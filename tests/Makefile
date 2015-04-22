@@ -49,7 +49,7 @@ $(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
 
 # rule for printing the results
 $(RESULT_DIR)/%.test : $(RESULT_DIR)/%_forward.out $(RESULT_DIR)/%_reverse.out
-	@./compare.sh $(RESULT_BASE_DIR)/$*.out $(RESULT_DIR)/$*_forward.out $(RESULT_DIR)/$*_reverse.out $*
+	@./compare.sh -n $* -b $(RESULT_BASE_DIR)/$*.out $(RESULT_DIR)/$*_forward.out $(RESULT_DIR)/$*_reverse.out
 
 all: $(TESTS)
 	@mkdir -p $(BUILD_DIR)
