@@ -2,3 +2,7 @@
 tests/build
 tests/results
 CMakeLists.txt
+CoDi.files
+CoDi.includes
+CoDi.config
+CoDi.creator
