@@ -18,7 +18,9 @@ namespace codi {
      * Cast the expression to its true type, given by the template
      * argument
      */
-    const A& cast() const { return static_cast<const A&>(*this); }
+    const A& cast() const {
+      return static_cast<const A&>(*this);
+    }
 
     /**
      * Calculate the gradient of the mathematical operation that this
@@ -59,7 +61,9 @@ namespace codi {
      * Intentionally inaccessible to prevent an expression appearing
      * on the left-hand-side of a statement
      */
-    Expression& operator=(const Expression&) { return *this; }
+    Expression& operator=(const Expression&) {
+      return *this;
+    }
   };
 
   /**
@@ -359,7 +363,7 @@ namespace codi {
    */
   template<class A>
   struct ScalarMultiply
-    : public Expression<ScalarMultiply<A> > {
+      : public Expression<ScalarMultiply<A> > {
     ScalarMultiply(const Expression<A>& a, const Real& b)
       : a_(a.cast()), b_(b) { }
 
@@ -826,14 +830,19 @@ namespace codi {
       a_.calc_gradient(gradient, b_.value() * pow(a_.value(), b_.value() - 1.0));
       if (a_.value() > 0) {
         b_.calc_gradient(gradient, log(a_.value()) * result_);
-      } else { b_.calc_gradient(gradient, 0.0); }
+      } else {
+        b_.calc_gradient(gradient, 0.0);
+      }
     }
 
     inline void calc_gradient(Real& gradient, const Real& multiplier) const {
       a_.calc_gradient(gradient, b_.value() * pow(a_.value(),
-                                                  b_.value() - 1.0) * multiplier);
-      if (a_.value() > 0) { b_.calc_gradient(gradient, log(a_.value()) * result_ * multiplier); }
-      else { b_.calc_gradient(gradient, 0.0); }
+                       b_.value() - 1.0) * multiplier);
+      if (a_.value() > 0) {
+        b_.calc_gradient(gradient, log(a_.value()) * result_ * multiplier);
+      } else {
+        b_.calc_gradient(gradient, 0.0);
+      }
     }
 
     inline Real value() const {

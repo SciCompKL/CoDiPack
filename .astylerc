@@ -1,0 +1,13 @@
+# Use java-style formatting (Attached brackets).
+--style=java
+# Ident using 2 spaces per ident.
+--ident=spaces=2
+# Brake line if it exceeds 120 characters.
+-xC120
+# Add brackets to unbracketed one-line statements
+-j
+# Ident content of namespace
+-N
+# Convert tabs to the appropriate number of spaces
+-c
+
