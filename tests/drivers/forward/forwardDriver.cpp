@@ -28,18 +28,18 @@ int main(int nargs, char** args) {
     }
 
     for(int curIn = 0; curIn < inputs; ++curIn) {
-      x[curIn].set_gradient(1.0);
+      x[curIn].setGradient(1.0);
       for(int i = 0; i < outputs; ++i) {
-        y[i].set_gradient(0.0);
+        y[i].setGradient(0.0);
       }
 
       func(x, y);
 
       for(int curOut = 0; curOut < outputs; ++curOut) {
-        std::cout << curIn << " " << curOut << " " << y[curOut].get_gradient() << std::endl;
+        std::cout << curIn << " " << curOut << " " << y[curOut].getGradient() << std::endl;
       }
 
-      x[curIn].set_gradient(0.0);
+      x[curIn].setGradient(0.0);
     }
   }
 }

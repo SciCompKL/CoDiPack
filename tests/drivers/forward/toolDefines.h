@@ -1,7 +1,7 @@
 #pragma once
 
-#include <adept.h>
+#include <codi.hpp>
 
-typedef adept::fReal NUMBER;
+typedef codi::RealForward NUMBER;
 
 #include "../globalDefines.h"

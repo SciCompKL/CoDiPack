@@ -18,6 +18,7 @@ endif
 
 CXX := g++
 ADEPT_DIR := ../../adept-extended
+CODI_DIR := ..
 
 INC =  -I$(ADEPT_DIR)/include
 
@@ -28,7 +29,7 @@ FORWARD_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_forward.out,$
 REVERSE_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_reverse_bin,$(TEST_FILES))
 REVERSE_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_reverse.out,$(TEST_FILES))
 
-FORWARD_DRIVER = $(DRIVER_DIR)/forward/forwardDriver.cpp $(INC) -I$(DRIVER_DIR)/forward
+FORWARD_DRIVER = $(DRIVER_DIR)/forward/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward
 REVERSE_DRIVER = $(DRIVER_DIR)/reverse/reverseDriver.cpp $(INC) -L$(ADEPT_DIR) -ladept -I$(DRIVER_DIR)/reverse
 
 .SECONDARY: $(FORWARD_OUT_FILES) $(FORWARD_BIN_FILES) $(REVERSE_OUT_FILES) $(REVERSE_BIN_FILES)
