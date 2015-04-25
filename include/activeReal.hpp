@@ -18,7 +18,7 @@ namespace codi {
 
   public:
 
-    inline ActiveReal() : value(0.0) {
+    inline ActiveReal() : value() {
       globalTape.initGradientData(value, gradientData);
     }
 
@@ -61,6 +61,10 @@ namespace codi {
     }
 
     inline Real getGradient() const {
+      return globalTape.getGradient(gradientData);
+    }
+
+    inline Real& getGradient() {
       return globalTape.getGradient(gradientData);
     }
 

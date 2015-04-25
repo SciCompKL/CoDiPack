@@ -125,5 +125,16 @@ namespace codi {
      */
     virtual Real getGradient(const GradientData& value) const = 0;
 
+    /**
+    * @brief Get the gradient of the gradient data as reference.
+    *
+    * The tape  returns the gradient which corresponds to the gradient data as a reference.
+    *
+    * @param[in] value  The gradient data of the active type.
+    *
+    * @return The gradient which belongs to the active type as a reference.
+    */
+    virtual Real& getGradient(GradientData& value) = 0;
+
   };
 }

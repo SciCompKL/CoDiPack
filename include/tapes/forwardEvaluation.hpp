@@ -32,7 +32,7 @@ namespace codi {
      */
     template<typename Rhs>
     inline void store(Real& value, GradientData& lhsTangent, const Rhs& rhs) {
-      lhsTangent = 0.0;
+      lhsTangent = Real();
       rhs.calcGradient(lhsTangent);
       value = rhs.getValue();
     }
@@ -44,7 +44,7 @@ namespace codi {
      * is inactive.
      */
     inline void store(Real& value, GradientData& tangent, const Real& rhs) {
-      tangent = Real(0.0);
+      tangent = Real();
       value = rhs;
     }
 
@@ -86,7 +86,7 @@ namespace codi {
      * @param[out] tangent  Set to zero.
      */
     inline void initGradientData(Real& /*value*/, GradientData& tangent) {
-      tangent = Real(0.0);
+      tangent = Real();
     }
 
     /**
@@ -114,6 +114,17 @@ namespace codi {
      * @return The tangent value of the active type.
      */
     inline Real getGradient(const GradientData& tangent) const {
+      return tangent;
+    }
+
+    /**
+     * Returns the tangent value of the active type.
+     *
+     * @param[in]  tangent  The gradient data of the active type is the tangent.
+     *
+     * @return The tangent value of the active type.
+     */
+    inline Real& getGradient(GradientData& tangent) {
       return tangent;
     }
   };
