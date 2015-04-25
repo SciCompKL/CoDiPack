@@ -12,11 +12,12 @@ namespace codi {
    * each operation the active type calls also the store operation to inform the tape that
    * an expression is assigned to an active type.
    *
+   * @tempalte             Real  Floating point type of the gradients.
    * @template GradientDataType  The data the tape uses to identify each active variable
    *                             and where the tape can store information about the
    *                             gradient.
    */
-  template <typename GradientDataType>
+  template <typename Real, typename GradientDataType>
   class TapeInterface {
   public:
 

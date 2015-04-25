@@ -4,5 +4,6 @@
 #include "tapes/forwardEvaluation.hpp"
 
 namespace codi {
-  typedef ActiveReal<ForwardEvaluation> RealForward;
+  typedef ActiveReal<double, ForwardEvaluation<double> > RealForward;
+  typedef ActiveReal<float, ForwardEvaluation<float> > RealForwardFloat;
 }

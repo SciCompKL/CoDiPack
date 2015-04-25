@@ -3,8 +3,8 @@
 #include "expressions.h"
 
 namespace codi {
-  template<typename Tape>
-  class ActiveReal : public Expression<ActiveReal<Tape> > {
+  template<typename Real, typename Tape>
+  class ActiveReal : public Expression<Real, ActiveReal<Real, Tape> > {
   public:
     typedef Real RealType;
     typedef Tape TapeType;
@@ -26,12 +26,17 @@ namespace codi {
       globalTape.initGradientData(this->value, gradientData);
     }
 
-    template<class R>
-    inline ActiveReal(const Expression<R>& rhs) {
-      globalTape.store(value, gradientData, rhs);
+    inline ActiveReal(const Real& value, const Real& gradient) : value(value) {
+      globalTape.initGradientData(this->value, gradientData);
+      globalTape.setGradient(gradientData, gradient);
     }
 
-    inline ActiveReal(const ActiveReal<Tape>& v) {
+    template<class R>
+    inline ActiveReal(const Expression<Real, R>& rhs) {
+      globalTape.store(value, gradientData, rhs.cast());
+    }
+
+    inline ActiveReal(const ActiveReal<Real, Tape>& v) {
       globalTape.store(value, gradientData, v);
     }
 
@@ -71,74 +76,74 @@ namespace codi {
       this->value = value;
     }
 
-    inline ActiveReal<Tape>& operator=(const Real& rhs){
+    inline ActiveReal<Real, Tape>& operator=(const Real& rhs){
       globalTape.store(value, gradientData, rhs);
       return *this;
     }
 
     template<class R>
-    inline ActiveReal<Tape>& operator=(const Expression<R>& rhs){
-      globalTape.store(value, gradientData, rhs);
+    inline ActiveReal<Real, Tape>& operator=(const Expression<Real, R>& rhs){
+      globalTape.store(value, gradientData, rhs.cast());
       return *this;
     }
 
-    inline ActiveReal<Tape>& operator=(const ActiveReal<Tape>& rhs) {
+    inline ActiveReal<Real, Tape>& operator=(const ActiveReal<Real, Tape>& rhs) {
       globalTape.store(value, gradientData, rhs);
       return *this;
     }
 
     template<class R>
-    inline ActiveReal<Tape>& operator+=(const Expression<R>& rhs) {
+    inline ActiveReal<Real, Tape>& operator+=(const Expression<Real, R>& rhs) {
       return *this = (*this + rhs);
     }
     template<class R>
-    inline ActiveReal<Tape>& operator-=(const Expression<R>& rhs) {
+    inline ActiveReal<Real, Tape>& operator-=(const Expression<Real, R>& rhs) {
       return *this = (*this - rhs);
     }
     template<class R>
-    inline ActiveReal<Tape>& operator*=(const Expression<R>& rhs) {
+    inline ActiveReal<Real, Tape>& operator*=(const Expression<Real, R>& rhs) {
       return *this = (*this * rhs);
     }
     template<class R>
-    inline ActiveReal<Tape>& operator/=(const Expression<R>& rhs) {
+    inline ActiveReal<Real, Tape>& operator/=(const Expression<Real, R>& rhs) {
       return *this = (*this / rhs);
     }
 
-    inline ActiveReal<Tape>& operator+=(const Real& rhs) {
+    inline ActiveReal<Real, Tape>& operator+=(const Real& rhs) {
       // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
       value += rhs;
       return *this;
     }
-    inline ActiveReal<Tape>& operator-=(const Real& rhs) {
+    inline ActiveReal<Real, Tape>& operator-=(const Real& rhs) {
       // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
       value -= rhs;
       return *this;
     }
-    inline ActiveReal<Tape>& operator*=(const Real& rhs) {
+    inline ActiveReal<Real, Tape>& operator*=(const Real& rhs) {
       return *this = (*this * rhs);
     }
-    inline ActiveReal<Tape>& operator/=(const Real& rhs) {
+    inline ActiveReal<Real, Tape>& operator/=(const Real& rhs) {
       return *this = (*this / rhs);
     }
 
-    inline ActiveReal<Tape> operator++() {
+    inline ActiveReal<Real, Tape> operator++() {
       return *this = *this + 1.0;
     }
-    inline ActiveReal<Tape> operator++(int) {
-      ActiveReal<Tape> r(*this);
+    inline ActiveReal<Real, Tape> operator++(int) {
+      ActiveReal<Real, Tape> r(*this);
       *this = *this + 1.0;
       return r;
     }
-    inline ActiveReal<Tape> operator--() {
+    inline ActiveReal<Real, Tape> operator--() {
       return *this = *this - 1.0;
     }
-    inline ActiveReal<Tape> operator--(int) {
-      ActiveReal<Tape> r(*this);
+    inline ActiveReal<Real, Tape> operator--(int) {
+      ActiveReal<Real, Tape> r(*this);
       *this = *this - 1.0;
       return r;
     }
   };
 
-  template< typename Tape>
-  Tape ActiveReal<Tape>::globalTape;
+  template<typename Real, typename Tape>
+  Tape ActiveReal<Real, Tape>::globalTape;
 }

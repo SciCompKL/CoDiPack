@@ -12,9 +12,14 @@ namespace codi {
    *
    * is evaluated. The gradient data type of this tape is just the same as the active type
    * uses for the storage of the floating point values.
+   *
+   * @template  Real  The floating point type of the tangent data.
    */
-  class ForwardEvaluation : public TapeInterface<Real >{
+  template<typename Real>
+  class ForwardEvaluation : public TapeInterface<Real, Real>{
   public:
+
+    typedef Real GradientData;
 
     /**
      * @brief Evaluates the primal expression and the tangent
@@ -30,6 +35,17 @@ namespace codi {
       lhsTangent = 0.0;
       rhs.calcGradient(lhsTangent);
       value = rhs.getValue();
+    }
+
+    /**
+     * @brief Specialization for store which has a constant value on the rhs.
+     *
+     * This implementation of store sets the gradient of th active type to zero as the rhs
+     * is inactive.
+     */
+    inline void store(Real& value, GradientData& tangent, const Real& rhs) {
+      tangent = Real(0.0);
+      value = rhs;
     }
 
     /**
@@ -101,18 +117,6 @@ namespace codi {
       return tangent;
     }
   };
-
-  /**
-   * @brief Specialization for store which has a constant value on the rhs.
-   *
-   * This implementation of store sets the gradient of th active type to zero as the rhs
-   * is inactive.
-   */
-  template<>
-  inline void ForwardEvaluation::store<Real>(Real& value, GradientData& tangent, const Real& rhs) {
-    tangent = Real(0.0);
-    value = rhs;
-  }
 }
 
 

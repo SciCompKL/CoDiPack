@@ -11,9 +11,11 @@ namespace codi {
    * derive. Each member function simply calls the specialized version
    * of the function according to the expression's true type, which is
    * given by its template argument.
+   *
+   * @template Real  The data type of the primal values and the gradient values.
    */
 
-  template<class A>
+  template<typename Real, class A>
   struct Expression {
 
     /**
@@ -76,9 +78,9 @@ namespace codi {
   /**
    * Add: an expression plus another expression
    */
-  template<class A, class B>
-  struct Add : public Expression<Add<A, B> > {
-    Add(const Expression<A>& a, const Expression<B>& b)
+  template<typename Real, class A, class B>
+  struct Add : public Expression<Real, Add<Real, A, B> > {
+    Add(const Expression<Real, A>& a, const Expression<Real, B>& b)
       : a_(a.cast()), b_(b.cast()) { }
 
     /**
@@ -111,19 +113,19 @@ namespace codi {
    * Overload the addition operator for Expression arguments to return
    * an Add type
    */
-  template<class A, class B>
+  template<typename Real, class A, class B>
   inline
-  Add<A, B> operator+(const Expression<A>& a,
-                      const Expression<B>& b) {
-    return Add<A, B>(a.cast(), b.cast());
+  Add<Real, A, B> operator+(const Expression<Real, A>& a,
+                            const Expression<Real, B>& b) {
+    return Add<Real, A, B>(a.cast(), b.cast());
   }
 
   /**
    * Subtract: an expression minus another expression
    */
-  template<class A, class B>
-  struct Subtract : public Expression<Subtract<A, B> > {
-    Subtract(const Expression<A>& a, const Expression<B>& b)
+  template<typename Real, class A, class B>
+  struct Subtract : public Expression<Real, Subtract<Real, A, B> > {
+    Subtract(const Expression<Real, A>& a, const Expression<Real, B>& b)
       : a_(a.cast()), b_(b.cast()) { }
 
     /**
@@ -151,11 +153,11 @@ namespace codi {
   /*
    *  Overload subtraction operator for Expression arguments
    */
-  template<class A, class B>
+  template<typename Real, class A, class B>
   inline
-  Subtract<A, B> operator-(const Expression<A>& a,
-                           const Expression<B>& b) {
-    return Subtract<A, B>(a.cast(), b.cast());
+  Subtract<Real, A, B> operator-(const Expression<Real, A>& a,
+                           const Expression<Real, B>& b) {
+    return Subtract<Real, A, B>(a.cast(), b.cast());
   }
 
   /**
@@ -167,8 +169,8 @@ namespace codi {
    * if getValue() is called multiple times
    */
   template <class A, class B>
-  struct Multiply : public Expression<Multiply<A,B> > {
-    Multiply(const Expression<A>& a, const Expression<B>& b)
+  struct Multiply : public Expression<Real, Multiply<A,B> > {
+    Multiply(const Expression<Real, A>& a, const Expression<Real, B>& b)
       : a_(a.cast()), b_(b.cast()), result_(a_.getValue()*b_.getValue()) { }
     // If f(a,b) = a*b then df/da = b and df/db = a
     inline void calcGradient(Real& gradient) const {
@@ -192,9 +194,9 @@ namespace codi {
   /**
    * The second version does not precompute the result
    */
-  template<class A, class B>
-  struct Multiply : public Expression<Multiply<A, B> > {
-    Multiply(const Expression<A>& a, const Expression<B>& b)
+  template<typename Real, class A, class B>
+  struct Multiply : public Expression<Real, Multiply<Real, A, B> > {
+    Multiply(const Expression<Real, A>& a, const Expression<Real, B>& b)
       : a_(a.cast()), b_(b.cast()) { }
 
     // If f(a,b) = a*b then df/da = b and df/db = a
@@ -222,19 +224,19 @@ namespace codi {
   /**
    * Overload multiplication operator for Expression arguments
    */
-  template<class A, class B>
+  template<typename Real, class A, class B>
   inline
-  Multiply<A, B> operator*(const Expression<A>& a,
-                           const Expression<B>& b) {
-    return Multiply<A, B>(a.cast(), b.cast());
+  Multiply<Real, A, B> operator*(const Expression<Real, A>& a,
+                           const Expression<Real, B>& b) {
+    return Multiply<Real, A, B>(a.cast(), b.cast());
   }
 
   /**
    *  Divide: an expression divided by another expression
    */
-  template<class A, class B>
-  struct Divide : public Expression<Divide<A, B> > {
-    Divide(const Expression<A>& a, const Expression<B>& b)
+  template<typename Real, class A, class B>
+  struct Divide : public Expression<Real, Divide<Real, A, B> > {
+    Divide(const Expression<Real, A>& a, const Expression<Real, B>& b)
       : a_(a.cast()), b_(b.cast()), one_over_b_(1.0 / b_.getValue()),
         result_(a_.getValue() * one_over_b_) { }
 
@@ -264,19 +266,19 @@ namespace codi {
   /**
    * Overload division operator for Expression arguments
    */
-  template<class A, class B>
+  template<typename Real, class A, class B>
   inline
-  Divide<A, B> operator/(const Expression<A>& a,
-                         const Expression<B>& b) {
-    return Divide<A, B>(a.cast(), b.cast());
+  Divide<Real, A, B> operator/(const Expression<Real, A>& a,
+                         const Expression<Real, B>& b) {
+    return Divide<Real, A, B>(a.cast(), b.cast());
   }
 
   /**
    * ScalarAdd: an expression plus a scalar
    */
-  template<class A>
-  struct ScalarAdd : public Expression<ScalarAdd<A> > {
-    ScalarAdd(const Expression<A>& a, const Real& b)
+  template<typename Real, class A>
+  struct ScalarAdd : public Expression<Real, ScalarAdd<Real, A> > {
+    ScalarAdd(const Expression<Real, A>& a, const Real& b)
       : a_(a.cast()), result_(a_.getValue() + b) { }
 
     inline void calcGradient(Real& gradient) const {
@@ -300,37 +302,37 @@ namespace codi {
    *  Overload addition operator for expression plus scalar and scalar
    * plus expression
    */
-  template<class A>
+  template<typename Real, class A>
   inline
-  ScalarAdd<A> operator+(const Expression<A>& a,
+  ScalarAdd<Real, A> operator+(const Expression<Real, A>& a,
                          const Real& b) {
-    return ScalarAdd<A>(a.cast(), b);
+    return ScalarAdd<Real, A>(a.cast(), b);
   }
 
-  template<class A>
+  template<typename Real, class A>
   inline
-  ScalarAdd<A> operator+(const Real& b,
-                         const Expression<A>& a) {
-    return ScalarAdd<A>(a.cast(), b);
+  ScalarAdd<Real, A> operator+(const Real& b,
+                         const Expression<Real, A>& a) {
+    return ScalarAdd<Real, A>(a.cast(), b);
   }
 
   /**
    * Overload subtraction operator for expression minus scalar to
    * return a ScalarAdd object
    */
-  template<class A>
+  template<typename Real, class A>
   inline
-  ScalarAdd<A> operator-(const Expression<A>& a,
+  ScalarAdd<Real, A> operator-(const Expression<Real, A>& a,
                          const Real& b) {
-    return ScalarAdd<A>(a.cast(), -b);
+    return ScalarAdd<Real, A>(a.cast(), -b);
   }
 
   /**
    *  ScalarSubtract: scalar minus expression
    */
-  template<class B>
-  struct ScalarSubtract : public Expression<ScalarSubtract<B> > {
-    ScalarSubtract(const Real& a, const Expression<B>& b)
+  template<typename Real, class B>
+  struct ScalarSubtract : public Expression<Real, ScalarSubtract<Real, B> > {
+    ScalarSubtract(const Real& a, const Expression<Real, B>& b)
       : b_(b.cast()), result_(a - b_.getValue()) { }
 
     inline void calcGradient(Real& gradient) const {
@@ -353,20 +355,20 @@ namespace codi {
   /**
    *  Overload subtraction operator for scalar minus expression
    */
-  template<class B>
+  template<typename Real, class B>
   inline
-  ScalarSubtract<B> operator-(const Real& a,
-                              const Expression<B>& b) {
-    return ScalarSubtract<B>(a, b.cast());
+  ScalarSubtract<Real, B> operator-(const Real& a,
+                              const Expression<Real, B>& b) {
+    return ScalarSubtract<Real, B>(a, b.cast());
   }
 
   /**
    *  ScalarMultiply: expression multiplied by scalar
    */
-  template<class A>
+  template<typename Real, class A>
   struct ScalarMultiply
-      : public Expression<ScalarMultiply<A> > {
-    ScalarMultiply(const Expression<A>& a, const Real& b)
+      : public Expression<Real, ScalarMultiply<Real, A> > {
+    ScalarMultiply(const Expression<Real, A>& a, const Real& b)
       : a_(a.cast()), b_(b) { }
 
     inline void calcGradient(Real& gradient) const {
@@ -390,37 +392,37 @@ namespace codi {
    * Overload multiplication operator for expression multiplied by
    * scalar and scalar multiplied by expression
    */
-  template<class A>
+  template<typename Real, class A>
   inline
-  ScalarMultiply<A> operator*(const Expression<A>& a,
+  ScalarMultiply<Real, A> operator*(const Expression<Real, A>& a,
                               const Real& b) {
-    return ScalarMultiply<A>(a.cast(), b);
+    return ScalarMultiply<Real, A>(a.cast(), b);
   }
 
-  template<class A>
+  template<typename Real, class A>
   inline
-  ScalarMultiply<A> operator*(const Real& b,
-                              const Expression<A>& a) {
-    return ScalarMultiply<A>(a.cast(), b);
+  ScalarMultiply<Real, A> operator*(const Real& b,
+                              const Expression<Real, A>& a) {
+    return ScalarMultiply<Real, A>(a.cast(), b);
   }
 
   /**
    *  Overload division operator for expression divided by scalar to
    * return ScalarMultiply object
    */
-  template<class A>
+  template<typename Real, class A>
   inline
-  ScalarMultiply<A> operator/(const Expression<A>& a,
+  ScalarMultiply<Real, A> operator/(const Expression<Real, A>& a,
                               const Real& b) {
-    return ScalarMultiply<A>(a.cast(), 1.0 / b);
+    return ScalarMultiply<Real, A>(a.cast(), 1.0 / b);
   }
 
   /**
    * ScalarDivide: scalar divided by expression
    */
-  template<class B>
-  struct ScalarDivide : public Expression<ScalarDivide<B> > {
-    ScalarDivide(const Real& a, const Expression<B>& b)
+  template<typename Real, class B>
+  struct ScalarDivide : public Expression<Real, ScalarDivide<Real, B> > {
+    ScalarDivide(const Real& a, const Expression<Real, B>& b)
       : b_(b.cast()), one_over_b_(1.0 / b_.getValue()),
         result_(a * one_over_b_) { }
 
@@ -448,11 +450,11 @@ namespace codi {
   /**
    *  Overload division operator for scalar divided by expression
    */
-  template<class B>
+  template<typename Real, class B>
   inline
-  ScalarDivide<B> operator/(const Real& a,
-                            const Expression<B>& b) {
-    return ScalarDivide<B>(a, b.cast());
+  ScalarDivide<Real, B> operator/(const Real& a,
+                            const Expression<Real, B>& b) {
+    return ScalarDivide<Real, B>(a, b.cast());
   }
 
   /**
@@ -461,22 +463,22 @@ namespace codi {
    * function is called to extract the value of the expression
    */
 #define CODI_DEFINE_CONDITIONAL(OPERATOR, OP)      \
-template <class A, class B>          \
+template<typename Real, class A, class B>          \
 inline              \
-bool OPERATOR(const Expression<A>& a,        \
-      const Expression<B>& b) {      \
+bool OPERATOR(const Expression<Real, A>& a,        \
+      const Expression<Real, B>& b) {      \
   return a.getValue() OP b.getValue();        \
 }                \
                               \
-template <class A>            \
+template<typename Real, class A>            \
 inline              \
-bool OPERATOR(const Expression<A>& a, const Real& b) {  \
+bool OPERATOR(const Expression<Real, A>& a, const Real& b) {  \
   return a.getValue() OP b;          \
 }                \
                               \
-template <class B>            \
+template<typename Real, class B>            \
 inline              \
-bool OPERATOR(const Real& a, const Expression<B>& b) {  \
+bool OPERATOR(const Real& a, const Expression<Real, B>& b) {  \
   return a OP b.getValue();          \
 }
 
@@ -497,9 +499,9 @@ bool OPERATOR(const Real& a, const Expression<B>& b) {  \
   /*
    *  UnaryMinus: negation of expression
    */
-  template<class A>
-  struct UnaryMinus : public Expression<UnaryMinus<A> > {
-    UnaryMinus(const Expression<A>& a)
+  template<typename Real, class A>
+  struct UnaryMinus : public Expression<Real, UnaryMinus<Real, A> > {
+    UnaryMinus(const Expression<Real, A>& a)
       : a_(a.cast()) { }
 
     inline void calcGradient(Real& gradient) const {
@@ -521,27 +523,27 @@ bool OPERATOR(const Real& a, const Expression<B>& b) {  \
   /**
    *  Overload unary minus of expression
    */
-  template<class A>
+  template<typename Real, class A>
   inline
-  UnaryMinus<A> operator-(const Expression<A>& a) {
-    return UnaryMinus<A>(a.cast());
+  UnaryMinus<Real, A> operator-(const Expression<Real, A>& a) {
+    return UnaryMinus<Real, A>(a.cast());
   }
 
   /**
    *  Unary plus: returns the argument
    */
-  template<class A>
+  template<typename Real, class A>
   inline
-  A operator+(const Expression<A>& a) {
+  A operator+(const Expression<Real, A>& a) {
     return a;
   }
 
   /**
    *  Exponential of an expression
    */
-  template<class A>
-  struct Exp : public Expression<Exp<A> > {
-    Exp(const Expression<A>& a)
+  template<typename Real, class A>
+  struct Exp : public Expression<Real, Exp<Real, A> > {
+    Exp(const Expression<Real, A>& a)
       : a_(a.cast()), result_(exp(a.getValue())) { }
 
     /**
@@ -567,9 +569,9 @@ bool OPERATOR(const Real& a, const Expression<B>& b) {  \
   /**
    *  Exponential of an expression
    */
-  template<class A>
-  struct Atanh : public Expression<Atanh<A> > {
-    Atanh(const Expression<A>& a)
+  template<typename Real, class A>
+  struct Atanh : public Expression<Real, Atanh<Real, A> > {
+    Atanh(const Expression<Real, A>& a)
       : a_(a.cast()), result_(.5 * std::log((1 + a.getValue()) / (1 - a.getValue()))) { }
 
     inline void calcGradient(Real& gradient) const {
@@ -605,16 +607,16 @@ bool OPERATOR(const Real& a, const Expression<B>& b) {  \
 /*
  *  Overload exp for Expression objects
  */
-template<class A>
+template<typename Real, class A>
 inline
-codi::Exp<A> exp(const codi::Expression<A>& a) {
-  return codi::Exp<A>(a.cast());
+codi::Exp<Real, A> exp(const codi::Expression<Real, A>& a) {
+  return codi::Exp<Real, A>(a.cast());
 }
 
-template<class A>
+template<typename Real, class A>
 inline
-codi::Atanh<A> atanh(const codi::Expression<A>& a) {
-  return codi::Atanh<A>(a.cast());
+codi::Atanh<Real, A> atanh(const codi::Expression<Real, A>& a) {
+  return codi::Atanh<Real, A>(a.cast());
 }
 
 
@@ -625,9 +627,9 @@ codi::Atanh<A> atanh(const codi::Expression<A>& a) {
  */
 #define CODI_DEFINE_UNARY_FUNCTION(OP, FUNC, DERIVATIVE)    \
 namespace codi {            \
-  template <class A>            \
-  struct OP : public Expression<OP<A> > {      \
-    OP(const Expression<A>& a)        \
+  template<typename Real, class A>            \
+  struct OP : public Expression<Real, OP<Real, A> > {      \
+    OP(const Expression<Real, A>& a)        \
   : a_(a.cast()), result_(std::FUNC(a_.getValue())) { }    \
     inline void calcGradient(Real& gradient) const {      \
   a_.calcGradient(gradient, DERIVATIVE);      \
@@ -644,10 +646,10 @@ namespace codi {            \
   Real result_;            \
   };                \
 }                \
-template <class A>            \
+template <typename Real, class A>            \
 inline              \
-codi:: OP<A> FUNC(const codi::Expression<A>& a) {    \
-  return codi:: OP<A>(a.cast());        \
+codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a) {    \
+  return codi:: OP<Real, A>(a.cast());        \
 }
 
 /**
@@ -679,10 +681,10 @@ CODI_DEFINE_UNARY_FUNCTION(Abs, abs, (a_.getValue() > 0.0) - (a_.getValue() < 0.
  * Need both fabs and abs for C compatibility, so get fabs to return
  * an Abs object
  */
-template<class A>
+template<typename Real, class A>
 inline
-codi::Abs<A> fabs(const codi::Expression<A>& a) {
-  return codi::Abs<A>(a.cast());
+codi::Abs<Real, A> fabs(const codi::Expression<Real, A>& a) {
+  return codi::Abs<Real, A>(a.cast());
 }
 
 /**
@@ -690,50 +692,50 @@ codi::Abs<A> fabs(const codi::Expression<A>& a) {
  * Lots more math function in math.h: erf, bessel functions etc...
  */
 
-template<class A>
+template<typename Real, class A>
 inline
 bool
-isinf(const codi::Expression<A>& a) {
+isinf(const codi::Expression<Real, A>& a) {
   return std::isinf(a.getValue());
 }
 
-template<class A>
+template<typename Real, class A>
 inline
 bool
-isnan(const codi::Expression<A>& a) {
+isnan(const codi::Expression<Real, A>& a) {
   return std::isnan(a.getValue());
 }
 
-template<class A>
+template<typename Real, class A>
 inline
 bool
-isfinite(const codi::Expression<A>& a) {
+isfinite(const codi::Expression<Real, A>& a) {
   return std::isfinite(a.getValue());
 }
 
-template<class A>
+template<typename Real, class A>
 inline
 bool
-__isinf(const codi::Expression<A>& a) {
+__isinf(const codi::Expression<Real, A>& a) {
   return __isinf(a.getValue());
 }
 
-template<class A>
+template<typename Real, class A>
 inline
 bool
-__isnan(const codi::Expression<A>& a) {
+__isnan(const codi::Expression<Real, A>& a) {
   return __isnan(a.getValue());
 }
 
-template<class A>
+template<typename Real, class A>
 inline
 bool
-__isfinite(const codi::Expression<A>& a) {
+__isfinite(const codi::Expression<Real, A>& a) {
   return __isfinite(a.getValue());
 }
 
-template<class A>
-inline Real floor(const codi::Expression<A>& a) {
+template<typename Real, class A>
+inline Real floor(const codi::Expression<Real, A>& a) {
   return std::floor(a.getValue());
 }
 
@@ -744,9 +746,9 @@ inline Real floor(const codi::Expression<A>& a) {
  */
 #define CODI_DEFINE_UNARY_FUNCTION2(OP, FUNC, DERIVATIVE)  \
 namespace codi {            \
-  template <class A>            \
-  struct OP : public Expression<OP<A> > {      \
-    OP(const Expression<A>& a)        \
+  template<typename Real, class A>            \
+  struct OP : public Expression<Real, OP<Real, A> > {      \
+    OP(const Expression<Real, A>& a)        \
   : a_(a.cast()), result_(FUNC(a.getValue())) { }    \
     inline void calcGradient(Real& gradient) const {      \
   a_.calcGradient(gradient, DERIVATIVE);      \
@@ -763,10 +765,10 @@ namespace codi {            \
   Real result_;            \
   };                \
 }                \
-template <class A>            \
+template <typename Real, class A>            \
 inline              \
-codi:: OP<A> FUNC(const codi::Expression<A>& a) {    \
-  return codi:: OP<A>(a.cast());        \
+codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a) {    \
+  return codi:: OP<Real, A>(a.cast());        \
 }
 
 CODI_DEFINE_UNARY_FUNCTION2(Sqrt, sqrt, result_ != 0 ? 0.5 / result_ : 0.0)
@@ -781,9 +783,9 @@ CODI_DEFINE_UNARY_FUNCTION2(Tanh, tanh, 1 - result_ * result_)
  */
 #define CODI_DEFINE_UNARY_FUNCTION3(OP, FUNC, DERIV1, DERIV2)  \
 namespace codi {            \
-  template <class A>            \
-  struct OP : public Expression<OP<A> > {      \
-    OP(const Expression<A>& a)        \
+  template<typename Real, class A>            \
+  struct OP : public Expression<Real, OP<Real, A> > {      \
+    OP(const Expression<Real, A>& a)        \
   : a_(a.cast()), result_(FUNC(a_.getValue())) { }    \
     inline void calcGradient(Real& gradient) const {      \
   DERIV1;              \
@@ -802,10 +804,10 @@ namespace codi {            \
   Real result_;            \
   };                \
 }                \
-template <class A>            \
+template <typename Real, class A>            \
 inline              \
-codi:: OP<A> FUNC(const codi::Expression<A>& a) {    \
-  return codi:: OP<A>(a.cast());        \
+codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a) {    \
+  return codi:: OP<Real, A>(a.cast());        \
 }
 
 CODI_DEFINE_UNARY_FUNCTION3(Tan, tan, Real tmp = 1 / cos(a_.getValue()), tmp * tmp)
@@ -817,9 +819,9 @@ namespace codi {
   /**
    *  Pow: an expression to the power of another expression
    */
-  template<class A, class B>
-  struct Pow : public Expression<Pow<A, B> > {
-    Pow(const Expression<A>& a, const Expression<B>& b)
+  template<typename Real, class A, class B>
+  struct Pow : public Expression<Real, Pow<Real, A, B> > {
+    Pow(const Expression<Real, A>& a, const Expression<Real, B>& b)
       : a_(a.cast()), b_(b.cast()),
         result_(pow(a_.getValue(), b_.getValue())) { };
 
@@ -858,9 +860,9 @@ namespace codi {
   /**
    *  PowScalarExponent: an expression to the power of a scalar
    */
-  template<class A>
-  struct PowScalarExponent : public Expression<PowScalarExponent<A> > {
-    PowScalarExponent(const Expression<A>& a, const Real& b)
+  template<typename Real, class A>
+  struct PowScalarExponent : public Expression<Real, PowScalarExponent<Real, A> > {
+    PowScalarExponent(const Expression<Real, A>& a, const Real& b)
       : a_(a.cast()), b_(b), result_(pow(a_.getValue(), b)) { }
 
     inline void calcGradient(Real& gradient) const {
@@ -884,9 +886,9 @@ namespace codi {
   /**
    * PowScalarBase: a scalar to the power of an expression
    */
-  template<class B>
-  struct PowScalarBase : public Expression<PowScalarBase<B> > {
-    PowScalarBase(const Real& a, const Expression<B>& b)
+  template<typename Real, class B>
+  struct PowScalarBase : public Expression<Real, PowScalarBase<Real, B> > {
+    PowScalarBase(const Real& a, const Expression<Real, B>& b)
       : a_(a), b_(b.cast()), result_(pow(a_, b_.getValue())) { }
 
     inline void calcGradient(Real& gradient) const {
@@ -914,38 +916,38 @@ namespace codi {
 /**
  *  Overload pow for Expression arguments
  */
-template<class A, class B>
+template<typename Real, class A, class B>
 inline
-codi::Pow<A, B> pow(const codi::Expression<A>& a,
-                    const codi::Expression<B>& b) {
-  return codi::Pow<A, B>(a.cast(), b.cast());
+codi::Pow<Real, A, B> pow(const codi::Expression<Real, A>& a,
+                    const codi::Expression<Real, B>& b) {
+  return codi::Pow<Real, A, B>(a.cast(), b.cast());
 }
 
 /**
  *  Overload pow for expression to the power of scalar
  */
-template<class A>
+template<typename Real, class A>
 inline
-codi::PowScalarExponent<A> pow(const codi::Expression<A>& a,
+codi::PowScalarExponent<Real, A> pow(const codi::Expression<Real, A>& a,
                                const Real& b) {
-  return codi::PowScalarExponent<A>(a.cast(), b);
+  return codi::PowScalarExponent<Real, A>(a.cast(), b);
 }
 
 /**
  * Overload pow for scalar to the power of an expression
  */
-template<class B>
+template<typename Real, class B>
 inline
-codi::PowScalarBase<B> pow(const Real& a,
-                           const codi::Expression<B>& b) {
-  return codi::PowScalarBase<B>(a, b.cast());
+codi::PowScalarBase<Real, B> pow(const Real& a,
+                           const codi::Expression<Real, B>& b) {
+  return codi::PowScalarBase<Real, B>(a, b.cast());
 }
 
 namespace codi {
-// atan2: 
-  template<class A, class B>
-  struct Atan2 : public Expression<Atan2<A, B> > {
-    Atan2(const Expression<A>& a, const Expression<B>& b)
+// atan2:
+  template<typename Real, class A, class B>
+  struct Atan2 : public Expression<Real, Atan2<Real, A, B> > {
+    Atan2(const Expression<Real, A>& a, const Expression<Real, B>& b)
       : a_(a.cast()), b_(b.cast()),
         result_(atan2(a_.getValue(), b_.getValue())) { };
 
@@ -975,9 +977,9 @@ namespace codi {
   };
 
 // atan2Scalar1
-  template<class A>
-  struct Atan2Scalar1 : public Expression<Atan2Scalar1<A> > {
-    Atan2Scalar1(const Expression<A>& a, const Real& b)
+  template<typename Real, class A>
+  struct Atan2Scalar1 : public Expression<Real, Atan2Scalar1<Real, A> > {
+    Atan2Scalar1(const Expression<Real, A>& a, const Real& b)
       : a_(a.cast()), b_(b),
         result_(atan2(a_.getValue(), b)) { }
 
@@ -1005,9 +1007,9 @@ namespace codi {
   };
 
 // atan2Scalar2
-  template<class B>
-  struct Atan2Scalar2 : public Expression<Atan2Scalar2<B> > {
-    Atan2Scalar2(const Real& a, const Expression<B>& b)
+  template<typename Real, class B>
+  struct Atan2Scalar2 : public Expression<Real, Atan2Scalar2<Real, B> > {
+    Atan2Scalar2(const Real& a, const Expression<Real, B>& b)
       : a_(a), b_(b.cast()),
         result_(atan2(a_, b_.getValue())) { }
 
@@ -1036,26 +1038,26 @@ namespace codi {
 } // End namespace codi
 
 // Overload pow for Expression arguments
-template<class A, class B>
+template<typename Real, class A, class B>
 inline
-codi::Atan2<A, B> atan2(const codi::Expression<A>& a,
-                        const codi::Expression<B>& b) {
-  return codi::Atan2<A, B>(a.cast(), b.cast());
+codi::Atan2<Real, A, B> atan2(const codi::Expression<Real, A>& a,
+                        const codi::Expression<Real, B>& b) {
+  return codi::Atan2<Real, A, B>(a.cast(), b.cast());
 }
 
 // Overload pow for expression to the power of scalar
-template<class A>
+template<typename Real, class A>
 inline
-codi::Atan2Scalar1<A> atan2(const codi::Expression<A>& a,
+codi::Atan2Scalar1<Real, A> atan2(const codi::Expression<Real, A>& a,
                             const Real& b) {
-  return codi::Atan2Scalar1<A>(a.cast(), b);
+  return codi::Atan2Scalar1<Real, A>(a.cast(), b);
 }
 
 // Overload pow for scalar to the power of an expression
-template<class B>
+template<typename Real, class B>
 inline
-codi::Atan2Scalar2<B> atan2(const Real& a,
-                            const codi::Expression<B>& b) {
-  return codi::Atan2Scalar2<B>(a, b.cast());
+codi::Atan2Scalar2<Real, B> atan2(const Real& a,
+                            const codi::Expression<Real, B>& b) {
+  return codi::Atan2Scalar2<Real, B>(a, b.cast());
 }
 
