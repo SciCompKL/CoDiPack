@@ -22,7 +22,7 @@ namespace codi {
      * Cast the expression to its true type, given by the template
      * argument
      */
-    const A& cast() const {
+    inline const A& cast() const {
       return static_cast<const A&>(*this);
     }
 
@@ -32,31 +32,21 @@ namespace codi {
      * For functions f(a), pass df/da to the argument in the
      * first case and pass multiplier*df/da in the second case.
      */
-    void calcGradient(Real& gradient) const {
+    inline void calcGradient(Real& gradient) const {
       cast().calcGradient(gradient);
     }
 
     /**
      * As the previous but multiplying the gradient by "multiplier"
      */
-    void calcGradient(Real& gradient, const Real& multiplier) const {
+    inline void calcGradient(Real& gradient, const Real& multiplier) const {
       cast().calcGradient(gradient, multiplier);
     }
 
     /**
      * Return the numerical value of the expression
      */
-    Real getValue() const {
-      return cast().getValue();
-    }
-
-    /**
-     * Calculate the gradient and return the numerical value
-     */
-    Real value_and_gradient(Real& gradient) const {
-      Real a = 0.0;
-      cast().calcGradient(a);
-      gradient = a;
+    inline Real getValue() const {
       return cast().getValue();
     }
 
@@ -65,9 +55,7 @@ namespace codi {
      * Intentionally inaccessible to prevent an expression appearing
      * on the left-hand-side of a statement
      */
-    Expression& operator=(const Expression&) {
-      return *this;
-    }
+    Expression& operator=(const Expression&) = delete;
   };
 
   /**

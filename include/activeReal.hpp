@@ -44,35 +44,35 @@ namespace codi {
       globalTape.destroyGradientData(value, gradientData);
     }
 
-    void calcGradient(Real& gradient) const {
+    inline void calcGradient(Real& gradient) const {
       globalTape.pushJacobi(gradient, value, gradientData);
     }
 
-    void calcGradient(Real& gradient, const Real& multiplier) const {
+    inline void calcGradient(Real& gradient, const Real& multiplier) const {
       globalTape.pushJacobi(gradient, multiplier, value, gradientData);
     }
 
-    GradientData& getGradientData() {
+    inline GradientData& getGradientData() {
       return gradientData;
     }
 
-    const GradientData& getGradientData() const {
+    inline const GradientData& getGradientData() const {
       return gradientData;
     }
 
-    Real getGradient() const {
+    inline Real getGradient() const {
       return globalTape.getGradient(gradientData);
     }
 
-    void setGradient(const Real& gradient) {
+    inline void setGradient(const Real& gradient) {
       globalTape.setGradient(gradientData, gradient);
     }
 
-    Real getValue() const {
+    inline Real getValue() const {
       return value;
     }
 
-    void setValue(const Real& value) {
+    inline void setValue(const Real& value) {
       this->value = value;
     }
 

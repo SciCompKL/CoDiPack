@@ -102,7 +102,7 @@ namespace codi {
      * @param[out]   tangent  The tangent value of the active type.
      * @param[in] newTangent  The new tangent value.
      */
-    void setGradient(GradientData& tangent, const Real& newTangent) {
+    inline void setGradient(GradientData& tangent, const Real& newTangent) {
       tangent = newTangent;
     }
 
@@ -113,7 +113,7 @@ namespace codi {
      *
      * @return The tangent value of the active type.
      */
-    Real getGradient(const GradientData& tangent) const {
+    inline Real getGradient(const GradientData& tangent) const {
       return tangent;
     }
   };
