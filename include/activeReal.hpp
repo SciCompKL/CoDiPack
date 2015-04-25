@@ -31,6 +31,10 @@ namespace codi {
       globalTape.store(value, gradientData, rhs);
     }
 
+    inline ActiveReal(const ActiveReal<Tape>& v) {
+      globalTape.store(value, gradientData, v);
+    }
+
     inline ~ActiveReal() {
       globalTape.destroyGradientData(value, gradientData);
     }
@@ -50,7 +54,6 @@ namespace codi {
     const GradientData& getGradientData() const {
       return gradientData;
     }
-
 
     Real getGradient() const {
       return globalTape.getGradient(gradientData);
@@ -75,6 +78,11 @@ namespace codi {
 
     template<class R>
     inline ActiveReal<Tape>& operator=(const Expression<R>& rhs){
+      globalTape.store(value, gradientData, rhs);
+      return *this;
+    }
+
+    inline ActiveReal<Tape>& operator=(const ActiveReal<Tape>& rhs) {
       globalTape.store(value, gradientData, rhs);
       return *this;
     }
