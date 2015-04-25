@@ -31,6 +31,10 @@ namespace codi {
       globalTape.store(value, gradientData, rhs);
     }
 
+    inline ~ActiveReal() {
+      globalTape.destroyGradientData(value, gradientData);
+    }
+
     void calcGradient(Real& gradient) const {
       globalTape.pushJacobi(gradient, value, gradientData);
     }
