@@ -1,6 +1,7 @@
 #pragma once
 
 #include "expressions.h"
+#include "typeTraits.hpp"
 
 namespace codi {
   template<typename Real, typename Tape>
@@ -8,6 +9,7 @@ namespace codi {
   public:
     typedef Real RealType;
     typedef Tape TapeType;
+    typedef typename TypeTraits<ActiveReal<Real, Tape> >::BaseType BaseType;
     typedef typename Tape::GradientData GradientData;
 
     static Tape globalTape;
@@ -22,7 +24,13 @@ namespace codi {
       globalTape.initGradientData(value, gradientData);
     }
 
-    inline ActiveReal(const Real& value) : value(value) {
+    template<class Q = Real>
+    inline ActiveReal(const typename std::enable_if<std::is_same<Q, BaseType>::value, BaseType>::type& value) : value(value) {
+      globalTape.initGradientData(this->value, gradientData);
+    }
+
+    template<class Q = Real>
+    inline ActiveReal(const typename std::enable_if<!std::is_same<Q, BaseType>::value, BaseType>::type& value) : value(value, 0.0) {
       globalTape.initGradientData(this->value, gradientData);
     }
 
@@ -146,6 +154,12 @@ namespace codi {
       *this = *this - 1.0;
       return r;
     }
+  };
+
+  template<typename Real, typename Tape>
+  class TypeTraits<ActiveReal<Real, Tape> > {
+    public:
+      typedef typename TypeTraits<Real>::BaseType BaseType;
   };
 
   template<typename Real, typename Tape>

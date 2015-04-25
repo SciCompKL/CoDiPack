@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "configure.h"
+#include "typeTraits.hpp"
 
 namespace codi {
 
@@ -356,7 +357,7 @@ namespace codi {
   template<typename Real, class A>
   struct ScalarMultiply
       : public Expression<Real, ScalarMultiply<Real, A> > {
-    ScalarMultiply(const Expression<Real, A>& a, const Real& b)
+    ScalarMultiply(const Expression<Real, A>& a, const typename TypeTraits<Real>::BaseType& b)
       : a_(a.cast()), b_(b) { }
 
     inline void calcGradient(Real& gradient) const {
@@ -373,7 +374,7 @@ namespace codi {
 
   private:
     const A& a_;
-    Real b_;
+    typename TypeTraits<Real>::BaseType b_;
   };
 
   /**
@@ -383,13 +384,13 @@ namespace codi {
   template<typename Real, class A>
   inline
   ScalarMultiply<Real, A> operator*(const Expression<Real, A>& a,
-                              const Real& b) {
+                              const typename TypeTraits<Real>::BaseType& b) {
     return ScalarMultiply<Real, A>(a.cast(), b);
   }
 
   template<typename Real, class A>
   inline
-  ScalarMultiply<Real, A> operator*(const Real& b,
+  ScalarMultiply<Real, A> operator*(const typename TypeTraits<Real>::BaseType& b,
                               const Expression<Real, A>& a) {
     return ScalarMultiply<Real, A>(a.cast(), b);
   }
