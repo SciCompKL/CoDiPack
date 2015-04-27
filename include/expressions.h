@@ -151,13 +151,9 @@ namespace codi {
   /**
    * Multiply: an expression multiplied by another expression
    */
-#ifdef CODI_MULTIPLY_PRECOMPUTES_RESULT
-  /**
-   * The first version precomputes the result, which should be optimal
-   * if getValue() is called multiple times
-   */
-  template <class A, class B>
-  struct Multiply : public Expression<Real, Multiply<A,B> > {
+
+  template <typename Real, class A, class B>
+  struct Multiply : public Expression<Real, Multiply<Real, A,B> > {
     Multiply(const Expression<Real, A>& a, const Expression<Real, B>& b)
       : a_(a.cast()), b_(b.cast()), result_(a_.getValue()*b_.getValue()) { }
     // If f(a,b) = a*b then df/da = b and df/db = a
@@ -177,37 +173,7 @@ namespace codi {
     const B& b_;
     Real result_;
   };
-#else
 
-  /**
-   * The second version does not precompute the result
-   */
-  template<typename Real, class A, class B>
-  struct Multiply : public Expression<Real, Multiply<Real, A, B> > {
-    Multiply(const Expression<Real, A>& a, const Expression<Real, B>& b)
-      : a_(a.cast()), b_(b.cast()) { }
-
-    // If f(a,b) = a*b then df/da = b and df/db = a
-    inline void calcGradient(Real& gradient) const {
-      a_.calcGradient(gradient, b_.getValue());
-      b_.calcGradient(gradient, a_.getValue());
-    }
-
-    inline void calcGradient(Real& gradient, const Real& multiplier) const {
-      a_.calcGradient(gradient, b_.getValue() * multiplier);
-      b_.calcGradient(gradient, a_.getValue() * multiplier);
-    }
-
-    inline Real getValue() const {
-      return a_.getValue() * b_.getValue();
-    }
-
-  private:
-    const A& a_;
-    const B& b_;
-  };
-
-#endif
 
   /**
    * Overload multiplication operator for Expression arguments
