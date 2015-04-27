@@ -134,7 +134,7 @@ namespace codi {
     *
     * @return The gradient which belongs to the active type as a reference.
     */
-    virtual Real& getGradient(GradientData& value) = 0;
+    virtual Real& gradient(GradientData& value) = 0;
 
   };
 }

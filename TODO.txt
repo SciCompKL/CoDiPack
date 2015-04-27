@@ -1,0 +1,2 @@
+Performance:
+  - Check if the compiler can optimize expression templates in such a way the expressions which occur twice are optimized
