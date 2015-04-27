@@ -60,16 +60,21 @@ namespace codi {
       return gradientData;
     }
 
-    inline Real getGradient() const {
-      return globalTape.getGradient(gradientData);
+    inline Real& gradient() {
+      return globalTape.gradient(gradientData);
     }
 
-    inline Real& getGradient() {
+
+    inline Real getGradient() const {
       return globalTape.getGradient(gradientData);
     }
 
     inline void setGradient(const Real& gradient) {
       globalTape.setGradient(gradientData, gradient);
+    }
+
+    inline Real& getValue() {
+      return value;
     }
 
     inline Real getValue() const {

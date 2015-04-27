@@ -124,7 +124,7 @@ namespace codi {
      *
      * @return The tangent value of the active type.
      */
-    inline Real& getGradient(GradientData& tangent) {
+    inline Real& gradient(GradientData& tangent) {
       return tangent;
     }
   };
