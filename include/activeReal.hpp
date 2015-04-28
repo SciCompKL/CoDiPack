@@ -25,6 +25,7 @@
 #pragma once
 
 #include "expressions.h"
+#include "typeTraits.hpp"
 
 namespace codi {
   template<typename Real, typename Tape>
@@ -32,6 +33,7 @@ namespace codi {
   public:
     typedef Real RealType;
     typedef Tape TapeType;
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
     typedef typename Tape::GradientData GradientData;
 
     static Tape globalTape;
@@ -46,7 +48,7 @@ namespace codi {
       globalTape.initGradientData(value, gradientData);
     }
 
-    inline ActiveReal(const Real& value) : value(value) {
+    inline ActiveReal(const PassiveReal& value) : value(value) {
       globalTape.initGradientData(this->value, gradientData);
     }
 
@@ -101,7 +103,7 @@ namespace codi {
       return value;
     }
 
-    inline Real getValue() const {
+    inline const Real& getValue() const {
       return value;
     }
 
@@ -109,7 +111,7 @@ namespace codi {
       this->value = value;
     }
 
-    inline ActiveReal<Real, Tape>& operator=(const Real& rhs){
+    inline ActiveReal<Real, Tape>& operator=(const PassiveReal& rhs){
       globalTape.store(value, gradientData, rhs);
       return *this;
     }
@@ -142,20 +144,20 @@ namespace codi {
       return *this = (*this / rhs);
     }
 
-    inline ActiveReal<Real, Tape>& operator+=(const Real& rhs) {
+    inline ActiveReal<Real, Tape>& operator+=(const PassiveReal& rhs) {
       // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
       value += rhs;
       return *this;
     }
-    inline ActiveReal<Real, Tape>& operator-=(const Real& rhs) {
+    inline ActiveReal<Real, Tape>& operator-=(const PassiveReal& rhs) {
       // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
       value -= rhs;
       return *this;
     }
-    inline ActiveReal<Real, Tape>& operator*=(const Real& rhs) {
+    inline ActiveReal<Real, Tape>& operator*=(const PassiveReal& rhs) {
       return *this = (*this * rhs);
     }
-    inline ActiveReal<Real, Tape>& operator/=(const Real& rhs) {
+    inline ActiveReal<Real, Tape>& operator/=(const PassiveReal& rhs) {
       return *this = (*this / rhs);
     }
 
@@ -175,6 +177,12 @@ namespace codi {
       *this = *this - 1.0;
       return r;
     }
+  };
+
+  template<typename Real, typename Tape>
+  class TypeTraits<ActiveReal<Real, Tape> > {
+    public:
+      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
   };
 
   template<typename Real, typename Tape>
