@@ -43,7 +43,7 @@ namespace codi {
      * This implementation of store sets the gradient of th active type to zero as the rhs
      * is inactive.
      */
-    inline void store(Real& value, GradientData& tangent, const Real& rhs) {
+    inline void store(Real& value, GradientData& tangent, const typename TypeTraits<Real>::PassiveReal& rhs) {
       tangent = Real();
       value = rhs;
     }
