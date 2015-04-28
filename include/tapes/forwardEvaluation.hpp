@@ -1,3 +1,26 @@
+/**
+ * CoDiPack, a Code Differentiation Package
+ *
+ * Copyright (C) 2015 Chair for Scientific Computing, TU Kaiserslautern
+ *
+ * This file is part of CoDiPack.
+ *
+ * CoDiPack is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * CoDiPack is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU
+ * General Public License along with CoDiPack.
+ * If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Authors: TODO
+ */
 #pragma once
 
 #include "tapeInterface.hpp"
@@ -6,14 +29,20 @@ namespace codi {
   /**
    * @brief Tape for the tangent or forward AD mode
    *
-   * This tape implements the forward or tangent AD mode. For each expression the equation
+   * This tape implements the forward or tangent AD mode. For each statement
+   * \f[ y = f(x) \f]
+   * the rhs of the equation
+   * \f[ \dot{y} = \frac{df}{dx}(x)\cdot \dot {x} \f]
+   * is evaluated and stored into the GradientData of \f$y\f$. This is done by calling the store routine of the tape
+   * in the assignment operator of ActiveReal. Using expression templates, the evaluation of each expression on the rhs leads to an
+   * ActiveReal that then calls the pushJacobi routine to
+   * add the Jacobian (the partial derivative of the expression with respect to the inputs)
+   * multiplied by the tangent value of the input to the tangent value of \f$y\f$.
    *
-   * \dot y = \frac{df}{dx}(x)\dot x
-   *
-   * is evaluated. The gradient data type of this tape is just the same as the active type
+   * GradientData is just the same as the active type
    * uses for the storage of the floating point values.
    *
-   * @template  Real  The floating point type of the tangent data.
+   * @tparam  Real  The floating point type of the tangent data.
    */
   template<typename Real>
   class ForwardEvaluation : public TapeInterface<Real, Real>{

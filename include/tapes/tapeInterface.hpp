@@ -1,3 +1,26 @@
+/**
+ * CoDiPack, a Code Differentiation Package
+ *
+ * Copyright (C) 2015 Chair for Scientific Computing, TU Kaiserslautern
+ *
+ * This file is part of CoDiPack.
+ *
+ * CoDiPack is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * CoDiPack is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU
+ * General Public License along with CoDiPack.
+ * If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Authors: TODO
+ */
 #pragma once
 
 #include "../configure.h"
@@ -12,8 +35,8 @@ namespace codi {
    * each operation the active type calls also the store operation to inform the tape that
    * an expression is assigned to an active type.
    *
-   * @tempalte             Real  Floating point type of the gradients.
-   * @template GradientDataType  The data the tape uses to identify each active variable
+   * @tparam             Real  Floating point type of the gradients.
+   * @tparam GradientDataType  The data the tape uses to identify each active variable
    *                             and where the tape can store information about the
    *                             gradient.
    */
