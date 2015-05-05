@@ -26,6 +26,7 @@
 
 #include "expressions.h"
 #include "typeTraits.hpp"
+#include "expressionTraits.hpp"
 
 namespace codi {
   template<typename Real, typename Tape>
@@ -183,6 +184,11 @@ namespace codi {
   class TypeTraits<ActiveReal<Real, Tape> > {
     public:
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+  };
+
+  template<typename Real, typename Tape>
+  struct ExpressionTraits<ActiveReal<Real, Tape> >  {
+    static const size_t maxActiveVariables = 1;
   };
 
   template<typename Real, typename Tape>

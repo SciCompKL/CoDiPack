@@ -67,7 +67,7 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       Real gradient; /* This value will not be used */
 
-      //assert(rhs.getMaxActiveVariables() < data.getUnusedSize());
+      assert(ExpressionTraits<Rhs>::maxActiveVariables < data.getUnusedSize());
       /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
