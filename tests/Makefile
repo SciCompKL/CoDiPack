@@ -33,7 +33,7 @@ REVERSE_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_reverse.out,$
 
 FORWARD_DRIVER = $(DRIVER_DIR)/forward/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward
 FORWARD_2ND_DRIVER = $(DRIVER_DIR)/forward2ndOrder/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward2ndOrder
-REVERSE_DRIVER = $(DRIVER_DIR)/reverse/reverseDriver.cpp $(INC) -L$(ADEPT_DIR) -ladept -I$(DRIVER_DIR)/reverse
+REVERSE_DRIVER = $(DRIVER_DIR)/reverse/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverse
 
 .SECONDARY: $(FORWARD_OUT_FILES) $(FORWARD_BIN_FILES) $(FORWARD_2ND_OUT_FILES) $(FORWARD_2ND_BIN_FILES) $(REVERSE_OUT_FILES) $(REVERSE_BIN_FILES)
 

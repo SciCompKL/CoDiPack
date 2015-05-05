@@ -1,7 +1,6 @@
 #include <toolDefines.h>
 
 #include <iostream>
-#include <vector>
 
 int main(int nargs, char** args) {
   int evalPoints = getEvalPointsCount();
@@ -10,8 +9,8 @@ int main(int nargs, char** args) {
   NUMBER* x = new NUMBER[inputs];
   NUMBER* y = new NUMBER[outputs];
 
-  codi::SimpleTape<double, int>& tape = codi::RealReverse::globalTape;
-  tape.resize(1000, 1000);
+  adept::Stack tape(true);
+  tape.pause_recording();
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
@@ -31,22 +30,25 @@ int main(int nargs, char** args) {
       y[i] = 0.0;
     }
 
+
     std::vector<std::vector<double> > jac(outputs);
     for(int curOut = 0; curOut < outputs; ++curOut) {
+      tape.continue_recording();
       for(int i = 0; i < inputs; ++i) {
-        tape.registerInput(x[i]);
+        x[i].register_gradient();
       }
 
       func(x, y);
+      tape.pause_recording();
 
-      y[curOut].setGradient(1.0);
-      tape.evaluate();
+      y[curOut].set_gradient(1.0);
+      tape.compute_adjoint();
 
       for(int curIn = 0; curIn < inputs; ++curIn) {
-        jac[curOut].push_back(x[curIn].getGradient());
+        jac[curOut].push_back(x[curIn].get_gradient());
       }
 
-      tape.reset();
+      tape.clear_gradients();
     }
 
     for(int curIn = 0; curIn < inputs; ++curIn) {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <adept.h>
+#include <codi.hpp>
 
-typedef adept::adouble NUMBER;
+typedef codi::RealReverse NUMBER;
 
 #include "../globalDefines.h"
