@@ -28,14 +28,17 @@ FORWARD_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_forward_bin,$(
 FORWARD_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_forward.out,$(TEST_FILES))
 FORWARD_2ND_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_forward2nd_bin,$(TEST_FILES))
 FORWARD_2ND_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_forward2nd.out,$(TEST_FILES))
-REVERSE_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_reverse_bin,$(TEST_FILES))
-REVERSE_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_reverse.out,$(TEST_FILES))
+REVERSE_SIMPLE_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_reverse_simple_bin,$(TEST_FILES))
+REVERSE_SIMPLE_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_reverse_simple.out,$(TEST_FILES))
+REVERSE_CHUNK_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_reverse_chunk_bin,$(TEST_FILES))
+REVERSE_CHUNK_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_reverse_chunk.out,$(TEST_FILES))
 
 FORWARD_DRIVER = $(DRIVER_DIR)/forward/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward
 FORWARD_2ND_DRIVER = $(DRIVER_DIR)/forward2ndOrder/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward2ndOrder
-REVERSE_DRIVER = $(DRIVER_DIR)/reverse/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverse
+REVERSE_SIMPLE_DRIVER = $(DRIVER_DIR)/reverseSimple/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimple
+REVERSE_CHUNK_DRIVER = $(DRIVER_DIR)/reverseChunk/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunk
 
-.SECONDARY: $(FORWARD_OUT_FILES) $(FORWARD_BIN_FILES) $(FORWARD_2ND_OUT_FILES) $(FORWARD_2ND_BIN_FILES) $(REVERSE_OUT_FILES) $(REVERSE_BIN_FILES)
+.SECONDARY: $(FORWARD_OUT_FILES) $(FORWARD_BIN_FILES) $(FORWARD_2ND_OUT_FILES) $(FORWARD_2ND_BIN_FILES) $(REVERSE_SIMPLE_OUT_FILES) $(REVERSE_SIMPLE_BIN_FILES) $(REVERSE_CHUNK_OUT_FILES) $(REVERSE_CHUNK_BIN_FILES)
 
 # rules for test creation
 $(BUILD_DIR)/%_forward_bin : $(TEST_DIR)/%.cpp
@@ -46,9 +49,13 @@ $(BUILD_DIR)/%_forward2nd_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(FORWARD_DRIVER)
 
-$(BUILD_DIR)/%_reverse_bin : $(TEST_DIR)/%.cpp
+$(BUILD_DIR)/%_reverse_simple_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $< -o $@ $(REVERSE_DRIVER)
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(REVERSE_SIMPLE_DRIVER)
+
+$(BUILD_DIR)/%_reverse_chunk_bin : $(TEST_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(REVERSE_CHUNK_DRIVER)
 
 # rules for generating the text files
 $(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
@@ -56,8 +63,8 @@ $(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
 	$< > $@
 
 # rule for printing the results
-$(RESULT_DIR)/%.test : $(RESULT_DIR)/%_forward.out $(RESULT_DIR)/%_forward2nd.out $(RESULT_DIR)/%_reverse.out
-	@./compare.sh -n $* -b $(RESULT_BASE_DIR)/$*.out $(RESULT_DIR)/$*_forward.out $(RESULT_DIR)/$*_forward2nd.out $(RESULT_DIR)/$*_reverse.out
+$(RESULT_DIR)/%.test : $(RESULT_DIR)/%_forward.out $(RESULT_DIR)/%_forward2nd.out $(RESULT_DIR)/%_reverse_simple.out $(RESULT_DIR)/%_reverse_chunk.out
+	@./compare.sh -n $* -b $(RESULT_BASE_DIR)/$*.out $(RESULT_DIR)/$*_forward.out $(RESULT_DIR)/$*_forward2nd.out $(RESULT_DIR)/$*_reverse_simple.out $(RESULT_DIR)/$*_reverse_chunk.out
 
 all: $(TESTS)
 	@mkdir -p $(BUILD_DIR)

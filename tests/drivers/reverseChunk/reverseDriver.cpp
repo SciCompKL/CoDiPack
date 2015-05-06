@@ -10,8 +10,8 @@ int main(int nargs, char** args) {
   NUMBER* x = new NUMBER[inputs];
   NUMBER* y = new NUMBER[outputs];
 
-  codi::SimpleTape<double, int>& tape = codi::RealReverse::globalTape;
-  tape.resize(1000, 1000);
+  codi::ChunkTape<double, int>& tape = codi::RealReverse::globalTape;
+  tape.resize(2, 3);
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
