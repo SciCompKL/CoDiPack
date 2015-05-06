@@ -137,7 +137,7 @@ namespace codi {
     }
 
     inline Real& gradient(IndexType& index) {
-      assert(index < operators.size);
+      assert(index <= operators.size);
       assert(0 != index);
 
       return adjoints.data[index];

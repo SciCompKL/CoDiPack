@@ -191,7 +191,7 @@ namespace codi {
     inline void evaluate(Real* startAdj, Real* endAdj, IndexType* &operators, Real* &jacobies, IndexType* &indices) {
       Real* curAdj = startAdj;
 
-      while(curPos != end) {
+      while(curAdj != endAdj) {
         const Real& adj = *curAdj;
         curAdj--;  // move to next adjoint in array
         operators--; // move to next operator in array
