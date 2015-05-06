@@ -6,3 +6,5 @@ CoDi.files
 CoDi.includes
 CoDi.config
 CoDi.creator
+CoDi.creator.user
+*.autosave
