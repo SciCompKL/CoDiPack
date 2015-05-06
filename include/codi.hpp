@@ -26,11 +26,17 @@
 #include "activeReal.hpp"
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/simpleTape.hpp"
+#include "tapes/chunkTape.hpp"
 
 namespace codi {
   typedef ActiveReal<double, ForwardEvaluation<double> > RealForward;
   typedef ActiveReal<float, ForwardEvaluation<float> > RealForwardFloat;
 
-  typedef ActiveReal<double, SimpleTape<double, int> > RealReverse;
-  typedef ActiveReal<float, SimpleTape<float, int> > RealReverseFloat;
+  typedef ActiveReal<double, ChunkTape<double, int> > RealReverse;
+  typedef ActiveReal<float, ChunkTape<float, int> > RealReverseFloat;
+
+  typedef ActiveReal<double, SimpleTape<double, int> > RealReverseSimple;
+  typedef ActiveReal<float, SimpleTape<float, int> > RealReverseSimpleFloat;
+
+
 }

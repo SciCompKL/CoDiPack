@@ -23,73 +23,148 @@
  */
 #pragma once
 
+#include <tuple>
+#include <vector>
+
 #include "chunk.hpp"
 
 namespace codi {
-  template<typename ChunkData>
+
+  struct EmptyChunkVector {
+    /**
+     * @brief Position without any data.
+     */
+    struct Position {};
+
+    inline Position getPosition() {
+      return Position();
+    }
+
+    inline void reset(const Position& /*pos*/) {}
+  };
+
+  template<typename ChunkData, typename NestedVector = EmptyChunkVector>
   class ChunkVector {
   public:
 
+    typedef typename NestedVector::Position NestedPosition;
+
     struct Position {
-      size_t chunkIndex;
-      size_t chunkPosition;
+      size_t chunk;
+      size_t data;
+
+      NestedPosition inner;
+
+      Position() :
+        chunk(0),
+        data(0),
+        inner() {}
+
+      Position(const size_t& chunk, const size_t& data, const NestedPosition& inner) :
+        chunk(chunk),
+        data(data),
+        inner(inner) {}
     };
 
   private:
     std::vector<ChunkData* > chunks;
+    std::vector<NestedPosition> positions;
 
     ChunkData* curChunk;
+    size_t curChunkIndex;
 
     size_t chunkSize;
 
-    Position curPosition;
+    NestedVector& nested;
 
   public:
-    ChunkVector(const size_t& chunkSize) : chunkSize(chunkSize), curPosition(0, 0) {
-      chunks.push_back(new Chunk<Data>(chunkSize));
-      curChunk = chunks[0];
+    ChunkVector(const size_t& chunkSize, NestedVector& nested) :
+      chunks(),
+      positions(),
+      curChunk(NULL),
+      curChunkIndex(0),
+      chunkSize(chunkSize),
+      nested(nested)
+    {
+      curChunk = new ChunkData(chunkSize);
+      chunks.push_back(curChunk);
+      positions.push_back(nested.getPosition());
     }
 
-    void nextChunk() {
-      curChunk.setUsedSize(curPosition.chunkPosition);
+    void setChunkSize(const size_t& chunkSize) {
+      this->chunkSize = chunkSize;
+
+      for(size_t i = 0; i < chunks.size(); ++i) {
+        chunks[i]->resize(this->chunkSize);
+      }
+    }
+
+    inline void nextChunk() {
       curChunk->store();
 
-      curPosition.chunkIndex += 1;
-      if(chunks.size() == curPosition.chunkIndex) {
+      curChunkIndex += 1;
+      if(chunks.size() == curChunkIndex) {
         curChunk = new ChunkData(chunkSize);
         chunks.push_back(curChunk);
+        positions.push_back(nested.getPosition());
       } else {
-        curChunk = chunks[curPosition.chunkIndex];
+        curChunk = chunks[curChunkIndex];
         curChunk->reset();
+        positions[curChunkIndex] = nested.getPosition();
       }
     }
 
     void reset(const Position& pos) {
-      assert(pos.chunkIndex < chunks.size());
-      assert(pos.chunkPosition < chunkSize);
+      assert(pos.chunk < chunks.size());
+      assert(pos.data < chunkSize);
 
-      curPosition = pos;
-      curChunk = chunks[curPosition.chunkIndex];
+      curChunk = chunks[pos.chunk];
       curChunk->load();
+      curChunk->setUsedSize(pos.data);
+      curChunkIndex = pos.chunk;
+
+      nested.reset(pos.inner);
     }
 
     void reset() {
-      reset(Position(0, 0));
+      reset(Position());
     }
 
-    void reserveItems(const size_t& items) {
-      assert(items < chunkSize);
+    inline void reserveItems(const size_t items) {
+      assert(items <= chunkSize);
 
-      if(chunkSize < curPosition.chunkPosition + items) {
+      if(chunkSize < curChunk->getUsedSize() + items) {
         nextChunk();
       }
     }
 
-    void useItems(const size_t& items) {
-      // This method shuld only be called if 'reserveItems' has been called
-      assert(chunkSize < curPosition.chunkPosition + items);
+    inline void setDataAndMove(const typename ChunkData::DataValues& data) {
+      // this method should only be called if reserverItems has been called
+      curChunk->setDataAndMove(data);
+    }
 
-      curPosition.chunkPosition += items;
+    inline typename ChunkData::DataPointer getCurDataAtPos() {
+      return curChunk->getDataPointer(curChunk->getUsedSize());
+    }
+
+    inline size_t getChunkPosition() {
+      return curChunk->getUsedSize();
+    }
+
+    inline Position getPosition() {
+      return Position(curChunkIndex, curChunk->getUsedSize(), nested.getPosition());
+    }
+
+    inline NestedPosition getInnerPosition(const size_t& chunkIndex) {
+      return positions[chunkIndex];
+    }
+
+    inline typename ChunkData::DataPointer getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos) {
+      return chunks[chunkIndex]->dataPointer(dataPos);
+    }
+
+    inline size_t getChunkUsedData(const size_t& chunkIndex) {
+      return chunks[chunkIndex]->getUsedSize();
     }
   };
 }

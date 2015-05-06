@@ -25,6 +25,7 @@
 
 #include <cstddef>
 #include <new>
+#include <tuple>
 
 namespace codi {
 
@@ -38,10 +39,6 @@ namespace codi {
       usedSize(0) {}
 
     ~ChunkInterface() {}
-
-    virtual void resize(const size_t& size) {
-      this->size = size;
-    }
 
     inline size_t getUsedSize() {
       return usedSize;
@@ -69,6 +66,9 @@ namespace codi {
 
   template<typename Data>
   struct Chunk1 : public ChunkInterface {
+    typedef std::tuple<Data*> DataPointer;
+    typedef std::tuple<Data> DataValues;
+
     Data* data;
 
     Chunk1(const size_t& size) : ChunkInterface(size) {
@@ -79,14 +79,26 @@ namespace codi {
       delete [] data;
     }
 
-    virtual void resize(const size_t &size) {
+    void resize(const size_t &size) {
       this->~Chunk1();
       new (this) Chunk1(size);
+    }
+
+    inline void setDataAndMove(const DataValues& values) {
+      std::tie(data[usedSize]) = values;
+      ++usedSize;
+    }
+
+    inline std::tuple<Data*> dataPointer(const size_t& index) {
+      return std::make_tuple(&data[index]);
     }
   };
 
   template<typename Data1, typename Data2>
   struct Chunk2 : public ChunkInterface {
+    typedef std::tuple<Data1*, Data2*> DataPointer;
+    typedef std::tuple<Data1, Data2> DataValues;
+
     Data1* data1;
     Data2* data2;
 
@@ -100,9 +112,18 @@ namespace codi {
       delete [] data2;
     }
 
-    virtual void resize(const size_t &size) {
+    void resize(const size_t &size) {
       this->~Chunk2();
       new (this) Chunk2(size);
+    }
+
+    inline void setDataAndMove(const DataValues& values) {
+      std::tie(data1[usedSize], data2[usedSize]) = values;
+      ++usedSize;
+    }
+
+    inline DataPointer dataPointer(const size_t& index) {
+      return std::make_tuple(&data1[index], &data2[index]);
     }
   };
 }
