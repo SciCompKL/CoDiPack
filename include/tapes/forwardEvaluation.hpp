@@ -23,6 +23,7 @@
  */
 #pragma once
 
+#include "activeReal.hpp"
 #include "tapeInterface.hpp"
 
 namespace codi {
@@ -63,6 +64,19 @@ namespace codi {
     inline void store(Real& value, GradientData& lhsTangent, const Rhs& rhs) {
       lhsTangent = Real();
       rhs.calcGradient(lhsTangent);
+    }
+
+    /**
+     * @brief Evaluates the primal expression and the tangent
+     *
+     * The store method evaluates the forward AD equation and the primal equation.
+     *
+     * @param[out]      value  The value of the rhs.
+     * @param[out] lhsTangent  The tangent of the lhs.
+     * @param[in]         rhs  The expression of the rhs.
+     */
+    inline void store(Real& value, GradientData& lhsTangent, const ActiveReal<Real, ForwardEvaluation<Real> >& rhs) {
+      lhsTangent = rhs.getGradient();
       value = rhs.getValue();
     }
 
