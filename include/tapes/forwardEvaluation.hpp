@@ -62,8 +62,10 @@ namespace codi {
      */
     template<typename Rhs>
     inline void store(Real& value, GradientData& lhsTangent, const Rhs& rhs) {
-      lhsTangent = Real();
-      rhs.calcGradient(lhsTangent);
+      Real gradient = Real();
+      rhs.calcGradient(gradient);
+      lhsTangent  = gradient;
+      value = rhs.getValue();
     }
 
     /**
