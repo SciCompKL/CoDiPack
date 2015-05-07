@@ -71,12 +71,15 @@ namespace codi {
     Real* adjoints;
     size_t adjointsSize;
 
+    bool active;
+
   public:
     ChunkTape() :
       expressionCount(),
       data(0, expressionCount),
       operators(0, data),
-      adjoints(NULL) {
+      adjoints(NULL),
+      active(false){
     }
 
     void resize(const size_t& dataChunkSize, const size_t& opChunkSize) {
@@ -98,32 +101,37 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       Real gradient; /* This value will not be used */
 
-      data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
-      operators.reserveItems(1); // operators needs a reserve bevor the data items for the operator are pushed
-      /* first store the size of the current stack position and evaluate the
+      if (active){
+        data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
+        operators.reserveItems(1); // operators needs a reserve bevor the data items for the operator are pushed
+        /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
-      IndexType startSize = data.getChunkPosition();
-      rhs.calcGradient(gradient);
-      IndexType activeVariables = data.getChunkPosition() - startSize;
-      if(0 == activeVariables) {
-        lhsIndex = 0;
-      } else {
-        operators.setDataAndMove(std::make_tuple(activeVariables));
-        lhsIndex = ++expressionCount.count;
+        IndexType startSize = data.getChunkPosition();
+        rhs.calcGradient(gradient);
+        IndexType activeVariables = data.getChunkPosition() - startSize;
+        if(0 == activeVariables) {
+          lhsIndex = 0;
+        } else {
+          operators.setDataAndMove(std::make_tuple(activeVariables));
+          lhsIndex = ++expressionCount.count;
+        }
       }
-
       /* now set the value of the lhs */
       lhsValue = rhs.getValue();
     }
 
     inline void store(Real& value, IndexType& lhsIndex, const ActiveReal<Real, SimpleTape<Real, IndexType> >& rhs) {
-      lhsIndex = rhs.getGradientData();
+      if (active){
+        lhsIndex = rhs.getGradientData();
+      }
       value = rhs.getValue();
     }
 
     inline void store(Real& value, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      lhsIndex = 0;
+      if (active){
+        lhsIndex = 0;
+      }
       value = rhs;
     }
 
@@ -172,6 +180,12 @@ namespace codi {
 
     inline Position getPosition() {
       return operators.getPosition();
+    }
+
+    inline void clearAdjoints(){
+      for(size_t i = 0; i <= operators.getUsedSize(); ++i) {
+        adjoints.data[i] = 0.0;
+      }
     }
 
     inline void reset(const Position& pos) {
@@ -267,5 +281,17 @@ namespace codi {
     inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexType> >& /*value*/) {
       /* do nothing */
     }
+    inline void setActive(){
+      active = true;
+    }
+
+    inline void setPassive(){
+      active = false;
+    }
+
+    inline bool isActive(){
+      return active;
+    }
+
   };
 }
