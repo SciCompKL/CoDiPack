@@ -23,4 +23,6 @@
  */
 #pragma once
 
-//typedef double Real;
+
+#define NDEBUG
+#include <assert.h>

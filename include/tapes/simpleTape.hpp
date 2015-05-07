@@ -24,7 +24,6 @@
 
 #pragma once
 
-#include <assert.h>
 #include <cstddef>
 
 #include "activeReal.hpp"
