@@ -23,6 +23,13 @@
  */
 #pragma once
 
+#include <stdint.h>
+
 
 #define NDEBUG
 #include <assert.h>
+
+/**
+ * @brief Type for the maximum number of variables a opeartion can have.
+ */
+typedef uint8_t OperationInt;
