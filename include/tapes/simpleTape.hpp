@@ -187,10 +187,15 @@ namespace codi {
         const Real& adj = adjoints.data[curPos.op];
         --curPos.op;
         const IndexType& activeVariables = operators.data[curPos.op];
-        for(IndexType curVar = 0; curVar < activeVariables; ++curVar) {
-          --curPos.data;
+        if (adj != 0.0){
+          for(IndexType curVar = 0; curVar < activeVariables; ++curVar) {
+            --curPos.data;
 
-          adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
+            adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
+          }
+        }
+        else {
+          curPos.data -= activeVariables;
         }
       }
     }

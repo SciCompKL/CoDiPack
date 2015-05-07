@@ -208,12 +208,16 @@ namespace codi {
         const Real& adj = *curAdj;
         curAdj--;  // move to next adjoint in array
         operators--; // move to next operator in array
+        if (adj != 0){
+          for(IndexType curVar = 0; curVar < *operators; ++curVar) {
+            indices--;  // move to next index in array
+            jacobies--; // move to next jacobi in array
+            adjoints[*indices] += adj * *jacobies;
 
-        for(IndexType curVar = 0; curVar < *operators; ++curVar) {
-          indices--;  // move to next index in array
-          jacobies--; // move to next jacobi in array
-          adjoints[*indices] += adj * *jacobies;
-
+          }
+        }else {
+          indices -= *operators;
+          jacobies -= *operators;
         }
       }
     }
