@@ -91,11 +91,29 @@ namespace codi {
       positions.push_back(nested.getPosition());
     }
 
+    ~ChunkVector() {
+      for(size_t i = 0; i < chunks.size(); ++i) {
+        delete chunks[i];
+      }
+    }
+
     void setChunkSize(const size_t& chunkSize) {
       this->chunkSize = chunkSize;
 
       for(size_t i = 0; i < chunks.size(); ++i) {
         chunks[i]->resize(this->chunkSize);
+      }
+    }
+
+    void resize(const size_t& totalSize) {
+      size_t noOfChunks = totalSize / chunkSize;
+      if(0 != totalSize % chunkSize) {
+        noOfChunks += 1;
+      }
+
+      for(size_t i = chunks.size(); i < noOfChunks; ++i) {
+        chunks.push_back(new ChunkData(chunkSize));
+        positions.push_back(nested.getPosition());
       }
     }
 

@@ -76,21 +76,34 @@ namespace codi {
   public:
     ChunkTape() :
       expressionCount(),
-      data(0, expressionCount),
-      operators(0, data),
+      data(DefaultChunkSize, expressionCount),
+      operators(DefaultChunkSize, data),
       adjoints(NULL),
       active(false){
     }
 
-    void resize(const size_t& dataChunkSize, const size_t& opChunkSize) {
+    void setDataChunkSize(const size_t& dataChunkSize) {
       data.setChunkSize(dataChunkSize);
+    }
+
+    void setOperatorChunkSize(const size_t& opChunkSize) {
       operators.setChunkSize(opChunkSize);
     }
 
+    void resize(const size_t& dataSize, const size_t& opSize) {
+      data.resize(dataSize);
+      operators.resize(opSize);
+    }
+
     void resizeAdjoints(const size_t& size) {
+      size_t oldSize = adjointsSize;
       adjointsSize = size;
 
       adjoints = (Real*)realloc(adjoints, sizeof(Real) * adjointsSize);
+
+      for(size_t i = oldSize; i < adjointsSize; ++i) {
+        adjoints[i] = 0.0;
+      }
     }
 
     void allocateAdjoints() {
