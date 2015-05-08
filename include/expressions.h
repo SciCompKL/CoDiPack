@@ -24,6 +24,7 @@
 #pragma once
 
 #include <cmath>
+#include <algorithm>
 
 #include "configure.h"
 #include "typeTraits.hpp"
@@ -72,7 +73,7 @@ namespace codi {
     /**
      * Return the numerical value of the expression
      */
-    inline const Real& getValue() const {
+    inline const Real getValue() const {
       return cast().getValue();
     }
 
@@ -459,8 +460,18 @@ template<typename Real, class B>            \
 inline              \
 bool OPERATOR(const Real& a, const Expression<Real, B>& b) {  \
   return a OP b.getValue();          \
-}
-
+}\
+  template<typename Real, class A>            \
+  inline              \
+  bool OPERATOR(const Expression<Real, A>& a, const int& b) {  \
+    return a.getValue() OP b;          \
+  }                \
+                                \
+  template<typename Real, class B>            \
+  inline              \
+  bool OPERATOR(const int& a, const Expression<Real, B>& b) {  \
+    return a OP b.getValue();          \
+  }
   CODI_DEFINE_CONDITIONAL(operator==, ==)
 
   CODI_DEFINE_CONDITIONAL(operator!=, !=)
@@ -513,7 +524,7 @@ bool OPERATOR(const Real& a, const Expression<Real, B>& b) {  \
    */
   template<typename Real, class A>
   inline
-  A operator+(const Expression<Real, A>& a) {
+  Expression<Real, A> operator+(const Expression<Real, A>& a) {
     return a;
   }
 }
@@ -818,6 +829,129 @@ CODI_DEFINE_UNARY_FUNCTION3(Tan, tan, Real tmp = 1 / cos(a_.getValue()), tmp * t
 
 #undef CODI_DEFINE_UNARY_FUNCTION3
 
+/**
+ * Enable mathematical functions when derivative is a little more
+ * complicated
+ */
+#define CODI_DEFINE_MIN_MAX(OP, FUNC, COMP)            \
+/* predefine the struct and the function for higher order derivatrives */\
+namespace codi {                                                         \
+  template<typename Real, class A, class B> struct OP;                 \
+}                                                                        \
+template <typename Real, class A, class B>                               \
+inline  codi:: OP<Real, A, B> FUNC(const codi::Expression<Real, A>& a, \
+                                   const codi::Expression<Real, B>& b);     \
+                                                                         \
+namespace codi {                                                         \
+  template<typename Real, class A, class B>                              \
+  struct OP : public Expression<Real, OP<Real, A, B> > {                 \
+    OP(const Expression<Real, A>& a, const Expression<Real, B>& b)     \
+  : a_(a.cast()), b_(b.cast()), result_(std::FUNC(a_.getValue(), b_.getValue())){} \
+    inline void calcGradient(Real& gradient) const {                     \
+      if (a_ COMP b_){ a_.calcGradient(gradient);}                          \
+      else b_.calcGradient(gradient); \
+    }                \
+    inline void calcGradient(Real& gradient, const Real& multiplier) const {  \
+      if (a_ COMP b_){ a_.calcGradient(gradient, multiplier);}                          \
+      else b_.calcGradient(gradient, multiplier); \
+    }                \
+    inline const Real& getValue() const {      \
+      return result_;            \
+    }                \
+  private:              \
+    const A& a_;            \
+    const B& b_;            \
+    Real result_;            \
+  };                \
+}                \
+template <typename Real, class A, class B>            \
+inline  codi:: OP<Real, A, B> FUNC(const codi::Expression<Real, A>& a, \
+                                   const codi::Expression<Real, B>& b) {    \
+  return codi:: OP<Real, A, B>(a.cast(), b.cast());        \
+}
+
+#define CODI_DEFINE_MIN_MAX_SCALAR_1(OP, FUNC, COMP)            \
+/* predefine the struct and the function for higher order derivatrives */\
+namespace codi {                                                         \
+  template<typename Real, class B> struct OP;                 \
+}                                                                        \
+template <typename Real, class B>                               \
+inline  codi:: OP<Real, B> FUNC(const typename codi::TypeTraits<Real>::PassiveReal& a, \
+                                   const codi::Expression<Real, B>& b);     \
+                                                                         \
+namespace codi {                                                         \
+  template<typename Real, class B>                              \
+  struct OP : public Expression<Real, OP<Real, B> > {                 \
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;  \
+    OP(const PassiveReal& a, const Expression<Real, B>& b)     \
+  : a_(a), b_(b.cast()), result_(std::FUNC(a_, b_.getValue())){}                                   \
+    inline void calcGradient(Real& gradient) const {                     \
+      if (a_ COMP b_){ }                          \
+      else b_.calcGradient(gradient); \
+    }                \
+    inline void calcGradient(Real& gradient, const Real& multiplier) const {  \
+      if (a_ COMP b_){ }                          \
+      else b_.calcGradient(gradient, multiplier); \
+    }                \
+    inline const Real& getValue() const {      \
+      return result_;            \
+    }                \
+  private:              \
+    const PassiveReal& a_;            \
+    const B& b_;            \
+    Real result_;            \
+  };                \
+}                \
+template <typename Real, class B>            \
+inline  codi:: OP<Real, B> FUNC(const typename codi::TypeTraits<Real>::PassiveReal& a, \
+                                   const codi::Expression<Real, B>& b) {    \
+  return codi:: OP<Real, B>(a, b.cast());        \
+}
+
+#define CODI_DEFINE_MIN_MAX_SCALAR_2(OP, FUNC, COMP)            \
+/* predefine the struct and the function for higher order derivatrives */\
+namespace codi {                                                         \
+  template<typename Real, class A> struct OP;                 \
+}                                                                        \
+template <typename Real, class A>                               \
+inline  codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a,  \
+                                const typename codi::TypeTraits<Real>::PassiveReal& b);     \
+                                                                         \
+namespace codi {                                                         \
+  template<typename Real, class A>                              \
+  struct OP : public Expression<Real, OP<Real, A> > {                 \
+  typedef typename TypeTraits<Real>::PassiveReal PassiveReal;  \
+    OP(const Expression<Real, A>& a, const PassiveReal& b)     \
+  : a_(a.cast()), b_(b), result_(std::FUNC(a_.getValue(), b_)){}                                   \
+    inline void calcGradient(Real& gradient) const {                     \
+      if (a_ COMP b_){a_.calcGradient(gradient);}                          \
+    }                \
+    inline void calcGradient(Real& gradient, const Real& multiplier) const {  \
+      if (a_ COMP b_){a_.calcGradient(gradient, multiplier);}                          \
+    }                \
+    inline const Real& getValue() const {      \
+      return result_;            \
+    }                \
+  private:              \
+    const A& a_;            \
+    const PassiveReal& b_;            \
+    Real result_;            \
+  };                \
+}                \
+template <typename Real, class A>            \
+inline  codi:: OP<Real, A> FUNC( const codi::Expression<Real, A>& a, \
+                                  const typename codi::TypeTraits<Real>::PassiveReal& b) {    \
+  return codi:: OP<Real, A>(a.cast(), b);        \
+}
+CODI_DEFINE_MIN_MAX(Max, max, >)
+CODI_DEFINE_MIN_MAX(Min, min, <)
+CODI_DEFINE_MIN_MAX_SCALAR_1(MaxScalar1, max, >)
+CODI_DEFINE_MIN_MAX_SCALAR_1(MinScalar1, min, <)
+CODI_DEFINE_MIN_MAX_SCALAR_2(MaxScalar2, max, >)
+CODI_DEFINE_MIN_MAX_SCALAR_2(MinScalar2, min, <)
+#undef CODI_DEFINE_MIN_MAX
+#undef CODI_DEFINE_MIN_MAX_SCALAR_1
+#undef CODI_DEFINE_MIN_MAX_SCALAR_2
 /* predefine the struct and the function for higher order derivatrives */
 namespace codi {
   template<typename Real, class A, class B> struct Pow;

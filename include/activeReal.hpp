@@ -27,6 +27,7 @@
 #include "expressions.h"
 #include "typeTraits.hpp"
 #include "expressionTraits.hpp"
+#include <iostream>
 
 namespace codi {
   template<typename Real, typename Tape>
@@ -193,4 +194,17 @@ namespace codi {
 
   template<typename Real, typename Tape>
   Tape ActiveReal<Real, Tape>::globalTape;
+
+  template<typename Real, class R>
+  std::ostream& operator<<(std::ostream& os, const Expression<Real, R>& rhs){
+    os << rhs.getValue();
+    return os;
+  }
+  template<typename Real, typename Tape>
+  std::istream& operator>>(std::istream& os, ActiveReal<Real, Tape>& rhs){
+    Real temp;
+    os >> temp;
+    rhs.setValue(temp);
+    return os;
+  }
 }

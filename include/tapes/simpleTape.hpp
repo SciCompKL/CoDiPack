@@ -47,14 +47,17 @@ namespace codi {
 
   private:
     Chunk2<Real, IndexType> data;
-    Chunk1<OperationInt> operators;
+    Chunk1<IndexType> operators;
     Chunk1<Real> adjoints;
+
+    bool active;
 
   public:
     SimpleTape() :
       data(0),
       operators(0),
-      adjoints(1) {}
+      adjoints(1),
+      active(false){}
 
     void resize(const size_t& dataSize, const size_t& opSize) {
       data.resize(dataSize);
@@ -66,19 +69,21 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       Real gradient; /* This value will not be used */
 
-      assert(ExpressionTraits<Rhs>::maxActiveVariables < data.getUnusedSize());
-      /* first store the size of the current stack position and evaluate the
+      if (active){
+        assert(ExpressionTraits<Rhs>::maxActiveVariables < data.getUnusedSize());
+        /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
-      size_t startSize = data.getUsedSize();
-      rhs.calcGradient(gradient);
-      size_t activeVariables = data.getUsedSize() - startSize;
-      if(0 == activeVariables) {
-        lhsIndex = 0;
-      } else {
-        assert(operators.getUsedSize() < operators.size);
-        operators.data[operators.getUsedSize()] = (OperationInt)activeVariables;
-        lhsIndex = operators.increase();
+        size_t startSize = data.getUsedSize();
+        rhs.calcGradient(gradient);
+        size_t activeVariables = data.getUsedSize() - startSize;
+        if(0 == activeVariables) {
+          lhsIndex = 0;
+        } else {
+          assert(operators.getUsedSize() < operators.size);
+          operators.data[operators.getUsedSize()] = activeVariables;
+          lhsIndex = operators.increase();
+        }
       }
 
       /* now set the value of the lhs */
@@ -86,12 +91,16 @@ namespace codi {
     }
 
     inline void store(Real& value, IndexType& lhsIndex, const ActiveReal<Real, SimpleTape<Real, IndexType> >& rhs) {
-      lhsIndex = rhs.getGradientData();
+      if (active){
+        lhsIndex = rhs.getGradientData();
+      }
       value = rhs.getValue();
     }
 
     inline void store(Real& value, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      lhsIndex = 0;
+      if (active){
+        lhsIndex = 0;
+      }
       value = rhs;
     }
 
@@ -136,7 +145,7 @@ namespace codi {
     }
 
     inline Real& gradient(IndexType& index) {
-      assert(index <= operators.size);
+      assert(index < operators.size);
       assert(0 != index);
 
       return adjoints.data[index];
@@ -162,6 +171,12 @@ namespace codi {
       reset(Position(0,0));
     }
 
+    inline void clearAdjoints(){
+      for(size_t i = 0; i <= operators.getUsedSize(); ++i) {
+        adjoints.data[i] = 0.0;
+      }
+    }
+
     inline void evaluate(const Position& start, const Position& end) {
       assert(start.data >= end.data);
       assert(start.op >= end.op);
@@ -171,11 +186,16 @@ namespace codi {
       while(curPos.op > end.op) {
         const Real& adj = adjoints.data[curPos.op];
         --curPos.op;
-        const OperationInt& activeVariables = operators.data[curPos.op];
-        for(OperationInt curVar = 0; curVar < activeVariables; ++curVar) {
-          --curPos.data;
+        const IndexType& activeVariables = operators.data[curPos.op];
+        if (adj != 0.0){
+          for(IndexType curVar = 0; curVar < activeVariables; ++curVar) {
+            --curPos.data;
 
-          adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
+            adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
+          }
+        }
+        else {
+          curPos.data -= activeVariables;
         }
       }
     }
@@ -193,6 +213,19 @@ namespace codi {
     inline void registerOutput(ActiveReal<Real, SimpleTape<Real, IndexType> >& /*value*/) {
       /* do nothing */
     }
+
+    inline void setActive(){
+      active = true;
+    }
+
+    inline void setPassive(){
+      active = false;
+    }
+
+    inline bool isActive(){
+      return active;
+    }
+
   };
 }
 
