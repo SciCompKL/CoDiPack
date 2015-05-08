@@ -101,7 +101,7 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       Real gradient; /* This value will not be used */
 
-      if (active){
+      ENABLE_CHECK (OptTapeActivity, active){
         data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
         operators.reserveItems(1); // operators needs a reserve bevor the data items for the operator are pushed
         /* first store the size of the current stack position and evaluate the
@@ -122,14 +122,14 @@ namespace codi {
     }
 
     inline void store(Real& value, IndexType& lhsIndex, const ActiveReal<Real, SimpleTape<Real, IndexType> >& rhs) {
-      if (active){
+      ENABLE_CHECK (OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       }
       value = rhs.getValue();
     }
 
     inline void store(Real& value, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      if (active){
+      ENABLE_CHECK (OptTapeActivity, active){
         lhsIndex = 0;
       }
       value = rhs;
@@ -143,7 +143,9 @@ namespace codi {
 
     inline void pushJacobi(Real& /*gradient*/, const Real& jacobi, const Real& /*value*/, const IndexType& index) {
       if(0 != index) {
-        data.setDataAndMove(std::make_tuple(jacobi, index));
+        ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
+          data.setDataAndMove(std::make_tuple(jacobi, index));
+        }
       }
     }
 
@@ -208,14 +210,14 @@ namespace codi {
         const Real& adj = *curAdj;
         curAdj--;  // move to next adjoint in array
         operators--; // move to next operator in array
-        if (adj != 0){
+        ENABLE_CHECK(OptZeroAdjoint, adj != 0){
           for(IndexType curVar = 0; curVar < *operators; ++curVar) {
             indices--;  // move to next index in array
             jacobies--; // move to next jacobi in array
             adjoints[*indices] += adj * *jacobies;
 
           }
-        }else {
+        } else {
           indices -= *operators;
           jacobies -= *operators;
         }

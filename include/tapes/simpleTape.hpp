@@ -69,7 +69,7 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       Real gradient; /* This value will not be used */
 
-      if (active){
+      ENABLE_CHECK(OptTapeActivity, active){
         assert(ExpressionTraits<Rhs>::maxActiveVariables < data.getUnusedSize());
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
@@ -91,14 +91,14 @@ namespace codi {
     }
 
     inline void store(Real& value, IndexType& lhsIndex, const ActiveReal<Real, SimpleTape<Real, IndexType> >& rhs) {
-      if (active){
+      ENABLE_CHECK(OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       }
       value = rhs.getValue();
     }
 
     inline void store(Real& value, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      if (active){
+      ENABLE_CHECK(OptTapeActivity, active) {
         lhsIndex = 0;
       }
       value = rhs;
@@ -116,11 +116,13 @@ namespace codi {
 
     inline void pushJacobi(Real& /*gradient*/, const Real& jacobi, const Real& /*value*/, const IndexType& index) {
       if(0 != index) {
-        assert(data.getUsedSize() < data.size);
+        ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
+          assert(data.getUsedSize() < data.size);
 
-        data.data1[data.getUsedSize()] = jacobi;
-        data.data2[data.getUsedSize()] = index;
-        data.increase();
+          data.data1[data.getUsedSize()] = jacobi;
+          data.data2[data.getUsedSize()] = index;
+          data.increase();
+        }
       }
     }
 
@@ -187,14 +189,13 @@ namespace codi {
         const Real& adj = adjoints.data[curPos.op];
         --curPos.op;
         const IndexType& activeVariables = operators.data[curPos.op];
-        if (adj != 0.0){
+        ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
           for(IndexType curVar = 0; curVar < activeVariables; ++curVar) {
             --curPos.data;
 
             adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
           }
-        }
-        else {
+        } else {
           curPos.data -= activeVariables;
         }
       }
@@ -223,7 +224,13 @@ namespace codi {
     }
 
     inline bool isActive(){
-      return active;
+      ENABLE_CHECK(OptTapeActivity, true) {
+        // default branch will return the tape activity
+        return active;
+      } else {
+        // if we do not check for the tape activity, the tape is always active
+        return true;
+      }
     }
 
   };
