@@ -25,6 +25,7 @@
 
 #include <cstddef>
 #include <new>
+#include <string.h>
 #include <tuple>
 
 namespace codi {
@@ -72,11 +73,13 @@ namespace codi {
     Data* data;
 
     Chunk1(const size_t& size) : ChunkInterface(size) {
-      data = new Data[size];
+      data = (Data*)malloc(sizeof(Data) * size);
+      memset(data, 0, sizeof(Data) * size);
     }
 
     ~Chunk1() {
-      delete [] data;
+      free(data);
+      data = NULL;
     }
 
     void resize(const size_t &size) {
@@ -103,13 +106,17 @@ namespace codi {
     Data2* data2;
 
     Chunk2(const size_t& size) : ChunkInterface(size) {
-      data1 = new Data1[size];
-      data2 = new Data2[size];
+      data1 = (Data1*)malloc(sizeof(Data1) * size);
+      data2 = (Data2*)malloc(sizeof(Data2) * size);
+      memset(data1, 0, sizeof(Data1) * size);
+      memset(data2, 0, sizeof(Data2) * size);
     }
 
     ~Chunk2() {
-      delete [] data1;
-      delete [] data2;
+      free(data1);
+      free(data2);
+      data1 = NULL;
+      data2 = NULL;
     }
 
     void resize(const size_t &size) {
