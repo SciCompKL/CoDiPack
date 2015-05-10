@@ -134,7 +134,7 @@ namespace codi {
       lhsValue = rhs.getValue();
     }
 
-    inline void store(Real& value, IndexType& lhsIndex, const ActiveReal<Real, SimpleTape<Real, IndexType> >& rhs) {
+    inline void store(Real& value, IndexType& lhsIndex, const ActiveReal<Real, ChunkTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       }
@@ -198,7 +198,7 @@ namespace codi {
     }
 
     inline void clearAdjoints(){
-      for(size_t i = 0; i <= operators.getUsedSize(); ++i) {
+      for(size_t i = 0; i <= expressionCount.count; ++i) {
         adjoints.data[i] = 0.0;
       }
     }
