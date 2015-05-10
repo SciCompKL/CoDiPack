@@ -58,7 +58,7 @@ namespace codi {
     typedef Chunk2< Real, IndexType> DataChunk;
     typedef ChunkVector<DataChunk, ExpressionCounter<IndexType> > DataChunkVector;
 
-    typedef Chunk1<IndexType> OperatorChunk;
+    typedef Chunk1<OperationInt> OperatorChunk;
     typedef ChunkVector<OperatorChunk, DataChunkVector> OperatorChunkVector;
 
     typedef typename OperatorChunkVector::Position Position;
@@ -120,13 +120,13 @@ namespace codi {
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
-        IndexType startSize = data.getChunkPosition();
+        size_t startSize = data.getChunkPosition();
         rhs.calcGradient(gradient);
-        IndexType activeVariables = data.getChunkPosition() - startSize;
+        size_t activeVariables = data.getChunkPosition() - startSize;
         if(0 == activeVariables) {
           lhsIndex = 0;
         } else {
-          operators.setDataAndMove(std::make_tuple(activeVariables));
+          operators.setDataAndMove(std::make_tuple((OperationInt)activeVariables));
           lhsIndex = ++expressionCount.count;
         }
       }
@@ -216,7 +216,7 @@ namespace codi {
       reset(Position());
     }
 
-    inline void evaluate(Real* startAdj, Real* endAdj, IndexType* &operators, Real* &jacobies, IndexType* &indices) {
+    inline void evaluate(Real* startAdj, Real* endAdj, OperationInt* &operators, Real* &jacobies, IndexType* &indices) {
       Real* curAdj = startAdj;
 
       while(curAdj != endAdj) {
@@ -224,7 +224,7 @@ namespace codi {
         curAdj--;  // move to next adjoint in array
         operators--; // move to next operator in array
         ENABLE_CHECK(OptZeroAdjoint, adj != 0){
-          for(IndexType curVar = 0; curVar < *operators; ++curVar) {
+          for(OperationInt curVar = 0; curVar < *operators; ++curVar) {
             indices--;  // move to next index in array
             jacobies--; // move to next jacobi in array
             adjoints[*indices] += adj * *jacobies;
@@ -238,7 +238,7 @@ namespace codi {
     }
 
     inline void evaluateOp(const typename OperatorChunkVector::Position& start, const typename OperatorChunkVector::Position& end) {
-      IndexType* operatorPos;
+      OperationInt* operatorPos;
       size_t dataPos = start.data;
       typename DataChunkVector::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
@@ -257,7 +257,7 @@ namespace codi {
       evaluate(curInnerPos, end.inner, operatorPos);
     }
 
-    inline void evaluate(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, IndexType* &operatorPos) {
+    inline void evaluate(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, OperationInt* &operatorPos) {
       Real* jacobiPos;
       IndexType* indexPos;
       size_t dataPos = start.data;
