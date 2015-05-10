@@ -47,7 +47,7 @@ namespace codi {
 
   private:
     Chunk2<Real, IndexType> data;
-    Chunk1<IndexType> operators;
+    Chunk1<OperationInt> operators;
     Chunk1<Real> adjoints;
 
     bool active;
@@ -81,7 +81,7 @@ namespace codi {
           lhsIndex = 0;
         } else {
           assert(operators.getUsedSize() < operators.size);
-          operators.data[operators.getUsedSize()] = activeVariables;
+          operators.data[operators.getUsedSize()] = (OperationInt)activeVariables;
           lhsIndex = operators.increase();
         }
       }
@@ -188,9 +188,9 @@ namespace codi {
       while(curPos.op > end.op) {
         const Real& adj = adjoints.data[curPos.op];
         --curPos.op;
-        const IndexType& activeVariables = operators.data[curPos.op];
+        const OperationInt& activeVariables = operators.data[curPos.op];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
-          for(IndexType curVar = 0; curVar < activeVariables; ++curVar) {
+          for(OperationInt curVar = 0; curVar < activeVariables; ++curVar) {
             --curPos.data;
 
             adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
