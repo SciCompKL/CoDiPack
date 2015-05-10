@@ -216,36 +216,35 @@ namespace codi {
       reset(Position());
     }
 
-    inline void evaluate(Real* startAdj, Real* endAdj, OperationInt* &operators, Real* &jacobies, IndexType* &indices) {
-      Real* curAdj = startAdj;
+    inline void evaluate(const size_t& startAdjPos, const size_t& endAdjPos, size_t& opPos, OperationInt* &operators, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+      size_t adjPos = startAdjPos;
 
-      while(curAdj != endAdj) {
-        const Real& adj = *curAdj;
-        curAdj--;  // move to next adjoint in array
-        operators--; // move to next operator in array
+      while(adjPos > endAdjPos) {
+        const Real& adj = adjoints[adjPos];
+        --adjPos;
+        --opPos;
+        const OperationInt& activeVariables = operators[opPos];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0){
-          for(OperationInt curVar = 0; curVar < *operators; ++curVar) {
-            indices--;  // move to next index in array
-            jacobies--; // move to next jacobi in array
-            adjoints[*indices] += adj * *jacobies;
+          for(OperationInt curVar = 0; curVar < activeVariables; ++curVar) {
+            --dataPos;
+            adjoints[indices[dataPos]] += adj * jacobies[dataPos];
 
           }
         } else {
-          indices -= *operators;
-          jacobies -= *operators;
+          dataPos -= activeVariables;
         }
       }
     }
 
     inline void evaluateOp(const typename OperatorChunkVector::Position& start, const typename OperatorChunkVector::Position& end) {
-      OperationInt* operatorPos;
+      OperationInt* operatorData;
       size_t dataPos = start.data;
       typename DataChunkVector::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(operatorPos) = operators.getDataAtPosition(curChunk, dataPos);
+        std::tie(operatorData) = operators.getDataAtPosition(curChunk, 0);
 
         typename DataChunkVector::Position endInnerPos = operators.getInnerPosition(curChunk);
-        evaluate(curInnerPos, endInnerPos, operatorPos);
+        evaluate(curInnerPos, endInnerPos, dataPos, operatorData);
 
         curInnerPos = endInnerPos;
 
@@ -253,20 +252,20 @@ namespace codi {
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(operatorPos) = operators.getDataAtPosition(end.chunk, dataPos);
-      evaluate(curInnerPos, end.inner, operatorPos);
+      std::tie(operatorData) = operators.getDataAtPosition(end.chunk, 0);
+      evaluate(curInnerPos, end.inner, dataPos, operatorData);
     }
 
-    inline void evaluate(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, OperationInt* &operatorPos) {
-      Real* jacobiPos;
-      IndexType* indexPos;
+    inline void evaluate(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, size_t& opPos, OperationInt* &operatorData) {
+      Real* jacobiData;
+      IndexType* indexData;
       size_t dataPos = start.data;
       typename ExpressionCounter<IndexType>::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(jacobiPos, indexPos) = data.getDataAtPosition(curChunk, dataPos);
+        std::tie(jacobiData, indexData) = data.getDataAtPosition(curChunk, 0);
 
         typename ExpressionCounter<IndexType>::Position endInnerPos = data.getInnerPosition(curChunk);
-        evaluate(&adjoints[curInnerPos], &adjoints[endInnerPos], operatorPos, jacobiPos, indexPos);
+        evaluate(curInnerPos, endInnerPos, opPos, operatorData, dataPos, jacobiData, indexData);
 
         curInnerPos = endInnerPos;
 
@@ -274,8 +273,8 @@ namespace codi {
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(jacobiPos, indexPos) = data.getDataAtPosition(end.chunk, dataPos);
-      evaluate(&adjoints[curInnerPos], &adjoints[end.inner], operatorPos, jacobiPos, indexPos);
+      std::tie(jacobiData, indexData) = data.getDataAtPosition(end.chunk, 0);
+      evaluate(curInnerPos, end.inner, opPos, operatorData, dataPos, jacobiData, indexData);
     }
 
     void evaluate(const Position& start, const Position& end) {
