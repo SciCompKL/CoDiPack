@@ -25,6 +25,7 @@
 #pragma once
 
 #include <cstddef>
+#include <tuple>
 
 #include "activeReal.hpp"
 #include "chunk.hpp"
@@ -81,8 +82,8 @@ namespace codi {
           lhsIndex = 0;
         } else {
           assert(operators.getUsedSize() < operators.size);
-          operators.data[operators.getUsedSize()] = (OperationInt)activeVariables;
-          lhsIndex = operators.increase();
+          operators.setDataAndMove(std::make_tuple((OperationInt)activeVariables));
+          lhsIndex = operators.getUsedSize();
         }
       }
 
@@ -108,9 +109,7 @@ namespace codi {
       if(0 != index) {
         assert(data.getUsedSize() < data.size);
 
-        data.data1[data.getUsedSize()] = 1.0;
-        data.data2[data.getUsedSize()] = index;
-        data.increase();
+        data.setDataAndMove(std::make_tuple(1.0, index));
       }
     }
 
@@ -119,9 +118,7 @@ namespace codi {
         ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
           assert(data.getUsedSize() < data.size);
 
-          data.data1[data.getUsedSize()] = jacobi;
-          data.data2[data.getUsedSize()] = index;
-          data.increase();
+          data.setDataAndMove(std::make_tuple(jacobi, index));
         }
       }
     }
@@ -207,8 +204,8 @@ namespace codi {
     inline void registerInput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
       assert(operators.getUsedSize() < operators.size);
 
-      operators.data[operators.getUsedSize()] = 0;
-      value.getGradientData() = operators.increase();
+      operators.setDataAndMove(std::make_tuple((OperationInt) 0));
+      value.getGradientData() = operators.getUsedSize();
     }
 
     inline void registerOutput(ActiveReal<Real, SimpleTape<Real, IndexType> >& /*value*/) {
