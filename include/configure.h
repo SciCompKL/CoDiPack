@@ -39,7 +39,7 @@ namespace codi {
   /**
    * @brief Default size for all chunks.
    */
-  size_t DefaultChunkSize = 13107200; //TODO: Find optimal value
+  static size_t DefaultChunkSize = 13107200; //TODO: Find optimal value
 
 
   /**
