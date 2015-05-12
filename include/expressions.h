@@ -524,7 +524,7 @@ bool OPERATOR(const Real& a, const Expression<Real, B>& b) {  \
    */
   template<typename Real, class A>
   inline
-  Expression<Real, A> operator+(const Expression<Real, A>& a) {
+  const Expression<Real, A>& operator+(const Expression<Real, A>& a) {
     return a;
   }
 }
