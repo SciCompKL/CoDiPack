@@ -12,6 +12,7 @@ int main(int nargs, char** args) {
 
   codi::SimpleTape<double, int>& tape = codi::RealReverseSimple::globalTape;
   tape.resize(1000, 1000);
+  tape.setActive();
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";

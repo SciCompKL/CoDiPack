@@ -12,6 +12,7 @@ int main(int nargs, char** args) {
 
   codi::ChunkTape<double, int>& tape = codi::RealReverse::globalTape;
   tape.resize(2, 3);
+  tape.setActive();
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
