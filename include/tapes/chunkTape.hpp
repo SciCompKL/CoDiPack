@@ -69,7 +69,7 @@ namespace codi {
     DataChunkVector data;
     OperatorChunkVector operators;
     Real* adjoints;
-    size_t adjointsSize;
+    IndexType adjointsSize;
 
     bool active;
 
@@ -95,13 +95,13 @@ namespace codi {
       operators.resize(opSize);
     }
 
-    void resizeAdjoints(const size_t& size) {
-      size_t oldSize = adjointsSize;
+    void resizeAdjoints(const IndexType& size) {
+      IndexType oldSize = adjointsSize;
       adjointsSize = size;
 
-      adjoints = (Real*)realloc(adjoints, sizeof(Real) * adjointsSize);
+      adjoints = (Real*)realloc(adjoints, sizeof(Real) * (size_t)adjointsSize);
 
-      for(size_t i = oldSize; i < adjointsSize; ++i) {
+      for(IndexType i = oldSize; i < adjointsSize; ++i) {
         adjoints[i] = 0.0;
       }
     }
@@ -204,7 +204,7 @@ namespace codi {
     }
 
     inline void reset(const Position& pos) {
-      for(size_t i = pos.inner.inner; i <= expressionCount.count; ++i) {
+      for(IndexType i = pos.inner.inner; i <= expressionCount.count; ++i) {
         adjoints[i] = 0.0;
       }
 
