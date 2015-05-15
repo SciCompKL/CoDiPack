@@ -74,7 +74,7 @@ namespace codi {
     ExpressionCounter<IndexType> expressionCount;
     DataChunkVector data;
     OperatorChunkVector operators;
-    ExternalFunctionChunkVector external_functions;
+    ExternalFunctionChunkVector externalFunctions;
     Real* adjoints;
     IndexType adjointsSize;
 
@@ -85,7 +85,7 @@ namespace codi {
       expressionCount(),
       data(DefaultChunkSize, expressionCount),
       operators(DefaultChunkSize, data),
-      external_functions(1, operators),
+      externalFunctions(1, operators),
       adjoints(NULL),
       active(false){
       pushExternalFunction(NULL,NULL,NULL);
@@ -207,7 +207,7 @@ namespace codi {
     }
 
     inline Position getPosition() {
-      return external_functions.getPosition();
+      return externalFunctions.getPosition();
     }
 
     inline void clearAdjoints(){
@@ -228,7 +228,7 @@ namespace codi {
       }
 
       // reset will be done iterativly through the vectors
-      external_functions.reset(pos);
+      externalFunctions.reset(pos);
 //      pushExternalFunction(NULL,NULL,NULL);
     }
 
@@ -310,8 +310,10 @@ namespace codi {
       typename OperatorChunkVector::Position curInnerPos = start.inner;
 
       for (size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk){
-        std::tie(extFunc) = external_functions.getDataAtPosition(curChunk,0);
-        typename OperatorChunkVector::Position endInnerPos = external_functions.getInnerPosition(curChunk);
+        std::tie(extFunc) = externalFunctions.getDataAtPosition(curChunk,0);
+        typename OperatorChunkVector::Position endInnerPos = externalFunctions.getInnerPosition(curChunk);
+
+        // always evaluate the stack to the point of the external function
         evaluateOp(curInnerPos, endInnerPos);
 
         if(extFunc->func != NULL){
@@ -321,18 +323,7 @@ namespace codi {
         curInnerPos = endInnerPos;
       }
 
-//      if (start.data != 0 && end.data == 0){
-//        std::tie(extFunc) = external_functions.getDataAtPosition(end.chunk,0);
-//        typename OperatorChunkVector::Position endInnerPos = external_functions.getInnerPosition(end.chunk);
-//        evaluateOp(curInnerPos, endInnerPos);
-
-//        if (extFunc->func != NULL){
-//          extFunc->func(extFunc->checkpoint);
-//        }
-
-//        curInnerPos = endInnerPos;
-//      }
-
+      // evaluate everything after the external function
       evaluateOp(curInnerPos, end.inner);
 
     }
@@ -341,13 +332,10 @@ namespace codi {
       evaluate(getPosition(), Position());
     }
 
-    void pushExternalFunction(void(*ext_func)(void*), void* checkpoint, void(*del_checkpoint)(void*)){
-      external_functions.reserveItems(1);
-      ExternalFunction function;
-      function.func = ext_func;
-      function.checkpoint = checkpoint;
-      function.delete_checkpoint = del_checkpoint;
-      external_functions.setDataAndMove(std::tuple<ExternalFunction>(function));
+    void pushExternalFunction(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint){
+      externalFunctions.reserveItems(1);
+      ExternalFunction function(extFunc, checkpoint, delCheckpoint);
+      externalFunctions.setDataAndMove(std::tuple<ExternalFunction>(function));
     }
 
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {

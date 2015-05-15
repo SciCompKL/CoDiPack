@@ -27,22 +27,24 @@
 namespace codi {
 
   struct ExternalFunction {
-      ExternalFunction(){}
-      ExternalFunction(void(*func_)(void*),
-                   void* checkpoint_,void (*delete_checkpoint_)(void*))
-          :func(func_), checkpoint(checkpoint_) ,
-           delete_checkpoint(delete_checkpoint_){}
+    typedef void (*CallFunction)(void*);
+    typedef void (*DeleteFunction)(void*);
 
-      void (*func)(void*);
+    CallFunction func;
+    DeleteFunction deleteCheckpoint;
 
-      void* checkpoint;
+    void* checkpoint;
 
-      void (*delete_checkpoint)(void*);
+    ExternalFunction(){}
+    ExternalFunction(CallFunction func, void* checkpoint, DeleteFunction deleteCheckpoint) :
+      func(func),
+      deleteCheckpoint(deleteCheckpoint),
+      checkpoint(checkpoint){}
 
-      ~ExternalFunction(){
-        if (delete_checkpoint != NULL){
-          delete_checkpoint(checkpoint);
-        }
+    ~ExternalFunction(){
+      if (deleteCheckpoint != NULL){
+        deleteCheckpoint(checkpoint);
       }
+    }
   };
 }
