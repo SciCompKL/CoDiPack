@@ -172,6 +172,14 @@ namespace codi {
     inline Real& gradient(GradientData& tangent) {
       return tangent;
     }
+
+    void setActive(){}
+
+    void setPassive(){}
+
+    bool isActive(){return true;}
+
+    void clearAdjoints(){}
   };
 }
 

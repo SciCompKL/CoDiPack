@@ -21,23 +21,28 @@
  *
  * Authors: TODO
  */
+
 #pragma once
 
-#include "activeReal.hpp"
-#include "tapes/forwardEvaluation.hpp"
-#include "tapes/simpleTape.hpp"
-#include "tapes/chunkTape.hpp"
-#include "tools/DataStore.hpp"
-
 namespace codi {
-  typedef ActiveReal<double, ForwardEvaluation<double> > RealForward;
-  typedef ActiveReal<float, ForwardEvaluation<float> > RealForwardFloat;
 
-  typedef ActiveReal<double, ChunkTape<double, int> > RealReverse;
-  typedef ActiveReal<float, ChunkTape<float, int> > RealReverseFloat;
+  struct ExternalFunction {
+      ExternalFunction(){}
+      ExternalFunction(void(*func_)(void*),
+                   void* checkpoint_,void (*delete_checkpoint_)(void*))
+          :func(func_), checkpoint(checkpoint_) ,
+           delete_checkpoint(delete_checkpoint_){}
 
-  typedef ActiveReal<double, SimpleTape<double, int> > RealReverseSimple;
-  typedef ActiveReal<float, SimpleTape<float, int> > RealReverseSimpleFloat;
+      void (*func)(void*);
 
+      void* checkpoint;
 
+      void (*delete_checkpoint)(void*);
+
+      ~ExternalFunction(){
+        if (delete_checkpoint != NULL){
+          delete_checkpoint(checkpoint);
+        }
+      }
+  };
 }

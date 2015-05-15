@@ -32,6 +32,7 @@
 #include "chunk.hpp"
 #include "chunkVector.hpp"
 #include "tapeInterface.hpp"
+#include "externalFunctions.hpp"
 
 namespace codi {
 
@@ -61,13 +62,19 @@ namespace codi {
     typedef Chunk1<OperationInt> OperatorChunk;
     typedef ChunkVector<OperatorChunk, DataChunkVector> OperatorChunkVector;
 
-    typedef typename OperatorChunkVector::Position Position;
+
+    typedef Chunk1<ExternalFunction> ExternalFunctionChunk;
+    typedef ChunkVector<ExternalFunctionChunk, OperatorChunkVector> ExternalFunctionChunkVector;
+
+    typedef typename ExternalFunctionChunkVector::Position Position;
+
 
   private:
 
     ExpressionCounter<IndexType> expressionCount;
     DataChunkVector data;
     OperatorChunkVector operators;
+    ExternalFunctionChunkVector external_functions;
     Real* adjoints;
     IndexType adjointsSize;
 
@@ -78,8 +85,10 @@ namespace codi {
       expressionCount(),
       data(DefaultChunkSize, expressionCount),
       operators(DefaultChunkSize, data),
+      external_functions(1, operators),
       adjoints(NULL),
       active(false){
+      pushExternalFunction(NULL,NULL,NULL);
     }
 
     void setDataChunkSize(const size_t& dataChunkSize) {
@@ -129,6 +138,8 @@ namespace codi {
           operators.setDataAndMove(std::make_tuple((OperationInt)activeVariables));
           lhsIndex = ++expressionCount.count;
         }
+//      } else {
+//        lhsIndex = 0;
       }
       /* now set the value of the lhs */
       lhsValue = rhs.getValue();
@@ -137,6 +148,8 @@ namespace codi {
     inline void store(Real& value, IndexType& lhsIndex, const ActiveReal<Real, ChunkTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
+//      } else {
+//        lhsIndex = 0;
       }
       value = rhs.getValue();
     }
@@ -194,22 +207,29 @@ namespace codi {
     }
 
     inline Position getPosition() {
-      return operators.getPosition();
+      return external_functions.getPosition();
     }
 
     inline void clearAdjoints(){
-      for(size_t i = 0; i <= expressionCount.count; ++i) {
-        adjoints.data[i] = 0.0;
+      for(IndexType i = 0; i <= expressionCount.count; ++i) {
+        adjoints[i] = 0.0;
+      }
+    }
+
+    inline void clearAdjoints(const Position& start, const Position& end){
+      for(IndexType i = start.inner.inner.inner; i <= end.inner.inner.inner; ++i) {
+        adjoints[i] = 0.0;
       }
     }
 
     inline void reset(const Position& pos) {
-      for(IndexType i = pos.inner.inner; i <= expressionCount.count; ++i) {
+      for(IndexType i = pos.inner.inner.inner; i <= expressionCount.count; ++i) {
         adjoints[i] = 0.0;
       }
 
       // reset will be done iterativly through the vectors
-      operators.reset(pos);
+      external_functions.reset(pos);
+//      pushExternalFunction(NULL,NULL,NULL);
     }
 
     inline void reset() {
@@ -282,11 +302,52 @@ namespace codi {
         resizeAdjoints(expressionCount.count + 1);
       }
 
-      evaluateOp(start, end);
+      evaluateExtFunc(start, end);
+    }
+
+    void evaluateExtFunc(const typename ExternalFunctionChunkVector::Position& start, const typename ExternalFunctionChunkVector::Position &end){
+      ExternalFunction *extFunc;
+      typename OperatorChunkVector::Position curInnerPos = start.inner;
+
+      for (size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk){
+        std::tie(extFunc) = external_functions.getDataAtPosition(curChunk,0);
+        typename OperatorChunkVector::Position endInnerPos = external_functions.getInnerPosition(curChunk);
+        evaluateOp(curInnerPos, endInnerPos);
+
+        if(extFunc->func != NULL){
+          extFunc->func(extFunc->checkpoint);
+        }
+
+        curInnerPos = endInnerPos;
+      }
+
+//      if (start.data != 0 && end.data == 0){
+//        std::tie(extFunc) = external_functions.getDataAtPosition(end.chunk,0);
+//        typename OperatorChunkVector::Position endInnerPos = external_functions.getInnerPosition(end.chunk);
+//        evaluateOp(curInnerPos, endInnerPos);
+
+//        if (extFunc->func != NULL){
+//          extFunc->func(extFunc->checkpoint);
+//        }
+
+//        curInnerPos = endInnerPos;
+//      }
+
+      evaluateOp(curInnerPos, end.inner);
+
     }
 
     void evaluate() {
       evaluate(getPosition(), Position());
+    }
+
+    void pushExternalFunction(void(*ext_func)(void*), void* checkpoint, void(*del_checkpoint)(void*)){
+      external_functions.reserveItems(1);
+      ExternalFunction function;
+      function.func = ext_func;
+      function.checkpoint = checkpoint;
+      function.delete_checkpoint = del_checkpoint;
+      external_functions.setDataAndMove(std::tuple<ExternalFunction>(function));
     }
 
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
