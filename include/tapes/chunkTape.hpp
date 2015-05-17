@@ -227,6 +227,8 @@ namespace codi {
         adjoints[i] = 0.0;
       }
 
+      externalFunctions.forEach(externalFunctions.getPosition(), pos, popExternalFunction);
+
       // reset will be done iterativly through the vectors
       externalFunctions.reset(pos);
       pushExternalFunctionHandle(NULL,NULL,NULL);
@@ -342,6 +344,11 @@ namespace codi {
     void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* checkpoint, typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint){
       ExternalFunctionDataHelper<Data>* functionHelper = new ExternalFunctionDataHelper<Data>(extFunc, checkpoint, delCheckpoint);
       pushExternalFunctionHandle( ExternalFunctionDataHelper<Data>::callFunction, functionHelper, ExternalFunctionDataHelper<Data>::deleteFunction);
+    }
+
+    static void popExternalFunction(ExternalFunctionChunk::DataPointer& extFunction) {
+      /* we just need to call the delete function */
+      std::get<0>(extFunction)->deleteData();
     }
 
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {

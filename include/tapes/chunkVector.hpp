@@ -178,11 +178,48 @@ namespace codi {
     }
 
     inline typename ChunkData::DataPointer getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos) {
+      assert(start.chunk < chunks.size());
+
       return chunks[chunkIndex]->dataPointer(dataPos);
     }
 
     inline size_t getChunkUsedData(const size_t& chunkIndex) {
+      assert(start.chunk < chunks.size());
+
       return chunks[chunkIndex]->getUsedSize();
+    }
+
+  private:
+    template<typename FunctionObject>
+    inline void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function) {
+      assert(start >= end);
+      assert(chunkPos < chunks.size());
+
+      typename ChunkData::DataPointer data;
+      // we do not initalize dataPos with start - 1 because the type can be unsigned
+      for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
+        --dataPos; // decrement of loop variable
+
+        data = getDataAtPosition(chunkPos, dataPos);
+        function(data);
+      }
+    }
+
+  public:
+    template<typename FunctionObject>
+    inline void forEach(const Position& start, const Position& end, FunctionObject& function) {
+      assert(start >= end);
+      assert(start.chunk < chunks.size());
+      size_t dataStart = start.data;
+      for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
+
+        forEachData(chunkPos, dataStart, 0, function);
+
+        dataStart = chunks[--chunkPos]->getUsedSize(); // decrement of loop variable
+
+      }
+
+      forEachData(end.chunk, dataStart, end.data, function);
     }
   };
 }
