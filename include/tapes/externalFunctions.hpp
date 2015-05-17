@@ -41,10 +41,49 @@ namespace codi {
       deleteCheckpoint(deleteCheckpoint),
       checkpoint(checkpoint){}
 
-    ~ExternalFunction(){
+    void deleteData() {
       if (deleteCheckpoint != NULL){
         deleteCheckpoint(checkpoint);
+        checkpoint = NULL;
       }
     }
+  };
+
+  template<typename Data>
+  class ExternalFunctionDataHelper {
+  public:
+    typedef void (*CallFunction)(Data*);
+    typedef void (*DeleteFunction)(Data*);
+
+    CallFunction func;
+    DeleteFunction deleteData;
+
+    Data* data;
+
+    ExternalFunctionDataHelper(CallFunction func, Data* data, DeleteFunction deleteData) :
+      func(func),
+      deleteData(deleteData),
+      data(data){}
+
+
+    static void callFunction(void* data) {
+      ExternalFunctionDataHelper<Data>* castData = cast(data);
+      castData->func(castData->data);
+    }
+
+    static void deleteFunction(void* data) {
+      ExternalFunctionDataHelper<Data>* castData = cast(data);
+      castData->deleteData(castData->data);
+
+      // delete self
+      delete castData;
+    }
+
+  private:
+
+    static ExternalFunctionDataHelper<Data>* cast(void* data) {
+      return (ExternalFunctionDataHelper<Data>*)data;
+    }
+
   };
 }

@@ -88,7 +88,7 @@ namespace codi {
       externalFunctions(1, operators),
       adjoints(NULL),
       active(false){
-      pushExternalFunction(NULL,NULL,NULL);
+      pushExternalFunctionHandle(NULL,NULL,NULL);
     }
 
     void setDataChunkSize(const size_t& dataChunkSize) {
@@ -229,7 +229,7 @@ namespace codi {
 
       // reset will be done iterativly through the vectors
       externalFunctions.reset(pos);
-//      pushExternalFunction(NULL,NULL,NULL);
+      pushExternalFunctionHandle(NULL,NULL,NULL);
     }
 
     inline void reset() {
@@ -332,10 +332,16 @@ namespace codi {
       evaluate(getPosition(), Position());
     }
 
-    void pushExternalFunction(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint){
+    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint){
       externalFunctions.reserveItems(1);
       ExternalFunction function(extFunc, checkpoint, delCheckpoint);
       externalFunctions.setDataAndMove(std::tuple<ExternalFunction>(function));
+    }
+
+    template<typename Data>
+    void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* checkpoint, typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint){
+      ExternalFunctionDataHelper<Data>* functionHelper = new ExternalFunctionDataHelper<Data>(extFunc, checkpoint, delCheckpoint);
+      pushExternalFunctionHandle( ExternalFunctionDataHelper<Data>::callFunction, functionHelper, ExternalFunctionDataHelper<Data>::deleteFunction);
     }
 
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
