@@ -1,5 +1,7 @@
 #include <toolDefines.h>
 
+#include <tools/DataStore.hpp>
+
 #include <iostream>
 
 IN(2)
@@ -9,7 +11,8 @@ POINTS(1) = {{2.0, 3.0}};
 void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
   z = w*v;
 }
-#ifdef CHUNK_TAPE
+
+#ifdef REVERSE_TAPE
 static void extFunc(void* checkpoint){
   DataStore *check = static_cast<DataStore*>(checkpoint);
   NUMBER *x, w;
@@ -26,16 +29,17 @@ static void delFunc(void* checkpoint){
 }
 
 void func(NUMBER* x, NUMBER* y) {
+  NUMBER::TapeType& tape = NUMBER::globalTape;
   DataStore *checkpoint = new DataStore;
   NUMBER w;
-  codi::RealReverse::globalTape.setPassive();
+  tape.setPassive();
   func_forward(w,x[0],x[1]);
-  codi::RealReverse::globalTape.setActive();
+  tape.setActive();
 
-  codi::RealReverse::globalTape.registerInput(w);
+  tape.registerInput(w);
   checkpoint->addData(x);
   checkpoint->addData(w);
-  codi::RealReverse::globalTape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
+  tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
 
 
   y[0] = w*w;

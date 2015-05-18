@@ -1,5 +1,7 @@
 #include <toolDefines.h>
 
+#include <tools/DataStore.hpp>
+
 #include <iostream>
 
 IN(2)
@@ -12,7 +14,7 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
 
 const int ITER = 5;
 
-#ifdef CHUNK_TAPE
+#ifdef REVERSE_TAPE
 static void extFunc(void* checkpoint){
   DataStore *check = static_cast<DataStore*>(checkpoint);
   NUMBER *x, w0, w1;
@@ -30,20 +32,21 @@ static void delFunc(void* checkpoint){
 }
 
 void func(NUMBER* x, NUMBER* y) {
+  NUMBER::TapeType& tape = NUMBER::globalTape;
   NUMBER w[ITER];
 
   w[0] = x[0];
   for(int i = 1; i < ITER; ++i) {
-    codi::RealReverse::globalTape.setPassive();
+    tape.setPassive();
     func_forward(w[i],w[i - 1],x[1]);
-    codi::RealReverse::globalTape.setActive();
+    tape.setActive();
 
     DataStore *checkpoint = new DataStore();
-    codi::RealReverse::globalTape.registerInput(w[i]);
+    tape.registerInput(w[i]);
     checkpoint->addData(x);
     checkpoint->addData(w[i-1]);
     checkpoint->addData(w[i]);
-    codi::RealReverse::globalTape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
+    tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
   }
 
 
