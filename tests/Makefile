@@ -44,18 +44,22 @@ REVERSE_CHUNK_DRIVER = $(DRIVER_DIR)/reverseChunk/reverseDriver.cpp -I$(CODI_DIR
 $(BUILD_DIR)/%_forward_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(FORWARD_DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(FORWARD_DRIVER) $< -MM -MP -MT $@ -MF $@.d
 
 $(BUILD_DIR)/%_forward2nd_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $< -o $@ $(FORWARD_DRIVER)
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(FORWARD_2ND_DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(FORWARD_2ND_DRIVER) $< -MM -MP -MT $@ -MF $@.d
 
 $(BUILD_DIR)/%_reverse_simple_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(REVERSE_SIMPLE_DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(REVERSE_SIMPLE_DRIVER) $< -MM -MP -MT $@ -MF $@.d
 
 $(BUILD_DIR)/%_reverse_chunk_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(REVERSE_CHUNK_DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(REVERSE_CHUNK_DRIVER) $< -MM -MP -MT $@ -MF $@.d
 
 # rules for generating the text files
 $(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
@@ -76,3 +80,8 @@ Test% : $(RESULT_DIR)/Test%.test
 clean:
 	rm -fr $(BUILD_DIR)
 	rm -fr $(RESULT_DIR)
+
+-include $(FORWARD_BIN_FILES:_bin=_bin.d)
+-include $(FORWARD_2ND_BIN_FILES:_bin=_bin.d)
+-include $(REVERSE_SIMPLE_BIN_FILES:_bin=_bin.d)
+-include $(REVERSE_CHUNK_BIN_FILES:_bin=_bin.d)
