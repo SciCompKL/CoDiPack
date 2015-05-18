@@ -31,7 +31,7 @@
 #include "activeReal.hpp"
 #include "chunk.hpp"
 #include "chunkVector.hpp"
-#include "tapeInterface.hpp"
+#include "reverseTapeInterface.hpp"
 #include "externalFunctions.hpp"
 
 namespace codi {
@@ -53,20 +53,34 @@ namespace codi {
   };
 
   template <typename Real, typename IndexType>
-  class ChunkTape : public TapeInterface<Real, IndexType> {
-  public:
-
+  struct ChunkTapeTypes {
     typedef Chunk2< Real, IndexType> DataChunk;
     typedef ChunkVector<DataChunk, ExpressionCounter<IndexType> > DataChunkVector;
 
     typedef Chunk1<OperationInt> OperatorChunk;
     typedef ChunkVector<OperatorChunk, DataChunkVector> OperatorChunkVector;
 
-
     typedef Chunk2<ExternalFunction,typename OperatorChunkVector::Position> ExternalFunctionChunk;
     typedef ChunkVector<ExternalFunctionChunk, OperatorChunkVector> ExternalFunctionChunkVector;
 
     typedef typename ExternalFunctionChunkVector::Position Position;
+
+  };
+
+  template <typename Real, typename IndexType>
+  class ChunkTape : public ReverseTapeInterface<Real, IndexType, ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::Position > {
+  public:
+
+    typedef typename ChunkTapeTypes<Real, IndexType>::DataChunk DataChunk;
+    typedef typename ChunkTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
+
+    typedef typename ChunkTapeTypes<Real, IndexType>::OperatorChunk OperatorChunk;
+    typedef typename ChunkTapeTypes<Real, IndexType>::OperatorChunkVector OperatorChunkVector;
+
+    typedef typename ChunkTapeTypes<Real, IndexType>::ExternalFunctionChunk ExternalFunctionChunk;
+    typedef typename ChunkTapeTypes<Real, IndexType>::ExternalFunctionChunkVector ExternalFunctionChunkVector;
+
+    typedef typename ChunkTapeTypes<Real, IndexType>::Position Position;
 
 
   private:

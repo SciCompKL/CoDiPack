@@ -159,37 +159,7 @@ namespace codi {
     */
     virtual Real& gradient(GradientData& value) = 0;
 
-    /**
-    * @brief Set the tape to active.
-    *
-    *  While active each operation involving active variables is stored on the tape.
-    *
-    */
-    virtual void setActive() = 0;
 
-
-    /**
-    * @brief Set the tape to passive.
-    *
-    *  While passive no operation involving active variables is stored on the tape.
-    *
-    */
-    virtual void setPassive() = 0;
-
-
-    /**
-    * @brief Get the current status if of tape.
-    *
-    * @return The current state. If true the tape is active.
-    */
-    virtual bool isActive() = 0;
-
-    /**
-    * @brief Clears the currently stored adjoints.
-    *
-    * @return Sets the currently stored adjoints to zero, thereby enabling a re-evalution of the tape.
-    */
-    virtual void clearAdjoints() = 0;
 
   };
 }

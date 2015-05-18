@@ -29,23 +29,24 @@
 
 #include "activeReal.hpp"
 #include "chunk.hpp"
-#include "tapeInterface.hpp"
+#include "reverseTapeInterface.hpp"
 
 namespace codi {
 
+  struct SimpleTapePosition {
+    size_t op;
+    size_t data;
+
+    SimpleTapePosition(const size_t& op, const size_t& data) :
+      op(op),
+      data(data) {}
+  };
+
   template <typename Real, typename IndexType>
-  class SimpleTape : public TapeInterface<Real, IndexType> {
+  class SimpleTape : public ReverseTapeInterface<Real, IndexType, SimpleTape<Real, IndexType>, SimpleTapePosition > {
   public:
 
-    struct Position {
-      size_t op;
-      size_t data;
-
-      Position(const size_t& op, const size_t& data) :
-        op(op),
-        data(data) {}
-    };
-
+    typedef SimpleTapePosition Position;
   private:
     Chunk2<Real, IndexType> data;
     Chunk1<OperationInt> operators;
@@ -201,6 +202,7 @@ namespace codi {
     inline void evaluate() {
       evaluate(getPosition(), Position(0,0));
     }
+
     inline void registerInput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
       assert(operators.getUsedSize() < operators.size);
 
@@ -229,6 +231,38 @@ namespace codi {
         return true;
       }
     }
+
+    /**
+     * @brief Add a external function to the tape.
+     *
+     * The external function is called during the reverse evaluation of the tape. It can be used to
+     * give special treatment to code sections which have simpler reverse implementation than the
+     * AD tool.
+     *
+     * @param       extFunc The function which is called during the reverse evluation of the tape.
+     * @param    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
+     * @param delCheckpoint The delete function for the data.
+     */
+    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint) {}
+
+    /**
+     * @brief Add a external function to the tape.
+     *
+     * The external function is called during the reverse evaluation of the tape. It can be used to
+     * give special treatment to code sections which have simpler reverse implementation than the
+     * AD tool.
+     *
+     * @param       extFunc The function which is called during the reverse evluation of the tape.
+     * @param    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
+     * @param delCheckpoint The delete function for the data.
+     *
+     * @tparam Data The data type for the data.
+     */
+    template<typename Data>
+    void pushExternalFunction(
+        typename ExternalFunctionDataHelper<Data>::CallFunction extFunc,
+        Data* checkpoint,
+        typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint) {}
 
   };
 }
