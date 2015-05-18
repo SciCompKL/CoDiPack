@@ -90,7 +90,7 @@ namespace codi {
         if(0 == activeVariables) {
           lhsIndex = 0;
         } else {
-          assert(statements.getUsedSize() < statement.size);
+          assert(statements.getUsedSize() < statements.size);
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = statements.getUsedSize();
         }
@@ -148,12 +148,12 @@ namespace codi {
     }
 
     inline Real getGradient(const IndexType& index) const {
-      assert(index < statements.size);
+      assert((size_t)index < statements.size);
       return adjoints.data[index];
     }
 
     inline Real& gradient(IndexType& index) {
-      assert(index < statements.size);
+      assert((size_t)index < statements.size);
       assert(0 != index);
 
       return adjoints.data[index];
@@ -166,6 +166,7 @@ namespace codi {
     inline void reset(const Position& pos) {
       assert(pos.stmt < statements.size);
       assert(pos.data < data.size);
+      assert(pos.extFunc < externalFunctions.size);
 
       for(size_t i = pos.stmt; i <= statements.getUsedSize(); ++i) {
         adjoints.data[i] = 0.0;

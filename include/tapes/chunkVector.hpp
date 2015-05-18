@@ -178,13 +178,13 @@ namespace codi {
     }
 
     inline typename ChunkData::DataPointer getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos) {
-      assert(start.chunk < chunks.size());
+      assert(chunkIndex < chunks.size());
 
       return chunks[chunkIndex]->dataPointer(dataPos);
     }
 
     inline size_t getChunkUsedData(const size_t& chunkIndex) {
-      assert(start.chunk < chunks.size());
+      assert(chunkIndex < chunks.size());
 
       return chunks[chunkIndex]->getUsedSize();
     }
@@ -208,7 +208,7 @@ namespace codi {
   public:
     template<typename FunctionObject>
     inline void forEach(const Position& start, const Position& end, FunctionObject& function) {
-      assert(start >= end);
+      assert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
       assert(start.chunk < chunks.size());
       size_t dataStart = start.data;
       for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
