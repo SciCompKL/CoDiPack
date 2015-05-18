@@ -63,7 +63,7 @@ namespace codi {
     typedef ChunkVector<OperatorChunk, DataChunkVector> OperatorChunkVector;
 
 
-    typedef Chunk1<ExternalFunction> ExternalFunctionChunk;
+    typedef Chunk2<ExternalFunction,typename OperatorChunkVector::Position> ExternalFunctionChunk;
     typedef ChunkVector<ExternalFunctionChunk, OperatorChunkVector> ExternalFunctionChunkVector;
 
     typedef typename ExternalFunctionChunkVector::Position Position;
@@ -85,10 +85,9 @@ namespace codi {
       expressionCount(),
       data(DefaultChunkSize, expressionCount),
       operators(DefaultChunkSize, data),
-      externalFunctions(1, operators),
+      externalFunctions(1000, operators),
       adjoints(NULL),
       active(false){
-      pushExternalFunctionHandle(NULL,NULL,NULL);
     }
 
     void setDataChunkSize(const size_t& dataChunkSize) {
@@ -97,6 +96,10 @@ namespace codi {
 
     void setOperatorChunkSize(const size_t& opChunkSize) {
       operators.setChunkSize(opChunkSize);
+    }
+
+    void setExternalFunctionChunkSize(const size_t& extChunkSize) {
+      externalFunctions.setChunkSize(extChunkSize);
     }
 
     void resize(const size_t& dataSize, const size_t& opSize) {
@@ -231,7 +234,6 @@ namespace codi {
 
       // reset will be done iterativly through the vectors
       externalFunctions.reset(pos);
-      pushExternalFunctionHandle(NULL,NULL,NULL);
     }
 
     inline void reset() {
@@ -307,27 +309,39 @@ namespace codi {
       evaluateExtFunc(start, end);
     }
 
-    void evaluateExtFunc(const typename ExternalFunctionChunkVector::Position& start, const typename ExternalFunctionChunkVector::Position &end){
-      ExternalFunction *extFunc;
-      typename OperatorChunkVector::Position curInnerPos = start.inner;
+    struct ExtFuncEvaluator {
+      typename OperatorChunkVector::Position curInnerPos;
+      ExternalFunction* extFunc;
+      typename OperatorChunkVector::Position* endInnerPos;
 
-      for (size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk){
-        std::tie(extFunc) = externalFunctions.getDataAtPosition(curChunk,0);
-        typename OperatorChunkVector::Position endInnerPos = externalFunctions.getInnerPosition(curChunk);
+      ChunkTape<Real, IndexType>& tape;
+
+      ExtFuncEvaluator(typename OperatorChunkVector::Position curInnerPos, ChunkTape<Real, IndexType>& tape) :
+        curInnerPos(curInnerPos),
+        extFunc(NULL),
+        endInnerPos(NULL),
+        tape(tape){}
+
+      void operator () (typename ExternalFunctionChunk::DataPointer& data) {
+        std::tie(extFunc, endInnerPos) = data;
 
         // always evaluate the stack to the point of the external function
-        evaluateOp(curInnerPos, endInnerPos);
+        tape.evaluateOp(curInnerPos, *endInnerPos);
 
         if(extFunc->func != NULL){
           extFunc->func(extFunc->checkpoint);
         }
 
-        curInnerPos = endInnerPos;
+        curInnerPos = *endInnerPos;
       }
+    };
 
-      // evaluate everything after the external function
-      evaluateOp(curInnerPos, end.inner);
+    void evaluateExtFunc(const typename ExternalFunctionChunkVector::Position& start, const typename ExternalFunctionChunkVector::Position &end){
+      ExtFuncEvaluator evaluator(start.inner, *this);
 
+      externalFunctions.forEach(start, end, evaluator);
+
+      evaluateOp(evaluator.curInnerPos, end.inner);
     }
 
     void evaluate() {
@@ -337,7 +351,7 @@ namespace codi {
     void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint){
       externalFunctions.reserveItems(1);
       ExternalFunction function(extFunc, checkpoint, delCheckpoint);
-      externalFunctions.setDataAndMove(std::tuple<ExternalFunction>(function));
+      externalFunctions.setDataAndMove(std::make_tuple(function, operators.getPosition()));
     }
 
     template<typename Data>
@@ -346,7 +360,7 @@ namespace codi {
       pushExternalFunctionHandle( ExternalFunctionDataHelper<Data>::callFunction, functionHelper, ExternalFunctionDataHelper<Data>::deleteFunction);
     }
 
-    static void popExternalFunction(ExternalFunctionChunk::DataPointer& extFunction) {
+    static void popExternalFunction(typename ExternalFunctionChunk::DataPointer& extFunction) {
       /* we just need to call the delete function */
       std::get<0>(extFunction)->deleteData();
     }
