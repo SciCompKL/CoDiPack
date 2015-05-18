@@ -57,11 +57,11 @@ namespace codi {
     typedef Chunk2< Real, IndexType> DataChunk;
     typedef ChunkVector<DataChunk, ExpressionCounter<IndexType> > DataChunkVector;
 
-    typedef Chunk1<OperationInt> OperatorChunk;
-    typedef ChunkVector<OperatorChunk, DataChunkVector> OperatorChunkVector;
+    typedef Chunk1<StatementInt> StatementChunk;
+    typedef ChunkVector<StatementChunk, DataChunkVector> StatementChunkVector;
 
-    typedef Chunk2<ExternalFunction,typename OperatorChunkVector::Position> ExternalFunctionChunk;
-    typedef ChunkVector<ExternalFunctionChunk, OperatorChunkVector> ExternalFunctionChunkVector;
+    typedef Chunk2<ExternalFunction,typename StatementChunkVector::Position> ExternalFunctionChunk;
+    typedef ChunkVector<ExternalFunctionChunk, StatementChunkVector> ExternalFunctionChunkVector;
 
     typedef typename ExternalFunctionChunkVector::Position Position;
 
@@ -74,8 +74,8 @@ namespace codi {
     typedef typename ChunkTapeTypes<Real, IndexType>::DataChunk DataChunk;
     typedef typename ChunkTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
 
-    typedef typename ChunkTapeTypes<Real, IndexType>::OperatorChunk OperatorChunk;
-    typedef typename ChunkTapeTypes<Real, IndexType>::OperatorChunkVector OperatorChunkVector;
+    typedef typename ChunkTapeTypes<Real, IndexType>::StatementChunk StatementChunk;
+    typedef typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector StatementChunkVector;
 
     typedef typename ChunkTapeTypes<Real, IndexType>::ExternalFunctionChunk ExternalFunctionChunk;
     typedef typename ChunkTapeTypes<Real, IndexType>::ExternalFunctionChunkVector ExternalFunctionChunkVector;
@@ -87,7 +87,7 @@ namespace codi {
 
     ExpressionCounter<IndexType> expressionCount;
     DataChunkVector data;
-    OperatorChunkVector operators;
+    StatementChunkVector statements;
     ExternalFunctionChunkVector externalFunctions;
     Real* adjoints;
     IndexType adjointsSize;
@@ -98,8 +98,8 @@ namespace codi {
     ChunkTape() :
       expressionCount(),
       data(DefaultChunkSize, expressionCount),
-      operators(DefaultChunkSize, data),
-      externalFunctions(1000, operators),
+      statements(DefaultChunkSize, data),
+      externalFunctions(1000, statements),
       adjoints(NULL),
       active(false){
     }
@@ -108,17 +108,17 @@ namespace codi {
       data.setChunkSize(dataChunkSize);
     }
 
-    void setOperatorChunkSize(const size_t& opChunkSize) {
-      operators.setChunkSize(opChunkSize);
+    void setStatementChunkSize(const size_t& statementChunkSize) {
+      statements.setChunkSize(statementChunkSize);
     }
 
     void setExternalFunctionChunkSize(const size_t& extChunkSize) {
       externalFunctions.setChunkSize(extChunkSize);
     }
 
-    void resize(const size_t& dataSize, const size_t& opSize) {
+    void resize(const size_t& dataSize, const size_t& statementSize) {
       data.resize(dataSize);
-      operators.resize(opSize);
+      statements.resize(statementSize);
     }
 
     void resizeAdjoints(const IndexType& size) {
@@ -142,7 +142,7 @@ namespace codi {
 
       ENABLE_CHECK (OptTapeActivity, active){
         data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
-        operators.reserveItems(1); // operators needs a reserve bevor the data items for the operator are pushed
+        statements.reserveItems(1); // statements needs a reserve bevor the data items for the statement are pushed
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
@@ -152,7 +152,7 @@ namespace codi {
         if(0 == activeVariables) {
           lhsIndex = 0;
         } else {
-          operators.setDataAndMove(std::make_tuple((OperationInt)activeVariables));
+          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
         }
 //      } else {
@@ -254,16 +254,16 @@ namespace codi {
       reset(Position());
     }
 
-    inline void evaluate(const size_t& startAdjPos, const size_t& endAdjPos, size_t& opPos, OperationInt* &operators, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    inline void evaluate(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
         const Real& adj = adjoints[adjPos];
         --adjPos;
-        --opPos;
-        const OperationInt& activeVariables = operators[opPos];
+        --stmtPos;
+        const StatementInt& activeVariables = statements[stmtPos];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0){
-          for(OperationInt curVar = 0; curVar < activeVariables; ++curVar) {
+          for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --dataPos;
             adjoints[indices[dataPos]] += adj * jacobies[dataPos];
 
@@ -274,27 +274,27 @@ namespace codi {
       }
     }
 
-    inline void evaluateOp(const typename OperatorChunkVector::Position& start, const typename OperatorChunkVector::Position& end) {
-      OperationInt* operatorData;
+    inline void evaluateStmt(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end) {
+      StatementInt* statementData;
       size_t dataPos = start.data;
       typename DataChunkVector::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(operatorData) = operators.getDataAtPosition(curChunk, 0);
+        std::tie(statementData) = statements.getDataAtPosition(curChunk, 0);
 
-        typename DataChunkVector::Position endInnerPos = operators.getInnerPosition(curChunk);
-        evaluate(curInnerPos, endInnerPos, dataPos, operatorData);
+        typename DataChunkVector::Position endInnerPos = statements.getInnerPosition(curChunk);
+        evaluateData(curInnerPos, endInnerPos, dataPos, statementData);
 
         curInnerPos = endInnerPos;
 
-        dataPos = operators.getChunkUsedData(curChunk - 1);
+        dataPos = statements.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(operatorData) = operators.getDataAtPosition(end.chunk, 0);
-      evaluate(curInnerPos, end.inner, dataPos, operatorData);
+      std::tie(statementData) = statements.getDataAtPosition(end.chunk, 0);
+      evaluateData(curInnerPos, end.inner, dataPos, statementData);
     }
 
-    inline void evaluate(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, size_t& opPos, OperationInt* &operatorData) {
+    inline void evaluateData(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, size_t& stmtPos, StatementInt* &statementData) {
       Real* jacobiData;
       IndexType* indexData;
       size_t dataPos = start.data;
@@ -303,7 +303,7 @@ namespace codi {
         std::tie(jacobiData, indexData) = data.getDataAtPosition(curChunk, 0);
 
         typename ExpressionCounter<IndexType>::Position endInnerPos = data.getInnerPosition(curChunk);
-        evaluate(curInnerPos, endInnerPos, opPos, operatorData, dataPos, jacobiData, indexData);
+        evaluate(curInnerPos, endInnerPos, stmtPos, statementData, dataPos, jacobiData, indexData);
 
         curInnerPos = endInnerPos;
 
@@ -312,7 +312,7 @@ namespace codi {
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       std::tie(jacobiData, indexData) = data.getDataAtPosition(end.chunk, 0);
-      evaluate(curInnerPos, end.inner, opPos, operatorData, dataPos, jacobiData, indexData);
+      evaluate(curInnerPos, end.inner, stmtPos, statementData, dataPos, jacobiData, indexData);
     }
 
     void evaluate(const Position& start, const Position& end) {
@@ -324,13 +324,13 @@ namespace codi {
     }
 
     struct ExtFuncEvaluator {
-      typename OperatorChunkVector::Position curInnerPos;
+      typename StatementChunkVector::Position curInnerPos;
       ExternalFunction* extFunc;
-      typename OperatorChunkVector::Position* endInnerPos;
+      typename StatementChunkVector::Position* endInnerPos;
 
       ChunkTape<Real, IndexType>& tape;
 
-      ExtFuncEvaluator(typename OperatorChunkVector::Position curInnerPos, ChunkTape<Real, IndexType>& tape) :
+      ExtFuncEvaluator(typename StatementChunkVector::Position curInnerPos, ChunkTape<Real, IndexType>& tape) :
         curInnerPos(curInnerPos),
         extFunc(NULL),
         endInnerPos(NULL),
@@ -340,7 +340,7 @@ namespace codi {
         std::tie(extFunc, endInnerPos) = data;
 
         // always evaluate the stack to the point of the external function
-        tape.evaluateOp(curInnerPos, *endInnerPos);
+        tape.evaluateStmt(curInnerPos, *endInnerPos);
 
         if(extFunc->func != NULL){
           extFunc->func(extFunc->checkpoint);
@@ -355,7 +355,7 @@ namespace codi {
 
       externalFunctions.forEach(start, end, evaluator);
 
-      evaluateOp(evaluator.curInnerPos, end.inner);
+      evaluateStmt(evaluator.curInnerPos, end.inner);
     }
 
     void evaluate() {
@@ -365,7 +365,7 @@ namespace codi {
     void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint){
       externalFunctions.reserveItems(1);
       ExternalFunction function(extFunc, checkpoint, delCheckpoint);
-      externalFunctions.setDataAndMove(std::make_tuple(function, operators.getPosition()));
+      externalFunctions.setDataAndMove(std::make_tuple(function, statements.getPosition()));
     }
 
     template<typename Data>
@@ -380,8 +380,8 @@ namespace codi {
     }
 
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
-      operators.reserveItems(1);
-      operators.setDataAndMove(std::make_tuple(0));
+      statements.reserveItems(1);
+      statements.setDataAndMove(std::make_tuple(0));
 
       value.getGradientData() = ++expressionCount.count;
     }

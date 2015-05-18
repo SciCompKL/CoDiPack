@@ -34,11 +34,11 @@
 namespace codi {
 
   struct SimpleTapePosition {
-    size_t op;
+    size_t stmt;
     size_t data;
 
-    SimpleTapePosition(const size_t& op, const size_t& data) :
-      op(op),
+    SimpleTapePosition(const size_t& stmt, const size_t& data) :
+      stmt(stmt),
       data(data) {}
   };
 
@@ -49,7 +49,7 @@ namespace codi {
     typedef SimpleTapePosition Position;
   private:
     Chunk2<Real, IndexType> data;
-    Chunk1<OperationInt> operators;
+    Chunk1<StatementInt> statements;
     Chunk1<Real> adjoints;
 
     bool active;
@@ -57,14 +57,14 @@ namespace codi {
   public:
     SimpleTape() :
       data(0),
-      operators(0),
+      statements(0),
       adjoints(1),
       active(false){}
 
-    void resize(const size_t& dataSize, const size_t& opSize) {
+    void resize(const size_t& dataSize, const size_t& stmtSize) {
       data.resize(dataSize);
-      operators.resize(opSize);
-      adjoints.resize(opSize + 1);
+      statements.resize(stmtSize);
+      adjoints.resize(stmtSize + 1);
     }
 
     template<typename Rhs>
@@ -82,9 +82,9 @@ namespace codi {
         if(0 == activeVariables) {
           lhsIndex = 0;
         } else {
-          assert(operators.getUsedSize() < operators.size);
-          operators.setDataAndMove(std::make_tuple((OperationInt)activeVariables));
-          lhsIndex = operators.getUsedSize();
+          assert(statements.getUsedSize() < statement.size);
+          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
+          lhsIndex = statements.getUsedSize();
         }
       }
 
@@ -140,30 +140,30 @@ namespace codi {
     }
 
     inline Real getGradient(const IndexType& index) const {
-      assert(index < operators.size);
+      assert(index < statements.size);
       return adjoints.data[index];
     }
 
     inline Real& gradient(IndexType& index) {
-      assert(index < operators.size);
+      assert(index < statements.size);
       assert(0 != index);
 
       return adjoints.data[index];
     }
 
     inline Position getPosition() {
-      return Position(operators.getUsedSize(), data.getUsedSize());
+      return Position(statements.getUsedSize(), data.getUsedSize());
     }
 
     inline void reset(const Position& pos) {
-      assert(pos.op < operators.size);
+      assert(pos.stmt < statements.size);
       assert(pos.data < data.size);
 
-      for(size_t i = pos.op; i <= operators.getUsedSize(); ++i) {
+      for(size_t i = pos.stmt; i <= statements.getUsedSize(); ++i) {
         adjoints.data[i] = 0.0;
       }
 
-      operators.setUsedSize(pos.op);
+      statements.setUsedSize(pos.stmt);
       data.setUsedSize(pos.data);
     }
 
@@ -172,23 +172,23 @@ namespace codi {
     }
 
     inline void clearAdjoints(){
-      for(size_t i = 0; i <= operators.getUsedSize(); ++i) {
+      for(size_t i = 0; i <= statements.getUsedSize(); ++i) {
         adjoints.data[i] = 0.0;
       }
     }
 
     inline void evaluate(const Position& start, const Position& end) {
       assert(start.data >= end.data);
-      assert(start.op >= end.op);
+      assert(start.stmt >= end.stmt);
 
       Position curPos = start;
 
-      while(curPos.op > end.op) {
-        const Real& adj = adjoints.data[curPos.op];
-        --curPos.op;
-        const OperationInt& activeVariables = operators.data[curPos.op];
+      while(curPos.stmt > end.stmt) {
+        const Real& adj = adjoints.data[curPos.stmt];
+        --curPos.stmt;
+        const StatementInt& activeVariables = statements.data[curPos.stmt];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
-          for(OperationInt curVar = 0; curVar < activeVariables; ++curVar) {
+          for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --curPos.data;
 
             adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
@@ -204,10 +204,10 @@ namespace codi {
     }
 
     inline void registerInput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
-      assert(operators.getUsedSize() < operators.size);
+      assert(statements.getUsedSize() < statements.size);
 
-      operators.setDataAndMove(std::make_tuple((OperationInt) 0));
-      value.getGradientData() = operators.getUsedSize();
+      statements.setDataAndMove(std::make_tuple((StatementInt) 0));
+      value.getGradientData() = statements.getUsedSize();
     }
 
     inline void registerOutput(ActiveReal<Real, SimpleTape<Real, IndexType> >& /*value*/) {

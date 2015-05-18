@@ -34,7 +34,7 @@ namespace codi {
   /**
    * @brief Type for the maximum number of variables a opeartion can have.
    */
-  typedef uint8_t OperationInt;
+  typedef uint8_t StatementInt;
 
   /**
    * @brief Default size for all chunks.
