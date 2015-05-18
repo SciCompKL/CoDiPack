@@ -30,11 +30,13 @@ namespace codi {
     typedef void (*CallFunction)(void*);
     typedef void (*DeleteFunction)(void*);
 
+  private:
     CallFunction func;
     DeleteFunction deleteCheckpoint;
 
     void* checkpoint;
 
+  public:
     ExternalFunction(){}
     ExternalFunction(CallFunction func, void* checkpoint, DeleteFunction deleteCheckpoint) :
       func(func),
@@ -47,6 +49,12 @@ namespace codi {
         checkpoint = NULL;
       }
     }
+
+    void evaluate() {
+      if(NULL != func) {
+        func(checkpoint);
+      }
+    }
   };
 
   template<typename Data>
@@ -55,11 +63,13 @@ namespace codi {
     typedef void (*CallFunction)(Data*);
     typedef void (*DeleteFunction)(Data*);
 
+  private:
     CallFunction func;
     DeleteFunction deleteData;
 
     Data* data;
 
+  public:
     ExternalFunctionDataHelper(CallFunction func, Data* data, DeleteFunction deleteData) :
       func(func),
       deleteData(deleteData),

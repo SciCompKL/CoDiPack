@@ -36,10 +36,12 @@ namespace codi {
   struct SimpleTapePosition {
     size_t stmt;
     size_t data;
+    size_t extFunc;
 
-    SimpleTapePosition(const size_t& stmt, const size_t& data) :
+    SimpleTapePosition(const size_t& stmt, const size_t& data, const size_t& extFunc) :
       stmt(stmt),
-      data(data) {}
+      data(data),
+      extFunc(extFunc) {}
   };
 
   template <typename Real, typename IndexType>
@@ -50,6 +52,7 @@ namespace codi {
   private:
     Chunk2<Real, IndexType> data;
     Chunk1<StatementInt> statements;
+    Chunk2<ExternalFunction, Position> externalFunctions;
     Chunk1<Real> adjoints;
 
     bool active;
@@ -58,8 +61,13 @@ namespace codi {
     SimpleTape() :
       data(0),
       statements(0),
+      externalFunctions(0),
       adjoints(1),
       active(false){}
+
+    void setExternalFunctionChunkSize(const size_t& extChunkSize) {
+      externalFunctions.resize(extChunkSize);
+    }
 
     void resize(const size_t& dataSize, const size_t& stmtSize) {
       data.resize(dataSize);
@@ -152,7 +160,7 @@ namespace codi {
     }
 
     inline Position getPosition() {
-      return Position(statements.getUsedSize(), data.getUsedSize());
+      return Position(statements.getUsedSize(), data.getUsedSize(), externalFunctions.getUsedSize());
     }
 
     inline void reset(const Position& pos) {
@@ -163,12 +171,17 @@ namespace codi {
         adjoints.data[i] = 0.0;
       }
 
+      for(size_t i = pos.extFunc; i < externalFunctions.getUsedSize(); ++i) {
+        externalFunctions.data1[i].deleteData();
+      }
+
       statements.setUsedSize(pos.stmt);
       data.setUsedSize(pos.data);
+      externalFunctions.setUsedSize(pos.extFunc);
     }
 
     inline void reset() {
-      reset(Position(0,0));
+      reset(Position(0,0,0));
     }
 
     inline void clearAdjoints(){
@@ -177,10 +190,7 @@ namespace codi {
       }
     }
 
-    inline void evaluate(const Position& start, const Position& end) {
-      assert(start.data >= end.data);
-      assert(start.stmt >= end.stmt);
-
+    inline void evaluateStack(const Position& start, const Position& end) {
       Position curPos = start;
 
       while(curPos.stmt > end.stmt) {
@@ -199,8 +209,34 @@ namespace codi {
       }
     }
 
+    inline void evaluate(const Position& start, const Position& end) {
+      assert(start.data >= end.data);
+      assert(start.stmt >= end.stmt);
+      assert(start.extFunc >= end.extFunc);
+
+      Position curPos = start;
+
+
+      for(size_t curExtFunc = start.extFunc; curExtFunc > end.extFunc; /* decrement is done inside the loop */) {
+        --curExtFunc; // decrement of loop variable
+
+        ExternalFunction& extFunc = externalFunctions.data1[curExtFunc];
+        const Position& extFuncPos = externalFunctions.data2[curExtFunc];
+
+        // always evaluate the stack to the point of the external function
+        evaluateStack(curPos, extFuncPos);
+
+        extFunc.evaluate();
+
+        curPos = extFuncPos;
+      }
+
+      // Iterate over the reminder also covers the case if the there are no external functions
+      evaluateStack(curPos, end);
+    }
+
     inline void evaluate() {
-      evaluate(getPosition(), Position(0,0));
+      evaluate(getPosition(), Position(0,0,0));
     }
 
     inline void registerInput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
@@ -232,38 +268,17 @@ namespace codi {
       }
     }
 
-    /**
-     * @brief Add a external function to the tape.
-     *
-     * The external function is called during the reverse evaluation of the tape. It can be used to
-     * give special treatment to code sections which have simpler reverse implementation than the
-     * AD tool.
-     *
-     * @param       extFunc The function which is called during the reverse evluation of the tape.
-     * @param    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
-     * @param delCheckpoint The delete function for the data.
-     */
-    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint) {}
+    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint){
+      assert(0 != externalFunctions.getUnusedSize());
+      ExternalFunction function(extFunc, checkpoint, delCheckpoint);
+      externalFunctions.setDataAndMove(std::make_tuple(function, getPosition()));
+    }
 
-    /**
-     * @brief Add a external function to the tape.
-     *
-     * The external function is called during the reverse evaluation of the tape. It can be used to
-     * give special treatment to code sections which have simpler reverse implementation than the
-     * AD tool.
-     *
-     * @param       extFunc The function which is called during the reverse evluation of the tape.
-     * @param    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
-     * @param delCheckpoint The delete function for the data.
-     *
-     * @tparam Data The data type for the data.
-     */
     template<typename Data>
-    void pushExternalFunction(
-        typename ExternalFunctionDataHelper<Data>::CallFunction extFunc,
-        Data* checkpoint,
-        typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint) {}
-
+    void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* checkpoint, typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint){
+      ExternalFunctionDataHelper<Data>* functionHelper = new ExternalFunctionDataHelper<Data>(extFunc, checkpoint, delCheckpoint);
+      pushExternalFunctionHandle( ExternalFunctionDataHelper<Data>::callFunction, functionHelper, ExternalFunctionDataHelper<Data>::deleteFunction);
+    }
   };
 }
 

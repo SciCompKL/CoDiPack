@@ -342,9 +342,7 @@ namespace codi {
         // always evaluate the stack to the point of the external function
         tape.evaluateStmt(curInnerPos, *endInnerPos);
 
-        if(extFunc->func != NULL){
-          extFunc->func(extFunc->checkpoint);
-        }
+        extFunc->evaluate();
 
         curInnerPos = *endInnerPos;
       }
