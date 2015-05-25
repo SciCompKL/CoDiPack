@@ -44,10 +44,20 @@ namespace codi {
   // Macro for expresions with two arguments
 # define ADEPT_DEFINE_BINARY_TRAIT(OP)                        \
     template<typename Real, typename A, typename B>           \
-    struct ExpressionTraits<OP<Real, A, B> > {                \
+    struct ExpressionTraits<OP ## 11<Real, A, B> > {          \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<A>::maxActiveVariables            \
          + ExpressionTraits<B>::maxActiveVariables;           \
+    };                                                        \
+    template<typename Real, typename A>                       \
+    struct ExpressionTraits<OP ## 10<Real, A> > {             \
+      static const size_t maxActiveVariables =                \
+           ExpressionTraits<A>::maxActiveVariables;           \
+    };                                                        \
+    template<typename Real, typename B>                       \
+    struct ExpressionTraits<OP ## 01<Real, B> > {             \
+      static const size_t maxActiveVariables =                \
+           ExpressionTraits<B>::maxActiveVariables;           \
     };
 
   ADEPT_DEFINE_BINARY_TRAIT(Add)
@@ -69,10 +79,6 @@ namespace codi {
          = ExpressionTraits<A>::maxActiveVariables;           \
     };
 
-  ADEPT_DEFINE_UNARY_TRAIT(ScalarAdd)
-  ADEPT_DEFINE_UNARY_TRAIT(ScalarSubtract)
-  ADEPT_DEFINE_UNARY_TRAIT(ScalarMultiply)
-  ADEPT_DEFINE_UNARY_TRAIT(ScalarDivide)
   ADEPT_DEFINE_UNARY_TRAIT(UnaryMinus)
   ADEPT_DEFINE_UNARY_TRAIT(Exp)
   ADEPT_DEFINE_UNARY_TRAIT(Tan)
@@ -88,14 +94,6 @@ namespace codi {
   ADEPT_DEFINE_UNARY_TRAIT(Cosh)
   ADEPT_DEFINE_UNARY_TRAIT(Tanh)
   ADEPT_DEFINE_UNARY_TRAIT(Abs)
-  ADEPT_DEFINE_UNARY_TRAIT(PowScalarExponent)
-  ADEPT_DEFINE_UNARY_TRAIT(PowScalarBase)
   ADEPT_DEFINE_UNARY_TRAIT(Atanh)
-  ADEPT_DEFINE_UNARY_TRAIT(Atan2Scalar1)
-  ADEPT_DEFINE_UNARY_TRAIT(Atan2Scalar2)
-  ADEPT_DEFINE_UNARY_TRAIT(MaxScalar1)
-  ADEPT_DEFINE_UNARY_TRAIT(MaxScalar2)
-  ADEPT_DEFINE_UNARY_TRAIT(MinScalar1)
-  ADEPT_DEFINE_UNARY_TRAIT(MinScalar2)
 # undef ADEPT_DEFINE_UNARY_TRAIT
 }
