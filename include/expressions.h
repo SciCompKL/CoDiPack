@@ -39,7 +39,6 @@ namespace codi {
    *
    * @template Real  The data type of the primal values and the gradient values.
    */
-
   template<typename Real, class A>
   struct Expression {
 
@@ -91,134 +90,108 @@ namespace codi {
    */
 
   /**
-   * Multiply: an expression multiplied by another expression
-   */
-
-  template <typename Real, class A, class B>
-  struct Multiply : public Expression<Real, Multiply<Real, A,B> > {
-    Multiply(const Expression<Real, A>& a, const Expression<Real, B>& b)
-      : a_(a.cast()), b_(b.cast()), result_(a_.getValue()*b_.getValue()) { }
-    // If f(a,b) = a*b then df/da = b and df/db = a
-    inline void calcGradient(Real& gradient) const {
-      a_.calcGradient(gradient, b_.getValue());
-      b_.calcGradient(gradient, a_.getValue());
-    }
-    inline void calcGradient(Real& gradient, const Real& multiplier) const {
-      a_.calcGradient(gradient, b_.getValue()*multiplier);
-      b_.calcGradient(gradient, a_.getValue()*multiplier);
-    }
-    inline const Real& getValue() const {
-      return result_;
-    }
-  private:
-    const A& a_;
-    const B& b_;
-    Real result_;
-  };
-
-  /**
    * Enable mathematical functions with two arguments.
    */
-  # define CODI_DEFINE_BINARY_FUNCTION(OP, FUNC, PRIMAL_CALL, DERIVATIVE_FUNC_11, DERIVATIVE_FUNC_11M, DERIVATIVE_FUNC_10, DERIVATIVE_FUNC_10M, DERIVATIVE_FUNC_01, DERIVATIVE_FUNC_01M)  \
-  /* predefine the struct and the function for higher order derivatrives */\
-      template <typename Real, class A, class B> struct OP ## 11;\
-      template <typename Real, class A> struct OP ## 10;\
-      template <typename Real, class B> struct OP ## 01;\
-      template <typename Real, class A, class B> \
-      inline  OP ## 11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b); \
-      template <typename Real, class A> \
-      inline  OP ## 10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b); \
-      template <typename Real, class B> \
-      inline  OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b); \
+  #define CODI_DEFINE_BINARY_FUNCTION(OP, FUNC, PRIMAL_CALL, DERIVATIVE_FUNC_11, DERIVATIVE_FUNC_11M, DERIVATIVE_FUNC_10, DERIVATIVE_FUNC_10M, DERIVATIVE_FUNC_01, DERIVATIVE_FUNC_01M)  \
+    /* predefine the struct and the function for higher order derivatrives */\
+    template <typename Real, class A, class B> struct OP ## 11;\
+    template <typename Real, class A> struct OP ## 10;\
+    template <typename Real, class B> struct OP ## 01;\
+    template <typename Real, class A, class B> \
+    inline  OP ## 11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b); \
+    template <typename Real, class A> \
+    inline  OP ## 10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b); \
+    template <typename Real, class B> \
+    inline  OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b); \
+    \
+    template<typename Real, class A, class B> \
+    struct OP ## 11: public Expression<Real, OP ## 11<Real, A, B> > { \
+      private: \
+        const A& a_; \
+        const B& b_; \
+        Real result_; \
+      public: \
+        OP ## 11(const Expression<Real, A>& a, const Expression<Real, B>& b) : \
+          a_(a.cast()), b_(b.cast()), \
+          result_(PRIMAL_CALL(a.getValue(), b.getValue())) {} \
       \
-      template<typename Real, class A, class B> \
-      struct OP ## 11: public Expression<Real, OP ## 11<Real, A, B> > { \
-        private: \
-          const A& a_; \
-          const B& b_; \
-          Real result_; \
-        public: \
-          OP ## 11(const Expression<Real, A>& a, const Expression<Real, B>& b) : \
-            a_(a.cast()), b_(b.cast()), \
-            result_(PRIMAL_CALL(a.getValue(), b.getValue())) {} \
-        \
-        inline void calcGradient(Real& gradient) const { \
-          DERIVATIVE_FUNC_11(gradient, a_, b_, result_); \
-        } \
-        \
-        inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-          DERIVATIVE_FUNC_11M(gradient, a_, b_, result_, multiplier); \
-        } \
-        \
-        inline const Real& getValue() const { \
-          return result_; \
-        } \
-      }; \
-      \
-      template<typename Real, class A> \
-      struct OP ## 10: public Expression<Real, OP ## 10<Real, A> > { \
-        public: \
-          typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
-        private: \
-          const A& a_; \
-          const PassiveReal& b_; \
-          Real result_; \
-        public: \
-          OP ## 10(const Expression<Real, A>& a, const PassiveReal& b) : \
-            a_(a.cast()), b_(b), \
-            result_(PRIMAL_CALL(a.getValue(), b)) {} \
-        \
-        inline void calcGradient(Real& gradient) const { \
-          DERIVATIVE_FUNC_10(gradient, a_, b_, result_); \
-        } \
-        \
-        inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-          DERIVATIVE_FUNC_10M(gradient, a_, b_, result_, multiplier); \
-        } \
-        \
-        inline const Real& getValue() const { \
-          return result_; \
-        } \
-      }; \
-      \
-      template<typename Real, class B> \
-      struct OP ## 01 : public Expression<Real, OP ## 01<Real, B> > { \
-        public: \
-          typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
-        private: \
-          const PassiveReal& a_; \
-          const B& b_; \
-          Real result_; \
-        public: \
-          OP ## 01(const PassiveReal& a, const Expression<Real, B>& b) : \
-            a_(a), b_(b.cast()), \
-            result_(PRIMAL_CALL(a, b.getValue())) {} \
-        \
-        inline void calcGradient(Real& gradient) const { \
-          DERIVATIVE_FUNC_01(gradient, a_, b_, result_); \
-        } \
-        \
-        inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-          DERIVATIVE_FUNC_01M(gradient, a_, b_, result_, multiplier); \
-        } \
-        \
-        inline const Real& getValue() const { \
-          return result_; \
-        } \
-      }; \
-      \
-      template <typename Real, class A, class B> \
-      inline OP ## 11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b) { \
-        return OP ## 11<Real, A, B>(a.cast(), b.cast()); \
+      inline void calcGradient(Real& gradient) const { \
+        DERIVATIVE_FUNC_11(gradient, a_, b_, result_); \
       } \
-      template <typename Real, class A> \
-      inline OP ## 10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) { \
-        return OP ## 10<Real, A>(a.cast(), b); \
+      \
+      inline void calcGradient(Real& gradient, const Real& multiplier) const { \
+        DERIVATIVE_FUNC_11M(gradient, a_, b_, result_, multiplier); \
       } \
-      template <typename Real, class B> \
-      inline OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b) { \
-        return OP ## 01<Real, B>(a, b.cast()); \
-      }
+      \
+      inline const Real& getValue() const { \
+        return result_; \
+      } \
+    }; \
+    \
+    template<typename Real, class A> \
+    struct OP ## 10: public Expression<Real, OP ## 10<Real, A> > { \
+      public: \
+        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
+      private: \
+        const A& a_; \
+        const PassiveReal& b_; \
+        Real result_; \
+      public: \
+        OP ## 10(const Expression<Real, A>& a, const PassiveReal& b) : \
+          a_(a.cast()), b_(b), \
+          result_(PRIMAL_CALL(a.getValue(), b)) {} \
+      \
+      inline void calcGradient(Real& gradient) const { \
+        DERIVATIVE_FUNC_10(gradient, a_, b_, result_); \
+      } \
+      \
+      inline void calcGradient(Real& gradient, const Real& multiplier) const { \
+        DERIVATIVE_FUNC_10M(gradient, a_, b_, result_, multiplier); \
+      } \
+      \
+      inline const Real& getValue() const { \
+        return result_; \
+      } \
+    }; \
+    \
+    template<typename Real, class B> \
+    struct OP ## 01 : public Expression<Real, OP ## 01<Real, B> > { \
+      public: \
+        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
+      private: \
+        const PassiveReal& a_; \
+        const B& b_; \
+        Real result_; \
+      public: \
+        OP ## 01(const PassiveReal& a, const Expression<Real, B>& b) : \
+          a_(a), b_(b.cast()), \
+          result_(PRIMAL_CALL(a, b.getValue())) {} \
+      \
+      inline void calcGradient(Real& gradient) const { \
+        DERIVATIVE_FUNC_01(gradient, a_, b_, result_); \
+      } \
+      \
+      inline void calcGradient(Real& gradient, const Real& multiplier) const { \
+        DERIVATIVE_FUNC_01M(gradient, a_, b_, result_, multiplier); \
+      } \
+      \
+      inline const Real& getValue() const { \
+        return result_; \
+      } \
+    }; \
+    \
+    template <typename Real, class A, class B> \
+    inline OP ## 11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b) { \
+      return OP ## 11<Real, A, B>(a.cast(), b.cast()); \
+    } \
+    template <typename Real, class A> \
+    inline OP ## 10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) { \
+      return OP ## 10<Real, A>(a.cast(), b); \
+    } \
+    template <typename Real, class B> \
+    inline OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b) { \
+      return OP ## 01<Real, B>(a, b.cast()); \
+    }
 
   #define CODI_OPERATOR_HELPER(NAME, OP) \
     template<typename A, typename B> \
@@ -564,11 +537,11 @@ namespace codi {
     return a;
   }
 
-/**
- * Enable mathematical functions with one argument.
- */
-# define CODI_DEFINE_UNARY_FUNCTION(OP, FUNC, DERIVATIVE_FUNC)  \
-/* predefine the struct and the function for higher order derivatrives */\
+  /**
+   * Enable mathematical functions with one argument.
+   */
+  # define CODI_DEFINE_UNARY_FUNCTION(OP, FUNC, DERIVATIVE_FUNC)  \
+    /* predefine the struct and the function for higher order derivatrives */\
     template<typename Real, class A> struct OP; \
     template <typename Real, class A> \
     inline  codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a); \
@@ -602,130 +575,129 @@ namespace codi {
       return codi:: OP<Real, A>(a.cast()); \
     }
 
-    template<typename Real> inline Real gradSqrt(const Real& /*a*/, const Real& result) {
-      if(result != 0.0) {
-        return 0.5 / result;
-      } else {
-        return (Real)0.0;
-      }
+  template<typename Real> inline Real gradSqrt(const Real& /*a*/, const Real& result) {
+    if(result != 0.0) {
+      return 0.5 / result;
+    } else {
+      return (Real)0.0;
     }
-    CODI_DEFINE_UNARY_FUNCTION(Sqrt, sqrt, gradSqrt)
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Sqrt, sqrt, gradSqrt)
 
-    template<typename Real> inline Real gradTanh(const Real& /*a*/, const Real& result) {
-      return 1 - result * result;
+  template<typename Real> inline Real gradTanh(const Real& /*a*/, const Real& result) {
+    return 1 - result * result;
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Tanh, tanh, gradTanh)
+
+  template<typename Real> inline Real gradLog(const Real& a, const Real& /*result*/) {
+    return 1.0 / a;
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Log, log, gradLog)
+
+  template<typename Real> inline Real gradLog10(const Real& a, const Real& /*result*/) {
+    return 0.434294481903252 / a;
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Log10, log10, gradLog10)
+
+  template<typename Real> inline Real gradSin(const Real& a, const Real& /*result*/) {
+    return cos(a);
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Sin, sin, gradSin)
+
+  template<typename Real> inline Real gradCos(const Real& a, const Real& /*result*/) {
+    return -sin(a);
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Cos, cos, gradCos)
+
+  using std::sqrt;
+  template<typename Real> inline Real gradAsin(const Real& a, const Real& /*result*/) {
+    return 1.0 / sqrt(1.0 - a * a);
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Asin, asin, gradAsin)
+
+  template<typename Real> inline Real gradAcos(const Real& a, const Real& /*result*/) {
+    return -1.0 / sqrt(1.0 - a * a);
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Acos, acos, gradAcos)
+
+  template<typename Real> inline Real gradAtan(const Real& a, const Real& /*result*/) {
+    return 1.0 / (1 + a * a);
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Atan, atan, gradAtan)
+
+  template<typename Real> inline Real gradSinh(const Real& a, const Real& /*result*/) {
+    return cosh(a);
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Sinh, sinh, gradSinh)
+
+  template<typename Real> inline Real gradCosh(const Real& a, const Real& /*result*/) {
+    return sinh(a);
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Cosh, cosh, gradCosh)
+
+  template<typename Real> inline Real gradExp(const Real& /*a*/, const Real& result) {
+    return result;
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Exp, exp, gradExp)
+
+  template<typename Real> inline Real gradAtanh(const Real& a, const Real& /*result*/) {
+    return 1.0 / (1 - a * a);
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Atanh, atanh, gradAtanh)
+
+  template<typename Real> inline Real gradAbs(const Real& a, const Real& /*result*/) {
+    if(a < 0.0) {
+      return (Real)-1.0;
+    } else if(a > 0.0) {
+      return (Real)1.0;
+    } else {
+      return (Real)0.0;
     }
-    CODI_DEFINE_UNARY_FUNCTION(Tanh, tanh, gradTanh)
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Abs, abs, gradAbs)
 
-    template<typename Real> inline Real gradLog(const Real& a, const Real& /*result*/) {
-      return 1.0 / a;
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Log, log, gradLog)
+  template<typename Real> inline Real gradTan(const Real& a, const Real& /*result*/) {
+    Real tmp = 1 / cos(a);
+    return tmp * tmp;
+  }
+  CODI_DEFINE_UNARY_FUNCTION(Tan, tan, gradTan)
+  # undef CODI_DEFINE_UNARY_FUNCTION
 
-    template<typename Real> inline Real gradLog10(const Real& a, const Real& /*result*/) {
-      return 0.434294481903252 / a;
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Log10, log10, gradLog10)
+  template<typename Real, class A>
+  inline Abs<Real, A> fabs(const codi::Expression<Real, A>& a) {
+    return Abs<Real, A>(a.cast());
+  }
 
-    template<typename Real> inline Real gradSin(const Real& a, const Real& /*result*/) {
-      return cos(a);
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Sin, sin, gradSin)
+  /**
+   * Need to add ceil, floor...
+   * Lots more math function in math.h: erf, bessel functions etc...
+   */
+  template<typename Real, class A>
+  inline bool isinf(const codi::Expression<Real, A>& a) {
+    return isinf(a.getValue());
+  }
 
-    template<typename Real> inline Real gradCos(const Real& a, const Real& /*result*/) {
-      return -sin(a);
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Cos, cos, gradCos)
+  template<typename Real, class A>
+  inline bool isnan(const codi::Expression<Real, A>& a) {
+    return isnan(a.getValue());
+  }
 
-    using std::sqrt;
-    template<typename Real> inline Real gradAsin(const Real& a, const Real& /*result*/) {
-      return 1.0 / sqrt(1.0 - a * a);
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Asin, asin, gradAsin)
+  using std::isfinite;
+  template<typename Real, class A>
+  inline bool isfinite(const codi::Expression<Real, A>& a) {
+    return isfinite(a.getValue());
+  }
 
-    template<typename Real> inline Real gradAcos(const Real& a, const Real& /*result*/) {
-      return -1.0 / sqrt(1.0 - a * a);
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Acos, acos, gradAcos)
+  using std::floor;
+  template<typename Real, class A>
+  inline typename codi::TypeTraits<Real>::PassiveReal floor(const codi::Expression<Real, A>& a) {
+    return floor(a.getValue());
+  }
 
-    template<typename Real> inline Real gradAtan(const Real& a, const Real& /*result*/) {
-      return 1.0 / (1 + a * a);
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Atan, atan, gradAtan)
+  using std::ceil;
+  template<typename Real, class A>
+  inline typename codi::TypeTraits<Real>::PassiveReal ceil(const codi::Expression<Real, A>& a) {
+    return ceil(a.getValue());
+  }
 
-    template<typename Real> inline Real gradSinh(const Real& a, const Real& /*result*/) {
-      return cosh(a);
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Sinh, sinh, gradSinh)
-
-    template<typename Real> inline Real gradCosh(const Real& a, const Real& /*result*/) {
-      return sinh(a);
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Cosh, cosh, gradCosh)
-
-    template<typename Real> inline Real gradExp(const Real& /*a*/, const Real& result) {
-      return result;
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Exp, exp, gradExp)
-
-    template<typename Real> inline Real gradAtanh(const Real& a, const Real& /*result*/) {
-      return 1.0 / (1 - a * a);
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Atanh, atanh, gradAtanh)
-
-    template<typename Real> inline Real gradAbs(const Real& a, const Real& /*result*/) {
-      if(a < 0.0) {
-        return (Real)-1.0;
-      } else if(a > 0.0) {
-        return (Real)1.0;
-      } else {
-        return (Real)0.0;
-      }
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Abs, abs, gradAbs)
-
-    template<typename Real> inline Real gradTan(const Real& a, const Real& /*result*/) {
-      Real tmp = 1 / cos(a);
-      return tmp * tmp;
-    }
-    CODI_DEFINE_UNARY_FUNCTION(Tan, tan, gradTan)
-# undef CODI_DEFINE_UNARY_FUNCTION
-
-template<typename Real, class A>
-inline Abs<Real, A> fabs(const codi::Expression<Real, A>& a) {
-  return Abs<Real, A>(a.cast());
 }
-
-/**
- * Need to add ceil, floor...
- * Lots more math function in math.h: erf, bessel functions etc...
- */
-template<typename Real, class A>
-inline bool isinf(const codi::Expression<Real, A>& a) {
-  return isinf(a.getValue());
-}
-
-template<typename Real, class A>
-inline bool isnan(const codi::Expression<Real, A>& a) {
-  return isnan(a.getValue());
-}
-
-using std::isfinite;
-template<typename Real, class A>
-inline bool isfinite(const codi::Expression<Real, A>& a) {
-  return isfinite(a.getValue());
-}
-
-using std::floor;
-template<typename Real, class A>
-inline typename codi::TypeTraits<Real>::PassiveReal floor(const codi::Expression<Real, A>& a) {
-  return floor(a.getValue());
-}
-
-using std::ceil;
-template<typename Real, class A>
-inline typename codi::TypeTraits<Real>::PassiveReal ceil(const codi::Expression<Real, A>& a) {
-  return ceil(a.getValue());
-}
-
-}
-
