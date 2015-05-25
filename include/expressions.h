@@ -479,57 +479,48 @@ namespace codi {
   }
   using std::max;
   CODI_DEFINE_BINARY_FUNCTION(Max, max, max, derv11_Max, derv11M_Max, derv10_Max, derv10M_Max, derv01_Max, derv01M_Max)
-#undef CODI_OPERATOR_HELPER;
-#undef CODI_DEFINE_BINARY_FUNCTION;
+
+  #undef CODI_OPERATOR_HELPER;
+  #undef CODI_DEFINE_BINARY_FUNCTION;
 
   /**
    *  Conditional operators should behave exactly the same as with
    * non-active arguments so in each of the cases below the getValue()
    * function is called to extract the value of the expression
    */
-#define CODI_DEFINE_CONDITIONAL(OPERATOR, OP)      \
-template<typename Real, class A, class B>          \
-inline              \
-bool OPERATOR(const Expression<Real, A>& a,        \
-      const Expression<Real, B>& b) {      \
-  return a.getValue() OP b.getValue();        \
-}                \
-                              \
-template<typename Real, class A>            \
-inline              \
-bool OPERATOR(const Expression<Real, A>& a, const Real& b) {  \
-  return a.getValue() OP b;          \
-}                \
-                              \
-template<typename Real, class B>            \
-inline              \
-bool OPERATOR(const Real& a, const Expression<Real, B>& b) {  \
-  return a OP b.getValue();          \
-}\
-  template<typename Real, class A>            \
-  inline              \
-  bool OPERATOR(const Expression<Real, A>& a, const int& b) {  \
-    return a.getValue() OP b;          \
-  }                \
-                                \
-  template<typename Real, class B>            \
-  inline              \
-  bool OPERATOR(const int& a, const Expression<Real, B>& b) {  \
-    return a OP b.getValue();          \
-  }
+  #define CODI_DEFINE_CONDITIONAL(OPERATOR, OP) \
+    template<typename Real, class A, class B> \
+    inline bool OPERATOR(const Expression<Real, A>& a, const Expression<Real, B>& b) { \
+      return a.getValue() OP b.getValue(); \
+    } \
+    \
+    template<typename Real, class A> \
+    inline bool OPERATOR(const Expression<Real, A>& a, const Real& b) { \
+      return a.getValue() OP b; \
+    } \
+    \
+    template<typename Real, class B> \
+    inline bool OPERATOR(const Real& a, const Expression<Real, B>& b) { \
+      return a OP b.getValue(); \
+    } \
+    template<typename Real, class A> \
+    inline bool OPERATOR(const Expression<Real, A>& a, const int& b) { \
+      return a.getValue() OP b; \
+    } \
+    \
+    template<typename Real, class B>            \
+    inline bool OPERATOR(const int& a, const Expression<Real, B>& b) { \
+      return a OP b.getValue(); \
+    }
+
   CODI_DEFINE_CONDITIONAL(operator==, ==)
-
   CODI_DEFINE_CONDITIONAL(operator!=, !=)
-
   CODI_DEFINE_CONDITIONAL(operator>, >)
-
   CODI_DEFINE_CONDITIONAL(operator<, <)
-
   CODI_DEFINE_CONDITIONAL(operator>=, >=)
-
   CODI_DEFINE_CONDITIONAL(operator<=, <=)
 
-#undef CODI_DEFINE_CONDITIONAL
+  #undef CODI_DEFINE_CONDITIONAL
 
   /**
    *  UnaryMinus: negation of expression
