@@ -119,7 +119,9 @@ namespace codi {
      * @param[in]     curTangent  The tangent of the current rhs value.
      */
     inline void pushJacobi(Real& lhsTangent, const Real& jacobi, const Real& /*value*/, const GradientData& curTangent) {
-      lhsTangent += jacobi * curTangent;
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+        lhsTangent += jacobi * curTangent;
+      }
     }
 
     /**

@@ -186,8 +186,10 @@ namespace codi {
 
     inline void pushJacobi(Real& /*gradient*/, const Real& jacobi, const Real& /*value*/, const IndexType& index) {
       if(0 != index) {
-        ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
-          data.setDataAndMove(std::make_tuple(jacobi, index));
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+          ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
+            data.setDataAndMove(std::make_tuple(jacobi, index));
+          }
         }
       }
     }

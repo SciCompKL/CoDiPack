@@ -50,6 +50,16 @@ namespace codi {
    */
   const bool CheckExpressionArguments = false;
 
+
+  /**
+   * @brief Tapes push jacobies only if they are valid values.
+   *
+   * The check is used in the tape 'pushJacobi' function to disable the pushing of the
+   * jacobies if they are nan or inf.
+   */
+  const bool OptIgnoreInvalidJacobies = true;
+
+
   /**
    * @brief Tapes push jacobies only if they are none zero.
    *
