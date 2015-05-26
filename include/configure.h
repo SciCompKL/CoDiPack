@@ -41,6 +41,14 @@ namespace codi {
    */
   static size_t DefaultChunkSize = 13107200; //TODO: Find optimal value
 
+  /**
+   * @brief Check if the arguemnts are inside the diffentiable domain.
+   *
+   * The check enables for all function the validation of the arguments for
+   * gradient evalution. If the arguments are not valid a CoDiPack exceptions is
+   * generated.
+   */
+  const bool CheckExpressionArguments = false;
 
   /**
    * @brief Tapes push jacobies only if they are none zero.

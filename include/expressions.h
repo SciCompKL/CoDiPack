@@ -25,8 +25,10 @@
 
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 #include "configure.h"
+#include "exceptions.hpp"
 #include "typeTraits.hpp"
 
 namespace codi {
@@ -283,29 +285,42 @@ namespace codi {
   /**
    * Implementation for f(a,b) = a / b
    */
+  template<typename Real> inline void checkArgumentsDivide(const Real& b) {
+    if(CheckExpressionArguments) {
+      if( 0.0 == TypeTraits<Real>::getBaseValue(b)) {
+        CODI_EXCEPTION("Devision called with devisor of zero.");
+      }
+    }
+  }
   template<typename Real, typename A, typename B> inline void derv11_Divide(Real& gradient, const A& a, const B& b, const Real& result) {
+    checkArgumentsDivide(b.getValue());
     Real one_over_b = 1.0 / b.getValue();
     a.calcGradient(gradient, one_over_b);
     b.calcGradient(gradient, -result * one_over_b);
   }
   template<typename Real, typename A, typename B> inline void derv11M_Divide(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+    checkArgumentsDivide(b.getValue());
     Real one_over_b = multiplier / b.getValue();
     a.calcGradient(gradient, one_over_b);
     b.calcGradient(gradient, -result * one_over_b);
   }
   template<typename Real, typename A> inline void derv10_Divide(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+    checkArgumentsDivide(b);
     Real one_over_b = 1.0 / b;
     a.calcGradient(gradient, one_over_b);
   }
   template<typename Real, typename A> inline void derv10M_Divide(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+    checkArgumentsDivide(b);
     Real one_over_b = multiplier / b;
     a.calcGradient(gradient, one_over_b);
   }
   template<typename Real, typename B> inline void derv01_Divide(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+    checkArgumentsDivide(b.getValue());
     Real one_over_b = 1.0 / b.getValue();
     b.calcGradient(gradient, -result * one_over_b);
   }
   template<typename Real, typename B> inline void derv01M_Divide(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+    checkArgumentsDivide(b.getValue());
     Real one_over_b = multiplier / b.getValue();
     b.calcGradient(gradient, -result * one_over_b);
   }
@@ -315,34 +330,48 @@ namespace codi {
   /**
    * Implementation for f(a,b) = atan2(a,b)
    */
+  template<typename A, typename B> inline void checkArgumentsAtan2(const A& a, const B& b) {
+    if(CheckExpressionArguments) {
+      if( 0.0 == TypeTraits<A>::getBaseValue(a) &&
+          0.0 == TypeTraits<B>::getBaseValue(b)) {
+        CODI_EXCEPTION("atan2 called at point (0,0).");
+      }
+    }
+  }
   template<typename Real, typename A, typename B> inline void derv11_Atan2(Real& gradient, const A& a, const B& b, const Real& /*result*/) {
+    checkArgumentsAtan2(a.getValue(), b.getValue());
     Real divisor = a.getValue() * a.getValue() + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
     a.calcGradient(gradient, b.getValue() * divisor);
     b.calcGradient(gradient, -a.getValue() * divisor);
   }
   template<typename Real, typename A, typename B> inline void derv11M_Atan2(Real& gradient, const A& a, const B& b, const Real& /*result*/, const Real& multiplier) {
+    checkArgumentsAtan2(a.getValue(), b.getValue());
     Real divisor = a.getValue() * a.getValue() + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
     a.calcGradient(gradient, multiplier * b.getValue() * divisor);
     b.calcGradient(gradient, multiplier * -a.getValue() * divisor);
   }
   template<typename Real, typename A> inline void derv10_Atan2(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& /*result*/) {
+    checkArgumentsAtan2(a.getValue(), b);
     Real divisor = a.getValue() * a.getValue() + b * b;
     divisor = 1.0 / divisor;
     a.calcGradient(gradient, b * divisor);
   }
   template<typename Real, typename A> inline void derv10M_Atan2(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& /*result*/, const Real& multiplier) {
+    checkArgumentsAtan2(a.getValue(), b);
     Real divisor = a.getValue() * a.getValue() + b * b;
     divisor = 1.0 / divisor;
     a.calcGradient(gradient, multiplier * b * divisor);
   }
   template<typename Real, typename B> inline void derv01_Atan2(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& /*result*/) {
+    checkArgumentsAtan2(a, b.getValue());
     Real divisor = a * a + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
     b.calcGradient(gradient, -a * divisor);
   }
   template<typename Real, typename B> inline void derv01M_Atan2(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& /*result*/, const Real& multiplier) {
+    checkArgumentsAtan2(a, b.getValue());
     Real divisor = a * a + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
     b.calcGradient(gradient, multiplier * -a * divisor);
@@ -353,7 +382,15 @@ namespace codi {
   /**
    * Implementation for f(a,b) = pow(a,b)
    */
+  template<typename Real> inline void checkArgumentsPow(const Real& a) {
+    if(CheckExpressionArguments) {
+      if( TypeTraits<Real>::getBaseValue(a) < 0.0) {
+        CODI_EXCEPTION("Negative base for active exponend in pow function. (Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
+  }
   template<typename Real, typename A, typename B> inline void derv11_Pow(Real& gradient, const A& a, const B& b, const Real& result) {
+    checkArgumentsPow(a.getValue());
     a.calcGradient(gradient, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
       return b.calcGradient(gradient, log(a.getValue()) * result);
@@ -362,6 +399,7 @@ namespace codi {
     }
   }
   template<typename Real, typename A, typename B> inline void derv11M_Pow(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+    checkArgumentsPow(a.getValue());
     a.calcGradient(gradient, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
       return b.calcGradient(gradient, multiplier * log(a.getValue()) * result);
@@ -376,6 +414,7 @@ namespace codi {
     a.calcGradient(gradient, multiplier * b * pow(a.getValue(), b - 1.0));
   }
   template<typename Real, typename B> inline void derv01_Pow(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+    checkArgumentsPow(a);
     if (a > 0.0) {
       return b.calcGradient(gradient, log(a) * result);
     } else {
@@ -383,6 +422,7 @@ namespace codi {
     }
   }
   template<typename Real, typename B> inline void derv01M_Pow(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+    checkArgumentsPow(a);
     if (a > 0.0) {
       return b.calcGradient(gradient, multiplier * log(a) * result);
     } else {
@@ -594,7 +634,12 @@ namespace codi {
       return codi:: OP<Real, A>(a.cast()); \
     }
 
-  template<typename Real> inline Real gradSqrt(const Real& /*a*/, const Real& result) {
+  template<typename Real> inline Real gradSqrt(const Real& a, const Real& result) {
+    if(CheckExpressionArguments) {
+      if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
+        CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
     if(result != 0.0) {
       return 0.5 / result;
     } else {
@@ -609,11 +654,21 @@ namespace codi {
   CODI_DEFINE_UNARY_FUNCTION(Tanh, tanh, gradTanh)
 
   template<typename Real> inline Real gradLog(const Real& a, const Real& /*result*/) {
+    if(CheckExpressionArguments) {
+      if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
+        CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
     return 1.0 / a;
   }
   CODI_DEFINE_UNARY_FUNCTION(Log, log, gradLog)
 
   template<typename Real> inline Real gradLog10(const Real& a, const Real& /*result*/) {
+    if(CheckExpressionArguments) {
+      if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
+        CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
     return 0.434294481903252 / a;
   }
   CODI_DEFINE_UNARY_FUNCTION(Log10, log10, gradLog10)
@@ -630,11 +685,21 @@ namespace codi {
 
   using std::sqrt;
   template<typename Real> inline Real gradAsin(const Real& a, const Real& /*result*/) {
+    if(CheckExpressionArguments) {
+      if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
+        CODI_EXCEPTION("asin outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
     return 1.0 / sqrt(1.0 - a * a);
   }
   CODI_DEFINE_UNARY_FUNCTION(Asin, asin, gradAsin)
 
   template<typename Real> inline Real gradAcos(const Real& a, const Real& /*result*/) {
+    if(CheckExpressionArguments) {
+      if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
+        CODI_EXCEPTION("acos outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
     return -1.0 / sqrt(1.0 - a * a);
   }
   CODI_DEFINE_UNARY_FUNCTION(Acos, acos, gradAcos)
@@ -660,6 +725,11 @@ namespace codi {
   CODI_DEFINE_UNARY_FUNCTION(Exp, exp, gradExp)
 
   template<typename Real> inline Real gradAtanh(const Real& a, const Real& /*result*/) {
+    if(CheckExpressionArguments) {
+      if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
+        CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
     return 1.0 / (1 - a * a);
   }
   CODI_DEFINE_UNARY_FUNCTION(Atanh, atanh, gradAtanh)
@@ -676,7 +746,12 @@ namespace codi {
   CODI_DEFINE_UNARY_FUNCTION(Abs, abs, gradAbs)
 
   template<typename Real> inline Real gradTan(const Real& a, const Real& /*result*/) {
-    Real tmp = 1 / cos(a);
+    if(CheckExpressionArguments) {
+      if(0.0 == cos(TypeTraits<Real>::getBaseValue(a))) {
+        CODI_EXCEPTION("Tan evaluated at (0.5  + i) * PI.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
+    Real tmp = 1.0 / cos(a);
     return tmp * tmp;
   }
   CODI_DEFINE_UNARY_FUNCTION(Tan, tan, gradTan)

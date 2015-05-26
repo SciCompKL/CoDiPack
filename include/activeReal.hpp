@@ -185,6 +185,10 @@ namespace codi {
   class TypeTraits<ActiveReal<Real, Tape> > {
     public:
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ActiveReal<Real, Tape>& t) {
+        return TypeTraits<Real>::getBaseValue(t.getValue());
+      }
   };
 
   template<typename Real, typename Tape>

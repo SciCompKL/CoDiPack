@@ -29,5 +29,7 @@ namespace codi {
   class TypeTraits {
   public:
     typedef T PassiveReal;
+
+    static const T getBaseValue(const T& t) { return t;}
   };
 }
