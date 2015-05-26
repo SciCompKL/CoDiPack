@@ -1,7 +1,7 @@
 #include <toolDefines.h>
 
 IN(2)
-OUT(9)
+OUT(15)
 POINTS(25) =
 {
   {-10.0,   -10},
@@ -41,4 +41,10 @@ void func(NUMBER* x, NUMBER* y) {
   y[6] = x[0] * x[1];  // R x R
   y[7] = 5.00 * x[1];  // R x R
   y[8] = x[0] * 5.00;  // R x R
+  y[9]  = min(x[0], x[1]);  // R x R
+  y[10] = min(5.00, x[1]);  // R x R
+  y[11] = min(x[0], 5.00);  // R x R
+  y[12] = max(x[0], x[1]);  // R x R
+  y[13] = max(5.00, x[1]);  // R x R
+  y[14] = max(x[0], 5.00);  // R x R
 }
