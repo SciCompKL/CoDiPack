@@ -93,7 +93,7 @@ namespace codi {
    * Enable mathematical functions with two arguments.
    */
   #define CODI_DEFINE_BINARY_FUNCTION(OP, FUNC, PRIMAL_CALL, DERIVATIVE_FUNC_11, DERIVATIVE_FUNC_11M, DERIVATIVE_FUNC_10, DERIVATIVE_FUNC_10M, DERIVATIVE_FUNC_01, DERIVATIVE_FUNC_01M)  \
-    /* predefine the struct and the function for higher order derivatrives */\
+    /* predefine the structs and the functions for higher order derivatrives */\
     template <typename Real, class A, class B> struct OP ## 11;\
     template <typename Real, class A> struct OP ## 10;\
     template <typename Real, class B> struct OP ## 01;\
@@ -200,7 +200,8 @@ namespace codi {
     }
 
   /**
-   * If f(a,b) = a + b, df/da = 1 and likewise for df/db so simply
+   * Implementation for f(a,b) = a + b
+   * df/da = 1 and likewise for df/db so simply
    * call a and b's versions of calcGradient
    */
   template<typename Real, typename A, typename B> inline void derv11_Add(Real& gradient, const A& a, const B& b, const Real& /*result*/) {
@@ -227,8 +228,8 @@ namespace codi {
   CODI_DEFINE_BINARY_FUNCTION(Add, operator +, primal_Add, derv11_Add, derv11M_Add, derv10_Add, derv10M_Add, derv01_Add, derv01M_Add)
 
   /**
-   * If f(a,b) = a - b, df/da = 1 so simply
-   * call a
+   * Implementation for f(a,b) = a - b
+   * df/da = 1 so simply call a
    */
   template<typename Real, typename A, typename B> inline void derv11_Subtract(Real& gradient, const A& a, const B& b, const Real& /*result*/) {
     a.calcGradient(gradient);
@@ -253,6 +254,9 @@ namespace codi {
   CODI_OPERATOR_HELPER(Subtract, -)
   CODI_DEFINE_BINARY_FUNCTION(Subtract, operator -, primal_Subtract, derv11_Subtract, derv11M_Subtract, derv10_Subtract, derv10M_Subtract, derv01_Subtract, derv01M_Subtract)
 
+  /**
+   * Implementation for f(a,b) = a * b
+   */
   template<typename Real, typename A, typename B> inline void derv11_Multiply(Real& gradient, const A& a, const B& b, const Real& /*result*/) {
     a.calcGradient(gradient, b.getValue());
     b.calcGradient(gradient, a.getValue());
@@ -276,6 +280,9 @@ namespace codi {
   CODI_OPERATOR_HELPER(Multiply, *)
   CODI_DEFINE_BINARY_FUNCTION(Multiply, operator *, primal_Multiply, derv11_Multiply, derv11M_Multiply, derv10_Multiply, derv10M_Multiply, derv01_Multiply, derv01M_Multiply)
 
+  /**
+   * Implementation for f(a,b) = a / b
+   */
   template<typename Real, typename A, typename B> inline void derv11_Divide(Real& gradient, const A& a, const B& b, const Real& result) {
     Real one_over_b = 1.0 / b.getValue();
     a.calcGradient(gradient, one_over_b);
@@ -305,6 +312,9 @@ namespace codi {
   CODI_OPERATOR_HELPER(Divide, /)
   CODI_DEFINE_BINARY_FUNCTION(Divide, operator /, primal_Divide, derv11_Divide, derv11M_Divide, derv10_Divide, derv10M_Divide, derv01_Divide, derv01M_Divide)
 
+  /**
+   * Implementation for f(a,b) = atan2(a,b)
+   */
   template<typename Real, typename A, typename B> inline void derv11_Atan2(Real& gradient, const A& a, const B& b, const Real& /*result*/) {
     Real divisor = a.getValue() * a.getValue() + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
@@ -340,6 +350,9 @@ namespace codi {
   using std::atan2;
   CODI_DEFINE_BINARY_FUNCTION(Atan2, atan2, atan2, derv11_Atan2, derv11M_Atan2, derv10_Atan2, derv10M_Atan2, derv01_Atan2, derv01M_Atan2)
 
+  /**
+   * Implementation for f(a,b) = pow(a,b)
+   */
   template<typename Real, typename A, typename B> inline void derv11_Pow(Real& gradient, const A& a, const B& b, const Real& result) {
     a.calcGradient(gradient, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
@@ -379,6 +392,9 @@ namespace codi {
   using std::pow;
   CODI_DEFINE_BINARY_FUNCTION(Pow, pow, pow, derv11_Pow, derv11M_Pow, derv10_Pow, derv10M_Pow, derv01_Pow, derv01M_Pow)
 
+  /**
+   * Implementation for f(a,b) = Min(a,b)
+   */
   template<typename Real, typename A, typename B> inline void derv11_Min(Real& gradient, const A& a, const B& b, const Real& result) {
     if(a.getValue() < b.getValue()) {
       a.calcGradient(gradient);
@@ -416,6 +432,9 @@ namespace codi {
   using std::min;
   CODI_DEFINE_BINARY_FUNCTION(Min, min, min, derv11_Min, derv11M_Min, derv10_Min, derv10M_Min, derv01_Min, derv01M_Min)
 
+  /**
+   * Implementation for f(a,b) = Max(a,b)
+   */
   template<typename Real, typename A, typename B> inline void derv11_Max(Real& gradient, const A& a, const B& b, const Real& result) {
     if(a.getValue() > b.getValue()) {
       a.calcGradient(gradient);
@@ -453,8 +472,8 @@ namespace codi {
   using std::max;
   CODI_DEFINE_BINARY_FUNCTION(Max, max, max, derv11_Max, derv11M_Max, derv10_Max, derv10M_Max, derv01_Max, derv01M_Max)
 
-  #undef CODI_OPERATOR_HELPER;
-  #undef CODI_DEFINE_BINARY_FUNCTION;
+  #undef CODI_OPERATOR_HELPER
+  #undef CODI_DEFINE_BINARY_FUNCTION
 
   /**
    *  Conditional operators should behave exactly the same as with
@@ -669,8 +688,7 @@ namespace codi {
   }
 
   /**
-   * Need to add ceil, floor...
-   * Lots more math function in math.h: erf, bessel functions etc...
+   * Functions which do not need derivatives.
    */
   template<typename Real, class A>
   inline bool isinf(const codi::Expression<Real, A>& a) {
