@@ -58,8 +58,8 @@ namespace codi {
      *
      * It has to hold start >= end.
      *
-     * @param start
-     * @param end
+     * @param[in] start The starting position for the reverse evaluation.
+     * @param[in]   end The ending position for the reverse evalution.
      */
     virtual void evaluate(const Position& start, const Position& end) = 0;
 
@@ -71,14 +71,14 @@ namespace codi {
     /**
      * @brief Declare a variable as an input variable.
      *
-     * @param value The input variable.
+     * @param[inout] value The input variable.
      */
     virtual void registerInput(ActiveReal<Real, TapeImplementation>& value) = 0;
 
     /**
      * @brief Declare a variable as an output variable.
      *
-     * @param value The output variable.
+     * @param[inout] value The output variable.
      */
     virtual void registerOutput(ActiveReal<Real, TapeImplementation>& value) = 0;
 
@@ -119,7 +119,7 @@ namespace codi {
      *
      * The reset will clear everything the tape has recorded after the given position.
      *
-     * @param pos The position to which the tape is reset.
+     * @param[in] pos The position to which the tape is reset.
      */
     virtual void reset(const Position& pos) = 0;
 
@@ -147,9 +147,9 @@ namespace codi {
      * give special treatment to code sections which have simpler reverse implementation than the
      * AD tool.
      *
-     * @param       extFunc The function which is called during the reverse evluation of the tape.
-     * @param    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
-     * @param delCheckpoint The delete function for the data.
+     * @param[in]       extFunc The function which is called during the reverse evluation of the tape.
+     * @param[in]    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
+     * @param[in] delCheckpoint The delete function for the data.
      */
     virtual void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint) = 0;
 
@@ -160,9 +160,9 @@ namespace codi {
      * give special treatment to code sections which have simpler reverse implementation than the
      * AD tool.
      *
-     * @param       extFunc The function which is called during the reverse evluation of the tape.
-     * @param    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
-     * @param delCheckpoint The delete function for the data.
+     * @param[in]       extFunc The function which is called during the reverse evluation of the tape.
+     * @param[in]    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
+     * @param[in] delCheckpoint The delete function for the data.
      *
      * @tparam Data The data type for the data.
      */
