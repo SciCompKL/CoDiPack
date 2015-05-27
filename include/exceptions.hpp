@@ -47,7 +47,7 @@ namespace codi {
    * @param[in]  message  The exception message and the arguments for the formatting in the message.
    */
   inline void outputException(const char function[], const char file[], const int line, const char* message, ...) {
-    fprintf(stderr, "Error in function %s (%s:%d)\nThe message is:", function, file, line);
+    fprintf(stderr, "Error in function %s (%s:%d)\nThe message is: ", function, file, line);
 
     va_list vl;
     va_start(vl, message);
@@ -55,6 +55,7 @@ namespace codi {
     va_end(vl);
 
     fprintf(stderr, "\n");
+    exit(-1);
   }
 }
 
