@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include "activeReal.hpp"
+#include "../activeReal.hpp"
 #include "tapeInterface.hpp"
 
 namespace codi {
@@ -103,7 +103,8 @@ namespace codi {
      * @param[]            value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
      */
-    inline void pushJacobi(Real& lhsTangent, const Real& CODI_UNUSED(value), const GradientData& curTangent) {
+    inline void pushJacobi(Real& lhsTangent, const Real& value, const GradientData& curTangent) {
+      CODI_UNUSED(value);
       lhsTangent += curTangent;
     }
 
@@ -118,7 +119,8 @@ namespace codi {
      * @param[]            value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
      */
-    inline void pushJacobi(Real& lhsTangent, const Real& jacobi, const Real& CODI_UNUSED(value), const GradientData& curTangent) {
+    inline void pushJacobi(Real& lhsTangent, const Real& jacobi, const Real& value, const GradientData& curTangent) {
+      CODI_UNUSED(value);
       ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
         lhsTangent += jacobi * curTangent;
       }
@@ -132,14 +134,17 @@ namespace codi {
      * @param[]      value  Not used.
      * @param[out] tangent  Set to zero.
      */
-    inline void initGradientData(Real& CODI_UNUSED(value), GradientData& tangent) {
+    inline void initGradientData(Real& value, GradientData& tangent) {
+      CODI_UNUSED(value);
       tangent = Real();
     }
 
     /**
      * @brief Nothing to do.
      */
-    inline void destroyGradientData(Real& CODI_UNUSED(value), GradientData& CODI_UNUSED(tangent)) {
+    inline void destroyGradientData(Real& value, GradientData& tangent) {
+      CODI_UNUSED(value);
+      CODI_UNUSED(tangent);
       /* do nothing */
     }
 

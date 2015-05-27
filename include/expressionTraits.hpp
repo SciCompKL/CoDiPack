@@ -42,7 +42,7 @@ namespace codi {
   };
 
   // Macro for expresions with two arguments
-# define ADEPT_DEFINE_BINARY_TRAIT(OP)                        \
+# define CODI_DEFINE_BINARY_TRAIT(OP)                         \
     template<typename Real, typename A, typename B>           \
     struct ExpressionTraits<OP ## 11<Real, A, B> > {          \
       static const size_t maxActiveVariables =                \
@@ -60,40 +60,40 @@ namespace codi {
            ExpressionTraits<B>::maxActiveVariables;           \
     };
 
-  ADEPT_DEFINE_BINARY_TRAIT(Add)
-  ADEPT_DEFINE_BINARY_TRAIT(Subtract)
-  ADEPT_DEFINE_BINARY_TRAIT(Multiply)
-  ADEPT_DEFINE_BINARY_TRAIT(Divide)
-  ADEPT_DEFINE_BINARY_TRAIT(Pow)
-  ADEPT_DEFINE_BINARY_TRAIT(Atan2)
-  ADEPT_DEFINE_BINARY_TRAIT(Min)
-  ADEPT_DEFINE_BINARY_TRAIT(Max)
+  CODI_DEFINE_BINARY_TRAIT(Add)
+  CODI_DEFINE_BINARY_TRAIT(Subtract)
+  CODI_DEFINE_BINARY_TRAIT(Multiply)
+  CODI_DEFINE_BINARY_TRAIT(Divide)
+  CODI_DEFINE_BINARY_TRAIT(Pow)
+  CODI_DEFINE_BINARY_TRAIT(Atan2)
+  CODI_DEFINE_BINARY_TRAIT(Min)
+  CODI_DEFINE_BINARY_TRAIT(Max)
 
-# undef ADEPT_DEFINE_BINARY_TRAIT
+# undef CODI_DEFINE_BINARY_TRAIT
 
   // Macro for expressions with one argument
-# define ADEPT_DEFINE_UNARY_TRAIT(OP)                         \
+# define CODI_DEFINE_UNARY_TRAIT(OP)                          \
     template<typename Real, typename A>                       \
     struct ExpressionTraits<OP<Real, A> > {                   \
       static const size_t maxActiveVariables                  \
          = ExpressionTraits<A>::maxActiveVariables;           \
     };
 
-  ADEPT_DEFINE_UNARY_TRAIT(UnaryMinus)
-  ADEPT_DEFINE_UNARY_TRAIT(Exp)
-  ADEPT_DEFINE_UNARY_TRAIT(Tan)
-  ADEPT_DEFINE_UNARY_TRAIT(Log)
-  ADEPT_DEFINE_UNARY_TRAIT(Log10)
-  ADEPT_DEFINE_UNARY_TRAIT(Sqrt)
-  ADEPT_DEFINE_UNARY_TRAIT(Sin)
-  ADEPT_DEFINE_UNARY_TRAIT(Cos)
-  ADEPT_DEFINE_UNARY_TRAIT(Asin)
-  ADEPT_DEFINE_UNARY_TRAIT(Acos)
-  ADEPT_DEFINE_UNARY_TRAIT(Atan)
-  ADEPT_DEFINE_UNARY_TRAIT(Sinh)
-  ADEPT_DEFINE_UNARY_TRAIT(Cosh)
-  ADEPT_DEFINE_UNARY_TRAIT(Tanh)
-  ADEPT_DEFINE_UNARY_TRAIT(Abs)
-  ADEPT_DEFINE_UNARY_TRAIT(Atanh)
-# undef ADEPT_DEFINE_UNARY_TRAIT
+  CODI_DEFINE_UNARY_TRAIT(UnaryMinus)
+  CODI_DEFINE_UNARY_TRAIT(Exp)
+  CODI_DEFINE_UNARY_TRAIT(Tan)
+  CODI_DEFINE_UNARY_TRAIT(Log)
+  CODI_DEFINE_UNARY_TRAIT(Log10)
+  CODI_DEFINE_UNARY_TRAIT(Sqrt)
+  CODI_DEFINE_UNARY_TRAIT(Sin)
+  CODI_DEFINE_UNARY_TRAIT(Cos)
+  CODI_DEFINE_UNARY_TRAIT(Asin)
+  CODI_DEFINE_UNARY_TRAIT(Acos)
+  CODI_DEFINE_UNARY_TRAIT(Atan)
+  CODI_DEFINE_UNARY_TRAIT(Sinh)
+  CODI_DEFINE_UNARY_TRAIT(Cosh)
+  CODI_DEFINE_UNARY_TRAIT(Tanh)
+  CODI_DEFINE_UNARY_TRAIT(Abs)
+  CODI_DEFINE_UNARY_TRAIT(Atanh)
+# undef CODI_DEFINE_UNARY_TRAIT
 }

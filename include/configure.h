@@ -97,10 +97,10 @@ namespace codi {
    */
 #  define ENABLE_CHECK(option, condition) if(!(option) || (condition))
 
-#ifdef DOXYPROCESSING
-  #define CODI_UNUSED(name) name
-#else
-  #define CODI_UNUSED(name) /*name*/
-#endif
-
+  /**
+   * @brief Needed to disable warnings about unused paraemeters.
+   *
+   * Is also necessary because of doxygen parameter handling.
+   */
+#  define CODI_UNUSED(name) (void)name
 }

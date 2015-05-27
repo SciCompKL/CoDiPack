@@ -178,13 +178,17 @@ namespace codi {
       value = rhs;
     }
 
-    inline void pushJacobi(Real& CODI_UNUSED(gradient), const Real& CODI_UNUSED(value), const IndexType& index) {
+    inline void pushJacobi(Real& gradient, const Real& value, const IndexType& index) {
+      CODI_UNUSED(gradient);
+      CODI_UNUSED(value);
       if(0 != index) {
         data.setDataAndMove(std::make_tuple(1.0, index));
       }
     }
 
-    inline void pushJacobi(Real& CODI_UNUSED(gradient), const Real& jacobi, const Real& CODI_UNUSED(value), const IndexType& index) {
+    inline void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
+      CODI_UNUSED(gradient);
+      CODI_UNUSED(value);
       if(0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
@@ -194,11 +198,14 @@ namespace codi {
       }
     }
 
-    inline void initGradientData(Real& CODI_UNUSED(value), IndexType& index) {
+    inline void initGradientData(Real& value, IndexType& index) {
+      CODI_UNUSED(value);
       index = 0;
     }
 
-    inline void destroyGradientData(Real& CODI_UNUSED(value), IndexType& index) {
+    inline void destroyGradientData(Real& value, IndexType& index) {
+      CODI_UNUSED(value);
+      CODI_UNUSED(index);
       /* nothing to do */
     }
 
@@ -386,7 +393,8 @@ namespace codi {
       value.getGradientData() = ++expressionCount.count;
     }
 
-    inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexType> >& CODI_UNUSED(value)) {
+    inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
+      CODI_UNUSED(value);
       /* do nothing */
     }
     inline void setActive(){
