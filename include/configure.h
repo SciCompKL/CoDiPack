@@ -97,4 +97,10 @@ namespace codi {
    */
 #  define ENABLE_CHECK(option, condition) if(!(option) || (condition))
 
+#ifdef DOXYPROCESSING
+  #define CODI_UNUSED(name) name
+#else
+  #define CODI_UNUSED(name) /*name*/
+#endif
+
 }
