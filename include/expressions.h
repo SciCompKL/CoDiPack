@@ -39,7 +39,8 @@ namespace codi {
    * of the function according to the expression's true type, which is
    * given by its template argument.
    *
-   * @template Real  The data type of the primal values and the gradient values.
+   * @tparam Real  The data type of the primal values and the gradient values.
+   * @tparam    A  The implementing class of the expression.
    */
   template<typename Real, class A>
   struct Expression {
@@ -48,31 +49,47 @@ namespace codi {
 
     /**
      * Cast the expression to its true type, given by the template
-     * argument
+     * argument.
+     *
+     * @return The instance of the implementing class.
      */
     inline const A& cast() const {
       return static_cast<const A&>(*this);
     }
 
     /**
+     * @brief Calculate the gradient of the expression.
+     *
      * Calculate the gradient of the mathematical operation that this
      * expression represents and pass the result to its argument.
-     * For functions f(a), pass df/da to the argument in the
-     * first case and pass multiplier*df/da in the second case.
+     * For functions f(a), pass df/da to the argument.
+     *
+     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
+     *                        lhs of the expression.
      */
     inline void calcGradient(Real& gradient) const {
       cast().calcGradient(gradient);
     }
 
     /**
-     * As the previous but multiplying the gradient by "multiplier"
+     * @brief Calculate the gradient of the expression.
+     *
+     * Calculate the gradient of the mathematical operation that this
+     * expression represents and pass the result to its argument.
+     * For functions f(a), pass multiplier * df/da to the argument.
+     *
+     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
+     *                        lhs of the expression.
+     * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
      */
     inline void calcGradient(Real& gradient, const Real& multiplier) const {
       cast().calcGradient(gradient, multiplier);
     }
 
     /**
-     * Return the numerical value of the expression
+     * @brief Return the numerical value of the expression.
+     *
+     * @return The value of the expression.
      */
     inline const Real getValue() const {
       return cast().getValue();
@@ -91,11 +108,21 @@ namespace codi {
    * polymorphism via the Curiously Recurring Template Pattern
    */
 
-  /**
+  /*
    * Enable mathematical functions with two arguments.
+   *
+   * @param                  OP   The name of the class
+   * @param                FUNC   The name of the functions. Can also be an operator.
+   * @param         PRIMAL_CALL   A function which calls the function or operator.
+   * @param  DERIVATIVE_FUNC_11   The function which computes the derative when both variables are active.
+   * @param DERIVATIVE_FUNC_11M   The function which computes the derative when both variables are active and a multiplier is given.
+   * @param  DERIVATIVE_FUNC_10   The function which computes the derative when the first variable is active.
+   * @param DERIVATIVE_FUNC_10M   The function which computes the derative when the first variable is active and a multiplier is given.
+   * @param  DERIVATIVE_FUNC_01   The function which computes the derative when the second variable is active.
+   * @param DERIVATIVE_FUNC_01M   The function which computes the derative when the second variable is active and a multiplier is given.
    */
   #define CODI_DEFINE_BINARY_FUNCTION(OP, FUNC, PRIMAL_CALL, DERIVATIVE_FUNC_11, DERIVATIVE_FUNC_11M, DERIVATIVE_FUNC_10, DERIVATIVE_FUNC_10M, DERIVATIVE_FUNC_01, DERIVATIVE_FUNC_01M)  \
-    /* predefine the structs and the functions for higher order derivatrives */\
+    /* predefine the structs and the functions for higher order derivatives */\
     template <typename Real, class A, class B> struct OP ## 11;\
     template <typename Real, class A> struct OP ## 10;\
     template <typename Real, class B> struct OP ## 01;\
@@ -106,102 +133,137 @@ namespace codi {
     template <typename Real, class B> \
     inline  OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b); \
     \
+    /** @brief Expression implementation for OP with two active variables. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
     template<typename Real, class A, class B> \
     struct OP ## 11: public Expression<Real, OP ## 11<Real, A, B> > { \
       private: \
+        /** @brief The first argument of the function. */ \
         const A& a_; \
+        /** @brief The second argument of the function. */ \
         const B& b_; \
+        /** @brief The result of the function. It is always precomputed. */ \
         Real result_; \
       public: \
+        /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
         OP ## 11(const Expression<Real, A>& a, const Expression<Real, B>& b) : \
           a_(a.cast()), b_(b.cast()), \
           result_(PRIMAL_CALL(a.getValue(), b.getValue())) {} \
-      \
-      inline void calcGradient(Real& gradient) const { \
-        DERIVATIVE_FUNC_11(gradient, a_, b_, result_); \
-      } \
-      \
-      inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-        DERIVATIVE_FUNC_11M(gradient, a_, b_, result_, multiplier); \
-      } \
-      \
-      inline const Real& getValue() const { \
-        return result_; \
-      } \
+        \
+        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx and df/dy and passes these values as the multipliers to the arguments. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
+        inline void calcGradient(Real& gradient) const { \
+          DERIVATIVE_FUNC_11(gradient, a_, b_, result_); \
+        } \
+        \
+        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and multiplier * df/dy and passes these values as the multipliers to the arguments. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
+        inline void calcGradient(Real& gradient, const Real& multiplier) const { \
+          DERIVATIVE_FUNC_11M(gradient, a_, b_, result_, multiplier); \
+        } \
+        \
+        /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
+        inline const Real& getValue() const { \
+          return result_; \
+        } \
     }; \
     \
+    /** @brief Expression implementation for OP with one active variables. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function*/ \
     template<typename Real, class A> \
     struct OP ## 10: public Expression<Real, OP ## 10<Real, A> > { \
-      public: \
-        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
       private: \
+        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
         const A& a_; \
         const PassiveReal& b_; \
         Real result_; \
       public: \
+        /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
         OP ## 10(const Expression<Real, A>& a, const PassiveReal& b) : \
           a_(a.cast()), b_(b), \
           result_(PRIMAL_CALL(a.getValue(), b)) {} \
-      \
-      inline void calcGradient(Real& gradient) const { \
-        DERIVATIVE_FUNC_10(gradient, a_, b_, result_); \
-      } \
-      \
-      inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-        DERIVATIVE_FUNC_10M(gradient, a_, b_, result_, multiplier); \
-      } \
-      \
-      inline const Real& getValue() const { \
-        return result_; \
-      } \
+        \
+        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
+        inline void calcGradient(Real& gradient) const { \
+          DERIVATIVE_FUNC_10(gradient, a_, b_, result_); \
+        } \
+        \
+        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
+        inline void calcGradient(Real& gradient, const Real& multiplier) const { \
+          DERIVATIVE_FUNC_10M(gradient, a_, b_, result_, multiplier); \
+        } \
+        \
+        /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
+        inline const Real& getValue() const { \
+          return result_; \
+        } \
     }; \
     \
+    /** @brief Expression implementation for OP with one active variables. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
     template<typename Real, class B> \
     struct OP ## 01 : public Expression<Real, OP ## 01<Real, B> > { \
-      public: \
-        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
       private: \
+        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
         const PassiveReal& a_; \
         const B& b_; \
         Real result_; \
       public: \
+        /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
         OP ## 01(const PassiveReal& a, const Expression<Real, B>& b) : \
           a_(a), b_(b.cast()), \
           result_(PRIMAL_CALL(a, b.getValue())) {} \
-      \
-      inline void calcGradient(Real& gradient) const { \
-        DERIVATIVE_FUNC_01(gradient, a_, b_, result_); \
-      } \
-      \
-      inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-        DERIVATIVE_FUNC_01M(gradient, a_, b_, result_, multiplier); \
-      } \
-      \
-      inline const Real& getValue() const { \
-        return result_; \
-      } \
+        \
+        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
+        inline void calcGradient(Real& gradient) const { \
+          DERIVATIVE_FUNC_01(gradient, a_, b_, result_); \
+        } \
+        \
+        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
+        inline void calcGradient(Real& gradient, const Real& multiplier) const { \
+          DERIVATIVE_FUNC_01M(gradient, a_, b_, result_, multiplier); \
+        } \
+        \
+        /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
+        inline const Real& getValue() const { \
+          return result_; \
+        } \
     }; \
     \
+    /** @brief Overload for FUNC with the CoDiPack expressions. @return The implementing expresion OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
     template <typename Real, class A, class B> \
     inline OP ## 11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b) { \
       return OP ## 11<Real, A, B>(a.cast(), b.cast()); \
     } \
+    /** @brief Overload for FUNC with the CoDiPack expressions. @return The implementing expresion OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function*/ \
     template <typename Real, class A> \
     inline OP ## 10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) { \
       return OP ## 10<Real, A>(a.cast(), b); \
     } \
+    /** @brief Overload for FUNC with the CoDiPack expressions. @return The implementing expresion OP. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
     template <typename Real, class B> \
     inline OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b) { \
       return OP ## 01<Real, B>(a, b.cast()); \
     }
 
   #define CODI_OPERATOR_HELPER(NAME, OP) \
+    /** @brief Helper function to call operators as a function. @return The value of a OP b @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
     template<typename A, typename B> \
     inline auto primal_ ## NAME(const A& a, const B& b) -> decltype(a OP b) { \
       return a OP b; \
     }
 
-  /**
+  /*
+   * Now all binary functions are implemented.
+   *
+   * We use the namin sheme dervBB[M]_Name.
+   *
+   * BB tells which variable is active. Thus we have the combinations
+   * 11 -> both are active
+   * 10 -> first argument is active
+   * 01 -> second argument is active
+   *
+   * There is no implementation for 00 because no variable is active and thus the derivative would be zero.
+   *
+   * If the M is present the method is implemented with the multiplier as an argument.
+   */
+
+  /*
    * Implementation for f(a,b) = a + b
    * df/da = 1 and likewise for df/db so simply
    * call a and b's versions of calcGradient
@@ -234,7 +296,7 @@ namespace codi {
   CODI_OPERATOR_HELPER(Add, +)
   CODI_DEFINE_BINARY_FUNCTION(Add, operator +, primal_Add, derv11_Add, derv11M_Add, derv10_Add, derv10M_Add, derv01_Add, derv01M_Add)
 
-  /**
+  /*
    * Implementation for f(a,b) = a - b
    * df/da = 1 so simply call a
    */
@@ -267,7 +329,7 @@ namespace codi {
   CODI_OPERATOR_HELPER(Subtract, -)
   CODI_DEFINE_BINARY_FUNCTION(Subtract, operator -, primal_Subtract, derv11_Subtract, derv11M_Subtract, derv10_Subtract, derv10M_Subtract, derv01_Subtract, derv01M_Subtract)
 
-  /**
+  /*
    * Implementation for f(a,b) = a * b
    */
   template<typename Real, typename A, typename B> inline void derv11_Multiply(Real& gradient, const A& a, const B& b, const Real& result) {
@@ -299,8 +361,16 @@ namespace codi {
   CODI_OPERATOR_HELPER(Multiply, *)
   CODI_DEFINE_BINARY_FUNCTION(Multiply, operator *, primal_Multiply, derv11_Multiply, derv11M_Multiply, derv10_Multiply, derv10M_Multiply, derv01_Multiply, derv01M_Multiply)
 
-  /**
+  /*
    * Implementation for f(a,b) = a / b
+   */
+  /**
+   * @brief Helper function which checks if the deviso is zero.
+   *
+   * Depending of the global option CheckExpressionArguments the function will call
+   * CODI_EXCEPTION if b is equal to zero.
+   *
+   * @tparam Real The real type used in the active type.
    */
   template<typename Real> inline void checkArgumentsDivide(const Real& b) {
     if(CheckExpressionArguments) {
@@ -344,8 +414,17 @@ namespace codi {
   CODI_OPERATOR_HELPER(Divide, /)
   CODI_DEFINE_BINARY_FUNCTION(Divide, operator /, primal_Divide, derv11_Divide, derv11M_Divide, derv10_Divide, derv10M_Divide, derv01_Divide, derv01M_Divide)
 
-  /**
+  /*
    * Implementation for f(a,b) = atan2(a,b)
+   */
+  /**
+   * @brief Helper function which checks if both arguments are zero.
+   *
+   * Depending of the global option CheckExpressionArguments the function will call
+   * CODI_EXCEPTION if a and b are equal to zero.
+   *
+   * @tparam A Type of the first argument.
+   * @tparam B Type of the second argument.
    */
   template<typename A, typename B> inline void checkArgumentsAtan2(const A& a, const B& b) {
     if(CheckExpressionArguments) {
@@ -402,8 +481,17 @@ namespace codi {
   using std::atan2;
   CODI_DEFINE_BINARY_FUNCTION(Atan2, atan2, atan2, derv11_Atan2, derv11M_Atan2, derv10_Atan2, derv10M_Atan2, derv01_Atan2, derv01M_Atan2)
 
-  /**
+  /*
    * Implementation for f(a,b) = pow(a,b)
+   */
+  /**
+   * @brief Helper function which checks if the base of the power is negative.
+   *
+   * Depending of the global option CheckExpressionArguments the function will call
+   * CODI_EXCEPTION if a is smaller than zero.
+   *
+   * @tparam A Type of the first argument.
+   * @tparam B Type of the second argument.
    */
   template<typename Real> inline void checkArgumentsPow(const Real& a) {
     if(CheckExpressionArguments) {
@@ -457,7 +545,7 @@ namespace codi {
   using std::pow;
   CODI_DEFINE_BINARY_FUNCTION(Pow, pow, pow, derv11_Pow, derv11M_Pow, derv10_Pow, derv10M_Pow, derv01_Pow, derv01M_Pow)
 
-  /**
+  /*
    * Implementation for f(a,b) = Min(a,b)
    */
   template<typename Real, typename A, typename B> inline void derv11_Min(Real& gradient, const A& a, const B& b, const Real& result) {
@@ -497,7 +585,7 @@ namespace codi {
   using std::min;
   CODI_DEFINE_BINARY_FUNCTION(Min, min, min, derv11_Min, derv11M_Min, derv10_Min, derv10M_Min, derv01_Min, derv01M_Min)
 
-  /**
+  /*
    * Implementation for f(a,b) = Max(a,b)
    */
   template<typename Real, typename A, typename B> inline void derv11_Max(Real& gradient, const A& a, const B& b, const Real& result) {

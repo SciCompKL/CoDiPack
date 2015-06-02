@@ -29,33 +29,48 @@
 #include "expressions.h"
 
 namespace codi {
+
+  /**
+   * @brief Information about the expression.
+   *
+   * The class contains information about specific expressions. This information
+   * is used by CoDiPack to run the differentiation.
+   *
+   * @tparam A The expression for which the information is needed.
+   */
   template<class A>
   struct ExpressionTraits {
     /**
      * @brief The maximum number of active variables for the expression
      *
      * This value ca be used to determine how many variables can be active in an expression.
-     * For evary expression a specialization has to be defined which assigns a value to
-     * the varaible.
+     * For every expression a specialization has to be defined which assigns a value to
+     * the variable.
      */
     static const size_t maxActiveVariable;
   };
 
-  // Macro for expresions with two arguments
+  // Macro for expressions with two arguments
 # define CODI_DEFINE_BINARY_TRAIT(OP)                         \
+    /** @brief Specialization for OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
     template<typename Real, typename A, typename B>           \
     struct ExpressionTraits<OP ## 11<Real, A, B> > {          \
+      /** @brief Number of maximum activie variables is the sum of the active variables from both arguments. */ \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<A>::maxActiveVariables            \
          + ExpressionTraits<B>::maxActiveVariables;           \
     };                                                        \
+    /** @brief Specialization for OP  with only the first argument active. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
     template<typename Real, typename A>                       \
     struct ExpressionTraits<OP ## 10<Real, A> > {             \
+      /** @brief Number of maximum activie variables is the number of active variables from the first argument. */ \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<A>::maxActiveVariables;           \
     };                                                        \
+    /** @brief Specialization for OP with only the second argument active. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function */ \
     template<typename Real, typename B>                       \
     struct ExpressionTraits<OP ## 01<Real, B> > {             \
+      /** @brief Number of maximum activie variables is the number of active variables from the second argument. */ \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<B>::maxActiveVariables;           \
     };
@@ -73,8 +88,10 @@ namespace codi {
 
   // Macro for expressions with one argument
 # define CODI_DEFINE_UNARY_TRAIT(OP)                          \
+    /** @brief Specialization for OP. @tparam Real The real type used in the active types. @tparam A The expression for the argument of the function */ \
     template<typename Real, typename A>                       \
     struct ExpressionTraits<OP<Real, A> > {                   \
+      /** @brief Number of maximum activie variables is the number of active variables from the expresssion in the argument. */ \
       static const size_t maxActiveVariables                  \
          = ExpressionTraits<A>::maxActiveVariables;           \
     };
