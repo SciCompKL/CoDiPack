@@ -10,7 +10,7 @@ int main(int nargs, char** args) {
   NUMBER* x = new NUMBER[inputs];
   NUMBER* y = new NUMBER[outputs];
 
-  codi::SimpleTape<double, int>& tape = codi::RealReverseSimple::globalTape;
+  NUMBER::TapeType& tape = NUMBER::globalTape;
   tape.resize(1000, 1000);
   tape.setExternalFunctionChunkSize(1000);
   tape.setActive();

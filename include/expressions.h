@@ -685,6 +685,8 @@ namespace codi {
   struct UnaryMinus : public Expression<Real, UnaryMinus<Real, A> > {
    private:
      const A& a_;
+
+   public:
    /**
     * @brief The unary minus operator.
     * @param a  The argument for the operation.

@@ -2,7 +2,7 @@
 
 #include <codi.hpp>
 
-typedef codi::RealReverseSimple NUMBER;
+typedef codi::RealReverseUnchecked NUMBER;
 
 #include "../globalDefines.h"
 
