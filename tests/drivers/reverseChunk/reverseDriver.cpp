@@ -10,7 +10,7 @@ int main(int nargs, char** args) {
   NUMBER* x = new NUMBER[inputs];
   NUMBER* y = new NUMBER[outputs];
 
-  NUMBER::TapeType& tape = NUMBER::globalTape;
+  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
   tape.resize(2, 3);
   tape.setActive();
 

@@ -29,7 +29,7 @@ static void delFunc(void* checkpoint){
 }
 
 void func(NUMBER* x, NUMBER* y) {
-  NUMBER::TapeType& tape = NUMBER::globalTape;
+  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
   DataStore *checkpoint = new DataStore;
   NUMBER w;
   tape.setPassive();

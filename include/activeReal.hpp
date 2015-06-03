@@ -30,6 +30,16 @@
 #include <iostream>
 
 namespace codi {
+
+  /*
+   * Just a helper class to remove the globalTape from the ActiveReal implementation.
+   */
+  template<typename Tape>
+  class GlobalActiveRealData  {
+    public:
+      static Tape globalTape;
+  };
+
   template<typename Real, typename Tape>
   class ActiveReal : public Expression<Real, ActiveReal<Real, Tape> > {
   public:
@@ -38,8 +48,6 @@ namespace codi {
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
     typedef typename Tape::GradientData GradientData;
 
-    static Tape globalTape;
-
   private:
     Real value;
     GradientData gradientData;
@@ -47,37 +55,37 @@ namespace codi {
   public:
 
     inline ActiveReal() : value() {
-      globalTape.initGradientData(value, gradientData);
+      getGlobalTape().initGradientData(value, gradientData);
     }
 
     inline ActiveReal(const PassiveReal& value) : value(value) {
-      globalTape.initGradientData(this->value, gradientData);
+      getGlobalTape().initGradientData(this->value, gradientData);
     }
 
     inline ActiveReal(const Real& value, const Real& gradient) : value(value) {
-      globalTape.initGradientData(this->value, gradientData);
-      globalTape.setGradient(gradientData, gradient);
+      getGlobalTape().initGradientData(this->value, gradientData);
+      getGlobalTape().setGradient(gradientData, gradient);
     }
 
     template<class R>
     inline ActiveReal(const Expression<Real, R>& rhs) {
-      globalTape.store(value, gradientData, rhs.cast());
+      getGlobalTape().store(value, gradientData, rhs.cast());
     }
 
     inline ActiveReal(const ActiveReal<Real, Tape>& v) {
-      globalTape.store(value, gradientData, v);
+      getGlobalTape().store(value, gradientData, v);
     }
 
     inline ~ActiveReal() {
-      globalTape.destroyGradientData(value, gradientData);
+      getGlobalTape().destroyGradientData(value, gradientData);
     }
 
     inline void calcGradient(Real& gradient) const {
-      globalTape.pushJacobi(gradient, value, gradientData);
+      getGlobalTape().pushJacobi(gradient, value, gradientData);
     }
 
     inline void calcGradient(Real& gradient, const Real& multiplier) const {
-      globalTape.pushJacobi(gradient, multiplier, value, gradientData);
+      getGlobalTape().pushJacobi(gradient, multiplier, value, gradientData);
     }
 
     inline GradientData& getGradientData() {
@@ -89,16 +97,16 @@ namespace codi {
     }
 
     inline Real& gradient() {
-      return globalTape.gradient(gradientData);
+      return getGlobalTape().gradient(gradientData);
     }
 
 
     inline Real getGradient() const {
-      return globalTape.getGradient(gradientData);
+      return getGlobalTape().getGradient(gradientData);
     }
 
     inline void setGradient(const Real& gradient) {
-      globalTape.setGradient(gradientData, gradient);
+      getGlobalTape().setGradient(gradientData, gradient);
     }
 
     inline Real& getValue() {
@@ -114,18 +122,18 @@ namespace codi {
     }
 
     inline ActiveReal<Real, Tape>& operator=(const PassiveReal& rhs){
-      globalTape.store(value, gradientData, rhs);
+      getGlobalTape().store(value, gradientData, rhs);
       return *this;
     }
 
     template<class R>
     inline ActiveReal<Real, Tape>& operator=(const Expression<Real, R>& rhs){
-      globalTape.store(value, gradientData, rhs.cast());
+      getGlobalTape().store(value, gradientData, rhs.cast());
       return *this;
     }
 
     inline ActiveReal<Real, Tape>& operator=(const ActiveReal<Real, Tape>& rhs) {
-      globalTape.store(value, gradientData, rhs);
+      getGlobalTape().store(value, gradientData, rhs);
       return *this;
     }
 
@@ -179,6 +187,10 @@ namespace codi {
       *this = *this - 1.0;
       return r;
     }
+
+    static inline Tape& getGlobalTape() {
+      return GlobalActiveRealData<Tape>::globalTape;
+    }
   };
 
   template<typename Real, typename Tape>
@@ -196,8 +208,8 @@ namespace codi {
     static const size_t maxActiveVariables = 1;
   };
 
-  template<typename Real, typename Tape>
-  Tape ActiveReal<Real, Tape>::globalTape;
+  template<typename Tape>
+  Tape GlobalActiveRealData<Tape>::globalTape;
 
   template<typename Real, class R>
   std::ostream& operator<<(std::ostream& os, const Expression<Real, R>& rhs){

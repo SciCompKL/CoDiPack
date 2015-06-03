@@ -32,7 +32,7 @@ static void delFunc(void* checkpoint){
 }
 
 void func(NUMBER* x, NUMBER* y) {
-  NUMBER::TapeType& tape = NUMBER::globalTape;
+  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
   NUMBER w[ITER];
 
   w[0] = x[0];
