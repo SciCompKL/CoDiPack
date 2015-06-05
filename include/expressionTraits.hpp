@@ -55,7 +55,7 @@ namespace codi {
     /** @brief Specialization for OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
     template<typename Real, typename A, typename B>           \
     struct ExpressionTraits<OP ## 11<Real, A, B> > {          \
-      /** @brief Number of maximum activie variables is the sum of the active variables from both arguments. */ \
+      /** @brief Number of maximum active variables is the sum of the active variables from both arguments. */ \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<A>::maxActiveVariables            \
          + ExpressionTraits<B>::maxActiveVariables;           \
@@ -63,14 +63,14 @@ namespace codi {
     /** @brief Specialization for OP  with only the first argument active. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
     template<typename Real, typename A>                       \
     struct ExpressionTraits<OP ## 10<Real, A> > {             \
-      /** @brief Number of maximum activie variables is the number of active variables from the first argument. */ \
+      /** @brief Number of maximum active variables is the number of active variables from the first argument. */ \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<A>::maxActiveVariables;           \
     };                                                        \
     /** @brief Specialization for OP with only the second argument active. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function */ \
     template<typename Real, typename B>                       \
     struct ExpressionTraits<OP ## 01<Real, B> > {             \
-      /** @brief Number of maximum activie variables is the number of active variables from the second argument. */ \
+      /** @brief Number of maximum active variables is the number of active variables from the second argument. */ \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<B>::maxActiveVariables;           \
     };
@@ -91,7 +91,7 @@ namespace codi {
     /** @brief Specialization for OP. @tparam Real The real type used in the active types. @tparam A The expression for the argument of the function */ \
     template<typename Real, typename A>                       \
     struct ExpressionTraits<OP<Real, A> > {                   \
-      /** @brief Number of maximum activie variables is the number of active variables from the expresssion in the argument. */ \
+      /** @brief Number of maximum active variables is the number of active variables from the expression in the argument. */ \
       static const size_t maxActiveVariables                  \
          = ExpressionTraits<A>::maxActiveVariables;           \
     };

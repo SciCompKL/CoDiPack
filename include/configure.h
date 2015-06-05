@@ -32,7 +32,7 @@
 namespace codi {
 
   /**
-   * @brief Type for the maximum number of variables a opeartion can have.
+   * @brief Type for the maximum number of variables a operation can have.
    */
   typedef uint8_t StatementInt;
 
@@ -42,10 +42,10 @@ namespace codi {
   static size_t DefaultChunkSize = 13107200; //TODO: Find optimal value
 
   /**
-   * @brief Check if the arguemnts are inside the diffentiable domain.
+   * @brief Check if the arguments are inside the differentiable domain.
    *
    * The check enables for all function the validation of the arguments for
-   * gradient evalution. If the arguments are not valid a CoDiPack exceptions is
+   * gradient evaluation. If the arguments are not valid a CoDiPack exceptions is
    * generated.
    */
   const bool CheckExpressionArguments = false;
@@ -81,24 +81,24 @@ namespace codi {
    * @brief Omits the evaluation of jacobies which are zero in the reverse sweep.
    *
    * If an adjoint seed is zero during the reverse sweep, all the updates for the
-   * adjoint vector will be zero. Thefore the loop does not need to be evaluted.
+   * adjoint vector will be zero. Therefore the loop does not need to be evaluated.
    */
   const bool OptZeroAdjoint = true;
 
   /**
    * @brief Enable the check only if the option is set
    *
-   * The macro ca be used to surrund a code block with an if statement. If the option is set to true
+   * The macro ca be used to surround a code block with an if statement. If the option is set to true
    * the condition is evaluated and only if the condition is true the block after the macro is
    * executed. If the option is false the block will always be executed.
    *
    * @param option     A constant global boolean. Only than the compiler can optimize the statement.
-   * @param condition  The condition which is only evaluted if 'option' is set to true.
+   * @param condition  The condition which is only evaluated if 'option' is set to true.
    */
 #  define ENABLE_CHECK(option, condition) if(!(option) || (condition))
 
   /**
-   * @brief Needed to disable warnings about unused paraemeters.
+   * @brief Needed to disable warnings about unused parameters.
    *
    * Is also necessary because of doxygen parameter handling.
    */

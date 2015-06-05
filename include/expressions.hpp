@@ -117,12 +117,12 @@ namespace codi {
    * @param                  OP   The name of the class
    * @param                FUNC   The name of the functions. Can also be an operator.
    * @param         PRIMAL_CALL   A function which calls the function or operator.
-   * @param  DERIVATIVE_FUNC_11   The function which computes the derative when both variables are active.
-   * @param DERIVATIVE_FUNC_11M   The function which computes the derative when both variables are active and a multiplier is given.
-   * @param  DERIVATIVE_FUNC_10   The function which computes the derative when the first variable is active.
-   * @param DERIVATIVE_FUNC_10M   The function which computes the derative when the first variable is active and a multiplier is given.
-   * @param  DERIVATIVE_FUNC_01   The function which computes the derative when the second variable is active.
-   * @param DERIVATIVE_FUNC_01M   The function which computes the derative when the second variable is active and a multiplier is given.
+   * @param  DERIVATIVE_FUNC_11   The function which computes the derivative when both variables are active.
+   * @param DERIVATIVE_FUNC_11M   The function which computes the derivative when both variables are active and a multiplier is given.
+   * @param  DERIVATIVE_FUNC_10   The function which computes the derivative when the first variable is active.
+   * @param DERIVATIVE_FUNC_10M   The function which computes the derivative when the first variable is active and a multiplier is given.
+   * @param  DERIVATIVE_FUNC_01   The function which computes the derivative when the second variable is active.
+   * @param DERIVATIVE_FUNC_01M   The function which computes the derivative when the second variable is active and a multiplier is given.
    */
   #define CODI_DEFINE_BINARY_FUNCTION(OP, FUNC, PRIMAL_CALL, DERIVATIVE_FUNC_11, DERIVATIVE_FUNC_11M, DERIVATIVE_FUNC_10, DERIVATIVE_FUNC_10M, DERIVATIVE_FUNC_01, DERIVATIVE_FUNC_01M)  \
     /* predefine the structs and the functions for higher order derivatives */\
@@ -228,17 +228,17 @@ namespace codi {
         } \
     }; \
     \
-    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expresion OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
+    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expression OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
     template <typename Real, class A, class B> \
     inline OP ## 11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b) { \
       return OP ## 11<Real, A, B>(a.cast(), b.cast()); \
     } \
-    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expresion OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function*/ \
+    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expression OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function*/ \
     template <typename Real, class A> \
     inline OP ## 10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) { \
       return OP ## 10<Real, A>(a.cast(), b); \
     } \
-    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expresion OP. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
+    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expression OP. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
     template <typename Real, class B> \
     inline OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b) { \
       return OP ## 01<Real, B>(a, b.cast()); \
@@ -254,7 +254,7 @@ namespace codi {
   /*
    * Now all binary functions are implemented.
    *
-   * We use the namin sheme dervBB[M]_Name.
+   * We use the naming scheme dervBB[M]_Name.
    *
    * BB tells which variable is active. Thus we have the combinations
    * 11 -> both are active
@@ -368,7 +368,7 @@ namespace codi {
    * Implementation for f(a,b) = a / b
    */
   /**
-   * @brief Helper function which checks if the deviso is zero.
+   * @brief Helper function which checks if the divisor is zero.
    *
    * Depending of the global option CheckExpressionArguments the function will call
    * CODI_EXCEPTION if b is equal to zero.
@@ -507,18 +507,18 @@ namespace codi {
     checkArgumentsPow(a.getValue());
     a.calcGradient(gradient, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
-      return b.calcGradient(gradient, log(a.getValue()) * result);
+      b.calcGradient(gradient, log(a.getValue()) * result);
     } else {
-      return b.calcGradient(gradient, 0.0);
+      b.calcGradient(gradient, 0.0);
     }
   }
   template<typename Real, typename A, typename B> inline void derv11M_Pow(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsPow(a.getValue());
     a.calcGradient(gradient, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
-      return b.calcGradient(gradient, multiplier * log(a.getValue()) * result);
+      b.calcGradient(gradient, multiplier * log(a.getValue()) * result);
     } else {
-      return b.calcGradient(gradient, 0.0);
+      b.calcGradient(gradient, 0.0);
     }
   }
   template<typename Real, typename A> inline void derv10_Pow(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
@@ -532,17 +532,17 @@ namespace codi {
   template<typename Real, typename B> inline void derv01_Pow(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     checkArgumentsPow(a);
     if (a > 0.0) {
-      return b.calcGradient(gradient, log(a) * result);
+      b.calcGradient(gradient, log(a) * result);
     } else {
-      return b.calcGradient(gradient, 0.0);
+      b.calcGradient(gradient, 0.0);
     }
   }
   template<typename Real, typename B> inline void derv01M_Pow(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsPow(a);
     if (a > 0.0) {
-      return b.calcGradient(gradient, multiplier * log(a) * result);
+      b.calcGradient(gradient, multiplier * log(a) * result);
     } else {
-      return b.calcGradient(gradient, 0.0);
+      b.calcGradient(gradient, 0.0);
     }
   }
   using std::pow;
@@ -700,7 +700,7 @@ namespace codi {
     *
     * f(a) = -a => df/da = -1.0
     *
-    * The operatin gives the jacobi -1 to the argument.
+    * The operation gives the jacobi -1 to the argument.
     *
     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
     *                        lhs of the expression.
@@ -714,7 +714,7 @@ namespace codi {
     *
     * f(a) = -a => df/da = -1.0
     *
-    * The operatin gives the jacobi -multiplier to the argument.
+    * The operation gives the jacobi -multiplier to the argument.
     *
     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
     *                        lhs of the expression.
@@ -738,7 +738,7 @@ namespace codi {
    * @brief Overload for operator- with the CoDiPack expressions.
    *
    * @param[in] a The argument of the expression.
-   * @return The implementing expresion UnaryMinus.
+   * @return The implementing expression UnaryMinus.
    *
    * @tparam Real The real type used in the active types.
    * @tparam A The expression for the argument of the function.
@@ -766,11 +766,11 @@ namespace codi {
    * Enable mathematical functions with one argument.
    *
    * @param              OP   The name of the implementing class.
-   * @param            FUNC   The name of the function. FUNC(a) shuold be a valid call.
+   * @param            FUNC   The name of the function. FUNC(a) should be a valid call.
    * @param DERIVATIVE_FUNC   The name of the function for the derivative calculation.
    */
   # define CODI_DEFINE_UNARY_FUNCTION(OP, FUNC, DERIVATIVE_FUNC)  \
-    /* predefine the struct and the function for higher order derivatrives */\
+    /* predefine the struct and the function for higher order derivatives */\
     template<typename Real, class A> struct OP; \
     template <typename Real, class A> \
     inline  codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a); \
@@ -806,7 +806,7 @@ namespace codi {
       } \
     }; \
     \
-    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The argument of the operation. @return The implementing expresion OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function. */ \
+    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The argument of the operation. @return The implementing expression OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function. */ \
     template <typename Real, class A> \
     inline codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a) { \
       return codi:: OP<Real, A>(a.cast()); \
@@ -955,7 +955,7 @@ namespace codi {
    *
    * @param[in] a The argument of the operation.
    *
-   * @return The implementaiton of Abs.
+   * @return The implementation of Abs.
    *
    * @tparam Real The real type used in the active types.
    * @tparam A The expression for the argument of the function

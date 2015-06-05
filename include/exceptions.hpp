@@ -38,7 +38,7 @@ namespace codi {
   /**
    * @brief Prints the positions and the message of the exception.
    *
-   * The position and function where the exceptions occoured is printed. The message will be handled
+   * The position and function where the exceptions occurred is printed. The message will be handled
    * and formatted by a printf like function.
    *
    * @param[in] function  Name of the function from which the exception is generated.

@@ -43,7 +43,7 @@ namespace codi {
    *  double a = 3.0;
    *  double b = a * a;
    * \endcode
-   * the differentitated version looks like
+   * the differentiated version looks like
    * \code{.cpp}
    *  RealForward a = 3.0;
    *  a.setGradient(1.0);
@@ -74,9 +74,9 @@ namespace codi {
    *  double a = 3.0;
    *  double b = a * a;
    * \endcode
-   * the differentitated version looks like
+   * the differentiated version looks like
    * \code{.cpp}
-   *  // For convinience get a reference to the global tape.
+   *  // For convenience get a reference to the global tape.
    *  RealReverse::TapeType& tape = RealReverse::globalTape;
    *  tape.setActive();
    *  RealReverse a = 3.0;
@@ -106,7 +106,7 @@ namespace codi {
    * For details on the AD reverse mode see #RealReverse.
    *
    * This reverse type uses a tape which has no checks on the available space. The user has to specify at the beginning of
-   * the calculation how many statements will be evaluted during the calculation and how many active arguments occour in
+   * the calculation how many statements will be evaluated during the calculation and how many active arguments occur in
    * all statements.
    *
    * This tape should only be used if you are an experienced AD user or developer. If you are new to AD please use the
@@ -117,9 +117,9 @@ namespace codi {
    *  double a = 3.0;
    *  double b = a * a;
    * \endcode
-   * the differentitated version looks like
+   * the differentiated version looks like
    * \code{.cpp}
-   *  // For convinience get a reference to the global tape.
+   *  // For convenience get a reference to the global tape.
    *  RealReverseUnchecked::TapeType& tape = RealReverseUnchecked::globalTape;
    *  // The only but very important change with respect to RealReverse. Without this you should get a segmentation fault.
    *  tape.resize(2, 2);
