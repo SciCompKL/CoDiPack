@@ -26,7 +26,7 @@
 
 #include <cstddef>
 
-#include "expressions.h"
+#include "expressions.hpp"
 
 namespace codi {
 

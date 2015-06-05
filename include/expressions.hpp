@@ -965,9 +965,9 @@ namespace codi {
     return Abs<Real, A>(a.cast());
   }
 
-  /*
+  /***************************************************************************************
    * Functions which do not need derivatives.
-   */
+   ****************************************************************************************/
   /**
    * @brief Overload for the isinf function with expressions.
    *

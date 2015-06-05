@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "expressions.h"
+#include "expressions.hpp"
 #include "typeTraits.hpp"
 #include "expressionTraits.hpp"
 #include <iostream>
