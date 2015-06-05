@@ -86,8 +86,8 @@ namespace codi {
      * corresponding to the tape is 1.0.
      *
      * @param[inout]   gradient  A handle to the gradient of the operation. Mostly used for the forward mode.
-     * @param[in]          value  The value of the active type which pushes the jacobi.
-     * @param[in]   gradientData  The gradient data of the active type which pushes the jacobi.
+     * @param[in]         value  The value of the active type which pushes the jacobi.
+     * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
      */
     virtual void pushJacobi(Real& gradient, const Real& value, const GradientData& gradientData) = 0;
 
@@ -98,8 +98,9 @@ namespace codi {
      * in the evaluation and needs to be evaluated or stored.
      *
      * @param[inout]   gradient  A handle to the gradient of the operation. Mostly used for the forward mode.
-     * @param[in]          value  The value of the active type which pushes the jacobi.
-     * @param[in]   gradientData  The gradient data of the active type which pushes the jacobi.
+     * @param[in]        jacobi  The value of the jacobi.
+     * @param[in]         value  The value of the active type which pushes the jacobi.
+     * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
      */
     virtual void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const GradientData& gradientData) = 0;
 
@@ -116,7 +117,7 @@ namespace codi {
     /**
      * @brief Destroy the gradient data of a active type.
      *
-     * The tape can destory the gradient data of the active type. This method is
+     * The tape can destroy the gradient data of the active type. This method is
      * called in the destructor of an active type.
      *
      * @param[inout]        value  The value of the active type.
@@ -160,8 +161,5 @@ namespace codi {
     * @return The gradient which belongs to the active type as a reference.
     */
     virtual Real& gradient(GradientData& value) = 0;
-
-
-
   };
 }
