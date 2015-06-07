@@ -41,9 +41,9 @@ namespace codi {
    * @tparam   GradientDataType  The data the tape uses to identify each active variable
    *                               and where the tape can store information about the
    *                               gradient.
-   * @tparam TapeImplementation  The implementing tape of the interface. It is neede to define the active type
+   * @tparam TapeImplementation  The implementing tape of the interface. It is needed to define the active type
    *                               for the registration of the variables.
-   * @tparam           Position  Position used by the impelementing tape.
+   * @tparam           Position  Position used by the implementing tape.
    *
    */
   template <typename Real, typename GradientDataType, typename TapeImplementation, typename Position>
@@ -59,7 +59,7 @@ namespace codi {
      * It has to hold start >= end.
      *
      * @param[in] start The starting position for the reverse evaluation.
-     * @param[in]   end The ending position for the reverse evalution.
+     * @param[in]   end The ending position for the reverse evaluation.
      */
     virtual void evaluate(const Position& start, const Position& end) = 0;
 
@@ -110,7 +110,7 @@ namespace codi {
     /**
     * @brief Clears the currently stored adjoints.
     *
-    * @return Sets the currently stored adjoints to zero, thereby enabling a re-evalution of the tape.
+    * @return Sets the currently stored adjoints to zero, thereby enabling a reevaluation of the tape.
     */
     virtual void clearAdjoints() = 0;
 
@@ -124,7 +124,7 @@ namespace codi {
     virtual void reset(const Position& pos) = 0;
 
     /**
-     * @brief Completly reset the tape.
+     * @brief Completely reset the tape.
      *
      * The reset will clear everything the tape has recorded.
      */
@@ -147,7 +147,7 @@ namespace codi {
      * give special treatment to code sections which have simpler reverse implementation than the
      * AD tool.
      *
-     * @param[in]       extFunc The function which is called during the reverse evluation of the tape.
+     * @param[in]       extFunc The function which is called during the reverse evaluation of the tape.
      * @param[in]    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
      * @param[in] delCheckpoint The delete function for the data.
      */
@@ -160,7 +160,7 @@ namespace codi {
      * give special treatment to code sections which have simpler reverse implementation than the
      * AD tool.
      *
-     * @param[in]       extFunc The function which is called during the reverse evluation of the tape.
+     * @param[in]       extFunc The function which is called during the reverse evaluation of the tape.
      * @param[in]    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
      * @param[in] delCheckpoint The delete function for the data.
      *

@@ -64,12 +64,12 @@ namespace codi {
    * The vector stores an array of data chunks which have all the same size.
    * The data in the chunk can be accessed in a stack like fashion. The user
    * has to check first if enough data is available. The chunk vector will
-   * make shure that the current loaded chunk has enough data. The user can then
+   * make sure that the current loaded chunk has enough data. The user can then
    * push as many data items as he has reserved on the chunk vector.
    *
-   * The read acces to the data is provided by the function forEach, which will
+   * The read access to the data is provided by the function forEach, which will
    * call the provided function handle on every data item. A second option is to
-   * get direct pointers to the data with the getDataAtPostion function.
+   * get direct pointers to the data with the getDataAtPosition function.
    *
    * As some tapes need multiple chunk vectors, the design of the chunk vector reflects
    * this need. The user never knows when a chunk vector pushes a new chunk on the stack
@@ -120,7 +120,7 @@ namespace codi {
        * @brief Create the full position for all the nested vectors.
        * @param chunk   Index of the current chunk.
        * @param  data   Index of the data in the current chunk.
-       * @param inner   Position of the nexted vector.
+       * @param inner   Position of the nested vector.
        */
       Position(const size_t& chunk, const size_t& data, const NestedPosition& inner) :
         chunk(chunk),
@@ -143,7 +143,7 @@ namespace codi {
     ChunkData* curChunk; /**< The current loaded chunk. This will never be NULL */
     size_t curChunkIndex; /**< Index of the chunk which loaded. */
 
-    size_t chunkSize; /**< Global size of the chunks. If this size is set all the chunks are resized. */
+    size_t chunkSize; /**< Global size of the chunks. If this size is set all the chunks are set to this size. */
 
     NestedVector& nested; /**< Reference to the nested vector. */
 
@@ -178,7 +178,7 @@ namespace codi {
     }
 
     /**
-     * @brief Sets the global chunk size and resizes all chunks.
+     * @brief Sets the global chunk size and sets the size of all chunks.
      * @param chunkSize   The new chunk size.
      */
     void setChunkSize(const size_t& chunkSize) {
@@ -264,7 +264,7 @@ namespace codi {
     /**
      * @brief Checks if the current chunk has enough items left.
      *
-     * If the chunk has not enough ites left, the next chunk is
+     * If the chunk has not enough items left, the next chunk is
      * loaded.
      *
      * @param items   The maximum number of items to store.

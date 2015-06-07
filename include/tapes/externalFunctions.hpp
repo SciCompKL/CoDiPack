@@ -31,11 +31,11 @@ namespace codi {
    *
    * The structures stores all elements for the function evaluation.
    *
-   * The function itself is stored and a handle to the user data for the
-   * function. The user data changes ownership when it is provided to
+   * The function itself and a handle to the user data for the
+   * function is stored. The user data changes its ownership when it is provided to
    * the external function, therefore a method for deleting the data is stored.
    *
-   * The data will not be deleted in destructor as the structure is considered
+   * The data will not be deleted in the destructor as the structure is considered
    * a POD type.
    */
   struct ExternalFunction {
@@ -97,14 +97,14 @@ namespace codi {
    *
    * The structures stores all elements for the function evaluation.
    *
-   * The function itself is stored and a pointer to the user data for the
-   * function. The user data changes ownership when it is provided to
+   * The function itself and a pointer to the user data for the
+   * function is stored. The user data changes its ownership when it is provided to
    * the external function, therefore a method for deleting the data is stored.
    *
-   * The data will not be deleted in destructor as the structure is considered
+   * The data will not be deleted in the destructor as the structure is considered
    * a POD type.
    *
-   * @tparam The type of the data used in the external function.
+   * @tparam Data The type of the data used in the external function.
    */
   template<typename Data>
   class ExternalFunctionDataHelper {
@@ -175,11 +175,11 @@ namespace codi {
   public:
 
     /**
-     * @brief Create a ExternalFunction object with strong typed data.
+     * @brief Create an ExternalFunction object with strong typed data.
      *
-     * @param[in]             func  The user function which is called by the data.
-     * @param[inout]          data  The data for the user function.
-     * @param[in] deleteCheckpoint  The function which deletes the user data. The function handle can be NULL.
+     * @param[in]       func  The user function which is called by the data.
+     * @param[inout]    data  The data for the user function.
+     * @param[in] deleteData  The function which deletes the user data. The function handle can be NULL.
      *
      * @return The ExternalFunction object with strong typed data.
      */

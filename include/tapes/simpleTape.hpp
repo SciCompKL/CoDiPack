@@ -501,15 +501,14 @@ namespace codi {
      * The data handle provided to the tape is considered in possession of the tape. The tape will now be responsible to
      * free the handle. For this it will use the delete function provided by the user.
      *
-     * @param[in]       extFunc  The external function which is called by the tape.
-     * @param[inout] checkpoint  The data for the external function. The tape takes ownership over the data.
-     * @param[in] delCheckpoint  The delete function for the data.
+     * @param[in] extFunc  The external function which is called by the tape.
+     * @param[inout] data  The data for the external function. The tape takes ownership over the data.
+     * @param[in] delData  The delete function for the data.
      */
-    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint){
-      assert(0 != externalFunctions.getUnusedSize());
-      ExternalFunction function(extFunc, checkpoint, delCheckpoint);
-      externalFunctions.setDataAndMove(std::make_tuple(function, getPosition()));
+    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData){
+      pushExternalFunctionHandle(ExternalFunction(extFunc, data, delData));
     }
+
 
     /**
      * @brief Add an external function with a specific data type.
@@ -517,14 +516,25 @@ namespace codi {
      * The data pointer provided to the tape is considered in possession of the tape. The tape will now be responsible to
      * free the data. For this it will use the delete function provided by the user.
      *
-     * @param[in]       extFunc  The external function which is called by the tape.
-     * @param[inout] checkpoint  The data for the external function. The tape takes ownership over the data.
-     * @param[in] delCheckpoint  The delete function for the data.
+     * @param[in] extFunc  The external function which is called by the tape.
+     * @param[inout] data  The data for the external function. The tape takes ownership over the data.
+     * @param[in] delData  The delete function for the data.
      */
     template<typename Data>
-    void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* checkpoint, typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint){
-      ExternalFunctionDataHelper<Data>* functionHelper = new ExternalFunctionDataHelper<Data>(extFunc, checkpoint, delCheckpoint);
-      pushExternalFunctionHandle( ExternalFunctionDataHelper<Data>::callFunction, functionHelper, ExternalFunctionDataHelper<Data>::deleteFunction);
+    void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<Data>::DeleteFunction delData){
+      pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));\
     }
+
+  private:
+    /**
+     * @brief Private common method to add to the external function stack.
+     *
+     * @param[in] function The external function structure to push.
+     */
+    void pushExternalFunctionHandle(const ExternalFunction& function){
+      assert(0 != externalFunctions.getUnusedSize());
+      externalFunctions.setDataAndMove(std::make_tuple(function, getPosition()));
+    }
+
   };
 }
