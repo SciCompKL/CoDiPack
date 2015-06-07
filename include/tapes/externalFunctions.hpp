@@ -26,61 +26,135 @@
 
 namespace codi {
 
+  /**
+   * @brief Data and functions for external functions.
+   *
+   * The structures stores all elements for the function evaluation.
+   *
+   * The function itself is stored and a handle to the user data for the
+   * function. The user data changes ownership when it is provided to
+   * the external function, therefore a method for deleting the data is stored.
+   *
+   * The data will not be deleted in destructor as the structure is considered
+   * a POD type.
+   */
   struct ExternalFunction {
+    /** @brief Definition for the user function.*/
     typedef void (*CallFunction)(void*);
+    /** @brief Definition for the delete function of the user data. */
     typedef void (*DeleteFunction)(void*);
 
   private:
+    /** @brief The function given by the user. */
     CallFunction func;
+    /** @brief The delete function for the user data. */
     DeleteFunction deleteCheckpoint;
 
-    void* checkpoint;
+    /** @brief The data for the function. */
+    void* data;
 
   public:
-    ExternalFunction(){}
-    ExternalFunction(CallFunction func, void* checkpoint, DeleteFunction deleteCheckpoint) :
+    /**
+     * @brief Needed to construct arrays.
+     */
+    ExternalFunction() {}
+    /**
+     * @brief Create the structure with all data.
+     *
+     * @param[in]             func  The user function which is called by the data.
+     * @param[inout]          data  The data for the user function.
+     * @param[in] deleteCheckpoint  The function which deletes the user data. The function handle can be NULL.
+     */
+    ExternalFunction(CallFunction func, void* data, DeleteFunction deleteCheckpoint) :
       func(func),
       deleteCheckpoint(deleteCheckpoint),
-      checkpoint(checkpoint){}
+      data(data){}
 
+    /**
+     * @brief Delete the data provided by the user.
+     *
+     * If the function handle is NULL the data is not deleted.
+     */
     void deleteData() {
       if (deleteCheckpoint != NULL){
-        deleteCheckpoint(checkpoint);
-        checkpoint = NULL;
+        deleteCheckpoint(data);
+        data = NULL;
       }
     }
 
+    /**
+     * @brief Call the user function with the user data as an argument.
+     */
     void evaluate() {
       if(NULL != func) {
-        func(checkpoint);
+        func(data);
       }
     }
   };
 
+  /**
+   * @brief Data and functions for strongly typed external functions.
+   *
+   * The structures stores all elements for the function evaluation.
+   *
+   * The function itself is stored and a pointer to the user data for the
+   * function. The user data changes ownership when it is provided to
+   * the external function, therefore a method for deleting the data is stored.
+   *
+   * The data will not be deleted in destructor as the structure is considered
+   * a POD type.
+   *
+   * @tparam The type of the data used in the external function.
+   */
   template<typename Data>
   class ExternalFunctionDataHelper {
   public:
+    /** @brief Definition for the user function.*/
     typedef void (*CallFunction)(Data*);
+    /** @brief Definition for the delete function of the user data. */
     typedef void (*DeleteFunction)(Data*);
 
   private:
+    /** @brief The function given by the user. */
     CallFunction func;
+    /** @brief The delete function for the user data. */
     DeleteFunction deleteData;
 
+    /** @brief The data for the function. */
     Data* data;
 
-  public:
+  private:
+    /**
+     * @brief Create the structure with all data.
+     *
+     * @param[in]             func  The user function which is called by the data.
+     * @param[inout]          data  The data for the user function.
+     * @param[in] deleteCheckpoint  The function which deletes the user data. The function handle can be NULL.
+     */
     ExternalFunctionDataHelper(CallFunction func, Data* data, DeleteFunction deleteData) :
       func(func),
       deleteData(deleteData),
       data(data){}
 
-
+    /**
+     * @brief Helper function which is called from the #ExternalFunction structure.
+     *
+     * The method calls the user function with the data stored in the data handle.
+     *
+     * @param[inout] data The void handle from the #ExternalFunction is a handle to a #ExternalFunctionDataHelper object.
+     */
     static void callFunction(void* data) {
       ExternalFunctionDataHelper<Data>* castData = cast(data);
       castData->func(castData->data);
     }
 
+    /**
+     * @brief Helper function which is called from the #ExternalFunction structure.
+     *
+     * The method deletes the user data for the user function and deletes the  the user function with the data stored in the data handle.
+     *
+     * @param[inout] data The void handle from the #ExternalFunction is a handle to a #ExternalFunctionDataHelper object.
+     */
     static void deleteFunction(void* data) {
       ExternalFunctionDataHelper<Data>* castData = cast(data);
       castData->deleteData(castData->data);
@@ -89,11 +163,29 @@ namespace codi {
       delete castData;
     }
 
-  private:
-
+    /**
+     * @brief Cast the data handle to a ExternalFunctionDataHelper pointer.
+     * @param data  The void handle to the data.
+     * @return The converted void pointer.
+     */
     static ExternalFunctionDataHelper<Data>* cast(void* data) {
       return (ExternalFunctionDataHelper<Data>*)data;
     }
 
+  public:
+
+    /**
+     * @brief Create a ExternalFunction object with strong typed data.
+     *
+     * @param[in]             func  The user function which is called by the data.
+     * @param[inout]          data  The data for the user function.
+     * @param[in] deleteCheckpoint  The function which deletes the user data. The function handle can be NULL.
+     *
+     * @return The ExternalFunction object with strong typed data.
+     */
+    static inline ExternalFunction createHandle(CallFunction func, Data* data, DeleteFunction deleteData) {
+      ExternalFunctionDataHelper<Data>* functionHelper = new ExternalFunctionDataHelper<Data>(func, data, deleteData);
+      return ExternalFunction(ExternalFunctionDataHelper<Data>::callFunction, functionHelper, ExternalFunctionDataHelper<Data>::deleteFunction);
+    }
   };
 }
