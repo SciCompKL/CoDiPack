@@ -725,6 +725,12 @@ public:
     }
   public:
 
+    /**
+     * @brief Register a variable as an active variable.
+     *
+     * The index of the variable is set to a non zero number.
+     * @param[inout] value The value which will be marked as an active variable.
+     */
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
       statements.reserveItems(1);
       statements.setDataAndMove(std::make_tuple(0));
@@ -732,6 +738,11 @@ public:
       value.getGradientData() = ++expressionCount.count;
     }
 
+    /**
+     * @brief Not needed in this implementation.
+     *
+     * @param[in] value Not used.
+     */
     inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
       CODI_UNUSED(value);
       /* do nothing */
