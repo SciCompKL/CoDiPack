@@ -31,7 +31,7 @@ namespace codi {
   /**
    * @brief Generates an exception.
    *
-   * @params ...  Arguments for a printf like output and format.
+   * @param ...  Arguments for a printf like output and format.
    */
   #define CODI_EXCEPTION(...) outputException( __func__, __FILE__, __LINE__, __VA_ARGS__)
 
