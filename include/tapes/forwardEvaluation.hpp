@@ -49,6 +49,11 @@ namespace codi {
   class ForwardEvaluation : public TapeInterface<Real, Real>{
   public:
 
+    /**
+     * @brief The tangent value for the active variable.
+     *
+     * The tangent data has the same type as the primal data.
+     */
     typedef Real GradientData;
 
     /**
@@ -99,8 +104,8 @@ namespace codi {
      * This method is called for each value on the rhs. The tangent of the value is added to the
      * tangent of the lhs.
      *
-     * @param[inout] lhsTangent  The tangent of the lhs.
-     * @param[]            value  Not used
+     * @param[inout]  lhsTangent  The tangent of the lhs.
+     * @param[in]          value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
      */
     inline void pushJacobi(Real& lhsTangent, const Real& value, const GradientData& curTangent) {
@@ -114,9 +119,9 @@ namespace codi {
      * This method is called for each value on the rhs. The tangent of the value times the jacobi is added to the
      * tangent of the lhs.
      *
-     * @param[inout] lhsTangent  The tangent of the lhs.
+     * @param[inout]  lhsTangent  The tangent of the lhs.
      * @param[in]         jacobi  The jacobi value of the operation.
-     * @param[]            value  Not used
+     * @param[in]          value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
      */
     inline void pushJacobi(Real& lhsTangent, const Real& jacobi, const Real& value, const GradientData& curTangent) {
@@ -131,7 +136,7 @@ namespace codi {
      *
      * The tangent is initialized with zero.
      *
-     * @param[]      value  Not used.
+     * @param[in]    value  Not used.
      * @param[out] tangent  Set to zero.
      */
     inline void initGradientData(Real& value, GradientData& tangent) {
