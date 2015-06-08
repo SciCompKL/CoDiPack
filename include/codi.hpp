@@ -27,7 +27,7 @@
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/simpleTape.hpp"
 #include "tapes/chunkTape.hpp"
-#include "tools/DataStore.hpp"
+#include "tools/dataStore.hpp"
 
 namespace codi {
   /**
