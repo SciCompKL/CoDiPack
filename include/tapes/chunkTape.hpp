@@ -294,9 +294,8 @@ public:
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
         }
-        // TODO: Hack aufheben oder schaltbar machen?
-//      } else {
-//        lhsIndex = 0;
+      } else {
+        lhsIndex = 0;
       }
       /* now set the value of the lhs */
       lhsValue = rhs.getValue();
@@ -317,9 +316,8 @@ public:
     inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
-        // TODO: Hack aufheben oder schaltbar machen?
-//      } else {
-//        lhsIndex = 0;
+      } else {
+        lhsIndex = 0;
       }
       lhsValue = rhs.getValue();
     }
