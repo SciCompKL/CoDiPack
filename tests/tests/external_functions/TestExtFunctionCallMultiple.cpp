@@ -1,6 +1,6 @@
 #include <toolDefines.h>
 
-#include <tools/DataStore.hpp>
+#include <tools/dataStore.hpp>
 
 #include <iostream>
 
@@ -16,7 +16,7 @@ const int ITER = 5;
 
 #ifdef REVERSE_TAPE
 static void extFunc(void* checkpoint){
-  DataStore *check = static_cast<DataStore*>(checkpoint);
+  codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   NUMBER *x, w0, w1;
   check->getData(x);
   check->getData(w0);
@@ -26,7 +26,7 @@ static void extFunc(void* checkpoint){
 }
 
 static void delFunc(void* checkpoint){
-  DataStore *check = static_cast<DataStore*>(checkpoint);
+  codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   delete check;
   std::cout << "Delete" << std::endl;
 }
@@ -41,7 +41,7 @@ void func(NUMBER* x, NUMBER* y) {
     func_forward(w[i],w[i - 1],x[1]);
     tape.setActive();
 
-    DataStore *checkpoint = new DataStore();
+    codi::DataStore *checkpoint = new codi::DataStore();
     tape.registerInput(w[i]);
     checkpoint->addData(x);
     checkpoint->addData(w[i-1]);
