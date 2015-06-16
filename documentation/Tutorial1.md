@@ -2,7 +2,7 @@ Tutorial 1: Forward mode      {#Tutorial1}
 ============
 
 
-The first function we want to differentation is implemented as
+The first function we want to differentiation is implemented as
 ~~~~{.cpp}
     double func(const double& x) {
       return x * x * x;
@@ -20,11 +20,11 @@ As the function is quite simple the jacobi of the function can be computed by ha
 \f]
 The derivative computation with the forward mode of CoDiPack needs now three things:
   - An implementation of the function with the CoDiPack forward type [RealForward](@ref codi::RealForward).
-  - The direction of the derivate has to be set.
-  - The result of the derivative has to be recevied from the result.
+  - The direction of the derivative has to be set.
+  - The result of the derivative has to be received from the result.
 
 The first thing is the implementation of the function with the forward type of CoDiPack.
-This is done by replacing every occourence of the type double in the function with the type RealForward.
+This is done by replacing every occurrence of the type double in the function with the type RealForward.
 The overloading implementation looks like
 ~~~~{.cpp}
     codi::RealForward func(const codi::RealForward& x) {
@@ -66,9 +66,9 @@ The forward mode of AD computes the equation
 \f[
   \dot y = \frac{\d f}{\d x}(x) \cdot \dot x \quad .
 \f]
-In our example the dimensions of the vectorspaces \f$\R^n\f$ and \f$\R^n\f$ is one.
-The formulation contains the partial derivative of \f$f\f$ with respect to the input variable \f$x\f$.
-In equation (T1.1) the partial derivative was derrived.
+In our example the dimensions of the vector spaces \f$\R^n\f$ and \f$\R^m\f$ is one.
+The formulation contains the partial derivative of \f$f\f$ with respect to the input variable \f$x\f$,
+which was derived in equation (T1.1).
 AD will multiply this partial derivative with the value of \f$\dot x\f$ and the result of the operation will be stored in \f$\dot y\f$.
 By setting \f$\dot x = 1\f$ the result will be the gradient of \f$f\f$ at the position \f$x\f$.
 The RealForward type stores the primal value and the derivative value which is denoted by the dot above the name of the value.
@@ -78,7 +78,7 @@ The value of \f$\dot x\f$ can be set with the call:
 ~~~~{.cpp}
       x.setGradient(1.0);
 ~~~~
-The value of \f$\dot y\f$ can be retrived with the call:
+The value of \f$\dot y\f$ can be retrieved with the call:
 ~~~~{.cpp}
       double y_dot = y.getGradient();
 ~~~~
@@ -98,7 +98,7 @@ The implementation of the main method is now extended by these two calls:
     }
 ~~~~
 
-The result for the primal computation will be 64 and for the derivative it will be 48.
+The result for the primal computation will be 64 and the derivative will be 48.
 
 The full code of the example is now:
 ~~~~{.cpp}
