@@ -1,0 +1,80 @@
+#include "ampi_tape.hpp"
+#include "tools/dataStore.hpp"
+
+//#define INT64 int
+
+typedef codi::RealReverse type;
+
+extern "C" {
+  //forward declare von AMPI
+
+  void ampi_get_val(void *buf, int *i, double *x) {
+    *x=static_cast<type*>(buf)[*i].getValue();
+  }
+  void ampi_set_val(void* buf, int *i, double *v) {
+    type &dummy= static_cast<type*>(buf)[*i];
+    dummy.setValue(*v);
+  }
+
+  void ampi_get_idx(void *buf, int *i, INT64 *idx) {
+    type &var = static_cast<type*>(buf)[*i];
+    *idx = var.getGradientData();
+  }
+
+
+  void ampi_get_adj(INT64 *idx, double *x) {
+    //if(*idx) *x = *(*idx);
+    if(*idx!=0) {
+        *x = codi::RealReverse::getGlobalTape().getGradient(*idx);
+    } else {
+        *x = 0.0;
+    }
+
+  }
+  void ampi_set_adj(INT64 *idx, double *x) {
+   int index = *idx;
+    if(*idx!=0 && *x != 0.0){
+        codi::RealReverse::getGlobalTape().gradient(index) += *x;
+    }
+  }
+
+  void ampi_tape_wrapper(void* cp) {
+   codi::DataStore *handler = static_cast<codi::DataStore*>(cp);
+   ampi_tape_entry* ampi_entry;
+   handler->getData(ampi_entry);
+    ampi_interpret_tape(ampi_entry);
+  }
+
+  void delete_handler(void* cp){
+    codi::DataStore *handler = static_cast<codi::DataStore*>(cp);
+    ampi_tape_entry* ampi_entry;
+    handler->getData(ampi_entry);
+    ampi_reset_entry((void*)ampi_entry);
+    delete handler;
+  }
+
+  void ampi_create_tape_entry(void* handle) {
+     if (codi::RealReverse::getGlobalTape().isActive()){
+      ampi_tape_entry* ampi_entry = static_cast<ampi_tape_entry*>(handle);
+      codi::DataStore *handler = new codi::DataStore;
+      handler->addData(ampi_entry);
+         codi::RealReverse::getGlobalTape().pushExternalFunctionHandle(&ampi_tape_wrapper,handler,&delete_handler);
+     }
+  }
+
+  void ampi_create_dummies(void *buf, int *size) {
+      if (codi::RealReverse::getGlobalTape().isActive()){
+
+        type *values=static_cast<type*>(buf);
+        for(int i=0;i<*size;++i) {
+          //type &dummy=values[i];
+          values[i]=0;
+          codi::RealReverse::getGlobalTape().registerInput(values[i]);
+        }
+     }
+  }
+
+  int ampi_is_tape_active () {
+     return codi::RealReverse::getGlobalTape().isActive();
+  }
+}
