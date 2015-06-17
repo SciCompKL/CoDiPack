@@ -19,7 +19,7 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: TODO
+ * Authors: Max Sagebaum, Tim Albring, TU Kaiserslautern.
  */
 #pragma once
 
