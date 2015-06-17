@@ -1,9 +1,13 @@
 /**
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing, TU Kaiserslautern
+ * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Homepage: http://www.scicomp.uni-kl.de
+ * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
- * This file is part of CoDiPack.
+ * Lead developers: Max Sagebaum, Tim Albring (SciComp, TU Kaiserslautern)
+ *
+ * This file is part of CoDiPack (http://www.scicomp.uni-kl.de/software/codi).
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,8 +23,8 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, TU Kaiserslautern,
- *          Prof. Robing Hogan, Univ. of Reading.
+ * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ *          Prof. Robin Hogan, (Univ. of Reading).
  *
  * Originally based on Adept 1.0 (http://www.met.rdg.ac.uk/clouds/adept/)
  * released under GPL 3.0 (Copyright (C) 2012-2013 Robin Hogan and the University of Reading).
