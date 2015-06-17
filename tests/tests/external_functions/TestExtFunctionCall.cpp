@@ -1,6 +1,6 @@
 #include <toolDefines.h>
 
-#include <tools/DataStore.hpp>
+#include <tools/dataStore.hpp>
 
 #include <iostream>
 
@@ -14,7 +14,7 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
 
 #ifdef REVERSE_TAPE
 static void extFunc(void* checkpoint){
-  DataStore *check = static_cast<DataStore*>(checkpoint);
+  codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   NUMBER *x, w;
   check->getData(x);
   check->getData(w);
@@ -23,14 +23,14 @@ static void extFunc(void* checkpoint){
 }
 
 static void delFunc(void* checkpoint){
-  DataStore *check = static_cast<DataStore*>(checkpoint);
+  codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   delete check;
   std::cout << "Delete" << std::endl;
 }
 
 void func(NUMBER* x, NUMBER* y) {
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
-  DataStore *checkpoint = new DataStore;
+  codi::DataStore *checkpoint = new codi::DataStore;
   NUMBER w;
   tape.setPassive();
   func_forward(w,x[0],x[1]);
