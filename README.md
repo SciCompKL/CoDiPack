@@ -59,4 +59,4 @@ for the gcc compiler or with
 ~~~~
 for the intel compiler.
 
-Please visit the [tutorial page](http://www.scicomp.uni-kl.de/software/codi) for further information.
+Please visit the [tutorial page](http://www.scicomp.uni-kl.de/codi) for further information.
