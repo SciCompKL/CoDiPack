@@ -60,4 +60,4 @@ for the gcc compiler or with
 ~~~~
 for the intel compiler.
 
-Please visit the tutorial page for further information.
+Please visit the \ref tutorialPage "tutorial page" for further information.
