@@ -7,4 +7,6 @@ CoDi.includes
 CoDi.config
 CoDi.creator
 CoDi.creator.user
+CoDi.creator.user.*
 *.autosave
+documentation/html
