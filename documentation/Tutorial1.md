@@ -18,9 +18,10 @@ As the function is quite simple the jacobi of the function can be computed by ha
   \tag{T1.1}
   \frac{\d f}{\d x}(x) = 3 * x * x = 3 * x^2 \eqdot
 \f]
-The derivative computation with the forward mode of CoDiPack needs now three things:
+The derivative computation with the forward mode of CoDiPack needs now four things:
   - An implementation of the function with the CoDiPack forward type [RealForward](@ref codi::RealForward).
   - The direction of the derivative has to be set.
+  - The evaluation of the function with the RealForward type.
   - The result of the derivative has to be received from the result.
 
 The first thing is the implementation of the function with the forward type of CoDiPack.

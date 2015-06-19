@@ -81,7 +81,7 @@ The equation for the AD reverse mode
 \f[
   \bar x = \frac{\d f}{\d x}^T(x) \cdot \bar y \quad .
 \f]
-just states the multiplication of the Jacobi matrix with the vector \f$\bar y \in \R^m\f$.
+just states the multiplication of the transposed Jacobi matrix with the vector \f$\bar y \in \R^m\f$.
 Because \f$m=2\f$ in this example the matrix can not be computed in one sweep.
 First \f$\bar y\f$ has to be set to \f$(1.0, 0.0)\f$ and then to \f$(0.0, 1.0)\f$.
 Because the tape implementation in CoDiPack keeps all adjoint variables in place,
