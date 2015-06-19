@@ -2,3 +2,14 @@ p.formulaDsp {
 	text-align: left;
   text-indent: 2em;
 }
+
+.navpath li.footer {
+  float: unset;
+}
+
+.alignleft {
+    float: left;
+}
+.alignright {
+    float: right;
+}
