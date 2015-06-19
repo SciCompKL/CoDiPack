@@ -10,7 +10,7 @@ CoDiPack (Code Differentiation Package) is a tool for gradient evaluation in com
   - Higher order derivatives
 
 The design principle for CoDiPack is that it is easy to use.
-But it also gives experienced AD developers the full access to all the data structures.
+However, it also gives experienced AD developers the full access to all the data structures.
 
 The Scientific Computing Group at the TU Kaiserslautern develops CoDiPack and
 will enhance and extend CoDiPack in the future.
@@ -19,11 +19,11 @@ will enhance and extend CoDiPack in the future.
 
 CoDiPack is a header only library.
 The only file the user needs to include is `codi.hpp`.
-The only other requirement is a c++11 compliant compiler,
-usually one needs to specify '--std=c++11' in compiler arguments.
+The only other requirement is a c++11 compliant compiler
+where one usually needs to specify '--std=c++11' in compiler arguments.
 CoDiPack is tested with gcc and the intel compiler.
 
-In the file `codi.hpp` the types RealForward, RealReverse and RealReverseUnchecked are defined.
+The file `codi.hpp` defines the datatypes `RealForward`, `RealReverse` and `RealReverseUnchecked`.
 For RealForward type implements the forward mode of AD and
 the RealReverse type implements the reverse mode of AD.
 The third type is also an implementation of the reverse mode of AD but it should only be used by experienced users.
