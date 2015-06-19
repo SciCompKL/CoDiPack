@@ -1,6 +1,6 @@
 # CoDiPack
 
-CoDiPack (Code Differentiation Package) is a tool for gradient evaluation in computer programs. It supports the features:
+[CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) (Code Differentiation Package) is a tool for gradient evaluation in computer programs. It supports the features:
   - Forward mode of Algorithmic Differentiation(AD)
   - Reverse mode of Algorithmic Differentiation(AD)
   - Different tape implementations
@@ -59,4 +59,4 @@ for the gcc compiler or with
 ~~~~
 for the intel compiler.
 
-Please visit the [tutorial page](http://www.scicomp.uni-kl.de/codi) for further information.
+Please visit the [tutorial page](http://www.scicomp.uni-kl.de/codi/db/d3c/tutorialPage.html) for further information.
