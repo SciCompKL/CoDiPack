@@ -42,7 +42,6 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
 
 const int ITER = 5;
 
-#ifdef REVERSE_TAPE
 static void extFunc(void* checkpoint){
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   NUMBER *x, w0, w1;
@@ -80,17 +79,3 @@ void func(NUMBER* x, NUMBER* y) {
 
   y[0] = w[ITER - 1]*w[ITER - 1];
 }
-#else
-void func(NUMBER*x, NUMBER* y){
-  NUMBER w[ITER];
-
-  w[0] = x[0];
-  for(int i = 1; i < ITER; ++i) {
-    func_forward(w[i],w[i - 1],x[1]);
-  }
-
-
-  y[0] = w[ITER - 1]*w[ITER - 1];
-}
-#endif
-
