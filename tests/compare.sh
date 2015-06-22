@@ -36,14 +36,20 @@ fi;
 
 # arguments have been read now iterate over the files and compare them
 res=
-while [ $# -gt 0 ]
-do
-    res+=" "
-    cmp $baseFileName $1
-    if [ $? -eq 0 ];
-    then res+=$ok;
-    else res+=$failure;
-    fi;
-    shift
-done
+if [[ 0 == $# ]];
+then res+=" $failure no drivers run this test.";
+else
+    while [ $# -gt 0 ]
+    do
+        res+=" "
+        [[ $1 =~ _([^/]+)\.out ]] &&
+            res+=${BASH_REMATCH[1]}:
+        cmp $baseFileName $1
+        if [ $? -eq 0 ];
+        then res+=$ok;
+        else res+=$failure;
+        fi;
+        shift
+    done
+fi;
 echo Test$testName:$res

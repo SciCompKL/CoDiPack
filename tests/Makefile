@@ -6,9 +6,14 @@ RESULT_BASE_DIR = results_base
 RESULT_DIR = results
 
 #list all source files in TEST_DIR
-TEST_FILES  = $(wildcard $(TEST_DIR)/Test**.cpp)
+TEST_FILES   = $(wildcard $(TEST_DIR)/Test**.cpp)
 TEST_FILES  += $(wildcard $(TEST_DIR)/**/Test**.cpp)
 TEST_FILES  += $(wildcard $(TEST_DIR)/**/**/Test**.cpp)
+
+#list all dependency files in BUILD_DIR
+DEP_FILES   = $(wildcard $(BUILD_DIR)/Test**.d)
+DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
+DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 -Wall -pedantic -std=c++11
@@ -17,71 +22,80 @@ else
 endif
 
 CXX := g++
-ADEPT_DIR := ../../adept-extended
 CODI_DIR := ..
 
-INC =  -I$(ADEPT_DIR)/include
-
+# Complete list of test files
 TESTS = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(TEST_FILES))
 
-FORWARD_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_forward_bin,$(TEST_FILES))
-FORWARD_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_forward.out,$(TEST_FILES))
-FORWARD_2ND_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_forward2nd_bin,$(TEST_FILES))
-FORWARD_2ND_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_forward2nd.out,$(TEST_FILES))
-REVERSE_SIMPLE_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_reverse_simple_bin,$(TEST_FILES))
-REVERSE_SIMPLE_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_reverse_simple.out,$(TEST_FILES))
-REVERSE_CHUNK_BIN_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%_reverse_chunk_bin,$(TEST_FILES))
-REVERSE_CHUNK_OUT_FILES   = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%_reverse_chunk.out,$(TEST_FILES))
+# set default rule
+all:
 
-FORWARD_DRIVER = $(DRIVER_DIR)/forward/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward
-FORWARD_2ND_DRIVER = $(DRIVER_DIR)/forward2ndOrder/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward2ndOrder
-REVERSE_SIMPLE_DRIVER = $(DRIVER_DIR)/reverseSimple/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimple
-REVERSE_CHUNK_DRIVER = $(DRIVER_DIR)/reverseChunk/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunk
+# disable the deletion of secondary targets
+.SECONDARY:
 
-.SECONDARY: $(FORWARD_OUT_FILES) $(FORWARD_BIN_FILES) $(FORWARD_2ND_OUT_FILES) $(FORWARD_2ND_BIN_FILES) $(REVERSE_SIMPLE_OUT_FILES) $(REVERSE_SIMPLE_BIN_FILES) $(REVERSE_CHUNK_OUT_FILES) $(REVERSE_CHUNK_BIN_FILES)
+# define general sets for tests
+BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp)
+REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp)
 
-# rules for test creation
-$(BUILD_DIR)/%_forward_bin : $(TEST_DIR)/%.cpp
+# Driver for RealForward
+DRIVER_NAME  := FWD
+DRIVER_TESTS := $(BASIC_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/forward/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $< -o $@ $(FORWARD_DRIVER)
-	@$(CXX) $(CXX_FLAGS) $(FORWARD_DRIVER) $< -MM -MP -MT $@ -MF $@.d
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(DRIVER) $< -MM -MP -MT $@ -MF $@.d
+DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
+$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
 
-$(BUILD_DIR)/%_forward2nd_bin : $(TEST_DIR)/%.cpp
+# Driver for 2nd order type but first derivative evaluation both forward.
+DRIVER_NAME  := FWD2nd
+DRIVER_TESTS := $(BASIC_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/forward2ndOrder/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward2ndOrder
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $< -o $@ $(FORWARD_2ND_DRIVER)
-	@$(CXX) $(CXX_FLAGS) $(FORWARD_2ND_DRIVER) $< -MM -MP -MT $@ -MF $@.d
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(DRIVER) $< -MM -MP -MT $@ -MF $@.d
+DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
+$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
 
-$(BUILD_DIR)/%_reverse_simple_bin : $(TEST_DIR)/%.cpp
+# Driver for RealReverseUnchecked
+DRIVER_NAME  := RWS_Unch
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reverseSimple/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimple
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $< -o $@ $(REVERSE_SIMPLE_DRIVER)
-	@$(CXX) $(CXX_FLAGS) $(REVERSE_SIMPLE_DRIVER) $< -MM -MP -MT $@ -MF $@.d
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(DRIVER) $< -MM -MP -MT $@ -MF $@.d
+DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
+$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
 
-$(BUILD_DIR)/%_reverse_chunk_bin : $(TEST_DIR)/%.cpp
+# Driver for RealReverse
+DRIVER_NAME  := RWS_Chunk
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunk/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunk
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $< -o $@ $(REVERSE_CHUNK_DRIVER)
-	@$(CXX) $(CXX_FLAGS) $(REVERSE_CHUNK_DRIVER) $< -MM -MP -MT $@ -MF $@.d
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(DRIVER) $< -MM -MP -MT $@ -MF $@.d
+DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
+$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
 
-# rules for generating the text files
+# rules for generating the test files
 $(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
 	@mkdir -p $(@D)
 	$< > $@
 
-# rule for printing the results
-$(RESULT_DIR)/%.test : $(RESULT_DIR)/%_forward.out $(RESULT_DIR)/%_forward2nd.out $(RESULT_DIR)/%_reverse_simple.out $(RESULT_DIR)/%_reverse_chunk.out
-	@./compare.sh -n $* -b $(RESULT_BASE_DIR)/$*.out $(RESULT_DIR)/$*_forward.out $(RESULT_DIR)/$*_forward2nd.out $(RESULT_DIR)/$*_reverse_simple.out $(RESULT_DIR)/$*_reverse_chunk.out
+# rule for printing the results (dependencies are generated by the drivers)
+$(RESULT_DIR)/%.test:
+	@./compare.sh -n $* -b $(RESULT_BASE_DIR)/$*.out $^
 
 all: $(TESTS)
 	@mkdir -p $(BUILD_DIR)
-
-Test% : $(RESULT_DIR)/Test%.test
-	@echo Test$* build
 
 .PHONY: clean
 clean:
 	rm -fr $(BUILD_DIR)
 	rm -fr $(RESULT_DIR)
 
--include $(FORWARD_BIN_FILES:_bin=_bin.d)
--include $(FORWARD_2ND_BIN_FILES:_bin=_bin.d)
--include $(REVERSE_SIMPLE_BIN_FILES:_bin=_bin.d)
--include $(REVERSE_CHUNK_BIN_FILES:_bin=_bin.d)
+-include $(DEP_FILES)
