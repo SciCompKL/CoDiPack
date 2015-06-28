@@ -1,0 +1,15 @@
+language: cpp
+
+compiler:
+  - gcc
+
+notifications:
+    email:
+        recipients:
+            - max.sagebaum@scicomp.uni-kl.de
+            - tim.albring@scicomp.uni-kl.de
+        on_success: never
+        on_failure: always
+script: 
+  - cd tests/
+  - make 
