@@ -16,9 +16,9 @@ DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
 ifeq ($(OPT), yes)
-  CXX_FLAGS := -O3 -Wall -pedantic -std=c++11
+  CXX_FLAGS := -O3 -Wall -pedantic -std=gnu++0x
 else
-  CXX_FLAGS := -O0 -g -Wall -pedantic -std=c++11
+  CXX_FLAGS := -O0 -g -Wall -pedantic -std=gnu++0x
 endif
 
 ifeq ($(CXX), )
