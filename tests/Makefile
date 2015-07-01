@@ -21,7 +21,12 @@ else
   CXX_FLAGS := -O0 -g -Wall -pedantic -std=c++11
 endif
 
-CXX := g++
+ifeq ($(CXX), )
+	CXX := g++
+else
+	CXX := $(CXX)
+endif
+
 CODI_DIR := ..
 
 # Complete list of test files
