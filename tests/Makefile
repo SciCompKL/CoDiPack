@@ -86,10 +86,10 @@ $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
 $(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
 
-# Driver for RealReverse
+# Driver for reverse over forward
 DRIVER_NAME  := RWS2nd
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseOverForward/forwardDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseOverForward
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseOverForward/reverseOverForwardDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseOverForward
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
