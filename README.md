@@ -14,7 +14,7 @@ However, it also gives experienced AD developers the full access to all the data
 The [Scientific Computing Group](http://www.scicomp.uni-kl.de) at the TU Kaiserslautern develops CoDiPack and
 will enhance and extend CoDiPack in the future.
 
-[![Build Status](https://travis-ci.org/SciCompKL/CoDiPack?branch=develop)](https://travis-ci.org/SciCompKL/CoDiPack)
+[![Build Status](https://travis-ci.org/SciCompKL/CoDiPack.svg?branch=develop)](https://travis-ci.org/SciCompKL/CoDiPack)
 
 ## Usage
 
