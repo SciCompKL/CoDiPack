@@ -235,13 +235,13 @@ namespace codi {
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
         inline void calcGradient(Real& gradient) const { \
           DERIVATIVE_FUNC_10(gradient, a_, b_, result_); \
-          a_.pushPassive(a_); \
+          a_.pushPassive(b_); \
         } \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
         inline void calcGradient(Real& gradient, const Real& multiplier) const { \
           DERIVATIVE_FUNC_10M(gradient, a_, b_, result_, multiplier); \
-          a_.pushPassive(a_); \
+          a_.pushPassive(b_); \
         } \
         \
         /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
@@ -259,7 +259,7 @@ namespace codi {
         \
         template<typename IndexType> \
         static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-          evalAdjointOffset<IndexType, 0, 0>(seed, indices, primalValues, adjointValues);\
+          evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);\
         } \
         \
         template<typename IndexType, size_t offset, size_t passiveOffset> \
@@ -1030,9 +1030,9 @@ namespace codi {
       \
       template<typename IndexType, size_t offset, size_t passiveOffset> \
       static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) { \
-        const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, primalValues);\
+        const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);\
         \
-        return PRIMAL_CALL(aPrimal); \
+        return FUNC(aPrimal); \
       } \
       \
       template<typename IndexType> \
@@ -1042,8 +1042,8 @@ namespace codi {
       \
       template<typename IndexType, size_t offset, size_t passiveOffset> \
       static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-        const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, primalValues, passiveValues);\
-        const Real resPrimal = PRIMAL_CALL(aPrimal); \
+        const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);\
+        const Real resPrimal = FUNC(aPrimal); \
         \
         const Real aJac = DERIVATIVE_FUNC(aPrimal, resPrimal) * seed; \
         A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues); \

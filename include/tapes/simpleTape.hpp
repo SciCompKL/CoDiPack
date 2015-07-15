@@ -226,6 +226,10 @@ namespace codi {
       lhsValue = rhs;
     }
 
+    inline void pushPassive(const typename TypeTraits<Real>::PassiveReal& value) {
+      CODI_UNUSED(value);
+    }
+
     /**
      * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
      *
@@ -323,7 +327,7 @@ namespace codi {
      * @return The reference to the gradient data.
      */
     inline Real& gradient(IndexType& index) {
-      assert((size_t)index < statements.size);
+      assert((size_t)index <= statements.size);
       assert(0 != index);
 
       return adjoints.data[index];

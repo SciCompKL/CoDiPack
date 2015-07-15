@@ -29,6 +29,7 @@
 #pragma once
 
 #include "../configure.h"
+#include "../typeTraits.hpp"
 
 namespace codi {
 
@@ -58,6 +59,8 @@ namespace codi {
      */
     typedef GradientDataType GradientData;
 
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
     /**
      * This functions are called from the expression templates. They tell the
      * tape about the operations which is evaluated.
@@ -83,6 +86,10 @@ namespace codi {
      */
     template<typename Rhs>
     void store(Real& lhsValue, GradientData& lhsGradientData, const Rhs& rhs);
+
+    inline void pushPassive(const PassiveReal& value) {
+      CODI_UNUSED(value);
+    }
 
     /**
      * @brief Add a jacobi of 1.0 to the tape.

@@ -99,7 +99,7 @@ namespace codi {
 
     Chunk1<IndexType> data;
     Chunk1<PassiveReal> passiveData;
-    Chunk2<Real, const ExpressionHandle<Real, IndexType>* > statements;
+    Chunk1<const ExpressionHandle<Real, IndexType>* > statements;
     /**
      * @brief The external function data and the position where the external function has been inserted.
      */
@@ -138,6 +138,18 @@ namespace codi {
 
     void setPassiveDataSize(const size_t& passiveDataSize) {
       passiveData.resize(passiveDataSize);
+    }
+
+    size_t getUsedStatementSize() {
+      return statements.getUsedSize();
+    }
+
+    size_t getUsedDataSize() {
+      return data.getUsedSize();
+    }
+
+    size_t getUsedPassiveDataSize() {
+      return passiveData.getUsedSize();
     }
 
     /**
@@ -181,51 +193,65 @@ namespace codi {
         assert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
         assert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
         assert(statements.getUsedSize() < statements.size);
-        statements.setDataAndMove(std::make_tuple(lhsValue, ExpressionHandleStore<Real, IndexType, Rhs>::getHandle()));
+        statements.setDataAndMove(std::make_tuple(ExpressionHandleStore<Real, IndexType, Rhs>::getHandle()));
+        primalAdjointValues.data1[statements.getUsedSize()] = rhs.getValue();
         lhsIndex = statements.getUsedSize();
+      } else {
+        lhsIndex = 0;
       }
 
       /* now set the value of the lhs */
       lhsValue = rhs.getValue();
     }
 
-//    /**
-//     * @brief Optimization for the copy operation just copies the index of the rhs.
-//     *
-//     * No data is stored in this method.
-//     *
-//     * The primal value of the lhs is set to the primal value of the rhs.
-//     *
-//     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
-//     *                           of the right hand side.
-//     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
-//     * @param[in]         rhs    The right hand side expression of the assignment.
-//     */
-//    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimplePrimalValueTape<Real, IndexType> >& rhs) {
-//      ENABLE_CHECK(OptTapeActivity, active){
-//        lhsIndex = rhs.getGradientData();
-//      } else {
-//        lhsIndex = 0;
-//      }
-//      lhsValue = rhs.getValue();
-//    }
+    /**
+     * @brief Optimization for the copy operation just copies the index of the rhs.
+     *
+     * No data is stored in this method.
+     *
+     * The primal value of the lhs is set to the primal value of the rhs.
+     *
+     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
+     *                           of the right hand side.
+     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
+     * @param[in]         rhs    The right hand side expression of the assignment.
+     */
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimplePrimalValueTape<Real, IndexType> >& rhs) {
+      ENABLE_CHECK(OptTapeActivity, active){
+        lhsIndex = rhs.getGradientData();
+      } else {
+        lhsIndex = 0;
+      }
+      lhsValue = rhs.getValue();
+    }
 
-//    /**
-//     * @brief Optimization for a passive value on the rhs. The lhs index is set to zero.
-//     *
-//     * No data is stored in this method.
-//     *
-//     * The primal value of the lhs is set to the primal value of the rhs.
-//     *
-//     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
-//     *                           of the right hand side.
-//     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
-//     * @param[in]         rhs    The right hand side expression of the assignment.
-//     */
-//    inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-//      lhsIndex = 0;
-//      lhsValue = rhs;
-//    }
+    /**
+     * @brief Optimization for a passive value on the rhs. The lhs index is set to zero.
+     *
+     * No data is stored in this method.
+     *
+     * The primal value of the lhs is set to the primal value of the rhs.
+     *
+     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
+     *                           of the right hand side.
+     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
+     * @param[in]         rhs    The right hand side expression of the assignment.
+     */
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+      ENABLE_CHECK(OptTapeActivity, active){
+        assert(statements.getUsedSize() < statements.size);
+
+        statements.setDataAndMove(std::make_tuple(&InputHandle));
+        lhsIndex = statements.getUsedSize();
+
+        assert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
+        primalAdjointValues.data1[statements.getUsedSize()] = rhs;
+      } else {
+        lhsIndex = 0;
+      }
+
+      lhsValue = rhs;
+    }
 
     inline void pushPassive(const PassiveReal& value) {
       assert(passiveData.getUsedSize() < passiveData.size);
@@ -244,11 +270,10 @@ namespace codi {
       CODI_UNUSED(gradient);
       CODI_UNUSED(value);
 
-      if(0 != index) {
-        assert(data.getUsedSize() < data.size);
+      assert(0 != index); // passive values are currently not supported
+      assert(data.getUsedSize() < data.size);
 
-        data.setDataAndMove(std::make_tuple(index));
-      }
+      data.setDataAndMove(std::make_tuple(index));
     }
 
     /**
@@ -264,11 +289,10 @@ namespace codi {
       CODI_UNUSED(value);
       CODI_UNUSED(jacobi);
 
-      if(0 != index) {
-        assert(data.getUsedSize() < data.size);
+      assert(0 != index); // passive values are currently not supported
+      assert(data.getUsedSize() < data.size);
 
-        data.setDataAndMove(std::make_tuple(index));
-      }
+      data.setDataAndMove(std::make_tuple(index));
     }
 
     /**
@@ -277,8 +301,17 @@ namespace codi {
      * @param[out] index The index of the active type.
      */
     inline void initGradientData(Real& value, IndexType& index) {
-      CODI_UNUSED(value);
-      index = 0;
+      ENABLE_CHECK(OptTapeActivity, active){
+        assert(statements.getUsedSize() < statements.size);
+
+        statements.setDataAndMove(std::make_tuple(&InputHandle));
+        index = statements.getUsedSize();
+
+        assert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
+        primalAdjointValues.data1[statements.getUsedSize()] = value;
+      } else {
+        index = 0;
+      }
     }
 
     /**
@@ -400,10 +433,8 @@ namespace codi {
 
       while(curPos.stmt > end.stmt) {
         const Real& adj = primalAdjointValues.data2[curPos.stmt];
-        Real& primalValue = primalAdjointValues.data1[curPos.stmt];
         --curPos.stmt;
-        primalValue = statements.data1[curPos.stmt]; // restore primal value before it was overwritten
-        const ExpressionHandle<Real, IndexType>* exprHandle = statements.data2[curPos.stmt];
+        const ExpressionHandle<Real, IndexType>* exprHandle = statements.data[curPos.stmt];
         curPos.data -= exprHandle->maxAcitveVariables;
         curPos.passiveData -= exprHandle->maxPassiveVariables;
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
@@ -466,7 +497,7 @@ namespace codi {
     inline void registerInput(ActiveReal<Real, SimplePrimalValueTape<Real, IndexType> >& value) {
       assert(statements.getUsedSize() < statements.size);
 
-      statements.setDataAndMove(std::make_tuple(value.getValue(), &InputHandle));
+      statements.setDataAndMove(std::make_tuple(&InputHandle));
       value.getGradientData() = statements.getUsedSize();
 
       assert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);

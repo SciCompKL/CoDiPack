@@ -259,7 +259,7 @@ public:
      */
     void allocateAdjoints() {
       //TODO: Tim fragen of er das brauch
-      resizeAdjoints(expressionCount + 1);
+      resizeAdjoints(expressionCount.count + 1);
     }
 
     /**
@@ -343,6 +343,10 @@ public:
         lhsIndex = 0;
       }
       lhsValue = rhs;
+    }
+
+    inline void pushPassive(const typename TypeTraits<Real>::PassiveReal& value) {
+      CODI_UNUSED(value);
     }
 
     /**

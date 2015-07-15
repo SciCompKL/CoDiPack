@@ -32,6 +32,7 @@
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/simpleTape.hpp"
 #include "tapes/chunkTape.hpp"
+#include "tapes/simpelPrimalValueTape.hpp"
 #include "tools/dataStore.hpp"
 
 namespace codi {
@@ -149,6 +150,8 @@ namespace codi {
    * See the documentation of #RealReverseUnchecked.
    */
   typedef ActiveReal<float, SimpleTape<float, int> > RealReverseUncheckedFloat;
+
+  typedef ActiveReal<double, SimplePrimalValueTape<double, int> > RealPrimalValueTape;
 
 
 }

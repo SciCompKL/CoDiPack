@@ -103,6 +103,10 @@ namespace codi {
       value = rhs;
     }
 
+    inline void pushPassive(const typename TypeTraits<Real>::PassiveReal& value) {
+      CODI_UNUSED(value);
+    }
+
     /**
      * @brief Adds the jacobi to the tangent value of the expression.
      *
