@@ -135,6 +135,14 @@ namespace codi {
       externalFunctions.resize(extChunkSize);
     }
 
+    size_t getUsedStatementSize() {
+      return statements.getUsedSize();
+    }
+
+    size_t getUsedDataSize() {
+      return data.getUsedSize();
+    }
+
     /**
      * @brief Set the size of the jacobi and statement data and the adjoint vector.
      * @param[in] dataSize  The new size of the jacobi vector.
