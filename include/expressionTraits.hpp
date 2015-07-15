@@ -38,6 +38,36 @@
 
 namespace codi {
 
+  template<typename Real, typename IndexType>
+  class ExpressionHandle {
+    private:
+      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+    public:
+      typedef void (*StatementFuncPointer)(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues);
+
+      const StatementFuncPointer adjointFunc;
+      const size_t maxAcitveVariables;
+      const size_t maxPassiveVariables;
+
+      ExpressionHandle(const StatementFuncPointer adjointFunc, const size_t maxAcitveVariables, const size_t maxPassiveVariables) :
+        adjointFunc(adjointFunc),
+        maxAcitveVariables(maxAcitveVariables),
+        maxPassiveVariables(maxPassiveVariables) {}
+  };
+
+  template<typename Real, typename IndexType, typename Expr>
+  class ExpressionHandleStore {
+    private:
+      static const ExpressionHandle<Real, IndexType> handle;
+    public:
+      static const ExpressionHandle<Real, IndexType>* getHandle() {
+        return &handle;
+      }
+  };
+
+  template<typename Real, typename IndexType, typename Expr>
+  const ExpressionHandle<Real, IndexType> ExpressionHandleStore<Real, IndexType, Expr>::handle(Expr::template evalAdjoint<IndexType>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
+
   /**
    * @brief Information about the expression.
    *
@@ -51,11 +81,19 @@ namespace codi {
     /**
      * @brief The maximum number of active variables for the expression
      *
-     * This value ca be used to determine how many variables can be active in an expression.
+     * This value can be used to determine how many variables can be active in an expression.
      * For every expression a specialization has to be defined which assigns a value to
      * the variable.
      */
     static const size_t maxActiveVariable;
+    /**
+     * @brief The maximum number of passive variables for the expression
+     *
+     * This value can be used to determine how many variables are passive in an expression.
+     * For every expression a specialization has to be defined which assigns a value to
+     * the variable.
+     */
+    static const size_t maxPassiveVariable;
   };
 
   // Macro for expressions with two arguments
@@ -67,20 +105,30 @@ namespace codi {
       static const size_t maxActiveVariables =                \
            ExpressionTraits<A>::maxActiveVariables            \
          + ExpressionTraits<B>::maxActiveVariables;           \
-    };                                                        \
+      /** @brief Number of maximum passive variables is the sum of the passive variables from both arguments. */ \
+      static const size_t maxPassiveVariables =                \
+           ExpressionTraits<A>::maxPassiveVariables            \
+         + ExpressionTraits<B>::maxPassiveVariables;           \
+    };                                                         \
     /** @brief Specialization for OP  with only the first argument active. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
     template<typename Real, typename A>                       \
     struct ExpressionTraits<OP ## 10<Real, A> > {             \
       /** @brief Number of maximum active variables is the number of active variables from the first argument. */ \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<A>::maxActiveVariables;           \
-    };                                                        \
+      /** @brief Number of maximum passive variables is the number of passive variables from the first argument plus the passive value from this expression. */ \
+      static const size_t maxPassiveVariables =                \
+           1 + ExpressionTraits<A>::maxPassiveVariables;       \
+    };                                                         \
     /** @brief Specialization for OP with only the second argument active. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function */ \
     template<typename Real, typename B>                       \
     struct ExpressionTraits<OP ## 01<Real, B> > {             \
       /** @brief Number of maximum active variables is the number of active variables from the second argument. */ \
       static const size_t maxActiveVariables =                \
            ExpressionTraits<B>::maxActiveVariables;           \
+      /** @brief Number of maximum passive variables is the number of passive variables from the second argument plus the passive value from this expression. */ \
+      static const size_t maxPassiveVariables =               \
+           1 + ExpressionTraits<B>::maxPassiveVariables;      \
     };
 
   CODI_DEFINE_BINARY_TRAIT(Add)
@@ -102,6 +150,9 @@ namespace codi {
       /** @brief Number of maximum active variables is the number of active variables from the expression in the argument. */ \
       static const size_t maxActiveVariables                  \
          = ExpressionTraits<A>::maxActiveVariables;           \
+      /** @brief Number of maximum passive variables is the number of passive variables from the expression in the argument. */ \
+      static const size_t maxPassiveVariables                  \
+         = ExpressionTraits<A>::maxPassiveVariables;           \
     };
 
   CODI_DEFINE_UNARY_TRAIT(UnaryMinus)

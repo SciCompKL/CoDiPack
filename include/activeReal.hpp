@@ -200,6 +200,11 @@ namespace codi {
       getGlobalTape().pushJacobi(gradient, jacobi, primalValue, gradientData);
     }
 
+
+    inline void pushPassive(const PassiveReal& passive) const {
+      getGlobalTape().pushPassive(passive);
+    }
+
     /**
      * @brief Helper function for the tape to get its information about this type.
      * @return The gradient data from the tape stored in this type.
@@ -400,6 +405,7 @@ namespace codi {
     inline ActiveReal<Real, Tape> operator++() {
       return *this += 1.0;
     }
+
     /**
      * @brief The expression is unfolded to *this += 1.0
      *
@@ -435,6 +441,24 @@ namespace codi {
      */
     static inline Tape& getGlobalTape() {
       return GlobalActiveRealData<Tape>::globalTape;
+    }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static inline const Real& getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+      CODI_UNUSED(passiveValues);
+      return primalValues[indices[offset]];
+    }
+
+    template<typename IndexType>
+    static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+      evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);
+    }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset> \
+    static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+      CODI_UNUSED(passiveValues);
+      CODI_UNUSED(primalValues);
+      adjointValues[indices[offset]] += seed;
     }
   };
 
@@ -474,6 +498,11 @@ namespace codi {
      * @brief The maximum number of active values for an ActiveReal is one.
      */
     static const size_t maxActiveVariables = 1;
+
+    /**
+     * @brief The maximum number of passive values for an ActiveReal is zero.
+     */
+    static const size_t maxPassiveVariables = 0;
   };
 
   /**
