@@ -235,11 +235,13 @@ namespace codi {
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
         inline void calcGradient(Real& gradient) const { \
           DERIVATIVE_FUNC_10(gradient, a_, b_, result_); \
+          a_.pushPassive(a_); \
         } \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
         inline void calcGradient(Real& gradient, const Real& multiplier) const { \
           DERIVATIVE_FUNC_10M(gradient, a_, b_, result_, multiplier); \
+          a_.pushPassive(a_); \
         } \
         \
         /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
@@ -291,11 +293,13 @@ namespace codi {
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
         inline void calcGradient(Real& gradient) const { \
+          b_.pushPassive(a_); \
           DERIVATIVE_FUNC_01(gradient, a_, b_, result_); \
         } \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
         inline void calcGradient(Real& gradient, const Real& multiplier) const { \
+          b_.pushPassive(a_); \
           DERIVATIVE_FUNC_01M(gradient, a_, b_, result_, multiplier); \
         } \
         \
@@ -314,7 +318,7 @@ namespace codi {
         \
         template<typename IndexType> \
         static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-          evalAdjointOffset<IndexType, 0, 0>(seed, indices, primalValues, adjointValues);\
+          evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);\
         } \
         \
         template<typename IndexType, size_t offset, size_t passiveOffset> \
@@ -489,21 +493,17 @@ namespace codi {
   template<typename Real, typename A> inline void derv10_Multiply(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
     a.calcGradient(gradient, b);
-    a.pushPassive(b);
   }
   template<typename Real, typename A> inline void derv10M_Multiply(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
     a.calcGradient(gradient, b * multiplier);
-    a.pushPassive(b);
   }
   template<typename Real, typename B> inline void derv01_Multiply(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    b.pushPassive(a);
     b.calcGradient(gradient, a);
   }
   template<typename Real, typename B> inline void derv01M_Multiply(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    b.pushPassive(a);
     b.calcGradient(gradient, a * multiplier);
   }
   CODI_OPERATOR_HELPER(Multiply, *)
