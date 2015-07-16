@@ -43,7 +43,7 @@ The driver for the primal evaluation of the function is inside the main routine:
 
       double y = func(x);
 
-      stc::cout << "f(4.0) = " << y << std::endl;
+      std::cout << "f(4.0) = " << y << std::endl;
 
       return 0;
     }
