@@ -153,27 +153,24 @@ namespace codi {
         const A& a_; \
         /** @brief The second argument of the function. */ \
         const B& b_; \
-        /** @brief The result of the function. It is always precomputed. */ \
-        Real result_; \
       public: \
         /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
         OP ## 11(const Expression<Real, A>& a, const Expression<Real, B>& b) : \
-          a_(a.cast()), b_(b.cast()), \
-          result_(PRIMAL_CALL(a.getValue(), b.getValue())) {} \
+          a_(a.cast()), b_(b.cast()) {} \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx and df/dy and passes these values as the multipliers to the arguments. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
         inline void calcGradient(Real& gradient) const { \
-          DERIVATIVE_FUNC_11(gradient, a_, b_, result_); \
+          DERIVATIVE_FUNC_11(gradient, a_, b_, getValue()); \
         } \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and multiplier * df/dy and passes these values as the multipliers to the arguments. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
         inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-          DERIVATIVE_FUNC_11M(gradient, a_, b_, result_, multiplier); \
+          DERIVATIVE_FUNC_11M(gradient, a_, b_, getValue(), multiplier); \
         } \
         \
         /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
-        inline const Real& getValue() const { \
-          return result_; \
+        inline const Real getValue() const { \
+          return PRIMAL_CALL(a_.getValue(), b_.getValue()); \
         } \
     }; \
     \
@@ -184,26 +181,24 @@ namespace codi {
         typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
         const A& a_; \
         const PassiveReal& b_; \
-        Real result_; \
       public: \
         /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
         OP ## 10(const Expression<Real, A>& a, const PassiveReal& b) : \
-          a_(a.cast()), b_(b), \
-          result_(PRIMAL_CALL(a.getValue(), b)) {} \
+          a_(a.cast()), b_(b) {} \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
         inline void calcGradient(Real& gradient) const { \
-          DERIVATIVE_FUNC_10(gradient, a_, b_, result_); \
+          DERIVATIVE_FUNC_10(gradient, a_, b_, getValue()); \
         } \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
         inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-          DERIVATIVE_FUNC_10M(gradient, a_, b_, result_, multiplier); \
+          DERIVATIVE_FUNC_10M(gradient, a_, b_, getValue(), multiplier); \
         } \
         \
         /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
-        inline const Real& getValue() const { \
-          return result_; \
+        inline const Real getValue() const { \
+          return PRIMAL_CALL(a_.getValue(), b_); \
         } \
     }; \
     \
@@ -214,26 +209,24 @@ namespace codi {
         typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
         const PassiveReal& a_; \
         const B& b_; \
-        Real result_; \
       public: \
         /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
         OP ## 01(const PassiveReal& a, const Expression<Real, B>& b) : \
-          a_(a), b_(b.cast()), \
-          result_(PRIMAL_CALL(a, b.getValue())) {} \
+          a_(a), b_(b.cast()) {} \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
         inline void calcGradient(Real& gradient) const { \
-          DERIVATIVE_FUNC_01(gradient, a_, b_, result_); \
+          DERIVATIVE_FUNC_01(gradient, a_, b_, getValue()); \
         } \
         \
         /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
         inline void calcGradient(Real& gradient, const Real& multiplier) const { \
-          DERIVATIVE_FUNC_01M(gradient, a_, b_, result_, multiplier); \
+          DERIVATIVE_FUNC_01M(gradient, a_, b_, getValue(), multiplier); \
         } \
         \
         /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
-        inline const Real& getValue() const { \
-          return result_; \
+        inline const Real getValue() const { \
+          return PRIMAL_CALL(a_, b_.getValue()); \
         } \
     }; \
     \
