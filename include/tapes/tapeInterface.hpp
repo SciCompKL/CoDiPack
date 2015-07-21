@@ -100,8 +100,11 @@ namespace codi {
      * @param[inout]   gradient  A handle to the gradient of the operation. Mostly used for the forward mode.
      * @param[in]         value  The value of the active type which pushes the jacobi.
      * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
+     *
+     * @tparam EvalData  Data for the evaluation of the AD mode.
      */
-    virtual void pushJacobi(Real& gradient, const Real& value, const GradientData& gradientData) = 0;
+    template<typename EvalData>
+    void pushJacobi(EvalData& gradient, const Real& value, const GradientData& gradientData);
 
     /**
      * @brief Add a jacobi to the tape.
@@ -113,8 +116,11 @@ namespace codi {
      * @param[in]        jacobi  The value of the jacobi.
      * @param[in]         value  The value of the active type which pushes the jacobi.
      * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
+     *
+     * @tparam EvalData  Data for the evaluation of the AD mode.
      */
-    virtual void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const GradientData& gradientData) = 0;
+    template<typename EvalData>
+    void pushJacobi(EvalData& gradient, const Real& jacobi, const Real& value, const GradientData& gradientData);
 
     /**
      * @brief Called in the construction of a active type.

@@ -245,7 +245,8 @@ namespace codi {
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
      */
-    inline void pushJacobi(Real& gradient, const Real& value, const IndexType& index) {
+    template<typename EvalData>
+    inline void pushJacobi(EvalData& gradient, const Real& value, const IndexType& index) {
       CODI_UNUSED(gradient);
       CODI_UNUSED(value);
 
@@ -264,7 +265,8 @@ namespace codi {
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
      */
-    inline void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
+    template<typename EvalData>
+    inline void pushJacobi(EvalData& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(gradient);
       CODI_UNUSED(value);
 

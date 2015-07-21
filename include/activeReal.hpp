@@ -101,7 +101,6 @@ namespace codi {
      * @brief The gradient data needed by the tape to compute the derivatives.
      */
     typedef typename Tape::GradientData GradientData;
-
   private:
     /**
      * @brief The primal value of this floating point type.
@@ -136,16 +135,18 @@ namespace codi {
       GlobalActiveRealData<Tape>::globalTape.initGradientData(this->primalValue, gradientData);
     }
 
-    /**
-     * @brief Sets the primal value of this ActiveReal and sets the gradient after it was initialized.
-     *
-     * @param[in]    value  The primal value for this type.
-     * @param[in] gradient  The gradient value for this type.
-     */
-    inline ActiveReal(const Real& value, const Real& gradient) : primalValue(value) {
-      GlobalActiveRealData<Tape>::globalTape.initGradientData(this->primalValue, gradientData);
-      GlobalActiveRealData<Tape>::globalTape.setGradient(gradientData, gradient);
-    }
+//    /**
+//     * @brief Sets the primal value of this ActiveReal and sets the gradient after it was initialized.
+//     *
+//     * @param[in]    value  The primal value for this type.
+//     * @param[in] gradient  The gradient value for this type.
+//     */
+//    inline ActiveReal(const Real& value, const Real& gradient) : primalValue(value) {
+//      GlobalActiveRealData<Tape>::globalTape.initGradientData(this->primalValue, gradientData);
+//      GlobalActiveRealData<Tape>::globalTape.setGradient(gradientData, gradient);
+//    }
+
+    inline ActiveReal(const Real& value, const GradientData& gradient) : primalValue(value), gradientData(gradient) {}
 
     /**
      * @brief Forwards the evaluation of the expression to the tape.
@@ -186,7 +187,8 @@ namespace codi {
      *
      * @param[inout] gradient A helper value for gradient calculations.
      */
-    inline void calcGradient(Real& gradient) const {
+    template<typename Data>
+    inline void calcGradient(Data& gradient) const {
       GlobalActiveRealData<Tape>::globalTape.pushJacobi(gradient, primalValue, gradientData);
     }
 
@@ -196,7 +198,8 @@ namespace codi {
      * @param[inout] gradient A helper value for gradient calculations.
      * @param[in]      jacobi The partial derivative of the expression with respect to this variable.
      */
-    inline void calcGradient(Real& gradient, const Real& jacobi) const {
+    template<typename Data>
+    inline void calcGradient(Data& gradient, const Real& jacobi) const {
       GlobalActiveRealData<Tape>::globalTape.pushJacobi(gradient, jacobi, primalValue, gradientData);
     }
 
@@ -459,6 +462,12 @@ namespace codi {
       CODI_UNUSED(passiveValues);
       CODI_UNUSED(primalValues);
       adjointValues[indices[offset]] += seed;
+    }
+
+    template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
+    static inline NewActiveType exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
+      CODI_UNUSED(passiveValues);
+      return NewActiveType (primalValues[gradientData[activeOffset]], gradientData[activeOffset]);
     }
   };
 

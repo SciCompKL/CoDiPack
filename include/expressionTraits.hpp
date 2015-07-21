@@ -38,12 +38,12 @@
 
 namespace codi {
 
-  template<typename Real, typename IndexType>
+  template<typename AdjointData, typename Real, typename IndexType>
   class ExpressionHandle {
     private:
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
     public:
-      typedef void (*StatementFuncPointer)(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues);
+      typedef void (*StatementFuncPointer)(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues);
 
       const StatementFuncPointer adjointFunc;
       const size_t maxAcitveVariables;
@@ -55,18 +55,18 @@ namespace codi {
         maxPassiveVariables(maxPassiveVariables) {}
   };
 
-  template<typename Real, typename IndexType, typename Expr>
+  template<typename AdjointData, typename Real, typename IndexType, typename Expr, typename NewActiveType>
   class ExpressionHandleStore {
     private:
-      static const ExpressionHandle<Real, IndexType> handle;
+      static const ExpressionHandle<AdjointData, Real, IndexType> handle;
     public:
-      static const ExpressionHandle<Real, IndexType>* getHandle() {
+      static const ExpressionHandle<AdjointData, Real, IndexType>* getHandle() {
         return &handle;
       }
   };
 
-  template<typename Real, typename IndexType, typename Expr>
-  const ExpressionHandle<Real, IndexType> ExpressionHandleStore<Real, IndexType, Expr>::handle(Expr::template evalAdjoint<IndexType>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
+  template<typename AdjointData, typename Real, typename IndexType, typename Expr, typename NewActiveType>
+  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr, NewActiveType>::handle(Expr::template evalAdjoint2<AdjointData, IndexType, NewActiveType, IndexType>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
 
   /**
    * @brief Information about the expression.

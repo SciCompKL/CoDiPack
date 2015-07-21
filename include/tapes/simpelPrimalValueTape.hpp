@@ -64,6 +64,43 @@ namespace codi {
       extFunc(extFunc) {}
   };
 
+  template <typename Real, typename IndexType>
+  class ReverseEvaluationTapeHelper {
+    public:
+
+      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      typedef IndexType GradientData;
+
+      ReverseEvaluationTapeHelper() {}
+
+      template<typename Data>
+      inline void pushJacobi(Data& adjointVec, const Real& jacobi, const Real& value, const IndexType& index) {
+        CODI_UNUSED(value);
+        CODI_UNUSED(jacobi);
+
+        assert(0 != index); // passive values are currently not supported
+
+        adjointVec[index] += jacobi;
+      }
+
+      inline void pushPassive(const PassiveReal& value) {
+        CODI_UNUSED(value);
+      }
+
+      inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ReverseEvaluationTapeHelper< Real, IndexType> >& rhs) {
+        lhsIndex = rhs.getGradientData();
+        lhsValue = rhs.getValue();
+      }
+
+
+      inline void destroyGradientData(Real& value, IndexType& index) {
+        CODI_UNUSED(value);
+        CODI_UNUSED(index);
+        /* nothing to do */
+      }
+  };
+
   /**
    * @brief A tape with a simple implementation and no bounds checking.
    *
@@ -94,12 +131,15 @@ namespace codi {
   private:
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
-    static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {}
-    const static ExpressionHandle<Real, IndexType> InputHandle;
+    typedef ActiveReal<Real, ReverseEvaluationTapeHelper<Real, IndexType> > ReverseEvalType;
+
+    template<typename AdjointData>
+    static void inputHandleFunc(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues) {}
+    const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
 
     Chunk1<IndexType> data;
     Chunk1<PassiveReal> passiveData;
-    Chunk1<const ExpressionHandle<Real, IndexType>* > statements;
+    Chunk1<const ExpressionHandle<Real*, Real, IndexType>* > statements;
     /**
      * @brief The external function data and the position where the external function has been inserted.
      */
@@ -193,7 +233,7 @@ namespace codi {
         assert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
         assert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
         assert(statements.getUsedSize() < statements.size);
-        statements.setDataAndMove(std::make_tuple(ExpressionHandleStore<Real, IndexType, Rhs>::getHandle()));
+        statements.setDataAndMove(std::make_tuple(ExpressionHandleStore<Real*, Real, IndexType, Rhs, ReverseEvalType>::getHandle()));
         primalAdjointValues.data1[statements.getUsedSize()] = rhs.getValue();
         lhsIndex = statements.getUsedSize();
       } else {
@@ -266,7 +306,8 @@ namespace codi {
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
      */
-    inline void pushJacobi(Real& gradient, const Real& value, const IndexType& index) {
+    template<typename Data>
+    inline void pushJacobi(Data& gradient, const Real& value, const IndexType& index) {
       CODI_UNUSED(gradient);
       CODI_UNUSED(value);
 
@@ -284,7 +325,8 @@ namespace codi {
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
      */
-    inline void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
+    template<typename Data>
+    inline void pushJacobi(Data& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(gradient);
       CODI_UNUSED(value);
       CODI_UNUSED(jacobi);
@@ -434,14 +476,14 @@ namespace codi {
       while(curPos.stmt > end.stmt) {
         const Real& adj = primalAdjointValues.data2[curPos.stmt];
         --curPos.stmt;
-        const ExpressionHandle<Real, IndexType>* exprHandle = statements.data[curPos.stmt];
+        const ExpressionHandle<Real*, Real, IndexType>* exprHandle = statements.data[curPos.stmt];
         curPos.data -= exprHandle->maxAcitveVariables;
         curPos.passiveData -= exprHandle->maxPassiveVariables;
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
 
           const IndexType* indices = &data.data[curPos.data];
           const PassiveReal* passiveValues = &passiveData.data[curPos.passiveData];
-          exprHandle->adjointFunc(adj, indices, passiveValues, primalAdjointValues.data1, primalAdjointValues.data2);
+          exprHandle->adjointFunc(primalAdjointValues.data2, adj, primalAdjointValues.data1, indices, passiveValues);
         }
       }
     }
@@ -586,5 +628,5 @@ namespace codi {
   };
 
   template <typename Real, typename IndexType>
-  const ExpressionHandle<Real, IndexType> SimplePrimalValueTape<Real, IndexType>::InputHandle(&SimplePrimalValueTape<Real, IndexType>::inputHandleFunc, 0, 0);
+  const ExpressionHandle<Real*, Real, IndexType> SimplePrimalValueTape<Real, IndexType>::InputHandle(&SimplePrimalValueTape<Real, IndexType>::inputHandleFunc, 0, 0);
 }
