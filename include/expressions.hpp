@@ -1030,7 +1030,7 @@ namespace codi {
       \
       template<typename IndexType> \
       static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-        evalAdjointOffset<IndexType, 0, 0>(seed, indices, primalValues, adjointValues);\
+        evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);\
       } \
       \
       template<typename IndexType, size_t offset, size_t passiveOffset> \
