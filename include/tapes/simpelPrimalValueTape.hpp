@@ -180,14 +180,26 @@ namespace codi {
       passiveData.resize(passiveDataSize);
     }
 
-    size_t getUsedStatementSize() {
+    /**
+     * @brief Return the number of used statements.
+     * @return The number of used statements.
+     */
+    size_t getUsedStatementsSize() {
       return statements.getUsedSize();
     }
 
-    size_t getUsedDataSize() {
+    /**
+     * @brief Return the number of used data entries.
+     * @return The number of used data entries.
+     */
+    size_t getUsedDataEntriesSize() {
       return data.getUsedSize();
     }
 
+    /**
+     * @brief Return the number of passive data entries.
+     * @return The number of passive data entries.
+     */
     size_t getUsedPassiveDataSize() {
       return passiveData.getUsedSize();
     }
@@ -229,6 +241,8 @@ namespace codi {
         assert(ExpressionTraits<Rhs>::maxPassiveVariables < passiveData.getUnusedSize());
         size_t dataSize = data.getUsedSize();
         size_t passiveDataSize = passiveData.getUsedSize();
+        CODI_UNUSED(dataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+        CODI_UNUSED(passiveDataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
         rhs.calcGradient(gradient);
         assert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
         assert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);

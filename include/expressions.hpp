@@ -78,8 +78,9 @@ namespace codi {
      * expression represents and pass the result to its argument.
      * For functions f(a), pass df/da to the argument.
      *
-     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
-     *                        lhs of the expression.
+     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
      */
     template<typename Data>
     inline void calcGradient(Data& data) const {
@@ -93,13 +94,14 @@ namespace codi {
      * expression represents and pass the result to its argument.
      * For functions f(a), pass multiplier * df/da to the argument.
      *
-     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
-     *                        lhs of the expression.
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
      * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+     *
+     * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& gradient, const Real& multiplier) const {
-      cast().calcGradient(gradient, multiplier);
+    inline void calcGradient(Data& data, const Real& multiplier) const {
+      cast().calcGradient(data, multiplier);
     }
 
     /**
@@ -119,288 +121,10 @@ namespace codi {
     Expression& operator=(const Expression&) = delete;
   };
 
-  /**
+  /*
    * Now define particular types of expression, using static
    * polymorphism via the Curiously Recurring Template Pattern
    */
-
-  /*
-   * Enable mathematical functions with two arguments.
-   *
-   * @param                  OP   The name of the class
-   * @param                FUNC   The name of the functions. Can also be an operator.
-   * @param         PRIMAL_CALL   A function which calls the function or operator.
-   * @param  DERIVATIVE_FUNC_11   The function which computes the derivative when both variables are active.
-   * @param DERIVATIVE_FUNC_11M   The function which computes the derivative when both variables are active and a multiplier is given.
-   * @param  DERIVATIVE_FUNC_10   The function which computes the derivative when the first variable is active.
-   * @param DERIVATIVE_FUNC_10M   The function which computes the derivative when the first variable is active and a multiplier is given.
-   * @param  DERIVATIVE_FUNC_01   The function which computes the derivative when the second variable is active.
-   * @param DERIVATIVE_FUNC_01M   The function which computes the derivative when the second variable is active and a multiplier is given.
-   */
-  #define CODI_DEFINE_BINARY_FUNCTION(OP, FUNC, PRIMAL_CALL, DERIVATIVE_FUNC_11, DERIVATIVE_FUNC_11M, DERIVATIVE_FUNC_10, DERIVATIVE_FUNC_10M, DERIVATIVE_FUNC_01, DERIVATIVE_FUNC_01M, DERIVATIVE_FUNC_A, DERIVATIVE_FUNC_B)  \
-    /* predefine the structs and the functions for higher order derivatives */\
-    template <typename Real, class A, class B> struct OP ## 11;\
-    template <typename Real, class A> struct OP ## 10;\
-    template <typename Real, class B> struct OP ## 01;\
-    template <typename Real, class A, class B> \
-    inline  OP ## 11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b); \
-    template <typename Real, class A> \
-    inline  OP ## 10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b); \
-    template <typename Real, class B> \
-    inline  OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b); \
-    \
-    /** @brief Expression implementation for OP with two active variables. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
-    template<typename Real, class A, class B> \
-    struct OP ## 11: public Expression<Real, OP ## 11<Real, A, B> > { \
-      private: \
-        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
-        /** @brief The first argument of the function. */ \
-        const A a_; \
-        /** @brief The second argument of the function. */ \
-        const B b_; \
-      public: \
-        /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
-        OP ## 11(const Expression<Real, A>& a, const Expression<Real, B>& b) : \
-          a_(a.cast()), b_(b.cast()) {} \
-        \
-        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx and df/dy and passes these values as the multipliers to the arguments. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
-        template<typename Data> \
-        inline void calcGradient(Data& gradient) const { \
-          DERIVATIVE_FUNC_11(gradient, a_, b_, getValue()); \
-        } \
-        \
-        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and multiplier * df/dy and passes these values as the multipliers to the arguments. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
-        template<typename Data> \
-        inline void calcGradient(Data& gradient, const Real& multiplier) const { \
-            DERIVATIVE_FUNC_11M(gradient, a_, b_, getValue(), multiplier); \
-        } \
-        \
-        /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
-        inline const Real getValue() const { \
-          return PRIMAL_CALL(a_.getValue(), b_.getValue()); \
-        } \
-        \
-        template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset> \
-        static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) { \
-          return OP ## 11< Real, \
-              decltype(A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues)), \
-              decltype(B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset + ExpressionTraits<A>::maxActiveVariables, passiveOffset + ExpressionTraits<A>::maxPassiveVariables>(primalValues, gradientData, passiveValues)) \
-              > ( \
-              A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues), \
-              B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset + ExpressionTraits<A>::maxActiveVariables, passiveOffset + ExpressionTraits<A>::maxPassiveVariables>(primalValues, gradientData, passiveValues) \
-            ); \
-        } \
-        \
-        template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData > \
-        static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) { \
-          auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues); \
-          newExpr.calcGradient(gradient, seed); \
-        } \
-        \
-        template<typename IndexType, size_t offset, size_t passiveOffset> \
-        static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) { \
-          const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);\
-          const Real bPrimal = B::template getValue<IndexType, \
-              offset + ExpressionTraits<A>::maxActiveVariables, \
-              passiveOffset + ExpressionTraits<A>::maxPassiveVariables> \
-                (indices, passiveValues, primalValues);\
-          \
-          return PRIMAL_CALL(aPrimal, bPrimal); \
-        } \
-        \
-        template<typename IndexType> \
-        static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-          evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);\
-        } \
-        \
-        template<typename IndexType, size_t offset, size_t passiveOffset> \
-        static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-          const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues); \
-          const Real bPrimal = B::template getValue<IndexType, \
-              offset + ExpressionTraits<A>::maxActiveVariables, \
-              passiveOffset + ExpressionTraits<A>::maxPassiveVariables> \
-                (indices, passiveValues, primalValues); \
-          const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal); \
-          \
-          const Real aJac = DERIVATIVE_FUNC_A(aPrimal, bPrimal, resPrimal) * seed; \
-          const Real bJac = DERIVATIVE_FUNC_B(aPrimal, bPrimal, resPrimal) * seed; \
-          A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues); \
-          B::template evalAdjointOffset<IndexType, \
-              offset + ExpressionTraits<A>::maxActiveVariables, \
-              passiveOffset + ExpressionTraits<A>::maxPassiveVariables> \
-                (bJac, indices, passiveValues, primalValues, adjointValues); \
-        } \
-        \
-        inline void pushPassive(const PassiveReal& passive) const { \
-          a_.pushPassive(passive);\
-        } \
-    }; \
-    \
-    /** @brief Expression implementation for OP with one active variables. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function*/ \
-    template<typename Real, class A> \
-    struct OP ## 10: public Expression<Real, OP ## 10<Real, A> > { \
-      private: \
-        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
-        const A a_; \
-        const PassiveReal& b_; \
-      public: \
-        /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
-        OP ## 10(const Expression<Real, A>& a, const PassiveReal& b) : \
-          a_(a.cast()), b_(b) {} \
-        \
-        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
-        template<typename Data> \
-        inline void calcGradient(Data& gradient) const { \
-          DERIVATIVE_FUNC_10(gradient, a_, b_, getValue()); \
-          a_.pushPassive(b_); \
-        } \
-        \
-        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
-        template<typename Data> \
-        inline void calcGradient(Data& gradient, const Real& multiplier) const { \
-          DERIVATIVE_FUNC_10M(gradient, a_, b_, getValue(), multiplier); \
-          a_.pushPassive(b_); \
-        } \
-        \
-        /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
-        inline const Real getValue() const { \
-          return PRIMAL_CALL(a_.getValue(), b_); \
-        } \
-        \
-        template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset> \
-        static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) { \
-          return OP ## 10< Real, \
-              decltype(A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues)) \
-              > ( \
-              A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues), \
-              passiveValues[passiveOffset + ExpressionTraits<A>::maxPassiveVariables] \
-            ); \
-        } \
-        \
-        template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData > \
-        static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) { \
-          auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues); \
-          newExpr.calcGradient(gradient, seed); \
-        } \
-        \
-        template<typename IndexType, size_t offset, size_t passiveOffset> \
-        static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) { \
-          const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);\
-          const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxPassiveVariables]; \
-          \
-          return PRIMAL_CALL(aPrimal, bPrimal); \
-        } \
-        \
-        template<typename IndexType> \
-        static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-          evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);\
-        } \
-        \
-        template<typename IndexType, size_t offset, size_t passiveOffset> \
-        static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-          const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues); \
-          const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxPassiveVariables]; \
-          const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal); \
-          \
-          const Real aJac = DERIVATIVE_FUNC_A(aPrimal, bPrimal, resPrimal) * seed; \
-          A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues); \
-        } \
-        \
-        inline void pushPassive(const PassiveReal& passive) const { \
-          a_.pushPassive(passive);\
-        } \
-    }; \
-    \
-    /** @brief Expression implementation for OP with one active variables. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
-    template<typename Real, class B> \
-    struct OP ## 01 : public Expression<Real, OP ## 01<Real, B> > { \
-      private: \
-        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
-        const PassiveReal& a_; \
-        const B b_; \
-      public: \
-        /** @brief Stores both arguments and precomputes the result of the expression. @param[in] a First argument of the expression. @param[in] b Second argument of the expression.*/ \
-        OP ## 01(const PassiveReal& a, const Expression<Real, B>& b) : \
-          a_(a), b_(b.cast()) {} \
-        \
-        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates df/dx passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
-        template<typename Data> \
-        inline void calcGradient(Data& gradient) const { \
-          b_.pushPassive(a_); \
-          DERIVATIVE_FUNC_01(gradient, a_, b_, getValue()); \
-        } \
-        \
-        /** @brief Calculates the jacobies of the expression and hands them down to the arguments. @details For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
-        template<typename Data> \
-        inline void calcGradient(Data& gradient, const Real& multiplier) const { \
-          b_.pushPassive(a_); \
-          DERIVATIVE_FUNC_01M(gradient, a_, b_, getValue(), multiplier); \
-        } \
-        \
-        /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
-        inline const Real getValue() const { \
-          return PRIMAL_CALL(a_, b_.getValue()); \
-        } \
-        \
-        template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset> \
-        static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) { \
-          return OP ## 01< Real, \
-              decltype(B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset + 1>(primalValues, gradientData, passiveValues)) \
-              > ( \
-              passiveValues[passiveOffset], \
-              B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset + 1>(primalValues, gradientData, passiveValues) \
-            ); \
-        } \
-        \
-        template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData > \
-        static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) { \
-          auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues); \
-          newExpr.calcGradient(gradient, seed); \
-        } \
-        \
-        template<typename IndexType, size_t offset, size_t passiveOffset> \
-        static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) { \
-          const PassiveReal& aPrimal = passiveValues[passiveOffset]; \
-          const Real bPrimal = B::template getValue<IndexType, offset, passiveOffset + 1>(indices, passiveValues, primalValues); \
-          \
-          return PRIMAL_CALL(aPrimal, bPrimal); \
-        } \
-        \
-        template<typename IndexType> \
-        static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-          evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);\
-        } \
-        \
-        template<typename IndexType, size_t offset, size_t passiveOffset> \
-        static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-          const PassiveReal& aPrimal = passiveValues[passiveOffset]; \
-          const Real bPrimal = B::template getValue<IndexType, offset, passiveOffset + 1>(indices, passiveValues, primalValues); \
-          const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal); \
-          \
-          const Real bJac = DERIVATIVE_FUNC_B(aPrimal, bPrimal, resPrimal) * seed; \
-          B::template evalAdjointOffset<IndexType, offset, passiveOffset + 1>(bJac, indices, passiveValues, primalValues, adjointValues); \
-        } \
-        \
-        inline void pushPassive(const PassiveReal& passive) const { \
-          b_.pushPassive(passive);\
-        } \
-    }; \
-    \
-    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expression OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
-    template <typename Real, class A, class B> \
-    inline OP ## 11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b) { \
-      return OP ## 11<Real, A, B>(a.cast(), b.cast()); \
-    } \
-    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expression OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function*/ \
-    template <typename Real, class A> \
-    inline OP ## 10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) { \
-      return OP ## 10<Real, A>(a.cast(), b); \
-    } \
-    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The implementing expression OP. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
-    template <typename Real, class B> \
-    inline OP ## 01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b) { \
-      return OP ## 01<Real, B>(a, b.cast()); \
-    }
 
   #define CODI_OPERATOR_HELPER(NAME, OP) \
     /** @brief Helper function to call operators as a function. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The value of a OP b @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
@@ -444,33 +168,37 @@ namespace codi {
     CODI_UNUSED(result);
     return 1.0;
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11_Add(Data& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Add(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient);
-    b.calcGradient(gradient);
+    a.calcGradient(data);
+    b.calcGradient(data);
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Add(Data& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
-    a.calcGradient(gradient, multiplier);
-    b.calcGradient(gradient, multiplier);
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Add(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
+    a.calcGradient(data, multiplier);
+    b.calcGradient(data, multiplier);
   }
-  template<typename Data, typename Real, typename A> inline void derv10_Add(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Add(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient);
+    a.calcGradient(data);
   }
-  template<typename Data, typename Real, typename A> inline void derv10M_Add(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Add(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, multiplier);
+    a.calcGradient(data, multiplier);
   }
-  template<typename Data, typename Real, typename B> inline void derv01_Add(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Add(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient);
+    b.calcGradient(data);
   }
-  template<typename Data, typename Real, typename B> inline void derv01M_Add(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Add(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, multiplier);
+    b.calcGradient(data, multiplier);
   }
+
   CODI_OPERATOR_HELPER(Add, +)
-  CODI_DEFINE_BINARY_FUNCTION(Add, operator +, primal_Add, derv11_Add, derv11M_Add, derv10_Add, derv10M_Add, derv01_Add, derv01M_Add, gradientA_Add, gradientB_Add)
+  #define NAME Add
+  #define FUNCTION operator +
+  #define PRIMAL_FUNCTION primal_Add
+  #include "binaryExpression.tpp"
 
   /*
    * Implementation for f(a,b) = a - b
@@ -488,34 +216,37 @@ namespace codi {
     CODI_UNUSED(result);
     return -1.0;
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11_Subtract(Data& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Subtract(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient);
-    b.calcGradient(gradient, -1.0);
+    a.calcGradient(data);
+    b.calcGradient(data, -1.0);
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Subtract(Data& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Subtract(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, multiplier);
-    b.calcGradient(gradient, -multiplier);
+    a.calcGradient(data, multiplier);
+    b.calcGradient(data, -multiplier);
   }
-  template<typename Data, typename Real, typename A> inline void derv10_Subtract(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Subtract(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient);
+    a.calcGradient(data);
   }
-  template<typename Data, typename Real, typename A> inline void derv10M_Subtract(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Subtract(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, multiplier);
+    a.calcGradient(data, multiplier);
   }
-  template<typename Data, typename Real, typename B> inline void derv01_Subtract(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Subtract(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, -1.0);
+    b.calcGradient(data, -1.0);
   }
-  template<typename Data, typename Real, typename B> inline void derv01M_Subtract(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Subtract(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, -multiplier);
+    b.calcGradient(data, -multiplier);
   }
   CODI_OPERATOR_HELPER(Subtract, -)
-  CODI_DEFINE_BINARY_FUNCTION(Subtract, operator -, primal_Subtract, derv11_Subtract, derv11M_Subtract, derv10_Subtract, derv10M_Subtract, derv01_Subtract, derv01M_Subtract, gradientA_Substract, gradientB_Substract)
+  #define NAME Subtract
+  #define FUNCTION operator -
+  #define PRIMAL_FUNCTION primal_Subtract
+  #include "binaryExpression.tpp"
 
   /*
    * Implementation for f(a,b) = a * b
@@ -530,34 +261,37 @@ namespace codi {
     CODI_UNUSED(result);
     return a;
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11_Multiply(Data& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Multiply(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b.getValue());
-    b.calcGradient(gradient, a.getValue());
+    a.calcGradient(data, b.getValue());
+    b.calcGradient(data, a.getValue());
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Multiply(Data& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Multiply(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b.getValue() * multiplier);
-    b.calcGradient(gradient, a.getValue() * multiplier);
+    a.calcGradient(data, b.getValue() * multiplier);
+    b.calcGradient(data, a.getValue() * multiplier);
   }
-  template<typename Data, typename Real, typename A> inline void derv10_Multiply(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Multiply(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b);
+    a.calcGradient(data, b);
   }
-  template<typename Data, typename Real, typename A> inline void derv10M_Multiply(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Multiply(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b * multiplier);
+    a.calcGradient(data, b * multiplier);
   }
-  template<typename Data, typename Real, typename B> inline void derv01_Multiply(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Multiply(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, a);
+    b.calcGradient(data, a);
   }
-  template<typename Data, typename Real, typename B> inline void derv01M_Multiply(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Multiply(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, a * multiplier);
+    b.calcGradient(data, a * multiplier);
   }
   CODI_OPERATOR_HELPER(Multiply, *)
-  CODI_DEFINE_BINARY_FUNCTION(Multiply, operator *, primal_Multiply, derv11_Multiply, derv11M_Multiply, derv10_Multiply, derv10M_Multiply, derv01_Multiply, derv01M_Multiply, gradientA_Multiply, gradientB_Multiply)
+  #define NAME Multiply
+  #define FUNCTION operator *
+  #define PRIMAL_FUNCTION primal_Multiply
+  #include "binaryExpression.tpp"
 
   /*
    * Implementation for f(a,b) = a / b
@@ -590,40 +324,43 @@ namespace codi {
     CODI_UNUSED(a);
     return -result / b;
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11_Divide(Data& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Divide(Data& data, const A& a, const B& b, const Real& result) {
     checkArgumentsDivide(b.getValue());
     Real one_over_b = 1.0 / b.getValue();
-    a.calcGradient(gradient, one_over_b);
-    b.calcGradient(gradient, -result * one_over_b);
+    a.calcGradient(data, one_over_b);
+    b.calcGradient(data, -result * one_over_b);
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Divide(Data& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Divide(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsDivide(b.getValue());
     Real one_over_b = multiplier / b.getValue();
-    a.calcGradient(gradient, one_over_b);
-    b.calcGradient(gradient, -result * one_over_b);
+    a.calcGradient(data, one_over_b);
+    b.calcGradient(data, -result * one_over_b);
   }
-  template<typename Data, typename Real, typename A> inline void derv10_Divide(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Divide(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     checkArgumentsDivide(b);
     Real one_over_b = 1.0 / b;
-    a.calcGradient(gradient, one_over_b);
+    a.calcGradient(data, one_over_b);
   }
-  template<typename Data, typename Real, typename A> inline void derv10M_Divide(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Divide(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     checkArgumentsDivide(b);
     Real one_over_b = multiplier / b;
-    a.calcGradient(gradient, one_over_b);
+    a.calcGradient(data, one_over_b);
   }
-  template<typename Data, typename Real, typename B> inline void derv01_Divide(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Divide(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     checkArgumentsDivide(b.getValue());
     Real one_over_b = 1.0 / b.getValue();
-    b.calcGradient(gradient, -result * one_over_b);
+    b.calcGradient(data, -result * one_over_b);
   }
-  template<typename Data, typename Real, typename B> inline void derv01M_Divide(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Divide(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsDivide(b.getValue());
     Real one_over_b = multiplier / b.getValue();
-    b.calcGradient(gradient, -result * one_over_b);
+    b.calcGradient(data, -result * one_over_b);
   }
   CODI_OPERATOR_HELPER(Divide, /)
-  CODI_DEFINE_BINARY_FUNCTION(Divide, operator /, primal_Divide, derv11_Divide, derv11M_Divide, derv10_Divide, derv10M_Divide, derv01_Divide, derv01M_Divide, gradientA_Devide, gradientB_Devide)
+  #define NAME Divide
+  #define FUNCTION operator /
+  #define PRIMAL_FUNCTION primal_Divide
+  #include "binaryExpression.tpp"
 
   /*
    * Implementation for f(a,b) = atan2(a,b)
@@ -662,52 +399,55 @@ namespace codi {
     divisor = 1.0 / divisor;
     return -a * divisor;
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11_Atan2(Data& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Atan2(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a.getValue(), b.getValue());
     Real divisor = a.getValue() * a.getValue() + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
-    a.calcGradient(gradient, b.getValue() * divisor);
-    b.calcGradient(gradient, -a.getValue() * divisor);
+    a.calcGradient(data, b.getValue() * divisor);
+    b.calcGradient(data, -a.getValue() * divisor);
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Atan2(Data& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Atan2(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a.getValue(), b.getValue());
     Real divisor = a.getValue() * a.getValue() + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
-    a.calcGradient(gradient, multiplier * b.getValue() * divisor);
-    b.calcGradient(gradient, multiplier * -a.getValue() * divisor);
+    a.calcGradient(data, multiplier * b.getValue() * divisor);
+    b.calcGradient(data, multiplier * -a.getValue() * divisor);
   }
-  template<typename Data, typename Real, typename A> inline void derv10_Atan2(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Atan2(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a.getValue(), b);
     Real divisor = a.getValue() * a.getValue() + b * b;
     divisor = 1.0 / divisor;
-    a.calcGradient(gradient, b * divisor);
+    a.calcGradient(data, b * divisor);
   }
-  template<typename Data, typename Real, typename A> inline void derv10M_Atan2(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Atan2(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a.getValue(), b);
     Real divisor = a.getValue() * a.getValue() + b * b;
     divisor = 1.0 / divisor;
-    a.calcGradient(gradient, multiplier * b * divisor);
+    a.calcGradient(data, multiplier * b * divisor);
   }
-  template<typename Data, typename Real, typename B> inline void derv01_Atan2(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Atan2(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a, b.getValue());
     Real divisor = a * a + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
-    b.calcGradient(gradient, -a * divisor);
+    b.calcGradient(data, -a * divisor);
   }
-  template<typename Data, typename Real, typename B> inline void derv01M_Atan2(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Atan2(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a, b.getValue());
     Real divisor = a * a + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
-    b.calcGradient(gradient, multiplier * -a * divisor);
+    b.calcGradient(data, multiplier * -a * divisor);
   }
   using std::atan2;
-  CODI_DEFINE_BINARY_FUNCTION(Atan2, atan2, atan2, derv11_Atan2, derv11M_Atan2, derv10_Atan2, derv10M_Atan2, derv01_Atan2, derv01M_Atan2, gradientA_Atan2, gradientB_Atan2)
+  #define NAME Atan2
+  #define FUNCTION atan2
+  #define PRIMAL_FUNCTION atan2
+  #include "binaryExpression.tpp"
 
   /*
    * Implementation for f(a,b) = pow(a,b)
@@ -743,50 +483,53 @@ namespace codi {
       return 0.0;
     }
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11_Pow(Data& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Pow(Data& data, const A& a, const B& b, const Real& result) {
     checkArgumentsPow(a.getValue());
-    a.calcGradient(gradient, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+    a.calcGradient(data, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
-      b.calcGradient(gradient, log(a.getValue()) * result);
+      b.calcGradient(data, log(a.getValue()) * result);
     } else {
-      b.calcGradient(gradient, 0.0);
+      b.calcGradient(data, 0.0);
     }
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Pow(Data& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Pow(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsPow(a.getValue());
-    a.calcGradient(gradient, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+    a.calcGradient(data, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
-      b.calcGradient(gradient, multiplier * log(a.getValue()) * result);
+      b.calcGradient(data, multiplier * log(a.getValue()) * result);
     } else {
-      b.calcGradient(gradient, 0.0);
+      b.calcGradient(data, 0.0);
     }
   }
-  template<typename Data, typename Real, typename A> inline void derv10_Pow(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Pow(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b * pow(a.getValue(), b - 1.0));
+    a.calcGradient(data, b * pow(a.getValue(), b - 1.0));
   }
-  template<typename Data, typename Real, typename A> inline void derv10M_Pow(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Pow(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, multiplier * b * pow(a.getValue(), b - 1.0));
+    a.calcGradient(data, multiplier * b * pow(a.getValue(), b - 1.0));
   }
-  template<typename Data, typename Real, typename B> inline void derv01_Pow(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Pow(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     checkArgumentsPow(a);
     if (a > 0.0) {
-      b.calcGradient(gradient, log(a) * result);
+      b.calcGradient(data, log(a) * result);
     } else {
-      b.calcGradient(gradient, 0.0);
+      b.calcGradient(data, 0.0);
     }
   }
-  template<typename Data, typename Real, typename B> inline void derv01M_Pow(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Pow(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsPow(a);
     if (a > 0.0) {
-      b.calcGradient(gradient, multiplier * log(a) * result);
+      b.calcGradient(data, multiplier * log(a) * result);
     } else {
-      b.calcGradient(gradient, 0.0);
+      b.calcGradient(data, 0.0);
     }
   }
   using std::pow;
-  CODI_DEFINE_BINARY_FUNCTION(Pow, pow, pow, derv11_Pow, derv11M_Pow, derv10_Pow, derv10M_Pow, derv01_Pow, derv01M_Pow, gradientA_Pow, gradientB_Pow)
+  #define NAME Pow
+  #define FUNCTION pow
+  #define PRIMAL_FUNCTION pow
+  #include "binaryExpression.tpp"
 
   /*
    * Implementation for f(a,b) = Min(a,b)
@@ -807,42 +550,45 @@ namespace codi {
       return 1.0;
     }
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11_Min(Data& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Min(Data& data, const A& a, const B& b, const Real& result) {
     if(a.getValue() < b.getValue()) {
-      a.calcGradient(gradient);
+      a.calcGradient(data);
     } else {
-      b.calcGradient(gradient);
+      b.calcGradient(data);
     }
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Min(Data& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Min(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     if(a.getValue() < b.getValue()) {
-      a.calcGradient(gradient, multiplier);
+      a.calcGradient(data, multiplier);
     } else {
-      b.calcGradient(gradient, multiplier);
+      b.calcGradient(data, multiplier);
     }
   }
-  template<typename Data, typename Real, typename A> inline void derv10_Min(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Min(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     if(a.getValue() < b) {
-      a.calcGradient(gradient);
+      a.calcGradient(data);
     }
   }
-  template<typename Data, typename Real, typename A> inline void derv10M_Min(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Min(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     if(a.getValue() < b) {
-      a.calcGradient(gradient, multiplier);
+      a.calcGradient(data, multiplier);
     }
   }
-  template<typename Data, typename Real, typename B> inline void derv01_Min(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Min(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     if(a >= b.getValue()) {
-      b.calcGradient(gradient);
+      b.calcGradient(data);
     }
   }
-  template<typename Data, typename Real, typename B> inline void derv01M_Min(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Min(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     if(a >= b.getValue()) {
-      b.calcGradient(gradient, multiplier);
+      b.calcGradient(data, multiplier);
     }
   }
   using std::min;
-  CODI_DEFINE_BINARY_FUNCTION(Min, min, min, derv11_Min, derv11M_Min, derv10_Min, derv10M_Min, derv01_Min, derv01M_Min, gradientA_Min, gradientB_Min)
+  #define NAME Min
+  #define FUNCTION min
+  #define PRIMAL_FUNCTION min
+  #include "binaryExpression.tpp"
 
   /*
    * Implementation for f(a,b) = Max(a,b)
@@ -863,45 +609,47 @@ namespace codi {
       return 1.0;
     }
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11_Max(Data& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Max(Data& data, const A& a, const B& b, const Real& result) {
     if(a.getValue() > b.getValue()) {
-      a.calcGradient(gradient);
+      a.calcGradient(data);
     } else {
-      b.calcGradient(gradient);
+      b.calcGradient(data);
     }
   }
-  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Max(Data& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Max(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     if(a.getValue() > b.getValue()) {
-      a.calcGradient(gradient, multiplier);
+      a.calcGradient(data, multiplier);
     } else {
-      b.calcGradient(gradient, multiplier);
+      b.calcGradient(data, multiplier);
     }
   }
-  template<typename Data, typename Real, typename A> inline void derv10_Max(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Max(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     if(a.getValue() > b) {
-      a.calcGradient(gradient);
+      a.calcGradient(data);
     }
   }
-  template<typename Data, typename Real, typename A> inline void derv10M_Max(Data& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Max(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     if(a.getValue() > b) {
-      a.calcGradient(gradient, multiplier);
+      a.calcGradient(data, multiplier);
     }
   }
-  template<typename Data, typename Real, typename B> inline void derv01_Max(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Max(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     if(a <= b.getValue()) {
-      b.calcGradient(gradient);
+      b.calcGradient(data);
     }
   }
-  template<typename Data, typename Real, typename B> inline void derv01M_Max(Data& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Max(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     if(a <= b.getValue()) {
-      b.calcGradient(gradient, multiplier);
+      b.calcGradient(data, multiplier);
     }
   }
   using std::max;
-  CODI_DEFINE_BINARY_FUNCTION(Max, max, max, derv11_Max, derv11M_Max, derv10_Max, derv10M_Max, derv01_Max, derv01M_Max, gradientA_Max, gradientB_Max)
+  #define NAME Max
+  #define FUNCTION max
+  #define PRIMAL_FUNCTION max
+  #include "binaryExpression.tpp"
 
   #undef CODI_OPERATOR_HELPER
-  #undef CODI_DEFINE_BINARY_FUNCTION
 
   /*
    * Conditional operators should behave exactly the same as with
@@ -947,185 +695,30 @@ namespace codi {
 
   #undef CODI_DEFINE_CONDITIONAL
 
-  /**
-   *  @brief Implementation for unary minus operator.
-   *
-   * @tparam Real The real type used in the active types.
-   * @tparam A    The expression for the argument of the function.
-   */
-  template<typename Real, class A>
-  struct UnaryMinus : public Expression<Real, UnaryMinus<Real, A> > {
-   private:
-     const A& a_;
-
-   public:
-   /**
-    * @brief The unary minus operator.
-    * @param a  The argument for the operation.
-    */
-    UnaryMinus(const Expression<Real, A>& a)
-      : a_(a.cast()) { }
-
-
-   /**
-    * @brief Calculate the gradient of the expression.
-    *
-    * f(a) = -a => df/da = -1.0
-    *
-    * The operation gives the jacobi -1 to the argument.
-    *
-    * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
-    *                        lhs of the expression.
-    */
-    inline void calcGradient(Real& gradient) const {
-      a_.calcGradient(gradient, -1.0);
+  #define CODI_OPERATOR_HELPER(NAME, OP) \
+    /** @brief Helper function to call operators as a function. @param[in] a The argument of the operation. @return The value of OP b @tparam A The expression for the argument of the function*/ \
+    template<typename A> \
+    inline auto primal_ ## NAME(const A& a) -> decltype(OP a) { \
+      return OP a; \
     }
-
-   /**
-    * @brief Calculate the gradient of the expression.
-    *
-    * f(a) = -a => df/da = -1.0
-    *
-    * The operation gives the jacobi -multiplier to the argument.
-    *
-    * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
-    *                        lhs of the expression.
-    * @param[in] multiplier  The multiplier from the expression which used this expression as an argument.
-    */
-    inline void calcGradient(Real& gradient, const Real& multiplier) const {
-      a_.calcGradient(gradient, -multiplier);
-    }
-
-   /**
-    * @brief Return the numerical value of the expression.
-    *
-    * @return The value of the expression.
-    */
-    inline Real getValue() const {
-      return -a_.getValue();
-    }
-  };
-
-  /**
-   * @brief Overload for operator- with the CoDiPack expressions.
-   *
-   * @param[in] a The argument of the expression.
-   * @return The implementing expression UnaryMinus.
-   *
-   * @tparam Real The real type used in the active types.
-   * @tparam A The expression for the argument of the function.
-   */
-  template<typename Real, class A>
-  inline UnaryMinus<Real, A> operator-(const Expression<Real, A>& a) {
-    return UnaryMinus<Real, A>(a.cast());
-  }
-
-  /**
-   * @brief Overload for operator+ with the CoDiPack expressions.
-   *
-   * @param[in] a The argument of the expression.
-   * @return The argument a.
-   *
-   * @tparam Real The real type used in the active types.
-   * @tparam A The expression for the argument of the function.
-   */
-  template<typename Real, class A>
-  inline const Expression<Real, A>& operator+(const Expression<Real, A>& a) {
-    return a;
-  }
 
   /*
-   * Enable mathematical functions with one argument.
+   * Now all unary functions are implemented.
    *
-   * @param              OP   The name of the implementing class.
-   * @param            FUNC   The name of the function. FUNC(a) should be a valid call.
-   * @param DERIVATIVE_FUNC   The name of the function for the derivative calculation.
+   * We use the naming scheme gradName for the gradient computation of the function.
+   *
    */
-  # define CODI_DEFINE_UNARY_FUNCTION(OP, FUNC, DERIVATIVE_FUNC)  \
-    /* predefine the struct and the function for higher order derivatives */\
-    template<typename Real, class A> struct OP; \
-    template <typename Real, class A> \
-    inline  codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a); \
-    \
-    using std:: FUNC; \
-    /** @brief Expression implementation for OP. @tparam Real The real type used in the active types. @tparam A The expression for the argument of the function.*/ \
-    template<typename Real, class A> \
-    struct OP : public Expression<Real, OP<Real, A> > { \
-      private: \
-        typedef typename TypeTraits<Real>::PassiveReal PassiveReal; \
-        /** @brief The argument of the function. */ \
-        const A a_; \
-        /** @brief The result of the function. It is always precomputed. */ \
-        Real result_; \
-      public: \
-        /** @brief Stores the argument and precomputes the result of the expression. @param[in] a Argument of the expression.*/ \
-        OP(const Expression<Real, A>& a) : \
-          a_(a.cast()), \
-          result_(FUNC(a.getValue())) {} \
-      \
-      /** @brief Calculates the jacobie of the expression and hands them down to the argument. @details For f(x) it calculates df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. */ \
-      template<typename Data> \
-      inline void calcGradient(Data& gradient) const { \
-        a_.calcGradient(gradient, DERIVATIVE_FUNC(a_.getValue(), result_)); \
-      } \
-      \
-      /** @brief Calculates the jacobi of the expression and hands them down to the argument. @details For f(x) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression. * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument. */ \
-      template<typename Data> \
-      inline void calcGradient(Data& gradient, const Real& multiplier) const { \
-        a_.calcGradient(gradient, DERIVATIVE_FUNC(a_.getValue(), result_)*multiplier); \
-      } \
-      \
-      /** @brief Return the numerical value of the expression. @return The value of the expression. */ \
-      inline const Real& getValue() const { \
-        return result_; \
-      } \
-      \
-      template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset> \
-      static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) { \
-        return OP< Real, \
-            decltype(A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues)) \
-            > ( \
-            A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues) \
-          ); \
-      } \
-      \
-      template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData > \
-      static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) { \
-        auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues); \
-        newExpr.calcGradient(gradient, seed); \
-      } \
-      \
-      template<typename IndexType, size_t offset, size_t passiveOffset> \
-      static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) { \
-        const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);\
-        \
-        return FUNC(aPrimal); \
-      } \
-      \
-      template<typename IndexType> \
-      static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-        evalAdjointOffset<IndexType, 0, 0>(seed, indices, primalValues, adjointValues);\
-      } \
-      \
-      template<typename IndexType, size_t offset, size_t passiveOffset> \
-      static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) { \
-        const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);\
-        const Real resPrimal = FUNC(aPrimal); \
-        \
-        const Real aJac = DERIVATIVE_FUNC(aPrimal, resPrimal) * seed; \
-        A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues); \
-      } \
-      \
-      inline void pushPassive(const PassiveReal& passive) const { \
-        a_.pushPassive(passive);\
-      } \
-    }; \
-    \
-    /** @brief Overload for FUNC with the CoDiPack expressions. @param[in] a The argument of the operation. @return The implementing expression OP. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function. */ \
-    template <typename Real, class A> \
-    inline codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a) { \
-      return codi:: OP<Real, A>(a.cast()); \
-    }
+
+  template<typename Real> inline typename TypeTraits<Real>::PassiveReal gradUnaryMinus(const Real& a, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(result);
+    return -1.0;
+  }
+  CODI_OPERATOR_HELPER(UnaryMinus, -)
+  #define NAME UnaryMinus
+  #define FUNCTION operator -
+  #define PRIMAL_FUNCTION primal_UnaryMinus
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradSqrt(const Real& a, const Real& result) {
     if(CheckExpressionArguments) {
@@ -1139,13 +732,21 @@ namespace codi {
       return (Real)0.0;
     }
   }
-  CODI_DEFINE_UNARY_FUNCTION(Sqrt, sqrt, gradSqrt)
+  using std::sqrt;
+  #define NAME Sqrt
+  #define FUNCTION sqrt
+  #define PRIMAL_FUNCTION sqrt
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradTanh(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return 1 - result * result;
   }
-  CODI_DEFINE_UNARY_FUNCTION(Tanh, tanh, gradTanh)
+  using std::tanh;
+  #define NAME Tanh
+  #define FUNCTION tanh
+  #define PRIMAL_FUNCTION tanh
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradLog(const Real& a, const Real& result) {
     CODI_UNUSED(result);
@@ -1156,7 +757,11 @@ namespace codi {
     }
     return 1.0 / a;
   }
-  CODI_DEFINE_UNARY_FUNCTION(Log, log, gradLog)
+  using std::log;
+  #define NAME Log
+  #define FUNCTION log
+  #define PRIMAL_FUNCTION log
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradLog10(const Real& a, const Real& result) {
     CODI_UNUSED(result);
@@ -1167,19 +772,31 @@ namespace codi {
     }
     return 0.434294481903252 / a;
   }
-  CODI_DEFINE_UNARY_FUNCTION(Log10, log10, gradLog10)
+  using std::log10;
+  #define NAME Log10
+  #define FUNCTION log10
+  #define PRIMAL_FUNCTION log10
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradSin(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return cos(a);
   }
-  CODI_DEFINE_UNARY_FUNCTION(Sin, sin, gradSin)
+  using std::sin;
+  #define NAME Sin
+  #define FUNCTION sin
+  #define PRIMAL_FUNCTION sin
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradCos(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return -sin(a);
   }
-  CODI_DEFINE_UNARY_FUNCTION(Cos, cos, gradCos)
+  using std::cos;
+  #define NAME Cos
+  #define FUNCTION cos
+  #define PRIMAL_FUNCTION cos
+  #include "unaryExpression.tpp"
 
   using std::sqrt;
   template<typename Real> inline Real gradAsin(const Real& a, const Real& result) {
@@ -1191,7 +808,11 @@ namespace codi {
     }
     return 1.0 / sqrt(1.0 - a * a);
   }
-  CODI_DEFINE_UNARY_FUNCTION(Asin, asin, gradAsin)
+  using std::asin;
+  #define NAME Asin
+  #define FUNCTION asin
+  #define PRIMAL_FUNCTION asin
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradAcos(const Real& a, const Real& result) {
     CODI_UNUSED(result);
@@ -1202,31 +823,51 @@ namespace codi {
     }
     return -1.0 / sqrt(1.0 - a * a);
   }
-  CODI_DEFINE_UNARY_FUNCTION(Acos, acos, gradAcos)
+  using std::acos;
+  #define NAME Acos
+  #define FUNCTION acos
+  #define PRIMAL_FUNCTION acos
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradAtan(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return 1.0 / (1 + a * a);
   }
-  CODI_DEFINE_UNARY_FUNCTION(Atan, atan, gradAtan)
+  using std::atan;
+  #define NAME Atan
+  #define FUNCTION atan
+  #define PRIMAL_FUNCTION atan
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradSinh(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return cosh(a);
   }
-  CODI_DEFINE_UNARY_FUNCTION(Sinh, sinh, gradSinh)
+  using std::sinh;
+  #define NAME Sinh
+  #define FUNCTION sinh
+  #define PRIMAL_FUNCTION sinh
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradCosh(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return sinh(a);
   }
-  CODI_DEFINE_UNARY_FUNCTION(Cosh, cosh, gradCosh)
+  using std::cosh;
+  #define NAME Cosh
+  #define FUNCTION cosh
+  #define PRIMAL_FUNCTION cosh
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradExp(const Real& a, const Real& result) {
     CODI_UNUSED(a);
     return result;
   }
-  CODI_DEFINE_UNARY_FUNCTION(Exp, exp, gradExp)
+  using std::exp;
+  #define NAME Exp
+  #define FUNCTION exp
+  #define PRIMAL_FUNCTION exp
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradAtanh(const Real& a, const Real& result) {
     CODI_UNUSED(result);
@@ -1237,7 +878,11 @@ namespace codi {
     }
     return 1.0 / (1 - a * a);
   }
-  CODI_DEFINE_UNARY_FUNCTION(Atanh, atanh, gradAtanh)
+  using std::atanh;
+  #define NAME Atanh
+  #define FUNCTION atanh
+  #define PRIMAL_FUNCTION atanh
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradAbs(const Real& a, const Real& result) {
     CODI_UNUSED(result);
@@ -1249,7 +894,11 @@ namespace codi {
       return (Real)0.0;
     }
   }
-  CODI_DEFINE_UNARY_FUNCTION(Abs, abs, gradAbs)
+  using std::abs;
+  #define NAME Abs
+  #define FUNCTION abs
+  #define PRIMAL_FUNCTION abs
+  #include "unaryExpression.tpp"
 
   template<typename Real> inline Real gradTan(const Real& a, const Real& result) {
     CODI_UNUSED(result);
@@ -1261,9 +910,13 @@ namespace codi {
     Real tmp = 1.0 / cos(a);
     return tmp * tmp;
   }
-  CODI_DEFINE_UNARY_FUNCTION(Tan, tan, gradTan)
-  # undef CODI_DEFINE_UNARY_FUNCTION
+  using std::tan ;
+  #define NAME Tan
+  #define FUNCTION tan
+  #define PRIMAL_FUNCTION tan
+  #include "unaryExpression.tpp"
 
+  #undef CODI_OPERATOR_HELPER
 
   /**
    * @brief The fabs function is redirected to abs.
@@ -1278,6 +931,20 @@ namespace codi {
   template<typename Real, class A>
   inline Abs<Real, A> fabs(const codi::Expression<Real, A>& a) {
     return Abs<Real, A>(a.cast());
+  }
+
+  /**
+   * @brief Overload for operator+ with the CoDiPack expressions.
+   *
+   * @param[in] a The argument of the expression.
+   * @return The argument a.
+   *
+   * @tparam Real The real type used in the active types.
+   * @tparam A The expression for the argument of the function.
+   */
+  template<typename Real, class A>
+  inline const Expression<Real, A>& operator+(const Expression<Real, A>& a) {
+    return a;
   }
 
   /***************************************************************************************
