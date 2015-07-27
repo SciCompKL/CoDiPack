@@ -90,11 +90,14 @@ namespace codi {
      * The optimized version of push jacobi which signals the tape that the jacobi
      * corresponding to the tape is 1.0.
      *
-     * @param[inout]   gradient  A handle to the gradient of the operation. Mostly used for the forward mode.
+     * @param[inout]       data  A handle for data the tape can use for the evaluation.
      * @param[in]         value  The value of the active type which pushes the jacobi.
      * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
+     *
+     * @tparam Data  The type of the data for the tape.
      */
-    virtual void pushJacobi(Real& gradient, const Real& value, const GradientData& gradientData) = 0;
+    template<typename Data>
+    void pushJacobi(Real& gradient, const Real& value, const GradientData& gradientData);
 
     /**
      * @brief Add a jacobi to the tape.
@@ -102,12 +105,15 @@ namespace codi {
      * The general version of push jacobi which signals the tape that the jacobi is used
      * in the evaluation and needs to be evaluated or stored.
      *
-     * @param[inout]   gradient  A handle to the gradient of the operation. Mostly used for the forward mode.
+     * @param[inout]       data  A handle for data the tape can use for the evaluation.
      * @param[in]        jacobi  The value of the jacobi.
      * @param[in]         value  The value of the active type which pushes the jacobi.
      * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
+     *
+     * @tparam Data  The type of the data for the tape.
      */
-    virtual void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const GradientData& gradientData) = 0;
+    template<typename Data>
+    void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const GradientData& gradientData);
 
     /**
      * @brief Called in the construction of a active type.

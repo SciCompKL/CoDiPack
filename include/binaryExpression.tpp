@@ -116,9 +116,13 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      *
      * For f(x,y) it calculates df/dx and df/dy and passes these values as the multipliers to the arguments.
      *
-     * @param[inout] gradient  A helper value for the forward implementations. The value is the gradient of the lhs of the expression. */
-    inline void calcGradient(Real& gradient) const {
-      DERIVATIVE_FUNC_11(gradient, a_, b_, getValue());
+     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
+     */
+    template<typename Data>
+    inline void calcGradient(Data& data) const {
+      DERIVATIVE_FUNC_11(data, a_, b_, getValue());
     }
 
     /** 
@@ -126,11 +130,14 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      *
      * For f(x,y) it calculates multiplier * df/dx and multiplier * df/dy and passes these values as the multipliers to the arguments.
      *
-     * @param[inout] gradient  A helper value for forward implementations. The value is the gradient of the lhs of the expression.
-     * @param[in]  multiplier  The Jacobi from the expression where this expression was used as an argument. 
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient, const Real& multiplier) const {
-      DERIVATIVE_FUNC_11M(gradient, a_, b_, getValue(), multiplier);
+    template<typename Data>
+    inline void calcGradient(Data& data, const Real& multiplier) const {
+      DERIVATIVE_FUNC_11M(data, a_, b_, getValue(), multiplier);
     }
 
     /** 
@@ -170,10 +177,13 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      *
      * For f(x,y) it calculates df/dx passes this value as the multiplier to the argument.
      *
-     * @param[inout] gradient  A helper value for forward implementations. The value is the gradient of the lhs of the expression.
+     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient) const {
-      DERIVATIVE_FUNC_10(gradient, a_, b_, getValue());
+    template<typename Data>
+    inline void calcGradient(Data& data) const {
+      DERIVATIVE_FUNC_10(data, a_, b_, getValue());
     }
 
     /** 
@@ -181,10 +191,14 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      *
      * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. 
      *
-     * @param[inout] gradient  A helper value for forward implementations. The value is the gradient of the lhs of the expression.
-     * @param[in]  multiplier  The Jacobi from the expression where this expression was used as an argument. */
-    inline void calcGradient(Real& gradient, const Real& multiplier) const {
-      DERIVATIVE_FUNC_10M(gradient, a_, b_, getValue(), multiplier);
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+     *
+     * @tparam Data The type for the tape data.
+     */
+    template<typename Data>
+    inline void calcGradient(Data& data, const Real& multiplier) const {
+      DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
     }
 
     /** 
@@ -224,10 +238,13 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      *
      * For f(x,y) it calculates df/dx passes this value as the multiplier to the argument.
      *
-     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression.
+     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient) const {
-      DERIVATIVE_FUNC_01(gradient, a_, b_, getValue());
+    template<typename Data>
+    inline void calcGradient(Data& data) const {
+      DERIVATIVE_FUNC_01(data, a_, b_, getValue());
     }
 
     /** 
@@ -235,11 +252,14 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      *
      * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. 
      *
-     * @param[inout] gradient  A helper value for forward implementations. The value is the gradient of the lhs of the expression.
-     * @param[in]  multiplier  The Jacobi from the expression where this expression was used as an argument. 
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient, const Real& multiplier) const {
-      DERIVATIVE_FUNC_01M(gradient, a_, b_, getValue(), multiplier);
+    template<typename Data>
+    inline void calcGradient(Data& data, const Real& multiplier) const {
+      DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
     }
 
     /** 

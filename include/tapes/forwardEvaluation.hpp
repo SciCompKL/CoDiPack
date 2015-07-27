@@ -73,7 +73,7 @@ namespace codi {
     template<typename Rhs>
     inline void store(Real& value, GradientData& lhsTangent, const Rhs& rhs) {
       Real gradient = Real();
-      rhs.calcGradient(gradient);
+      rhs.template calcGradient<Real>(gradient);
       lhsTangent  = gradient;
       value = rhs.getValue();
     }
@@ -112,8 +112,11 @@ namespace codi {
      * @param[inout]  lhsTangent  The tangent of the lhs.
      * @param[in]          value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
+     *
+     * @tparam Data  A Real.
      */
-    inline void pushJacobi(Real& lhsTangent, const Real& value, const GradientData& curTangent) {
+    template<typename Data>
+    inline void pushJacobi(Data& lhsTangent, const Real& value, const GradientData& curTangent) {
       CODI_UNUSED(value);
       lhsTangent += curTangent;
     }
@@ -128,8 +131,11 @@ namespace codi {
      * @param[in]         jacobi  The jacobi value of the operation.
      * @param[in]          value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
+     *
+     * @tparam Data  A Real.
      */
-    inline void pushJacobi(Real& lhsTangent, const Real& jacobi, const Real& value, const GradientData& curTangent) {
+    template<typename Data>
+    inline void pushJacobi(Data& lhsTangent, const Real& jacobi, const Real& value, const GradientData& curTangent) {
       CODI_UNUSED(value);
       ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
         lhsTangent += jacobi * curTangent;

@@ -184,20 +184,26 @@ namespace codi {
     /**
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value 1.0.
      *
-     * @param[inout] gradient A helper value for gradient calculations.
+     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient) const {
-      GlobalActiveRealData<Tape>::globalTape.pushJacobi(gradient, primalValue, gradientData);
+    template<typename Data>
+    inline void calcGradient(Data& data) const {
+      GlobalActiveRealData<Tape>::globalTape.pushJacobi(data, primalValue, gradientData);
     }
 
     /**
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value jacobi.
      *
-     * @param[inout] gradient A helper value for gradient calculations.
-     * @param[in]      jacobi The partial derivative of the expression with respect to this variable.
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient, const Real& jacobi) const {
-      GlobalActiveRealData<Tape>::globalTape.pushJacobi(gradient, jacobi, primalValue, gradientData);
+    template<typename Data>
+    inline void calcGradient(Data& data, const Real& jacobi) const {
+      GlobalActiveRealData<Tape>::globalTape.pushJacobi(data, jacobi, primalValue, gradientData);
     }
 
 

@@ -76,11 +76,13 @@ namespace codi {
      * expression represents and pass the result to its argument.
      * For functions f(a), pass df/da to the argument.
      *
-     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
-     *                        lhs of the expression.
+     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient) const {
-      cast().calcGradient(gradient);
+    template<typename Data>
+    inline void calcGradient(Data& data) const {
+      cast().calcGradient(data);
     }
 
     /**
@@ -90,12 +92,14 @@ namespace codi {
      * expression represents and pass the result to its argument.
      * For functions f(a), pass multiplier * df/da to the argument.
      *
-     * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the
-     *                        lhs of the expression.
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
      * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient, const Real& multiplier) const {
-      cast().calcGradient(gradient, multiplier);
+    template<typename Data>
+    inline void calcGradient(Data& data, const Real& multiplier) const {
+      cast().calcGradient(data, multiplier);
     }
 
     /**
@@ -147,30 +151,30 @@ namespace codi {
    * df/da = 1 and likewise for df/db so simply
    * call a and b's versions of calcGradient
    */
-  template<typename Real, typename A, typename B> inline void derv11_Add(Real& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Add(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient);
-    b.calcGradient(gradient);
+    a.calcGradient(data);
+    b.calcGradient(data);
   }
-  template<typename Real, typename A, typename B> inline void derv11M_Add(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
-    a.calcGradient(gradient, multiplier);
-    b.calcGradient(gradient, multiplier);
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Add(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
+    a.calcGradient(data, multiplier);
+    b.calcGradient(data, multiplier);
   }
-  template<typename Real, typename A> inline void derv10_Add(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Add(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient);
+    a.calcGradient(data);
   }
-  template<typename Real, typename A> inline void derv10M_Add(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Add(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, multiplier);
+    a.calcGradient(data, multiplier);
   }
-  template<typename Real, typename B> inline void derv01_Add(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Add(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient);
+    b.calcGradient(data);
   }
-  template<typename Real, typename B> inline void derv01M_Add(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Add(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, multiplier);
+    b.calcGradient(data, multiplier);
   }
 
   CODI_OPERATOR_HELPER(Add, +)
@@ -183,31 +187,31 @@ namespace codi {
    * Implementation for f(a,b) = a - b
    * df/da = 1 so simply call a
    */
-  template<typename Real, typename A, typename B> inline void derv11_Subtract(Real& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Subtract(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient);
-    b.calcGradient(gradient, -1.0);
+    a.calcGradient(data);
+    b.calcGradient(data, -1.0);
   }
-  template<typename Real, typename A, typename B> inline void derv11M_Subtract(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Subtract(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, multiplier);
-    b.calcGradient(gradient, -multiplier);
+    a.calcGradient(data, multiplier);
+    b.calcGradient(data, -multiplier);
   }
-  template<typename Real, typename A> inline void derv10_Subtract(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Subtract(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient);
+    a.calcGradient(data);
   }
-  template<typename Real, typename A> inline void derv10M_Subtract(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Subtract(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, multiplier);
+    a.calcGradient(data, multiplier);
   }
-  template<typename Real, typename B> inline void derv01_Subtract(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Subtract(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, -1.0);
+    b.calcGradient(data, -1.0);
   }
-  template<typename Real, typename B> inline void derv01M_Subtract(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Subtract(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, -multiplier);
+    b.calcGradient(data, -multiplier);
   }
   CODI_OPERATOR_HELPER(Subtract, -)
   #define NAME Subtract
@@ -218,31 +222,31 @@ namespace codi {
   /*
    * Implementation for f(a,b) = a * b
    */
-  template<typename Real, typename A, typename B> inline void derv11_Multiply(Real& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Multiply(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b.getValue());
-    b.calcGradient(gradient, a.getValue());
+    a.calcGradient(data, b.getValue());
+    b.calcGradient(data, a.getValue());
   }
-  template<typename Real, typename A, typename B> inline void derv11M_Multiply(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Multiply(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b.getValue() * multiplier);
-    b.calcGradient(gradient, a.getValue() * multiplier);
+    a.calcGradient(data, b.getValue() * multiplier);
+    b.calcGradient(data, a.getValue() * multiplier);
   }
-  template<typename Real, typename A> inline void derv10_Multiply(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Multiply(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b);
+    a.calcGradient(data, b);
   }
-  template<typename Real, typename A> inline void derv10M_Multiply(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Multiply(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b * multiplier);
+    a.calcGradient(data, b * multiplier);
   }
-  template<typename Real, typename B> inline void derv01_Multiply(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Multiply(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, a);
+    b.calcGradient(data, a);
   }
-  template<typename Real, typename B> inline void derv01M_Multiply(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Multiply(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    b.calcGradient(gradient, a * multiplier);
+    b.calcGradient(data, a * multiplier);
   }
   CODI_OPERATOR_HELPER(Multiply, *)
   #define NAME Multiply
@@ -268,37 +272,37 @@ namespace codi {
       }
     }
   }
-  template<typename Real, typename A, typename B> inline void derv11_Divide(Real& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Divide(Data& data, const A& a, const B& b, const Real& result) {
     checkArgumentsDivide(b.getValue());
     Real one_over_b = 1.0 / b.getValue();
-    a.calcGradient(gradient, one_over_b);
-    b.calcGradient(gradient, -result * one_over_b);
+    a.calcGradient(data, one_over_b);
+    b.calcGradient(data, -result * one_over_b);
   }
-  template<typename Real, typename A, typename B> inline void derv11M_Divide(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Divide(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsDivide(b.getValue());
     Real one_over_b = multiplier / b.getValue();
-    a.calcGradient(gradient, one_over_b);
-    b.calcGradient(gradient, -result * one_over_b);
+    a.calcGradient(data, one_over_b);
+    b.calcGradient(data, -result * one_over_b);
   }
-  template<typename Real, typename A> inline void derv10_Divide(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Divide(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     checkArgumentsDivide(b);
     Real one_over_b = 1.0 / b;
-    a.calcGradient(gradient, one_over_b);
+    a.calcGradient(data, one_over_b);
   }
-  template<typename Real, typename A> inline void derv10M_Divide(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Divide(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     checkArgumentsDivide(b);
     Real one_over_b = multiplier / b;
-    a.calcGradient(gradient, one_over_b);
+    a.calcGradient(data, one_over_b);
   }
-  template<typename Real, typename B> inline void derv01_Divide(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Divide(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     checkArgumentsDivide(b.getValue());
     Real one_over_b = 1.0 / b.getValue();
-    b.calcGradient(gradient, -result * one_over_b);
+    b.calcGradient(data, -result * one_over_b);
   }
-  template<typename Real, typename B> inline void derv01M_Divide(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Divide(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsDivide(b.getValue());
     Real one_over_b = multiplier / b.getValue();
-    b.calcGradient(gradient, -result * one_over_b);
+    b.calcGradient(data, -result * one_over_b);
   }
   CODI_OPERATOR_HELPER(Divide, /)
   #define NAME Divide
@@ -326,49 +330,49 @@ namespace codi {
       }
     }
   }
-  template<typename Real, typename A, typename B> inline void derv11_Atan2(Real& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Atan2(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a.getValue(), b.getValue());
     Real divisor = a.getValue() * a.getValue() + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
-    a.calcGradient(gradient, b.getValue() * divisor);
-    b.calcGradient(gradient, -a.getValue() * divisor);
+    a.calcGradient(data, b.getValue() * divisor);
+    b.calcGradient(data, -a.getValue() * divisor);
   }
-  template<typename Real, typename A, typename B> inline void derv11M_Atan2(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Atan2(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a.getValue(), b.getValue());
     Real divisor = a.getValue() * a.getValue() + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
-    a.calcGradient(gradient, multiplier * b.getValue() * divisor);
-    b.calcGradient(gradient, multiplier * -a.getValue() * divisor);
+    a.calcGradient(data, multiplier * b.getValue() * divisor);
+    b.calcGradient(data, multiplier * -a.getValue() * divisor);
   }
-  template<typename Real, typename A> inline void derv10_Atan2(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Atan2(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a.getValue(), b);
     Real divisor = a.getValue() * a.getValue() + b * b;
     divisor = 1.0 / divisor;
-    a.calcGradient(gradient, b * divisor);
+    a.calcGradient(data, b * divisor);
   }
-  template<typename Real, typename A> inline void derv10M_Atan2(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Atan2(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a.getValue(), b);
     Real divisor = a.getValue() * a.getValue() + b * b;
     divisor = 1.0 / divisor;
-    a.calcGradient(gradient, multiplier * b * divisor);
+    a.calcGradient(data, multiplier * b * divisor);
   }
-  template<typename Real, typename B> inline void derv01_Atan2(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Atan2(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a, b.getValue());
     Real divisor = a * a + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
-    b.calcGradient(gradient, -a * divisor);
+    b.calcGradient(data, -a * divisor);
   }
-  template<typename Real, typename B> inline void derv01M_Atan2(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Atan2(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a, b.getValue());
     Real divisor = a * a + b.getValue() * b.getValue();
     divisor = 1.0 / divisor;
-    b.calcGradient(gradient, multiplier * -a * divisor);
+    b.calcGradient(data, multiplier * -a * divisor);
   }
   using std::atan2;
   #define NAME Atan2
@@ -395,46 +399,46 @@ namespace codi {
       }
     }
   }
-  template<typename Real, typename A, typename B> inline void derv11_Pow(Real& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Pow(Data& data, const A& a, const B& b, const Real& result) {
     checkArgumentsPow(a.getValue());
-    a.calcGradient(gradient, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+    a.calcGradient(data, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
-      b.calcGradient(gradient, log(a.getValue()) * result);
+      b.calcGradient(data, log(a.getValue()) * result);
     } else {
-      b.calcGradient(gradient, 0.0);
+      b.calcGradient(data, 0.0);
     }
   }
-  template<typename Real, typename A, typename B> inline void derv11M_Pow(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Pow(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsPow(a.getValue());
-    a.calcGradient(gradient, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+    a.calcGradient(data, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
-      b.calcGradient(gradient, multiplier * log(a.getValue()) * result);
+      b.calcGradient(data, multiplier * log(a.getValue()) * result);
     } else {
-      b.calcGradient(gradient, 0.0);
+      b.calcGradient(data, 0.0);
     }
   }
-  template<typename Real, typename A> inline void derv10_Pow(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Pow(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, b * pow(a.getValue(), b - 1.0));
+    a.calcGradient(data, b * pow(a.getValue(), b - 1.0));
   }
-  template<typename Real, typename A> inline void derv10M_Pow(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Pow(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     CODI_UNUSED(result);
-    a.calcGradient(gradient, multiplier * b * pow(a.getValue(), b - 1.0));
+    a.calcGradient(data, multiplier * b * pow(a.getValue(), b - 1.0));
   }
-  template<typename Real, typename B> inline void derv01_Pow(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Pow(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     checkArgumentsPow(a);
     if (a > 0.0) {
-      b.calcGradient(gradient, log(a) * result);
+      b.calcGradient(data, log(a) * result);
     } else {
-      b.calcGradient(gradient, 0.0);
+      b.calcGradient(data, 0.0);
     }
   }
-  template<typename Real, typename B> inline void derv01M_Pow(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Pow(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsPow(a);
     if (a > 0.0) {
-      b.calcGradient(gradient, multiplier * log(a) * result);
+      b.calcGradient(data, multiplier * log(a) * result);
     } else {
-      b.calcGradient(gradient, 0.0);
+      b.calcGradient(data, 0.0);
     }
   }
   using std::pow;
@@ -446,38 +450,38 @@ namespace codi {
   /*
    * Implementation for f(a,b) = Min(a,b)
    */
-  template<typename Real, typename A, typename B> inline void derv11_Min(Real& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Min(Data& data, const A& a, const B& b, const Real& result) {
     if(a.getValue() < b.getValue()) {
-      a.calcGradient(gradient);
+      a.calcGradient(data);
     } else {
-      b.calcGradient(gradient);
+      b.calcGradient(data);
     }
   }
-  template<typename Real, typename A, typename B> inline void derv11M_Min(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Min(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     if(a.getValue() < b.getValue()) {
-      a.calcGradient(gradient, multiplier);
+      a.calcGradient(data, multiplier);
     } else {
-      b.calcGradient(gradient, multiplier);
+      b.calcGradient(data, multiplier);
     }
   }
-  template<typename Real, typename A> inline void derv10_Min(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Min(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     if(a.getValue() < b) {
-      a.calcGradient(gradient);
+      a.calcGradient(data);
     }
   }
-  template<typename Real, typename A> inline void derv10M_Min(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Min(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     if(a.getValue() < b) {
-      a.calcGradient(gradient, multiplier);
+      a.calcGradient(data, multiplier);
     }
   }
-  template<typename Real, typename B> inline void derv01_Min(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Min(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     if(a >= b.getValue()) {
-      b.calcGradient(gradient);
+      b.calcGradient(data);
     }
   }
-  template<typename Real, typename B> inline void derv01M_Min(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Min(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     if(a >= b.getValue()) {
-      b.calcGradient(gradient, multiplier);
+      b.calcGradient(data, multiplier);
     }
   }
   using std::min;
@@ -489,38 +493,38 @@ namespace codi {
   /*
    * Implementation for f(a,b) = Max(a,b)
    */
-  template<typename Real, typename A, typename B> inline void derv11_Max(Real& gradient, const A& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11_Max(Data& data, const A& a, const B& b, const Real& result) {
     if(a.getValue() > b.getValue()) {
-      a.calcGradient(gradient);
+      a.calcGradient(data);
     } else {
-      b.calcGradient(gradient);
+      b.calcGradient(data);
     }
   }
-  template<typename Real, typename A, typename B> inline void derv11M_Max(Real& gradient, const A& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A, typename B> inline void derv11M_Max(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
     if(a.getValue() > b.getValue()) {
-      a.calcGradient(gradient, multiplier);
+      a.calcGradient(data, multiplier);
     } else {
-      b.calcGradient(gradient, multiplier);
+      b.calcGradient(data, multiplier);
     }
   }
-  template<typename Real, typename A> inline void derv10_Max(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+  template<typename Data, typename Real, typename A> inline void derv10_Max(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     if(a.getValue() > b) {
-      a.calcGradient(gradient);
+      a.calcGradient(data);
     }
   }
-  template<typename Real, typename A> inline void derv10M_Max(Real& gradient, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename A> inline void derv10M_Max(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     if(a.getValue() > b) {
-      a.calcGradient(gradient, multiplier);
+      a.calcGradient(data, multiplier);
     }
   }
-  template<typename Real, typename B> inline void derv01_Max(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+  template<typename Data, typename Real, typename B> inline void derv01_Max(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     if(a <= b.getValue()) {
-      b.calcGradient(gradient);
+      b.calcGradient(data);
     }
   }
-  template<typename Real, typename B> inline void derv01M_Max(Real& gradient, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+  template<typename Data, typename Real, typename B> inline void derv01M_Max(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     if(a <= b.getValue()) {
-      b.calcGradient(gradient, multiplier);
+      b.calcGradient(data, multiplier);
     }
   }
   using std::max;
