@@ -136,6 +136,22 @@ namespace codi {
     }
 
     /**
+     * @brief Return the number of used statements.
+     * @return The number of used statements.
+     */
+    size_t getUsedStatementsSize() {
+      return statements.getUsedSize();
+    }
+
+    /**
+     * @brief Return the number of used data entries.
+     * @return The number of used data entries.
+     */
+    size_t getUsedDataEntriesSize() {
+      return data.getUsedSize();
+    }
+
+    /**
      * @brief Set the size of the jacobi and statement data and the adjoint vector.
      * @param[in] dataSize  The new size of the jacobi vector.
      * @param[in] stmtSize  The new size of the statement vector.
