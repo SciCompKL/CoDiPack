@@ -54,7 +54,11 @@ namespace codi {
    * performace issues. If the data set with memset to zero then the system will
    * directly allocate all the memory.
    */
-  const bool UseMemsetInChunks = true;
+  #ifndef CODI_UseMemsetInChunks
+    #define CODI_UseMemsetInChunks true
+  #endif
+  const bool UseMemsetInChunks = CODI_UseMemsetInChunks;
+  #undef CODI_UseMemsetInChunks
 
   /**
    * @brief Check if the arguments are inside the differentiable domain.
@@ -63,7 +67,11 @@ namespace codi {
    * gradient evaluation. If the arguments are not valid a CoDiPack exceptions is
    * generated.
    */
-  const bool CheckExpressionArguments = false;
+  #ifndef CODI_CheckExpressionArguments
+    #define CODI_CheckExpressionArguments false
+  #endif
+  const bool CheckExpressionArguments = CODI_CheckExpressionArguments;
+  #undef CODI_CheckExpressionArguments
 
 
   /**
@@ -72,7 +80,11 @@ namespace codi {
    * The check is used in the tape 'pushJacobi' function to disable the pushing of the
    * jacobies if they are nan or inf.
    */
-  const bool OptIgnoreInvalidJacobies = true;
+  #ifndef CODI_OptIgnoreInvalidJacobies
+    #define CODI_OptIgnoreInvalidJacobies true
+  #endif
+  const bool OptIgnoreInvalidJacobies = CODI_OptIgnoreInvalidJacobies;
+  #undef CODI_OptIgnoreInvalidJacobies
 
 
   /**
@@ -81,7 +93,11 @@ namespace codi {
    * The check is used in the tape 'pushJacobi' function to disable the pushing of the
    * jacobies if they are zero.
    */
-  const bool OptJacobiIsZero = true;
+  #ifndef CODI_OptJacobiIsZero
+    #define CODI_OptJacobiIsZero true
+  #endif
+  const bool OptJacobiIsZero = CODI_OptJacobiIsZero;
+  #undef CODI_OptJacobiIsZero
 
   /**
    * @brief Tapes can be disable for regions which do not need to be taped.
@@ -90,7 +106,11 @@ namespace codi {
    * disable the tape for code parts which do not need to be taped. If the option is set
    * to false the tape will always be active.
    */
-  const bool OptTapeActivity = true;
+  #ifndef CODI_OptTapeActivity
+    #define CODI_OptTapeActivity true
+  #endif
+  const bool OptTapeActivity = CODI_OptTapeActivity;
+  #undef CODI_OptTapeActivity
 
   /**
    * @brief Omits the evaluation of jacobies which are zero in the reverse sweep.
@@ -98,7 +118,11 @@ namespace codi {
    * If an adjoint seed is zero during the reverse sweep, all the updates for the
    * adjoint vector will be zero. Therefore the loop does not need to be evaluated.
    */
-  const bool OptZeroAdjoint = true;
+  #ifndef CODI_OptZeroAdjoint
+    #define CODI_OptZeroAdjoint true
+  #endif
+  const bool OptZeroAdjoint = CODI_OptZeroAdjoint;
+  #undef CODI_OptZeroAdjoint
 
   /**
    * @brief Enable the check only if the option is set
