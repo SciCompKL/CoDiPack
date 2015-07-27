@@ -47,6 +47,16 @@ namespace codi {
   static size_t DefaultChunkSize = 13107200; //TODO: Find optimal value
 
   /**
+   * @brief Enables the use of memset to preallocate the memory.
+   *
+   * Modern systems can initalize memory acquired with malloc or calloc
+   * in a lazy fashion. The memory is then acquired on first use which can cause
+   * performace issues. If the data set with memset to zero then the system will
+   * directly allocate all the memory.
+   */
+  const bool UseMemsetInChunks = true;
+
+  /**
    * @brief Check if the arguments are inside the differentiable domain.
    *
    * The check enables for all function the validation of the arguments for
