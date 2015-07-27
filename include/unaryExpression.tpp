@@ -76,7 +76,7 @@ template<typename Real, class A>
 struct OP : public Expression<Real, OP<Real, A> > {
   private:
     /** @brief The argument of the function. */
-    const A& a_;
+    const A a_;
     /** @brief The result of the function. It is always precomputed. */
     Real result_;
   public:
