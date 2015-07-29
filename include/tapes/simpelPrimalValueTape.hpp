@@ -101,6 +101,22 @@ namespace codi {
       }
   };
 
+  template<typename IndexType, size_t n>
+  struct PassiveDataHelper {
+    size_t pos;
+    IndexType indices[n];
+
+    PassiveDataHelper() : pos(0) {}
+
+    inline void push(const IndexType& index) {
+      indices[pos++] = index;
+    }
+
+    inline void reset() {
+      pos = 0;
+    }
+  };
+
   /**
    * @brief A tape with a simple implementation and no bounds checking.
    *
@@ -151,6 +167,8 @@ namespace codi {
      * @brief Determines if statements are recorded or ignored.
      */
     bool active;
+
+    PassiveDataHelper<IndexType, 256> passiveDataHelper;
 
   public:
     /**
@@ -234,7 +252,6 @@ namespace codi {
      */
     template<typename Rhs>
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
-      Real gradient; /* This value will not be used */
 
       ENABLE_CHECK(OptTapeActivity, active){
         assert(ExpressionTraits<Rhs>::maxActiveVariables < data.getUnusedSize());
@@ -243,13 +260,21 @@ namespace codi {
         size_t passiveDataSize = passiveData.getUsedSize();
         CODI_UNUSED(dataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
         CODI_UNUSED(passiveDataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
-        rhs.calcGradient(gradient);
+        rhs.calcGradient(passiveDataHelper);
         assert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
         assert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
         assert(statements.getUsedSize() < statements.size);
         statements.setDataAndMove(std::make_tuple(ExpressionHandleStore<Real*, Real, IndexType, Rhs, ReverseEvalType>::getHandle()));
         primalAdjointValues.data1[statements.getUsedSize()] = rhs.getValue();
         lhsIndex = statements.getUsedSize();
+
+        // clear the generated temproal indices
+        if(0 != passiveDataHelper.pos) {
+          for(size_t i = 0; i < passiveDataHelper.pos; ++i) {
+            destroyGradientData(primalAdjointValues.data1[passiveDataHelper.indices[i]], passiveDataHelper.indices[i]);
+          }
+          passiveDataHelper.reset();
+        }
       } else {
         lhsIndex = 0;
       }
@@ -321,14 +346,22 @@ namespace codi {
      * @param[in]    index Used to check if the variable is active.
      */
     template<typename Data>
-    inline void pushJacobi(Data& gradient, const Real& value, const IndexType& index) {
-      CODI_UNUSED(gradient);
+    inline void pushJacobi(Data& passiveDataHelper, const Real& value, const IndexType& index) {
       CODI_UNUSED(value);
 
-      assert(0 != index); // passive values are currently not supported
       assert(data.getUsedSize() < data.size);
+      if(0 == index) {
+        assert(statements.getUsedSize() < statements.size);
+        // create temporary index
+        statements.setDataAndMove(std::make_tuple(&InputHandle));
+        IndexType tempIndex = statements.getUsedSize();
+        primalAdjointValues.data1[tempIndex] = value;
+        data.setDataAndMove(std::make_tuple(index));
 
-      data.setDataAndMove(std::make_tuple(index));
+        passiveDataHelper.push(index);
+      } else {
+        data.setDataAndMove(std::make_tuple(index));
+      }
     }
 
     /**
@@ -340,15 +373,23 @@ namespace codi {
      * @param[in]    index Used to check if the variable is active.
      */
     template<typename Data>
-    inline void pushJacobi(Data& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(gradient);
+    inline void pushJacobi(Data& passiveDataHelper, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(value);
       CODI_UNUSED(jacobi);
 
-      assert(0 != index); // passive values are currently not supported
       assert(data.getUsedSize() < data.size);
+      if(0 == index) {
+        assert(statements.getUsedSize() < statements.size);
+        // create temporary index
+        statements.setDataAndMove(std::make_tuple(&InputHandle));
+        IndexType tempIndex = statements.getUsedSize();
+        primalAdjointValues.data1[tempIndex] = value;
+        data.setDataAndMove(std::make_tuple(index));
 
-      data.setDataAndMove(std::make_tuple(index));
+        passiveDataHelper.push(index);
+      } else {
+        data.setDataAndMove(std::make_tuple(index));
+      }
     }
 
     /**
