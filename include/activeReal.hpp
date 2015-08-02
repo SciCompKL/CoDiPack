@@ -162,6 +162,7 @@ namespace codi {
      */
     template<class R>
     inline ActiveReal(const Expression<Real, R>& rhs) {
+      GlobalActiveRealData<Tape>::globalTape().initGradientData(this->primalValue, gradientData);
       GlobalActiveRealData<Tape>::globalTape().store(primalValue, gradientData, rhs.cast());
     }
 
@@ -174,6 +175,7 @@ namespace codi {
      * @param[in] v The value to copy.
      */
     inline ActiveReal(const ActiveReal<Real, Tape>& v) {
+      GlobalActiveRealData<Tape>::globalTape().initGradientData(this->primalValue, gradientData);
       GlobalActiveRealData<Tape>::globalTape().store(primalValue, gradientData, v);
     }
 

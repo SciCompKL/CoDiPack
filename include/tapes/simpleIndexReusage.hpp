@@ -38,10 +38,64 @@
 
 namespace codi {
 
+  template<typename IndexType>
+  class IndexHandler {
+    private:
+      IndexType globalMaximumIndex;
+      IndexType currentMaximumIndex;
+      std::vector<IndexType> freeIndices;
+
+    public:
+      IndexHandler() :
+        globalMaximumIndex(0),
+        currentMaximumIndex(0),
+        freeIndices() {}
+
+      inline void freeIndex(const IndexType& index) {
+        if(0 != index) { // do not free the zero index
+          if(currentMaximumIndex == index) {
+            // freed index is the maximum one so we can decrease the count
+            --currentMaximumIndex;
+          } else {
+            freeIndices.push_back(index);
+          }
+        }
+      }
+
+      inline IndexType createIndex() {
+        if(0 != freeIndices.size()) {
+          IndexType index = freeIndices.back();
+          freeIndices.pop_back();
+          return index;
+        } else {
+          if(globalMaximumIndex == currentMaximumIndex) {
+            ++globalMaximumIndex;
+          }
+          ++currentMaximumIndex;
+
+          return currentMaximumIndex;
+        }
+      }
+
+      inline void checkIndex(IndexType& index) {
+        if(0 == index) {
+          index = this->createIndex();
+        }
+      }
+
+      inline void reset() {
+        /* do nothing */
+      }
+
+      inline IndexType getMaximumGlobalIndex() {
+        return globalMaximumIndex;
+      }
+  };
+
   /**
    * @brief Position for the simple tape.
    */
-  struct SimpleTapePosition {
+  struct SimpleIndexReusageTapePosition {
     /** @brief The current statement recorded on the tape. */
     size_t stmt;
     /** @brief The current jacobi data recorded on the tape. */
@@ -55,7 +109,7 @@ namespace codi {
      * @param[in]    data  The current jacobi recorded on the tape.
      * @param[in] extFunc  The current external function recorded on the tape.
      */
-    SimpleTapePosition(const size_t& stmt, const size_t& data, const size_t& extFunc) :
+    SimpleIndexReusageTapePosition(const size_t& stmt, const size_t& data, const size_t& extFunc) :
       stmt(stmt),
       data(data),
       extFunc(extFunc) {}
@@ -64,7 +118,7 @@ namespace codi {
   /**
    * @brief A tape with a simple implementation and no bounds checking.
    *
-   * The SimpleTape implements a fully featured ReverseTapeInterface in a
+   * The SimpleIndexReusageTape implements a fully featured ReverseTapeInterface in a
    * simple fashion. This tape is not intended for simple usage. Actually the
    * tape has no bounds checking, therefore it can produce segmentation faults
    * if it is not used with care.
@@ -80,13 +134,13 @@ namespace codi {
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class SimpleTape : public ReverseTapeInterface<Real, IndexType, SimpleTape<Real, IndexType>, SimpleTapePosition > {
+  class SimpleIndexReusageTape : public ReverseTapeInterface<Real, IndexType, SimpleIndexReusageTape<Real, IndexType>, SimpleIndexReusageTapePosition > {
   public:
 
     /**
      * @brief The type used to store the position of the tape.
      */
-    typedef SimpleTapePosition Position;
+    typedef SimpleIndexReusageTapePosition Position;
 
   private:
     /**
@@ -94,9 +148,9 @@ namespace codi {
      */
     Chunk2<Real, IndexType> data;
     /**
-     * @brief The number of active variables in each statement.
+     * @brief The number of active variables in each statement and the index on the lhs.
      */
-    Chunk1<StatementInt> statements;
+    Chunk2<StatementInt, IndexType> statements;
     /**
      * @brief The external function data and the position where the external function has been inserted.
      */
@@ -107,6 +161,8 @@ namespace codi {
      */
     Chunk1<Real> adjoints;
 
+    IndexHandler<IndexType> indexHandler;
+
     /**
      * @brief Determines if statements are recorded or ignored.
      */
@@ -116,11 +172,12 @@ namespace codi {
     /**
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
-    SimpleTape() :
+    SimpleIndexReusageTape() :
       data(0),
       statements(0),
       externalFunctions(0),
       adjoints(1),
+      indexHandler(),
       active(false){}
 
     /**
@@ -133,6 +190,10 @@ namespace codi {
      */
     void setExternalFunctionChunkSize(const size_t& extChunkSize) {
       externalFunctions.resize(extChunkSize);
+    }
+
+    void setAdjointsSize(const size_t& adjointsSize) {
+      adjoints.resize(adjointsSize);
     }
 
     /**
@@ -159,7 +220,6 @@ namespace codi {
     void resize(const size_t& dataSize, const size_t& stmtSize) {
       data.resize(dataSize);
       statements.resize(stmtSize);
-      adjoints.resize(stmtSize + 1);
     }
 
     /**
@@ -190,12 +250,12 @@ namespace codi {
         size_t startSize = data.getUsedSize();
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getUsedSize() - startSize;
-        if(0 == activeVariables) {
-          lhsIndex = 0;
-        } else {
+        if(0 != activeVariables) {
+          indexHandler.checkIndex(lhsIndex);
+          assert(lhsIndex < adjoints.size);
+
           assert(statements.getUsedSize() < statements.size);
-          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
-          lhsIndex = statements.getUsedSize();
+          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables, lhsIndex));
         }
       }
 
@@ -215,11 +275,17 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimpleTape<Real, IndexType> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimpleIndexReusageTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
-        lhsIndex = rhs.getGradientData();
-      } else {
-        lhsIndex = 0;
+        if(0 != rhs.getGradientData()) {
+          indexHandler.checkIndex(lhsIndex);
+          assert(lhsIndex < adjoints.size);
+
+          assert(statements.getUsedSize() < statements.size);
+          assert(1 <= data.getUnusedSize());
+          this->data.setDataAndMove(std::make_tuple(1.0, rhs.getGradientData()));
+          statements.setDataAndMove(std::make_tuple((StatementInt)1, lhsIndex));
+        }
       }
       lhsValue = rhs.getValue();
     }
@@ -237,7 +303,6 @@ namespace codi {
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      lhsIndex = 0;
       lhsValue = rhs;
     }
 
@@ -305,8 +370,8 @@ namespace codi {
      */
     inline void destroyGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
-      CODI_UNUSED(index);
-      /* nothing to do */
+
+      indexHandler.freeIndex(index);
     }
 
 
@@ -331,7 +396,7 @@ namespace codi {
      * @return The gradient value corresponding to the given index.
      */
     inline Real getGradient(const IndexType& index) const {
-      assert((size_t)index < statements.size);
+      assert((size_t)index < adjoints.size);
       return adjoints.data[index];
     }
 
@@ -344,7 +409,7 @@ namespace codi {
      * @return The reference to the gradient data.
      */
     inline Real& gradient(IndexType& index) {
-      assert((size_t)index < statements.size);
+      assert((size_t)index < adjoints.size);
       assert(0 != index);
 
       return adjoints.data[index];
@@ -371,9 +436,7 @@ namespace codi {
       assert(pos.data < data.size);
       assert(pos.extFunc < externalFunctions.size);
 
-      for(size_t i = pos.stmt; i <= statements.getUsedSize(); ++i) {
-        adjoints.data[i] = 0.0;
-      }
+      clearAdjoints();
 
       for(size_t i = pos.extFunc; i < externalFunctions.getUsedSize(); ++i) {
         externalFunctions.data1[i].deleteData();
@@ -382,6 +445,8 @@ namespace codi {
       statements.setUsedSize(pos.stmt);
       data.setUsedSize(pos.data);
       externalFunctions.setUsedSize(pos.extFunc);
+
+      indexHandler.reset();
     }
 
     /**
@@ -395,7 +460,7 @@ namespace codi {
      * @brief Sets all adjoint/gradients to zero.
      */
     inline void clearAdjoints(){
-      for(size_t i = 0; i <= statements.getUsedSize(); ++i) {
+      for(size_t i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
         adjoints.data[i] = 0.0;
       }
     }
@@ -413,9 +478,12 @@ namespace codi {
       Position curPos = start;
 
       while(curPos.stmt > end.stmt) {
-        const Real& adj = adjoints.data[curPos.stmt];
         --curPos.stmt;
-        const StatementInt& activeVariables = statements.data[curPos.stmt];
+
+        const IndexType& lhsIndex = statements.data2[curPos.stmt];
+        const Real adj = adjoints.data[lhsIndex];
+        adjoints.data[lhsIndex] = 0.0;
+        const StatementInt& activeVariables = statements.data1[curPos.stmt];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
           for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --curPos.data;
@@ -441,9 +509,9 @@ namespace codi {
       assert(start.data >= end.data);
       assert(start.stmt >= end.stmt);
       assert(start.extFunc >= end.extFunc);
+      assert(adjoints.size <= indexHandler.getMaximumGlobalIndex());
 
       Position curPos = start;
-
 
       for(size_t curExtFunc = start.extFunc; curExtFunc > end.extFunc; /* decrement is done inside the loop */) {
         --curExtFunc; // decrement of loop variable
@@ -476,11 +544,8 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
-      assert(statements.getUsedSize() < statements.size);
-
-      statements.setDataAndMove(std::make_tuple((StatementInt) 0));
-      value.getGradientData() = statements.getUsedSize();
+    inline void registerInput(ActiveReal<Real, SimpleIndexReusageTape<Real, IndexType> >& value) {
+      indexHandler.checkIndex(value.getGradientData());
     }
 
     /**
@@ -488,7 +553,7 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
+    inline void registerOutput(ActiveReal<Real, SimpleIndexReusageTape<Real, IndexType> >& value) {
       CODI_UNUSED(value);
       /* do nothing */
     }
