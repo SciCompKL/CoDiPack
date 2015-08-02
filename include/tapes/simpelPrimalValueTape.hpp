@@ -255,8 +255,8 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
 
       ENABLE_CHECK(OptTapeActivity, active){
-        assert(ExpressionTraits<Rhs>::maxActiveVariables < data.getUnusedSize());
-        assert(ExpressionTraits<Rhs>::maxPassiveVariables < passiveData.getUnusedSize());
+        assert(ExpressionTraits<Rhs>::maxActiveVariables <= data.getUnusedSize());
+        assert(ExpressionTraits<Rhs>::maxPassiveVariables <= passiveData.getUnusedSize());
         size_t dataSize = data.getUsedSize();
         size_t passiveDataSize = passiveData.getUsedSize();
         CODI_UNUSED(dataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
@@ -357,7 +357,7 @@ namespace codi {
         statements.setDataAndMove(std::make_tuple(&InputHandle));
         IndexType tempIndex = statements.getUsedSize();
         primalAdjointValues.data1[tempIndex] = value;
-        data.setDataAndMove(std::make_tuple(index));
+        data.setDataAndMove(std::make_tuple(tempIndex));
 
         passiveDataHelper.push(index);
       } else {
@@ -385,7 +385,7 @@ namespace codi {
         statements.setDataAndMove(std::make_tuple(&InputHandle));
         IndexType tempIndex = statements.getUsedSize();
         primalAdjointValues.data1[tempIndex] = value;
-        data.setDataAndMove(std::make_tuple(index));
+        data.setDataAndMove(std::make_tuple(tempIndex));
 
         passiveDataHelper.push(index);
       } else {
