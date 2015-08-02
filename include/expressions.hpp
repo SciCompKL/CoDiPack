@@ -204,13 +204,13 @@ namespace codi {
    * Implementation for f(a,b) = a - b
    * df/da = 1 so simply call a
    */
-  template<typename Real, typename A, typename B> inline const typename TypeTraits<Real>::PassiveReal gradientA_Substract(const A& a, const B& b, const Real& result) {
+  template<typename Real, typename A, typename B> inline const typename TypeTraits<Real>::PassiveReal gradientA_Subtract(const A& a, const B& b, const Real& result) {
     CODI_UNUSED(a);
     CODI_UNUSED(b);
     CODI_UNUSED(result);
     return 1.0;
   }
-  template<typename Real, typename A, typename B> inline const typename TypeTraits<Real>::PassiveReal gradientB_Substract(const A& a, const B& b, const Real& result) {
+  template<typename Real, typename A, typename B> inline const typename TypeTraits<Real>::PassiveReal gradientB_Subtract(const A& a, const B& b, const Real& result) {
     CODI_UNUSED(a);
     CODI_UNUSED(b);
     CODI_UNUSED(result);
@@ -312,14 +312,14 @@ namespace codi {
     }
   }
   // TODO: optimize return type
-  template<typename Real, typename A, typename B> inline const Real gradientA_Devide(const A& a, const B& b, const Real& result) {
+  template<typename Real, typename A, typename B> inline const Real gradientA_Divide(const A& a, const B& b, const Real& result) {
     checkArgumentsDivide(b);
     CODI_UNUSED(a);
     CODI_UNUSED(result);
     return 1.0 / b;
   }
   // TODO: optimize return type
-  template<typename Real, typename A, typename B> inline const Real gradientB_Devide(const A& a, const B& b, const Real& result) {
+  template<typename Real, typename A, typename B> inline const Real gradientB_Divide(const A& a, const B& b, const Real& result) {
     checkArgumentsDivide(b);
     CODI_UNUSED(a);
     return -result / b;

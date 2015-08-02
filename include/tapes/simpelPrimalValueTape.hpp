@@ -150,7 +150,8 @@ namespace codi {
     typedef ActiveReal<Real, ReverseEvaluationTapeHelper<Real, IndexType> > ReverseEvalType;
 
     template<typename AdjointData>
-    static void inputHandleFunc(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues) {}
+    //static void inputHandleFunc(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues) {}
+    static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {}
     const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
 
     Chunk1<IndexType> data;
@@ -538,7 +539,8 @@ namespace codi {
 
           const IndexType* indices = &data.data[curPos.data];
           const PassiveReal* passiveValues = &passiveData.data[curPos.passiveData];
-          exprHandle->adjointFunc(primalAdjointValues.data2, adj, primalAdjointValues.data1, indices, passiveValues);
+          //exprHandle->adjointFunc(primalAdjointValues.data2, adj, primalAdjointValues.data1, indices, passiveValues);
+          exprHandle->adjointFunc(adj, indices, passiveValues, primalAdjointValues.data1, primalAdjointValues.data2);
         }
       }
     }
@@ -683,5 +685,5 @@ namespace codi {
   };
 
   template <typename Real, typename IndexType>
-  const ExpressionHandle<Real*, Real, IndexType> SimplePrimalValueTape<Real, IndexType>::InputHandle(&SimplePrimalValueTape<Real, IndexType>::inputHandleFunc, 0, 0);
+  const ExpressionHandle<Real*, Real, IndexType> SimplePrimalValueTape<Real, IndexType>::InputHandle(&SimplePrimalValueTape<Real, IndexType>::inputHandleFunc<Real*>, 0, 0);
 }

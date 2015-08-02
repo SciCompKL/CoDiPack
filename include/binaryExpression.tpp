@@ -160,22 +160,22 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       return PRIMAL_CALL(a_.getValue(), b_.getValue());
     }
 
-    template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
-    static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
-      return OP11< Real,
-          decltype(A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues)),
-          decltype(B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset + ExpressionTraits<A>::maxActiveVariables, passiveOffset + ExpressionTraits<A>::maxPassiveVariables>(primalValues, gradientData, passiveValues))
-          > (
-          A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues),
-          B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset + ExpressionTraits<A>::maxActiveVariables, passiveOffset + ExpressionTraits<A>::maxPassiveVariables>(primalValues, gradientData, passiveValues)
-        );
-    }
+//    template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
+//    static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
+//      return OP11< Real,
+//          decltype(A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues)),
+//          decltype(B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset + ExpressionTraits<A>::maxActiveVariables, passiveOffset + ExpressionTraits<A>::maxPassiveVariables>(primalValues, gradientData, passiveValues))
+//          > (
+//          A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues),
+//          B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset + ExpressionTraits<A>::maxActiveVariables, passiveOffset + ExpressionTraits<A>::maxPassiveVariables>(primalValues, gradientData, passiveValues)
+//        );
+//    }
 
-    template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData >
-    static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
-      auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues);
-      newExpr.calcGradient(gradient, seed);
-    }
+//    template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData >
+//    static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
+//      auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues);
+//      newExpr.calcGradient(gradient, seed);
+//    }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
     static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
@@ -287,21 +287,21 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       return PRIMAL_CALL(a_.getValue(), b_);
     }
 
-    template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
-    static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
-      return OP10< Real,
-          decltype(A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues))
-          > (
-          A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues),
-          passiveValues[passiveOffset + ExpressionTraits<A>::maxPassiveVariables]
-        );
-    }
+//    template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
+//    static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
+//      return OP10< Real,
+//          decltype(A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues))
+//          > (
+//          A::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset>(primalValues, gradientData, passiveValues),
+//          passiveValues[passiveOffset + ExpressionTraits<A>::maxPassiveVariables]
+//        );
+//    }
 
-    template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData >
-    static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
-      auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues);
-      newExpr.calcGradient(gradient, seed);
-    }
+//    template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData >
+//    static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
+//      auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues);
+//      newExpr.calcGradient(gradient, seed);
+//    }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
     static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
@@ -402,21 +402,21 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
       return PRIMAL_CALL(a_, b_.getValue());
     }
 
-    template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
-    static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
-      return OP01< Real,
-          decltype(B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset + 1>(primalValues, gradientData, passiveValues))
-          > (
-          passiveValues[passiveOffset],
-          B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset + 1>(primalValues, gradientData, passiveValues)
-        );
-    }
+//    template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
+//    static inline decltype(auto) exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
+//      return OP01< Real,
+//          decltype(B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset + 1>(primalValues, gradientData, passiveValues))
+//          > (
+//          passiveValues[passiveOffset],
+//          B::template exchangeActiveType<NewActiveType, NewGradientData, activeOffset, passiveOffset + 1>(primalValues, gradientData, passiveValues)
+//        );
+//    }
 
-    template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData >
-    static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
-      auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues);
-      newExpr.calcGradient(gradient, seed);
-    }
+//    template<typename Data, typename IndexType, typename NewActiveType, typename NewGradientData >
+//    static void evalAdjoint2(Data& gradient, const Real& seed, const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
+//      auto newExpr = exchangeActiveType<NewActiveType, NewGradientData, 0, 0> (primalValues, gradientData, passiveValues);
+//      newExpr.calcGradient(gradient, seed);
+//    }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
     static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
