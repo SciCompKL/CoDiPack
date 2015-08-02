@@ -32,7 +32,7 @@
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/simpleTape.hpp"
 #include "tapes/chunkTape.hpp"
-#include "tapes/simpelPrimalValueTape.hpp"
+#include "tapes/simplePrimalValueTape.hpp"
 #include "tools/dataStore.hpp"
 
 namespace codi {
