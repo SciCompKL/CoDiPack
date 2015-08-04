@@ -428,7 +428,7 @@ public:
      * @return The gradient value corresponding to the given index.
      */
     inline Real getGradient(const IndexType& index) const {
-      if(adjointsSize <= index) {
+      if(0 == index || adjointsSize <= index) {
         return Real();
       } else {
         return adjoints[index];
@@ -445,10 +445,10 @@ public:
      */
     inline Real& gradient(IndexType& index) {
       assert(0 != index);
+      assert(index <= expressionCount.count);
 
-      //TODO: Add error when index is bigger than expression count
       if(adjointsSize <= index) {
-        resizeAdjoints(index + 1);
+        resizeAdjoints(expressionCount.count + 1);
       }
 
       return adjoints[index];
@@ -469,8 +469,10 @@ public:
      * @brief Sets all adjoint/gradients to zero.
      */
     inline void clearAdjoints(){
-      for(IndexType i = 0; i <= expressionCount.count; ++i) {
-        adjoints[i] = 0.0;
+      if(NULL != adjoints) {
+        for(IndexType i = 0; i <= expressionCount.count; ++i) {
+          adjoints[i] = 0.0;
+        }
       }
     }
 
@@ -478,8 +480,10 @@ public:
      * @brief Sets all adjoint/gradients to zero.
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = start.inner.inner.inner; i <= end.inner.inner.inner; ++i) {
-        adjoints[i] = 0.0;
+      if(NULL != adjoints) {
+        for(IndexType i = start.inner.inner.inner; i <= end.inner.inner.inner; ++i) {
+          adjoints[i] = 0.0;
+        }
       }
     }
 
@@ -489,8 +493,10 @@ public:
      * @param[in] pos Reset the state of the tape to the given position.
      */
     inline void reset(const Position& pos) {
-      for(IndexType i = pos.inner.inner.inner; i <= expressionCount.count; ++i) {
-        adjoints[i] = 0.0;
+      if(NULL != adjoints) {
+        for(IndexType i = pos.inner.inner.inner; i <= expressionCount.count; ++i) {
+          adjoints[i] = 0.0;
+        }
       }
 
       externalFunctions.forEach(externalFunctions.getPosition(), pos, popExternalFunction);
