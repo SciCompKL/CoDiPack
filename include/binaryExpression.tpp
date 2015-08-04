@@ -272,6 +272,94 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     }
 };
 
+
+/**
+ * @brief Specialization of the TypeTraits for the binary operator type.
+ *
+ * @tparam Real The floating point value of the active real.
+ * @tparam Tape The tape of the active real.
+ */
+template<typename RealType, typename A, typename B>
+class TypeTraits< OP11<RealType, A, B> > {
+  public:
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef RealType Real;
+
+    /**
+     * @brief Get the primal value of the origin of this type.
+     * @param[in] t The value from which the primal is extracted.
+     * @return The primal value of the origin of this type..
+     */
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP11<RealType, A, B>& t) {
+      return TypeTraits<RealType>::getBaseValue(t.getValue());
+    }
+};
+
+/**
+ * @brief Specialization of the TypeTraits for the binary operator type.
+ *
+ * @tparam Real The floating point value of the active real.
+ * @tparam Tape The tape of the active real.
+ */
+template<typename RealType, typename A>
+class TypeTraits< OP10<RealType, A> > {
+  public:
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef RealType Real;
+
+    /**
+     * @brief Get the primal value of the origin of this type.
+     * @param[in] t The value from which the primal is extracted.
+     * @return The primal value of the origin of this type..
+     */
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP10<RealType, A>& t) {
+      return TypeTraits<RealType>::getBaseValue(t.getValue());
+    }
+};
+
+/**
+ * @brief Specialization of the TypeTraits for the binary operator type.
+ *
+ * @tparam Real The floating point value of the active real.
+ * @tparam Tape The tape of the active real.
+ */
+template<typename RealType, typename B>
+class TypeTraits< OP01<RealType, B> > {
+  public:
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef RealType Real;
+
+    /**
+     * @brief Get the primal value of the origin of this type.
+     * @param[in] t The value from which the primal is extracted.
+     * @return The primal value of the origin of this type..
+     */
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP01<RealType, B>& t) {
+      return TypeTraits<RealType>::getBaseValue(t.getValue());
+    }
+};
+
 /** 
  * @brief Overload for FUNC with the CoDiPack expressions. 
  *

@@ -50,12 +50,19 @@ namespace codi {
     typedef T PassiveReal;
 
     /**
+     * @brief The real value of the type.
+     *
+     * The default implementation defines the type itself as the type.
+     */
+    typedef T Real;
+
+    /**
      * @brief Get the primal base value of the type.
      *
      * The default implementation returns the identity.
      * @param t   The value from which the base value is extracted.
      * @return The base value of the type.
      */
-    static const T getBaseValue(const T& t) { return t;}
+    static const T& getBaseValue(const T& t) { return t;}
   };
 }

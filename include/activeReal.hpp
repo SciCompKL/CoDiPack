@@ -454,21 +454,26 @@ namespace codi {
    * @tparam Real The floating point value of the active real.
    * @tparam Tape The tape of the active real.
    */
-  template<typename Real, typename Tape>
-  class TypeTraits<ActiveReal<Real, Tape> > {
+  template<typename RealType, typename Tape>
+  class TypeTraits<ActiveReal<RealType, Tape> > {
     public:
       /**
        * @brief The passive type is the passive type of Real.
        */
-      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+      typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+      /**
+       * @brief The passive type is the passive type of Real.
+       */
+      typedef RealType Real;
 
       /**
        * @brief Get the primal value of the origin of this type.
        * @param[in] t The value from which the primal is extracted.
        * @return The primal value of the origin of this type..
        */
-      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ActiveReal<Real, Tape>& t) {
-        return TypeTraits<Real>::getBaseValue(t.getValue());
+      static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const ActiveReal<RealType, Tape>& t) {
+        return TypeTraits<RealType>::getBaseValue(t.getValue());
       }
   };
 

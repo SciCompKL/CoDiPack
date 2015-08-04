@@ -834,6 +834,7 @@ namespace codi {
   /***************************************************************************************
    * Functions which do not need derivatives.
    ****************************************************************************************/
+  using std::isinf;
   /**
    * @brief Overload for the isinf function with expressions.
    *
@@ -849,6 +850,7 @@ namespace codi {
     return isinf(a.getValue());
   }
 
+  using std::isnan;
   /**
    * @brief Overload for the isnan function with expressions.
    *
