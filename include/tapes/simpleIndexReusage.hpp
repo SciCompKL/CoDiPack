@@ -51,7 +51,7 @@ namespace codi {
         currentMaximumIndex(0),
         freeIndices() {}
 
-      inline void freeIndex(const IndexType& index) {
+      inline void freeIndex(IndexType& index) {
         if(0 != index) { // do not free the zero index
           if(currentMaximumIndex == index) {
             // freed index is the maximum one so we can decrease the count
@@ -59,6 +59,8 @@ namespace codi {
           } else {
             freeIndices.push_back(index);
           }
+
+          index = 0;
         }
       }
 
@@ -212,6 +214,10 @@ namespace codi {
       return data.getUsedSize();
     }
 
+    size_t getAdjointsSize() {
+      return indexHandler.getMaximumGlobalIndex() + 1;
+    }
+
     /**
      * @brief Set the size of the jacobi and statement data and the adjoint vector.
      * @param[in] dataSize  The new size of the jacobi vector.
@@ -256,6 +262,8 @@ namespace codi {
 
           assert(statements.getUsedSize() < statements.size);
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables, lhsIndex));
+        } else {
+          indexHandler.freeIndex(lhsIndex);
         }
       }
 
@@ -285,6 +293,8 @@ namespace codi {
           assert(1 <= data.getUnusedSize());
           this->data.setDataAndMove(std::make_tuple(1.0, rhs.getGradientData()));
           statements.setDataAndMove(std::make_tuple((StatementInt)1, lhsIndex));
+        } else {
+          indexHandler.freeIndex(lhsIndex);
         }
       }
       lhsValue = rhs.getValue();
@@ -303,6 +313,7 @@ namespace codi {
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+      indexHandler.freeIndex(lhsIndex);
       lhsValue = rhs;
     }
 

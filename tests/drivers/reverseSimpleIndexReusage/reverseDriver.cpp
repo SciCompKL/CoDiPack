@@ -42,7 +42,6 @@ int main(int nargs, char** args) {
   tape.resize(1000, 1000);
   tape.setAdjointsSize(1000);
   tape.setExternalFunctionChunkSize(1000);
-  tape.setActive();
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
@@ -64,12 +63,14 @@ int main(int nargs, char** args) {
 
     std::vector<std::vector<double> > jac(outputs);
     for(int curOut = 0; curOut < outputs; ++curOut) {
+      tape.setActive();
       for(int i = 0; i < inputs; ++i) {
         tape.registerInput(x[i]);
       }
 
       func(x, y);
 
+      tape.setPassive();
       y[curOut].setGradient(1.0);
       tape.evaluate();
 
