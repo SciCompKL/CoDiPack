@@ -467,6 +467,12 @@ namespace codi {
   };
 
   /**
+   * @brief The instantiation of the tape for the ActiveReal.
+   */
+  template<typename Real, typename Tape>
+  Tape ActiveReal<Real, Tape>::globalTape;
+
+  /**
    * @brief Specialization of the ExpressionTraits for the ActiveReal type.
    *
    * @tparam Real The floating point value of the active real.
