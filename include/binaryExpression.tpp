@@ -108,7 +108,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
-    OP11(const Expression<Real, A>& a, const Expression<Real, B>& b) :
+    explicit OP11(const Expression<Real, A>& a, const Expression<Real, B>& b) :
       a_(a.cast()), b_(b.cast()) {}
 
     /** 
@@ -169,7 +169,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
-    OP10(const Expression<Real, A>& a, const PassiveReal& b) :
+    explicit OP10(const Expression<Real, A>& a, const PassiveReal& b) :
       a_(a.cast()), b_(b) {}
 
     /** 
@@ -230,7 +230,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @param[in] a  First argument of the expression. 
      * @param[in] b  Second argument of the expression.
      */
-    OP01(const PassiveReal& a, const Expression<Real, B>& b) :
+    explicit OP01(const PassiveReal& a, const Expression<Real, B>& b) :
       a_(a), b_(b.cast()) {}
 
     /** 
