@@ -146,6 +146,11 @@ namespace codi {
     virtual Position getPosition() = 0;
 
     /**
+    * @brief Print some statistics about the currently stored information.
+    */
+    virtual void printStatistics() = 0;
+
+    /**
      * @brief Add a external function to the tape.
      *
      * The external function is called during the reverse evaluation of the tape. It can be used to

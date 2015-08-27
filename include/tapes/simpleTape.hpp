@@ -30,6 +30,7 @@
 #pragma once
 
 #include <cstddef>
+#include <iomanip>
 #include <tuple>
 
 #include "../activeReal.hpp"
@@ -528,6 +529,57 @@ namespace codi {
     template<typename Data>
     void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<Data>::DeleteFunction delData){
       pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));\
+    }
+
+    /**
+     * @brief Prints statistics about the tape on the screen
+     *
+     * Prints information such as stored statements/adjoints and memory usage on screen.
+     */
+    void printStatistics(){
+      size_t TotalStmts    = statements.getUsedSize();
+      double  MemoryUsedStmts = (double)TotalStmts*(double)sizeof(StatementInt)/1024.0/1024.0,
+              MemoryAllocStmts= ((double)statements.getUnusedSize()+(double)statements.getUsedSize())
+                                *(double)sizeof(StatementInt)/1024.0/1024.0;
+      size_t TotalData    = data.getUsedSize();
+      double  MemoryUsedData = (double)TotalData*(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0,
+              MemoryAllocData= ((double)data.getUsedSize()+(double)data.getUnusedSize())
+                                *(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0;
+      size_t nExternalFunc = externalFunctions.getUsedSize();
+
+      std::cout << std::endl
+                << "-------------------------------------" << std::endl
+                << "CoDi Tape Statistics (SimpleTape)    " << std::endl
+                << "-------------------------------------" << std::endl
+                << "Statements " << std::endl
+                << "-------------------------------------" << std::endl
+                << "  Total Number:     " << std::setw(10) << TotalStmts   << std::endl
+                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                          << std::setprecision(2)
+                                          << std::setw(10)
+                                          << MemoryAllocStmts << " MB" << std::endl
+                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                          << std::setprecision(2)
+                                          << std::setw(10)
+                                          << MemoryUsedStmts << " MB" << std::endl
+                << "-------------------------------------" << std::endl
+                << "Jacobi entries "                       << std::endl
+                << "-------------------------------------" << std::endl
+                << "  Total Number:     " << std::setw(10) << TotalData   << std::endl
+                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                          << std::setprecision(2)
+                                          << std::setw(10)
+                                          << MemoryAllocData << " MB" << std::endl
+                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                          << std::setprecision(2)
+                                          << std::setw(10)
+                                          << MemoryUsedData << " MB" << std::endl
+                << "-------------------------------------" << std::endl
+                << "External functions  "                  << std::endl
+                << "-------------------------------------" << std::endl
+                << "  Total Number:     " << std::setw(10) << nExternalFunc << std::endl
+                << std::endl;
+
     }
 
   private:
