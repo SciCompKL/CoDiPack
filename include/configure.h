@@ -42,7 +42,7 @@ namespace codi {
   typedef uint8_t StatementInt;
 
   /**
-   * @brief Default size for all chunks.
+   * @brief Default number of entries for all chunks.
    */
   static size_t DefaultChunkSize = 13107200; //TODO: Find optimal value
 
