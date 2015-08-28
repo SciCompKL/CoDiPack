@@ -242,4 +242,100 @@ namespace codi {
       return std::make_tuple(&data1[index], &data2[index]);
     }
   };
+
+  struct SequenzTerminator{};
+
+ template<typename Data, typename ... Remainder>
+  struct ChunkVarIter {
+    Data* data;
+
+    ChunkVarIter<Remainder...> remainder;
+
+    inline ChunkVarIter(const size_t& size) : remainder(size) {
+      data = (Data*)malloc(sizeof(Data) * size);
+      if(UseMemsetInChunks) {
+         memset(data, 0, sizeof(Data) * size);
+      }
+    }
+
+    inline ~ChunkVarIter() {
+      free(data);
+      data = NULL;
+    }
+
+    inline void setDataAndMove(const size_t& pos, const Data& d, const Remainder&... r) {
+      data[pos] = d;
+
+      remainder.setDataAndMove(pos, r...);
+    }
+
+    inline void dataPointer(const size_t& index, Data* &d, Remainder*&... r) {
+      d = &data[index];
+
+      remainder.dataPointer(index, r...);
+    }
+
+    inline void dataValue(const size_t& index, Data& d, Remainder&... r) const {
+      d = data[index];
+
+      remainder.dataValue(index, r...);
+    }
+  };
+
+  template<>
+  struct ChunkVarIter<SequenzTerminator>  {
+    ChunkVarIter(const size_t& size) {
+      CODI_UNUSED(size);
+    }
+    inline void setDataAndMove(const size_t& pos, const SequenzTerminator& d) {
+      CODI_UNUSED(pos);
+      CODI_UNUSED(d);
+    }
+
+    inline void dataPointer(const size_t& index, SequenzTerminator* &d) {
+      CODI_UNUSED(index);
+      CODI_UNUSED(d);
+    }
+
+    inline void dataValue(const size_t& index, SequenzTerminator &d) const {
+      CODI_UNUSED(index);
+      CODI_UNUSED(d);
+    }
+  };
+
+  template<typename ... Data>
+  struct ChunkVar : public ChunkInterface {
+    ChunkVarIter<Data..., SequenzTerminator> data;
+
+    ChunkVar(const size_t& size) : ChunkInterface(size), data(size){
+    }
+
+    inline void resize(const size_t &size) {
+      this->~ChunkVar();
+      new (this) ChunkVar(size);
+    }
+
+    inline void setDataAndMove(const Data&... values) {
+      assert(getUnusedSize() != 0);
+
+      SequenzTerminator terminator;
+      data.setDataAndMove(usedSize, values..., terminator);
+      ++usedSize;
+    }
+
+    inline void dataPointer(const size_t& index, Data*&... pointers) {
+      assert(index <= ChunkInterface::size);
+
+      SequenzTerminator* terminator = NULL;
+      data.dataPointer(index, pointers..., terminator);
+    }
+
+    inline void dataValue(const size_t& index, Data&... values) const {
+      assert(index <= ChunkInterface::size);
+
+      SequenzTerminator terminator;
+      data.dataValue(index, values..., terminator);
+    }
+  };
+
 }
