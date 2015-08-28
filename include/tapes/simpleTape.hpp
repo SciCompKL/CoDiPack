@@ -412,15 +412,21 @@ namespace codi {
     inline void evaluateStack(const Position& start, const Position& end) {
       Position curPos = start;
 
+      // Usage of pointers increases evaluation speed
+      Real* adjoint = adjoints.data;
+      StatementInt* stmt = statements.data;
+      Real* jacobi = data.data1;
+      IndexType* index = data.data2;
+
       while(curPos.stmt > end.stmt) {
-        const Real& adj = adjoints.data[curPos.stmt];
+        const Real& adj = adjoint[curPos.stmt];
         --curPos.stmt;
-        const StatementInt& activeVariables = statements.data[curPos.stmt];
+        const StatementInt& activeVariables = stmt[curPos.stmt];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
           for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --curPos.data;
 
-            adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
+            adjoint[index[curPos.data]] += adj * jacobi[curPos.data];
           }
         } else {
           curPos.data -= activeVariables;
