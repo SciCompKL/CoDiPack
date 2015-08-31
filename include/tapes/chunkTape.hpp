@@ -282,8 +282,7 @@ public:
      */
     template<typename Rhs>
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
-      Real gradient; /* This value will not be used */
-
+      void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
         data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
         statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
@@ -291,7 +290,7 @@ public:
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
         size_t startSize = data.getChunkPosition();
-        rhs.calcGradient(gradient);
+        rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getChunkPosition() - startSize;
         if(0 == activeVariables) {
           lhsIndex = 0;
@@ -352,12 +351,15 @@ public:
      * @param[in] gradient Not used in this implementation.
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
+     *
+     * @tparam Data  The type of the data for the tape.
      */
-    inline void pushJacobi(Real& gradient, const Real& value, const IndexType& index) {
-      CODI_UNUSED(gradient);
+    template<typename Data>
+    inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+      CODI_UNUSED(data);
       CODI_UNUSED(value);
       if(0 != index) {
-        data.setDataAndMove(std::make_tuple(1.0, index));
+        this->data.setDataAndMove(std::make_tuple(1.0, index));
       }
     }
 
@@ -368,14 +370,17 @@ public:
      * @param[in]   jacobi Stored on the tape if the variable is active.
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
+     *
+     * @tparam Data  The type of the data for the tape.
      */
-    inline void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(gradient);
+    template<typename Data>
+    inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
+      CODI_UNUSED(data);
       CODI_UNUSED(value);
       if(0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
-            data.setDataAndMove(std::make_tuple(jacobi, index));
+            this->data.setDataAndMove(std::make_tuple(jacobi, index));
           }
         }
       }

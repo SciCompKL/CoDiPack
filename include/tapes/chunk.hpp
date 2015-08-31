@@ -32,6 +32,8 @@
 #include <string.h>
 #include <tuple>
 
+#include "../configure.h"
+
 namespace codi {
 
   /**
@@ -125,7 +127,9 @@ namespace codi {
      */
     Chunk1(const size_t& size) : ChunkInterface(size) {
       data = (Data*)malloc(sizeof(Data) * size);
-      memset(data, 0, sizeof(Data) * size);
+      if(UseMemsetInChunks) {
+        memset(data, 0, sizeof(Data) * size);
+      }
     }
 
     /**
@@ -193,8 +197,10 @@ namespace codi {
     Chunk2(const size_t& size) : ChunkInterface(size) {
       data1 = (Data1*)malloc(sizeof(Data1) * size);
       data2 = (Data2*)malloc(sizeof(Data2) * size);
-      memset(data1, 0, sizeof(Data1) * size);
-      memset(data2, 0, sizeof(Data2) * size);
+      if(UseMemsetInChunks) {
+        memset(data1, 0, sizeof(Data1) * size);
+        memset(data2, 0, sizeof(Data2) * size);
+      }
     }
 
     /**

@@ -76,7 +76,7 @@ template<typename Real, class A>
 struct OP : public Expression<Real, OP<Real, A> > {
   private:
     /** @brief The argument of the function. */
-    const A& a_;
+    const A a_;
     /** @brief The result of the function. It is always precomputed. */
     Real result_;
   public:
@@ -85,7 +85,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
      *
      * @param[in] a Argument of the expression.
      */
-    OP(const Expression<Real, A>& a) :
+    explicit OP(const Expression<Real, A>& a) :
       a_(a.cast()),
       result_(PRIMAL_CALL(a.getValue())) {}
 
@@ -94,10 +94,13 @@ struct OP : public Expression<Real, OP<Real, A> > {
    *
    * For f(x) it calculates df/dx and passes this value as the multiplier to the argument.
    *
-   * @param[inout] gradient A helper value for forward implementations. The value is the gradient of the lhs of the expression.
+   * @param[inout] data A helper value which the tape can define and use for the evaluation.
+   *
+   * @tparam Data The type for the tape data.
    */
-  inline void calcGradient(Real& gradient) const {
-    a_.calcGradient(gradient, GRADIENT_FUNC(a_.getValue(), result_));
+  template<typename Data>
+  inline void calcGradient(Data& data) const {
+    a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_));
   }
 
   /** 
@@ -105,11 +108,14 @@ struct OP : public Expression<Real, OP<Real, A> > {
    *
    * For f(x) it calculates multiplier * df/dx and passes this value as the multiplier to the argument.
    *
-   * @param[inout] gradient  A helper value for forward implementations. The value is the gradient of the lhs of the expression.
-   * @param[in]  multiplier  The Jacobi from the expression where this expression was used as an argument.
+   * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+   * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+   *
+   * @tparam Data The type for the tape data.
    */
-  inline void calcGradient(Real& gradient, const Real& multiplier) const {
-    a_.calcGradient(gradient, GRADIENT_FUNC(a_.getValue(), result_)*multiplier);
+  template<typename Data>
+  inline void calcGradient(Data& data, const Real& multiplier) const {
+    a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_)*multiplier);
   }
 
   /** 

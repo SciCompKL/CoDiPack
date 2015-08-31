@@ -137,6 +137,22 @@ namespace codi {
     }
 
     /**
+     * @brief Return the number of used statements.
+     * @return The number of used statements.
+     */
+    size_t getUsedStatementsSize() {
+      return statements.getUsedSize();
+    }
+
+    /**
+     * @brief Return the number of used data entries.
+     * @return The number of used data entries.
+     */
+    size_t getUsedDataEntriesSize() {
+      return data.getUsedSize();
+    }
+
+    /**
      * @brief Set the size of the jacobi and statement data and the adjoint vector.
      * @param[in] dataSize  The new size of the jacobi vector.
      * @param[in] stmtSize  The new size of the statement vector.
@@ -166,15 +182,14 @@ namespace codi {
      */
     template<typename Rhs>
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
-      Real gradient; /* This value will not be used */
-
+      void* null = NULL;
       ENABLE_CHECK(OptTapeActivity, active){
         assert(ExpressionTraits<Rhs>::maxActiveVariables < data.getUnusedSize());
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
         size_t startSize = data.getUsedSize();
-        rhs.calcGradient(gradient);
+        rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getUsedSize() - startSize;
         if(0 == activeVariables) {
           lhsIndex = 0;
@@ -230,31 +245,37 @@ namespace codi {
     /**
      * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
      *
-     * @param[in] gradient Not used in this implementation.
+     * @param[in]     data Not used in this implementation.
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
+     *
+     * @tparam Data  The type of the data for the tape.
      */
-    inline void pushJacobi(Real& gradient, const Real& value, const IndexType& index) {
-      CODI_UNUSED(gradient);
+    template<typename Data>
+    inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+      CODI_UNUSED(data);
       CODI_UNUSED(value);
 
       if(0 != index) {
         assert(data.getUsedSize() < data.size);
 
-        data.setDataAndMove(std::make_tuple(1.0, index));
+        this->data.setDataAndMove(std::make_tuple(1.0, index));
       }
     }
 
     /**
      * @brief Stores the jacobi on the tape if the index is active.
      *
-     * @param[in] gradient Not used in this implementation.
+     * @param[in]     data Not used in this implementation.
      * @param[in]   jacobi Stored on the tape if the variable is active.
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
+     *
+     * @tparam Data  The type of the data for the tape.
      */
-    inline void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(gradient);
+    template<typename Data>
+    inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
+      CODI_UNUSED(data);
       CODI_UNUSED(value);
 
       if(0 != index) {
@@ -262,7 +283,7 @@ namespace codi {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
             assert(data.getUsedSize() < data.size);
 
-            data.setDataAndMove(std::make_tuple(jacobi, index));
+            this->data.setDataAndMove(std::make_tuple(jacobi, index));
           }
         }
       }
@@ -392,15 +413,21 @@ namespace codi {
     inline void evaluateStack(const Position& start, const Position& end) {
       Position curPos = start;
 
+      // Usage of pointers increases evaluation speed
+      Real* adjoint = adjoints.data;
+      StatementInt* stmt = statements.data;
+      Real* jacobi = data.data1;
+      IndexType* index = data.data2;
+
       while(curPos.stmt > end.stmt) {
-        const Real& adj = adjoints.data[curPos.stmt];
+        const Real& adj = adjoint[curPos.stmt];
         --curPos.stmt;
-        const StatementInt& activeVariables = statements.data[curPos.stmt];
+        const StatementInt& activeVariables = stmt[curPos.stmt];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
           for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --curPos.data;
 
-            adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
+            adjoint[index[curPos.data]] += adj * jacobi[curPos.data];
           }
         } else {
           curPos.data -= activeVariables;
