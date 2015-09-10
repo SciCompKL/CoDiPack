@@ -735,8 +735,7 @@ public:
      */
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
       statements.reserveItems(1);
-      auto tuple = std::make_tuple(0);
-      statements.setDataAndMove(tuple);
+      statements.setDataAndMove(std::make_tuple((StatementInt)0));
 
       value.getGradientData() = ++expressionCount.count;
     }
