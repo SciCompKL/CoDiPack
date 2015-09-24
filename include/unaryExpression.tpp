@@ -85,7 +85,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
      *
      * @param[in] a Argument of the expression.
      */
-    OP(const Expression<Real, A>& a) :
+    explicit OP(const Expression<Real, A>& a) :
       a_(a.cast()),
       result_(PRIMAL_CALL(a.getValue())) {}
 
