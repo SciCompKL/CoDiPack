@@ -210,6 +210,23 @@ namespace codi {
       }
     }
 
+    inline size_t getChunkNumber() {
+      return chunks.size();
+    }
+
+    inline size_t getChunkSize() {
+      return chunkSize;
+    }
+
+    inline size_t getDataSize() {
+      size_t size = curChunk->getUsedSize();
+      if(getChunkNumber() != 0) {
+        size += (getChunkNumber() - 1) * chunkSize;
+      }
+  
+      return size;
+    }
+
     /**
      * @brief Loads the next chunk.
      *

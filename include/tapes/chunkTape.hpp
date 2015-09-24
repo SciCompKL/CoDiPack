@@ -179,6 +179,22 @@ namespace codi {
     }
 
     /**
+     * @brief Return the number of used statements.
+     * @return The number of used statements.
+     */
+    size_t getUsedStatementsSize() {
+      return statements.getDataSize();
+    }
+
+    /**
+     * @brief Return the number of used data entries.
+     * @return The number of used data entries.
+     */
+    size_t getUsedDataEntriesSize() {
+      return data.getDataSize();
+    }
+
+    /**
      * @brief Set the size of the jacobi and statement data.
      *
      * The tape will allocate enough chunks such that the given data

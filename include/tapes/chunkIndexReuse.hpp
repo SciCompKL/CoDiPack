@@ -181,7 +181,23 @@ namespace codi {
     }
 
     void setAdjointsSize(const size_t& adjointsSize) {
-      adjoints.resize(adjointsSize);
+      resizeAdjoints(adjointsSize);
+    }
+
+    /**
+     * @brief Return the number of used statements.
+     * @return The number of used statements.
+     */
+    size_t getUsedStatementsSize() {
+      return statements.getDataSize();
+    }
+
+    /**
+     * @brief Return the number of used data entries.
+     * @return The number of used data entries.
+     */
+    size_t getUsedDataEntriesSize() {
+      return data.getDataSize();
     }
 
     size_t getAdjointsSize() {
