@@ -35,55 +35,11 @@
 #include "../activeReal.hpp"
 #include "chunk.hpp"
 #include "chunkVector.hpp"
-#include "reverseTapeInterface.hpp"
+#include "expressionCounter.hpp"
 #include "externalFunctions.hpp"
+#include "reverseTapeInterface.hpp"
 
 namespace codi {
-
-  /**
-   * @brief Terminator for a sequence of ChunkVectors, which counts the number of statements.
-   *
-   * The structure is a helper structure for the ChunkTape. It terminates the ChunkVector sequence
-   * and counts the number of expressions which have been recorded on the tape.
-   *
-   * @tparam IndexType The type of the index for the counting.
-   */
-  template <typename IndexType>
-  struct ExpressionCounter {
-
-    /**
-     * @brief The needed position definition for a ChunkVector sequence terminator.
-     *
-     * Just the integer for the current statement.
-     */
-    typedef IndexType Position;
-
-    /**
-     * @brief The current count for the statements.
-     */
-    IndexType count;
-
-    /**
-     * @brief The needed getPosition method for a ChunkVector sequence terminator.
-     *
-     * The method returns the current state of the count value.
-     * @return The current value of count.
-     */
-    inline Position getPosition() {
-      return count;
-    }
-
-    /**
-     * @brief The needed reset method for a ChunkVector sequence terminator.
-     *
-     * The method sets count to the value from the argument.
-     *
-     * @param pos The new value of count.
-     */
-    inline void reset(const Position& pos) {
-      count = pos;
-    }
-  };
 
   /**
    * @brief Helper struct to define the nested chunk vectors for the ChunkTape.
