@@ -259,7 +259,7 @@ public:
      */
     void allocateAdjoints() {
       //TODO: Tim fragen of er das brauch
-      resizeAdjoints(expressionCount + 1);
+      resizeAdjoints(expressionCount.count + 1);
     }
 
     /**
