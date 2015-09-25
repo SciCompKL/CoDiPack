@@ -48,20 +48,20 @@ namespace codi {
    */
   template <typename Real, typename IndexType>
   struct ChunkIndexReuseTapeTypes {
-    /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, IndexType> DataChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef ChunkVector<DataChunk, EmptyChunkVector> DataChunkVector;
-
     /** @brief The data for each statement. */
     typedef Chunk2<StatementInt, IndexType> StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StatementChunk, DataChunkVector> StatementChunkVector;
+    typedef ChunkVector<StatementChunk, EmptyChunkVector> StatementChunkVector;
+
+    /** @brief The data for the jacobies of each statement */
+    typedef Chunk2< Real, IndexType> DataChunk;
+    /** @brief The chunk vector for the jacobi data. */
+    typedef ChunkVector<DataChunk, StatementChunkVector> DataChunkVector;
 
     /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename StatementChunkVector::Position> ExternalFunctionChunk;
+    typedef Chunk2<ExternalFunction,typename DataChunkVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<ExternalFunctionChunk, StatementChunkVector> ExternalFunctionChunkVector;
+    typedef ChunkVector<ExternalFunctionChunk, DataChunkVector> ExternalFunctionChunkVector;
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionChunkVector::Position Position;
@@ -79,7 +79,7 @@ namespace codi {
    * the different data vectors. The current implementation uses 3 ChunkVectors
    * and one terminator. The relation is
    *
-   * externalFunctions -> statements -> jacobiData
+   * externalFunctions -> jacobiData -> statements
    *
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
@@ -91,15 +91,15 @@ namespace codi {
   class ChunkIndexReuseTape : public ReverseTapeInterface<Real, IndexType, ChunkIndexReuseTape<Real, IndexType>, typename ChunkIndexReuseTapeTypes<Real, IndexType>::Position > {
   public:
 
-    /** @brief The data for the jacobies of each statement */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::DataChunk DataChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
-
     /** @brief The data for each statement. */
     typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::StatementChunk StatementChunk;
     /** @brief The chunk vector for the statement data. */
     typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::StatementChunkVector StatementChunkVector;
+
+    /** @brief The data for the jacobies of each statement */
+    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::DataChunk DataChunk;
+    /** @brief The chunk vector for the jacobi data. */
+    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
 
     /** @brief The data for the external functions. */
     typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::ExternalFunctionChunk ExternalFunctionChunk;
@@ -114,10 +114,10 @@ namespace codi {
 
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
-    /** @brief The data for the jacobies of each statements. */
-    DataChunkVector data;
     /** @brief The data for the statements. */
     StatementChunkVector statements;
+    /** @brief The data for the jacobies of each statements. */
+    DataChunkVector data;
     /** @brief The data for the external functions. */
     ExternalFunctionChunkVector externalFunctions;
 
@@ -145,9 +145,9 @@ namespace codi {
      */
     ChunkIndexReuseTape() :
       emptyVector(),
-      data(DefaultChunkSize, emptyVector),
-      statements(DefaultChunkSize, data),
-      externalFunctions(1000, statements),
+      statements(DefaultChunkSize, emptyVector),
+      data(DefaultChunkSize, statements),
+      externalFunctions(1000, data),
       adjoints(NULL),
       adjointsSize(0),
       active(false){
@@ -266,8 +266,8 @@ public:
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
-        data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
         statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
@@ -305,8 +305,8 @@ public:
         if(0 != rhs.getGradientData()) {
           indexHandler.checkIndex(lhsIndex);
 
-          data.reserveItems(1);
           statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+          data.reserveItems(1);
           data.setDataAndMove(std::make_tuple(1.0, rhs.getGradientData()));
           statements.setDataAndMove(std::make_tuple((StatementInt)1, lhsIndex));
         } else {
@@ -542,25 +542,21 @@ public:
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evaluateStmt(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end) {
+    inline void evaluateStmt(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end, size_t& dataChunkPos, Real* &jacobies, IndexType* &indices) {
       StatementInt* numberOfArgumentsData;
       IndexType* lhsIndexData;
       size_t dataPos = start.data;
-      typename DataChunkVector::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         std::tie(numberOfArgumentsData, lhsIndexData) = statements.getDataAtPosition(curChunk, 0);
 
-        typename DataChunkVector::Position endInnerPos = statements.getInnerPosition(curChunk);
-        evaluateData(curInnerPos, endInnerPos, dataPos, 0, numberOfArgumentsData, lhsIndexData);
-
-        curInnerPos = endInnerPos;
+        evaluateExpressions(dataPos, 0, numberOfArgumentsData, lhsIndexData, dataChunkPos, jacobies, indices);
 
         dataPos = statements.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       std::tie(numberOfArgumentsData, lhsIndexData) = statements.getDataAtPosition(end.chunk, 0);
-      evaluateData(curInnerPos, end.inner, dataPos, end.data, numberOfArgumentsData, lhsIndexData);
+      evaluateExpressions(dataPos, end.data, numberOfArgumentsData, lhsIndexData, dataChunkPos, jacobies, indices);
     }
 
     /**
@@ -575,21 +571,24 @@ public:
      * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
      * @param[in]  statements The pointer to the statement vector.
      */
-    inline void evaluateData(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, size_t& stmtPosStart, const size_t& stmtPosEnd, StatementInt* &numberOfArgumentsData, IndexType* &lhsIndexData) {
+    inline void evaluateData(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end) {
       Real* jacobiData;
       IndexType* indexData;
       size_t dataPos = start.data;
+      typename StatementChunkVector::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         std::tie(jacobiData, indexData) = data.getDataAtPosition(curChunk, 0);
 
-        evaluateExpressions(stmtPosStart, stmtPosEnd, numberOfArgumentsData, lhsIndexData, dataPos, jacobiData, indexData);
+        typename StatementChunkVector::Position endInnerPos = data.getInnerPosition(curChunk);
+        evaluateStmt(curInnerPos, endInnerPos, dataPos, jacobiData, indexData);
 
+        curInnerPos = endInnerPos;
         dataPos = data.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       std::tie(jacobiData, indexData) = data.getDataAtPosition(end.chunk, 0);
-      evaluateExpressions(stmtPosStart, stmtPosEnd, numberOfArgumentsData, lhsIndexData, dataPos, jacobiData, indexData);
+      evaluateStmt(curInnerPos, end.inner, dataPos, jacobiData, indexData);
     }
 
     /*
@@ -601,13 +600,13 @@ public:
      * external function.
      */
     struct ExtFuncEvaluator {
-      typename StatementChunkVector::Position curInnerPos;
+      typename DataChunkVector::Position curInnerPos;
       ExternalFunction* extFunc;
-      typename StatementChunkVector::Position* endInnerPos;
+      typename DataChunkVector::Position* endInnerPos;
 
       ChunkIndexReuseTape<Real, IndexType>& tape;
 
-      ExtFuncEvaluator(typename StatementChunkVector::Position curInnerPos, ChunkIndexReuseTape<Real, IndexType>& tape) :
+      ExtFuncEvaluator(typename DataChunkVector::Position curInnerPos, ChunkIndexReuseTape<Real, IndexType>& tape) :
         curInnerPos(curInnerPos),
         extFunc(NULL),
         endInnerPos(NULL),
@@ -617,7 +616,7 @@ public:
         std::tie(extFunc, endInnerPos) = data;
 
         // always evaluate the stack to the point of the external function
-        tape.evaluateStmt(curInnerPos, *endInnerPos);
+        tape.evaluateData(curInnerPos, *endInnerPos);
 
         extFunc->evaluate();
 
@@ -641,7 +640,7 @@ public:
       externalFunctions.forEach(start, end, evaluator);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
-      evaluateStmt(evaluator.curInnerPos, end.inner);
+      evaluateData(evaluator.curInnerPos, end.inner);
     }
 
   public:
@@ -707,7 +706,7 @@ public:
      */
     void pushExternalFunctionHandle(const ExternalFunction& function){
       externalFunctions.reserveItems(1);
-      externalFunctions.setDataAndMove(std::make_tuple(function, statements.getPosition()));
+      externalFunctions.setDataAndMove(std::make_tuple(function, data.getPosition()));
     }
 
     /**
