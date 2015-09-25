@@ -756,6 +756,11 @@ public:
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
     void printStatistics(){
+      const double BYTE_TO_MB = 1.0/1024.0/1024.0;
+
+      size_t nAdjoints      = expressionCount.count + 1;
+      size_t MemoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+
       size_t nChunksStmts  = statements.getNumChunks(),
              TotalStmts    = (nChunksStmts-1)*statements.getChunkSize()
                              +statements.getChunkUsedData(nChunksStmts-1);
@@ -801,6 +806,14 @@ public:
                                           << std::setprecision(2)
                                           << std::setw(10)
                                           << MemoryUsedData << " MB" << std::endl
+                << "-------------------------------------" << std::endl
+                << "Adjoint vector"                        << std::endl
+                << "-------------------------------------" << std::endl
+                << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
+                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << MemoryAdjoints << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "External functions  "                  << std::endl
                 << "-------------------------------------" << std::endl

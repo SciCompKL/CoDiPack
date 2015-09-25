@@ -761,5 +761,98 @@ public:
       return active;
     }
 
+    /**
+     * @brief Prints statistics about the tape on the screen
+     *
+     * Prints information such as stored statements/adjoints and memory usage on screen.
+     */
+    void printStatistics(){
+      const double BYTE_TO_MB = 1.0/1024.0/1024.0;
+      
+      size_t nAdjoints      = (size_t)indexHandler.getMaximumGlobalIndex() + 1;
+      size_t MemoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+
+      size_t nChunksStmts  = statements.getNumChunks(),
+             TotalStmts    = (nChunksStmts-1)*statements.getChunkSize()
+                             +statements.getChunkUsedData(nChunksStmts-1);
+      double  MemoryUsedStmts = (double)TotalStmts*(double)(sizeof(StatementInt) + sizeof(IndexType))/1024.0/1024.0,
+              MemoryAllocStmts= (double)nChunksStmts*(double)statements.getChunkSize()
+                                *((double)sizeof(StatementInt) + sizeof(IndexType))/1024.0/1024.0;
+      size_t nChunksData  = data.getNumChunks(),
+             TotalData    = (nChunksData-1)*data.getChunkSize()
+                             +data.getChunkUsedData(nChunksData-1);
+      double  MemoryUsedData = (double)TotalData*(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0,
+              MemoryAllocData= (double)nChunksData*(double)data.getChunkSize()
+                                *(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0;
+      size_t maximumGlobalIndex     = (size_t)indexHandler.getMaximumGlobalIndex();
+      size_t storedIndices          = (size_t)indexHandler.getNumberStoredIndices();
+      size_t currentLiveIndices     = (size_t)indexHandler.getCurrentIndex() - indexHandler.getNumberStoredIndices();
+
+      double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(IndexType)) * BYTE_TO_MB;
+      double memoryAllocatedIndices = (double)indexHandler.getNumberAllocatedIndices()*(double)(sizeof(IndexType)) * BYTE_TO_MB;
+
+      size_t nExternalFunc = (externalFunctions.getNumChunks()-1)*externalFunctions.getChunkSize()
+          +externalFunctions.getChunkUsedData(externalFunctions.getNumChunks()-1);
+
+
+      std::cout << std::endl
+                << "---------------------------------------------" << std::endl
+                << "CoDi Tape Statistics (ChunkIndexReuseTape)"    << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Statements " << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Number of Chunks:  " << std::setw(10) << nChunksStmts << std::endl
+                << "  Total Number:      " << std::setw(10) << TotalStmts   << std::endl
+                << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << MemoryAllocStmts << " MB" << std::endl
+                << "  Memory used:       " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << MemoryUsedStmts << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Jacobi entries "                               << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Number of Chunks:  " << std::setw(10) << nChunksData << std::endl
+                << "  Total Number:      " << std::setw(10) << TotalData   << std::endl
+                << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << MemoryAllocData << " MB" << std::endl
+                << "  Memory used:       " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << MemoryUsedData << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Adjoint vector"                                << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
+                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << MemoryAdjoints << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Indices"                                       << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << std::endl
+                << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << std::endl
+                << "  Indices stored:    " << std::setw(10) << storedIndices << std::endl
+                << "  Memmory allocated: " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << memoryAllocatedIndices << " MB" << std::endl
+                << "  Memory used:       " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << memoryStoredIndices << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "External functions  "                          << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Total Number:     " << std::setw(10) << nExternalFunc << std::endl
+                << std::endl;
+
+    }
+
   };
 }

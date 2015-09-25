@@ -84,5 +84,17 @@ namespace codi {
       inline IndexType getMaximumGlobalIndex() {
         return globalMaximumIndex;
       }
+
+      inline IndexType getCurrentIndex() {
+        return globalMaximumIndex;
+      }
+
+      size_t getNumberStoredIndices() {
+        return freeIndices.size();
+      }
+
+      size_t getNumberAllocatedIndices() {
+        return freeIndices.capacity();
+      }
   };
 }

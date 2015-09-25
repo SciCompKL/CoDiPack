@@ -564,6 +564,11 @@ namespace codi {
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
     void printStatistics(){
+      const double BYTE_TO_MB = 1.0/1024.0/1024.0;
+
+      size_t nAdjoints      = statements.getUsedSize() + 1;
+      size_t MemoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+
       size_t TotalStmts    = statements.getUsedSize();
       double  MemoryUsedStmts = (double)TotalStmts*(double)sizeof(StatementInt)/1024.0/1024.0,
               MemoryAllocStmts= ((double)statements.getUnusedSize()+(double)statements.getUsedSize())
@@ -580,27 +585,35 @@ namespace codi {
                 << "-------------------------------------" << std::endl
                 << "Statements " << std::endl
                 << "-------------------------------------" << std::endl
-                << "  Total Number:     " << std::setw(10) << TotalStmts   << std::endl
-                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << MemoryAllocStmts << " MB" << std::endl
-                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << MemoryUsedStmts << " MB" << std::endl
+                << "  Total Number:       " << std::setw(10) << TotalStmts   << std::endl
+                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << MemoryAllocStmts << " MB" << std::endl
+                << "  Memory used:        " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << MemoryUsedStmts << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "Jacobi entries "                       << std::endl
                 << "-------------------------------------" << std::endl
-                << "  Total Number:     " << std::setw(10) << TotalData   << std::endl
-                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << MemoryAllocData << " MB" << std::endl
-                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << MemoryUsedData << " MB" << std::endl
+                << "  Total Number:       " << std::setw(10) << TotalData   << std::endl
+                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << MemoryAllocData << " MB" << std::endl
+                << "  Memory used:        " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << MemoryUsedData << " MB" << std::endl
+                << "-------------------------------------" << std::endl
+                << "Adjoint vector"                        << std::endl
+                << "-------------------------------------" << std::endl
+                << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
+                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << MemoryAdjoints << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "External functions  "                  << std::endl
                 << "-------------------------------------" << std::endl
