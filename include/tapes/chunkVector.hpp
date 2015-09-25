@@ -346,6 +346,22 @@ namespace codi {
       return chunks[chunkIndex]->getUsedSize();
     }
 
+    /**
+     * @brief Get the number of currently allocated chunks.
+     * @return The number of currently allocated chunks.
+     */
+    inline int getNumChunks(){
+      return chunks.size();
+    }
+
+    /**
+     * @brief Get the chunk size.
+     * @return The chunk size.
+     */
+    inline size_t getChunkSize(){
+      return chunkSize;
+    }
+
   private:
     /**
      * @brief Iterates of the data entries in the chunk.
