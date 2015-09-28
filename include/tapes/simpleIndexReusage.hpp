@@ -30,6 +30,7 @@
 #pragma once
 
 #include <cstddef>
+#include <iomanip>
 #include <tuple>
 
 #include "../activeReal.hpp"
@@ -433,18 +434,24 @@ namespace codi {
     inline void evaluateStack(const Position& start, const Position& end) {
       Position curPos = start;
 
+      // Usage of pointers increases evaluation speed
+      Real* adjoint = adjoints.data;
+      StatementInt* argumentCount = statements.data1;
+      IndexType* lhsIndex = statements.data2;
+      Real* jacobi = data.data1;
+      IndexType* rhsIndex = data.data2;
       while(curPos.stmt > end.stmt) {
         --curPos.stmt;
 
-        const IndexType& lhsIndex = statements.data2[curPos.stmt];
-        const Real adj = adjoints.data[lhsIndex];
-        adjoints.data[lhsIndex] = 0.0;
-        const StatementInt& activeVariables = statements.data1[curPos.stmt];
+        const IndexType& index = lhsIndex[curPos.stmt];
+        const Real adj = adjoint[index];
+        adjoints.data[index] = 0.0;
+        const StatementInt& activeVariables = argumentCount[curPos.stmt];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
           for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --curPos.data;
 
-            adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
+            adjoint[rhsIndex[curPos.data]] += adj * jacobi[curPos.data];
           }
         } else {
           curPos.data -= activeVariables;
