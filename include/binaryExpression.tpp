@@ -140,6 +140,12 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       DERIVATIVE_FUNC_11M(data, a_, b_, getValue(), multiplier);
     }
 
+    template<typename Data>
+    inline void pushLazyJacobies(Data& data) const {
+      a_.pushLazyJacobies(data);
+      b_.pushLazyJacobies(data);
+    }
+
     /** 
      * @brief Return the numerical value of the expression. 
      *
@@ -201,6 +207,11 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
     }
 
+    template<typename Data>
+    inline void pushLazyJacobies(Data& data) const {
+      a_.pushLazyJacobies(data);
+    }
+
     /** 
      * @brief Return the numerical value of the expression.
      *
@@ -260,6 +271,11 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     template<typename Data>
     inline void calcGradient(Data& data, const Real& multiplier) const {
       DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
+    }
+
+    template<typename Data>
+    inline void pushLazyJacobies(Data& data) const {
+      b_.pushLazyJacobies(data);
     }
 
     /** 

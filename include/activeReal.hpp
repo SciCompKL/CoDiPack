@@ -205,6 +205,10 @@ namespace codi {
       globalTape.pushJacobi(data, jacobi, primalValue, gradientData);
     }
 
+    template<typename Data>
+    inline void pushLazyJacobies(Data& data) const {
+      CODI_UNUSED(data);
+    }
 
     /**
      * @brief Helper function for the tape to get its information about this type.

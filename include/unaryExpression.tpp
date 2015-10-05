@@ -118,6 +118,11 @@ struct OP : public Expression<Real, OP<Real, A> > {
     a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_)*multiplier);
   }
 
+  template<typename Data>
+  inline void pushLazyJacobies(Data& data) const {
+    a_.pushLazyJacobies(data);
+  }
+
   /** 
    * @brief Return the numerical value of the expression. 
    *

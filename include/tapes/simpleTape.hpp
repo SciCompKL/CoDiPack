@@ -190,6 +190,7 @@ namespace codi {
          the index of the lhs */
         size_t startSize = data.getUsedSize();
         rhs.template calcGradient<void*>(null);
+        rhs.template pushLazyJacobies<void*>(null);
         size_t activeVariables = data.getUsedSize() - startSize;
         if(0 == activeVariables) {
           lhsIndex = 0;
