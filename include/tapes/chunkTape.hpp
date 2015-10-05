@@ -263,6 +263,7 @@ public:
          the index of the lhs */
         size_t startSize = data.getChunkPosition();
         rhs.template calcGradient<void*>(null);
+        rhs.template pushLazyJacobies<void*>(null);
         size_t activeVariables = data.getChunkPosition() - startSize;
         if(0 == activeVariables) {
           lhsIndex = 0;
