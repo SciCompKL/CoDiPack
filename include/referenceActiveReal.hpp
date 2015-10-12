@@ -40,6 +40,8 @@ namespace codi {
   class ReferenceActiveReal : public Expression<Real, ReferenceActiveReal<Real, Tape> > {
   public:
 
+    static const bool storeAsReference = true;
+
     static Tape globalTape;
 
 
