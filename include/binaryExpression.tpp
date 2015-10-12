@@ -98,10 +98,12 @@ template<typename Real, class A, class B>
 struct OP11: public Expression<Real, OP11<Real, A, B> > {
   private:
     /** @brief The first argument of the function. */
-    const A a_;
+    CODI_CREATE_STORE_TYPE(A) a_;
     /** @brief The second argument of the function. */
-    const B b_;
+    CODI_CREATE_STORE_TYPE(B) b_;
   public:
+
+    static const bool storeAsReference = false;
     /** 
      * @brief Stores both arguments of the expression.
      *
@@ -166,9 +168,11 @@ template<typename Real, class A>
 struct OP10: public Expression<Real, OP10<Real, A> > {
   private:
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-    const A a_;
+    CODI_CREATE_STORE_TYPE(A) a_;
     const PassiveReal b_;
   public:
+
+    static const bool storeAsReference = false;
     /** 
      * @brief Stores both arguments of the expression.
      *
@@ -233,8 +237,11 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
   private:
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
     const PassiveReal a_;
-    const B b_;
+    CODI_CREATE_STORE_TYPE(B) b_;
   public:
+
+    static const bool storeAsReference = false;
+
     /** 
      * @brief Stores both arguments of the expression.
      *

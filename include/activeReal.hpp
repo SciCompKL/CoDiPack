@@ -71,6 +71,8 @@ namespace codi {
   class ActiveReal : public Expression<Real, ActiveReal<Real, Tape> > {
   public:
 
+    static const bool storeAsReference = true;
+
     /**
      * @brief Static definition of the tape.
      */

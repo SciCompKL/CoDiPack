@@ -42,6 +42,9 @@
 
 namespace codi {
 
+#define CODI_CREATE_STORE_TYPE(Name) \
+  typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
+
   /**
    * The Expression type from which all other types of expression
    * derive. Each member function simply calls the specialized version
@@ -53,6 +56,8 @@ namespace codi {
    */
   template<typename Real, class A>
   struct Expression {
+
+    static const bool storeAsReference;
 
     /**
      * @brief The passive value is used where the expressions are combined with normal double values.
