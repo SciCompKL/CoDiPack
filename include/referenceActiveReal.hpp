@@ -55,21 +55,14 @@ namespace codi {
 
   private:
     const ActiveReal<Real, Tape>& reference;
-    mutable Real ownJacobi;
-
-    Real& jacobi;
+    mutable Real jacobi;
 
   public:
 
     inline ReferenceActiveReal(const ActiveReal<Real, Tape>& reference) :
       reference(reference),
-      ownJacobi(),
-      jacobi(ownJacobi) {}
+      jacobi() {}
 
-    inline ReferenceActiveReal(const ReferenceActiveReal<Real, Tape>& reference) :
-      reference(reference.reference),
-      ownJacobi(),
-      jacobi(reference.jacobi) {}
 
     template<typename Data>
     inline void calcGradient(Data& data) const {
