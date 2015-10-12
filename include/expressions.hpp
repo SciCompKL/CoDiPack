@@ -42,6 +42,9 @@
 
 namespace codi {
 
+#define CODI_CREATE_STORE_TYPE(Name) \
+  typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
+
   /**
    * The Expression type from which all other types of expression
    * derive. Each member function simply calls the specialized version

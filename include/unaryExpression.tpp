@@ -76,10 +76,12 @@ template<typename Real, class A>
 struct OP : public Expression<Real, OP<Real, A> > {
   private:
     /** @brief The argument of the function. */
-    const A& a_;
+    CODI_CREATE_STORE_TYPE(A) a_;
     /** @brief The result of the function. It is always precomputed. */
     Real result_;
   public:
+
+    static const bool storeAsReference = false;
     /** 
      * @brief Stores the argument of the expression.
      *
