@@ -29,6 +29,7 @@
 #pragma once
 
 #include "activeReal.hpp"
+#include "referenceActiveReal.hpp"
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/simpleTape.hpp"
 #include "tapes/simpleIndexReusage.hpp"
@@ -99,6 +100,7 @@ namespace codi {
    * \endcode
    */
   typedef ActiveReal<double, ChunkTape<double, int> > RealReverse;
+  typedef ReferenceActiveReal<double, ChunkTape<double, int> > ReferenceRealReverse;
 
   /**
    * @brief The default reverse type in CoDiPack with float as the real value type.
@@ -144,6 +146,7 @@ namespace codi {
    * \endcode
    */
   typedef ActiveReal<double, SimpleTape<double, int> > RealReverseUnchecked;
+  typedef ReferenceActiveReal<double, SimpleTape<double, int> > ReferenceRealReverseUnchecked;
 
   /**
    * @brief The reverse type in CoDiPack with float as the real value type and an unchecked tape.
