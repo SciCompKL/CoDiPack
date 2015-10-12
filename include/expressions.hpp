@@ -57,6 +57,8 @@ namespace codi {
   template<typename Real, class A>
   struct Expression {
 
+    static const bool storeAsReference;
+
     /**
      * @brief The passive value is used where the expressions are combined with normal double values.
      */
