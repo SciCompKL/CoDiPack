@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <vector>
+
 namespace codi {
 
   template<typename IndexType>

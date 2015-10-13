@@ -81,7 +81,7 @@ namespace codi {
    * jacobies if they are nan or inf.
    */
   #ifndef CODI_OptIgnoreInvalidJacobies
-    #define CODI_OptIgnoreInvalidJacobies true
+    #define CODI_OptIgnoreInvalidJacobies false
   #endif
   const bool OptIgnoreInvalidJacobies = CODI_OptIgnoreInvalidJacobies;
   #undef CODI_OptIgnoreInvalidJacobies
