@@ -31,9 +31,9 @@
 #include "activeReal.hpp"
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/simpleTape.hpp"
-#include "tapes/simpleIndexReusage.hpp"
+#include "tapes/simpleIndexTape.hpp"
 #include "tapes/chunkTape.hpp"
-#include "tapes/chunkIndexReuse.hpp"
+#include "tapes/chunkIndexTape.hpp"
 #include "tools/dataStore.hpp"
 
 namespace codi {
@@ -152,8 +152,8 @@ namespace codi {
    */
   typedef ActiveReal<float, SimpleTape<float, int> > RealReverseUncheckedFloat;
 
-  typedef ActiveReal<double, SimpleIndexReusageTape<double, int> > RealReverseUncheckedIndexReusage;
-  typedef ActiveReal<double, ChunkIndexReuseTape<double, int> > RealReverseIndexReuse;
+  typedef ActiveReal<double, SimpleIndexTape<double, int> > RealReverseIndexUnchecked;
+  typedef ActiveReal<double, ChunkIndexTape<double, int> > RealReverseIndex;
 
 
 }
