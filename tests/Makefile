@@ -44,6 +44,12 @@ all:
 BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp)
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp)
 
+# The first 3 lines of each driver define the basic parameters for this driver.
+# DRIVER_NAME:    The short name for the driver. This used to create the specific files for the driver
+# DRIVER_TESTS:   The full list of tests which are run for this driver. See the general test list for details.
+# DRIVER:         The special flags for this driver. It needs to be defined inside the build rule.
+# The other lines create the rules and dependencies to run the tests for this driver.
+
 # Driver for RealForward
 DRIVER_NAME  := FWD
 DRIVER_TESTS := $(BASIC_TESTS)
