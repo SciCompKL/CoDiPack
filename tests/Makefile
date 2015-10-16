@@ -15,10 +15,12 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
+FLAGS = -Wall -pedantic -std=gnu++0x -DCODI_OptIgnoreInvalidJacobies=true
+
 ifeq ($(OPT), yes)
-  CXX_FLAGS := -O3 -Wall -pedantic -std=gnu++0x
+  CXX_FLAGS := -O3 $(FLAGS)
 else
-  CXX_FLAGS := -O0 -g -Wall -pedantic -std=gnu++0x
+  CXX_FLAGS := -O0 -g $(FLAGS)
 endif
 
 ifeq ($(CXX), )
