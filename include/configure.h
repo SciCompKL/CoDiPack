@@ -44,7 +44,10 @@ namespace codi {
   /**
    * @brief Default number of entries for all chunks.
    */
-  static size_t DefaultChunkSize = 13107200; //TODO: Find optimal value
+  #ifndef CODI_ChunkSize
+    #define CODI_ChunkSize 13107200
+  #endif
+  static size_t DefaultChunkSize = CODI_ChunkSize; //TODO: Find optimal value
 
   /**
    * @brief Enables the use of memset to preallocate the memory.
