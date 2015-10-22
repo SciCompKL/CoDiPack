@@ -43,7 +43,7 @@ namespace codi {
   /**
    * @brief Position for the simple tape.
    */
-  struct SimpleIndexReusageTapePosition {
+  struct SimpleIndexTapePosition {
     /** @brief The current statement recorded on the tape. */
     size_t stmt;
     /** @brief The current jacobi data recorded on the tape. */
@@ -57,7 +57,7 @@ namespace codi {
      * @param[in]    data  The current jacobi recorded on the tape.
      * @param[in] extFunc  The current external function recorded on the tape.
      */
-    SimpleIndexReusageTapePosition(const size_t& stmt, const size_t& data, const size_t& extFunc) :
+    SimpleIndexTapePosition(const size_t& stmt, const size_t& data, const size_t& extFunc) :
       stmt(stmt),
       data(data),
       extFunc(extFunc) {}
@@ -66,7 +66,7 @@ namespace codi {
   /**
    * @brief A tape with a simple implementation and no bounds checking.
    *
-   * The SimpleIndexReusageTape implements a fully featured ReverseTapeInterface in a
+   * The SimpleIndexTape implements a fully featured ReverseTapeInterface in a
    * simple fashion. This tape is not intended for simple usage. Actually the
    * tape has no bounds checking, therefore it can produce segmentation faults
    * if it is not used with care.
@@ -82,13 +82,13 @@ namespace codi {
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class SimpleIndexReusageTape : public ReverseTapeInterface<Real, IndexType, SimpleIndexReusageTape<Real, IndexType>, SimpleIndexReusageTapePosition > {
+  class SimpleIndexTape : public ReverseTapeInterface<Real, IndexType, SimpleIndexTape<Real, IndexType>, SimpleIndexTapePosition > {
   public:
 
     /**
      * @brief The type used to store the position of the tape.
      */
-    typedef SimpleIndexReusageTapePosition Position;
+    typedef SimpleIndexTapePosition Position;
 
   private:
     /**
@@ -120,7 +120,7 @@ namespace codi {
     /**
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
-    SimpleIndexReusageTape() :
+    SimpleIndexTape() :
       data(0),
       statements(0),
       externalFunctions(0),
@@ -229,7 +229,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimpleIndexReusageTape<Real, IndexType> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimpleIndexTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
         if(0 != rhs.getGradientData()) {
           indexHandler.checkIndex(lhsIndex);
@@ -507,7 +507,7 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, SimpleIndexReusageTape<Real, IndexType> >& value) {
+    inline void registerInput(ActiveReal<Real, SimpleIndexTape<Real, IndexType> >& value) {
       indexHandler.checkIndex(value.getGradientData());
     }
 
@@ -516,7 +516,7 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<Real, SimpleIndexReusageTape<Real, IndexType> >& value) {
+    inline void registerOutput(ActiveReal<Real, SimpleIndexTape<Real, IndexType> >& value) {
       CODI_UNUSED(value);
       /* do nothing */
     }

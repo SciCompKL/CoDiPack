@@ -42,12 +42,12 @@
 namespace codi {
 
   /**
-   * @brief Helper struct to define the nested chunk vectors for the ChunkIndexReuseTape.
+   * @brief Helper struct to define the nested chunk vectors for the ChunkIndexTape.
    *
-   * See #ChunkIndexReuseTape for details.
+   * See #ChunkIndexTape for details.
    */
   template <typename Real, typename IndexType>
-  struct ChunkIndexReuseTapeTypes {
+  struct ChunkIndexTapeTypes {
     /** @brief The data for each statement. */
     typedef Chunk2<StatementInt, IndexType> StatementChunk;
     /** @brief The chunk vector for the statement data. */
@@ -71,7 +71,7 @@ namespace codi {
   /**
    * @brief A tape which grows if more space is needed.
    *
-   * The ChunkIndexReuseTape implements a fully featured ReverseTapeInterface in a most
+   * The ChunkIndexTape implements a fully featured ReverseTapeInterface in a most
    * user friendly fashion. The storage vectors of the tape are grown if the
    * tape runs out of space.
    *
@@ -88,26 +88,26 @@ namespace codi {
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class ChunkIndexReuseTape : public ReverseTapeInterface<Real, IndexType, ChunkIndexReuseTape<Real, IndexType>, typename ChunkIndexReuseTapeTypes<Real, IndexType>::Position > {
+  class ChunkIndexTape : public ReverseTapeInterface<Real, IndexType, ChunkIndexTape<Real, IndexType>, typename ChunkIndexTapeTypes<Real, IndexType>::Position > {
   public:
 
     /** @brief The data for each statement. */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::StatementChunk StatementChunk;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::StatementChunk StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::StatementChunkVector StatementChunkVector;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::StatementChunkVector StatementChunkVector;
 
     /** @brief The data for the jacobies of each statement */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::DataChunk DataChunk;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::DataChunk DataChunk;
     /** @brief The chunk vector for the jacobi data. */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
 
     /** @brief The data for the external functions. */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::ExternalFunctionChunk ExternalFunctionChunk;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::ExternalFunctionChunk ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::ExternalFunctionChunkVector ExternalFunctionChunkVector;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::ExternalFunctionChunkVector ExternalFunctionChunkVector;
 
     /** @brief The position for all the different data vectors. */
-    typedef typename ChunkIndexReuseTapeTypes<Real, IndexType>::Position Position;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::Position Position;
 
 
   private:
@@ -143,7 +143,7 @@ namespace codi {
      * @brief Creates a tape with the default chunk sizes for the data, statements and
      * external functions defined in the configuration.
      */
-    ChunkIndexReuseTape() :
+    ChunkIndexTape() :
       emptyVector(),
       statements(DefaultChunkSize, emptyVector),
       data(DefaultChunkSize, statements),
@@ -300,7 +300,7 @@ public:
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkIndexReuseTape<Real, IndexType> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkIndexTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         if(0 != rhs.getGradientData()) {
           indexHandler.checkIndex(lhsIndex);
@@ -604,9 +604,9 @@ public:
       ExternalFunction* extFunc;
       typename DataChunkVector::Position* endInnerPos;
 
-      ChunkIndexReuseTape<Real, IndexType>& tape;
+      ChunkIndexTape<Real, IndexType>& tape;
 
-      ExtFuncEvaluator(typename DataChunkVector::Position curInnerPos, ChunkIndexReuseTape<Real, IndexType>& tape) :
+      ExtFuncEvaluator(typename DataChunkVector::Position curInnerPos, ChunkIndexTape<Real, IndexType>& tape) :
         curInnerPos(curInnerPos),
         extFunc(NULL),
         endInnerPos(NULL),
@@ -725,7 +725,7 @@ public:
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, ChunkIndexReuseTape<Real, IndexType> >& value) {
+    inline void registerInput(ActiveReal<Real, ChunkIndexTape<Real, IndexType> >& value) {
       indexHandler.checkIndex(value.getGradientData());
     }
 
@@ -734,7 +734,7 @@ public:
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<Real, ChunkIndexReuseTape<Real, IndexType> >& value) {
+    inline void registerOutput(ActiveReal<Real, ChunkIndexTape<Real, IndexType> >& value) {
       CODI_UNUSED(value);
       /* do nothing */
     }
@@ -797,7 +797,7 @@ public:
 
       std::cout << std::endl
                 << "---------------------------------------------" << std::endl
-                << "CoDi Tape Statistics (ChunkIndexReuseTape)"    << std::endl
+                << "CoDi Tape Statistics (ChunkIndexTape)"    << std::endl
                 << "---------------------------------------------" << std::endl
                 << "Statements " << std::endl
                 << "---------------------------------------------" << std::endl

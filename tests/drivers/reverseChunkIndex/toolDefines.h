@@ -30,9 +30,9 @@
 
 #include <codi.hpp>
 
-typedef codi::RealReverseUncheckedIndexReusage NUMBER;
+typedef codi::RealReverseIndex NUMBER;
 
 #include "../globalDefines.h"
 
-#define SIMPLE_TAPE
+#define CHUNK_TAPE
 #define REVERSE_TAPE
