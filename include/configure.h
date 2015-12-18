@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -34,6 +34,9 @@
 #define NDEBUG
 #include <assert.h>
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
@@ -48,7 +51,7 @@ namespace codi {
    * @brief Default number of entries for all chunks.
    */
   static size_t DefaultChunkSize = CODI_ChunkSize; //TODO: Find optimal value
-  #undef CODI_ChunkSize;
+  #undef CODI_ChunkSize
 
   #ifndef CODI_UseMemsetInChunks
     #define CODI_UseMemsetInChunks true
