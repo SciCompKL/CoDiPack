@@ -567,16 +567,16 @@ namespace codi {
       const double BYTE_TO_MB = 1.0/1024.0/1024.0;
 
       size_t nAdjoints      = statements.getUsedSize() + 1;
-      size_t MemoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+      size_t memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
       size_t TotalStmts    = statements.getUsedSize();
-      double  MemoryUsedStmts = (double)TotalStmts*(double)sizeof(StatementInt)/1024.0/1024.0,
-              MemoryAllocStmts= ((double)statements.getUnusedSize()+(double)statements.getUsedSize())
-                                *(double)sizeof(StatementInt)/1024.0/1024.0;
+      double  memoryUsedStmts = (double)TotalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
+      double  memoryAllocStmts= ((double)statements.getUnusedSize()+(double)statements.getUsedSize())
+                                *(double)sizeof(StatementInt)* BYTE_TO_MB;
       size_t TotalData    = data.getUsedSize();
-      double  MemoryUsedData = (double)TotalData*(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0,
-              MemoryAllocData= ((double)data.getUsedSize()+(double)data.getUnusedSize())
-                                *(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0;
+      double  memoryUsedData = (double)TotalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
+      double  memoryAllocData= ((double)data.getUsedSize()+(double)data.getUnusedSize())
+                                *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
       size_t nExternalFunc = externalFunctions.getUsedSize();
 
       std::cout << std::endl
@@ -589,11 +589,11 @@ namespace codi {
                 << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << MemoryAllocStmts << " MB" << std::endl
+                                            << memoryAllocStmts << " MB" << std::endl
                 << "  Memory used:        " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << MemoryUsedStmts << " MB" << std::endl
+                                            << memoryUsedStmts << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "Jacobi entries "                       << std::endl
                 << "-------------------------------------" << std::endl
@@ -601,11 +601,11 @@ namespace codi {
                 << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << MemoryAllocData << " MB" << std::endl
+                                            << memoryAllocData << " MB" << std::endl
                 << "  Memory used:        " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << MemoryUsedData << " MB" << std::endl
+                                            << memoryUsedData << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "Adjoint vector"                        << std::endl
                 << "-------------------------------------" << std::endl
@@ -613,7 +613,7 @@ namespace codi {
                 << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << MemoryAdjoints << " MB" << std::endl
+                                            << memoryAdjoints << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "External functions  "                  << std::endl
                 << "-------------------------------------" << std::endl

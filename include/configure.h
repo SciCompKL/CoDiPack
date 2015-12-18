@@ -41,14 +41,18 @@ namespace codi {
    */
   typedef uint8_t StatementInt;
 
-  /**
-   * @brief Default number of entries for all chunks.
-   */
   #ifndef CODI_ChunkSize
     #define CODI_ChunkSize 13107200
   #endif
+  /**
+   * @brief Default number of entries for all chunks.
+   */
   static size_t DefaultChunkSize = CODI_ChunkSize; //TODO: Find optimal value
+  #undef CODI_ChunkSize;
 
+  #ifndef CODI_UseMemsetInChunks
+    #define CODI_UseMemsetInChunks true
+  #endif
   /**
    * @brief Enables the use of memset to preallocate the memory.
    *
@@ -57,12 +61,12 @@ namespace codi {
    * performace issues. If the data is set to zero with memset the system will
    * directly allocate all the memory.
    */
-  #ifndef CODI_UseMemsetInChunks
-    #define CODI_UseMemsetInChunks true
-  #endif
   const bool UseMemsetInChunks = CODI_UseMemsetInChunks;
   #undef CODI_UseMemsetInChunks
 
+  #ifndef CODI_CheckExpressionArguments
+    #define CODI_CheckExpressionArguments false
+  #endif
   /**
    * @brief Check if the arguments are inside the differentiable domain.
    *
@@ -70,38 +74,38 @@ namespace codi {
    * gradient evaluation. If the arguments are not valid a CoDiPack exceptions is
    * generated.
    */
-  #ifndef CODI_CheckExpressionArguments
-    #define CODI_CheckExpressionArguments false
-  #endif
   const bool CheckExpressionArguments = CODI_CheckExpressionArguments;
   #undef CODI_CheckExpressionArguments
 
 
+  #ifndef CODI_OptIgnoreInvalidJacobies
+    #define CODI_OptIgnoreInvalidJacobies false
+  #endif
   /**
    * @brief Tapes push jacobies only if they are valid values.
    *
    * The check is used in the tape 'pushJacobi' function to disable the pushing of the
    * jacobies if they are nan or inf.
    */
-  #ifndef CODI_OptIgnoreInvalidJacobies
-    #define CODI_OptIgnoreInvalidJacobies false
-  #endif
   const bool OptIgnoreInvalidJacobies = CODI_OptIgnoreInvalidJacobies;
   #undef CODI_OptIgnoreInvalidJacobies
 
 
+  #ifndef CODI_OptJacobiIsZero
+    #define CODI_OptJacobiIsZero true
+  #endif
   /**
    * @brief Tapes push jacobies only if they are none zero.
    *
    * The check is used in the tape 'pushJacobi' function to disable the pushing of the
    * jacobies if they are zero.
    */
-  #ifndef CODI_OptJacobiIsZero
-    #define CODI_OptJacobiIsZero true
-  #endif
   const bool OptJacobiIsZero = CODI_OptJacobiIsZero;
   #undef CODI_OptJacobiIsZero
 
+  #ifndef CODI_OptTapeActivity
+    #define CODI_OptTapeActivity true
+  #endif
   /**
    * @brief Tapes can be disable for regions which do not need to be taped.
    *
@@ -109,21 +113,18 @@ namespace codi {
    * disable the tape for code parts which do not need to be taped. If the option is set
    * to false the tape will always be active.
    */
-  #ifndef CODI_OptTapeActivity
-    #define CODI_OptTapeActivity true
-  #endif
   const bool OptTapeActivity = CODI_OptTapeActivity;
   #undef CODI_OptTapeActivity
 
+  #ifndef CODI_OptZeroAdjoint
+    #define CODI_OptZeroAdjoint true
+  #endif
   /**
    * @brief Omits the evaluation of jacobies which are zero in the reverse sweep.
    *
    * If an adjoint seed is zero during the reverse sweep, all the updates for the
    * adjoint vector will be zero. Therefore the loop does not need to be evaluated.
    */
-  #ifndef CODI_OptZeroAdjoint
-    #define CODI_OptZeroAdjoint true
-  #endif
   const bool OptZeroAdjoint = CODI_OptZeroAdjoint;
   #undef CODI_OptZeroAdjoint
 

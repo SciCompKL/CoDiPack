@@ -97,7 +97,7 @@ namespace codi {
      * @tparam Data  The type of the data for the tape.
      */
     template<typename Data>
-    void pushJacobi(Real& gradient, const Real& value, const GradientData& gradientData);
+    void pushJacobi(Real& data, const Real& value, const GradientData& gradientData);
 
     /**
      * @brief Add a jacobi to the tape.
@@ -113,7 +113,7 @@ namespace codi {
      * @tparam Data  The type of the data for the tape.
      */
     template<typename Data>
-    void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const GradientData& gradientData);
+    void pushJacobi(Real& data, const Real& jacobi, const Real& value, const GradientData& gradientData);
 
     /**
      * @brief Called in the construction of a active type.
