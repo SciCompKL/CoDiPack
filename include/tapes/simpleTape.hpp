@@ -260,7 +260,7 @@ namespace codi {
       CODI_UNUSED(value);
 
       if(0 != index) {
-        assert(data.getUsedSize() < data.size);
+        assert(this->data.getUsedSize() < this->data.size);
 
         this->data.setDataAndMove(std::make_tuple(1.0, index));
       }
@@ -284,7 +284,7 @@ namespace codi {
       if(0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
-            assert(data.getUsedSize() < data.size);
+            assert(this->data.getUsedSize() < this->data.size);
 
             this->data.setDataAndMove(std::make_tuple(jacobi, index));
           }

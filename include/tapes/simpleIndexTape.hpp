@@ -222,7 +222,7 @@ namespace codi {
         size_t activeVariables = data.getUsedSize() - startSize;
         if(0 != activeVariables) {
           indexHandler.checkIndex(lhsIndex);
-          assert(lhsIndex < adjoints.size);
+          assert(lhsIndex < (IndexType)adjoints.size);
 
           assert(statements.getUsedSize() < statements.size);
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables, lhsIndex));
@@ -251,7 +251,7 @@ namespace codi {
       ENABLE_CHECK(OptTapeActivity, active){
         if(0 != rhs.getGradientData()) {
           indexHandler.checkIndex(lhsIndex);
-          assert(lhsIndex < adjoints.size);
+          assert(lhsIndex < (IndexType)adjoints.size);
 
           assert(statements.getUsedSize() < statements.size);
           assert(1 <= data.getUnusedSize());
@@ -296,7 +296,7 @@ namespace codi {
       CODI_UNUSED(value);
 
       if(0 != index) {
-        assert(data.getUsedSize() < data.size);
+        assert(this->data.getUsedSize() < this->data.size);
 
         this->data.setDataAndMove(std::make_tuple(1.0, index));
       }
@@ -320,7 +320,7 @@ namespace codi {
       if(0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
-            assert(data.getUsedSize() < data.size);
+            assert(this->data.getUsedSize() < this->data.size);
 
             this->data.setDataAndMove(std::make_tuple(jacobi, index));
           }
@@ -491,7 +491,7 @@ namespace codi {
       assert(start.data >= end.data);
       assert(start.stmt >= end.stmt);
       assert(start.extFunc >= end.extFunc);
-      assert(adjoints.size <= indexHandler.getMaximumGlobalIndex());
+      assert((IndexType)adjoints.size > indexHandler.getMaximumGlobalIndex());
 
       Position curPos = start;
 
