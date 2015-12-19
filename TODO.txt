@@ -5,4 +5,5 @@ Performance:
   - Check performance increase in the simple by using direct pointer for the intel compiler and on ifrit.
   - Implement reference counters for index reuse tape
   - Early out fuer passive values
+  - Create an assert just for CoDiPack
 
