@@ -282,6 +282,26 @@ namespace codi {
     }
 
     /**
+     * @brief Manual store routine.
+     *
+     * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
+     *
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     *
+     * @param[out]   lhsIndex    The gradient data of the lhs.
+     * @param[in]        size    The number of Jacobi entries.
+     */
+    inline void store(IndexType& lhsIndex, StatementInt size) {
+      ENABLE_CHECK (OptTapeActivity, active){
+        assert(size < data.getUnusedSize());
+        indexHandler.checkIndex(lhsIndex);
+        assert(lhsIndex < (IndexType)adjoints.size);
+        assert(statements.getUsedSize() < statements.size);
+        statements.setDataAndMove(std::make_tuple(size, lhsIndex));
+      }
+    }
+
+    /**
      * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
      *
      * @param[in]     data Not used in this implementation.
