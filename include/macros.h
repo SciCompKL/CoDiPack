@@ -32,38 +32,31 @@
 #pragma once
 
 /**
- * @brief Global namespace for CoDiPack - Code Differentiation Package
+ * @brief Create a store by value or store by reference member based on the setting of the expression template.
+ *
+ * The constant member storeAsReference is looked of from the type named by Name and the
+ * either a reference or a value is stored.
+ *
+ * @param   Name  The name of the type for which a member declaration is crated.
  */
-namespace codi {
-
-  /**
-   * @brief Create a store by value or store by reference member based on the setting of the expression template.
-   *
-   * The constant member storeAsReference is looked of from the type named by Name and the
-   * either a reference or a value is stored.
-   *
-   * @param   Name  The name of the type for which a member declaration is crated.
-   */
-  #define CODI_CREATE_STORE_TYPE(Name) \
-    typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
+#define CODI_CREATE_STORE_TYPE(Name) \
+  typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
 
 
-  /**
-   * @brief Combine two preprocessor variables into one.
-   *
-   * This helper routine is needed in order two expand the arguments.
-   *
-   * @param A First parameter that is combined
-   * @param B Second parameter that is combined
-   */
-  #define COMBINE2(A,B) A ## B
+/**
+ * @brief Combine two preprocessor variables into one.
+ *
+ * This helper routine is needed in order two expand the arguments.
+ *
+ * @param A First parameter that is combined
+ * @param B Second parameter that is combined
+ */
+#define COMBINE2(A,B) A ## B
 
-  /**
-   * @brief Combine two preprocessor variables into one.
-   *
-   * @param A First parameter that is combined
-   * @param B Second parameter that is combined
-   */
-  #define COMBINE(A,B) COMBINE2(A,B)
-
-}
+/**
+ * @brief Combine two preprocessor variables into one.
+ *
+ * @param A First parameter that is combined
+ * @param B Second parameter that is combined
+ */
+#define COMBINE(A,B) COMBINE2(A,B)
