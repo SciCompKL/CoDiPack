@@ -1,0 +1,275 @@
+diff --git a/include/configure.h b/include/configure.h
+index 0851c6c..bf6103e 100644
+--- a/include/configure.h
++++ b/include/configure.h
+@@ -81,7 +81,7 @@ namespace codi {
+    * jacobies if they are nan or inf.
+    */
+   #ifndef CODI_OptIgnoreInvalidJacobies
+-    #define CODI_OptIgnoreInvalidJacobies true
++    #define CODI_OptIgnoreInvalidJacobies false
+   #endif
+   const bool OptIgnoreInvalidJacobies = CODI_OptIgnoreInvalidJacobies;
+   #undef CODI_OptIgnoreInvalidJacobies
+diff --git a/include/tapes/chunkTape.hpp b/include/tapes/chunkTape.hpp
+index 6d5591f..701e288 100644
+--- a/include/tapes/chunkTape.hpp
++++ b/include/tapes/chunkTape.hpp
+@@ -93,17 +93,17 @@ namespace codi {
+   template <typename Real, typename IndexType>
+   struct ChunkTapeTypes {
+     /** @brief The data for the jacobies of each statement */
+-    typedef Chunk2< Real, IndexType> DataChunk;
++    typedef ChunkVar< Real, IndexType> DataChunk;
+     /** @brief The chunk vector for the jacobi data. */
+     typedef ChunkVector<DataChunk, ExpressionCounter<IndexType> > DataChunkVector;
+ 
+     /** @brief The data for each statement. */
+-    typedef Chunk1<StatementInt> StatementChunk;
++    typedef ChunkVar<StatementInt> StatementChunk;
+     /** @brief The chunk vector for the statement data. */
+     typedef ChunkVector<StatementChunk, DataChunkVector> StatementChunkVector;
+ 
+     /** @brief The data for the external functions. */
+-    typedef Chunk2<ExternalFunction,typename StatementChunkVector::Position> ExternalFunctionChunk;
++    typedef ChunkVar<ExternalFunction,typename StatementChunkVector::Position> ExternalFunctionChunk;
+     /** @brief The chunk vector for the external  function data. */
+     typedef ChunkVector<ExternalFunctionChunk, StatementChunkVector> ExternalFunctionChunkVector;
+ 
+@@ -259,7 +259,7 @@ public:
+      */
+     void allocateAdjoints() {
+       //TODO: Tim fragen of er das brauch
+-      resizeAdjoints(expressionCount + 1);
++      resizeAdjoints(expressionCount.count + 1);
+     }
+ 
+     /**
+@@ -294,7 +294,7 @@ public:
+         if(0 == activeVariables) {
+           lhsIndex = 0;
+         } else {
+-          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
++          statements.setDataAndMove((StatementInt)activeVariables);
+           lhsIndex = ++expressionCount.count;
+         }
+       } else {
+@@ -358,7 +358,7 @@ public:
+       CODI_UNUSED(data);
+       CODI_UNUSED(value);
+       if(0 != index) {
+-        this->data.setDataAndMove(std::make_tuple(1.0, index));
++        this->data.setDataAndMove(1.0, index);
+       }
+     }
+ 
+@@ -379,7 +379,7 @@ public:
+       if(0 != index) {
+         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
+-            this->data.setDataAndMove(std::make_tuple(jacobi, index));
++            this->data.setDataAndMove(jacobi, index);
+           }
+         }
+       }
+@@ -493,7 +493,9 @@ public:
+         adjoints[i] = 0.0;
+       }
+ 
+-      externalFunctions.forEach(externalFunctions.getPosition(), pos, popExternalFunction);
++      ExternalFunction* extFuncData;
++      typename StatementChunkVector::Position* innerPosData;
++      externalFunctions.forEach(externalFunctions.getPosition(), pos, popExternalFunction, extFuncData, innerPosData);
+ 
+       // reset will be done iteratively through the vectors
+       externalFunctions.reset(pos);
+@@ -556,7 +558,7 @@ public:
+       size_t dataPos = start.data;
+       typename DataChunkVector::Position curInnerPos = start.inner;
+       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
+-        std::tie(statementData) = statements.getDataAtPosition(curChunk, 0);
++        statements.getDataAtPosition(curChunk, 0, statementData);
+ 
+         typename DataChunkVector::Position endInnerPos = statements.getInnerPosition(curChunk);
+         evaluateData(curInnerPos, endInnerPos, dataPos, statementData);
+@@ -567,7 +569,7 @@ public:
+       }
+ 
+       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+-      std::tie(statementData) = statements.getDataAtPosition(end.chunk, 0);
++      statements.getDataAtPosition(end.chunk, 0, statementData);
+       evaluateData(curInnerPos, end.inner, dataPos, statementData);
+     }
+ 
+@@ -589,7 +591,7 @@ public:
+       size_t dataPos = start.data;
+       typename ExpressionCounter<IndexType>::Position curInnerPos = start.inner;
+       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
+-        std::tie(jacobiData, indexData) = data.getDataAtPosition(curChunk, 0);
++        data.getDataAtPosition(curChunk, 0, jacobiData, indexData);
+ 
+         typename ExpressionCounter<IndexType>::Position endInnerPos = data.getInnerPosition(curChunk);
+         evaluateExpressions(curInnerPos, endInnerPos, stmtPos, statementData, dataPos, jacobiData, indexData);
+@@ -600,7 +602,7 @@ public:
+       }
+ 
+       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+-      std::tie(jacobiData, indexData) = data.getDataAtPosition(end.chunk, 0);
++      data.getDataAtPosition(end.chunk, 0, jacobiData, indexData);
+       evaluateExpressions(curInnerPos, end.inner, stmtPos, statementData, dataPos, jacobiData, indexData);
+     }
+ 
+@@ -614,20 +616,14 @@ public:
+      */
+     struct ExtFuncEvaluator {
+       typename StatementChunkVector::Position curInnerPos;
+-      ExternalFunction* extFunc;
+-      typename StatementChunkVector::Position* endInnerPos;
+ 
+       ChunkTape<Real, IndexType>& tape;
+ 
+       ExtFuncEvaluator(typename StatementChunkVector::Position curInnerPos, ChunkTape<Real, IndexType>& tape) :
+         curInnerPos(curInnerPos),
+-        extFunc(NULL),
+-        endInnerPos(NULL),
+         tape(tape){}
+ 
+-      void operator () (typename ExternalFunctionChunk::DataPointer& data) {
+-        std::tie(extFunc, endInnerPos) = data;
+-
++      void operator () (ExternalFunction* extFunc, typename StatementChunkVector::Position* endInnerPos) {
+         // always evaluate the stack to the point of the external function
+         tape.evaluateStmt(curInnerPos, *endInnerPos);
+ 
+@@ -648,9 +644,11 @@ public:
+      * @param[in]         end The ending point for the external function vector.
+      */
+     void evaluateExtFunc(const typename ExternalFunctionChunkVector::Position& start, const typename ExternalFunctionChunkVector::Position &end){
++      ExternalFunction* extFuncData;
++      typename StatementChunkVector::Position* innerPosData;
+       ExtFuncEvaluator evaluator(start.inner, *this);
+ 
+-      externalFunctions.forEach(start, end, evaluator);
++      externalFunctions.forEach(start, end, evaluator, extFuncData, innerPosData);
+ 
+       // Iterate over the reminder also covers the case if there have been no external functions.
+       evaluateStmt(evaluator.curInnerPos, end.inner);
+@@ -708,7 +706,7 @@ public:
+      */
+     template<typename Data>
+     void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<Data>::DeleteFunction delData){
+-      pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));\
++      pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));
+     }
+ 
+   private:
+@@ -719,16 +717,17 @@ public:
+      */
+     void pushExternalFunctionHandle(const ExternalFunction& function){
+       externalFunctions.reserveItems(1);
+-      externalFunctions.setDataAndMove(std::make_tuple(function, statements.getPosition()));
++      externalFunctions.setDataAndMove(function, statements.getPosition());
+     }
+ 
+     /**
+      * @brief Delete the data of the external function.
+      * @param extFunction The external function in the vector.
+      */
+-    static void popExternalFunction(typename ExternalFunctionChunk::DataPointer& extFunction) {
++    static void popExternalFunction(ExternalFunction* extFunc, typename StatementChunkVector::Position* innerPos) {
++      CODI_UNUSED(innerPos);
+       /* we just need to call the delete function */
+-      std::get<0>(extFunction)->deleteData();
++      extFunc->deleteData();
+     }
+   public:
+ 
+@@ -740,7 +739,7 @@ public:
+      */
+     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
+       statements.reserveItems(1);
+-      statements.setDataAndMove(std::make_tuple(0));
++      statements.setDataAndMove((StatementInt)0);
+ 
+       value.getGradientData() = ++expressionCount.count;
+     }
+diff --git a/include/tapes/chunkVector.hpp b/include/tapes/chunkVector.hpp
+index e946c5c..af9aa19 100644
+--- a/include/tapes/chunkVector.hpp
++++ b/include/tapes/chunkVector.hpp
+@@ -291,9 +291,10 @@ namespace codi {
+      *
+      * @param data  The data set to the current position in the chunk.
+      */
+-    inline void setDataAndMove(const typename ChunkData::DataValues& data) {
++    template<typename ... Data>
++    inline void setDataAndMove(const Data&... data) {
+       // this method should only be called if reserveItems has been called
+-      curChunk->setDataAndMove(data);
++      curChunk->setDataAndMove(data...);
+     }
+ 
+     /**
+@@ -329,10 +330,11 @@ namespace codi {
+      * @param    dataPos  The index for the data in the chunk.
+      * @return A pointer to the data of the chunk at the given position.
+      */
+-    inline typename ChunkData::DataPointer getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos) {
++    template<typename ... Data>
++    inline void getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos, Data*&... pointers) {
+       assert(chunkIndex < chunks.size());
+ 
+-      return chunks[chunkIndex]->dataPointer(dataPos);
++      chunks[chunkIndex]->dataPointer(dataPos, pointers...);
+     }
+ 
+     /**
+@@ -359,18 +361,17 @@ namespace codi {
+      * @param      end  The end point inside the data of the chunk.
+      * @param function  The function called for each data entry.
+      */
+-    template<typename FunctionObject>
+-    inline void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function) {
++    template<typename FunctionObject, typename ... Data>
++    inline void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Data*&... pointers) {
+       assert(start >= end);
+       assert(chunkPos < chunks.size());
+ 
+-      typename ChunkData::DataPointer data;
+       // we do not initialize dataPos with start - 1 because the type can be unsigned
+       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
+         --dataPos; // decrement of loop variable
+ 
+-        data = getDataAtPosition(chunkPos, dataPos);
+-        function(data);
++        getDataAtPosition(chunkPos, dataPos, pointers...);
++        function(pointers...);
+       }
+     }
+ 
+@@ -387,21 +388,21 @@ namespace codi {
+      * @param      end  The end point of the range.
+      * @param function  The function called for each data entry.
+      */
+-    template<typename FunctionObject>
+-    inline void forEach(const Position& start, const Position& end, FunctionObject& function) {
++    template<typename FunctionObject, typename ... Data>
++    inline void forEach(const Position& start, const Position& end, FunctionObject& function, Data*&... pointers) {
+       assert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
+       assert(start.chunk < chunks.size());
+ 
+       size_t dataStart = start.data;
+       for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
+ 
+-        forEachData(chunkPos, dataStart, 0, function);
++        forEachData(chunkPos, dataStart, 0, function, pointers...);
+ 
+         dataStart = chunks[--chunkPos]->getUsedSize(); // decrement of loop variable
+ 
+       }
+ 
+-      forEachData(end.chunk, dataStart, end.data, function);
++      forEachData(end.chunk, dataStart, end.data, function, pointers...);
+     }
+   };
+ }
