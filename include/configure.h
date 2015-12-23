@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -34,6 +34,9 @@
 #define NDEBUG
 #include <assert.h>
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
@@ -41,11 +44,32 @@ namespace codi {
    */
   typedef uint8_t StatementInt;
 
+  #ifndef CODI_ChunkSize
+    #define CODI_ChunkSize 13107200
+  #endif
   /**
-   * @brief Default size for all chunks.
+   * @brief Default number of entries for all chunks.
    */
-  static size_t DefaultChunkSize = 13107200; //TODO: Find optimal value
+  static size_t DefaultChunkSize = CODI_ChunkSize; //TODO: Find optimal value
+  #undef CODI_ChunkSize
 
+  #ifndef CODI_UseMemsetInChunks
+    #define CODI_UseMemsetInChunks true
+  #endif
+  /**
+   * @brief Enables the use of memset to preallocate the memory.
+   *
+   * Modern systems can initalize the memory acquired with malloc or calloc
+   * in a lazy fashion. The memory is then acquired on first use which can cause
+   * performace issues. If the data is set to zero with memset the system will
+   * directly allocate all the memory.
+   */
+  const bool UseMemsetInChunks = CODI_UseMemsetInChunks;
+  #undef CODI_UseMemsetInChunks
+
+  #ifndef CODI_CheckExpressionArguments
+    #define CODI_CheckExpressionArguments false
+  #endif
   /**
    * @brief Check if the arguments are inside the differentiable domain.
    *
@@ -53,26 +77,38 @@ namespace codi {
    * gradient evaluation. If the arguments are not valid a CoDiPack exceptions is
    * generated.
    */
-  const bool CheckExpressionArguments = false;
+  const bool CheckExpressionArguments = CODI_CheckExpressionArguments;
+  #undef CODI_CheckExpressionArguments
 
 
+  #ifndef CODI_OptIgnoreInvalidJacobies
+    #define CODI_OptIgnoreInvalidJacobies false
+  #endif
   /**
    * @brief Tapes push jacobies only if they are valid values.
    *
    * The check is used in the tape 'pushJacobi' function to disable the pushing of the
    * jacobies if they are nan or inf.
    */
-  const bool OptIgnoreInvalidJacobies = true;
+  const bool OptIgnoreInvalidJacobies = CODI_OptIgnoreInvalidJacobies;
+  #undef CODI_OptIgnoreInvalidJacobies
 
 
+  #ifndef CODI_OptJacobiIsZero
+    #define CODI_OptJacobiIsZero true
+  #endif
   /**
    * @brief Tapes push jacobies only if they are none zero.
    *
    * The check is used in the tape 'pushJacobi' function to disable the pushing of the
    * jacobies if they are zero.
    */
-  const bool OptJacobiIsZero = true;
+  const bool OptJacobiIsZero = CODI_OptJacobiIsZero;
+  #undef CODI_OptJacobiIsZero
 
+  #ifndef CODI_OptTapeActivity
+    #define CODI_OptTapeActivity true
+  #endif
   /**
    * @brief Tapes can be disable for regions which do not need to be taped.
    *
@@ -80,15 +116,20 @@ namespace codi {
    * disable the tape for code parts which do not need to be taped. If the option is set
    * to false the tape will always be active.
    */
-  const bool OptTapeActivity = true;
+  const bool OptTapeActivity = CODI_OptTapeActivity;
+  #undef CODI_OptTapeActivity
 
+  #ifndef CODI_OptZeroAdjoint
+    #define CODI_OptZeroAdjoint true
+  #endif
   /**
    * @brief Omits the evaluation of jacobies which are zero in the reverse sweep.
    *
    * If an adjoint seed is zero during the reverse sweep, all the updates for the
    * adjoint vector will be zero. Therefore the loop does not need to be evaluated.
    */
-  const bool OptZeroAdjoint = true;
+  const bool OptZeroAdjoint = CODI_OptZeroAdjoint;
+  #undef CODI_OptZeroAdjoint
 
   /**
    * @brief Enable the check only if the option is set

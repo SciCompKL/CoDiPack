@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -33,6 +33,9 @@
 #include "expressionTraits.hpp"
 #include <iostream>
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
@@ -70,6 +73,11 @@ namespace codi {
   template<typename Real, typename Tape>
   class ActiveReal : public Expression<Real, ActiveReal<Real, Tape> > {
   public:
+
+    /**
+     * @brief Defines that the active reals are stored as references in the expression templates.
+     */
+    static const bool storeAsReference = true;
 
     /**
      * @brief Static definition of the tape.
@@ -156,6 +164,7 @@ namespace codi {
      */
     template<class R>
     inline ActiveReal(const Expression<Real, R>& rhs) {
+      globalTape.initGradientData(this->primalValue, gradientData);
       globalTape.store(primalValue, gradientData, rhs.cast());
     }
 
@@ -168,6 +177,7 @@ namespace codi {
      * @param[in] v The value to copy.
      */
     inline ActiveReal(const ActiveReal<Real, Tape>& v) {
+      globalTape.initGradientData(this->primalValue, gradientData);
       globalTape.store(primalValue, gradientData, v);
     }
 
@@ -181,21 +191,28 @@ namespace codi {
     /**
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value 1.0.
      *
-     * @param[inout] gradient A helper value for gradient calculations.
+     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient) const {
-      globalTape.pushJacobi(gradient, primalValue, gradientData);
+    template<typename Data>
+    inline void calcGradient(Data& data) const {
+      globalTape.pushJacobi(data, primalValue, gradientData);
     }
 
     /**
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value jacobi.
      *
-     * @param[inout] gradient A helper value for gradient calculations.
-     * @param[in]      jacobi The partial derivative of the expression with respect to this variable.
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in]      jacobi The Jacobi from the expression where this expression was used as an argument.
+     *
+     * @tparam Data The type for the tape data.
      */
-    inline void calcGradient(Real& gradient, const Real& jacobi) const {
-      globalTape.pushJacobi(gradient, jacobi, primalValue, gradientData);
+    template<typename Data>
+    inline void calcGradient(Data& data, const Real& jacobi) const {
+      globalTape.pushJacobi(data, jacobi, primalValue, gradientData);
     }
+
 
     /**
      * @brief Helper function for the tape to get its information about this type.
@@ -460,6 +477,12 @@ namespace codi {
   };
 
   /**
+   * @brief The instantiation of the tape for the ActiveReal.
+   */
+  template<typename Real, typename Tape>
+  Tape ActiveReal<Real, Tape>::globalTape;
+
+  /**
    * @brief Specialization of the ExpressionTraits for the ActiveReal type.
    *
    * @tparam Real The floating point value of the active real.
@@ -472,12 +495,6 @@ namespace codi {
      */
     static const size_t maxActiveVariables = 1;
   };
-
-  /**
-   * @brief The instantiation of the tape for the ActiveReal.
-   */
-  template<typename Real, typename Tape>
-  Tape ActiveReal<Real, Tape>::globalTape;
 
   /**
    * @brief The primal value of the origin is written to the stream.

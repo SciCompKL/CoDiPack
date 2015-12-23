@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -34,6 +34,9 @@
 #include "tapeInterface.hpp"
 
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
   /**
    * @brief Interface common to all reverse tapes.
@@ -144,6 +147,11 @@ namespace codi {
      * @return The current position of the tape.
      */
     virtual Position getPosition() = 0;
+
+    /**
+    * @brief Print some statistics about the currently stored information.
+    */
+    virtual void printStatistics() = 0;
 
     /**
      * @brief Add a external function to the tape.

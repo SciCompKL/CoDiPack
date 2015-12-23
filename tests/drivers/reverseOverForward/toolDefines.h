@@ -1,4 +1,4 @@
-/*
+/**
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -28,37 +28,8 @@
 
 #pragma once
 
-/**
- * @brief Global namespace for CoDiPack - Code Differentiation Package
- */
-namespace codi {
+#include <codi.hpp>
 
-  /**
-   * @brief Provides information about the types which are used in the active types.
-   *
-   * This is the general implementation for all types which are used in the active type
-   * template parameter. It is used in CoDiPack to gather information about the the specific
-   * type.
-   *
-   * @tparam T The type used in the active types.
-   */
-  template<typename T>
-  class TypeTraits {
-  public:
-    /**
-     * @brief The passive value of the type.
-     *
-     * The default implementation defines the type itself as the passive type.
-     */
-    typedef T PassiveReal;
+typedef codi::ActiveReal<codi::RealForward, codi::ChunkTape<codi::RealForward, int> > NUMBER;
 
-    /**
-     * @brief Get the primal base value of the type.
-     *
-     * The default implementation returns the identity.
-     * @param t   The value from which the base value is extracted.
-     * @return The base value of the type.
-     */
-    static const T getBaseValue(const T& t) { return t;}
-  };
-}
+#include "../globalDefines.h"

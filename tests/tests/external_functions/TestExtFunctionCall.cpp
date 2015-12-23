@@ -40,14 +40,23 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
   z = w*v;
 }
 
-#ifdef REVERSE_TAPE
 static void extFunc(void* checkpoint){
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
-  NUMBER *x, w;
-  check->getData(x);
-  check->getData(w);
-  x[0].gradient() += x[1].getValue()*w.getGradient();
-  x[1].gradient() += x[0].getValue()*w.getGradient();
+  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
+
+  typename NUMBER::RealType x1_v, x2_v;
+  typename NUMBER::GradientData x1_i, x2_i, w_i;
+  check->getData(x1_v);
+  check->getData(x1_i);
+  check->getData(x2_v);
+  check->getData(x2_i);
+  check->getData(w_i);
+
+  typename NUMBER::RealType w_b = tape.gradient(w_i);
+  tape.gradient(w_i) = 0.0;
+
+  tape.gradient(x1_i) += x2_v*w_b;
+  tape.gradient(x2_i) += x1_v*w_b;
 }
 
 static void delFunc(void* checkpoint){
@@ -65,18 +74,13 @@ void func(NUMBER* x, NUMBER* y) {
   tape.setActive();
 
   tape.registerInput(w);
-  checkpoint->addData(x);
-  checkpoint->addData(w);
+  checkpoint->addData(x[0].getValue());
+  checkpoint->addData(x[0].getGradientData());
+  checkpoint->addData(x[1].getValue());
+  checkpoint->addData(x[1].getGradientData());
+  checkpoint->addData(w.getGradientData());
   tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
 
 
   y[0] = w*w;
 }
-#else
-void func(NUMBER*x, NUMBER* y){
-  NUMBER w;
-  func_forward(w, x[0], x[1]);
-  y[0] = w*w;
-}
-#endif
-

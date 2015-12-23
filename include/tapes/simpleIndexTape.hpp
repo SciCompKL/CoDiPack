@@ -35,6 +35,7 @@
 
 #include "../activeReal.hpp"
 #include "chunk.hpp"
+#include "indexHandler.hpp"
 #include "reverseTapeInterface.hpp"
 
 /**
@@ -45,7 +46,7 @@ namespace codi {
   /**
    * @brief Position for the simple tape.
    */
-  struct SimpleTapePosition {
+  struct SimpleIndexTapePosition {
     /** @brief The current statement recorded on the tape. */
     size_t stmt;
     /** @brief The current jacobi data recorded on the tape. */
@@ -59,7 +60,7 @@ namespace codi {
      * @param[in]    data  The current jacobi recorded on the tape.
      * @param[in] extFunc  The current external function recorded on the tape.
      */
-    SimpleTapePosition(const size_t& stmt, const size_t& data, const size_t& extFunc) :
+    SimpleIndexTapePosition(const size_t& stmt, const size_t& data, const size_t& extFunc) :
       stmt(stmt),
       data(data),
       extFunc(extFunc) {}
@@ -68,7 +69,7 @@ namespace codi {
   /**
    * @brief A tape with a simple implementation and no bounds checking.
    *
-   * The SimpleTape implements a fully featured ReverseTapeInterface in a
+   * The SimpleIndexTape implements a fully featured ReverseTapeInterface in a
    * simple fashion. This tape is not intended for simple usage. Actually the
    * tape has no bounds checking, therefore it can produce segmentation faults
    * if it is not used with care.
@@ -77,6 +78,11 @@ namespace codi {
    *
    * For details on how this tape works please read the general documentation //TODO: Add reference to chapter.
    *
+   * The tape also uses the index manager IndexHandler to reuse the indices that are deleted.
+   * That means that ActiveReal's which use this tape need to be copied by usual means and deleted after
+   * the are no longer used. No c-like memory operations like memset and memcpy should be applied
+   * to these types.
+   *
    * Assertions are placed in all the functions such that during development no
    * bounds are overwritten.
    *
@@ -84,13 +90,13 @@ namespace codi {
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class SimpleTape : public ReverseTapeInterface<Real, IndexType, SimpleTape<Real, IndexType>, SimpleTapePosition > {
+  class SimpleIndexTape : public ReverseTapeInterface<Real, IndexType, SimpleIndexTape<Real, IndexType>, SimpleIndexTapePosition > {
   public:
 
     /**
      * @brief The type used to store the position of the tape.
      */
-    typedef SimpleTapePosition Position;
+    typedef SimpleIndexTapePosition Position;
 
   private:
     /**
@@ -98,9 +104,9 @@ namespace codi {
      */
     Chunk2<Real, IndexType> data;
     /**
-     * @brief The number of active variables in each statement.
+     * @brief The number of active variables in each statement and the index on the lhs.
      */
-    Chunk1<StatementInt> statements;
+    Chunk2<StatementInt, IndexType> statements;
     /**
      * @brief The external function data and the position where the external function has been inserted.
      */
@@ -111,6 +117,8 @@ namespace codi {
      */
     Chunk1<Real> adjoints;
 
+    IndexHandler<IndexType> indexHandler;
+
     /**
      * @brief Determines if statements are recorded or ignored.
      */
@@ -120,11 +128,12 @@ namespace codi {
     /**
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
-    SimpleTape() :
+    SimpleIndexTape() :
       data(0),
       statements(0),
       externalFunctions(0),
       adjoints(1),
+      indexHandler(),
       active(false){}
 
     /**
@@ -137,6 +146,15 @@ namespace codi {
      */
     void setExternalFunctionChunkSize(const size_t& extChunkSize) {
       externalFunctions.resize(extChunkSize);
+    }
+
+    /**
+     * @brief Set the size of the adjoint vector.
+     *
+     * @param[in] adjointsSize The new size for the adjoint vector.
+     */
+    void setAdjointsSize(const size_t& adjointsSize) {
+      adjoints.resize(adjointsSize);
     }
 
     /**
@@ -156,6 +174,15 @@ namespace codi {
     }
 
     /**
+     * @brief Get the current size of the adjoint vector.
+     *
+     * @return The size of the current adjoint vector.
+     */
+    size_t getAdjointsSize() {
+      return indexHandler.getMaximumGlobalIndex() + 1;
+    }
+
+    /**
      * @brief Set the size of the jacobi and statement data and the adjoint vector.
      * @param[in] dataSize  The new size of the jacobi vector.
      * @param[in] stmtSize  The new size of the statement vector.
@@ -163,7 +190,6 @@ namespace codi {
     void resize(const size_t& dataSize, const size_t& stmtSize) {
       data.resize(dataSize);
       statements.resize(stmtSize);
-      adjoints.resize(stmtSize + 1);
     }
 
     /**
@@ -194,12 +220,14 @@ namespace codi {
         size_t startSize = data.getUsedSize();
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getUsedSize() - startSize;
-        if(0 == activeVariables) {
-          lhsIndex = 0;
-        } else {
+        if(0 != activeVariables) {
+          indexHandler.checkIndex(lhsIndex);
+          assert(lhsIndex < (IndexType)adjoints.size);
+
           assert(statements.getUsedSize() < statements.size);
-          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
-          lhsIndex = statements.getUsedSize();
+          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables, lhsIndex));
+        } else {
+          indexHandler.freeIndex(lhsIndex);
         }
       }
 
@@ -219,11 +247,19 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimpleTape<Real, IndexType> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimpleIndexTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
-        lhsIndex = rhs.getGradientData();
-      } else {
-        lhsIndex = 0;
+        if(0 != rhs.getGradientData()) {
+          indexHandler.checkIndex(lhsIndex);
+          assert(lhsIndex < (IndexType)adjoints.size);
+
+          assert(statements.getUsedSize() < statements.size);
+          assert(1 <= data.getUnusedSize());
+          this->data.setDataAndMove(std::make_tuple(1.0, rhs.getGradientData()));
+          statements.setDataAndMove(std::make_tuple((StatementInt)1, lhsIndex));
+        } else {
+          indexHandler.freeIndex(lhsIndex);
+        }
       }
       lhsValue = rhs.getValue();
     }
@@ -241,7 +277,7 @@ namespace codi {
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      lhsIndex = 0;
+      indexHandler.freeIndex(lhsIndex);
       lhsValue = rhs;
     }
 
@@ -258,9 +294,10 @@ namespace codi {
     inline void store(IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         assert(size < data.getUnusedSize());
+        indexHandler.checkIndex(lhsIndex);
+        assert(lhsIndex < (IndexType)adjoints.size);
         assert(statements.getUsedSize() < statements.size);
-        statements.setDataAndMove(std::make_tuple(size));
-        lhsIndex = statements.getUsedSize();
+        statements.setDataAndMove(std::make_tuple(size, lhsIndex));
       }
     }
 
@@ -321,15 +358,16 @@ namespace codi {
       index = 0;
     }
 
-    /**
-     * @brief Does nothing.
-     * @param[in] value Not used in this implementation.
-     * @param[in] index Not used in this implementation.
-     */
-    inline void destroyGradientData(Real& value, IndexType& index) {
+     /**
+      * @brief Frees the index.
+      *
+      * @param[in] value Not used in this implementation.
+      * @param[in] index The index is given to the index handler.
+      */
+     inline void destroyGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
-      CODI_UNUSED(index);
-      /* nothing to do */
+
+      indexHandler.freeIndex(index);
     }
 
 
@@ -354,7 +392,7 @@ namespace codi {
      * @return The gradient value corresponding to the given index.
      */
     inline Real getGradient(const IndexType& index) const {
-      assert((size_t)index < statements.size);
+      assert((size_t)index < adjoints.size);
       return adjoints.data[index];
     }
 
@@ -367,7 +405,7 @@ namespace codi {
      * @return The reference to the gradient data.
      */
     inline Real& gradient(IndexType& index) {
-      assert((size_t)index < statements.size);
+      assert((size_t)index < adjoints.size);
       assert(0 != index);
 
       return adjoints.data[index];
@@ -394,9 +432,7 @@ namespace codi {
       assert(pos.data < data.size);
       assert(pos.extFunc < externalFunctions.size);
 
-      for(size_t i = pos.stmt; i <= statements.getUsedSize(); ++i) {
-        adjoints.data[i] = 0.0;
-      }
+      clearAdjoints();
 
       for(size_t i = pos.extFunc; i < externalFunctions.getUsedSize(); ++i) {
         externalFunctions.data1[i].deleteData();
@@ -405,6 +441,8 @@ namespace codi {
       statements.setUsedSize(pos.stmt);
       data.setUsedSize(pos.data);
       externalFunctions.setUsedSize(pos.extFunc);
+
+      indexHandler.reset();
     }
 
     /**
@@ -418,23 +456,20 @@ namespace codi {
      * @brief Sets all adjoint/gradients to zero.
      */
     inline void clearAdjoints(){
-      for(size_t i = 0; i <= statements.getUsedSize(); ++i) {
+      for(IndexType i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
         adjoints.data[i] = 0.0;
       }
     }
 
     /**
-     * @brief Sets all adjoint/gradients to zero.
+     * @brief Does nothing because the indices are not connected to the positions.
      *
-     * It has to hold start >= end.
-     *
-     * @param[in] start  The starting position for the reset of the vector.
-     * @param[in]   end  The ending position for the reset of the vector.
+     * @param[in] start Not used
+     * @param[in] end Not used
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = end.stmt; i <= start.stmt; ++i) {
-        adjoints[i] = 0.0;
-      }
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
     }
 
   private:
@@ -451,19 +486,22 @@ namespace codi {
 
       // Usage of pointers increases evaluation speed
       Real* adjoint = adjoints.data;
-      StatementInt* stmt = statements.data;
+      StatementInt* argumentCount = statements.data1;
+      IndexType* lhsIndex = statements.data2;
       Real* jacobi = data.data1;
-      IndexType* index = data.data2;
-
+      IndexType* rhsIndex = data.data2;
       while(curPos.stmt > end.stmt) {
-        const Real& adj = adjoint[curPos.stmt];
         --curPos.stmt;
-        const StatementInt& activeVariables = stmt[curPos.stmt];
+
+        const IndexType& index = lhsIndex[curPos.stmt];
+        const Real adj = adjoint[index];
+        adjoints.data[index] = 0.0;
+        const StatementInt& activeVariables = argumentCount[curPos.stmt];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
           for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --curPos.data;
 
-            adjoint[index[curPos.data]] += adj * jacobi[curPos.data];
+            adjoint[rhsIndex[curPos.data]] += adj * jacobi[curPos.data];
           }
         } else {
           curPos.data -= activeVariables;
@@ -484,9 +522,9 @@ namespace codi {
       assert(start.data >= end.data);
       assert(start.stmt >= end.stmt);
       assert(start.extFunc >= end.extFunc);
+      assert((IndexType)adjoints.size > indexHandler.getMaximumGlobalIndex());
 
       Position curPos = start;
-
 
       for(size_t curExtFunc = start.extFunc; curExtFunc > end.extFunc; /* decrement is done inside the loop */) {
         --curExtFunc; // decrement of loop variable
@@ -519,11 +557,8 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
-      assert(statements.getUsedSize() < statements.size);
-
-      statements.setDataAndMove(std::make_tuple((StatementInt) 0));
-      value.getGradientData() = statements.getUsedSize();
+    inline void registerInput(ActiveReal<Real, SimpleIndexTape<Real, IndexType> >& value) {
+      indexHandler.checkIndex(value.getGradientData());
     }
 
     /**
@@ -531,7 +566,7 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
+    inline void registerOutput(ActiveReal<Real, SimpleIndexTape<Real, IndexType> >& value) {
       CODI_UNUSED(value);
       /* do nothing */
     }
@@ -594,70 +629,6 @@ namespace codi {
       pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));\
     }
 
-    /**
-     * @brief Prints statistics about the tape on the screen
-     *
-     * Prints information such as stored statements/adjoints and memory usage on screen.
-     */
-    void printStatistics(){
-      const double BYTE_TO_MB = 1.0/1024.0/1024.0;
-
-      size_t nAdjoints      = statements.getUsedSize() + 1;
-      size_t memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
-
-      size_t TotalStmts    = statements.getUsedSize();
-      double  memoryUsedStmts = (double)TotalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
-      double  memoryAllocStmts= ((double)statements.getUnusedSize()+(double)statements.getUsedSize())
-                                *(double)sizeof(StatementInt)* BYTE_TO_MB;
-      size_t TotalData    = data.getUsedSize();
-      double  memoryUsedData = (double)TotalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
-      double  memoryAllocData= ((double)data.getUsedSize()+(double)data.getUnusedSize())
-                                *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
-      size_t nExternalFunc = externalFunctions.getUsedSize();
-
-      std::cout << std::endl
-                << "-------------------------------------" << std::endl
-                << "CoDi Tape Statistics (SimpleTape)    " << std::endl
-                << "-------------------------------------" << std::endl
-                << "Statements " << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Total Number:       " << std::setw(10) << TotalStmts   << std::endl
-                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
-                                            << std::setprecision(2)
-                                            << std::setw(10)
-                                            << memoryAllocStmts << " MB" << std::endl
-                << "  Memory used:        " << std::setiosflags(std::ios::fixed)
-                                            << std::setprecision(2)
-                                            << std::setw(10)
-                                            << memoryUsedStmts << " MB" << std::endl
-                << "-------------------------------------" << std::endl
-                << "Jacobi entries "                       << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Total Number:       " << std::setw(10) << TotalData   << std::endl
-                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
-                                            << std::setprecision(2)
-                                            << std::setw(10)
-                                            << memoryAllocData << " MB" << std::endl
-                << "  Memory used:        " << std::setiosflags(std::ios::fixed)
-                                            << std::setprecision(2)
-                                            << std::setw(10)
-                                            << memoryUsedData << " MB" << std::endl
-                << "-------------------------------------" << std::endl
-                << "Adjoint vector"                        << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
-                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
-                                            << std::setprecision(2)
-                                            << std::setw(10)
-                                            << memoryAdjoints << " MB" << std::endl
-                << "-------------------------------------" << std::endl
-                << "External functions  "                  << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Total Number:     " << std::setw(10) << nExternalFunc << std::endl
-                << std::endl;
-
-    }
-
   private:
     /**
      * @brief Private common method to add to the external function stack.
@@ -667,6 +638,93 @@ namespace codi {
     void pushExternalFunctionHandle(const ExternalFunction& function){
       assert(0 != externalFunctions.getUnusedSize());
       externalFunctions.setDataAndMove(std::make_tuple(function, getPosition()));
+    }
+
+  public:
+    /**
+     * @brief Prints statistics about the tape on the screen
+     *
+     * Prints information such as stored statements/adjoints and memory usage on screen.
+     */
+    void printStatistics(){
+      const double BYTE_TO_MB = 1.0/1024.0/1024.0;
+
+      size_t nAdjoints      = (size_t)indexHandler.getMaximumGlobalIndex() + 1;
+      size_t memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+
+      size_t totalStmts    = statements.getUsedSize();
+      double  memoryUsedStmts = (double)totalStmts*((double)sizeof(StatementInt) + sizeof(IndexType))* BYTE_TO_MB;
+      double  memoryAllocStmts= ((double)statements.getUnusedSize()+(double)statements.getUsedSize())
+                                *((double)sizeof(StatementInt) + sizeof(IndexType))* BYTE_TO_MB;
+      size_t totalData    = data.getUsedSize();
+      double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
+      double  memoryAllocData= ((double)data.getUsedSize()+(double)data.getUnusedSize())
+                                *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
+
+      size_t maximumGlobalIndex     = (size_t)indexHandler.getMaximumGlobalIndex();
+      size_t storedIndices          = (size_t)indexHandler.getNumberStoredIndices();
+      size_t currentLiveIndices     = (size_t)indexHandler.getCurrentIndex() - indexHandler.getNumberStoredIndices();
+
+      double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(IndexType)) * BYTE_TO_MB;
+      double memoryAllocatedIndices = (double)indexHandler.getNumberAllocatedIndices()*(double)(sizeof(IndexType)) * BYTE_TO_MB;
+
+      size_t nExternalFunc = externalFunctions.getUsedSize();
+
+      std::cout << std::endl
+                << "---------------------------------------------" << std::endl
+                << "CoDi Tape Statistics (SimpleIndexReuseTape)  " << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Statements " << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Total Number:       " << std::setw(10) << totalStmts   << std::endl
+                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << memoryAllocStmts << " MB" << std::endl
+                << "  Memory used:        " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << memoryUsedStmts << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Jacobi entries "                       << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Total Number:       " << std::setw(10) << totalData   << std::endl
+                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << memoryAllocData << " MB" << std::endl
+                << "  Memory used:        " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << memoryUsedData << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Adjoint vector"                                << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
+                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                            << std::setprecision(2)
+                                            << std::setw(10)
+                                            << memoryAdjoints << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Indices"                               << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Max. live indices:   " << std::setw(10) << maximumGlobalIndex << std::endl
+                << "  Cur. live indices:   " << std::setw(10) << currentLiveIndices << std::endl
+                << "  Indices stored:      " << std::setw(10) << storedIndices << std::endl
+                << "  Memmory allocated:   " << std::setiosflags(std::ios::fixed)
+                                             << std::setprecision(2)
+                                             << std::setw(10)
+                                             << memoryAllocatedIndices << " MB" << std::endl
+                << "  Memory used:         " << std::setiosflags(std::ios::fixed)
+                                             << std::setprecision(2)
+                                             << std::setw(10)
+                                             << memoryStoredIndices << " MB" << std::endl
+                << "-------------------------------------" << std::endl
+                << "External functions  "                  << std::endl
+                << "-------------------------------------" << std::endl
+                << "  Total Number:        " << std::setw(10) << nExternalFunc << std::endl
+                << std::endl;
+
     }
 
   };
