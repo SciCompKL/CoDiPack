@@ -471,9 +471,14 @@ public:
 
     /**
      * @brief Sets all adjoint/gradients to zero.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in] start  The starting position for the reset of the vector.
+     * @param[in]   end  The ending position for the reset of the vector.
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = start.inner.inner.inner; i <= end.inner.inner.inner; ++i) {
+      for(IndexType i = end.inner.inner.inner; i <= start.inner.inner.inner; ++i) {
         adjoints[i] = 0.0;
       }
     }

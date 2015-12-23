@@ -461,6 +461,17 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Does nothing because the indices are not connected to the positions.
+     *
+     * @param[in] start Not used
+     * @param[in] end Not used
+     */
+    inline void clearAdjoints(const Position& start, const Position& end){
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
+    }
+
   private:
     /**
      * @brief Evaluate the stack from the start to to the end position.

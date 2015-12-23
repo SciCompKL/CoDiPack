@@ -423,6 +423,20 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Sets all adjoint/gradients to zero.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in] start  The starting position for the reset of the vector.
+     * @param[in]   end  The ending position for the reset of the vector.
+     */
+    inline void clearAdjoints(const Position& start, const Position& end){
+      for(IndexType i = end.stmt; i <= start.stmt; ++i) {
+        adjoints[i] = 0.0;
+      }
+    }
+
   private:
     /**
      * @brief Evaluate the stack from the start to to the end position.
