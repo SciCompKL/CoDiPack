@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -33,6 +33,9 @@
 #include "expressionTraits.hpp"
 #include <iostream>
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
@@ -71,6 +74,9 @@ namespace codi {
   class ActiveReal : public Expression<Real, ActiveReal<Real, Tape> > {
   public:
 
+    /**
+     * @brief Defines that the active reals are stored as references in the expression templates.
+     */
     static const bool storeAsReference = true;
 
     /**
@@ -198,7 +204,7 @@ namespace codi {
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value jacobi.
      *
      * @param[inout]     data A helper value which the tape can define and use for the evaluation.
-     * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+     * @param[in]      jacobi The Jacobi from the expression where this expression was used as an argument.
      *
      * @tparam Data The type for the tape data.
      */

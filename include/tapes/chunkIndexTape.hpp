@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -39,12 +39,15 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
    * @brief Helper struct to define the nested chunk vectors for the ChunkIndexTape.
    *
-   * See #ChunkIndexTape for details.
+   * See ChunkIndexTape for details.
    */
   template <typename Real, typename IndexType>
   struct ChunkIndexTapeTypes {
@@ -83,6 +86,11 @@ namespace codi {
    *
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
+   *
+   * The tape also uses the index manager IndexHandler to reuse the indices that are deleted.
+   * That means that ActiveReal's which use this tape need to be copied by usual means and deleted after
+   * the are no longer used. No c-like memory operations like memset and memcpy should be applied
+   * to these types.
    *
    * @tparam      Real  The floating point type used in the ActiveReal.
    * @tparam IndexType  The type for the indexing of the adjoint variables.
@@ -128,7 +136,8 @@ namespace codi {
      * But the positions should not be greater than the current expression counter.
      */
     Real* adjoints;
-    /* @brief The current size of the adjoint vector. */
+
+    /** @brief The current size of the adjoint vector. */
     IndexType adjointsSize;
 
     /**
@@ -136,6 +145,11 @@ namespace codi {
      */
     bool active;
 
+    /**
+     * @brief The index handler for the tape.
+     *
+     * It stores the deleted indices are reuses them.
+     */
     IndexHandler<IndexType> indexHandler;
 
   public:
@@ -180,12 +194,18 @@ namespace codi {
       externalFunctions.setChunkSize(extChunkSize);
     }
 
+    /**
+     * @brief Set the size of the adjoint vector.
+     *
+     * @param[in] adjointsSize The new size for the adjoint vector.
+     */
     void setAdjointsSize(const size_t& adjointsSize) {
       resizeAdjoints(adjointsSize);
     }
 
     /**
      * @brief Return the number of used statements.
+     *
      * @return The number of used statements.
      */
     size_t getUsedStatementsSize() {
@@ -200,10 +220,14 @@ namespace codi {
       return data.getDataSize();
     }
 
+    /**
+     * @brief Get the current size of the adjoint vector.
+     *
+     * @return The size of the current adjoint vector.
+     */
     size_t getAdjointsSize() {
       return indexHandler.getMaximumGlobalIndex() + 1;
     }
-
 
     /**
      * @brief Set the size of the jacobi and statement data.
@@ -336,11 +360,30 @@ public:
     }
 
     /**
+     * @brief Manual store routine.
+     *
+     * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
+     *
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     *
+     * @param[out]   lhsIndex    The gradient data of the lhs.
+     * @param[in]        size    The number of Jacobi entries.
+     */
+    inline void store(IndexType& lhsIndex, StatementInt size) {
+      ENABLE_CHECK (OptTapeActivity, active){
+        data.reserveItems(size);
+        statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        indexHandler.checkIndex(lhsIndex);
+        statements.setDataAndMove(std::make_tuple(size, lhsIndex));
+      }
+    }
+
+    /**
      * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
      *
-     * @param[in] gradient Not used in this implementation.
-     * @param[in]    value Not used in this implementation.
-     * @param[in]    index Used to check if the variable is active.
+     * @param[in]   data Not used in this implementation.
+     * @param[in]  value Not used in this implementation.
+     * @param[in]  index Used to check if the variable is active.
      *
      * @tparam Data  The type of the data for the tape.
      */
@@ -356,10 +399,10 @@ public:
     /**
      * @brief Stores the jacobi on the tape if the index is active.
      *
-     * @param[in] gradient Not used in this implementation.
-     * @param[in]   jacobi Stored on the tape if the variable is active.
-     * @param[in]    value Not used in this implementation.
-     * @param[in]    index Used to check if the variable is active.
+     * @param[in]   data Not used in this implementation.
+     * @param[in] jacobi Stored on the tape if the variable is active.
+     * @param[in]  value Not used in this implementation.
+     * @param[in]  index Used to check if the variable is active.
      *
      * @tparam Data  The type of the data for the tape.
      */
@@ -387,9 +430,10 @@ public:
     }
 
     /**
-     * @brief Does nothing.
+     * @brief Frees the index.
+     *
      * @param[in] value Not used in this implementation.
-     * @param[in] index Not used in this implementation.
+     * @param[in] index The index is given to the index handler.
      */
     inline void destroyGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
@@ -466,12 +510,14 @@ public:
     }
 
     /**
-     * @brief Sets all adjoint/gradients to zero.
+     * @brief Does nothing because the indices are not connected to the positions.
+     *
+     * @param[in] start Not used
+     * @param[in] end Not used
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = start.inner.inner.inner; i <= end.inner.inner.inner; ++i) {
-        adjoints[i] = 0.0;
-      }
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
     }
 
     /**
@@ -504,13 +550,13 @@ public:
      *
      * It has to hold startAdjPos >= endAdjPos.
      *
-     * @param[in] startAdjPos The starting point in the expression evaluation.
-     * @param[in]   endAdjPos The ending point in the expression evaluation.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]  statements The pointer to the statement vector.
-     * @param[inout]  dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
-     * @param[in]    jacobies The pointer to the jacobi vector.
-     * @param[in]     indices The pointer to the index vector
+     * @param[inout]           stmtPos The starting point in the expression evaluation. The index is decremented.
+     * @param[in]           endStmtPos The ending point in the expression evaluation.
+     * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
+     * @param[in]           lhsIndices The pointer the indices of the lhs.
+     * @param[inout]           dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
+     * @param[in]              indices The pointer the indices of the rhs arguments.
      */
     inline void evaluateExpressions(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, IndexType* lhsIndices, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
 
@@ -539,24 +585,28 @@ public:
      *
      * The function calls the evaluation method for the jacobi vector.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @param[in]      start The starting point for the statement vector.
+     * @param[in]        end The ending point for the statement vector.
+     * @param[inout] stmtPos The index position for the statment arrays.
+     * @param[in]   jacobies The statement data for the jacobies of the rhs.
+     * @param[in]    indices The statement data for the indices of the rhs.
      */
-    inline void evaluateStmt(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end, size_t& dataChunkPos, Real* &jacobies, IndexType* &indices) {
+    inline void evaluateStmt(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end, size_t& stmtPos, Real* &jacobies, IndexType* &indices) {
       StatementInt* numberOfArgumentsData;
       IndexType* lhsIndexData;
+
       size_t dataPos = start.data;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         std::tie(numberOfArgumentsData, lhsIndexData) = statements.getDataAtPosition(curChunk, 0);
 
-        evaluateExpressions(dataPos, 0, numberOfArgumentsData, lhsIndexData, dataChunkPos, jacobies, indices);
+        evaluateExpressions(dataPos, 0, numberOfArgumentsData, lhsIndexData, stmtPos, jacobies, indices);
 
         dataPos = statements.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       std::tie(numberOfArgumentsData, lhsIndexData) = statements.getDataAtPosition(end.chunk, 0);
-      evaluateExpressions(dataPos, end.data, numberOfArgumentsData, lhsIndexData, dataChunkPos, jacobies, indices);
+      evaluateExpressions(dataPos, end.data, numberOfArgumentsData, lhsIndexData, stmtPos, jacobies, indices);
     }
 
     /**
@@ -568,12 +618,11 @@ public:
      *
      * @param[in]       start The starting point for the jacobi vector.
      * @param[in]         end The ending point for the jacobi vector.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]  statements The pointer to the statement vector.
      */
     inline void evaluateData(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end) {
       Real* jacobiData;
       IndexType* indexData;
+
       size_t dataPos = start.data;
       typename StatementChunkVector::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
@@ -770,20 +819,20 @@ public:
       const double BYTE_TO_MB = 1.0/1024.0/1024.0;
       
       size_t nAdjoints      = (size_t)indexHandler.getMaximumGlobalIndex() + 1;
-      size_t MemoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+      size_t memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
-      size_t nChunksStmts  = statements.getNumChunks(),
-             TotalStmts    = (nChunksStmts-1)*statements.getChunkSize()
+      size_t nChunksStmts  = statements.getNumChunks();
+      size_t totalStmts    = (nChunksStmts-1)*statements.getChunkSize()
                              +statements.getChunkUsedData(nChunksStmts-1);
-      double  MemoryUsedStmts = (double)TotalStmts*(double)(sizeof(StatementInt) + sizeof(IndexType))/1024.0/1024.0,
-              MemoryAllocStmts= (double)nChunksStmts*(double)statements.getChunkSize()
-                                *((double)sizeof(StatementInt) + sizeof(IndexType))/1024.0/1024.0;
-      size_t nChunksData  = data.getNumChunks(),
-             TotalData    = (nChunksData-1)*data.getChunkSize()
+      double  memoryUsedStmts = (double)totalStmts*(double)(sizeof(StatementInt) + sizeof(IndexType))* BYTE_TO_MB;
+      double  memoryAllocStmts= (double)nChunksStmts*(double)statements.getChunkSize()
+                                *((double)sizeof(StatementInt) + sizeof(IndexType))* BYTE_TO_MB;
+      size_t nChunksData  = data.getNumChunks();
+      size_t totalData    = (nChunksData-1)*data.getChunkSize()
                              +data.getChunkUsedData(nChunksData-1);
-      double  MemoryUsedData = (double)TotalData*(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0,
-              MemoryAllocData= (double)nChunksData*(double)data.getChunkSize()
-                                *(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0;
+      double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
+      double  memoryAllocData= (double)nChunksData*(double)data.getChunkSize()
+                                *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
       size_t maximumGlobalIndex     = (size_t)indexHandler.getMaximumGlobalIndex();
       size_t storedIndices          = (size_t)indexHandler.getNumberStoredIndices();
       size_t currentLiveIndices     = (size_t)indexHandler.getCurrentIndex() - indexHandler.getNumberStoredIndices();
@@ -802,28 +851,28 @@ public:
                 << "Statements " << std::endl
                 << "---------------------------------------------" << std::endl
                 << "  Number of Chunks:  " << std::setw(10) << nChunksStmts << std::endl
-                << "  Total Number:      " << std::setw(10) << TotalStmts   << std::endl
+                << "  Total Number:      " << std::setw(10) << totalStmts   << std::endl
                 << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
                                            << std::setprecision(2)
                                            << std::setw(10)
-                                           << MemoryAllocStmts << " MB" << std::endl
+                                           << memoryAllocStmts << " MB" << std::endl
                 << "  Memory used:       " << std::setiosflags(std::ios::fixed)
                                            << std::setprecision(2)
                                            << std::setw(10)
-                                           << MemoryUsedStmts << " MB" << std::endl
+                                           << memoryUsedStmts << " MB" << std::endl
                 << "---------------------------------------------" << std::endl
                 << "Jacobi entries "                               << std::endl
                 << "---------------------------------------------" << std::endl
                 << "  Number of Chunks:  " << std::setw(10) << nChunksData << std::endl
-                << "  Total Number:      " << std::setw(10) << TotalData   << std::endl
+                << "  Total Number:      " << std::setw(10) << totalData   << std::endl
                 << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
                                            << std::setprecision(2)
                                            << std::setw(10)
-                                           << MemoryAllocData << " MB" << std::endl
+                                           << memoryAllocData << " MB" << std::endl
                 << "  Memory used:       " << std::setiosflags(std::ios::fixed)
                                            << std::setprecision(2)
                                            << std::setw(10)
-                                           << MemoryUsedData << " MB" << std::endl
+                                           << memoryUsedData << " MB" << std::endl
                 << "---------------------------------------------" << std::endl
                 << "Adjoint vector"                                << std::endl
                 << "---------------------------------------------" << std::endl
@@ -831,7 +880,7 @@ public:
                 << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << MemoryAdjoints << " MB" << std::endl
+                                            << memoryAdjoints << " MB" << std::endl
                 << "---------------------------------------------" << std::endl
                 << "Indices"                                       << std::endl
                 << "---------------------------------------------" << std::endl

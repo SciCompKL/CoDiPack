@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -40,12 +40,15 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
    * @brief Helper struct to define the nested chunk vectors for the ChunkTape.
    *
-   * See #ChunkTape for details.
+   * See ChunkTape for details.
    */
   template <typename Real, typename IndexType>
   struct ChunkTapeTypes {
@@ -318,11 +321,30 @@ public:
     }
 
     /**
+     * @brief Manual store routine.
+     *
+     * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
+     *
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     *
+     * @param[out]   lhsIndex    The gradient data of the lhs.
+     * @param[in]        size    The number of Jacobi entries.
+     */
+    inline void store(IndexType& lhsIndex, StatementInt size) {
+      ENABLE_CHECK (OptTapeActivity, active){
+        data.reserveItems(size);
+        statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        statements.setDataAndMove(std::make_tuple(size));
+        lhsIndex = ++expressionCount.count;
+      }
+    }
+
+    /**
      * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
      *
-     * @param[in] gradient Not used in this implementation.
-     * @param[in]    value Not used in this implementation.
-     * @param[in]    index Used to check if the variable is active.
+     * @param[in]  data Not used in this implementation.
+     * @param[in] value Not used in this implementation.
+     * @param[in] index Used to check if the variable is active.
      *
      * @tparam Data  The type of the data for the tape.
      */
@@ -338,10 +360,10 @@ public:
     /**
      * @brief Stores the jacobi on the tape if the index is active.
      *
-     * @param[in] gradient Not used in this implementation.
-     * @param[in]   jacobi Stored on the tape if the variable is active.
-     * @param[in]    value Not used in this implementation.
-     * @param[in]    index Used to check if the variable is active.
+     * @param[in]   data Not used in this implementation.
+     * @param[in] jacobi Stored on the tape if the variable is active.
+     * @param[in]  value Not used in this implementation.
+     * @param[in]  index Used to check if the variable is active.
      *
      * @tparam Data  The type of the data for the tape.
      */
@@ -449,9 +471,14 @@ public:
 
     /**
      * @brief Sets all adjoint/gradients to zero.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in] start  The starting position for the reset of the vector.
+     * @param[in]   end  The ending position for the reset of the vector.
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = start.inner.inner.inner; i <= end.inner.inner.inner; ++i) {
+      for(IndexType i = end.inner.inner.inner; i <= start.inner.inner.inner; ++i) {
         adjoints[i] = 0.0;
       }
     }
@@ -759,20 +786,20 @@ public:
       const double BYTE_TO_MB = 1.0/1024.0/1024.0;
 
       size_t nAdjoints      = expressionCount.count + 1;
-      size_t MemoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+      size_t memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
-      size_t nChunksStmts  = statements.getNumChunks(),
-             TotalStmts    = (nChunksStmts-1)*statements.getChunkSize()
+      size_t nChunksStmts  = statements.getNumChunks();
+      size_t totalStmts    = (nChunksStmts-1)*statements.getChunkSize()
                              +statements.getChunkUsedData(nChunksStmts-1);
-      double  MemoryUsedStmts = (double)TotalStmts*(double)sizeof(StatementInt)/1024.0/1024.0,
-              MemoryAllocStmts= (double)nChunksStmts*(double)statements.getChunkSize()
-                                *(double)sizeof(StatementInt)/1024.0/1024.0;
-      size_t nChunksData  = data.getNumChunks(),
-             TotalData    = (nChunksData-1)*data.getChunkSize()
+      double  memoryUsedStmts = (double)totalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
+      double  memoryAllocStmts= (double)nChunksStmts*(double)statements.getChunkSize()
+                                *(double)sizeof(StatementInt)* BYTE_TO_MB;
+      size_t nChunksData  = data.getNumChunks();
+      size_t totalData    = (nChunksData-1)*data.getChunkSize()
                              +data.getChunkUsedData(nChunksData-1);
-      double  MemoryUsedData = (double)TotalData*(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0,
-              MemoryAllocData= (double)nChunksData*(double)data.getChunkSize()
-                                *(double)(sizeof(Real)+sizeof(IndexType))/1024.0/1024.0;
+      double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
+      double  memoryAllocData= (double)nChunksData*(double)data.getChunkSize()
+                                *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
       size_t nExternalFunc = (externalFunctions.getNumChunks()-1)*externalFunctions.getChunkSize()
           +externalFunctions.getChunkUsedData(externalFunctions.getNumChunks()-1);
 
@@ -784,28 +811,28 @@ public:
                 << "Statements " << std::endl
                 << "-------------------------------------" << std::endl
                 << "  Number of Chunks: " << std::setw(10) << nChunksStmts << std::endl
-                << "  Total Number:     " << std::setw(10) << TotalStmts   << std::endl
+                << "  Total Number:     " << std::setw(10) << totalStmts   << std::endl
                 << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
                                           << std::setprecision(2)
                                           << std::setw(10)
-                                          << MemoryAllocStmts << " MB" << std::endl
+                                          << memoryAllocStmts << " MB" << std::endl
                 << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                           << std::setprecision(2)
                                           << std::setw(10)
-                                          << MemoryUsedStmts << " MB" << std::endl
+                                          << memoryUsedStmts << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "Jacobi entries "                       << std::endl
                 << "-------------------------------------" << std::endl
                 << "  Number of Chunks: " << std::setw(10) << nChunksData << std::endl
-                << "  Total Number:     " << std::setw(10) << TotalData   << std::endl
+                << "  Total Number:     " << std::setw(10) << totalData   << std::endl
                 << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
                                           << std::setprecision(2)
                                           << std::setw(10)
-                                          << MemoryAllocData << " MB" << std::endl
+                                          << memoryAllocData << " MB" << std::endl
                 << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                           << std::setprecision(2)
                                           << std::setw(10)
-                                          << MemoryUsedData << " MB" << std::endl
+                                          << memoryUsedData << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "Adjoint vector"                        << std::endl
                 << "-------------------------------------" << std::endl
@@ -813,7 +840,7 @@ public:
                 << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << MemoryAdjoints << " MB" << std::endl
+                                            << memoryAdjoints << " MB" << std::endl
                 << "-------------------------------------" << std::endl
                 << "External functions  "                  << std::endl
                 << "-------------------------------------" << std::endl

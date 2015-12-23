@@ -24,41 +24,39 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ *
+ * Originally based on Adept 1.0 (http://www.met.rdg.ac.uk/clouds/adept/)
+ * released under GPL 3.0 (Copyright (C) 2012-2013 Robin Hogan and the University of Reading).
  */
 
 #pragma once
 
 /**
- * @brief Global namespace for CoDiPack - Code Differentiation Package
+ * @brief Create a store by value or store by reference member based on the setting of the expression template.
+ *
+ * The constant member storeAsReference is looked of from the type named by Name and the
+ * either a reference or a value is stored.
+ *
+ * @param   Name  The name of the type for which a member declaration is crated.
  */
-namespace codi {
+#define CODI_CREATE_STORE_TYPE(Name) \
+  typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
 
-  /**
-   * @brief Provides information about the types which are used in the active types.
-   *
-   * This is the general implementation for all types which are used in the active type
-   * template parameter. It is used in CoDiPack to gather information about the the specific
-   * type.
-   *
-   * @tparam T The type used in the active types.
-   */
-  template<typename T>
-  class TypeTraits {
-  public:
-    /**
-     * @brief The passive value of the type.
-     *
-     * The default implementation defines the type itself as the passive type.
-     */
-    typedef T PassiveReal;
 
-    /**
-     * @brief Get the primal base value of the type.
-     *
-     * The default implementation returns the identity.
-     * @param t   The value from which the base value is extracted.
-     * @return The base value of the type.
-     */
-    static const T getBaseValue(const T& t) { return t;}
-  };
-}
+/**
+ * @brief Combine two preprocessor variables into one.
+ *
+ * This helper routine is needed in order two expand the arguments.
+ *
+ * @param A First parameter that is combined
+ * @param B Second parameter that is combined
+ */
+#define COMBINE2(A,B) A ## B
+
+/**
+ * @brief Combine two preprocessor variables into one.
+ *
+ * @param A First parameter that is combined
+ * @param B Second parameter that is combined
+ */
+#define COMBINE(A,B) COMBINE2(A,B)

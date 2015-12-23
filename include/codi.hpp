@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -36,6 +36,9 @@
 #include "tapes/chunkIndexTape.hpp"
 #include "tools/dataStore.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
   /**
    * @brief The default forward type in CoDiPack.
@@ -152,8 +155,38 @@ namespace codi {
    */
   typedef ActiveReal<float, SimpleTape<float, int> > RealReverseUncheckedFloat;
 
-  typedef ActiveReal<double, SimpleIndexTape<double, int> > RealReverseIndexUnchecked;
+
+  /**
+   * @brief A reverse type like the default reverse type in CoDiPack but with index reuse.
+   *
+   * The difference between this type and the #RealReverse is the handling of the indices.
+   * This type stores deleted indices and uses them again on other vriables. Usually this
+   * tape behaves as the #RealReverse but it is not compatible with c-like memory operations
+   * like memset and memcpy.
+   *
+   */
   typedef ActiveReal<double, ChunkIndexTape<double, int> > RealReverseIndex;
+
+  /**
+   * @brief The reverse type in CoDiPack with float as the real value type and an index reuse tape.
+   *
+   * See the documentation of #RealReverseIndex.
+   */
+  typedef ActiveReal<float, ChunkIndexTape<float, int> > RealReverseIndexFloat;
+
+  /**
+   * @brief A reverse type like the unchecked reverse type in CoDiPack but with index reuse.
+   *
+   * See the documentation of #RealReverseIndex and #RealReverseUnchecked.
+   */
+  typedef ActiveReal<double, SimpleIndexTape<double, int> > RealReverseIndexUnchecked;
+
+  /**
+   * @brief The reverse type in CoDiPack with float as the real value type and an unchecked index reuse tape.
+   *
+   * See the documentation of #RealReverseIndexUnchecked.
+   */
+  typedef ActiveReal<float, SimpleIndexTape<float, int> > RealReverseIndexUncheckedFloat;
 
 
 }

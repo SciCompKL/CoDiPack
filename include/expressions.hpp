@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -38,12 +38,13 @@
 
 #include "configure.h"
 #include "exceptions.hpp"
+#include "macros.h"
 #include "typeTraits.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
-
-#define CODI_CREATE_STORE_TYPE(Name) \
-  typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
 
   /**
    * The Expression type from which all other types of expression
@@ -57,6 +58,11 @@ namespace codi {
   template<typename Real, class A>
   struct Expression {
 
+    /**
+     * @brief If true, implementations of the expression are stored as references otherwise by values.
+     *
+     * This values is used by the macro CODI_CREATE_STORE_TYPE.
+     */
     static const bool storeAsReference;
 
     /**
@@ -129,6 +135,16 @@ namespace codi {
    * polymorphism via the Curiously Recurring Template Pattern
    */
 
+  /**
+   * @brief The macro creates a helper function that calls an operator as a function.
+   *
+   * The generated function has the format
+   *
+   * inline auto primal_NAME(const A& a, const B& b);
+   *
+   * @param   NAME  The name for the generated function.
+   * @param   OP    The sign of the operator that the function calls.
+   */
   #define CODI_OPERATOR_HELPER(NAME, OP) \
     /** @brief Helper function to call operators as a function. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The value of a OP b @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
     template<typename A, typename B> \
@@ -837,7 +853,7 @@ namespace codi {
   }
 
   /***************************************************************************************
-   * Functions which do not need derivatives.
+   * Functions that do not need derivatives.
    ****************************************************************************************/
   /**
    * @brief Overload for the isinf function with expressions.
