@@ -24,11 +24,13 @@ The only other requirement is a c++11 compliant compiler
 where one usually needs to specify '--std=c++11' in compiler arguments.
 CoDiPack is tested with gcc and the intel compiler.
 
-The file `codi.hpp` defines the datatypes `RealForward`, `RealReverse` and `RealReverseUnchecked`.
+The file `codi.hpp` defines the datatypes `RealForward`, `RealReverse`, `RealReverseUnchecked` and several others.
 For RealForward type implements the forward mode of AD and
 the RealReverse type implements the reverse mode of AD.
 The third type is also an implementation of the reverse mode of AD but it should only be used by experienced users.
 For each type there is also a type with single precession e.g. RealForwardFloat.
+
+For further details please visit our [CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) web page.
 
 ## Hello World Example
 
