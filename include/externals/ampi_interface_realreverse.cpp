@@ -26,7 +26,8 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 #include "ampi_tape.hpp"
-#include "tools/dataStore.hpp"
+#include "../tools/dataStore.hpp"
+#include "../codi.hpp"
 
 //#define INT64 int
 

@@ -37,8 +37,8 @@
  *
  * The defines NAME, FUNCTION and PRIMAL_FUNCTION will be undefined at the end of this template.
  *
- * The user needs to define the derivative computation functions that calculate the derivatrive
- * with respect to the first and/or second argument. The nameing convention is:
+ * The user needs to define the derivative computation functions that calculate the derivative
+ * with respect to the first and/or second argument. The naming convention is:
  *
  *  dervBB[M]_Name.
  *
@@ -119,7 +119,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
 
   public:
 
-    /** @brief Because these are temporary opjects they need to be stored as values. */
+    /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
     /** 
@@ -191,7 +191,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
 
   public:
 
-    /** @brief Because these are temporary opjects they need to be stored as values. */
+    /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
     /** 
@@ -262,7 +262,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     CODI_CREATE_STORE_TYPE(B) b_;
   public:
 
-    /** @brief Because these are temporary opjects they need to be stored as values. */
+    /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
     /** 

@@ -52,7 +52,7 @@ namespace codi {
       /**
        * @brief The maximum index that is currently used.
        *
-       * The maximum is decremented every time an index is released that correspoinds to the
+       * The maximum is decremented every time an index is released that corresponds to the
        * current maximum.
        */
       IndexType currentMaximumIndex;
@@ -76,7 +76,7 @@ namespace codi {
        * @brief Free the index that is given to the method.
        *
        * The method checks if the index is equal to the current maximum. If yes
-       * then the current maximum is decremented otherwise the indix is added
+       * then the current maximum is decremented otherwise the index is added
        * to the freed list.
        *
        * @param[inout] index  The index that is freed. It is set to zero in the method.
@@ -115,7 +115,7 @@ namespace codi {
       }
 
       /**
-       * @brief Check if the index is active if not a new index is genrated.
+       * @brief Check if the index is active if not a new index is generated.
        *
        * @param[inout] index The current value of the index. If 0 then a new index is generated.
        */

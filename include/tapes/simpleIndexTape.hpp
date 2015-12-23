@@ -626,7 +626,7 @@ namespace codi {
      */
     template<typename Data>
     void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<Data>::DeleteFunction delData){
-      pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));\
+      pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));
     }
 
   private:
@@ -711,7 +711,7 @@ namespace codi {
                 << "  Max. live indices:   " << std::setw(10) << maximumGlobalIndex << std::endl
                 << "  Cur. live indices:   " << std::setw(10) << currentLiveIndices << std::endl
                 << "  Indices stored:      " << std::setw(10) << storedIndices << std::endl
-                << "  Memmory allocated:   " << std::setiosflags(std::ios::fixed)
+                << "  Memory allocated:    " << std::setiosflags(std::ios::fixed)
                                              << std::setprecision(2)
                                              << std::setw(10)
                                              << memoryAllocatedIndices << " MB" << std::endl

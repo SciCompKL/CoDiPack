@@ -587,7 +587,7 @@ public:
      *
      * @param[in]      start The starting point for the statement vector.
      * @param[in]        end The ending point for the statement vector.
-     * @param[inout] stmtPos The index position for the statment arrays.
+     * @param[inout] stmtPos The index position for the statement arrays.
      * @param[in]   jacobies The statement data for the jacobies of the rhs.
      * @param[in]    indices The statement data for the indices of the rhs.
      */
@@ -819,7 +819,7 @@ public:
       const double BYTE_TO_MB = 1.0/1024.0/1024.0;
       
       size_t nAdjoints      = (size_t)indexHandler.getMaximumGlobalIndex() + 1;
-      size_t memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+      double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
       size_t nChunksStmts  = statements.getNumChunks();
       size_t totalStmts    = (nChunksStmts-1)*statements.getChunkSize()
@@ -887,7 +887,7 @@ public:
                 << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << std::endl
                 << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << std::endl
                 << "  Indices stored:    " << std::setw(10) << storedIndices << std::endl
-                << "  Memmory allocated: " << std::setiosflags(std::ios::fixed)
+                << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
                                            << std::setprecision(2)
                                            << std::setw(10)
                                            << memoryAllocatedIndices << " MB" << std::endl

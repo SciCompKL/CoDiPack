@@ -160,7 +160,7 @@ namespace codi {
    * @brief A reverse type like the default reverse type in CoDiPack but with index reuse.
    *
    * The difference between this type and the #RealReverse is the handling of the indices.
-   * This type stores deleted indices and uses them again on other vriables. Usually this
+   * This type stores deleted indices and uses them again on other variables. Usually this
    * tape behaves as the #RealReverse but it is not compatible with c-like memory operations
    * like memset and memcpy.
    *

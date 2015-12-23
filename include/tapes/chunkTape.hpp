@@ -786,7 +786,7 @@ public:
       const double BYTE_TO_MB = 1.0/1024.0/1024.0;
 
       size_t nAdjoints      = expressionCount.count + 1;
-      size_t memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+      double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
       size_t nChunksStmts  = statements.getNumChunks();
       size_t totalStmts    = (nChunksStmts-1)*statements.getChunkSize()

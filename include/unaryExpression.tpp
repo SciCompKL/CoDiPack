@@ -82,7 +82,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
     Real result_;
   public:
 
-    /** @brief Because these are temporary opjects they need to be stored as values. */
+    /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
     /** 
