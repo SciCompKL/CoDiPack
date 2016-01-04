@@ -59,9 +59,9 @@ namespace codi {
   /**
    * @brief Enables the use of memset to preallocate the memory.
    *
-   * Modern systems can initalize the memory acquired with malloc or calloc
+   * Modern systems can initialize the memory acquired with malloc or calloc
    * in a lazy fashion. The memory is then acquired on first use which can cause
-   * performace issues. If the data is set to zero with memset the system will
+   * performance issues. If the data is set to zero with memset the system will
    * directly allocate all the memory.
    */
   const bool UseMemsetInChunks = CODI_UseMemsetInChunks;

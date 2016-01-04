@@ -75,7 +75,7 @@ namespace codi {
   public:
 
     /**
-     * @brief Defines that the active reals are stored as references in the expression templates.
+     * @brief Defines that the active real's are stored as references in the expression templates.
      */
     static const bool storeAsReference = true;
 

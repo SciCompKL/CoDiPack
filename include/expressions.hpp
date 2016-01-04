@@ -289,7 +289,7 @@ namespace codi {
   template<typename Real> inline void checkArgumentsDivide(const Real& b) {
     if(CheckExpressionArguments) {
       if( 0.0 == TypeTraits<Real>::getBaseValue(b)) {
-        CODI_EXCEPTION("Devision called with devisor of zero.");
+        CODI_EXCEPTION("Division called with divisor of zero.");
       }
     }
   }
@@ -416,7 +416,7 @@ namespace codi {
   template<typename Real> inline void checkArgumentsPow(const Real& a) {
     if(CheckExpressionArguments) {
       if( TypeTraits<Real>::getBaseValue(a) < 0.0) {
-        CODI_EXCEPTION("Negative base for active exponend in pow function. (Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        CODI_EXCEPTION("Negative base for active exponent in pow function. (Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
       }
     }
   }
