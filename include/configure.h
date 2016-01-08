@@ -106,6 +106,30 @@ namespace codi {
   const bool OptJacobiIsZero = CODI_OptJacobiIsZero;
   #undef CODI_OptJacobiIsZero
 
+  #ifndef CODI_OptCheckZeroIndex
+    #define CODI_OptCheckZeroIndex true
+  #endif
+  /**
+   * @brief Tapes push jacobies only if there index is not zero
+   *
+   * The check is used in the tape 'pushJacobi' and 'store' functions to disable the pushing of the
+   * jacobies if there index is zero.
+   */
+  const bool OptCheckZeroIndex = CODI_OptCheckZeroIndex;
+  #undef CODI_OptCheckZeroIndex
+
+  #ifndef CODI_OptCheckEmptyStatements
+    #define CODI_OptCheckEmptyStatements true
+  #endif
+  /**
+   * @brief Tapes push statements only if at least one jacobi was pushed.
+   *
+   * The check is used in the tape 'store' function to disable the pushing of the
+   * statement if no jacobi was pushed.
+   */
+  const bool OptCheckEmptyStatements = CODI_OptCheckEmptyStatements;
+  #undef CODI_OptCheckEmptyStatements
+
   #ifndef CODI_OptTapeActivity
     #define CODI_OptTapeActivity true
   #endif

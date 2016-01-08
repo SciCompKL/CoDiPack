@@ -39,7 +39,7 @@
  *
  * The user needs to define the following functions:
  *
- * gradName: Computes the derivative df(x)/dx for y = f(x)
+ * gradNAME: Computes the derivative df(x)/dx for y = f(x)
  */
 
 #ifndef NAME

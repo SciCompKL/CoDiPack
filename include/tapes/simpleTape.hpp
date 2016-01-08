@@ -194,12 +194,12 @@ namespace codi {
         size_t startSize = data.getUsedSize();
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getUsedSize() - startSize;
-        if(0 == activeVariables) {
-          lhsIndex = 0;
-        } else {
+        ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
           assert(statements.getUsedSize() < statements.size);
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = statements.getUsedSize();
+        } else {
+          lhsIndex = 0;
         }
       }
 
@@ -278,7 +278,7 @@ namespace codi {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
 
-      if(0 != index) {
+      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         assert(this->data.getUsedSize() < this->data.size);
 
         this->data.setDataAndMove(std::make_tuple(1.0, index));
@@ -300,7 +300,7 @@ namespace codi {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
 
-      if(0 != index) {
+      ENABLE_CHECK(OptCheckZeroIndex,0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
             assert(this->data.getUsedSize() < this->data.size);

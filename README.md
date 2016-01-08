@@ -32,6 +32,27 @@ For each type there is also a type with single precession e.g. RealForwardFloat.
 
 For further details please visit our [CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) web page.
 
+## Miscellaneous information
+
+### Debugging with gdb
+
+The ActiveReal type contains the tape as an static member.
+GDB prints the information of these members in its default settings, which makes the output quite verbose.
+We recommend to disable the output of the static class members.
+This can be done with
+~~~~{.txt}
+set print static-members off
+~~~~
+
+### Intel compiler options
+
+Because CoDiPack relies on inlining of the compiler the performance can drop if it is not done or ignored.
+With some specific applications the performance can be improved if the inline factor of the intel compiler is increased.
+The options are
+~~~~{.txt}
+-inline-factor=600 -inline-forceinline
+~~~~
+
 ## Hello World Example
 
 A very small and simple example for the usage of the RealForward type is the code:

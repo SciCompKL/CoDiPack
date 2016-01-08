@@ -298,12 +298,12 @@ public:
         size_t startSize = data.getChunkPosition();
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getChunkPosition() - startSize;
-        if(0 == activeVariables) {
-          indexHandler.freeIndex(lhsIndex);
-        } else {
+        ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
           indexHandler.checkIndex(lhsIndex);
 
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables, lhsIndex));
+        } else {
+          indexHandler.freeIndex(lhsIndex);
         }
       } else {
         indexHandler.freeIndex(lhsIndex);
@@ -326,7 +326,7 @@ public:
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkIndexTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
-        if(0 != rhs.getGradientData()) {
+        ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
           indexHandler.checkIndex(lhsIndex);
 
           statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
@@ -391,7 +391,7 @@ public:
     inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
-      if(0 != index) {
+      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         this->data.setDataAndMove(std::make_tuple(1.0, index));
       }
     }
@@ -410,7 +410,7 @@ public:
     inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
-      if(0 != index) {
+      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
             this->data.setDataAndMove(std::make_tuple(jacobi, index));
