@@ -28,42 +28,53 @@
 
 #pragma once
 
-#include <cstdio>
-#include <cstdarg>
-
-
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
-  /**
-   * @brief Generates an exception.
-   *
-   * @param ...  Arguments for a printf like output and format.
-   */
-  #define CODI_EXCEPTION(...) outputException( __func__, __FILE__, __LINE__, __VA_ARGS__)
 
   /**
-   * @brief Prints the positions and the message of the exception.
+   * @brief Terminator for a sequence of ChunkVectors, which counts the number of statements.
    *
-   * The position and function where the exceptions occurred is printed. The message will be handled
-   * and formatted by a printf like function.
+   * The structure is a helper structure for the ChunkTape. It terminates the ChunkVector sequence
+   * and counts the number of expressions which have been recorded on the tape.
    *
-   * @param[in] function  Name of the function from which the exception is generated.
-   * @param[in]     file  File where the exception was generated.
-   * @param[in]     line  Line inside the file where the exception was generated.
-   * @param[in]  message  The exception message and the arguments for the formatting in the message.
+   * @tparam IndexType The type of the index for the counting.
    */
-  inline void outputException(const char function[], const char file[], const int line, const char* message, ...) {
-    fprintf(stderr, "Error in function %s (%s:%d)\nThe message is: ", function, file, line);
+  template <typename IndexType>
+  struct ExpressionCounter {
 
-    va_list vl;
-    va_start(vl, message);
-    vfprintf(stderr, message, vl);
-    va_end(vl);
+    /**
+     * @brief The needed position definition for a ChunkVector sequence terminator.
+     *
+     * Just the integer for the current statement.
+     */
+    typedef IndexType Position;
 
-    fprintf(stderr, "\n");
-    exit(-1);
-  }
+    /**
+     * @brief The current count for the statements.
+     */
+    IndexType count;
+
+    /**
+     * @brief The needed getPosition method for a ChunkVector sequence terminator.
+     *
+     * The method returns the current state of the count value.
+     * @return The current value of count.
+     */
+    inline Position getPosition() {
+      return count;
+    }
+
+    /**
+     * @brief The needed reset method for a ChunkVector sequence terminator.
+     *
+     * The method sets count to the value from the argument.
+     *
+     * @param pos The new value of count.
+     */
+    inline void reset(const Position& pos) {
+      count = pos;
+    }
+  };
 }
-

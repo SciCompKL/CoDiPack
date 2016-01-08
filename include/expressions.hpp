@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -38,8 +38,12 @@
 
 #include "configure.h"
 #include "exceptions.hpp"
+#include "macros.h"
 #include "typeTraits.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
@@ -53,6 +57,13 @@ namespace codi {
    */
   template<typename Real, class A>
   struct Expression {
+
+    /**
+     * @brief If true, implementations of the expression are stored as references otherwise by values.
+     *
+     * This values is used by the macro CODI_CREATE_STORE_TYPE.
+     */
+    static const bool storeAsReference;
 
     /**
      * @brief The passive value is used where the expressions are combined with normal double values.
@@ -124,6 +135,16 @@ namespace codi {
    * polymorphism via the Curiously Recurring Template Pattern
    */
 
+  /**
+   * @brief The macro creates a helper function that calls an operator as a function.
+   *
+   * The generated function has the format
+   *
+   * inline auto primal_NAME(const A& a, const B& b);
+   *
+   * @param   NAME  The name for the generated function.
+   * @param   OP    The sign of the operator that the function calls.
+   */
   #define CODI_OPERATOR_HELPER(NAME, OP) \
     /** @brief Helper function to call operators as a function. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The value of a OP b @tparam A The expression for the first argument of the function @tparam B The expression for the second argument of the function*/ \
     template<typename A, typename B> \
@@ -268,7 +289,7 @@ namespace codi {
   template<typename Real> inline void checkArgumentsDivide(const Real& b) {
     if(CheckExpressionArguments) {
       if( 0.0 == TypeTraits<Real>::getBaseValue(b)) {
-        CODI_EXCEPTION("Devision called with devisor of zero.");
+        CODI_EXCEPTION("Division called with divisor of zero.");
       }
     }
   }
@@ -395,7 +416,7 @@ namespace codi {
   template<typename Real> inline void checkArgumentsPow(const Real& a) {
     if(CheckExpressionArguments) {
       if( TypeTraits<Real>::getBaseValue(a) < 0.0) {
-        CODI_EXCEPTION("Negative base for active exponend in pow function. (Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        CODI_EXCEPTION("Negative base for active exponent in pow function. (Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
       }
     }
   }
@@ -832,7 +853,7 @@ namespace codi {
   }
 
   /***************************************************************************************
-   * Functions which do not need derivatives.
+   * Functions that do not need derivatives.
    ****************************************************************************************/
   using std::isinf;
   /**

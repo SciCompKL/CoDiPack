@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -33,6 +33,9 @@
 
 #include "chunk.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
@@ -344,6 +347,35 @@ namespace codi {
       assert(chunkIndex < chunks.size());
 
       return chunks[chunkIndex]->getUsedSize();
+    }
+
+    /**
+     * @brief Get the number of currently allocated chunks.
+     * @return The number of currently allocated chunks.
+     */
+    inline int getNumChunks(){
+      return chunks.size();
+    }
+
+    /**
+     * @brief Get the chunk size.
+     * @return The chunk size.
+     */
+    inline size_t getChunkSize(){
+      return chunkSize;
+    }
+
+    /**
+     * @brief Get the total number of data items used.
+     * @return The number of data items used in all chunks.
+     */
+    inline size_t getDataSize() {
+      size_t size = curChunk->getUsedSize();
+      if(getNumChunks() != 0) {
+        size += (getNumChunks() - 1) * chunkSize;
+      }
+
+      return size;
     }
 
   private:

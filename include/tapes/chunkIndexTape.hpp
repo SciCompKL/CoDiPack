@@ -29,14 +29,13 @@
 #pragma once
 
 #include <iostream>
-#include <iomanip>
 #include <cstddef>
 #include <tuple>
 
 #include "../activeReal.hpp"
 #include "chunk.hpp"
 #include "chunkVector.hpp"
-#include "expressionCounter.hpp"
+#include "indexHandler.hpp"
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 
@@ -46,26 +45,26 @@
 namespace codi {
 
   /**
-   * @brief Helper struct to define the nested chunk vectors for the ChunkTape.
+   * @brief Helper struct to define the nested chunk vectors for the ChunkIndexTape.
    *
-   * See ChunkTape for details.
+   * See ChunkIndexTape for details.
    */
   template <typename Real, typename IndexType>
-  struct ChunkTapeTypes {
+  struct ChunkIndexTapeTypes {
+    /** @brief The data for each statement. */
+    typedef Chunk2<StatementInt, IndexType> StatementChunk;
+    /** @brief The chunk vector for the statement data. */
+    typedef ChunkVector<StatementChunk, EmptyChunkVector> StatementChunkVector;
+
     /** @brief The data for the jacobies of each statement */
     typedef Chunk2< Real, IndexType> DataChunk;
     /** @brief The chunk vector for the jacobi data. */
-    typedef ChunkVector<DataChunk, ExpressionCounter<IndexType> > DataChunkVector;
-
-    /** @brief The data for each statement. */
-    typedef Chunk1<StatementInt> StatementChunk;
-    /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StatementChunk, DataChunkVector> StatementChunkVector;
+    typedef ChunkVector<DataChunk, StatementChunkVector> DataChunkVector;
 
     /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename StatementChunkVector::Position> ExternalFunctionChunk;
+    typedef Chunk2<ExternalFunction,typename DataChunkVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<ExternalFunctionChunk, StatementChunkVector> ExternalFunctionChunkVector;
+    typedef ChunkVector<ExternalFunctionChunk, DataChunkVector> ExternalFunctionChunkVector;
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionChunkVector::Position Position;
@@ -75,7 +74,7 @@ namespace codi {
   /**
    * @brief A tape which grows if more space is needed.
    *
-   * The ChunkTape implements a fully featured ReverseTapeInterface in a most
+   * The ChunkIndexTape implements a fully featured ReverseTapeInterface in a most
    * user friendly fashion. The storage vectors of the tape are grown if the
    * tape runs out of space.
    *
@@ -83,45 +82,50 @@ namespace codi {
    * the different data vectors. The current implementation uses 3 ChunkVectors
    * and one terminator. The relation is
    *
-   * externalFunctions -> statements -> jacobiData -> expressionCounter.
+   * externalFunctions -> jacobiData -> statements
    *
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
+   *
+   * The tape also uses the index manager IndexHandler to reuse the indices that are deleted.
+   * That means that ActiveReal's which use this tape need to be copied by usual means and deleted after
+   * the are no longer used. No c-like memory operations like memset and memcpy should be applied
+   * to these types.
    *
    * @tparam      Real  The floating point type used in the ActiveReal.
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class ChunkTape : public ReverseTapeInterface<Real, IndexType, ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::Position > {
+  class ChunkIndexTape : public ReverseTapeInterface<Real, IndexType, ChunkIndexTape<Real, IndexType>, typename ChunkIndexTapeTypes<Real, IndexType>::Position > {
   public:
 
-    /** @brief The data for the jacobies of each statement */
-    typedef typename ChunkTapeTypes<Real, IndexType>::DataChunk DataChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
-
     /** @brief The data for each statement. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::StatementChunk StatementChunk;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::StatementChunk StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector StatementChunkVector;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::StatementChunkVector StatementChunkVector;
+
+    /** @brief The data for the jacobies of each statement */
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::DataChunk DataChunk;
+    /** @brief The chunk vector for the jacobi data. */
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
 
     /** @brief The data for the external functions. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::ExternalFunctionChunk ExternalFunctionChunk;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::ExternalFunctionChunk ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::ExternalFunctionChunkVector ExternalFunctionChunkVector;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::ExternalFunctionChunkVector ExternalFunctionChunkVector;
 
     /** @brief The position for all the different data vectors. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::Position Position;
+    typedef typename ChunkIndexTapeTypes<Real, IndexType>::Position Position;
 
 
   private:
 
     /** @brief The counter for the current expression. */
-    ExpressionCounter<IndexType> expressionCount;
-    /** @brief The data for the jacobies of each statements. */
-    DataChunkVector data;
+    EmptyChunkVector emptyVector;
     /** @brief The data for the statements. */
     StatementChunkVector statements;
+    /** @brief The data for the jacobies of each statements. */
+    DataChunkVector data;
     /** @brief The data for the external functions. */
     ExternalFunctionChunkVector externalFunctions;
 
@@ -132,7 +136,8 @@ namespace codi {
      * But the positions should not be greater than the current expression counter.
      */
     Real* adjoints;
-    /* @brief The current size of the adjoint vector. */
+
+    /** @brief The current size of the adjoint vector. */
     IndexType adjointsSize;
 
     /**
@@ -140,16 +145,23 @@ namespace codi {
      */
     bool active;
 
+    /**
+     * @brief The index handler for the tape.
+     *
+     * It stores the deleted indices are reuses them.
+     */
+    IndexHandler<IndexType> indexHandler;
+
   public:
     /**
      * @brief Creates a tape with the default chunk sizes for the data, statements and
      * external functions defined in the configuration.
      */
-    ChunkTape() :
-      expressionCount(),
-      data(DefaultChunkSize, expressionCount),
-      statements(DefaultChunkSize, data),
-      externalFunctions(1000, statements),
+    ChunkIndexTape() :
+      emptyVector(),
+      statements(DefaultChunkSize, emptyVector),
+      data(DefaultChunkSize, statements),
+      externalFunctions(1000, data),
       adjoints(NULL),
       adjointsSize(0),
       active(false){
@@ -183,7 +195,17 @@ namespace codi {
     }
 
     /**
+     * @brief Set the size of the adjoint vector.
+     *
+     * @param[in] adjointsSize The new size for the adjoint vector.
+     */
+    void setAdjointsSize(const size_t& adjointsSize) {
+      resizeAdjoints(adjointsSize);
+    }
+
+    /**
      * @brief Return the number of used statements.
+     *
      * @return The number of used statements.
      */
     size_t getUsedStatementsSize() {
@@ -196,6 +218,15 @@ namespace codi {
      */
     size_t getUsedDataEntriesSize() {
       return data.getDataSize();
+    }
+
+    /**
+     * @brief Get the current size of the adjoint vector.
+     *
+     * @return The size of the current adjoint vector.
+     */
+    size_t getAdjointsSize() {
+      return indexHandler.getMaximumGlobalIndex() + 1;
     }
 
     /**
@@ -235,7 +266,7 @@ public:
      */
     void allocateAdjoints() {
       //TODO: Tim fragen of er das brauch
-      resizeAdjoints(expressionCount.count + 1);
+      resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
     }
 
     /**
@@ -259,8 +290,8 @@ public:
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
-        data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
         statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
@@ -268,13 +299,14 @@ public:
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getChunkPosition() - startSize;
         if(0 == activeVariables) {
-          lhsIndex = 0;
+          indexHandler.freeIndex(lhsIndex);
         } else {
-          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
-          lhsIndex = ++expressionCount.count;
+          indexHandler.checkIndex(lhsIndex);
+
+          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables, lhsIndex));
         }
       } else {
-        lhsIndex = 0;
+        indexHandler.freeIndex(lhsIndex);
       }
       /* now set the value of the lhs */
       lhsValue = rhs.getValue();
@@ -292,11 +324,20 @@ public:
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkTape<Real, IndexType> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkIndexTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
-        lhsIndex = rhs.getGradientData();
+        if(0 != rhs.getGradientData()) {
+          indexHandler.checkIndex(lhsIndex);
+
+          statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+          data.reserveItems(1);
+          data.setDataAndMove(std::make_tuple(1.0, rhs.getGradientData()));
+          statements.setDataAndMove(std::make_tuple((StatementInt)1, lhsIndex));
+        } else {
+          indexHandler.freeIndex(lhsIndex);
+        }
       } else {
-        lhsIndex = 0;
+        indexHandler.freeIndex(lhsIndex);
       }
       lhsValue = rhs.getValue();
     }
@@ -314,9 +355,7 @@ public:
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      ENABLE_CHECK (OptTapeActivity, active){
-        lhsIndex = 0;
-      }
+      indexHandler.freeIndex(lhsIndex);
       lhsValue = rhs;
     }
 
@@ -334,17 +373,17 @@ public:
       ENABLE_CHECK (OptTapeActivity, active){
         data.reserveItems(size);
         statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
-        statements.setDataAndMove(std::make_tuple(size));
-        lhsIndex = ++expressionCount.count;
+        indexHandler.checkIndex(lhsIndex);
+        statements.setDataAndMove(std::make_tuple(size, lhsIndex));
       }
     }
 
     /**
      * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
      *
-     * @param[in]  data Not used in this implementation.
-     * @param[in] value Not used in this implementation.
-     * @param[in] index Used to check if the variable is active.
+     * @param[in]   data Not used in this implementation.
+     * @param[in]  value Not used in this implementation.
+     * @param[in]  index Used to check if the variable is active.
      *
      * @tparam Data  The type of the data for the tape.
      */
@@ -391,14 +430,15 @@ public:
     }
 
     /**
-     * @brief Does nothing.
+     * @brief Frees the index.
+     *
      * @param[in] value Not used in this implementation.
-     * @param[in] index Not used in this implementation.
+     * @param[in] index The index is given to the index handler.
      */
     inline void destroyGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
-      CODI_UNUSED(index);
-      /* nothing to do */
+
+      indexHandler.freeIndex(index);
     }
 
 
@@ -423,7 +463,7 @@ public:
      * @return The gradient value corresponding to the given index.
      */
     inline Real getGradient(const IndexType& index) const {
-      if(0 == index || adjointsSize <= index) {
+      if(adjointsSize <= index) {
         return Real();
       } else {
         return adjoints[index];
@@ -440,10 +480,10 @@ public:
      */
     inline Real& gradient(IndexType& index) {
       assert(0 != index);
-      assert(index <= expressionCount.count);
 
+      //TODO: Add error when index is bigger than expression count
       if(adjointsSize <= index) {
-        resizeAdjoints(expressionCount.count + 1);
+        resizeAdjoints(index + 1);
       }
 
       return adjoints[index];
@@ -464,27 +504,20 @@ public:
      * @brief Sets all adjoint/gradients to zero.
      */
     inline void clearAdjoints(){
-      if(NULL != adjoints) {
-        for(IndexType i = 0; i <= expressionCount.count; ++i) {
-          adjoints[i] = 0.0;
-        }
+      for(IndexType i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
+        adjoints[i] = 0.0;
       }
     }
 
     /**
-     * @brief Sets all adjoint/gradients to zero.
+     * @brief Does nothing because the indices are not connected to the positions.
      *
-     * It has to hold start >= end.
-     *
-     * @param[in] start  The starting position for the reset of the vector.
-     * @param[in]   end  The ending position for the reset of the vector.
+     * @param[in] start Not used
+     * @param[in] end Not used
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      if(NULL != adjoints) {
-        for(IndexType i = end.inner.inner.inner; i <= start.inner.inner.inner; ++i) {
-          adjoints[i] = 0.0;
-        }
-      }
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
     }
 
     /**
@@ -493,16 +526,14 @@ public:
      * @param[in] pos Reset the state of the tape to the given position.
      */
     inline void reset(const Position& pos) {
-      if(NULL != adjoints) {
-        for(IndexType i = pos.inner.inner.inner; i <= expressionCount.count; ++i) {
-          adjoints[i] = 0.0;
-        }
-      }
+      clearAdjoints();
 
       externalFunctions.forEach(externalFunctions.getPosition(), pos, popExternalFunction);
 
       // reset will be done iteratively through the vectors
       externalFunctions.reset(pos);
+
+      indexHandler.reset();
     }
 
     /**
@@ -519,22 +550,22 @@ public:
      *
      * It has to hold startAdjPos >= endAdjPos.
      *
-     * @param[in] startAdjPos The starting point in the expression evaluation.
-     * @param[in]   endAdjPos The ending point in the expression evaluation.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]  statements The pointer to the statement vector.
-     * @param[inout]  dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
-     * @param[in]    jacobies The pointer to the jacobi vector.
-     * @param[in]     indices The pointer to the index vector
+     * @param[inout]           stmtPos The starting point in the expression evaluation. The index is decremented.
+     * @param[in]           endStmtPos The ending point in the expression evaluation.
+     * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
+     * @param[in]           lhsIndices The pointer the indices of the lhs.
+     * @param[inout]           dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
+     * @param[in]              indices The pointer the indices of the rhs arguments.
      */
-    inline void evaluateExpressions(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
-      size_t adjPos = startAdjPos;
+    inline void evaluateExpressions(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, IndexType* lhsIndices, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
 
-      while(adjPos > endAdjPos) {
-        const Real& adj = adjoints[adjPos];
-        --adjPos;
+      while(stmtPos > endStmtPos) {
         --stmtPos;
-        const StatementInt& activeVariables = statements[stmtPos];
+        const IndexType& lhsIndex = lhsIndices[stmtPos];
+        const Real adj = adjoints[lhsIndex];
+        adjoints[lhsIndex] = 0.0;
+        const StatementInt& activeVariables = numberOfArguments[stmtPos];
         ENABLE_CHECK(OptZeroAdjoint, adj != 0){
           for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --dataPos;
@@ -554,27 +585,28 @@ public:
      *
      * The function calls the evaluation method for the jacobi vector.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @param[in]      start The starting point for the statement vector.
+     * @param[in]        end The ending point for the statement vector.
+     * @param[inout] stmtPos The index position for the statement arrays.
+     * @param[in]   jacobies The statement data for the jacobies of the rhs.
+     * @param[in]    indices The statement data for the indices of the rhs.
      */
-    inline void evaluateStmt(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end) {
-      StatementInt* statementData;
+    inline void evaluateStmt(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end, size_t& stmtPos, Real* &jacobies, IndexType* &indices) {
+      StatementInt* numberOfArgumentsData;
+      IndexType* lhsIndexData;
+
       size_t dataPos = start.data;
-      typename DataChunkVector::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(statementData) = statements.getDataAtPosition(curChunk, 0);
+        std::tie(numberOfArgumentsData, lhsIndexData) = statements.getDataAtPosition(curChunk, 0);
 
-        typename DataChunkVector::Position endInnerPos = statements.getInnerPosition(curChunk);
-        evaluateData(curInnerPos, endInnerPos, dataPos, statementData);
-
-        curInnerPos = endInnerPos;
+        evaluateExpressions(dataPos, 0, numberOfArgumentsData, lhsIndexData, stmtPos, jacobies, indices);
 
         dataPos = statements.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(statementData) = statements.getDataAtPosition(end.chunk, 0);
-      evaluateData(curInnerPos, end.inner, dataPos, statementData);
+      std::tie(numberOfArgumentsData, lhsIndexData) = statements.getDataAtPosition(end.chunk, 0);
+      evaluateExpressions(dataPos, end.data, numberOfArgumentsData, lhsIndexData, stmtPos, jacobies, indices);
     }
 
     /**
@@ -586,28 +618,26 @@ public:
      *
      * @param[in]       start The starting point for the jacobi vector.
      * @param[in]         end The ending point for the jacobi vector.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]  statements The pointer to the statement vector.
      */
-    inline void evaluateData(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, size_t& stmtPos, StatementInt* &statementData) {
+    inline void evaluateData(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end) {
       Real* jacobiData;
       IndexType* indexData;
+
       size_t dataPos = start.data;
-      typename ExpressionCounter<IndexType>::Position curInnerPos = start.inner;
+      typename StatementChunkVector::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         std::tie(jacobiData, indexData) = data.getDataAtPosition(curChunk, 0);
 
-        typename ExpressionCounter<IndexType>::Position endInnerPos = data.getInnerPosition(curChunk);
-        evaluateExpressions(curInnerPos, endInnerPos, stmtPos, statementData, dataPos, jacobiData, indexData);
+        typename StatementChunkVector::Position endInnerPos = data.getInnerPosition(curChunk);
+        evaluateStmt(curInnerPos, endInnerPos, dataPos, jacobiData, indexData);
 
         curInnerPos = endInnerPos;
-
         dataPos = data.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       std::tie(jacobiData, indexData) = data.getDataAtPosition(end.chunk, 0);
-      evaluateExpressions(curInnerPos, end.inner, stmtPos, statementData, dataPos, jacobiData, indexData);
+      evaluateStmt(curInnerPos, end.inner, dataPos, jacobiData, indexData);
     }
 
     /*
@@ -619,13 +649,13 @@ public:
      * external function.
      */
     struct ExtFuncEvaluator {
-      typename StatementChunkVector::Position curInnerPos;
+      typename DataChunkVector::Position curInnerPos;
       ExternalFunction* extFunc;
-      typename StatementChunkVector::Position* endInnerPos;
+      typename DataChunkVector::Position* endInnerPos;
 
-      ChunkTape<Real, IndexType>& tape;
+      ChunkIndexTape<Real, IndexType>& tape;
 
-      ExtFuncEvaluator(typename StatementChunkVector::Position curInnerPos, ChunkTape<Real, IndexType>& tape) :
+      ExtFuncEvaluator(typename DataChunkVector::Position curInnerPos, ChunkIndexTape<Real, IndexType>& tape) :
         curInnerPos(curInnerPos),
         extFunc(NULL),
         endInnerPos(NULL),
@@ -635,7 +665,7 @@ public:
         std::tie(extFunc, endInnerPos) = data;
 
         // always evaluate the stack to the point of the external function
-        tape.evaluateStmt(curInnerPos, *endInnerPos);
+        tape.evaluateData(curInnerPos, *endInnerPos);
 
         extFunc->evaluate();
 
@@ -659,7 +689,7 @@ public:
       externalFunctions.forEach(start, end, evaluator);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
-      evaluateStmt(evaluator.curInnerPos, end.inner);
+      evaluateData(evaluator.curInnerPos, end.inner);
     }
 
   public:
@@ -672,8 +702,8 @@ public:
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
     void evaluate(const Position& start, const Position& end) {
-      if(adjointsSize <= expressionCount.count) {
-        resizeAdjoints(expressionCount.count + 1);
+      if(adjointsSize <= indexHandler.getMaximumGlobalIndex()) {
+        resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
       }
 
       evaluateExtFunc(start, end);
@@ -725,7 +755,7 @@ public:
      */
     void pushExternalFunctionHandle(const ExternalFunction& function){
       externalFunctions.reserveItems(1);
-      externalFunctions.setDataAndMove(std::make_tuple(function, statements.getPosition()));
+      externalFunctions.setDataAndMove(std::make_tuple(function, data.getPosition()));
     }
 
     /**
@@ -744,11 +774,8 @@ public:
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
-      statements.reserveItems(1);
-      statements.setDataAndMove(std::make_tuple((StatementInt)0));
-
-      value.getGradientData() = ++expressionCount.count;
+    inline void registerInput(ActiveReal<Real, ChunkIndexTape<Real, IndexType> >& value) {
+      indexHandler.checkIndex(value.getGradientData());
     }
 
     /**
@@ -756,7 +783,7 @@ public:
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
+    inline void registerOutput(ActiveReal<Real, ChunkIndexTape<Real, IndexType> >& value) {
       CODI_UNUSED(value);
       /* do nothing */
     }
@@ -790,66 +817,87 @@ public:
      */
     void printStatistics(){
       const double BYTE_TO_MB = 1.0/1024.0/1024.0;
-
-      size_t nAdjoints      = expressionCount.count + 1;
+      
+      size_t nAdjoints      = (size_t)indexHandler.getMaximumGlobalIndex() + 1;
       double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
       size_t nChunksStmts  = statements.getNumChunks();
       size_t totalStmts    = (nChunksStmts-1)*statements.getChunkSize()
                              +statements.getChunkUsedData(nChunksStmts-1);
-      double  memoryUsedStmts = (double)totalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
+      double  memoryUsedStmts = (double)totalStmts*(double)(sizeof(StatementInt) + sizeof(IndexType))* BYTE_TO_MB;
       double  memoryAllocStmts= (double)nChunksStmts*(double)statements.getChunkSize()
-                                *(double)sizeof(StatementInt)* BYTE_TO_MB;
+                                *((double)sizeof(StatementInt) + sizeof(IndexType))* BYTE_TO_MB;
       size_t nChunksData  = data.getNumChunks();
       size_t totalData    = (nChunksData-1)*data.getChunkSize()
                              +data.getChunkUsedData(nChunksData-1);
       double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
       double  memoryAllocData= (double)nChunksData*(double)data.getChunkSize()
                                 *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
+      size_t maximumGlobalIndex     = (size_t)indexHandler.getMaximumGlobalIndex();
+      size_t storedIndices          = (size_t)indexHandler.getNumberStoredIndices();
+      size_t currentLiveIndices     = (size_t)indexHandler.getCurrentIndex() - indexHandler.getNumberStoredIndices();
+
+      double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(IndexType)) * BYTE_TO_MB;
+      double memoryAllocatedIndices = (double)indexHandler.getNumberAllocatedIndices()*(double)(sizeof(IndexType)) * BYTE_TO_MB;
+
       size_t nExternalFunc = (externalFunctions.getNumChunks()-1)*externalFunctions.getChunkSize()
           +externalFunctions.getChunkUsedData(externalFunctions.getNumChunks()-1);
 
 
       std::cout << std::endl
-                << "-------------------------------------" << std::endl
-                << "CoDi Tape Statistics (ChunkTape)"      << std::endl
-                << "-------------------------------------" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "CoDi Tape Statistics (ChunkIndexTape)"    << std::endl
+                << "---------------------------------------------" << std::endl
                 << "Statements " << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Chunks: " << std::setw(10) << nChunksStmts << std::endl
-                << "  Total Number:     " << std::setw(10) << totalStmts   << std::endl
-                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryAllocStmts << " MB" << std::endl
-                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryUsedStmts << " MB" << std::endl
-                << "-------------------------------------" << std::endl
-                << "Jacobi entries "                       << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Chunks: " << std::setw(10) << nChunksData << std::endl
-                << "  Total Number:     " << std::setw(10) << totalData   << std::endl
-                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryAllocData << " MB" << std::endl
-                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryUsedData << " MB" << std::endl
-                << "-------------------------------------" << std::endl
-                << "Adjoint vector"                        << std::endl
-                << "-------------------------------------" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Number of Chunks:  " << std::setw(10) << nChunksStmts << std::endl
+                << "  Total Number:      " << std::setw(10) << totalStmts   << std::endl
+                << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << memoryAllocStmts << " MB" << std::endl
+                << "  Memory used:       " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << memoryUsedStmts << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Jacobi entries "                               << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Number of Chunks:  " << std::setw(10) << nChunksData << std::endl
+                << "  Total Number:      " << std::setw(10) << totalData   << std::endl
+                << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << memoryAllocData << " MB" << std::endl
+                << "  Memory used:       " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << memoryUsedData << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Adjoint vector"                                << std::endl
+                << "---------------------------------------------" << std::endl
                 << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
                 << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
                                             << memoryAdjoints << " MB" << std::endl
-                << "-------------------------------------" << std::endl
-                << "External functions  "                  << std::endl
-                << "-------------------------------------" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "Indices"                                       << std::endl
+                << "---------------------------------------------" << std::endl
+                << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << std::endl
+                << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << std::endl
+                << "  Indices stored:    " << std::setw(10) << storedIndices << std::endl
+                << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << memoryAllocatedIndices << " MB" << std::endl
+                << "  Memory used:       " << std::setiosflags(std::ios::fixed)
+                                           << std::setprecision(2)
+                                           << std::setw(10)
+                                           << memoryStoredIndices << " MB" << std::endl
+                << "---------------------------------------------" << std::endl
+                << "External functions  "                          << std::endl
+                << "---------------------------------------------" << std::endl
                 << "  Total Number:     " << std::setw(10) << nExternalFunc << std::endl
                 << std::endl;
 

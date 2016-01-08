@@ -25,7 +25,7 @@ The derivative computation with the forward mode of CoDiPack needs now four thin
   - The result of the derivative has to be received from the result.
 
 The first thing is the implementation of the function with the forward type of CoDiPack.
-This is done by replacing every occurrence of the type double in the function with the type RealForward.
+This is done by replacing every occurrence of the type double in the function with the type [RealForward](@ref codi::RealForward).
 The overloading implementation looks like
 ~~~~{.cpp}
     codi::RealForward func(const codi::RealForward& x) {
@@ -40,7 +40,7 @@ The driver for the primal evaluation of the function is inside the main routine:
 
       double y = func(x);
 
-      stc::cout << "f(4.0) = " << y << std::endl;
+      std::cout << "f(4.0) = " << y << std::endl;
 
       return 0;
     }
