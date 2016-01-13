@@ -267,11 +267,11 @@ public:
         size_t startSize = data.getChunkPosition();
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getChunkPosition() - startSize;
-        if(0 == activeVariables) {
-          lhsIndex = 0;
-        } else {
+        ENABLE_CHECK(OptCheckEmptyStatements, 0 == activeVariables) {
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
+        } else {
+          lhsIndex = 0;
         }
       } else {
         lhsIndex = 0;
@@ -352,7 +352,7 @@ public:
     inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
-      if(0 != index) {
+      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         this->data.setDataAndMove(std::make_tuple(1.0, index));
       }
     }
@@ -371,7 +371,7 @@ public:
     inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
-      if(0 != index) {
+      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
             this->data.setDataAndMove(std::make_tuple(jacobi, index));
