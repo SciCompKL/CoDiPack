@@ -177,8 +177,13 @@ namespace codi {
      * @param[in] v The value to copy.
      */
     inline ActiveReal(const ActiveReal<Real, Tape>& v) {
-      globalTape.initGradientData(this->primalValue, gradientData);
-      globalTape.store(primalValue, gradientData, v);
+      globalTape.initGradientData(primalValue, gradientData);
+
+      if(OptDisableAssignOptimization) {
+        *this = 1.0 * v;
+      } else {
+        globalTape.store(primalValue, gradientData, v);
+      }
     }
 
     /**
@@ -318,7 +323,11 @@ namespace codi {
      * @return Reference to this.
      */
     inline ActiveReal<Real, Tape>& operator=(const ActiveReal<Real, Tape>& rhs) {
-      globalTape.store(primalValue, gradientData, rhs);
+      if(OptDisableAssignOptimization) {
+           *this = 1.0 * rhs;
+      } else {
+          globalTape.store(primalValue, gradientData, rhs);
+      }
       return *this;
     }
 

@@ -131,6 +131,12 @@ namespace codi {
   const bool OptZeroAdjoint = CODI_OptZeroAdjoint;
   #undef CODI_OptZeroAdjoint
 
+  #ifndef CODI_DisableAssignOptimization
+    #define CODI_DisableAssignOptimization false
+  #endif
+  const bool OptDisableAssignOptimization = CODI_DisableAssignOptimization;
+  #undef CODI_DisableAssignOptimization
+
   /**
    * @brief Enable the check only if the option is set
    *
