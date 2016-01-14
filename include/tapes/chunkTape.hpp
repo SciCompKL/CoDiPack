@@ -272,6 +272,16 @@ public:
         } else {
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
+
+#if CODI_AdjointHandle
+          Real* jacobies = NULL;
+          IndexType* rhsIndices = NULL;
+
+          typename DataChunkVector::Position pos = data.getPosition();
+          std::tie(jacobies, rhsIndices) = data.getDataAtPosition(pos.chunk, startSize);
+
+          handleAdjointOperation(rhs.getValue(), lhsIndex, jacobies, rhsIndices, activeVariables);
+#endif
         }
       } else {
         lhsIndex = 0;

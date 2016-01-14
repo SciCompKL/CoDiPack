@@ -137,6 +137,13 @@ namespace codi {
   const bool OptDisableAssignOptimization = CODI_DisableAssignOptimization;
   #undef CODI_DisableAssignOptimization
 
+  #ifndef CODI_AdjointHandle
+    #define CODI_AdjointHandle false
+  #endif
+  #if CODI_AdjointHandle
+    void handleAdjointOperation(const double& value, const int lhsIndex, const double* jacobies, const int* rhsIndices, const int size);
+  #endif
+
   /**
    * @brief Enable the check only if the option is set
    *
