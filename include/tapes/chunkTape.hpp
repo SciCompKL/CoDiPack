@@ -267,7 +267,7 @@ public:
         size_t startSize = data.getChunkPosition();
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = data.getChunkPosition() - startSize;
-        ENABLE_CHECK(OptCheckEmptyStatements, 0 == activeVariables) {
+        ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
         } else {
