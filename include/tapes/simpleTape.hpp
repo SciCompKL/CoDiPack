@@ -527,13 +527,15 @@ namespace codi {
     }
 
     /**
-     * @brief Not needed in this implementation.
+     * @brief Register the value as an ouput value.
      *
-     * @param[in] value Not used.
+     * The method ensures that each output value has an unique index. This is done
+     * by performing the trivial operation value *= 1.0
+     *
+     * @param[in] value A new index is assigned.
      */
     inline void registerOutput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
-      CODI_UNUSED(value);
-      /* do nothing */
+      value = 1.0 * value;
     }
 
     /**
