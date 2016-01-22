@@ -54,7 +54,7 @@ namespace codi {
      * @brief Empty position.
      * @return Empty position
      */
-    inline Position getPosition() {
+    inline Position getPosition() const {
       return Position();
     }
 
@@ -173,7 +173,7 @@ namespace codi {
     {
       curChunk = new ChunkData(chunkSize);
       chunks.push_back(curChunk);
-      positions.push_back(nested.getPosition());
+      positions.push_back(NestedPosition());
     }
 
     /**
@@ -311,7 +311,7 @@ namespace codi {
      * @brief Get the position of the chunk vector and the nested vectors.
      * @return The position of the chunk vector.
      */
-    inline Position getPosition() {
+    inline Position getPosition() const {
       return Position(curChunkIndex, curChunk->getUsedSize(), nested.getPosition());
     }
 

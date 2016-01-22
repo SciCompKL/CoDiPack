@@ -39,6 +39,7 @@
 #include "expressionCounter.hpp"
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
+#include "modules/externalFunctionsModule.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -92,8 +93,13 @@ namespace codi {
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class ChunkTape : public ReverseTapeInterface<Real, IndexType, ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::Position > {
+  class ChunkTape : public ExternalFunctionModule<ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector >
+  {
   public:
+
+    typedef ExternalFunctionModule<ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector > ExtFuncModType;
+
+    typedef IndexType GradientData;
 
     /** @brief The data for the jacobies of each statement */
     typedef typename ChunkTapeTypes<Real, IndexType>::DataChunk DataChunk;
@@ -105,14 +111,9 @@ namespace codi {
     /** @brief The chunk vector for the statement data. */
     typedef typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector StatementChunkVector;
 
-    /** @brief The data for the external functions. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::ExternalFunctionChunk ExternalFunctionChunk;
-    /** @brief The chunk vector for the external  function data. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::ExternalFunctionChunkVector ExternalFunctionChunkVector;
 
     /** @brief The position for all the different data vectors. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::Position Position;
-
+    typedef typename ExtFuncModType::Position Position;
 
   private:
 
@@ -122,8 +123,6 @@ namespace codi {
     DataChunkVector data;
     /** @brief The data for the statements. */
     StatementChunkVector statements;
-    /** @brief The data for the external functions. */
-    ExternalFunctionChunkVector externalFunctions;
 
     /**
      * @brief The adjoint vector.
@@ -146,10 +145,10 @@ namespace codi {
      * external functions defined in the configuration.
      */
     ChunkTape() :
+      ExtFuncModType(statements),
       expressionCount(),
       data(DefaultChunkSize, expressionCount),
       statements(DefaultChunkSize, data),
-      externalFunctions(1000, statements),
       adjoints(NULL),
       adjointsSize(0),
       active(false){
@@ -171,15 +170,6 @@ namespace codi {
      */
     void setStatementChunkSize(const size_t& statementChunkSize) {
       statements.setChunkSize(statementChunkSize);
-    }
-
-    /**
-     * @brief Set the size of the external function data chunks.
-     *
-     * @param[in] extChunkSize The new size for the external function data chunks.
-     */
-    void setExternalFunctionChunkSize(const size_t& extChunkSize) {
-      externalFunctions.setChunkSize(extChunkSize);
     }
 
     /**
@@ -456,8 +446,8 @@ public:
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getPosition() {
-      return externalFunctions.getPosition();
+    inline Position getPosition() const {
+      return ExtFuncModType::getPosition();
     }
 
     /**
@@ -493,10 +483,8 @@ public:
         adjoints[i] = 0.0;
       }
 
-      externalFunctions.forEach(externalFunctions.getPosition(), pos, popExternalFunction);
-
       // reset will be done iteratively through the vectors
-      externalFunctions.reset(pos);
+      ExtFuncModType::reset(pos);
     }
 
     /**
@@ -541,6 +529,8 @@ public:
       }
     }
 
+  public:
+
     /**
      * @brief Evaluate a part of the statement vector.
      *
@@ -551,7 +541,7 @@ public:
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evaluateStmt(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end) {
+    inline void evalExtFuncCallback(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end) {
       StatementInt* statementData;
       size_t dataPos = start.data;
       typename DataChunkVector::Position curInnerPos = start.inner;
@@ -570,6 +560,8 @@ public:
       std::tie(statementData) = statements.getDataAtPosition(end.chunk, 0);
       evaluateData(curInnerPos, end.inner, dataPos, statementData);
     }
+
+  public:
 
     /**
      * @brief Evaluate a part of the jacobi vector.
@@ -604,58 +596,6 @@ public:
       evaluateExpressions(curInnerPos, end.inner, stmtPos, statementData, dataPos, jacobiData, indexData);
     }
 
-    /*
-     * Function object for the evaluation of the external functions.
-     *
-     * It stores the last position for the statement vector. With this
-     * position it evaluates the statement vector to the position
-     * where the external function was added and then calls the
-     * external function.
-     */
-    struct ExtFuncEvaluator {
-      typename StatementChunkVector::Position curInnerPos;
-      ExternalFunction* extFunc;
-      typename StatementChunkVector::Position* endInnerPos;
-
-      ChunkTape<Real, IndexType>& tape;
-
-      ExtFuncEvaluator(typename StatementChunkVector::Position curInnerPos, ChunkTape<Real, IndexType>& tape) :
-        curInnerPos(curInnerPos),
-        extFunc(NULL),
-        endInnerPos(NULL),
-        tape(tape){}
-
-      void operator () (typename ExternalFunctionChunk::DataPointer& data) {
-        std::tie(extFunc, endInnerPos) = data;
-
-        // always evaluate the stack to the point of the external function
-        tape.evaluateStmt(curInnerPos, *endInnerPos);
-
-        extFunc->evaluate();
-
-        curInnerPos = *endInnerPos;
-      }
-    };
-
-    /**
-     * @brief Evaluate a part of the external function vector.
-     *
-     * It has to hold start >= end.
-     *
-     * It calls the evaluation method for the statement vector.
-     *
-     * @param[in]       start The starting point for the external function vector.
-     * @param[in]         end The ending point for the external function vector.
-     */
-    void evaluateExtFunc(const typename ExternalFunctionChunkVector::Position& start, const typename ExternalFunctionChunkVector::Position &end){
-      ExtFuncEvaluator evaluator(start.inner, *this);
-
-      externalFunctions.forEach(start, end, evaluator);
-
-      // Iterate over the reminder also covers the case if there have been no external functions.
-      evaluateStmt(evaluator.curInnerPos, end.inner);
-    }
-
   public:
     /**
      * @brief Perform the adjoint evaluation from start to end.
@@ -670,7 +610,7 @@ public:
         resizeAdjoints(expressionCount.count + 1);
       }
 
-      evaluateExtFunc(start, end);
+      ExtFuncModType::evaluateExtFunc(start, end);
     }
 
 
@@ -681,55 +621,6 @@ public:
       evaluate(getPosition(), Position());
     }
 
-    /**
-     * @brief Add an external function with a void handle as user data.
-     *
-     * The data handle provided to the tape is considered in possession of the tape. The tape will now be responsible to
-     * free the handle. For this it will use the delete function provided by the user.
-     *
-     * @param[in] extFunc  The external function which is called by the tape.
-     * @param[inout] data  The data for the external function. The tape takes ownership over the data.
-     * @param[in] delData  The delete function for the data.
-     */
-    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData){
-      pushExternalFunctionHandle(ExternalFunction(extFunc, data, delData));
-    }
-
-
-    /**
-     * @brief Add an external function with a specific data type.
-     *
-     * The data pointer provided to the tape is considered in possession of the tape. The tape will now be responsible to
-     * free the data. For this it will use the delete function provided by the user.
-     *
-     * @param[in] extFunc  The external function which is called by the tape.
-     * @param[inout] data  The data for the external function. The tape takes ownership over the data.
-     * @param[in] delData  The delete function for the data.
-     */
-    template<typename Data>
-    void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<Data>::DeleteFunction delData){
-      pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));\
-    }
-
-  private:
-    /**
-     * @brief Private common method to add to the external function stack.
-     *
-     * @param[in] function The external function structure to push.
-     */
-    void pushExternalFunctionHandle(const ExternalFunction& function){
-      externalFunctions.reserveItems(1);
-      externalFunctions.setDataAndMove(std::make_tuple(function, statements.getPosition()));
-    }
-
-    /**
-     * @brief Delete the data of the external function.
-     * @param extFunction The external function in the vector.
-     */
-    static void popExternalFunction(typename ExternalFunctionChunk::DataPointer& extFunction) {
-      /* we just need to call the delete function */
-      std::get<0>(extFunction)->deleteData();
-    }
   public:
 
     /**
@@ -802,9 +693,6 @@ public:
       double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
       double  memoryAllocData= (double)nChunksData*(double)data.getChunkSize()
                                 *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
-      size_t nExternalFunc = (externalFunctions.getNumChunks()-1)*externalFunctions.getChunkSize()
-          +externalFunctions.getChunkUsedData(externalFunctions.getNumChunks()-1);
-
 
       std::cout << std::endl
                 << "-------------------------------------" << std::endl
@@ -842,12 +730,9 @@ public:
                 << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << memoryAdjoints << " MB" << std::endl
-                << "-------------------------------------" << std::endl
-                << "External functions  "                  << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Total Number:     " << std::setw(10) << nExternalFunc << std::endl
-                << std::endl;
+                                            << memoryAdjoints << " MB" << std::endl;
+      ExtFuncModType::printStatistics();
+      std::cout << std::endl;
 
     }
 

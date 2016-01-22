@@ -39,6 +39,8 @@
  */
 namespace codi {
 
+  const double BYTE_TO_MB = 1.0/1024.0/1024.0;
+
   /**
    * @brief Type for the maximum number of variables a operation can have.
    */
