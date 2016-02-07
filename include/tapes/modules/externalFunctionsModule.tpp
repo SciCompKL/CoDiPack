@@ -26,51 +26,28 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-#pragma once
+#ifndef CHILD_VECTOR_TYPE
+  #error Please define the type of the child vector
+#endif
+#ifndef CHILD_VECTOR_NAME
+  #error Please define the name of the child vector
+#endif
+#ifndef TAPE_NAME
+  #error Please define the name of the tape.
+#endif
 
-#include <iostream>
-#include <iomanip>
-#include <cstddef>
-#include <tuple>
-
-#include "../chunk.hpp"
-#include "../chunkVector.hpp"
-#include "../externalFunctions.hpp"
-
-/**
- * @brief Global namespace for CoDiPack - Code Differentiation Package
- */
-namespace codi {
-
-  template <typename Tape, typename ChildVector>
-  class ExternalFunctionModule {
-		public:
-
-    typedef typename ChildVector::Position ChildPosition;
+    typedef CHILD_VECTOR_TYPE ExtFuncChildVector;
+    typedef typename ExtFuncChildVector::Position ExtFuncChildPosition;
 
     /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction, ChildPosition> Chunk;
+    typedef Chunk2<ExternalFunction, ExtFuncChildPosition> ExtFuncChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<Chunk, ChildVector> Vector;
+    typedef ChunkVector<ExtFuncChunk, ExtFuncChildVector> ExtFuncVector;
 
-    typedef typename Vector::Position Position;
+    typedef typename ExtFuncVector::Position ExtFuncPosition;
 
     /** @brief The data for the external functions. */
-    Vector vector;
-    ChildVector& childVector;
-
-    ExternalFunctionModule(ChildVector& childVector) :
-      vector(1000, childVector),
-      childVector(childVector) {
-      }
-
-    inline const Tape& cast() const {
-      return static_cast<const Tape&>(*this);
-    }
-
-    inline Tape& cast() {
-      return static_cast<Tape&>(*this);
-    }
+    ExtFuncVector extFuncVector;
 
     /**
      * @brief Set the size of the external function data chunks.
@@ -78,18 +55,18 @@ namespace codi {
      * @param[in] extChunkSize The new size for the external function data chunks.
      */
     void setExternalFunctionChunkSize(const size_t& extChunkSize) {
-      vector.setChunkSize(extChunkSize);
+      extFuncVector.setChunkSize(extChunkSize);
     }
 
-    Position getPosition() const {
-      return vector.getPosition();
+    ExtFuncPosition getExtFuncPosition() const {
+      return extFuncVector.getPosition();
     }
 
-    void reset(const Position& pos) {
-      vector.forEach(getPosition(), pos, popExternalFunction);
+    void resetExtFunc(const ExtFuncPosition& pos) {
+      extFuncVector.forEach(getExtFuncPosition(), pos, popExternalFunction);
 
       // reset will be done iteratively through the vectors
-      vector.reset(pos);
+      extFuncVector.reset(pos);
     }
 
 
@@ -102,19 +79,19 @@ namespace codi {
      * external function.
      */
     struct ExtFuncEvaluator {
-      ChildPosition curInnerPos;
+      ExtFuncChildPosition curInnerPos;
       ExternalFunction* extFunc;
-      ChildPosition* endInnerPos;
+      ExtFuncChildPosition* endInnerPos;
 
-      Tape& tape;
+      TAPE_NAME& tape;
 
-      ExtFuncEvaluator(ChildPosition curInnerPos, Tape& tape) :
+      ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, TAPE_NAME& tape) :
         curInnerPos(curInnerPos),
         extFunc(NULL),
         endInnerPos(NULL),
         tape(tape){}
 
-      void operator () (typename Chunk::DataPointer& data) {
+      void operator () (typename ExtFuncChunk::DataPointer& data) {
         std::tie(extFunc, endInnerPos) = data;
 
         // always evaluate the stack to the point of the external function
@@ -136,13 +113,13 @@ namespace codi {
      * @param[in]       start The starting point for the external function vector.
      * @param[in]         end The ending point for the external function vector.
      */
-    void evaluateExtFunc(const Position& start, const Position &end){
-      ExtFuncEvaluator evaluator(start.inner, cast());
+    void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end){
+      ExtFuncEvaluator evaluator(start.inner, *this);
 
-      vector.forEach(start, end, evaluator);
+      extFuncVector.forEach(start, end, evaluator);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
-      cast().evalExtFuncCallback(evaluator.curInnerPos, end.inner);
+      evalExtFuncCallback(evaluator.curInnerPos, end.inner);
     }
 
     /**
@@ -156,7 +133,7 @@ namespace codi {
      * @param[in] delData  The delete function for the data.
      */
     void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData){
-      ENABLE_CHECK (OptTapeActivity, cast().isActive()){
+      ENABLE_CHECK (OptTapeActivity, isActive()){
         pushExternalFunctionHandle(ExternalFunction(extFunc, data, delData));
       }
     }
@@ -174,7 +151,7 @@ namespace codi {
      */
     template<typename Data>
     void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<Data>::DeleteFunction delData){
-      ENABLE_CHECK (OptTapeActivity, cast().isActive()){
+      ENABLE_CHECK (OptTapeActivity, isActive()){
         pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));
       }
     }
@@ -186,15 +163,15 @@ namespace codi {
      * @param[in] function The external function structure to push.
      */
     void pushExternalFunctionHandle(const ExternalFunction& function){
-      vector.reserveItems(1);
-      vector.setDataAndMove(std::make_tuple(function, childVector.getPosition()));
+      extFuncVector.reserveItems(1);
+      extFuncVector.setDataAndMove(std::make_tuple(function, CHILD_VECTOR_NAME.getPosition()));
     }
 
     /**
      * @brief Delete the data of the external function.
      * @param extFunction The external function in the vector.
      */
-    static void popExternalFunction(typename Chunk::DataPointer& extFunction) {
+    static void popExternalFunction(typename ExtFuncChunk::DataPointer& extFunction) {
       /* we just need to call the delete function */
       std::get<0>(extFunction)->deleteData();
     }
@@ -205,9 +182,9 @@ namespace codi {
      *
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
-    void printStatistics(){
-      size_t nExternalFunc = (vector.getNumChunks()-1)*vector.getChunkSize()
-          +vector.getChunkUsedData(vector.getNumChunks()-1);
+    void printExtFuncStatistics(){
+      size_t nExternalFunc = (extFuncVector.getNumChunks()-1)*extFuncVector.getChunkSize()
+          +extFuncVector.getChunkUsedData(extFuncVector.getNumChunks()-1);
 
 
       std::cout << "-------------------------------------" << std::endl
@@ -216,5 +193,6 @@ namespace codi {
                 << "  Total Number:     " << std::setw(10) << nExternalFunc << std::endl;
 
     }
-  };
-}
+
+#undef CHILD_VECTOR_TYPE
+#undef CHILD_VECTOR_NAME

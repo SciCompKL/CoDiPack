@@ -39,7 +39,6 @@
 #include "expressionCounter.hpp"
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
-#include "modules/externalFunctionsModule.hpp"
 #include "modules/jacobiModule.hpp"
 #include "modules/statementModule.hpp"
 
@@ -97,19 +96,23 @@ namespace codi {
   template <typename Real, typename IndexType>
   class ChunkTape :
       public JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>,
-      public StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector >,
-      public ExternalFunctionModule<ChunkTape<Real, IndexType>, typename StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector >::Vector >
+      public StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector >
   {
   public:
 
+    #define TAPE_NAME ChunkTape
+
     typedef JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType> JacobiModType;
     typedef StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector > StmtModType;
-    typedef ExternalFunctionModule<ChunkTape<Real, IndexType>, typename StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector >::Vector > ExtFuncModType;
 
     typedef IndexType GradientData;
 
+    #define CHILD_VECTOR_TYPE typename StmtModType::Vector
+    #define CHILD_VECTOR_NAME StmtModType::vector
+    #include "modules/externalFunctionsModule.tpp"
+
     /** @brief The position for all the different data vectors. */
-    typedef typename ExtFuncModType::Position Position;
+    typedef ExtFuncPosition Position;
 
   private:
 
@@ -139,7 +142,7 @@ namespace codi {
     ChunkTape() :
       JacobiModType(expressionCount),
       StmtModType(JacobiModType::vector),
-      ExtFuncModType(StmtModType::vector),
+      extFuncVector(1000, StmtModType::vector),
       expressionCount(),
       adjoints(NULL),
       adjointsSize(0),
@@ -364,7 +367,7 @@ public:
      * @return The current position of the tape.
      */
     inline Position getPosition() const {
-      return ExtFuncModType::getPosition();
+      return getExtFuncPosition();
     }
 
     /**
@@ -401,7 +404,7 @@ public:
       }
 
       // reset will be done iteratively through the vectors
-      ExtFuncModType::reset(pos);
+      resetExtFunc(pos);
     }
 
     /**
@@ -488,7 +491,7 @@ public:
         resizeAdjoints(expressionCount.count + 1);
       }
 
-      ExtFuncModType::evaluateExtFunc(start, end);
+      evaluateExtFunc(start, end);
     }
 
 
@@ -573,7 +576,7 @@ public:
                 << "-------------------------------------" << std::endl;
       StmtModType::printStatistics();
       JacobiModType::printStatistics();
-      ExtFuncModType::printStatistics();
+      printExtFuncStatistics();
       std::cout << std::endl;
 
     }
