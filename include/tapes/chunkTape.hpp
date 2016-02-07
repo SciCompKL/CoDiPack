@@ -41,6 +41,7 @@
 #include "reverseTapeInterface.hpp"
 #include "modules/externalFunctionsModule.hpp"
 #include "modules/jacobiModule.hpp"
+#include "modules/statementModule.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -96,20 +97,16 @@ namespace codi {
   template <typename Real, typename IndexType>
   class ChunkTape :
       public JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>,
-      public ExternalFunctionModule<ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector >
+      public StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector >,
+      public ExternalFunctionModule<ChunkTape<Real, IndexType>, typename StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector >::Vector >
   {
   public:
 
-    typedef JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType > JacobiModType;
-    typedef ExternalFunctionModule<ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector > ExtFuncModType;
+    typedef JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType> JacobiModType;
+    typedef StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector > StmtModType;
+    typedef ExternalFunctionModule<ChunkTape<Real, IndexType>, typename StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector >::Vector > ExtFuncModType;
 
     typedef IndexType GradientData;
-
-    /** @brief The data for each statement. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::StatementChunk StatementChunk;
-    /** @brief The chunk vector for the statement data. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector StatementChunkVector;
-
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExtFuncModType::Position Position;
@@ -118,8 +115,6 @@ namespace codi {
 
     /** @brief The counter for the current expression. */
     ExpressionCounter<IndexType> expressionCount;
-    /** @brief The data for the statements. */
-    StatementChunkVector statements;
 
     /**
      * @brief The adjoint vector.
@@ -143,29 +138,12 @@ namespace codi {
      */
     ChunkTape() :
       JacobiModType(expressionCount),
-      ExtFuncModType(statements),
+      StmtModType(JacobiModType::vector),
+      ExtFuncModType(StmtModType::vector),
       expressionCount(),
-      statements(DefaultChunkSize, JacobiModType::vector),
       adjoints(NULL),
       adjointsSize(0),
       active(false){
-    }
-
-    /**
-     * @brief Set the size of the statement data chunks.
-     *
-     * @param[in] statementChunkSize The new size for the statement data chunks.
-     */
-    void setStatementChunkSize(const size_t& statementChunkSize) {
-      statements.setChunkSize(statementChunkSize);
-    }
-
-    /**
-     * @brief Return the number of used statements.
-     * @return The number of used statements.
-     */
-    size_t getUsedStatementsSize() {
-      return statements.getDataSize();
     }
 
     /**
@@ -179,7 +157,7 @@ namespace codi {
      */
     void resize(const size_t& dataSize, const size_t& statementSize) {
       JacobiModType::resize(dataSize);
-      statements.resize(statementSize);
+      StmtModType::resize(statementSize);
     }
 
 private:
@@ -230,7 +208,7 @@ public:
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
         JacobiModType::vector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
-        statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        StmtModType::vector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
@@ -238,7 +216,7 @@ public:
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = JacobiModType::vector.getChunkPosition() - startSize;
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
-          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
+          StmtModType::vector.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
         } else {
           lhsIndex = 0;
@@ -303,8 +281,8 @@ public:
     inline void store(IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         JacobiModType::vector.reserveItems(size);
-        statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
-        statements.setDataAndMove(std::make_tuple(size));
+        StmtModType::vector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        StmtModType::vector.setDataAndMove(std::make_tuple(size));
         lhsIndex = ++expressionCount.count;
       }
     }
@@ -478,24 +456,22 @@ public:
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalExtFuncCallback(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end) {
-      StatementInt* statementData;
-      size_t dataPos = start.data;
-      typename JacobiModType::Position curInnerPos = start.inner;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(statementData) = statements.getDataAtPosition(curChunk, 0);
+    inline void evalStmtCallback(const typename JacobiModType::Position& start, const typename JacobiModType::Position& end, size_t& stmtPos, StatementInt* &statements) {
+      JacobiModType::evaluateJacobies(start, end, stmtPos, statements);
+    }
 
-        typename JacobiModType::Position endInnerPos = statements.getInnerPosition(curChunk);
-        JacobiModType::evaluateJacobies(curInnerPos, endInnerPos, dataPos, statementData);
-
-        curInnerPos = endInnerPos;
-
-        dataPos = statements.getChunkUsedData(curChunk - 1);
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(statementData) = statements.getDataAtPosition(end.chunk, 0);
-      JacobiModType::evaluateJacobies(curInnerPos, end.inner, dataPos, statementData);
+    /**
+     * @brief Evaluate a part of the statement vector.
+     *
+     * It has to hold start >= end.
+     *
+     * The function calls the evaluation method for the jacobi vector.
+     *
+     * @param[in] start The starting point for the statement vector.
+     * @param[in]   end The ending point for the statement vector.
+     */
+    inline void evalExtFuncCallback(const typename StmtModType::Position& start, const typename StmtModType::Position& end) {
+      StmtModType::evaluateStmt(start, end);
     }
 
   public:
@@ -532,8 +508,8 @@ public:
      * @param[inout] value The value which will be marked as an active variable.
      */
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
-      statements.reserveItems(1);
-      statements.setDataAndMove(std::make_tuple((StatementInt)0));
+      StmtModType::vector.reserveItems(1);
+      StmtModType::vector.setDataAndMove(std::make_tuple((StatementInt)0));
 
       value.getGradientData() = ++expressionCount.count;
     }
@@ -583,38 +559,20 @@ public:
       size_t nAdjoints      = expressionCount.count + 1;
       double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
-      size_t nChunksStmts  = statements.getNumChunks();
-      size_t totalStmts    = (nChunksStmts-1)*statements.getChunkSize()
-                             +statements.getChunkUsedData(nChunksStmts-1);
-      double  memoryUsedStmts = (double)totalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
-      double  memoryAllocStmts= (double)nChunksStmts*(double)statements.getChunkSize()
-                                *(double)sizeof(StatementInt)* BYTE_TO_MB;
-
       std::cout << std::endl
                 << "-------------------------------------" << std::endl
                 << "CoDi Tape Statistics (ChunkTape)"      << std::endl
                 << "-------------------------------------" << std::endl
-                << "Statements " << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Chunks: " << std::setw(10) << nChunksStmts << std::endl
-                << "  Total Number:     " << std::setw(10) << totalStmts   << std::endl
-                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryAllocStmts << " MB" << std::endl
-                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryUsedStmts << " MB" << std::endl;
-      JacobiModType::printStatistics();
-      std::cout << "-------------------------------------" << std::endl
                 << "Adjoint vector"                        << std::endl
                 << "-------------------------------------" << std::endl
                 << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
                 << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
                                             << std::setprecision(2)
                                             << std::setw(10)
-                                            << memoryAdjoints << " MB" << std::endl;
+                                            << memoryAdjoints << " MB" << std::endl
+                << "-------------------------------------" << std::endl;
+      StmtModType::printStatistics();
+      JacobiModType::printStatistics();
       ExtFuncModType::printStatistics();
       std::cout << std::endl;
 
