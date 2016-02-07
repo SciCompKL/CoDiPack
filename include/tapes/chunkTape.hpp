@@ -39,7 +39,6 @@
 #include "expressionCounter.hpp"
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
-#include "modules/jacobiModule.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -93,18 +92,17 @@ namespace codi {
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class ChunkTape :
-      public JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>
-  {
+  class ChunkTape {
   public:
 
     #define TAPE_NAME ChunkTape
 
-    typedef JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType> JacobiModType;
-
     typedef IndexType GradientData;
 
-    #define CHILD_VECTOR_TYPE typename JacobiModType::Vector
+    #define CHILD_VECTOR_TYPE ExpressionCounter<IndexType>
+    #include "modules/jacobiModule.tpp"
+
+    #define CHILD_VECTOR_TYPE JacobiVector
     #include "modules/statementModule.tpp"
 
     #define CHILD_VECTOR_TYPE StmtVector
@@ -140,8 +138,8 @@ namespace codi {
      * external functions defined in the configuration.
      */
     ChunkTape() :
-      JacobiModType(expressionCount),
-      stmtVector(DefaultChunkSize, JacobiModType::vector),
+      jacobiVector(DefaultChunkSize, expressionCount),
+      stmtVector(DefaultChunkSize, jacobiVector),
       extFuncVector(1000, stmtVector),
       expressionCount(),
       adjoints(NULL),
@@ -159,7 +157,7 @@ namespace codi {
      * @param[in] statementSize  The new size of the statement data.
      */
     void resize(const size_t& dataSize, const size_t& statementSize) {
-      JacobiModType::resize(dataSize);
+      resizeJacobi(dataSize);
       resizeStmt(statementSize);
     }
 
@@ -210,14 +208,14 @@ public:
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
-        JacobiModType::vector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
+        jacobiVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
         stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
-        size_t startSize = JacobiModType::vector.getChunkPosition();
+        size_t startSize = jacobiVector.getChunkPosition();
         rhs.template calcGradient<void*>(null);
-        size_t activeVariables = JacobiModType::vector.getChunkPosition() - startSize;
+        size_t activeVariables = jacobiVector.getChunkPosition() - startSize;
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
           stmtVector.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
@@ -283,7 +281,7 @@ public:
      */
     inline void store(IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
-        JacobiModType::vector.reserveItems(size);
+        jacobiVector.reserveItems(size);
         stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
         stmtVector.setDataAndMove(std::make_tuple(size));
         lhsIndex = ++expressionCount.count;
@@ -459,8 +457,8 @@ public:
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalStmtCallback(const typename JacobiModType::Position& start, const typename JacobiModType::Position& end, size_t& stmtPos, StatementInt* &statements) {
-      JacobiModType::evaluateJacobies(start, end, stmtPos, statements);
+    inline void evalStmtCallback(const JacobiPosition& start, const JacobiPosition& end, size_t& stmtPos, StatementInt* &statements) {
+      evaluateJacobies(start, end, stmtPos, statements);
     }
 
     /**
@@ -575,7 +573,7 @@ public:
                                             << memoryAdjoints << " MB" << std::endl
                 << "-------------------------------------" << std::endl;
       printStmtStatistics();
-      JacobiModType::printStatistics();
+      printJacobiStatistics();
       printExtFuncStatistics();
       std::cout << std::endl;
 
