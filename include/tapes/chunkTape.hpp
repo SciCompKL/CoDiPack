@@ -40,6 +40,7 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "modules/externalFunctionsModule.hpp"
+#include "modules/jacobiModule.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -93,18 +94,16 @@ namespace codi {
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class ChunkTape : public ExternalFunctionModule<ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector >
+  class ChunkTape :
+      public JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>,
+      public ExternalFunctionModule<ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector >
   {
   public:
 
+    typedef JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType > JacobiModType;
     typedef ExternalFunctionModule<ChunkTape<Real, IndexType>, typename ChunkTapeTypes<Real, IndexType>::StatementChunkVector > ExtFuncModType;
 
     typedef IndexType GradientData;
-
-    /** @brief The data for the jacobies of each statement */
-    typedef typename ChunkTapeTypes<Real, IndexType>::DataChunk DataChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef typename ChunkTapeTypes<Real, IndexType>::DataChunkVector DataChunkVector;
 
     /** @brief The data for each statement. */
     typedef typename ChunkTapeTypes<Real, IndexType>::StatementChunk StatementChunk;
@@ -119,8 +118,6 @@ namespace codi {
 
     /** @brief The counter for the current expression. */
     ExpressionCounter<IndexType> expressionCount;
-    /** @brief The data for the jacobies of each statements. */
-    DataChunkVector data;
     /** @brief The data for the statements. */
     StatementChunkVector statements;
 
@@ -145,22 +142,13 @@ namespace codi {
      * external functions defined in the configuration.
      */
     ChunkTape() :
+      JacobiModType(expressionCount),
       ExtFuncModType(statements),
       expressionCount(),
-      data(DefaultChunkSize, expressionCount),
-      statements(DefaultChunkSize, data),
+      statements(DefaultChunkSize, JacobiModType::vector),
       adjoints(NULL),
       adjointsSize(0),
       active(false){
-    }
-
-    /**
-     * @brief Set the size of the jacobi data chunks.
-     *
-     * @param[in] dataChunkSize The new size for the jacobi data chunks.
-     */
-    void setDataChunkSize(const size_t& dataChunkSize) {
-      data.setChunkSize(dataChunkSize);
     }
 
     /**
@@ -181,14 +169,6 @@ namespace codi {
     }
 
     /**
-     * @brief Return the number of used data entries.
-     * @return The number of used data entries.
-     */
-    size_t getUsedDataEntriesSize() {
-      return data.getDataSize();
-    }
-
-    /**
      * @brief Set the size of the jacobi and statement data.
      *
      * The tape will allocate enough chunks such that the given data
@@ -198,7 +178,7 @@ namespace codi {
      * @param[in] statementSize  The new size of the statement data.
      */
     void resize(const size_t& dataSize, const size_t& statementSize) {
-      data.resize(dataSize);
+      JacobiModType::resize(dataSize);
       statements.resize(statementSize);
     }
 
@@ -249,14 +229,14 @@ public:
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
-        data.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
+        JacobiModType::vector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
         statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
-        size_t startSize = data.getChunkPosition();
+        size_t startSize = JacobiModType::vector.getChunkPosition();
         rhs.template calcGradient<void*>(null);
-        size_t activeVariables = data.getChunkPosition() - startSize;
+        size_t activeVariables = JacobiModType::vector.getChunkPosition() - startSize;
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
           statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
@@ -322,51 +302,10 @@ public:
      */
     inline void store(IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
-        data.reserveItems(size);
+        JacobiModType::vector.reserveItems(size);
         statements.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
         statements.setDataAndMove(std::make_tuple(size));
         lhsIndex = ++expressionCount.count;
-      }
-    }
-
-    /**
-     * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
-     *
-     * @param[in]  data Not used in this implementation.
-     * @param[in] value Not used in this implementation.
-     * @param[in] index Used to check if the variable is active.
-     *
-     * @tparam Data  The type of the data for the tape.
-     */
-    template<typename Data>
-    inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
-      CODI_UNUSED(data);
-      CODI_UNUSED(value);
-      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        this->data.setDataAndMove(std::make_tuple(1.0, index));
-      }
-    }
-
-    /**
-     * @brief Stores the jacobi on the tape if the index is active.
-     *
-     * @param[in]   data Not used in this implementation.
-     * @param[in] jacobi Stored on the tape if the variable is active.
-     * @param[in]  value Not used in this implementation.
-     * @param[in]  index Used to check if the variable is active.
-     *
-     * @tparam Data  The type of the data for the tape.
-     */
-    template<typename Data>
-    inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(data);
-      CODI_UNUSED(value);
-      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
-          ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
-            this->data.setDataAndMove(std::make_tuple(jacobi, index));
-          }
-        }
       }
     }
 
@@ -494,7 +433,7 @@ public:
       reset(Position());
     }
 
-  private:
+  public:
 
     /**
      * @brief Implementation of the AD stack evaluation.
@@ -509,7 +448,7 @@ public:
      * @param[in]    jacobies The pointer to the jacobi vector.
      * @param[in]     indices The pointer to the index vector
      */
-    inline void evaluateExpressions(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    inline void evalJacobiesCallback(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
@@ -529,8 +468,6 @@ public:
       }
     }
 
-  public:
-
     /**
      * @brief Evaluate a part of the statement vector.
      *
@@ -544,12 +481,12 @@ public:
     inline void evalExtFuncCallback(const typename StatementChunkVector::Position& start, const typename StatementChunkVector::Position& end) {
       StatementInt* statementData;
       size_t dataPos = start.data;
-      typename DataChunkVector::Position curInnerPos = start.inner;
+      typename JacobiModType::Position curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         std::tie(statementData) = statements.getDataAtPosition(curChunk, 0);
 
-        typename DataChunkVector::Position endInnerPos = statements.getInnerPosition(curChunk);
-        evaluateData(curInnerPos, endInnerPos, dataPos, statementData);
+        typename JacobiModType::Position endInnerPos = statements.getInnerPosition(curChunk);
+        JacobiModType::evaluateJacobies(curInnerPos, endInnerPos, dataPos, statementData);
 
         curInnerPos = endInnerPos;
 
@@ -558,42 +495,7 @@ public:
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       std::tie(statementData) = statements.getDataAtPosition(end.chunk, 0);
-      evaluateData(curInnerPos, end.inner, dataPos, statementData);
-    }
-
-  public:
-
-    /**
-     * @brief Evaluate a part of the jacobi vector.
-     *
-     * It has to hold start >= end.
-     *
-     * It calls the evaluation method for the expression counter.
-     *
-     * @param[in]       start The starting point for the jacobi vector.
-     * @param[in]         end The ending point for the jacobi vector.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]  statements The pointer to the statement vector.
-     */
-    inline void evaluateData(const typename DataChunkVector::Position& start, const typename DataChunkVector::Position& end, size_t& stmtPos, StatementInt* &statementData) {
-      Real* jacobiData;
-      IndexType* indexData;
-      size_t dataPos = start.data;
-      typename ExpressionCounter<IndexType>::Position curInnerPos = start.inner;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(jacobiData, indexData) = data.getDataAtPosition(curChunk, 0);
-
-        typename ExpressionCounter<IndexType>::Position endInnerPos = data.getInnerPosition(curChunk);
-        evaluateExpressions(curInnerPos, endInnerPos, stmtPos, statementData, dataPos, jacobiData, indexData);
-
-        curInnerPos = endInnerPos;
-
-        dataPos = data.getChunkUsedData(curChunk - 1);
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(jacobiData, indexData) = data.getDataAtPosition(end.chunk, 0);
-      evaluateExpressions(curInnerPos, end.inner, stmtPos, statementData, dataPos, jacobiData, indexData);
+      JacobiModType::evaluateJacobies(curInnerPos, end.inner, dataPos, statementData);
     }
 
   public:
@@ -687,12 +589,6 @@ public:
       double  memoryUsedStmts = (double)totalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
       double  memoryAllocStmts= (double)nChunksStmts*(double)statements.getChunkSize()
                                 *(double)sizeof(StatementInt)* BYTE_TO_MB;
-      size_t nChunksData  = data.getNumChunks();
-      size_t totalData    = (nChunksData-1)*data.getChunkSize()
-                             +data.getChunkUsedData(nChunksData-1);
-      double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
-      double  memoryAllocData= (double)nChunksData*(double)data.getChunkSize()
-                                *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
 
       std::cout << std::endl
                 << "-------------------------------------" << std::endl
@@ -709,21 +605,9 @@ public:
                 << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                           << std::setprecision(2)
                                           << std::setw(10)
-                                          << memoryUsedStmts << " MB" << std::endl
-                << "-------------------------------------" << std::endl
-                << "Jacobi entries "                       << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Chunks: " << std::setw(10) << nChunksData << std::endl
-                << "  Total Number:     " << std::setw(10) << totalData   << std::endl
-                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryAllocData << " MB" << std::endl
-                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryUsedData << " MB" << std::endl
-                << "-------------------------------------" << std::endl
+                                          << memoryUsedStmts << " MB" << std::endl;
+      JacobiModType::printStatistics();
+      std::cout << "-------------------------------------" << std::endl
                 << "Adjoint vector"                        << std::endl
                 << "-------------------------------------" << std::endl
                 << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
