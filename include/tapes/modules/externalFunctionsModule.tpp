@@ -36,6 +36,8 @@
   #error Please define the name of the tape.
 #endif
 
+  public:
+
     typedef CHILD_VECTOR_TYPE ExtFuncChildVector;
     typedef typename ExtFuncChildVector::Position ExtFuncChildPosition;
 

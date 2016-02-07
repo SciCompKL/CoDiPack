@@ -40,7 +40,6 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "modules/jacobiModule.hpp"
-#include "modules/statementModule.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -95,20 +94,21 @@ namespace codi {
    */
   template <typename Real, typename IndexType>
   class ChunkTape :
-      public JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>,
-      public StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector >
+      public JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>
   {
   public:
 
     #define TAPE_NAME ChunkTape
 
     typedef JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType> JacobiModType;
-    typedef StatementModule<ChunkTape<Real, IndexType>, typename JacobiModule<ChunkTape<Real, IndexType>, ExpressionCounter<IndexType>, Real, IndexType>::Vector > StmtModType;
 
     typedef IndexType GradientData;
 
-    #define CHILD_VECTOR_TYPE typename StmtModType::Vector
-    #define CHILD_VECTOR_NAME StmtModType::vector
+    #define CHILD_VECTOR_TYPE typename JacobiModType::Vector
+    #include "modules/statementModule.tpp"
+
+    #define CHILD_VECTOR_TYPE StmtVector
+    #define CHILD_VECTOR_NAME stmtVector
     #include "modules/externalFunctionsModule.tpp"
 
     /** @brief The position for all the different data vectors. */
@@ -141,8 +141,8 @@ namespace codi {
      */
     ChunkTape() :
       JacobiModType(expressionCount),
-      StmtModType(JacobiModType::vector),
-      extFuncVector(1000, StmtModType::vector),
+      stmtVector(DefaultChunkSize, JacobiModType::vector),
+      extFuncVector(1000, stmtVector),
       expressionCount(),
       adjoints(NULL),
       adjointsSize(0),
@@ -160,7 +160,7 @@ namespace codi {
      */
     void resize(const size_t& dataSize, const size_t& statementSize) {
       JacobiModType::resize(dataSize);
-      StmtModType::resize(statementSize);
+      resizeStmt(statementSize);
     }
 
 private:
@@ -211,7 +211,7 @@ public:
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
         JacobiModType::vector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
-        StmtModType::vector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
@@ -219,7 +219,7 @@ public:
         rhs.template calcGradient<void*>(null);
         size_t activeVariables = JacobiModType::vector.getChunkPosition() - startSize;
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
-          StmtModType::vector.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
+          stmtVector.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
           lhsIndex = ++expressionCount.count;
         } else {
           lhsIndex = 0;
@@ -284,8 +284,8 @@ public:
     inline void store(IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         JacobiModType::vector.reserveItems(size);
-        StmtModType::vector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
-        StmtModType::vector.setDataAndMove(std::make_tuple(size));
+        stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        stmtVector.setDataAndMove(std::make_tuple(size));
         lhsIndex = ++expressionCount.count;
       }
     }
@@ -473,8 +473,8 @@ public:
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalExtFuncCallback(const typename StmtModType::Position& start, const typename StmtModType::Position& end) {
-      StmtModType::evaluateStmt(start, end);
+    inline void evalExtFuncCallback(const StmtPosition& start, const StmtPosition& end) {
+      evaluateStmt(start, end);
     }
 
   public:
@@ -511,8 +511,8 @@ public:
      * @param[inout] value The value which will be marked as an active variable.
      */
     inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
-      StmtModType::vector.reserveItems(1);
-      StmtModType::vector.setDataAndMove(std::make_tuple((StatementInt)0));
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove(std::make_tuple((StatementInt)0));
 
       value.getGradientData() = ++expressionCount.count;
     }
@@ -574,7 +574,7 @@ public:
                                             << std::setw(10)
                                             << memoryAdjoints << " MB" << std::endl
                 << "-------------------------------------" << std::endl;
-      StmtModType::printStatistics();
+      printStmtStatistics();
       JacobiModType::printStatistics();
       printExtFuncStatistics();
       std::cout << std::endl;

@@ -26,49 +26,28 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-#pragma once
+#ifndef CHILD_VECTOR_TYPE
+  #error Please define the type of the child vector
+#endif
+#ifndef TAPE_NAME
+  #error Please define the name of the tape.
+#endif
 
-#include <iostream>
-#include <iomanip>
-#include <cstddef>
-#include <tuple>
 
-#include "../chunk.hpp"
-#include "../chunkVector.hpp"
+  public:
 
-/**
- * @brief Global namespace for CoDiPack - Code Differentiation Package
- */
-namespace codi {
-
-  template <typename Tape, typename ChildVector>
-  class StatementModule {
-
-		public:
-
-    typedef typename ChildVector::Position ChildPosition;
+    typedef CHILD_VECTOR_TYPE StmtChildVector;
+    typedef typename StmtChildVector::Position StmtChildPosition;
 
     /** @brief The data for each statement. */
-    typedef Chunk1<StatementInt> Chunk;
+    typedef Chunk1<StatementInt> StmtChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<Chunk, ChildVector> Vector;
+    typedef ChunkVector<StmtChunk, StmtChildVector> StmtVector;
 
-    typedef typename Vector::Position Position;
+    typedef typename StmtVector::Position StmtPosition;
 
     /** @brief The data for the statements. */
-    Vector vector;
-
-    StatementModule(ChildVector& childVector) :
-      vector(DefaultChunkSize, childVector) {
-      }
-
-    inline const Tape& cast() const {
-      return static_cast<const Tape&>(*this);
-    }
-
-    inline Tape& cast() {
-      return static_cast<Tape&>(*this);
-    }
+    StmtVector stmtVector;
 
     /**
      * @brief Set the size of the statement data chunks.
@@ -76,7 +55,7 @@ namespace codi {
      * @param[in] statementChunkSize The new size for the statement data chunks.
      */
     void setStatementChunkSize(const size_t& statementChunkSize) {
-      vector.setChunkSize(statementChunkSize);
+      stmtVector.setChunkSize(statementChunkSize);
     }
 
     /**
@@ -84,11 +63,11 @@ namespace codi {
      * @return The number of used statements.
      */
     size_t getUsedStatementsSize() {
-      return vector.getDataSize();
+      return stmtVector.getDataSize();
     }
 
-    void resize(const size_t& statementSize) {
-      vector.resize(statementSize);
+    void resizeStmt(const size_t& statementSize) {
+      stmtVector.resize(statementSize);
     }
 
     /**
@@ -101,24 +80,24 @@ namespace codi {
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evaluateStmt(const Position& start, const Position& end) {
+    inline void evaluateStmt(const StmtPosition& start, const StmtPosition& end) {
       StatementInt* statementData;
       size_t dataPos = start.data;
-      ChildPosition curInnerPos = start.inner;
+      StmtChildPosition curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(statementData) = vector.getDataAtPosition(curChunk, 0);
+        std::tie(statementData) = stmtVector.getDataAtPosition(curChunk, 0);
 
-        ChildPosition endInnerPos = vector.getInnerPosition(curChunk);
-        cast().evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData);
+        StmtChildPosition endInnerPos = stmtVector.getInnerPosition(curChunk);
+        evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData);
 
         curInnerPos = endInnerPos;
 
-        dataPos = vector.getChunkUsedData(curChunk - 1);
+        dataPos = stmtVector.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(statementData) = vector.getDataAtPosition(end.chunk, 0);
-      cast().evalStmtCallback(curInnerPos, end.inner, dataPos, statementData);
+      std::tie(statementData) = stmtVector.getDataAtPosition(end.chunk, 0);
+      evalStmtCallback(curInnerPos, end.inner, dataPos, statementData);
     }
 
     /**
@@ -126,12 +105,12 @@ namespace codi {
      *
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
-    void printStatistics(){
-      size_t nChunksStmts  = vector.getNumChunks();
-      size_t totalStmts    = (nChunksStmts-1)*vector.getChunkSize()
-                             +vector.getChunkUsedData(nChunksStmts-1);
+    void printStmtStatistics(){
+      size_t nChunksStmts  = stmtVector.getNumChunks();
+      size_t totalStmts    = (nChunksStmts-1)*stmtVector.getChunkSize()
+                             +stmtVector.getChunkUsedData(nChunksStmts-1);
       double  memoryUsedStmts = (double)totalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
-      double  memoryAllocStmts= (double)nChunksStmts*(double)vector.getChunkSize()
+      double  memoryAllocStmts= (double)nChunksStmts*(double)stmtVector.getChunkSize()
                                 *(double)sizeof(StatementInt)* BYTE_TO_MB;
       std::cout << std::endl
                 << "Statements " << std::endl
@@ -148,5 +127,5 @@ namespace codi {
                                           << memoryUsedStmts << " MB" << std::endl;
 
     }
-  };
-}
+
+#undef CHILD_VECTOR_TYPE
