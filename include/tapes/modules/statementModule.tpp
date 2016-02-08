@@ -29,6 +29,9 @@
 #ifndef CHILD_VECTOR_TYPE
   #error Please define the type of the child vector
 #endif
+#ifndef JACOBI_VECTOR_NAME
+  #error Please define the name of the Jacobi vector
+#endif
 #ifndef TAPE_NAME
   #error Please define the name of the tape.
 #endif
@@ -68,6 +71,107 @@
 
     void resizeStmt(const size_t& statementSize) {
       stmtVector.resize(statementSize);
+    }
+
+    /**
+     * @brief Store the jacobies of the statement on the tape.
+     *
+     * The jacobies and the indices of the rhs expression are
+     * stored on the tape. Also the number of active variables
+     * is stored in the statement vector.
+     *
+     * The gradient data of the lhs will get a new index.
+     * The primal value of the lhs is set to the primal value of the rhs.
+     *
+     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
+     *                           of the right hand side.
+     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be updated.
+     * @param[in]         rhs    The right hand side expression of the assignment.
+     *
+     * @tparam Rhs The expression on the rhs of the statement.
+     */
+    template<typename Rhs>
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+      void* null = NULL;
+      ENABLE_CHECK (OptTapeActivity, active){
+        JACOBI_VECTOR_NAME.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
+        stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        /* first store the size of the current stack position and evaluate the
+         rhs expression. If there was an active variable on the rhs, update
+         the index of the lhs */
+        size_t startSize = JACOBI_VECTOR_NAME.getChunkPosition();
+        rhs.template calcGradient<void*>(null);
+        size_t activeVariables = JACOBI_VECTOR_NAME.getChunkPosition() - startSize;
+        ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
+          stmtVector.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
+          lhsIndex = ++expressionCount.count;
+        } else {
+          lhsIndex = 0;
+        }
+      } else {
+        lhsIndex = 0;
+      }
+      /* now set the value of the lhs */
+      lhsValue = rhs.getValue();
+    }
+
+    /**
+     * @brief Optimization for the copy operation just copies the index of the rhs.
+     *
+     * No data is stored in this method.
+     *
+     * The primal value of the lhs is set to the primal value of the rhs.
+     *
+     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
+     *                           of the right hand side.
+     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
+     * @param[in]         rhs    The right hand side expression of the assignment.
+     */
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkTape<Real, IndexType> >& rhs) {
+      ENABLE_CHECK (OptTapeActivity, active){
+        lhsIndex = rhs.getGradientData();
+      } else {
+        lhsIndex = 0;
+      }
+      lhsValue = rhs.getValue();
+    }
+
+    /**
+     * @brief Optimization for a passive value on the rhs. The lhs index is set to zero.
+     *
+     * No data is stored in this method.
+     *
+     * The primal value of the lhs is set to the primal value of the rhs.
+     *
+     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
+     *                           of the right hand side.
+     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
+     * @param[in]         rhs    The right hand side expression of the assignment.
+     */
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+      ENABLE_CHECK (OptTapeActivity, active){
+        lhsIndex = 0;
+      }
+      lhsValue = rhs;
+    }
+
+    /**
+     * @brief Manual store routine.
+     *
+     * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
+     *
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     *
+     * @param[out]   lhsIndex    The gradient data of the lhs.
+     * @param[in]        size    The number of Jacobi entries.
+     */
+    inline void store(IndexType& lhsIndex, StatementInt size) {
+      ENABLE_CHECK (OptTapeActivity, active){
+        JACOBI_VECTOR_NAME.reserveItems(size);
+        stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+        stmtVector.setDataAndMove(std::make_tuple(size));
+        lhsIndex = ++expressionCount.count;
+      }
     }
 
     /**
