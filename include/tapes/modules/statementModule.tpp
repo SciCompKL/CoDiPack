@@ -184,7 +184,8 @@
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evaluateStmt(const StmtPosition& start, const StmtPosition& end) {
+    template<typename ... Args>
+    inline void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
       StatementInt* statementData;
       size_t dataPos = start.data;
       StmtChildPosition curInnerPos = start.inner;
@@ -192,7 +193,7 @@
         std::tie(statementData) = stmtVector.getDataAtPosition(curChunk, 0);
 
         StmtChildPosition endInnerPos = stmtVector.getInnerPosition(curChunk);
-        evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData);
+        evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData, std::forward<Args>(args)...);
 
         curInnerPos = endInnerPos;
 
@@ -201,7 +202,7 @@
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       std::tie(statementData) = stmtVector.getDataAtPosition(end.chunk, 0);
-      evalStmtCallback(curInnerPos, end.inner, dataPos, statementData);
+      evalStmtCallback(curInnerPos, end.inner, dataPos, statementData, std::forward<Args>(args)...);
     }
 
     /**

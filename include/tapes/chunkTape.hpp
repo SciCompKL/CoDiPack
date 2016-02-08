@@ -100,14 +100,14 @@ namespace codi {
     typedef IndexType GradientData;
 
     #define CHILD_VECTOR_TYPE ExpressionCounter<IndexType>
-    #include "modules/jacobiModule.tpp"
-
-    #define CHILD_VECTOR_TYPE JacobiVector
     #define JACOBI_VECTOR_NAME jacobiVector
     #include "modules/statementModule.tpp"
 
     #define CHILD_VECTOR_TYPE StmtVector
-    #define CHILD_VECTOR_NAME stmtVector
+    #include "modules/jacobiModule.tpp"
+
+    #define CHILD_VECTOR_TYPE JacobiVector
+    #define CHILD_VECTOR_NAME jacobiVector
     #include "modules/externalFunctionsModule.tpp"
 
     /** @brief The position for all the different data vectors. */
@@ -139,9 +139,9 @@ namespace codi {
      * external functions defined in the configuration.
      */
     ChunkTape() :
-      jacobiVector(DefaultChunkSize, expressionCount),
-      stmtVector(DefaultChunkSize, jacobiVector),
-      extFuncVector(1000, stmtVector),
+      stmtVector(DefaultChunkSize, expressionCount),
+      jacobiVector(DefaultChunkSize, stmtVector),
+      extFuncVector(1000, jacobiVector),
       expressionCount(),
       adjoints(NULL),
       adjointsSize(0),
@@ -327,7 +327,7 @@ public:
      * @param[in]    jacobies The pointer to the jacobi vector.
      * @param[in]     indices The pointer to the index vector
      */
-    inline void evalJacobiesCallback(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    inline void evalStmtCallback(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
@@ -357,8 +357,8 @@ public:
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalStmtCallback(const JacobiPosition& start, const JacobiPosition& end, size_t& stmtPos, StatementInt* &statements) {
-      evaluateJacobies(start, end, stmtPos, statements);
+    inline void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+      evaluateStmt(start, end, dataPos, jacobies, indices);
     }
 
     /**
@@ -371,8 +371,8 @@ public:
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalExtFuncCallback(const StmtPosition& start, const StmtPosition& end) {
-      evaluateStmt(start, end);
+    inline void evalExtFuncCallback(const JacobiPosition& start, const JacobiPosition& end) {
+      evaluateJacobies(start, end);
     }
 
   public:

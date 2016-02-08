@@ -121,7 +121,8 @@
      * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
      * @param[in]  statements The pointer to the statement vector.
      */
-    inline void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, size_t& stmtPos, StatementInt* &statementData) {
+    template<typename ... Args>
+    inline void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
       Real* jacobiData;
       IndexType* indexData;
       size_t dataPos = start.data;
@@ -130,7 +131,7 @@
         std::tie(jacobiData, indexData) = jacobiVector.getDataAtPosition(curChunk, 0);
 
         JacobiChildPosition endInnerPos = jacobiVector.getInnerPosition(curChunk);
-        evalJacobiesCallback(curInnerPos, endInnerPos, stmtPos, statementData, dataPos, jacobiData, indexData);
+        evalJacobiesCallback(curInnerPos, endInnerPos, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
 
         curInnerPos = endInnerPos;
 
@@ -139,7 +140,7 @@
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       std::tie(jacobiData, indexData) = jacobiVector.getDataAtPosition(end.chunk, 0);
-      evalJacobiesCallback(curInnerPos, end.inner, stmtPos, statementData, dataPos, jacobiData, indexData);
+      evalJacobiesCallback(curInnerPos, end.inner, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
     }
 
     /**
