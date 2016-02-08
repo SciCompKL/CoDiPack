@@ -143,6 +143,18 @@
       evalJacobiesCallback(curInnerPos, end.inner, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
     }
 
+    inline void incrementAdjoints(const Real& adj, Real* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+      ENABLE_CHECK(OptZeroAdjoint, adj != 0){
+        for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
+          --dataPos;
+          adjoints[indices[dataPos]] += adj * jacobies[dataPos];
+
+        }
+      } else {
+        dataPos -= activeVariables;
+      }
+    }
+
     /**
      * @brief Prints statistics about the tape on the screen
      *

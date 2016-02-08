@@ -334,16 +334,8 @@ public:
         const Real& adj = adjoints[adjPos];
         --adjPos;
         --stmtPos;
-        const StatementInt& activeVariables = statements[stmtPos];
-        ENABLE_CHECK(OptZeroAdjoint, adj != 0){
-          for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
-            --dataPos;
-            adjoints[indices[dataPos]] += adj * jacobies[dataPos];
 
-          }
-        } else {
-          dataPos -= activeVariables;
-        }
+        incrementAdjoints(adj, adjoints, statements[stmtPos], dataPos, jacobies, indices);
       }
     }
 
