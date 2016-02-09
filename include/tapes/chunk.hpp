@@ -60,6 +60,14 @@ namespace codi {
       usedSize(0) {}
 
     /**
+     * @brief Get the maximum size of the chunk
+     * @return The maximum number of items.
+     */
+    inline size_t getSize() {
+      return size;
+    }
+
+    /**
      * @brief Get the number of used items.
      * @return The number of used items.
      */

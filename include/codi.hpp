@@ -103,14 +103,14 @@ namespace codi {
    *  assert(a.getGradient() == 6.0);
    * \endcode
    */
-  typedef ActiveReal<double, ChunkTape<double, LinearIndexHandler<int>> > RealReverse;
+  typedef ActiveReal<double, ChunkTape<double, LinearIndexHandler<int>, ChunkTapeTypes<double, LinearIndexHandler<int> > > > RealReverse;
 
   /**
    * @brief The default reverse type in CoDiPack with float as the real value type.
    *
    * See the documentation of #RealReverse.
    */
-  typedef ActiveReal<float, ChunkTape<float, LinearIndexHandler<int>> > RealReverseFloat;
+  typedef ActiveReal<float, ChunkTape<float, LinearIndexHandler<int>, ChunkTapeTypes<float, LinearIndexHandler<int> > > > RealReverseFloat;
 
   /**
    * @brief The reverse type in CoDiPack with an unchecked tape.
@@ -167,14 +167,14 @@ namespace codi {
    * like memset and memcpy.
    *
    */
-  typedef ActiveReal<double, ChunkIndexTape<double, ReuseIndexHandler<int> > > RealReverseIndex;
+  typedef ActiveReal<double, ChunkIndexTape<double, ReuseIndexHandler<int>, ChunkIndexTapeTypes<double, ReuseIndexHandler<int> > > > RealReverseIndex;
 
   /**
    * @brief The reverse type in CoDiPack with float as the real value type and an index reuse tape.
    *
    * See the documentation of #RealReverseIndex.
    */
-  typedef ActiveReal<float, ChunkIndexTape<float, ReuseIndexHandler<int> > > RealReverseIndexFloat;
+  typedef ActiveReal<float, ChunkIndexTape<float, ReuseIndexHandler<int>, ChunkIndexTapeTypes<float, ReuseIndexHandler<int> > > > RealReverseIndexFloat;
 
   /**
    * @brief A reverse type like the unchecked reverse type in CoDiPack but with index reuse.

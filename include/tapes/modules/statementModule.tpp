@@ -32,8 +32,8 @@
 #ifndef JACOBI_VECTOR_NAME
   #error Please define the name of the Jacobi vector
 #endif
-#ifndef STATEMENT_CHUNK_TYPE
-  #error Please define the type of the statement chunk
+#ifndef VECTOR_TYPE
+  #error Please define the name of the chunk vector type.
 #endif
 #ifndef STATEMENT_PUSH_FUNCTION_NAME
   #error Please define the name of the statement push function
@@ -45,10 +45,10 @@
     typedef CHILD_VECTOR_TYPE StmtChildVector;
     typedef typename StmtChildVector::Position StmtChildPosition;
 
-    /** @brief The data for each statement. */
-    typedef STATEMENT_CHUNK_TYPE StmtChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StmtChunk, StmtChildVector> StmtVector;
+    typedef VECTOR_TYPE StmtVector;
+    /** @brief The data for each statement. */
+    typedef typename StmtVector::ChunkType StmtChunk;
 
     typedef typename StmtVector::Position StmtPosition;
 
@@ -186,5 +186,5 @@
 
 #undef CHILD_VECTOR_TYPE
 #undef JACOBI_VECTOR_NAME
-#undef STATEMENT_CHUNK_TYPE
+#undef VECTOR_TYPE
 #undef STATEMENT_PUSH_FUNCTION_NAME

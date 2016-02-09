@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -28,8 +28,36 @@
 
 #pragma once
 
-#include <codi.hpp>
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
+namespace codi {
 
-typedef codi::ActiveReal<codi::RealForward, codi::ChunkTape<codi::RealForward, codi::LinearIndexHandler<int>, codi::ChunkTapeTypes<codi::RealForward, codi::LinearIndexHandler<int> > > > NUMBER;
+  /**
+   * @brief Implementation for a terminal sequence chunk vector
+   *
+   * This interface provides the basic implementation for a terminal point
+   * in a chain of chunk vectors.
+   */
+  struct EmptyChunkVector {
+    /**
+     * @brief Position without any data.
+     */
+    struct Position {};
 
-#include "../globalDefines.h"
+    /**
+     * @brief Empty position.
+     * @return Empty position
+     */
+    inline Position getPosition() const {
+      return Position();
+    }
+
+    /**
+     * @brief Will do nothing.
+     */
+    inline void reset(const Position& pos) {
+      CODI_UNUSED(pos);
+    }
+  };
+}

@@ -180,7 +180,10 @@
      * @brief Reset the tape to its initial state.
      */
     inline void reset() {
-      reset(Position());
+      clearAdjoints();
+
+      // reset will be done iteratively through the vectors
+      RESET_FUNCTION_NAME(Position());
     }
 
     /**

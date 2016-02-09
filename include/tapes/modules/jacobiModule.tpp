@@ -26,11 +26,15 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
+#ifndef TAPE_NAME
+  #error Please define the name of the tape.
+#endif
+
 #ifndef CHILD_VECTOR_TYPE
   #error Please define the type of the child vector
 #endif
-#ifndef TAPE_NAME
-  #error Please define the name of the tape.
+#ifndef VECTOR_TYPE
+  #error Please define the name of the chunk vector type.
 #endif
 
 		public:
@@ -38,9 +42,11 @@
     typedef CHILD_VECTOR_TYPE JacobiChildVector;
     typedef typename JacobiChildVector::Position JacobiChildPosition;
 
-    typedef Chunk2< Real, IndexType> JacobiChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef ChunkVector<JacobiChunk, JacobiChildVector > JacobiVector;
+    /** @brief The vector for the jacobi data. */
+    typedef VECTOR_TYPE JacobiVector;
+
+    /** @brief The data for the jacobies */
+    typedef typename JacobiVector::ChunkType JacobiChunk;
 
     typedef typename JacobiVector::Position JacobiPosition;
 
@@ -180,3 +186,4 @@
     }
 
 #undef CHILD_VECTOR_TYPE
+#undef VECTOR_TYPE

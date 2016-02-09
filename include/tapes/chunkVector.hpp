@@ -32,39 +32,12 @@
 #include <vector>
 
 #include "chunk.hpp"
+#include "emptyChunkVector.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
-
-  /**
-   * @brief Implementation for a terminal sequence chunk vector
-   *
-   * This interface provides the basic implementation for a terminal point
-   * in a chain of chunk vectors.
-   */
-  struct EmptyChunkVector {
-    /**
-     * @brief Position without any data.
-     */
-    struct Position {};
-
-    /**
-     * @brief Empty position.
-     * @return Empty position
-     */
-    inline Position getPosition() const {
-      return Position();
-    }
-
-    /**
-     * @brief Will do nothing.
-     */
-    inline void reset(const Position& pos) {
-      CODI_UNUSED(pos);
-    }
-  };
 
   /**
    * @brief A vector which manages chunks of data for the taping process.
@@ -101,6 +74,11 @@ namespace codi {
     typedef typename NestedVector::Position NestedPosition;
 
     /**
+     * @brief Typedef of the ChunkData for other classes
+     */
+    typedef ChunkData ChunkType;
+
+    /**
      * @brief Position of this chunk vector.
      *
      * The position also includes the position of the nested vector,
@@ -108,9 +86,6 @@ namespace codi {
      * is available to the user.
      */
     struct Position {
-      /**
-       * @brief chunk
-       */
       size_t chunk; /**< Index of the chunk */
       size_t data;  /**< Data position in the chunk */
 

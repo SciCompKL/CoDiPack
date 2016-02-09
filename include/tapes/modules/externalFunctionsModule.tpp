@@ -26,14 +26,18 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
+#ifndef TAPE_NAME
+  #error Please define the name of the tape.
+#endif
+
 #ifndef CHILD_VECTOR_TYPE
   #error Please define the type of the child vector
 #endif
 #ifndef CHILD_VECTOR_NAME
   #error Please define the name of the child vector
 #endif
-#ifndef TAPE_NAME
-  #error Please define the name of the tape.
+#ifndef VECTOR_TYPE
+  #error Please define the name of the chunk vector type.
 #endif
 
   public:
@@ -41,10 +45,10 @@
     typedef CHILD_VECTOR_TYPE ExtFuncChildVector;
     typedef typename ExtFuncChildVector::Position ExtFuncChildPosition;
 
+    /** @brief The vector for the external function data. */
+    typedef VECTOR_TYPE ExtFuncVector;
     /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction, ExtFuncChildPosition> ExtFuncChunk;
-    /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<ExtFuncChunk, ExtFuncChildVector> ExtFuncVector;
+    typedef typename ExtFuncVector::ChunkType ExtFuncChunk;
 
     typedef typename ExtFuncVector::Position ExtFuncPosition;
 
@@ -198,3 +202,4 @@
 
 #undef CHILD_VECTOR_TYPE
 #undef CHILD_VECTOR_NAME
+#undef VECTOR_TYPE

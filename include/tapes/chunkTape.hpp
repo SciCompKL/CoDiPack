@@ -54,20 +54,20 @@ namespace codi {
     /** @brief The data for each statement. */
     typedef Chunk1<StatementInt> StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StatementChunk, IndexHandler> StatementChunkVector;
+    typedef ChunkVector<StatementChunk, IndexHandler> StatementVector;
 
     /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, typename IndexHandler::IndexType> DataChunk;
+    typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
     /** @brief The chunk vector for the jacobi data. */
-    typedef ChunkVector<DataChunk, StatementChunkVector> DataChunkVector;
+    typedef ChunkVector<JacobiChunk, StatementVector> JacobiVector;
 
     /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename DataChunkVector::Position> ExternalFunctionChunk;
+    typedef Chunk2<ExternalFunction,typename JacobiVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<ExternalFunctionChunk, DataChunkVector> ExternalFunctionChunkVector;
+    typedef ChunkVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
 
     /** @brief The position for all the different data vectors. */
-    typedef typename ExternalFunctionChunkVector::Position Position;
+    typedef typename ExternalFunctionVector::Position Position;
 
   };
 
@@ -87,11 +87,12 @@ namespace codi {
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
    *
-   * @tparam      Real  The floating point type used in the ActiveReal.
-   * @tparam IndexType  The type for the indexing of the adjoint variables.
+   * @tparam        Real  The floating point type used in the ActiveReal.
+   * @tparam   IndexType  The type for the indexing of the adjoint variables.
+   * @tparam VectorTypes  The types for the data vectors.
    */
-  template <typename Real, typename IndexHandler>
-  class ChunkTape {
+  template <typename Real, typename IndexHandler, typename VectorTypes>
+  class ChunkTape : public ReverseTapeInterface<Real, typename IndexHandler::IndexType, ChunkTape<Real, IndexHandler, VectorTypes>, typename VectorTypes::Position > {
   public:
 
     #define TAPE_NAME ChunkTape
@@ -99,7 +100,7 @@ namespace codi {
     typedef typename IndexHandler::IndexType IndexType;
     typedef IndexType GradientData;
 
-    #define POSITION_TYPE typename ChunkTapeTypes<Real, IndexHandler>::Position
+    #define POSITION_TYPE typename VectorTypes::Position
     #define INDEX_HANDLER_TYPE IndexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateExtFunc
@@ -107,15 +108,17 @@ namespace codi {
 
     #define CHILD_VECTOR_TYPE IndexHandler
     #define JACOBI_VECTOR_NAME jacobiVector
-    #define STATEMENT_CHUNK_TYPE typename ChunkTapeTypes<Real, IndexHandler>::StatementChunk
+    #define VECTOR_TYPE typename VectorTypes::StatementVector
     #define STATEMENT_PUSH_FUNCTION_NAME pushStmtData
     #include "modules/statementModule.tpp"
 
     #define CHILD_VECTOR_TYPE StmtVector
+    #define VECTOR_TYPE typename VectorTypes::JacobiVector
     #include "modules/jacobiModule.tpp"
 
     #define CHILD_VECTOR_TYPE JacobiVector
     #define CHILD_VECTOR_NAME jacobiVector
+    #define VECTOR_TYPE typename VectorTypes::ExternalFunctionVector
     #include "modules/externalFunctionsModule.tpp"
 
     #undef TAPE_NAME
@@ -151,7 +154,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkTape<Real, IndexHandler> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkTape<Real, IndexHandler, VectorTypes> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       } else {
@@ -195,7 +198,7 @@ namespace codi {
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getPosition() const {
+    inline Position getPosition() {
       return getExtFuncPosition();
     }
 
@@ -293,7 +296,7 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexHandler> >& value) {
+    inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexHandler, VectorTypes> >& value) {
       stmtVector.reserveItems(1);
       stmtVector.setDataAndMove(std::make_tuple((StatementInt)0));
 
@@ -308,7 +311,7 @@ namespace codi {
      *
      * @param[in] value A new index is assigned.
      */
-    inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexHandler> >& value) {
+    inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexHandler, VectorTypes> >& value) {
       value = 1.0 * value;
     }
 
