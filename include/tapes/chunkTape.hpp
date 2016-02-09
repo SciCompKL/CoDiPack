@@ -226,7 +226,7 @@ namespace codi {
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getPosition() {
+    inline Position getPosition() const {
       return getExtFuncPosition();
     }
 
