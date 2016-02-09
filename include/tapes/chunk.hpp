@@ -63,7 +63,7 @@ namespace codi {
      * @brief Get the maximum size of the chunk
      * @return The maximum number of items.
      */
-    inline size_t getSize() {
+    inline size_t getSize() const {
       return size;
     }
 
@@ -71,7 +71,7 @@ namespace codi {
      * @brief Get the number of used items.
      * @return The number of used items.
      */
-    inline size_t getUsedSize() {
+    inline size_t getUsedSize() const {
       return usedSize;
     }
 
@@ -79,7 +79,7 @@ namespace codi {
      * @brief Get the number of free items.
      * @return The number of free items.
      */
-    inline size_t getUnusedSize() {
+    inline size_t getUnusedSize() const {
       return size - usedSize;
     }
 

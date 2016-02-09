@@ -37,6 +37,7 @@
 #include "chunk.hpp"
 #include "chunkVector.hpp"
 #include "externalFunctions.hpp"
+#include "singleChunkVector.hpp"
 #include "reverseTapeInterface.hpp"
 
 /**
@@ -65,6 +66,33 @@ namespace codi {
     typedef Chunk2<ExternalFunction,typename JacobiVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
     typedef ChunkVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
+
+    /** @brief The position for all the different data vectors. */
+    typedef typename ExternalFunctionVector::Position Position;
+
+  };
+
+  /**
+   * @brief Helper struct to define the nested vectors for the SimpleTape.
+   *
+   * See ChunkTape for details.
+   */
+  template <typename Real, typename IndexHandler>
+  struct SimpleTapeTypes {
+    /** @brief The data for each statement. */
+    typedef Chunk1<StatementInt> StatementChunk;
+    /** @brief The chunk vector for the statement data. */
+    typedef SingleChunkVector<StatementChunk, IndexHandler> StatementVector;
+
+    /** @brief The data for the jacobies of each statement */
+    typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
+    /** @brief The chunk vector for the jacobi data. */
+    typedef SingleChunkVector<JacobiChunk, StatementVector> JacobiVector;
+
+    /** @brief The data for the external functions. */
+    typedef Chunk2<ExternalFunction,typename JacobiVector::Position> ExternalFunctionChunk;
+    /** @brief The chunk vector for the external  function data. */
+    typedef SingleChunkVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;

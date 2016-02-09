@@ -148,14 +148,14 @@ namespace codi {
    *  assert(a.getGradient() == 6.0);
    * \endcode
    */
-  typedef ActiveReal<double, SimpleTape<double, int> > RealReverseUnchecked;
+  typedef ActiveReal<double, ChunkTape<double, LinearIndexHandler<int>, SimpleTapeTypes<double, LinearIndexHandler<int> > > > RealReverseUnchecked;
 
   /**
    * @brief The reverse type in CoDiPack with float as the real value type and an unchecked tape.
    *
    * See the documentation of #RealReverseUnchecked.
    */
-  typedef ActiveReal<float, SimpleTape<float, int> > RealReverseUncheckedFloat;
+  typedef ActiveReal<float, ChunkTape<float, LinearIndexHandler<int>, SimpleTapeTypes<float, LinearIndexHandler<int> > > > RealReverseUncheckedFloat;
 
 
   /**
