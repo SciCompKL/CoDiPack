@@ -36,7 +36,6 @@
 #include "../activeReal.hpp"
 #include "chunk.hpp"
 #include "chunkVector.hpp"
-#include "expressionCounter.hpp"
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 
@@ -50,22 +49,22 @@ namespace codi {
    *
    * See ChunkTape for details.
    */
-  template <typename Real, typename IndexType>
+  template <typename Real, typename IndexHandler>
   struct ChunkTapeTypes {
-    /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, IndexType> DataChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef ChunkVector<DataChunk, ExpressionCounter<IndexType> > DataChunkVector;
-
     /** @brief The data for each statement. */
     typedef Chunk1<StatementInt> StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StatementChunk, DataChunkVector> StatementChunkVector;
+    typedef ChunkVector<StatementChunk, IndexHandler> StatementChunkVector;
+
+    /** @brief The data for the jacobies of each statement */
+    typedef Chunk2< Real, typename IndexHandler::IndexType> DataChunk;
+    /** @brief The chunk vector for the jacobi data. */
+    typedef ChunkVector<DataChunk, StatementChunkVector> DataChunkVector;
 
     /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename StatementChunkVector::Position> ExternalFunctionChunk;
+    typedef Chunk2<ExternalFunction,typename DataChunkVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<ExternalFunctionChunk, StatementChunkVector> ExternalFunctionChunkVector;
+    typedef ChunkVector<ExternalFunctionChunk, DataChunkVector> ExternalFunctionChunkVector;
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionChunkVector::Position Position;
@@ -83,7 +82,7 @@ namespace codi {
    * the different data vectors. The current implementation uses 3 ChunkVectors
    * and one terminator. The relation is
    *
-   * externalFunctions -> statements -> jacobiData -> expressionCounter.
+   * externalFunctions -> statements -> jacobiData -> indexHandler.
    *
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
@@ -91,15 +90,23 @@ namespace codi {
    * @tparam      Real  The floating point type used in the ActiveReal.
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
-  template <typename Real, typename IndexType>
+  template <typename Real, typename IndexHandler>
   class ChunkTape {
   public:
 
     #define TAPE_NAME ChunkTape
 
+    typedef typename IndexHandler::IndexType IndexType;
     typedef IndexType GradientData;
 
-    #define CHILD_VECTOR_TYPE ExpressionCounter<IndexType>
+    #define POSITION_TYPE typename ChunkTapeTypes<Real, IndexHandler>::Position
+    #define INDEX_HANDLER_TYPE IndexHandler
+    #define RESET_FUNCTION_NAME resetExtFunc
+    #define EVALUATE_FUNCTION_NAME evaluateExtFunc
+    #include "modules/tapeBaseModule.tpp"
+
+
+    #define CHILD_VECTOR_TYPE IndexHandler
     #define JACOBI_VECTOR_NAME jacobiVector
     #include "modules/statementModule.tpp"
 
@@ -110,28 +117,6 @@ namespace codi {
     #define CHILD_VECTOR_NAME jacobiVector
     #include "modules/externalFunctionsModule.tpp"
 
-    /** @brief The position for all the different data vectors. */
-    typedef ExtFuncPosition Position;
-
-  private:
-
-    /** @brief The counter for the current expression. */
-    ExpressionCounter<IndexType> expressionCount;
-
-    /**
-     * @brief The adjoint vector.
-     *
-     * The size of the adjoint vector is set according to the requested positions.
-     * But the positions should not be greater than the current expression counter.
-     */
-    Real* adjoints;
-    /* @brief The current size of the adjoint vector. */
-    IndexType adjointsSize;
-
-    /**
-     * @brief Determines if statements are recorded or ignored.
-     */
-    bool active;
 
   public:
     /**
@@ -139,13 +124,34 @@ namespace codi {
      * external functions defined in the configuration.
      */
     ChunkTape() :
-      stmtVector(DefaultChunkSize, expressionCount),
-      jacobiVector(DefaultChunkSize, stmtVector),
-      extFuncVector(1000, jacobiVector),
-      expressionCount(),
+      indexHandler(),
       adjoints(NULL),
       adjointsSize(0),
-      active(false){
+      active(false),
+      stmtVector(DefaultChunkSize, indexHandler),
+      jacobiVector(DefaultChunkSize, stmtVector),
+      extFuncVector(1000, jacobiVector) {
+    }
+
+    /**
+     * @brief Optimization for the copy operation just copies the index of the rhs.
+     *
+     * No data is stored in this method.
+     *
+     * The primal value of the lhs is set to the primal value of the rhs.
+     *
+     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
+     *                           of the right hand side.
+     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
+     * @param[in]         rhs    The right hand side expression of the assignment.
+     */
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkTape<Real, IndexHandler> >& rhs) {
+      ENABLE_CHECK (OptTapeActivity, active){
+        lhsIndex = rhs.getGradientData();
+      } else {
+        lhsIndex = 0;
+      }
+      lhsValue = rhs.getValue();
     }
 
     /**
@@ -162,121 +168,6 @@ namespace codi {
       resizeStmt(statementSize);
     }
 
-private:
-    /**
-     * @brief Helper function: Sets the adjoint vector to a new size.
-     *
-     * @param[in] size The new size for the adjoint vector.
-     */
-    void resizeAdjoints(const IndexType& size) {
-      IndexType oldSize = adjointsSize;
-      adjointsSize = size;
-
-      adjoints = (Real*)realloc(adjoints, sizeof(Real) * (size_t)adjointsSize);
-
-      for(IndexType i = oldSize; i < adjointsSize; ++i) {
-        adjoints[i] = 0.0;
-      }
-    }
-
-public:
-    /**
-     * @brief Allocate the adjoint vector such that it fits the current number of statements.
-     */
-    void allocateAdjoints() {
-      //TODO: Tim fragen of er das brauch
-      resizeAdjoints(expressionCount.count + 1);
-    }
-
-    /**
-     * @brief Set the index to zero.
-     * @param[in] value Not used in this implementation.
-     * @param[out] index The index of the active type.
-     */
-    inline void initGradientData(Real& value, IndexType& index) {
-      CODI_UNUSED(value);
-      index = 0;
-    }
-
-    /**
-     * @brief Does nothing.
-     * @param[in] value Not used in this implementation.
-     * @param[in] index Not used in this implementation.
-     */
-    inline void destroyGradientData(Real& value, IndexType& index) {
-      CODI_UNUSED(value);
-      CODI_UNUSED(index);
-      /* nothing to do */
-    }
-
-
-    /**
-     * @brief Set the gradient value of the corresponding index.
-     *
-     * If the index 0 is the inactive indicator and is ignored.
-     *
-     * @param[in]    index  The index of the active type.
-     * @param[in] gradient  The new value for the gradient.
-     */
-    void setGradient(IndexType& index, const Real& gradient) {
-      if(0 != index) {
-        this->gradient(index) = gradient;
-      }
-    }
-
-    /**
-     * @brief Get the gradient value of the corresponding index.
-     *
-     * @param[in] index The index of the active type.
-     * @return The gradient value corresponding to the given index.
-     */
-    inline Real getGradient(const IndexType& index) const {
-      if(adjointsSize <= index) {
-        return Real();
-      } else {
-        return adjoints[index];
-      }
-    }
-
-    /**
-     * @brief Get a reference to the gradient value of the corresponding index.
-     *
-     * An index of 0 will raise an assert exception.
-     *
-     * @param[in] index The index of the active type.
-     * @return The reference to the gradient data.
-     */
-    inline Real& gradient(IndexType& index) {
-      assert(0 != index);
-
-      //TODO: Add error when index is bigger than expression count
-      if(adjointsSize <= index) {
-        resizeAdjoints(index + 1);
-      }
-
-      return adjoints[index];
-    }
-
-    /**
-     * @brief Get the current position of the tape.
-     *
-     * The position can be used to reset the tape to that position or to
-     * evaluate only parts of the tape.
-     * @return The current position of the tape.
-     */
-    inline Position getPosition() const {
-      return getExtFuncPosition();
-    }
-
-    /**
-     * @brief Sets all adjoint/gradients to zero.
-     */
-    inline void clearAdjoints(){
-      for(IndexType i = 0; i <= expressionCount.count; ++i) {
-        adjoints[i] = 0.0;
-      }
-    }
-
     /**
      * @brief Sets all adjoint/gradients to zero.
      *
@@ -290,29 +181,6 @@ public:
         adjoints[i] = 0.0;
       }
     }
-
-    /**
-     * @brief Reset the tape to the given position.
-     *
-     * @param[in] pos Reset the state of the tape to the given position.
-     */
-    inline void reset(const Position& pos) {
-      for(IndexType i = pos.inner.inner.inner; i <= expressionCount.count; ++i) {
-        adjoints[i] = 0.0;
-      }
-
-      // reset will be done iteratively through the vectors
-      resetExtFunc(pos);
-    }
-
-    /**
-     * @brief Reset the tape to its initial state.
-     */
-    inline void reset() {
-      reset(Position());
-    }
-
-  public:
 
     /**
      * @brief Implementation of the AD stack evaluation.
@@ -368,31 +236,6 @@ public:
     }
 
   public:
-    /**
-     * @brief Perform the adjoint evaluation from start to end.
-     *
-     * It has to hold start >= end.
-     *
-     * @param[in] start  The starting position for the adjoint evaluation.
-     * @param[in]   end  The ending position for the adjoint evaluation.
-     */
-    void evaluate(const Position& start, const Position& end) {
-      if(adjointsSize <= expressionCount.count) {
-        resizeAdjoints(expressionCount.count + 1);
-      }
-
-      evaluateExtFunc(start, end);
-    }
-
-
-    /**
-     * @brief Perform the adjoint evaluation from the current position to the initial position.
-     */
-    void evaluate() {
-      evaluate(getPosition(), Position());
-    }
-
-  public:
 
     /**
      * @brief Register a variable as an active variable.
@@ -400,11 +243,11 @@ public:
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
+    inline void registerInput(ActiveReal<Real, ChunkTape<Real, IndexHandler> >& value) {
       stmtVector.reserveItems(1);
       stmtVector.setDataAndMove(std::make_tuple((StatementInt)0));
 
-      value.getGradientData() = ++expressionCount.count;
+      value.getGradientData() = indexHandler.createIndex();
     }
 
     /**
@@ -415,30 +258,8 @@ public:
      *
      * @param[in] value A new index is assigned.
      */
-    inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
+    inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexHandler> >& value) {
       value = 1.0 * value;
-    }
-
-    /**
-     * @brief Start recording.
-     */
-    inline void setActive(){
-      active = true;
-    }
-
-    /**
-     * @brief Stop recording.
-     */
-    inline void setPassive(){
-      active = false;
-    }
-
-    /**
-     * @brief Check if the tape is active.
-     * @return true if the tape is active.
-     */
-    inline bool isActive(){
-      return active;
     }
 
     /**
@@ -447,23 +268,12 @@ public:
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
     void printStatistics(){
-      const double BYTE_TO_MB = 1.0/1024.0/1024.0;
-
-      size_t nAdjoints      = expressionCount.count + 1;
-      double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
       std::cout << std::endl
                 << "-------------------------------------" << std::endl
                 << "CoDi Tape Statistics (ChunkTape)"      << std::endl
-                << "-------------------------------------" << std::endl
-                << "Adjoint vector"                        << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
-                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
-                                            << std::setprecision(2)
-                                            << std::setw(10)
-                                            << memoryAdjoints << " MB" << std::endl
                 << "-------------------------------------" << std::endl;
+      printTapeBaseStatistics();
       printStmtStatistics();
       printJacobiStatistics();
       printExtFuncStatistics();

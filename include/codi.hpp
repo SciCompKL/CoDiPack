@@ -34,6 +34,7 @@
 #include "tapes/simpleIndexTape.hpp"
 #include "tapes/chunkTape.hpp"
 #include "tapes/chunkIndexTape.hpp"
+#include "tapes/indices/linearIndexHandler.hpp"
 #include "tools/dataStore.hpp"
 
 /**
@@ -101,14 +102,14 @@ namespace codi {
    *  assert(a.getGradient() == 6.0);
    * \endcode
    */
-  typedef ActiveReal<double, ChunkTape<double, int> > RealReverse;
+  typedef ActiveReal<double, ChunkTape<double, LinearIndexHandler<int>> > RealReverse;
 
   /**
    * @brief The default reverse type in CoDiPack with float as the real value type.
    *
    * See the documentation of #RealReverse.
    */
-  typedef ActiveReal<float, ChunkTape<float, int> > RealReverseFloat;
+  typedef ActiveReal<float, ChunkTape<float, LinearIndexHandler<int>> > RealReverseFloat;
 
   /**
    * @brief The reverse type in CoDiPack with an unchecked tape.
