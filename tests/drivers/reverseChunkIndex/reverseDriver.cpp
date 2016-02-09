@@ -85,6 +85,7 @@ int main(int nargs, char** args) {
       }
 
       tape.reset();
+      tape.clearAdjoints();
     }
 
     for(int curIn = 0; curIn < inputs; ++curIn) {

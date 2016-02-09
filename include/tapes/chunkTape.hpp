@@ -105,9 +105,10 @@ namespace codi {
     #define EVALUATE_FUNCTION_NAME evaluateExtFunc
     #include "modules/tapeBaseModule.tpp"
 
-
     #define CHILD_VECTOR_TYPE IndexHandler
     #define JACOBI_VECTOR_NAME jacobiVector
+    #define STATEMENT_CHUNK_TYPE typename ChunkTapeTypes<Real, IndexHandler>::StatementChunk
+    #define STATEMENT_PUSH_FUNCTION_NAME pushStmtData
     #include "modules/statementModule.tpp"
 
     #define CHILD_VECTOR_TYPE StmtVector
@@ -117,6 +118,7 @@ namespace codi {
     #define CHILD_VECTOR_NAME jacobiVector
     #include "modules/externalFunctionsModule.tpp"
 
+    #undef TAPE_NAME
 
   public:
     /**
@@ -131,6 +133,10 @@ namespace codi {
       stmtVector(DefaultChunkSize, indexHandler),
       jacobiVector(DefaultChunkSize, stmtVector),
       extFuncVector(1000, jacobiVector) {
+    }
+
+    inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
+      stmtVector.setDataAndMove(std::make_tuple(numberOfArguments));
     }
 
     /**
@@ -149,7 +155,7 @@ namespace codi {
       ENABLE_CHECK (OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       } else {
-        lhsIndex = 0;
+        indexHandler.freeIndex(lhsIndex);
       }
       lhsValue = rhs.getValue();
     }
@@ -183,6 +189,18 @@ namespace codi {
     }
 
     /**
+     * @brief Get the current position of the tape.
+     *
+     * The position can be used to reset the tape to that position or to
+     * evaluate only parts of the tape.
+     * @return The current position of the tape.
+     */
+    inline Position getPosition() const {
+      return getExtFuncPosition();
+    }
+
+
+    /**
      * @brief Implementation of the AD stack evaluation.
      *
      * It has to hold startAdjPos >= endAdjPos.
@@ -206,6 +224,38 @@ namespace codi {
         incrementAdjoints(adj, adjoints, statements[stmtPos], dataPos, jacobies, indices);
       }
     }
+
+    /**
+     * @brief Evaluate a part of the statement vector.
+     *
+     * It has to hold start >= end.
+     *
+     * The function calls the evaluation method for the jacobi vector.
+     *
+     * @param[in] start The starting point for the statement vector.
+     * @param[in]   end The ending point for the statement vector.
+     */
+    template<typename ... Args>
+    inline void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
+      StatementInt* statementData;
+      size_t dataPos = start.data;
+      StmtChildPosition curInnerPos = start.inner;
+      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
+        std::tie(statementData) = stmtVector.getDataAtPosition(curChunk, 0);
+
+        StmtChildPosition endInnerPos = stmtVector.getInnerPosition(curChunk);
+        evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData, std::forward<Args>(args)...);
+
+        curInnerPos = endInnerPos;
+
+        dataPos = stmtVector.getChunkUsedData(curChunk - 1);
+      }
+
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      std::tie(statementData) = stmtVector.getDataAtPosition(end.chunk, 0);
+      evalStmtCallback(curInnerPos, end.inner, dataPos, statementData, std::forward<Args>(args)...);
+    }
+
 
     /**
      * @brief Evaluate a part of the statement vector.
@@ -277,6 +327,7 @@ namespace codi {
       printStmtStatistics();
       printJacobiStatistics();
       printExtFuncStatistics();
+      indexHandler.printStatistics();
       std::cout << std::endl;
 
     }

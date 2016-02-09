@@ -155,17 +155,6 @@
     }
 
     /**
-     * @brief Get the current position of the tape.
-     *
-     * The position can be used to reset the tape to that position or to
-     * evaluate only parts of the tape.
-     * @return The current position of the tape.
-     */
-    inline Position getPosition() const {
-      return getExtFuncPosition();
-    }
-
-    /**
      * @brief Sets all adjoint/gradients to zero.
      */
     inline void clearAdjoints(){

@@ -35,6 +35,7 @@
 #include "tapes/chunkTape.hpp"
 #include "tapes/chunkIndexTape.hpp"
 #include "tapes/indices/linearIndexHandler.hpp"
+#include "tapes/indices/reuseIndexHandler.hpp"
 #include "tools/dataStore.hpp"
 
 /**
@@ -166,14 +167,14 @@ namespace codi {
    * like memset and memcpy.
    *
    */
-  typedef ActiveReal<double, ChunkIndexTape<double, int> > RealReverseIndex;
+  typedef ActiveReal<double, ChunkIndexTape<double, ReuseIndexHandler<int> > > RealReverseIndex;
 
   /**
    * @brief The reverse type in CoDiPack with float as the real value type and an index reuse tape.
    *
    * See the documentation of #RealReverseIndex.
    */
-  typedef ActiveReal<float, ChunkIndexTape<float, int> > RealReverseIndexFloat;
+  typedef ActiveReal<float, ChunkIndexTape<float, ReuseIndexHandler<int> > > RealReverseIndexFloat;
 
   /**
    * @brief A reverse type like the unchecked reverse type in CoDiPack but with index reuse.

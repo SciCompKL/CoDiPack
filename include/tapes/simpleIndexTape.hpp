@@ -35,7 +35,7 @@
 
 #include "../activeReal.hpp"
 #include "chunk.hpp"
-#include "indexHandler.hpp"
+#include "indices/reuseIndexHandler.hpp"
 #include "reverseTapeInterface.hpp"
 
 /**
@@ -78,7 +78,7 @@ namespace codi {
    *
    * For details on how this tape works please read the general documentation //TODO: Add reference to chapter.
    *
-   * The tape also uses the index manager IndexHandler to reuse the indices that are deleted.
+   * The tape also uses the index manager ReuseIndexHandler to reuse the indices that are deleted.
    * That means that ActiveReal's which use this tape need to be copied by usual means and deleted after
    * the are no longer used. No c-like memory operations like memset and memcpy should be applied
    * to these types.
@@ -117,7 +117,7 @@ namespace codi {
      */
     Chunk1<Real> adjoints;
 
-    IndexHandler<IndexType> indexHandler;
+    ReuseIndexHandler<IndexType> indexHandler;
 
     /**
      * @brief Determines if statements are recorded or ignored.

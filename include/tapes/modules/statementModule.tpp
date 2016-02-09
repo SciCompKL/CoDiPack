@@ -32,8 +32,11 @@
 #ifndef JACOBI_VECTOR_NAME
   #error Please define the name of the Jacobi vector
 #endif
-#ifndef TAPE_NAME
-  #error Please define the name of the tape.
+#ifndef STATEMENT_CHUNK_TYPE
+  #error Please define the type of the statement chunk
+#endif
+#ifndef STATEMENT_PUSH_FUNCTION_NAME
+  #error Please define the name of the statement push function
 #endif
 
 
@@ -43,7 +46,7 @@
     typedef typename StmtChildVector::Position StmtChildPosition;
 
     /** @brief The data for each statement. */
-    typedef Chunk1<StatementInt> StmtChunk;
+    typedef STATEMENT_CHUNK_TYPE StmtChunk;
     /** @brief The chunk vector for the statement data. */
     typedef ChunkVector<StmtChunk, StmtChildVector> StmtVector;
 
@@ -105,7 +108,7 @@
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
 
           indexHandler.checkIndex(lhsIndex);
-          stmtVector.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
+          STATEMENT_PUSH_FUNCTION_NAME((StatementInt)activeVariables, lhsIndex);
         } else {
           indexHandler.freeIndex(lhsIndex);
         }
@@ -149,38 +152,8 @@
         JACOBI_VECTOR_NAME.reserveItems(size);
         indexHandler.checkIndex(lhsIndex);
         stmtVector.setDataAndMove(std::make_tuple(size));
+        STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
       }
-    }
-
-    /**
-     * @brief Evaluate a part of the statement vector.
-     *
-     * It has to hold start >= end.
-     *
-     * The function calls the evaluation method for the jacobi vector.
-     *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
-     */
-    template<typename ... Args>
-    inline void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
-      StatementInt* statementData;
-      size_t dataPos = start.data;
-      StmtChildPosition curInnerPos = start.inner;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(statementData) = stmtVector.getDataAtPosition(curChunk, 0);
-
-        StmtChildPosition endInnerPos = stmtVector.getInnerPosition(curChunk);
-        evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData, std::forward<Args>(args)...);
-
-        curInnerPos = endInnerPos;
-
-        dataPos = stmtVector.getChunkUsedData(curChunk - 1);
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(statementData) = stmtVector.getDataAtPosition(end.chunk, 0);
-      evalStmtCallback(curInnerPos, end.inner, dataPos, statementData, std::forward<Args>(args)...);
     }
 
     /**
@@ -212,3 +185,6 @@
     }
 
 #undef CHILD_VECTOR_TYPE
+#undef JACOBI_VECTOR_NAME
+#undef STATEMENT_CHUNK_TYPE
+#undef STATEMENT_PUSH_FUNCTION_NAME
