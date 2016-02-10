@@ -56,7 +56,7 @@ namespace codi {
     /**
      * @brief Will do nothing.
      */
-    inline void reset(const Position& pos) {
+    inline void reset(const Position& pos) const {
       CODI_UNUSED(pos);
     }
   };

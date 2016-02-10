@@ -237,7 +237,7 @@ namespace codi {
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getPosition() {
+    inline Position getPosition() const {
       return getExtFuncPosition();
     }
 
@@ -359,7 +359,7 @@ namespace codi {
      *
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
-    void printStatistics(){
+    void printStatistics() const {
 
       std::cout << std::endl
                 << "-------------------------------------" << std::endl

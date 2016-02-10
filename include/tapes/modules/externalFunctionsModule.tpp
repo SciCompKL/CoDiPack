@@ -188,7 +188,7 @@
      *
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
-    void printExtFuncStatistics(){
+    void printExtFuncStatistics() const {
       size_t nExternalFunc = (extFuncVector.getNumChunks()-1)*extFuncVector.getChunkSize()
           +extFuncVector.getChunkUsedData(extFuncVector.getNumChunks()-1);
 

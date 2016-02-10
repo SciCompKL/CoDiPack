@@ -113,7 +113,7 @@ namespace codi {
     *
     * @return The current state. If true the tape is active.
     */
-    virtual bool isActive() = 0;
+    virtual bool isActive() const = 0;
 
     /**
     * @brief Clears the currently stored adjoints.
@@ -146,12 +146,12 @@ namespace codi {
      *
      * @return The current position of the tape.
      */
-    virtual Position getPosition() = 0;
+    virtual Position getPosition() const = 0;
 
     /**
     * @brief Print some statistics about the currently stored information.
     */
-    virtual void printStatistics() = 0;
+    virtual void printStatistics() const = 0;
 
     /**
      * @brief Add a external function to the tape.

@@ -176,7 +176,7 @@ namespace codi {
      *
      * @param items   The maximum number of items to store.
      */
-    inline void reserveItems(const size_t items) {
+    inline void reserveItems(const size_t items) const {
       assert(chunk.getUsedSize() + items < chunk.getSize());
     }
 
@@ -198,7 +198,7 @@ namespace codi {
      * @brief The position inside the data of the current chunk.
      * @return The current position in the current chunk.
      */
-    inline size_t getChunkPosition() {
+    inline size_t getChunkPosition() const {
       return chunk.getUsedSize();
     }
 
@@ -216,7 +216,7 @@ namespace codi {
      * @param chunkIndex  The index of the chunk for which the position is required.
      * @return The position of the nested chunk vector when the chunk was loaded.
      */
-    inline NestedPosition getInnerPosition(const size_t& chunkIndex) {
+    inline NestedPosition getInnerPosition(const size_t& chunkIndex) const {
       assert(0 == chunkIndex);
       return NestedPosition();
     }
@@ -238,7 +238,7 @@ namespace codi {
      * @param chunkIndex  The chunk from which the information is extracted.
      * @return The number of data items used in the chunk.
      */
-    inline size_t getChunkUsedData(const size_t& chunkIndex) {
+    inline size_t getChunkUsedData(const size_t& chunkIndex) const {
       assert(0 == chunkIndex);
 
       return chunk.getUsedSize();
@@ -248,7 +248,7 @@ namespace codi {
      * @brief Get the number of currently allocated chunks.
      * @return The number of currently allocated chunks.
      */
-    inline int getNumChunks(){
+    inline int getNumChunks() const {
       return 1;
     }
 
@@ -256,7 +256,7 @@ namespace codi {
      * @brief Get the chunk size.
      * @return The chunk size.
      */
-    inline size_t getChunkSize(){
+    inline size_t getChunkSize() const {
       return chunk.getSize();
     }
 
@@ -264,7 +264,7 @@ namespace codi {
      * @brief Get the total number of data items used.
      * @return The number of data items used in all chunks.
      */
-    inline size_t getDataSize() {
+    inline size_t getDataSize() const {
       return chunk.getUsedSize();
     }
 
