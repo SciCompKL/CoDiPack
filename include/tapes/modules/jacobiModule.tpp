@@ -66,7 +66,7 @@
      * @brief Return the number of used data entries.
      * @return The number of used data entries.
      */
-    size_t getUsedDataEntriesSize() {
+    size_t getUsedDataEntriesSize() const {
       return jacobiVector.getDataSize();
     }
 
@@ -166,7 +166,7 @@
      *
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
-    void printJacobiStatistics(){
+    void printJacobiStatistics() const {
       size_t nChunksData  = jacobiVector.getNumChunks();
       size_t totalData    = (nChunksData-1)*jacobiVector.getChunkSize()
                              +jacobiVector.getChunkUsedData(nChunksData-1);

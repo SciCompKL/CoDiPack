@@ -278,7 +278,7 @@ namespace codi {
      * @brief The position inside the data of the current chunk.
      * @return The current position in the current chunk.
      */
-    inline size_t getChunkPosition() {
+    inline size_t getChunkPosition() const {
       return curChunk->getUsedSize();
     }
 
@@ -296,7 +296,7 @@ namespace codi {
      * @param chunkIndex  The index of the chunk for which the position is required.
      * @return The position of the nested chunk vector when the chunk was loaded.
      */
-    inline NestedPosition getInnerPosition(const size_t& chunkIndex) {
+    inline NestedPosition getInnerPosition(const size_t& chunkIndex) const {
       assert(chunkIndex < positions.size());
       return positions[chunkIndex];
     }
@@ -318,7 +318,7 @@ namespace codi {
      * @param chunkIndex  The chunk from which the information is extracted.
      * @return The number of data items used in the chunk.
      */
-    inline size_t getChunkUsedData(const size_t& chunkIndex) {
+    inline size_t getChunkUsedData(const size_t& chunkIndex) const {
       assert(chunkIndex < chunks.size());
 
       return chunks[chunkIndex]->getUsedSize();
@@ -328,7 +328,7 @@ namespace codi {
      * @brief Get the number of currently allocated chunks.
      * @return The number of currently allocated chunks.
      */
-    inline int getNumChunks(){
+    inline int getNumChunks() const {
       return chunks.size();
     }
 
@@ -336,7 +336,7 @@ namespace codi {
      * @brief Get the chunk size.
      * @return The chunk size.
      */
-    inline size_t getChunkSize(){
+    inline size_t getChunkSize() const {
       return chunkSize;
     }
 
@@ -344,7 +344,7 @@ namespace codi {
      * @brief Get the total number of data items used.
      * @return The number of data items used in all chunks.
      */
-    inline size_t getDataSize() {
+    inline size_t getDataSize() const {
       size_t size = curChunk->getUsedSize();
       if(getNumChunks() != 0) {
         size += (getNumChunks() - 1) * chunkSize;

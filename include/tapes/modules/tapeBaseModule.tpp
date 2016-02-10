@@ -227,11 +227,11 @@
      * @brief Check if the tape is active.
      * @return true if the tape is active.
      */
-    inline bool isActive(){
+    inline bool isActive() const {
       return active;
     }
 
-    void printTapeBaseStatistics(){
+    void printTapeBaseStatistics() const {
 
       size_t nAdjoints      = indexHandler.getMaximumGlobalIndex() + 1;
       double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;

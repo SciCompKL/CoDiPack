@@ -81,7 +81,7 @@ namespace codi {
        *
        * @param[inout] index  The index that is freed. It is set to zero in the method.
        */
-      inline void freeIndex(Index& index) {
+      inline void freeIndex(Index& index) const {
         index = 0;
       }
 
@@ -110,7 +110,7 @@ namespace codi {
        *
        * @return The maximum index that was used during the lifetime of this index handler.
        */
-      inline Index getMaximumGlobalIndex() {
+      inline Index getMaximumGlobalIndex() const {
         return count;
       }
 
@@ -119,7 +119,7 @@ namespace codi {
        *
        * @return The current maximum index that is in use.
        */
-      inline Index getCurrentIndex() {
+      inline Index getCurrentIndex() const {
         return count;
       }
 
@@ -129,7 +129,7 @@ namespace codi {
        * The method returns the current state of the count value.
        * @return The current value of count.
        */
-      inline Position getPosition() {
+      inline Position getPosition() const {
         return count;
       }
 
@@ -147,7 +147,7 @@ namespace codi {
       /**
        * @ brief There are no statistics for this handler.
        */
-      inline void printStatistics() {
+      inline void printStatistics() const {
         // Do nothing
       }
   };

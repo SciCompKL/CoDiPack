@@ -134,7 +134,7 @@ namespace codi {
       /**
        * @brief Placeholder for further developments.
        */
-      inline void reset() {
+      inline void reset() const {
         /* do nothing */
       }
 
@@ -143,7 +143,7 @@ namespace codi {
        *
        * @return The maximum index that was used during the lifetime of this index handler.
        */
-      inline Index getMaximumGlobalIndex() {
+      inline Index getMaximumGlobalIndex() const {
         return globalMaximumIndex;
       }
 
@@ -152,7 +152,7 @@ namespace codi {
        *
        * @return The current maximum index that is in use.
        */
-      inline Index getCurrentIndex() {
+      inline Index getCurrentIndex() const {
         return currentMaximumIndex;
       }
 
@@ -161,7 +161,7 @@ namespace codi {
        *
        * @return The number of stored indices.
        */
-      size_t getNumberStoredIndices() {
+      size_t getNumberStoredIndices() const {
         return freeIndices.size();
       }
 
@@ -170,11 +170,11 @@ namespace codi {
        *
        * @return The number of the allocated indices.
        */
-      size_t getNumberAllocatedIndices() {
+      size_t getNumberAllocatedIndices() const {
         return freeIndices.capacity();
       }
 
-      void printStatistics() {
+      void printStatistics() const {
         size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
         size_t storedIndices          = (size_t)this->getNumberStoredIndices();
         size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();

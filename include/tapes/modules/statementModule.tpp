@@ -68,7 +68,7 @@
      * @brief Return the number of used statements.
      * @return The number of used statements.
      */
-    size_t getUsedStatementsSize() {
+    size_t getUsedStatementsSize() const {
       return stmtVector.getDataSize();
     }
 
@@ -161,7 +161,7 @@
      *
      * Prints information such as stored statements/adjoints and memory usage on screen.
      */
-    void printStmtStatistics(){
+    void printStmtStatistics() const {
       size_t nChunksStmts  = stmtVector.getNumChunks();
       size_t totalStmts    = (nChunksStmts-1)*stmtVector.getChunkSize()
                              +stmtVector.getChunkUsedData(nChunksStmts-1);
