@@ -768,7 +768,8 @@ public:
      */
     inline void registerOutput(ActiveReal<Real, ChunkTape<Real, IndexType> >& value) {
       CODI_UNUSED(value);
-      /* do nothing */
+
+      value = 1.0 * value;
     }
 
     /**
