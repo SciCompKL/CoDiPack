@@ -29,6 +29,7 @@
 #pragma once
 
 #include <iostream>
+#include <iomanip>
 #include <cstddef>
 #include <tuple>
 
@@ -36,6 +37,7 @@
 #include "chunk.hpp"
 #include "chunkVector.hpp"
 #include "externalFunctions.hpp"
+#include "singleChunkVector.hpp"
 #include "reverseTapeInterface.hpp"
 
 /**
@@ -44,16 +46,19 @@
 namespace codi {
 
   /**
-   * @brief Helper struct to define the nested chunk vectors for the ChunkIndexTape.
+   * @brief Helper struct to define the nested chunk vectors for the JacobiTape.
    *
-   * See ChunkIndexTape for details.
+   * See JacobiTape for details.
    */
   template <typename Real, typename IndexHandler>
-  struct ChunkIndexTapeTypes {
+  struct ChunkTapeTypes {
+    typedef Real RealType;
+    typedef IndexHandler IndexHandlerType;
+
     /** @brief The data for each statement. */
-    typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
+    typedef Chunk1<StatementInt> StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
+    typedef ChunkVector<StatementChunk, IndexHandler> StatementVector;
 
     /** @brief The data for the jacobies of each statement */
     typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
@@ -68,19 +73,24 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    constexpr static const char* tapeName = "ChunkTape";
+
   };
 
   /**
-   * @brief Helper struct to define the nested vectors for the SimpleIndexTape.
+   * @brief Helper struct to define the nested vectors for the SimpleTape.
    *
-   * See ChunkIndexTape for details.
+   * See JacobiTape for details.
    */
   template <typename Real, typename IndexHandler>
-  struct SimpleIndexTapeTypes {
+  struct SimpleTapeTypes {
+    typedef Real RealType;
+    typedef IndexHandler IndexHandlerType;
+
     /** @brief The data for each statement. */
-    typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
+    typedef Chunk1<StatementInt> StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef SingleChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
+    typedef SingleChunkVector<StatementChunk, IndexHandler> StatementVector;
 
     /** @brief The data for the jacobies of each statement */
     typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
@@ -95,12 +105,14 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    constexpr static const char* tapeName = "SimpleTape";
+
   };
 
   /**
    * @brief A tape which grows if more space is needed.
    *
-   * The ChunkIndexTape implements a fully featured ReverseTapeInterface in a most
+   * The JacobiTape implements a fully featured ReverseTapeInterface in a most
    * user friendly fashion. The storage vectors of the tape are grown if the
    * tape runs out of space.
    *
@@ -108,50 +120,44 @@ namespace codi {
    * the different data vectors. The current implementation uses 3 ChunkVectors
    * and one terminator. The relation is
    *
-   * externalFunctions -> jacobiData -> statements
+   * externalFunctions -> statements -> jacobiData -> indexHandler.
    *
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
    *
-   * The tape also uses the index manager IndexHandler to reuse the indices that are deleted.
-   * That means that ActiveReal's which use this tape need to be copied by usual means and deleted after
-   * the are no longer used. No c-like memory operations like memset and memcpy should be applied
-   * to these types.
-   *
-   * @tparam      Real  The floating point type used in the ActiveReal.
-   * @tparam IndexType  The type for the indexing of the adjoint variables.
+   * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
-  template <typename Real, typename IndexHandler, typename VectorTypes>
-  class ChunkIndexTape : public ReverseTapeInterface<Real, typename IndexHandler::IndexType, ChunkIndexTape<Real, IndexHandler, VectorTypes>, typename VectorTypes::Position > {
+  template <typename TapeTypes>
+  class JacobiTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, JacobiTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
-    /** @brief The counter for the current expression. */
-    EmptyChunkVector emptyVector;
+    typedef typename TapeTypes::RealType Real;
+    typedef typename TapeTypes::IndexHandlerType IndexHandler;
 
-    #define TAPE_NAME ChunkIndexTape
+    #define TAPE_NAME JacobiTape
 
     typedef typename IndexHandler::IndexType IndexType;
     typedef IndexType GradientData;
 
-    #define POSITION_TYPE typename VectorTypes::Position
+    #define POSITION_TYPE typename TapeTypes::Position
     #define INDEX_HANDLER_TYPE IndexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateExtFunc
     #include "modules/tapeBaseModule.tpp"
 
-    #define CHILD_VECTOR_TYPE EmptyChunkVector
+    #define CHILD_VECTOR_TYPE IndexHandler
     #define JACOBI_VECTOR_NAME jacobiVector
-    #define VECTOR_TYPE typename VectorTypes::StatementVector
+    #define VECTOR_TYPE typename TapeTypes::StatementVector
     #define STATEMENT_PUSH_FUNCTION_NAME pushStmtData
     #include "modules/statementModule.tpp"
 
     #define CHILD_VECTOR_TYPE StmtVector
-    #define VECTOR_TYPE typename VectorTypes::JacobiVector
+    #define VECTOR_TYPE typename TapeTypes::JacobiVector
     #include "modules/jacobiModule.tpp"
 
     #define CHILD_VECTOR_TYPE JacobiVector
     #define CHILD_VECTOR_NAME jacobiVector
-    #define VECTOR_TYPE typename VectorTypes::ExternalFunctionVector
+    #define VECTOR_TYPE typename TapeTypes::ExternalFunctionVector
     #include "modules/externalFunctionsModule.tpp"
 
     #undef TAPE_NAME
@@ -161,15 +167,18 @@ namespace codi {
      * @brief Creates a tape with the default chunk sizes for the data, statements and
      * external functions defined in the configuration.
      */
-    ChunkIndexTape() :
-      emptyVector(),
+    JacobiTape() :
       indexHandler(),
       adjoints(NULL),
       adjointsSize(0),
       active(false),
-      stmtVector(DefaultChunkSize, emptyVector),
+      stmtVector(DefaultChunkSize, indexHandler),
       jacobiVector(DefaultChunkSize, stmtVector),
       extFuncVector(1000, jacobiVector) {
+    }
+
+    inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
+      stmtVector.setDataAndMove(std::make_tuple(numberOfArguments));
     }
 
     /**
@@ -184,26 +193,13 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ChunkIndexTape<Real, IndexHandler, VectorTypes> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, JacobiTape<TapeTypes> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
-        ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
-          indexHandler.checkIndex(lhsIndex);
-
-          stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
-          jacobiVector.reserveItems(1);
-          jacobiVector.setDataAndMove(std::make_tuple(1.0, rhs.getGradientData()));
-          stmtVector.setDataAndMove(std::make_tuple((StatementInt)1, lhsIndex));
-        } else {
-          indexHandler.freeIndex(lhsIndex);
-        }
+        lhsIndex = rhs.getGradientData();
       } else {
         indexHandler.freeIndex(lhsIndex);
       }
       lhsValue = rhs.getValue();
-    }
-
-    inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
-      stmtVector.setDataAndMove(std::make_tuple(numberOfArguments, lhsIndex));
     }
 
     /**
@@ -221,14 +217,17 @@ namespace codi {
     }
 
     /**
-     * @brief Does nothing because the indices are not connected to the positions.
+     * @brief Sets all adjoint/gradients to zero.
      *
-     * @param[in] start Not used
-     * @param[in] end Not used
+     * It has to hold start >= end.
+     *
+     * @param[in] start  The starting position for the reset of the vector.
+     * @param[in]   end  The ending position for the reset of the vector.
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      CODI_UNUSED(start);
-      CODI_UNUSED(end);
+      for(IndexType i = end.inner.inner.inner; i <= start.inner.inner.inner; ++i) {
+        adjoints[i] = 0.0;
+      }
     }
 
     /**
@@ -242,28 +241,29 @@ namespace codi {
       return getExtFuncPosition();
     }
 
+
     /**
      * @brief Implementation of the AD stack evaluation.
      *
      * It has to hold startAdjPos >= endAdjPos.
      *
-     * @param[inout]           stmtPos The starting point in the expression evaluation. The index is decremented.
-     * @param[in]           endStmtPos The ending point in the expression evaluation.
-     * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
-     * @param[in]           lhsIndices The pointer the indices of the lhs.
-     * @param[inout]           dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
-     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
-     * @param[in]              indices The pointer the indices of the rhs arguments.
+     * @param[in] startAdjPos The starting point in the expression evaluation.
+     * @param[in]   endAdjPos The ending point in the expression evaluation.
+     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
+     * @param[in]  statements The pointer to the statement vector.
+     * @param[inout]  dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in]    jacobies The pointer to the jacobi vector.
+     * @param[in]     indices The pointer to the index vector
      */
-    inline void evalStmtCallback(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, IndexType* lhsIndices, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    inline void evalStmtCallback(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+      size_t adjPos = startAdjPos;
 
-      while(stmtPos > endStmtPos) {
+      while(adjPos > endAdjPos) {
+        const Real& adj = adjoints[adjPos];
+        --adjPos;
         --stmtPos;
-        const IndexType& lhsIndex = lhsIndices[stmtPos];
-        const Real adj = adjoints[lhsIndex];
-        adjoints[lhsIndex] = 0.0;
 
-        incrementAdjoints(adj, adjoints, numberOfArguments[stmtPos], dataPos, jacobies, indices);
+        incrementAdjoints(adj, adjoints, statements[stmtPos], dataPos, jacobies, indices);
       }
     }
 
@@ -279,21 +279,23 @@ namespace codi {
      */
     template<typename ... Args>
     inline void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
-      StatementInt* numberOfArgumentsData;
-      IndexType* lhsIndexData;
-
+      StatementInt* statementData;
       size_t dataPos = start.data;
+      StmtChildPosition curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(numberOfArgumentsData, lhsIndexData) = stmtVector.getDataAtPosition(curChunk, 0);
+        std::tie(statementData) = stmtVector.getDataAtPosition(curChunk, 0);
 
-        evalStmtCallback(dataPos, 0, numberOfArgumentsData, lhsIndexData, std::forward<Args>(args)...);
+        StmtChildPosition endInnerPos = stmtVector.getInnerPosition(curChunk);
+        evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData, std::forward<Args>(args)...);
+
+        curInnerPos = endInnerPos;
 
         dataPos = stmtVector.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(numberOfArgumentsData, lhsIndexData) = stmtVector.getDataAtPosition(end.chunk, 0);
-      evalStmtCallback(dataPos, end.data, numberOfArgumentsData, lhsIndexData , std::forward<Args>(args)...);
+      std::tie(statementData) = stmtVector.getDataAtPosition(end.chunk, 0);
+      evalStmtCallback(curInnerPos, end.inner, dataPos, statementData, std::forward<Args>(args)...);
     }
 
 
@@ -333,18 +335,23 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, ChunkIndexTape<Real, IndexHandler, VectorTypes> >& value) {
-      indexHandler.checkIndex(value.getGradientData());
+    inline void registerInput(ActiveReal<Real, JacobiTape<TapeTypes> >& value) {
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove(std::make_tuple((StatementInt)0));
+
+      value.getGradientData() = indexHandler.createIndex();
     }
 
     /**
-     * @brief Not needed in this implementation.
+     * @brief Register the value as an ouput value.
      *
-     * @param[in] value Not used.
+     * The method ensures that each output value has an unique index. This is done
+     * by performing the trivial operation value *= 1.0
+     *
+     * @param[in] value A new index is assigned.
      */
-    inline void registerOutput(ActiveReal<Real, ChunkIndexTape<Real, IndexHandler, VectorTypes> >& value) {
-      CODI_UNUSED(value);
-      /* do nothing */
+    inline void registerOutput(ActiveReal<Real, JacobiTape<TapeTypes> >& value) {
+      value = 1.0 * value;
     }
 
     /**
@@ -356,7 +363,7 @@ namespace codi {
 
       std::cout << std::endl
                 << "-------------------------------------" << std::endl
-                << "CoDi Tape Statistics (ChunkIndexTape)" << std::endl
+                << "CoDi Tape Statistics (" << TapeTypes::tapeName << ")"      << std::endl
                 << "-------------------------------------" << std::endl;
       printTapeBaseStatistics();
       printStmtStatistics();
