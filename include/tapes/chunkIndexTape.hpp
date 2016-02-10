@@ -71,6 +71,33 @@ namespace codi {
   };
 
   /**
+   * @brief Helper struct to define the nested vectors for the SimpleIndexTape.
+   *
+   * See ChunkIndexTape for details.
+   */
+  template <typename Real, typename IndexHandler>
+  struct SimpleIndexTapeTypes {
+    /** @brief The data for each statement. */
+    typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
+    /** @brief The chunk vector for the statement data. */
+    typedef SingleChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
+
+    /** @brief The data for the jacobies of each statement */
+    typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
+    /** @brief The chunk vector for the jacobi data. */
+    typedef SingleChunkVector<JacobiChunk, StatementVector> JacobiVector;
+
+    /** @brief The data for the external functions. */
+    typedef Chunk2<ExternalFunction,typename JacobiVector::Position> ExternalFunctionChunk;
+    /** @brief The chunk vector for the external  function data. */
+    typedef SingleChunkVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
+
+    /** @brief The position for all the different data vectors. */
+    typedef typename ExternalFunctionVector::Position Position;
+
+  };
+
+  /**
    * @brief A tape which grows if more space is needed.
    *
    * The ChunkIndexTape implements a fully featured ReverseTapeInterface in a most
