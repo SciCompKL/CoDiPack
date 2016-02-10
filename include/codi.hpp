@@ -181,14 +181,14 @@ namespace codi {
    *
    * See the documentation of #RealReverseIndex and #RealReverseUnchecked.
    */
-  typedef ActiveReal<double, SimpleIndexTape<double, int> > RealReverseIndexUnchecked;
+  typedef ActiveReal<double, ChunkIndexTape<double, ReuseIndexHandler<int>, SimpleIndexTapeTypes<double, ReuseIndexHandler<int> > > > RealReverseIndexUnchecked;
 
   /**
    * @brief The reverse type in CoDiPack with float as the real value type and an unchecked index reuse tape.
    *
    * See the documentation of #RealReverseIndexUnchecked.
    */
-  typedef ActiveReal<float, SimpleIndexTape<float, int> > RealReverseIndexUncheckedFloat;
+  typedef ActiveReal<float, ChunkIndexTape<float, ReuseIndexHandler<int>, SimpleIndexTapeTypes<float, ReuseIndexHandler<int> > > > RealReverseIndexUncheckedFloat;
 
 
 }
