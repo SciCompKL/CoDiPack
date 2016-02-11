@@ -31,6 +31,6 @@
 
 #include <codi.hpp>
 
-typedef codi::ActiveReal<codi::RealForward, codi::ForwardEvaluation<codi::RealForward> > NUMBER;
+typedef codi::ActiveReal<codi::ForwardEvaluation<codi::RealForward> > NUMBER;
 
 #include "../globalDefines.h"

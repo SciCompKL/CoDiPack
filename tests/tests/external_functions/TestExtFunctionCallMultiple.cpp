@@ -46,7 +46,7 @@ static void extFunc(void* checkpoint){
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
 
-  typename NUMBER::RealType x_v, w0_v;
+  typename NUMBER::Real x_v, w0_v;
   typename NUMBER::GradientData x_i, w0_i, w1_i;
   check->getData(x_v);
   check->getData(x_i);
@@ -54,8 +54,8 @@ static void extFunc(void* checkpoint){
   check->getData(w0_i);
   check->getData(w1_i);
 
-  typename NUMBER::RealType w1_b = tape.gradient(w1_i);
-  tape.gradient(w1_i) = 0.0;
+  typename NUMBER::GradientValue w1_b = tape.gradient(w1_i);
+  tape.gradient(w1_i) = typename NUMBER::GradientValue();
 
   tape.gradient(w0_i) += x_v*w1_b;
   tape.gradient(x_i)  += w0_v*w1_b;
