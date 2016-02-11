@@ -57,7 +57,7 @@
      * The size of the adjoint vector is set according to the requested positions.
      * But the positions should not be greater than the current expression counter.
      */
-    Real* adjoints;
+    GradientValue* adjoints;
     /* @brief The current size of the adjoint vector. */
     IndexType adjointsSize;
 
@@ -75,10 +75,10 @@
       IndexType oldSize = adjointsSize;
       adjointsSize = size;
 
-      adjoints = (Real*)realloc(adjoints, sizeof(Real) * (size_t)adjointsSize);
+      adjoints = (GradientValue*)realloc(adjoints, sizeof(GradientValue) * (size_t)adjointsSize);
 
       for(IndexType i = oldSize; i < adjointsSize; ++i) {
-        adjoints[i] = Real();
+        adjoints[i] = GradientValue();
       }
     }
 
@@ -114,7 +114,7 @@
      * @param[in]    index  The index of the active type.
      * @param[in] gradient  The new value for the gradient.
      */
-    void setGradient(IndexType& index, const Real& gradient) {
+    void setGradient(IndexType& index, const GradientValue& gradient) {
       if(0 != index) {
         this->gradient(index) = gradient;
       }
@@ -126,9 +126,9 @@
      * @param[in] index The index of the active type.
      * @return The gradient value corresponding to the given index.
      */
-    inline Real getGradient(const IndexType& index) const {
+    inline GradientValue getGradient(const IndexType& index) const {
       if(adjointsSize <= index) {
-        return Real();
+        return GradientValue();
       } else {
         return adjoints[index];
       }
@@ -142,7 +142,7 @@
      * @param[in] index The index of the active type.
      * @return The reference to the gradient data.
      */
-    inline Real& gradient(IndexType& index) {
+    inline GradientValue& gradient(IndexType& index) {
       assert(0 != index);
       assert(index <= indexHandler.getMaximumGlobalIndex());
 
@@ -159,7 +159,7 @@
      */
     inline void clearAdjoints(){
       for(IndexType i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
-        adjoints[i] = 0.0;
+        adjoints[i] = GradientValue();
       }
     }
 

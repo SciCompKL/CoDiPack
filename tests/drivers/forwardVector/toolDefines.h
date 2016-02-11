@@ -26,11 +26,13 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-
 #pragma once
 
 #include <codi.hpp>
+#include <tools/adVector.hpp>
 
-typedef codi::ActiveReal<codi::ForwardEvaluation<codi::RealForward> > NUMBER;
+const size_t DIM = 5;
+typedef codi::AdVector<double, DIM> Gradient;
+typedef codi::ActiveReal<codi::ForwardEvaluation<double, Gradient> > NUMBER;
 
 #include "../globalDefines.h"

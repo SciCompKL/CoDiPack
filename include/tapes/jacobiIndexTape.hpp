@@ -48,10 +48,11 @@ namespace codi {
    *
    * See JacobiIndexTape for details.
    */
-  template <typename Real, typename IndexHandler>
+  template <typename Real, typename IndexHandler, typename GradientValue = Real>
   struct ChunkIndexTapeTypes {
     typedef Real RealType;
     typedef IndexHandler IndexHandlerType;
+    typedef GradientValue GradientValueType;
 
     /** @brief The data for each statement. */
     typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
@@ -80,10 +81,11 @@ namespace codi {
    *
    * See JacobiIndexTape for details.
    */
-  template <typename Real, typename IndexHandler>
+  template <typename Real, typename IndexHandler, typename GradientValue = Real>
   struct SimpleIndexTapeTypes {
     typedef Real RealType;
     typedef IndexHandler IndexHandlerType;
+    typedef GradientValue GradientValueType;
 
     /** @brief The data for each statement. */
     typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
@@ -131,10 +133,11 @@ namespace codi {
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
-  class JacobiIndexTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
+  class JacobiIndexTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
     typedef typename TapeTypes::RealType Real;
+    typedef typename TapeTypes::GradientValueType GradientValue;
     typedef typename TapeTypes::IndexHandlerType IndexHandler;
 
     /** @brief The counter for the current expression. */
@@ -196,7 +199,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, JacobiIndexTape<TapeTypes> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
           indexHandler.checkIndex(lhsIndex);
@@ -272,8 +275,8 @@ namespace codi {
       while(stmtPos > endStmtPos) {
         --stmtPos;
         const IndexType& lhsIndex = lhsIndices[stmtPos];
-        const Real adj = adjoints[lhsIndex];
-        adjoints[lhsIndex] = 0.0;
+        const GradientValue adj = adjoints[lhsIndex];
+        adjoints[lhsIndex] = GradientValue();
 
         incrementAdjoints(adj, adjoints, numberOfArguments[stmtPos], dataPos, jacobies, indices);
       }
@@ -345,7 +348,7 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, JacobiIndexTape<TapeTypes> >& value) {
+    inline void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       indexHandler.checkIndex(value.getGradientData());
     }
 
@@ -354,7 +357,7 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<Real, JacobiIndexTape<TapeTypes> >& value) {
+    inline void registerOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       CODI_UNUSED(value);
       /* do nothing */
     }
