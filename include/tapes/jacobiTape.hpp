@@ -122,7 +122,7 @@ namespace codi {
    * the different data vectors. The current implementation uses 3 ChunkVectors
    * and one terminator. The relation is
    *
-   * externalFunctions -> statements -> jacobiData -> indexHandler.
+   * externalFunctions -> jacobiData -> statements -> indexHandler.
    *
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
@@ -180,10 +180,6 @@ namespace codi {
       extFuncVector(1000, jacobiVector) {
     }
 
-    inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
-      stmtVector.setDataAndMove(std::make_tuple(numberOfArguments));
-    }
-
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.
      *
@@ -203,6 +199,10 @@ namespace codi {
         indexHandler.freeIndex(lhsIndex);
       }
       lhsValue = rhs.getValue();
+    }
+
+    inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
+      stmtVector.setDataAndMove(std::make_tuple(numberOfArguments));
     }
 
     /**
