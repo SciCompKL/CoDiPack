@@ -151,7 +151,6 @@
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(size);
         indexHandler.checkIndex(lhsIndex);
-        stmtVector.setDataAndMove(std::make_tuple(size));
         STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
       }
     }

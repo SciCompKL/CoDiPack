@@ -69,7 +69,9 @@
     }
 
     void resetExtFunc(const ExtFuncPosition& pos) {
-      extFuncVector.forEach(getExtFuncPosition(), pos, popExternalFunction);
+      ExternalFunction* extFunc;
+      ExtFuncChildPosition* endInnerPos;
+      extFuncVector.forEach(getExtFuncPosition(), pos, popExternalFunction, extFunc, endInnerPos);
 
       // reset will be done iteratively through the vectors
       extFuncVector.reset(pos);
@@ -86,20 +88,14 @@
      */
     struct ExtFuncEvaluator {
       ExtFuncChildPosition curInnerPos;
-      ExternalFunction* extFunc;
-      ExtFuncChildPosition* endInnerPos;
 
       TAPE_NAME& tape;
 
       ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, TAPE_NAME& tape) :
         curInnerPos(curInnerPos),
-        extFunc(NULL),
-        endInnerPos(NULL),
         tape(tape){}
 
-      void operator () (typename ExtFuncChunk::DataPointer& data) {
-        std::tie(extFunc, endInnerPos) = data;
-
+      void operator () (ExternalFunction* extFunc, ExtFuncChildPosition* endInnerPos) {
         // always evaluate the stack to the point of the external function
         tape.evalExtFuncCallback(curInnerPos, *endInnerPos);
 
@@ -120,9 +116,11 @@
      * @param[in]         end The ending point for the external function vector.
      */
     void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end){
+      ExternalFunction* extFunc;
+      ExtFuncChildPosition* endInnerPos;
       ExtFuncEvaluator evaluator(start.inner, *this);
 
-      extFuncVector.forEach(start, end, evaluator);
+      extFuncVector.forEach(start, end, evaluator, extFunc, endInnerPos);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
       evalExtFuncCallback(evaluator.curInnerPos, end.inner);
@@ -170,16 +168,16 @@
      */
     void pushExternalFunctionHandle(const ExternalFunction& function){
       extFuncVector.reserveItems(1);
-      extFuncVector.setDataAndMove(std::make_tuple(function, CHILD_VECTOR_NAME.getPosition()));
+      extFuncVector.setDataAndMove(function, CHILD_VECTOR_NAME.getPosition());
     }
 
     /**
      * @brief Delete the data of the external function.
      * @param extFunction The external function in the vector.
      */
-    static void popExternalFunction(typename ExtFuncChunk::DataPointer& extFunction) {
+    static void popExternalFunction(ExternalFunction* extFunc, ExtFuncChildPosition* endInnerPos) {
       /* we just need to call the delete function */
-      std::get<0>(extFunction)->deleteData();
+      extFunc->deleteData();
     }
 
   public:

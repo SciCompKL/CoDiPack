@@ -88,7 +88,7 @@
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        this->jacobiVector.setDataAndMove(std::make_tuple(1.0, index));
+        this->jacobiVector.setDataAndMove(1.0, index);
       }
     }
 
@@ -109,7 +109,7 @@
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
-            this->jacobiVector.setDataAndMove(std::make_tuple(jacobi, index));
+            this->jacobiVector.setDataAndMove(jacobi, index);
           }
         }
       }
@@ -134,7 +134,7 @@
       size_t dataPos = start.data;
       JacobiChildPosition curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(jacobiData, indexData) = jacobiVector.getDataAtPosition(curChunk, 0);
+        jacobiVector.getDataAtPosition(curChunk, 0, jacobiData, indexData);
 
         JacobiChildPosition endInnerPos = jacobiVector.getInnerPosition(curChunk);
         evalJacobiesCallback(curInnerPos, endInnerPos, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
@@ -145,7 +145,7 @@
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(jacobiData, indexData) = jacobiVector.getDataAtPosition(end.chunk, 0);
+      jacobiVector.getDataAtPosition(end.chunk, 0, jacobiData, indexData);
       evalJacobiesCallback(curInnerPos, end.inner, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
     }
 

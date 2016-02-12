@@ -268,10 +268,13 @@ namespace codi {
      * method.
      *
      * @param data  The data set to the current position in the chunk.
+     *
+     * @tparam Data  The data types for the data to be set.
      */
-    inline void setDataAndMove(const typename ChunkData::DataValues& data) {
+    template<typename ... Data>
+    inline void setDataAndMove(const Data& ... data) {
       // this method should only be called if reserveItems has been called
-      curChunk->setDataAndMove(data);
+      curChunk->setDataAndMove(data...);
     }
 
     /**
@@ -303,14 +306,17 @@ namespace codi {
 
     /**
      * @brief Get a pointer to the data at the given position.
-     * @param chunkIndex  The index of the chunk.
-     * @param    dataPos  The index for the data in the chunk.
-     * @return A pointer to the data of the chunk at the given position.
+     * @param  chunkIndex  The index of the chunk.
+     * @param     dataPos  The index for the data in the chunk.
+     * @param    pointers  The pointers to the data of the chunk at the given position.
+     *
+     * @tparam  Pointers  The data types for the pointers.
      */
-    inline typename ChunkData::DataPointer getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos) {
+    template< typename ... Pointers>
+    inline void getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos, Pointers* &... pointers) {
       assert(chunkIndex < chunks.size());
 
-      return chunks[chunkIndex]->dataPointer(dataPos);
+      chunks[chunkIndex]->dataPointer(dataPos, pointers...);
     }
 
     /**
@@ -365,19 +371,21 @@ namespace codi {
      * @param    start  The starting point inside the data of the chunk.
      * @param      end  The end point inside the data of the chunk.
      * @param function  The function called for each data entry.
+     * @param pointers  The pointers to the data of the chunk at the given position.
+     *
+     * @tparam  Pointers  The data types for the pointers.
      */
-    template<typename FunctionObject>
-    inline void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function) {
+    template<typename FunctionObject, typename ... Pointers>
+    inline void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
       assert(start >= end);
       assert(chunkPos < chunks.size());
 
-      typename ChunkData::DataPointer data;
       // we do not initialize dataPos with start - 1 because the type can be unsigned
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
         --dataPos; // decrement of loop variable
 
-        data = getDataAtPosition(chunkPos, dataPos);
-        function(data);
+        getDataAtPosition(chunkPos, dataPos, pointers...);
+        function(pointers...);
       }
     }
 
@@ -393,22 +401,25 @@ namespace codi {
      * @param    start  The starting point of the range.
      * @param      end  The end point of the range.
      * @param function  The function called for each data entry.
+     * @param pointers  The pointers to the data of the chunk at the given position.
+     *
+     * @tparam  Pointers  The data types for the pointers.
      */
-    template<typename FunctionObject>
-    inline void forEach(const Position& start, const Position& end, FunctionObject& function) {
+    template<typename FunctionObject, typename ... Pointers>
+    inline void forEach(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
       assert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
       assert(start.chunk < chunks.size());
 
       size_t dataStart = start.data;
       for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
 
-        forEachData(chunkPos, dataStart, 0, function);
+        forEachData(chunkPos, dataStart, 0, function, pointers...);
 
         dataStart = chunks[--chunkPos]->getUsedSize(); // decrement of loop variable
 
       }
 
-      forEachData(end.chunk, dataStart, end.data, function);
+      forEachData(end.chunk, dataStart, end.data, function, pointers...);
     }
   };
 }

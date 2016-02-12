@@ -206,8 +206,8 @@ namespace codi {
 
           stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
           jacobiVector.reserveItems(1);
-          jacobiVector.setDataAndMove(std::make_tuple(1.0, rhs.getGradientData()));
-          stmtVector.setDataAndMove(std::make_tuple((StatementInt)1, lhsIndex));
+          jacobiVector.setDataAndMove(1.0, rhs.getGradientData());
+          stmtVector.setDataAndMove((StatementInt)1, lhsIndex);
         } else {
           indexHandler.freeIndex(lhsIndex);
         }
@@ -218,7 +218,7 @@ namespace codi {
     }
 
     inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
-      stmtVector.setDataAndMove(std::make_tuple(numberOfArguments, lhsIndex));
+      stmtVector.setDataAndMove(numberOfArguments, lhsIndex);
     }
 
     /**
@@ -299,7 +299,7 @@ namespace codi {
 
       size_t dataPos = start.data;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(numberOfArgumentsData, lhsIndexData) = stmtVector.getDataAtPosition(curChunk, 0);
+        stmtVector.getDataAtPosition(curChunk, 0, numberOfArgumentsData, lhsIndexData);
 
         evalStmtCallback(dataPos, 0, numberOfArgumentsData, lhsIndexData, std::forward<Args>(args)...);
 
@@ -307,7 +307,7 @@ namespace codi {
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(numberOfArgumentsData, lhsIndexData) = stmtVector.getDataAtPosition(end.chunk, 0);
+      stmtVector.getDataAtPosition(end.chunk, 0, numberOfArgumentsData, lhsIndexData);
       evalStmtCallback(dataPos, end.data, numberOfArgumentsData, lhsIndexData , std::forward<Args>(args)...);
     }
 

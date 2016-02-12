@@ -30,7 +30,6 @@
 #include <cstddef>
 #include <new>
 #include <string.h>
-#include <tuple>
 
 #include "../configure.h"
 
@@ -124,9 +123,6 @@ namespace codi {
    */
   template<typename Data>
   struct Chunk1 : public ChunkInterface {
-    typedef std::tuple<Data*> DataPointer; /**< Used as a return type when a pointer to the array is needed.*/
-    typedef std::tuple<Data> DataValues;   /**< Used as an argument when data for the array is provided. */
-
     Data* data; /**< The data of the chunk */
 
     /**
@@ -164,21 +160,21 @@ namespace codi {
      * @brief Set the data values to the current position and increment the used size.
      * @param values  The values which are set to the data.
      */
-    inline void setDataAndMove(const DataValues& values) {
+    inline void setDataAndMove(const Data& values) {
       assert(getUnusedSize() != 0);
-      std::tie(data[usedSize]) = values;
+      data[usedSize] = values;
       ++usedSize;
     }
 
     /**
      * @brief Returns a pointer to the data array at the given position.
-     * @param index   The index in the data array.
-     * @return A pointer to the data.
+     * @param index       The index in the data array.
+     * @param dataPointer Pointer that is set to the internal data pointer.
      */
-    inline std::tuple<Data*> dataPointer(const size_t& index) {
+    inline void dataPointer(const size_t& index, Data* &dataPointer) {
       assert(index <= ChunkInterface::size);
 
-      return std::make_tuple(&data[index]);
+      dataPointer = &data[index];
     }
   };
 
@@ -192,9 +188,6 @@ namespace codi {
    */
   template<typename Data1, typename Data2>
   struct Chunk2 : public ChunkInterface {
-    typedef std::tuple<Data1*, Data2*> DataPointer; /**< Used as a return type when a pointer to the array is needed.*/
-    typedef std::tuple<Data1, Data2> DataValues;    /**< Used as an argument when data for the array is provided. */
-
     Data1* data1; /**< First data item of the chunk */
     Data2* data2; /**< Second data item of the chunk */
 
@@ -235,11 +228,13 @@ namespace codi {
 
     /**
      * @brief Set the data values to the current position and increment the used size.
-     * @param values  The values which are set to the data.
+     * @param value1  The value for the first data array.
+     * @param value2  The value for the second data array.
      */
-    inline void setDataAndMove(const DataValues& values) {
+    inline void setDataAndMove(const Data1& value1, const Data2& value2) {
       assert(getUnusedSize() != 0);
-      std::tie(data1[usedSize], data2[usedSize]) = values;
+      data1[usedSize] = value1;
+      data2[usedSize] = value2;
       ++usedSize;
     }
 
@@ -248,9 +243,10 @@ namespace codi {
      * @param index   The index in the data array.
      * @return A pointer to the data.
      */
-    inline DataPointer dataPointer(const size_t& index) {
+    inline void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2) {
       assert(index <= ChunkInterface::size);
-      return std::make_tuple(&data1[index], &data2[index]);
+      pointer1 = &data1[index];
+      pointer2 = &data2[index];
     }
   };
 

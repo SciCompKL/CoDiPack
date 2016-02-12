@@ -181,7 +181,7 @@ namespace codi {
     }
 
     inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
-      stmtVector.setDataAndMove(std::make_tuple(numberOfArguments));
+      stmtVector.setDataAndMove(numberOfArguments);
     }
 
     /**
@@ -286,7 +286,7 @@ namespace codi {
       size_t dataPos = start.data;
       StmtChildPosition curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        std::tie(statementData) = stmtVector.getDataAtPosition(curChunk, 0);
+        stmtVector.getDataAtPosition(curChunk, 0, statementData);
 
         StmtChildPosition endInnerPos = stmtVector.getInnerPosition(curChunk);
         evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData, std::forward<Args>(args)...);
@@ -297,7 +297,7 @@ namespace codi {
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      std::tie(statementData) = stmtVector.getDataAtPosition(end.chunk, 0);
+      stmtVector.getDataAtPosition(end.chunk, 0, statementData);
       evalStmtCallback(curInnerPos, end.inner, dataPos, statementData, std::forward<Args>(args)...);
     }
 
@@ -340,7 +340,7 @@ namespace codi {
      */
     inline void registerInput(ActiveReal<JacobiTape<TapeTypes> >& value) {
       stmtVector.reserveItems(1);
-      stmtVector.setDataAndMove(std::make_tuple((StatementInt)0));
+      stmtVector.setDataAndMove((StatementInt)0);
 
       value.getGradientData() = indexHandler.createIndex();
     }
