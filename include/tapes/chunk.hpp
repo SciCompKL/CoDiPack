@@ -103,7 +103,7 @@ namespace codi {
      * This method is called when the data of a chunk is no
      * longer directly needed and can be stored somewhere else.
      */
-    void store() {}
+    inline void store() {}
 
     /**
      * @brief Load the data of the chunk.
@@ -111,7 +111,7 @@ namespace codi {
      * This method is called when the data of a chunk is needed by the
      * evaluation process.
      */
-    void load() {}
+    inline void load() {}
   };
 
   /**
