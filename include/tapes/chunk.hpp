@@ -158,11 +158,11 @@ namespace codi {
 
     /**
      * @brief Set the data values to the current position and increment the used size.
-     * @param values  The values which are set to the data.
+     * @param value  The value which are set to the data.
      */
-    inline void setDataAndMove(const Data& values) {
+    inline void setDataAndMove(const Data& value) {
       assert(getUnusedSize() != 0);
-      data[usedSize] = values;
+      data[usedSize] = value;
       ++usedSize;
     }
 
@@ -171,10 +171,10 @@ namespace codi {
      * @param index       The index in the data array.
      * @param dataPointer Pointer that is set to the internal data pointer.
      */
-    inline void dataPointer(const size_t& index, Data* &dataPointer) {
+    inline void dataPointer(const size_t& index, Data* &pointer) {
       assert(index <= ChunkInterface::size);
 
-      dataPointer = &data[index];
+      pointer = &data[index];
     }
   };
 
@@ -240,7 +240,9 @@ namespace codi {
 
     /**
      * @brief Returns a pointer to the data array at the given position.
-     * @param index   The index in the data array.
+     * @param    index  The index in the data array.
+     * @param pointer1  Pointer that is set to the internal data pointer of the first array.
+     * @param pointer2  Pointer that is set to the internal data pointer of the second array.
      * @return A pointer to the data.
      */
     inline void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2) {

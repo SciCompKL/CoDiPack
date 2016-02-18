@@ -39,6 +39,9 @@
  */
 namespace codi {
 
+  /**
+   * @brief Constant for the conversion from byte to megabyte.
+   */
   const double BYTE_TO_MB = 1.0/1024.0/1024.0;
 
   /**

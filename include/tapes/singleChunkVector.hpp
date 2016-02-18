@@ -40,13 +40,12 @@
 namespace codi {
 
   /**
-   * @brief A vector which manages chunks of data for the taping process.
+   * @brief A vector that creates only one chunk and presents it like a ChunkVector.
    *
-   * The vector stores an array of data chunks which have all the same size.
+   * The vector stores one data chunk.
    * The data in the chunk can be accessed in a stack like fashion. The user
-   * has to check first if enough data is available. The chunk vector will
-   * make sure that the current loaded chunk has enough data. The user can then
-   * push as many data items as he has reserved on the chunk vector.
+   * has to ensure that enough data is present. All the usual checks with reserveItems
+   * are only performed in assert statements.
    *
    * The read access to the data is provided by the function forEach, which will
    * call the provided function handle on every data item. A second option is to
@@ -62,7 +61,6 @@ namespace codi {
    *
    * @tparam    ChunkData   The data the chunk vector will store.
    * @tparam NestedVector   A nested chunk vector used for position information
-   *                          every time a chunk is pushed.
    */
   template<typename ChunkData, typename NestedVector = EmptyChunkVector>
   class SingleChunkVector {
@@ -87,7 +85,7 @@ namespace codi {
      */
     struct Position {
       size_t chunk; /**< Index of the chunk */
-      size_t data;  /**< Data position in the chunk */
+      size_t data;  /**< Data position in the chunk (Will always be zero. Required for compatiblity to ChunkVector. */
 
       NestedPosition inner; /**< Position of the nested chunk vector */
 
@@ -118,7 +116,6 @@ namespace codi {
 
   public:
 
-    //TODO: maybe create a constructor without the need to supply a nested vector
     /**
      * @brief Creates one chunk and loads it.
      * @param chunkSize   The size for the chunks.
@@ -148,10 +145,9 @@ namespace codi {
     /**
      * @brief Resets the chunk vector to the given position.
      *
-     * This method will call reset on all chunks which are behind the
-     * given position.
+     * This method will set the used size of the chunk to the one in the position.
      *
-     * It calls also reset on the nested chunk vector.
+     * It also calls reset on the nested chunk vector.
      *
      * @param pos   The position to reset to.
      */
@@ -173,7 +169,6 @@ namespace codi {
     /**
      * @brief Performs no check only does an assert.
      *
-     *
      * @param items   The maximum number of items to store.
      */
     inline void reserveItems(const size_t items) const {
@@ -186,6 +181,9 @@ namespace codi {
      * This method should only be called if 'reserveItems' was called
      * beforehand with enough items to accommodate to all calls to this
      * method.
+     *
+     * In this implementation the user has to ensure that there is enough
+     * space allocated up front.
      *
      * @param data  The data set to the current position in the chunk.
      *

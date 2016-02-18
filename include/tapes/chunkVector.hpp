@@ -371,7 +371,7 @@ namespace codi {
      * @param    start  The starting point inside the data of the chunk.
      * @param      end  The end point inside the data of the chunk.
      * @param function  The function called for each data entry.
-     * @param pointers  The pointers to the data of the chunk at the given position.
+     * @param pointers  The pointers are used as the arguments for the function. They will be populated with the data in the chunks.
      *
      * @tparam  Pointers  The data types for the pointers.
      */
@@ -401,7 +401,7 @@ namespace codi {
      * @param    start  The starting point of the range.
      * @param      end  The end point of the range.
      * @param function  The function called for each data entry.
-     * @param pointers  The pointers to the data of the chunk at the given position.
+     * @param pointers  The pointers are used as the arguments for the function. They will be populated with the data in the chunks.
      *
      * @tparam  Pointers  The data types for the pointers.
      */

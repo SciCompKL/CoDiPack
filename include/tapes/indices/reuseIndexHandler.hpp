@@ -174,6 +174,15 @@ namespace codi {
         return freeIndices.capacity();
       }
 
+      /**
+       * @brief Output statistics about the used indices.
+       *
+       * Writes the
+       *   maximum number of live indices,
+       *   the current number of lives indices,
+       *   the indices that are stored and
+       *   the memory for the allocated indices.
+       */
       void printStatistics() const {
         size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
         size_t storedIndices          = (size_t)this->getNumberStoredIndices();

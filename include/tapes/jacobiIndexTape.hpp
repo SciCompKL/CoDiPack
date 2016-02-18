@@ -44,14 +44,23 @@
 namespace codi {
 
   /**
-   * @brief Helper struct to define the nested chunk vectors for the JacobiIndexTape.
+   * @brief Vector defintion for the ChunkIndexTape.
+   *
+   * The structure defines all vectors as chunk vectors.
    *
    * See JacobiIndexTape for details.
+   *
+   * @tparam Real  The type for the primal values.
+   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
+   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
   struct ChunkIndexTapeTypes {
+    /** @brief The type for the primal values. */
     typedef Real RealType;
+    /** @brief The handler for the indices. */
     typedef IndexHandler IndexHandlerType;
+    /** @brief The type for the adjoint values. */
     typedef GradientValue GradientValueType;
 
     /** @brief The data for each statement. */
@@ -77,14 +86,23 @@ namespace codi {
   };
 
   /**
-   * @brief Helper struct to define the nested vectors for the SimpleIndexTape.
+   * @brief Vector defintion for the SimpleIndexTape.
+   *
+   * The structure defines all vectors as single chunk vectors.
    *
    * See JacobiIndexTape for details.
+   *
+   * @tparam Real  The type for the primal values.
+   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
+   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
   struct SimpleIndexTapeTypes {
+    /** @brief The type for the primal values. */
     typedef Real RealType;
+    /** @brief The handler for the indices. */
     typedef IndexHandler IndexHandlerType;
+    /** @brief The type for the adjoint values. */
     typedef GradientValue GradientValueType;
 
     /** @brief The data for each statement. */
@@ -118,7 +136,7 @@ namespace codi {
    *
    * This is handled by a nested definition of multiple ChunkVectors which hold
    * the different data vectors. The current implementation uses 3 ChunkVectors
-   * and one terminator. The relation is
+   * and an empty terminator. The relation is
    *
    * externalFunctions -> jacobiData -> statements
    *
@@ -127,7 +145,7 @@ namespace codi {
    *
    * The tape also uses the index manager IndexHandler to reuse the indices that are deleted.
    * That means that ActiveReal's which use this tape need to be copied by usual means and deleted after
-   * the are no longer used. No c-like memory operations like memset and memcpy should be applied
+   * they are no longer used. No c-like memory operations like memset and memcpy should be applied
    * to these types.
    *
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
@@ -136,17 +154,23 @@ namespace codi {
   class JacobiIndexTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
+    /** @brief The type for the primal values. */
     typedef typename TapeTypes::RealType Real;
+    /** @brief The type for the adjoint values. */
     typedef typename TapeTypes::GradientValueType GradientValue;
+    /** @brief The type for the index handler. */
     typedef typename TapeTypes::IndexHandlerType IndexHandler;
+
+    /** @brief The type for the indices that are used for the identification of the adjoint variables. */
+    typedef typename IndexHandler::IndexType IndexType;
+    /** @brief The gradient data is just the index type. */
+    typedef IndexType GradientData;
 
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
 
+    // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiIndexTape
-
-    typedef typename IndexHandler::IndexType IndexType;
-    typedef IndexType GradientData;
 
     #define POSITION_TYPE typename TapeTypes::Position
     #define INDEX_HANDLER_TYPE IndexHandler
@@ -178,13 +202,13 @@ namespace codi {
      */
     JacobiIndexTape() :
       emptyVector(),
-      indexHandler(),
-      adjoints(NULL),
-      adjointsSize(0),
-      active(false),
-      stmtVector(DefaultChunkSize, emptyVector),
-      jacobiVector(DefaultChunkSize, stmtVector),
-      extFuncVector(1000, jacobiVector) {
+      /* defined in tapeBaseModule */indexHandler(),
+      /* defined in tapeBaseModule */adjoints(NULL),
+      /* defined in tapeBaseModule */adjointsSize(0),
+      /* defined in tapeBaseModule */active(false),
+      /* defined in statementModule */stmtVector(DefaultChunkSize, emptyVector),
+      /* defined in jacobiModule */jacobiVector(DefaultChunkSize, stmtVector),
+      /* defined in externalFunctionsModule */extFuncVector(1000, jacobiVector) {
     }
 
     /**
@@ -204,7 +228,7 @@ namespace codi {
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
           indexHandler.checkIndex(lhsIndex);
 
-          stmtVector.reserveItems(1); // statements needs a reserve before the data items for the statement are pushed
+          stmtVector.reserveItems(1);
           jacobiVector.reserveItems(1);
           jacobiVector.setDataAndMove(1.0, rhs.getGradientData());
           stmtVector.setDataAndMove((StatementInt)1, lhsIndex);
@@ -215,10 +239,6 @@ namespace codi {
         indexHandler.freeIndex(lhsIndex);
       }
       lhsValue = rhs.getValue();
-    }
-
-    inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
-      stmtVector.setDataAndMove(numberOfArguments, lhsIndex);
     }
 
     /**
@@ -255,6 +275,22 @@ namespace codi {
      */
     inline Position getPosition() const {
       return getExtFuncPosition();
+    }
+
+
+  private:
+
+    /**
+     * @brief The callback method for the push of statement data.
+     *
+     * The method is called by the statement module to push the
+     * statements on the tape.
+     *
+     * @param[in] numberOfArguments  The number of arguments in the statements that have been pushed as jacobies.
+     * @param[in]          lhsIndex  The index of the lhs value of the operation.
+     */
+    inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
+      stmtVector.setDataAndMove(numberOfArguments, lhsIndex);
     }
 
     /**

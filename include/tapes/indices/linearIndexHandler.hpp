@@ -36,10 +36,11 @@
 namespace codi {
 
   /**
-   * @brief Handles the indices that can be used and reused.
+   * @brief Provides linear increasing indices.
    *
-   * New indices are generated if required. All the freed indices are stored in a list
-   * and are reused when indices are needed.
+   * New indices are generated if required. No index is generated twice.
+   *
+   * The handler will be reset together with the tape.
    *
    * @tparam Index  The type for the handled indices.
    */
@@ -51,8 +52,9 @@ namespace codi {
        * @brief The type definition for other tapes who want to access the type.
        */
       typedef Index IndexType;
+
       /**
-       * @brief The needed position definition for a ChunkVector sequence terminator.
+       * @brief The required position definition for a ChunkVector sequence terminator.
        *
        * Just the integer for the current statement.
        */
@@ -61,7 +63,7 @@ namespace codi {
     private:
 
       /**
-       * @brief The current count for the statements.
+       * @brief The current count for the indices or statements.
        */
       Index count;
 
@@ -69,7 +71,7 @@ namespace codi {
 
 
       /**
-       * @brief Create a handler that has no indices in use.
+       * @brief Create a handler that starts with the index one.
        */
       LinearIndexHandler() :
         count() {}
@@ -97,16 +99,16 @@ namespace codi {
       }
 
       /**
-       * @brief Check if the index is active if not a new index is generated.
+       * @brief No check needs to be performed. A new index is always generated.
        *
-       * @param[inout] index The current value of the index. If 0 then a new index is generated.
+       * @param[out] index Will be set to a new index.
        */
       inline void checkIndex(Index& index) {
         index = this->createIndex();
       }
 
       /**
-       * @brief Get the maximum global
+       * @brief Get the maximum global index.
        *
        * @return The maximum index that was used during the lifetime of this index handler.
        */

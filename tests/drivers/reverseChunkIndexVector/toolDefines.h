@@ -29,10 +29,10 @@
 #pragma once
 
 #include <codi.hpp>
-#include <tools/adVector.hpp>
+#include <tools/direction.hpp>
 
 const size_t DIM = 5;
-typedef codi::AdVector<double, DIM> Gradient;
+typedef codi::Direction<double, DIM> Gradient;
 typedef codi::ActiveReal<codi::JacobiIndexTape<codi::ChunkIndexTapeTypes<double, codi::ReuseIndexHandler<int> , Gradient> > > NUMBER;
 
 #include "../globalDefines.h"

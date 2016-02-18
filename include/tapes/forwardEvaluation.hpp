@@ -58,13 +58,19 @@ namespace codi {
   class ForwardEvaluation : public TapeInterface<RealType, GradientValueType, GradientValueType>{
   public:
 
+    /**
+     * @brief The real type for the primal values.
+     */
     typedef RealType Real;
+    /**
+     * @brief The real type for the tangent values.
+     */
     typedef GradientValueType GradientValue;
 
     /**
      * @brief The tangent value for the active variable.
      *
-     * The tangent data has the same type as the primal data.
+     * The tangent data has the same type as the GradientValue data.
      */
     typedef GradientValue GradientData;
 

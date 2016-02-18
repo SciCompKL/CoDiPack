@@ -495,7 +495,6 @@ namespace codi {
   /**
    * @brief Specialization of the ExpressionTraits for the ActiveReal type.
    *
-   * @tparam Real The floating point value of the active real.
    * @tparam Tape The tape of the active real.
    */
   template<typename Tape>
