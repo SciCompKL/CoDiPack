@@ -26,9 +26,24 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-#ifndef TAPE_NAME
-  #error Please define the name of the tape.
-#endif
+/*
+ * In order to include this file the user has to define the preprocessor macro CHILD_VECTOR_TYPE and
+ * VECTOR_TYPE.
+ *
+ * CHILD_VECTOR_TYPE defines the type of the nested vector for the data vector.
+ * VECTOR_TYPE defines the type of the data vector.
+ *
+ * All these macros are undefined at the end of the file.
+ *
+ * The module defines the structures jacobiVector.
+ * The module defines the types JacobiChildVector, JacobiChildPosition, JacobiVector, JacobiChunk,
+ * JacobiPosition.
+ *
+ * It defines the methods pushJacobi(1.0), pushJacobi(Mul) printJacobiStatistics from the TapeInterface and ReverseTapeInterface.
+ *
+ * It defines the methods evaluateJacobies, incrementAdjoints, setDataChunkSize, getUsedDataEntriesSize, resizeJacobi as interface functions for the
+ * including class.
+ */
 
 #ifndef CHILD_VECTOR_TYPE
   #error Please define the type of the child vector
@@ -37,7 +52,11 @@
   #error Please define the name of the chunk vector type.
 #endif
 
-		public:
+		private:
+
+  // ----------------------------------------------------------------------
+  // All definitons of the module
+  // ----------------------------------------------------------------------
 
     typedef CHILD_VECTOR_TYPE JacobiChildVector;
     typedef typename JacobiChildVector::Position JacobiChildPosition;
@@ -52,6 +71,75 @@
 
     /** @brief The data for the jacobies of each statements. */
     JacobiVector jacobiVector;
+
+  private:
+
+  // ----------------------------------------------------------------------
+  // Private function for the communication with the including class
+  // ----------------------------------------------------------------------
+
+    /**
+     * @brief Evaluate a part of the jacobi vector.
+     *
+     * It has to hold start >= end.
+     *
+     * It calls the evaluation method for the expression counter.
+     *
+     * @param[in]       start The starting point for the jacobi vector.
+     * @param[in]         end The ending point for the jacobi vector.
+     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
+     * @param[in]  statements The pointer to the statement vector.
+     */
+    template<typename ... Args>
+    inline void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
+      Real* jacobiData;
+      IndexType* indexData;
+      size_t dataPos = start.data;
+      JacobiChildPosition curInnerPos = start.inner;
+      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
+        jacobiVector.getDataAtPosition(curChunk, 0, jacobiData, indexData);
+
+        JacobiChildPosition endInnerPos = jacobiVector.getInnerPosition(curChunk);
+        evalJacobiesCallback(curInnerPos, endInnerPos, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
+
+        curInnerPos = endInnerPos;
+
+        dataPos = jacobiVector.getChunkUsedData(curChunk - 1);
+      }
+
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      jacobiVector.getDataAtPosition(end.chunk, 0, jacobiData, indexData);
+      evalJacobiesCallback(curInnerPos, end.inner, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
+    }
+
+    /**
+     * @brief Perform the adjoint update of the reverse AD sweep
+     *
+     * Evaluates the equation
+     *
+     * \f[ \bar v_i += \frac{\d \phi}{\d v_i} \bar w \f]
+     *
+     * The \f[ v_i \f] are the arguments of the statement and are taken from the input jacobi and indices.
+     * The value \f[ \bar w \f] is taken from the input adj.
+     *
+     * @param[in]                  adj  The adjoint of the lhs of the statement.
+     * @param[in,out]         adjoints  The adjoint vector containing the adjoints of all variables.
+     * @param[in]      activeVariables  The number of active arguments on the rhs.
+     * @param[int,out]         dataPos  The position inside the jacobi and indices vectors. It is decremented by the number of active variables.
+     * @param[in]             jacobies  The jacobies from the arguments of the statement.
+     * @param[in]              indices  The indices from the arguments of the statements.
+     */
+     inline void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+      ENABLE_CHECK(OptZeroAdjoint, adj != 0){
+        for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
+          --dataPos;
+          adjoints[indices[dataPos]] += adj * jacobies[dataPos];
+
+        }
+      } else {
+        dataPos -= activeVariables;
+      }
+    }
 
     /**
      * @brief Set the size of the jacobi data chunks.
@@ -70,9 +158,23 @@
       return jacobiVector.getDataSize();
     }
 
+    /**
+     * @brief Resize the jacobi data.
+     *
+     * Ensure that enough size is allocated such that dataSize number of items
+     * can be stored.
+     *
+     * @param[in] dataSize  The size that should be allocated for the jacobi data.
+     */
     void resizeJacobi(const size_t& dataSize) {
       jacobiVector.resize(dataSize);
     }
+
+  public:
+
+  // ----------------------------------------------------------------------
+  // Public function from the TapeInterface and ReverseTapeInterface
+  // ----------------------------------------------------------------------
 
     /**
      * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
@@ -115,51 +217,6 @@
       }
     }
 
-    /**
-     * @brief Evaluate a part of the jacobi vector.
-     *
-     * It has to hold start >= end.
-     *
-     * It calls the evaluation method for the expression counter.
-     *
-     * @param[in]       start The starting point for the jacobi vector.
-     * @param[in]         end The ending point for the jacobi vector.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]  statements The pointer to the statement vector.
-     */
-    template<typename ... Args>
-    inline void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
-      Real* jacobiData;
-      IndexType* indexData;
-      size_t dataPos = start.data;
-      JacobiChildPosition curInnerPos = start.inner;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        jacobiVector.getDataAtPosition(curChunk, 0, jacobiData, indexData);
-
-        JacobiChildPosition endInnerPos = jacobiVector.getInnerPosition(curChunk);
-        evalJacobiesCallback(curInnerPos, endInnerPos, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
-
-        curInnerPos = endInnerPos;
-
-        dataPos = jacobiVector.getChunkUsedData(curChunk - 1);
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      jacobiVector.getDataAtPosition(end.chunk, 0, jacobiData, indexData);
-      evalJacobiesCallback(curInnerPos, end.inner, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
-    }
-
-    inline void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
-      ENABLE_CHECK(OptZeroAdjoint, adj != 0){
-        for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
-          --dataPos;
-          adjoints[indices[dataPos]] += adj * jacobies[dataPos];
-
-        }
-      } else {
-        dataPos -= activeVariables;
-      }
-    }
 
     /**
      * @brief Prints statistics about the tape on the screen

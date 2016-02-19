@@ -26,6 +26,29 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
+/*
+ * In order to include this file the user has to define the preprocessor macro POSITION_TYPE, INDEX_HANDLER_TYPE
+ * RESET_FUNCTION_NAME and EVALUATE_FUNCTION_NAME.
+ *
+ * POSITION_TYPE defines the type of the position structure that is used in the tape.
+ * INDEX_HANDLER_TYPE defines the type of the index handler class that is used in the tape.
+ * RESET_FUNCTION_NAME is the name of the reset function that is implemented in the including class.
+ * EVALUATE_FUNCTION_NAME is the name of the tape evaluation function that is implemented in the including class.
+ *
+ * All these macros are undefined at the end of the file.
+ *
+ * The module defines the structures indexHandler, adjoints, adjointSize and active that have to initialized
+ * in the including class.
+ * The module defines the types Position.
+ *
+ * It defines the methods initGradientData, destroyGradientData, setGradient, getGradient, gradient, clearAdjoints,
+ * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), setActive, setPassive, isActive, printTapeBaseStatistics
+ * from the TapeInterface and ReverseTapeInterface.
+ *
+ * It defines the methods resizeAdjoints as interface functions for the
+ * including class.
+ */
+
 #ifndef POSITION_TYPE
 #error Please define the position type.
 #endif
@@ -42,6 +65,10 @@
 #error Please define the name of the evaluation function for the tape.
 #endif
 
+  // ----------------------------------------------------------------------
+  // All definitons of the module
+  // ----------------------------------------------------------------------
+
   public:
 
     /** @brief The position for all the different data vectors. */
@@ -49,6 +76,7 @@
 
   private:
 
+    /** @brief The index handler for the active real's. */
     INDEX_HANDLER_TYPE indexHandler;
 
     /**
@@ -58,6 +86,7 @@
      * But the positions should not be greater than the current expression counter.
      */
     GradientValue* adjoints;
+
     /* @brief The current size of the adjoint vector. */
     IndexType adjointsSize;
 
@@ -65,6 +94,12 @@
      * @brief Determines if statements are recorded or ignored.
      */
     bool active;
+
+  private:
+
+  // ----------------------------------------------------------------------
+  // Private function for the communication with the including class
+  // ----------------------------------------------------------------------
 
     /**
      * @brief Helper function: Sets the adjoint vector to a new size.
@@ -83,6 +118,11 @@
     }
 
   public:
+
+  // ----------------------------------------------------------------------
+  // Public function from the TapeInterface and ReverseTapeInterface
+  // ----------------------------------------------------------------------
+
 
     /**
      * @brief Set the index to zero.
@@ -231,6 +271,11 @@
       return active;
     }
 
+    /**
+     * @brief Prints statistics about the tape on the screen
+     *
+     * Prints information such as stored number of adjoints and the memory that is allocated for the adjoints.
+     */
     void printTapeBaseStatistics() const {
 
       size_t nAdjoints      = indexHandler.getMaximumGlobalIndex() + 1;

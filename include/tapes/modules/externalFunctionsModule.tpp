@@ -26,6 +26,29 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
+/*
+ * In order to include this file the user has to define the preprocessor macro CHILD_VECTOR_TYPE, CHILD_VECTOR_NAME,
+ * VECTOR_TYPE and TAPE_NAME.
+ *
+ * CHILD_VECTOR_TYPE defines the type of the nested vector for the data vector.
+ * CHILD_VECTOR_NAME defines the member name of the nested vector instantiation.
+ * VECTOR_TYPE defines the type of the data vector.
+ *
+ * All these macros are undefined at the end of the file.
+ *
+ * TAPE_NAME defines the type name of the tape and is not undefined at the end of the file.
+ *
+ * The module defines the structures extFuncVector.
+ * The module defines the types ExtFuncChildVector, ExtFuncChildPosition, ExtFuncVector, ExtFuncChunk,
+ * ExtFuncPosition.
+ *
+ * It defines the methods setExternalFunctionChunkSize, pushExternalFunctionHandle, pushExternalFunction,
+ * printExtFuncStatistics from the TapeInterface and ReverseTapeInterface.
+ *
+ * It defines the methods getExtFuncPosition, resetExtFunc, evaluateExtFunc as interface functions for the
+ * including class.
+ */
+
 #ifndef TAPE_NAME
   #error Please define the name of the tape.
 #endif
@@ -40,7 +63,11 @@
   #error Please define the name of the chunk vector type.
 #endif
 
-  public:
+  private:
+
+  // ----------------------------------------------------------------------
+  // All definitons of the module
+  // ----------------------------------------------------------------------
 
     typedef CHILD_VECTOR_TYPE ExtFuncChildVector;
     typedef typename ExtFuncChildVector::Position ExtFuncChildPosition;
@@ -55,28 +82,9 @@
     /** @brief The data for the external functions. */
     ExtFuncVector extFuncVector;
 
-    /**
-     * @brief Set the size of the external function data chunks.
-     *
-     * @param[in] extChunkSize The new size for the external function data chunks.
-     */
-    void setExternalFunctionChunkSize(const size_t& extChunkSize) {
-      extFuncVector.setChunkSize(extChunkSize);
-    }
-
-    ExtFuncPosition getExtFuncPosition() const {
-      return extFuncVector.getPosition();
-    }
-
-    void resetExtFunc(const ExtFuncPosition& pos) {
-      ExternalFunction* extFunc;
-      ExtFuncChildPosition* endInnerPos;
-      extFuncVector.forEach(getExtFuncPosition(), pos, popExternalFunction, extFunc, endInnerPos);
-
-      // reset will be done iteratively through the vectors
-      extFuncVector.reset(pos);
-    }
-
+  // ----------------------------------------------------------------------
+  // Private function of the module
+  // ----------------------------------------------------------------------
 
     /*
      * Function object for the evaluation of the external functions.
@@ -106,6 +114,58 @@
     };
 
     /**
+     * @brief Private common method to add to the external function stack.
+     *
+     * @param[in] function The external function structure to push.
+     */
+    void pushExternalFunctionHandle(const ExternalFunction& function){
+      extFuncVector.reserveItems(1);
+      extFuncVector.setDataAndMove(function, CHILD_VECTOR_NAME.getPosition());
+    }
+
+    /**
+     * @brief Delete the data of the external function.
+     * @param extFunction The external function in the vector.
+     */
+    static void popExternalFunction(ExternalFunction* extFunc, ExtFuncChildPosition* endInnerPos) {
+      /* we just need to call the delete function */
+      extFunc->deleteData();
+    }
+
+  private:
+
+  // ----------------------------------------------------------------------
+  // Private function for the communication with the including class
+  // ----------------------------------------------------------------------
+
+    /**
+     * @brief Get the position from the external function vector.
+     *
+     * The position contains also the positions information for all nested vectors.
+     *
+     * @return The position for the external function vector.
+     */
+    ExtFuncPosition getExtFuncPosition() const {
+      return extFuncVector.getPosition();
+    }
+
+    /**
+     * @brief Reset the external function module to the position.
+     *
+     * The reset will also reset the vector and therefore all nested vectors.
+     *
+     * @param[in] pos  The position to which the tape is reset.
+     */
+    void resetExtFunc(const ExtFuncPosition& pos) {
+      ExternalFunction* extFunc;
+      ExtFuncChildPosition* endInnerPos;
+      extFuncVector.forEach(getExtFuncPosition(), pos, popExternalFunction, extFunc, endInnerPos);
+
+      // reset will be done iteratively through the vectors
+      extFuncVector.reset(pos);
+    }
+
+    /**
      * @brief Evaluate a part of the external function vector.
      *
      * It has to hold start >= end.
@@ -124,6 +184,22 @@
 
       // Iterate over the reminder also covers the case if there have been no external functions.
       evalExtFuncCallback(evaluator.curInnerPos, end.inner);
+    }
+
+
+  public:
+
+  // ----------------------------------------------------------------------
+  // Public function from the TapeInterface and ReverseTapeInterface
+  // ----------------------------------------------------------------------
+
+    /**
+     * @brief Set the size of the external function data chunks.
+     *
+     * @param[in] extChunkSize The new size for the external function data chunks.
+     */
+    void setExternalFunctionChunkSize(const size_t& extChunkSize) {
+      extFuncVector.setChunkSize(extChunkSize);
     }
 
     /**
@@ -160,27 +236,6 @@
       }
     }
 
-  private:
-    /**
-     * @brief Private common method to add to the external function stack.
-     *
-     * @param[in] function The external function structure to push.
-     */
-    void pushExternalFunctionHandle(const ExternalFunction& function){
-      extFuncVector.reserveItems(1);
-      extFuncVector.setDataAndMove(function, CHILD_VECTOR_NAME.getPosition());
-    }
-
-    /**
-     * @brief Delete the data of the external function.
-     * @param extFunction The external function in the vector.
-     */
-    static void popExternalFunction(ExternalFunction* extFunc, ExtFuncChildPosition* endInnerPos) {
-      /* we just need to call the delete function */
-      extFunc->deleteData();
-    }
-
-  public:
     /**
      * @brief Prints statistics about the tape on the screen
      *

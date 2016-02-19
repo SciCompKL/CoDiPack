@@ -26,6 +26,27 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
+/*
+ * In order to include this file the user has to define the preprocessor macro CHILD_VECTOR_TYPE,
+ * JACOBI_VECTOR_NAME VECTOR_TYPE and STATEMENT_PUSH_FUNCTION_NAME.
+ *
+ * CHILD_VECTOR_TYPE defines the type of the nested vector for the data vector.
+ * JACOBI_VECTOR_NAME defines the member name of the jacobi vector.
+ * VECTOR_TYPE defines the type of the data vector.
+ * STATEMENT_PUSH_FUNCTION_NAME defines the name of the function that pushes the statements.
+ *
+ * All these macros are undefined at the end of the file.
+ *
+ * The module defines the structures stmtVector.
+ * The module defines the types StmtChildVector, StmtChildPosition, StmtVector, StmtChunk,
+ * StmtPosition.
+ *
+ * It defines the methods store(Expr), store(const), store(User) and printStmtStatistics from the TapeInterface and ReverseTapeInterface.
+ *
+ * It defines the methods setStatementChunkSize, getUsedStatementSize, resizeStmt as interface functions for the
+ * including class.
+ */
+
 #ifndef CHILD_VECTOR_TYPE
   #error Please define the type of the child vector
 #endif
@@ -40,7 +61,11 @@
 #endif
 
 
-  public:
+  private:
+
+  // ----------------------------------------------------------------------
+  // All definitons of the module
+  // ----------------------------------------------------------------------
 
     typedef CHILD_VECTOR_TYPE StmtChildVector;
     typedef typename StmtChildVector::Position StmtChildPosition;
@@ -54,6 +79,12 @@
 
     /** @brief The data for the statements. */
     StmtVector stmtVector;
+
+  private:
+
+  // ----------------------------------------------------------------------
+  // Private function for the communication with the including class
+  // ----------------------------------------------------------------------
 
     /**
      * @brief Set the size of the statement data chunks.
@@ -72,9 +103,23 @@
       return stmtVector.getDataSize();
     }
 
+    /**
+     * @brief Resize the statement data.
+     *
+     * Ensure that enough size is allocated such that dataSize number of items
+     * can be stored.
+     *
+     * @param[in] statementSize  The size that should be allocated for the statement data.
+     */
     void resizeStmt(const size_t& statementSize) {
       stmtVector.resize(statementSize);
     }
+
+  public:
+
+  // ----------------------------------------------------------------------
+  // Public function from the TapeInterface and ReverseTapeInterface
+  // ----------------------------------------------------------------------
 
     /**
      * @brief Store the jacobies of the statement on the tape.

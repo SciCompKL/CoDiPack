@@ -177,7 +177,7 @@ namespace codi {
       /**
        * @brief Output statistics about the used indices.
        *
-       * Writes the
+       * Writes the 
        *   maximum number of live indices,
        *   the current number of lives indices,
        *   the indices that are stored and
