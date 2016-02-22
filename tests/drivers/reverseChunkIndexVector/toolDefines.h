@@ -26,11 +26,16 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-
 #pragma once
 
 #include <codi.hpp>
+#include <tools/direction.hpp>
 
-typedef codi::ActiveReal<codi::ForwardEvaluation<codi::RealForward> > NUMBER;
+const size_t DIM = 5;
+typedef codi::Direction<double, DIM> Gradient;
+typedef codi::ActiveReal<codi::JacobiIndexTape<codi::ChunkIndexTapeTypes<double, codi::ReuseIndexHandler<int> , Gradient> > > NUMBER;
 
 #include "../globalDefines.h"
+
+#define CHUNK_TAPE
+#define REVERSE_TAPE

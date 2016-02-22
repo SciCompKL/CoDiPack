@@ -30,6 +30,6 @@
 
 #include <codi.hpp>
 
-typedef codi::ActiveReal<codi::RealForward, codi::ChunkTape<codi::RealForward, int> > NUMBER;
+typedef codi::ActiveReal<codi::JacobiTape<codi::ChunkTapeTypes<codi::RealForward, codi::LinearIndexHandler<int> > > > NUMBER;
 
 #include "../globalDefines.h"

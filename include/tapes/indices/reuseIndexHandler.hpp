@@ -41,33 +41,39 @@ namespace codi {
    * New indices are generated if required. All the freed indices are stored in a list
    * and are reused when indices are needed.
    *
-   * @tparam IndexType  The type for the handled indices.
+   * @tparam Index  The type for the handled indices.
    */
-  template<typename IndexType>
-  class IndexHandler {
+  template<typename Index>
+  class ReuseIndexHandler {
+    public:
+      /**
+       * @brief The type definition for other tapes who want to access the type.
+       */
+      typedef Index IndexType;
+
     private:
 
       /** @brief The maximum index that was used over the whole process */
-      IndexType globalMaximumIndex;
+      Index globalMaximumIndex;
       /**
        * @brief The maximum index that is currently used.
        *
        * The maximum is decremented every time an index is released that corresponds to the
        * current maximum.
        */
-      IndexType currentMaximumIndex;
+      Index currentMaximumIndex;
 
       /**
        * @brief The list with the indices that are available for reuse.
        */
-      std::vector<IndexType> freeIndices;
+      std::vector<Index> freeIndices;
 
     public:
 
       /**
        * @brief Create a handler that has no indices in use.
        */
-      IndexHandler() :
+      ReuseIndexHandler() :
         globalMaximumIndex(0),
         currentMaximumIndex(0),
         freeIndices() {}
@@ -81,7 +87,7 @@ namespace codi {
        *
        * @param[inout] index  The index that is freed. It is set to zero in the method.
        */
-      inline void freeIndex(IndexType& index) {
+      inline void freeIndex(Index& index) {
         if(0 != index) { // do not free the zero index
           if(currentMaximumIndex == index) {
             // freed index is the maximum one so we can decrease the count
@@ -99,9 +105,9 @@ namespace codi {
        *
        * @return The new index that can be used.
        */
-      inline IndexType createIndex() {
+      inline Index createIndex() {
         if(0 != freeIndices.size()) {
-          IndexType index = freeIndices.back();
+          Index index = freeIndices.back();
           freeIndices.pop_back();
           return index;
         } else {
@@ -119,7 +125,7 @@ namespace codi {
        *
        * @param[inout] index The current value of the index. If 0 then a new index is generated.
        */
-      inline void checkIndex(IndexType& index) {
+      inline void checkIndex(Index& index) {
         if(0 == index) {
           index = this->createIndex();
         }
@@ -128,7 +134,7 @@ namespace codi {
       /**
        * @brief Placeholder for further developments.
        */
-      inline void reset() {
+      inline void reset() const {
         /* do nothing */
       }
 
@@ -137,7 +143,7 @@ namespace codi {
        *
        * @return The maximum index that was used during the lifetime of this index handler.
        */
-      inline IndexType getMaximumGlobalIndex() {
+      inline Index getMaximumGlobalIndex() const {
         return globalMaximumIndex;
       }
 
@@ -146,7 +152,7 @@ namespace codi {
        *
        * @return The current maximum index that is in use.
        */
-      inline IndexType getCurrentIndex() {
+      inline Index getCurrentIndex() const {
         return currentMaximumIndex;
       }
 
@@ -155,7 +161,7 @@ namespace codi {
        *
        * @return The number of stored indices.
        */
-      size_t getNumberStoredIndices() {
+      size_t getNumberStoredIndices() const {
         return freeIndices.size();
       }
 
@@ -164,8 +170,41 @@ namespace codi {
        *
        * @return The number of the allocated indices.
        */
-      size_t getNumberAllocatedIndices() {
+      size_t getNumberAllocatedIndices() const {
         return freeIndices.capacity();
+      }
+
+      /**
+       * @brief Output statistics about the used indices.
+       *
+       * Writes the 
+       *   maximum number of live indices,
+       *   the current number of lives indices,
+       *   the indices that are stored and
+       *   the memory for the allocated indices.
+       */
+      void printStatistics() const {
+        size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
+        size_t storedIndices          = (size_t)this->getNumberStoredIndices();
+        size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();
+
+        double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * BYTE_TO_MB;
+        double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
+
+        std::cout << "---------------------------------------------" << std::endl
+                  << "Indices"                                       << std::endl
+                  << "---------------------------------------------" << std::endl
+                  << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << std::endl
+                  << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << std::endl
+                  << "  Indices stored:    " << std::setw(10) << storedIndices << std::endl
+                  << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
+                                             << std::setprecision(2)
+                                             << std::setw(10)
+                                             << memoryAllocatedIndices << " MB" << std::endl
+                  << "  Memory used:       " << std::setiosflags(std::ios::fixed)
+                                             << std::setprecision(2)
+                                             << std::setw(10)
+                                             << memoryStoredIndices << " MB" << std::endl;
       }
   };
 }

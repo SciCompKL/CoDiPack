@@ -26,11 +26,14 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
+#include <toolDefines.h>
 
-#pragma once
+IN(2)
+OUT(2)
+POINTS(1) = {{1.0, 2.0}};
 
-#include <codi.hpp>
-
-typedef codi::ActiveReal<codi::ForwardEvaluation<codi::RealForward> > NUMBER;
-
-#include "../globalDefines.h"
+void func(NUMBER* x, NUMBER* y) {
+  NUMBER t1 = x[0] * x[1];
+  y[0] = t1;
+  y[1] = t1;
+}
