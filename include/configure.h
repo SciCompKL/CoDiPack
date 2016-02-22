@@ -164,6 +164,15 @@ namespace codi {
   #ifndef CODI_DisableAssignOptimization
     #define CODI_DisableAssignOptimization false
   #endif
+  /**
+   * @brief Disables the assign optimization for linear index tapes.
+   *
+   * An assign statement usually does not need to written for tapes
+   * that use a linear increasing index scheme. The correspoinding
+   * entry on the tape would just add the accumulated values for
+   * the lhs to the rhs. This optimization can be dissabled with
+   * this switch.
+   */
   const bool OptDisableAssignOptimization = CODI_DisableAssignOptimization;
   #undef CODI_DisableAssignOptimization
 
@@ -171,7 +180,28 @@ namespace codi {
     #define CODI_AdjointHandle false
   #endif
   #if CODI_AdjointHandle
-    void handleAdjointOperation(const double& value, const int lhsIndex, const double* jacobies, const int* rhsIndices, const int size);
+    /**
+     * @brief A function that is called for every statement that is written on the
+     *        Jacobie tapes.
+     *
+     * The function can be used to extract information from the taping process.
+     *
+     * @param[in]      value  The primal value of the statement.
+     * @param[in]   lhsIndex  The index on the left hand side of the statement, that
+     *                        will be recorded.
+     * @param[in]   jacobies  The pointer to the array of the Jacobies that will be stored
+     *                        for the statement. jacobies[0] is the first argument, jacobies[1]
+     *                        the second, etc.
+     * @param[in] rhsIndices  The pointer to the array of the indices that will be stored
+     *                        for the statement. rhsIndices[0] is the first argument, rhsIndices[1]
+     *                        the second, etc.
+     * @param[in]       size  The number of arguments that are stored for the statement.
+     *
+     * @tparam      Real  The type of the floating point values that is used in the tape.
+     * @tparam IndexType  The type of the indices that is used in the tape.
+     */
+    template<typename Real, typename IndexType>
+    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
   #endif
 
   /**
@@ -181,7 +211,7 @@ namespace codi {
    * the condition is evaluated and only if the condition is true the block after the macro is
    * executed. If the option is false the block will always be executed.
    *
-   * @param option     A constant global boolean. Only than the compiler can optimize the statement.
+   * @param    option  A constant global boolean. Only than the compiler can optimize the statement.
    * @param condition  The condition which is only evaluated if 'option' is set to true.
    */
 #  define ENABLE_CHECK(option, condition) if(!(option) || (condition))

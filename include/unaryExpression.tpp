@@ -133,11 +133,12 @@ struct OP : public Expression<Real, OP<Real, A> > {
   }
 };
 
+
 /**
  * @brief Specialization of the TypeTraits for the unary operator type.
  *
- * @tparam Real The floating point value of the active real.
- * @tparam Tape The tape of the active real.
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    A  The type of the argument of the unary operator.
  */
 template<typename RealType, typename A>
 class TypeTraits< OP<RealType, A> > {
@@ -148,7 +149,7 @@ class TypeTraits< OP<RealType, A> > {
     typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
 
     /**
-     * @brief The passive type is the passive type of Real.
+     * @brief The definition of the Real type for other classes.
      */
     typedef RealType Real;
 
@@ -162,7 +163,7 @@ class TypeTraits< OP<RealType, A> > {
     }
 };
 
-/** 
+/**
  * @brief Overload for FUNC with the CoDiPack expressions.
  *
  * @param[in] a The argument of the operation.

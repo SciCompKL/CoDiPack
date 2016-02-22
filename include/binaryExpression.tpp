@@ -317,8 +317,9 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
 /**
  * @brief Specialization of the TypeTraits for the binary operator type.
  *
- * @tparam Real The floating point value of the active real.
- * @tparam Tape The tape of the active real.
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    A  The type of the first argument of the binary operator.
+ * @tparam    B  The type of the second argument of the binary operator.
  */
 template<typename RealType, typename A, typename B>
 class TypeTraits< OP11<RealType, A, B> > {
@@ -329,7 +330,7 @@ class TypeTraits< OP11<RealType, A, B> > {
     typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
 
     /**
-     * @brief The passive type is the passive type of Real.
+     * @brief The definition of the Real type for other classes.
      */
     typedef RealType Real;
 
@@ -346,8 +347,8 @@ class TypeTraits< OP11<RealType, A, B> > {
 /**
  * @brief Specialization of the TypeTraits for the binary operator type.
  *
- * @tparam Real The floating point value of the active real.
- * @tparam Tape The tape of the active real.
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    A  The type of the first argument of the binary operator.
  */
 template<typename RealType, typename A>
 class TypeTraits< OP10<RealType, A> > {
@@ -358,7 +359,7 @@ class TypeTraits< OP10<RealType, A> > {
     typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
 
     /**
-     * @brief The passive type is the passive type of Real.
+     * @brief The definition of the Real type for other classes.
      */
     typedef RealType Real;
 
@@ -375,8 +376,8 @@ class TypeTraits< OP10<RealType, A> > {
 /**
  * @brief Specialization of the TypeTraits for the binary operator type.
  *
- * @tparam Real The floating point value of the active real.
- * @tparam Tape The tape of the active real.
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    B  The type of the second argument of the binary operator.
  */
 template<typename RealType, typename B>
 class TypeTraits< OP01<RealType, B> > {
@@ -401,46 +402,46 @@ class TypeTraits< OP01<RealType, B> > {
     }
 };
 
-/** 
- * @brief Overload for FUNC with the CoDiPack expressions. 
+/**
+ * @brief Overload for FUNC with the CoDiPack expressions.
  *
- * @param[in] a  The first argument of the operation. 
- * @param[in] b  The second argument of the operation. 
+ * @param[in] a  The first argument of the operation.
+ * @param[in] b  The second argument of the operation.
  *
- * @return The implementing expression OP. 
+ * @return The implementing expression OP.
  *
- * @tparam Real  The real type used in the active types. 
- * @tparam    A  The expression for the first argument of the function 
+ * @tparam Real  The real type used in the active types.
+ * @tparam    A  The expression for the first argument of the function
  * @tparam    B  The expression for the second argument of the function
  */
 template <typename Real, class A, class B>
 inline OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b) {
   return OP11<Real, A, B>(a.cast(), b.cast());
 }
-/** 
- * @brief Overload for FUNC with the CoDiPack expressions. 
+/**
+ * @brief Overload for FUNC with the CoDiPack expressions.
  *
- * @param[in] a  The first argument of the operation. 
- * @param[in] b  The second argument of the operation. 
+ * @param[in] a  The first argument of the operation.
+ * @param[in] b  The second argument of the operation.
  *
- * @return The implementing expression OP. 
+ * @return The implementing expression OP.
  *
- * @tparam Real  The real type used in the active types. 
+ * @tparam Real  The real type used in the active types.
  * @tparam    A  The expression for the first argument of the function
  */
 template <typename Real, class A>
 inline OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
   return OP10<Real, A>(a.cast(), b);
 }
-/** 
- * @brief Overload for FUNC with the CoDiPack expressions. 
+/**
+ * @brief Overload for FUNC with the CoDiPack expressions.
  *
- * @param[in] a  The first argument of the operation. 
- * @param[in] b  The second argument of the operation. 
+ * @param[in] a  The first argument of the operation.
+ * @param[in] b  The second argument of the operation.
  *
- * @return The implementing expression OP. 
+ * @return The implementing expression OP.
  *
- * @tparam Real  The real type used in the active types. 
+ * @tparam Real  The real type used in the active types.
  * @tparam    B  The expression for the second argument of the function
  */
 template <typename Real, class B>
@@ -454,12 +455,12 @@ inline OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const
 #undef OP10
 #undef FUNC
 #undef PRIMAL_CALL
-#undef DERIVATIVE_FUNC_11  
-#undef DERIVATIVE_FUNC_11M 
-#undef DERIVATIVE_FUNC_10  
-#undef DERIVATIVE_FUNC_10M 
-#undef DERIVATIVE_FUNC_01  
-#undef DERIVATIVE_FUNC_01M 
+#undef DERIVATIVE_FUNC_11
+#undef DERIVATIVE_FUNC_11M
+#undef DERIVATIVE_FUNC_10
+#undef DERIVATIVE_FUNC_10M
+#undef DERIVATIVE_FUNC_01
+#undef DERIVATIVE_FUNC_01M
 
 #undef PRIMAL_FUNCTION
 #undef FUNCTION
