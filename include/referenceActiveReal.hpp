@@ -36,30 +36,26 @@
 
 namespace codi {
 
-  template<typename Real, typename Tape>
-  class ReferenceActiveReal : public Expression<Real, ReferenceActiveReal<Real, Tape> > {
+  template<typename ActiveType>
+  class ReferenceActiveReal : public Expression<typename ActiveType::Real, ReferenceActiveReal<ActiveType> > {
   public:
 
     static const bool storeAsReference = true;
 
-    static Tape globalTape;
-
-
-    typedef Real RealType;
-
-    typedef Tape TapeType;
+    typedef typename ActiveType::TapeType TapeType;
+    typedef typename ActiveType::Real Real;
 
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
-    typedef typename Tape::GradientData GradientData;
+    typedef typename TapeType::GradientData GradientData;
 
   private:
-    const ActiveReal<Tape>& reference;
+    const ActiveType& reference;
     mutable Real jacobi;
 
   public:
 
-    inline ReferenceActiveReal(const ActiveReal<Tape>& reference) :
+    inline ReferenceActiveReal(const ActiveType& reference) :
       reference(reference),
       jacobi() {}
 
@@ -95,19 +91,26 @@ namespace codi {
     }
 
   private:
-    inline ReferenceActiveReal<Real, Tape>& operator=(const ReferenceActiveReal& rhs){
+    inline ReferenceActiveReal<ActiveType>& operator=(const ReferenceActiveReal& rhs){
     }
   };
 
   /**
-   * @brief Specialization of the TypeTraits for the ActiveReal type.
+   * @brief Specialization of the TypeTraits for the ReferenceActiveReal type.
    *
-   * @tparam Real The floating point value of the active real.
-   * @tparam Tape The tape of the active real.
+   * @tparam ActiveType  The active type which is stored in this reference object.
    */
-  template<typename Real, typename Tape>
-  class TypeTraits<ReferenceActiveReal<Real, Tape> > {
+  template<typename ActiveType>
+  class TypeTraits<ReferenceActiveReal<ActiveType> > {
     public:
+
+      typedef typename ActiveType::TapeType Tape;
+
+      /**
+       * @brief The the calculation type.
+       */
+      typedef typename Tape::Real Real;
+
       /**
        * @brief The passive type is the passive type of Real.
        */
@@ -118,15 +121,15 @@ namespace codi {
        * @param[in] t The value from which the primal is extracted.
        * @return The primal value of the origin of this type..
        */
-      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ReferenceActiveReal<Real, Tape>& t) {
+      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ReferenceActiveReal<ActiveType>& t) {
         return TypeTraits<Real>::getBaseValue(t.getValue());
       }
   };
 
-  template<typename Real, typename Tape>
-  struct ExpressionTraits<ReferenceActiveReal<Real, Tape> >  {
+  template<typename ActiveType>
+  struct ExpressionTraits<ReferenceActiveReal<ActiveType> >  {
     /**
-     * @brief The maximum number of active values for an ActiveReal is one.
+     * @brief The maximum number of active values for an ReferenceActiveReal is one.
      */
     static const size_t maxActiveVariables = 1;
   };

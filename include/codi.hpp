@@ -103,7 +103,7 @@ namespace codi {
    * \endcode
    */
   typedef ActiveReal<JacobiTape<ChunkTapeTypes<double, LinearIndexHandler<int> > > > RealReverse;
-  typedef ReferenceActiveReal<double, JacobiTape<ChunkTapeTypes<double, LinearIndexHandler<int> > > > ReferenceRealReverse;
+  typedef ReferenceActiveReal<RealReverse > ReferenceRealReverse;
 
   /**
    * @brief The default reverse type in CoDiPack with float as the real value type.
@@ -149,7 +149,7 @@ namespace codi {
    * \endcode
    */
   typedef ActiveReal<JacobiTape<SimpleTapeTypes<double, LinearIndexHandler<int> > > > RealReverseUnchecked;
-  typedef ReferenceActiveReal<double, SimpleTapeTypes<double, LinearIndexHandler<int> > > ReferenceRealReverseUnchecked;
+  typedef ReferenceActiveReal<RealReverseUnchecked > ReferenceRealReverseUnchecked;
 
   /**
    * @brief The reverse type in CoDiPack with float as the real value type and an unchecked tape.
