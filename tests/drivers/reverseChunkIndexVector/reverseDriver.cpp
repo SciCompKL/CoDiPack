@@ -39,8 +39,7 @@ int main(int nargs, char** args) {
   NUMBER* y = new NUMBER[outputs];
 
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
-  tape.resize(1000, 1000);
-  tape.setExternalFunctionChunkSize(1000);
+  tape.resize(2, 3);
   tape.setActive();
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
@@ -61,8 +60,17 @@ int main(int nargs, char** args) {
       y[i] = 0.0;
     }
 
+    int runs = outputs / DIM;
+    if(outputs % DIM != 0) {
+      runs += 1;
+    }
     std::vector<std::vector<double> > jac(outputs);
-    for(int curOut = 0; curOut < outputs; ++curOut) {
+    for(int curOut = 0; curOut < runs; ++curOut) {
+      size_t curSize = DIM;
+      if((curOut + 1) * DIM  > (size_t)outputs) {
+        curSize = outputs % DIM;
+      }
+
       for(int i = 0; i < inputs; ++i) {
         tape.registerInput(x[i]);
       }
@@ -73,17 +81,20 @@ int main(int nargs, char** args) {
         tape.registerOutput(y[i]);
       }
 
-      for(int i = 0; i < outputs; ++i) {
-        y[i].setGradient(i == curOut ? 1.0:0.0);
+      for(size_t curDim = 0; curDim < curSize; ++curDim) {
+        y[curOut * DIM + curDim].gradient()[curDim] = 1.0;
       }
 
       tape.evaluate();
 
-      for(int curIn = 0; curIn < inputs; ++curIn) {
-        jac[curOut].push_back(x[curIn].getGradient());
+      for(size_t curDim = 0; curDim < curSize; ++curDim) {
+        for(int curIn = 0; curIn < inputs; ++curIn) {
+          jac[curOut * DIM + curDim].push_back(x[curIn].getGradient()[curDim]);
+        }
       }
 
       tape.reset();
+      tape.clearAdjoints();
     }
 
     for(int curIn = 0; curIn < inputs; ++curIn) {

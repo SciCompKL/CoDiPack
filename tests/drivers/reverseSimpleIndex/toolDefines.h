@@ -30,7 +30,7 @@
 
 #include <codi.hpp>
 
-typedef codi::RealReverseUncheckedIndexReusage NUMBER;
+typedef codi::RealReverseIndexUnchecked NUMBER;
 
 #include "../globalDefines.h"
 

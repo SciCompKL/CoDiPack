@@ -41,7 +41,6 @@ int main(int nargs, char** args) {
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
   tape.resize(1000, 1000);
   tape.setExternalFunctionChunkSize(1000);
-  tape.setActive();
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
@@ -63,6 +62,7 @@ int main(int nargs, char** args) {
 
     std::vector<std::vector<double> > jac(outputs);
     for(int curOut = 0; curOut < outputs; ++curOut) {
+      tape.setActive();
       for(int i = 0; i < inputs; ++i) {
         tape.registerInput(x[i]);
       }
@@ -72,6 +72,8 @@ int main(int nargs, char** args) {
       for(int i = 0; i < outputs; ++i) {
         tape.registerOutput(y[i]);
       }
+
+      tape.setPassive();
 
       for(int i = 0; i < outputs; ++i) {
         y[i].setGradient(i == curOut ? 1.0:0.0);

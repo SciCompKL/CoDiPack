@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -28,50 +28,36 @@
 
 #pragma once
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
-   * @brief Terminator for a sequence of ChunkVectors, which counts the number of statements.
+   * @brief Implementation for a terminal sequence chunk vector
    *
-   * The structure is a helper structure for the ChunkTape. It terminates the ChunkVector sequence
-   * and counts the number of expressions which have been recorded on the tape.
-   *
-   * @tparam IndexType The type of the index for the counting.
+   * This interface provides the basic implementation for a terminal point
+   * in a chain of chunk vectors.
    */
-  template <typename IndexType>
-  struct ExpressionCounter {
+  struct EmptyChunkVector {
+    /**
+     * @brief Position without any data.
+     */
+    struct Position {};
 
     /**
-     * @brief The needed position definition for a ChunkVector sequence terminator.
-     *
-     * Just the integer for the current statement.
+     * @brief Empty position.
+     * @return Empty position
      */
-    typedef IndexType Position;
-
-    /**
-     * @brief The current count for the statements.
-     */
-    IndexType count;
-
-    /**
-     * @brief The needed getPosition method for a ChunkVector sequence terminator.
-     *
-     * The method returns the current state of the count value.
-     * @return The current value of count.
-     */
-    inline Position getPosition() {
-      return count;
+    inline Position getPosition() const {
+      return Position();
     }
 
     /**
-     * @brief The needed reset method for a ChunkVector sequence terminator.
-     *
-     * The method sets count to the value from the argument.
-     *
-     * @param pos The new value of count.
+     * @brief Will do nothing.
      */
-    inline void reset(const Position& pos) {
-      count = pos;
+    inline void reset(const Position& pos) const {
+      CODI_UNUSED(pos);
     }
   };
 }

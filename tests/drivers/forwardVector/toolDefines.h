@@ -29,10 +29,10 @@
 #pragma once
 
 #include <codi.hpp>
+#include <tools/direction.hpp>
 
-typedef codi::RealReverseIndexReuse NUMBER;
+const size_t DIM = 5;
+typedef codi::Direction<double, DIM> Gradient;
+typedef codi::ActiveReal<codi::ForwardEvaluation<double, Gradient> > NUMBER;
 
 #include "../globalDefines.h"
-
-#define CHUNK_TAPE
-#define REVERSE_TAPE

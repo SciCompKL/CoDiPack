@@ -15,10 +15,12 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
+FLAGS = -Wall -pedantic -std=gnu++0x -DCODI_OptIgnoreInvalidJacobies=true
+
 ifeq ($(OPT), yes)
-  CXX_FLAGS := -O3 -Wall -pedantic -std=gnu++0x
+  CXX_FLAGS := -O3 $(FLAGS)
 else
-  CXX_FLAGS := -O0 -g -Wall -pedantic -std=gnu++0x
+  CXX_FLAGS := -O0 -g $(FLAGS)
 endif
 
 ifeq ($(CXX), )
@@ -42,10 +44,27 @@ all:
 BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp)
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp)
 
+# The first 3 lines of each driver define the basic parameters for this driver.
+# DRIVER_NAME:    The short name for the driver. This used to create the specific files for the driver
+# DRIVER_TESTS:   The full list of tests which are run for this driver. See the general test list for details.
+# DRIVER:         The special flags for this driver. It needs to be defined inside the build rule.
+# The other lines create the rules and dependencies to run the tests for this driver.
+
 # Driver for RealForward
 DRIVER_NAME  := FWD
 DRIVER_TESTS := $(BASIC_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/forward/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(DRIVER) $< -MM -MP -MT $@ -MF $@.d
+DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
+$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
+
+# Driver for RealForwardVector
+DRIVER_NAME  := FWD_Vec
+DRIVER_TESTS := $(BASIC_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/forwardVector/forwardDriver.cpp -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forwardVector
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
@@ -75,10 +94,10 @@ $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
 $(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
 
-# Driver for RealReverseUncheckedIndexReusage
-DRIVER_NAME  := RWS_Unch_InRe
+# Driver for RealReverseIndexUncheckedIndex
+DRIVER_NAME  := RWS_UnchInd
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reverseSimpleIndexReusage/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimpleIndexReusage
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reverseSimpleIndex/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimpleIndex
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
@@ -97,9 +116,33 @@ $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
 $(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
 
-DRIVER_NAME  := RWS_Chunk_InRe
+# Driver for RealReverseVector
+DRIVER_NAME  := RWS_ChunkVec
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkIndexReuse/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndexReuse
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkVector/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkVector
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(DRIVER) $< -MM -MP -MT $@ -MF $@.d
+DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
+$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
+
+
+# Driver for RealReverseIndex
+DRIVER_NAME  := RWS_ChunkInd
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkIndex/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndex
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
+	@$(CXX) $(CXX_FLAGS) $(DRIVER) $< -MM -MP -MT $@ -MF $@.d
+DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
+$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
+
+# Driver for RealReverseIndexVector
+DRIVER_NAME  := RWS_ChunkIndVec
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkIndexVector/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndexVector
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)

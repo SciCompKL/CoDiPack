@@ -29,7 +29,6 @@
 #include <toolDefines.h>
 
 #include <iostream>
-#include <vector>
 
 int main(int nargs, char** args) {
   int evalPoints = getEvalPointsCount();
@@ -37,11 +36,6 @@ int main(int nargs, char** args) {
   int outputs = getOutputCount();
   NUMBER* x = new NUMBER[inputs];
   NUMBER* y = new NUMBER[outputs];
-
-  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
-  tape.resize(1000, 1000);
-  tape.setExternalFunctionChunkSize(1000);
-  tape.setActive();
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
@@ -61,34 +55,33 @@ int main(int nargs, char** args) {
       y[i] = 0.0;
     }
 
-    std::vector<std::vector<double> > jac(outputs);
-    for(int curOut = 0; curOut < outputs; ++curOut) {
-      for(int i = 0; i < inputs; ++i) {
-        tape.registerInput(x[i]);
+    int runs = inputs / DIM;
+    if(inputs % DIM != 0) {
+      runs += 1;
+    }
+    for(int curIn = 0; curIn < runs; ++curIn) {
+      size_t curSize = DIM;
+      if((curIn + 1) * DIM  > (size_t)inputs) {
+        curSize = inputs % DIM;
+      }
+      for(size_t curDim = 0; curDim < curSize; ++curDim) {
+        x[curIn * DIM + curDim].gradient()[curDim] = 1.0;
+      }
+
+      for(int i = 0; i < outputs; ++i) {
+        y[i].setGradient(Gradient());
       }
 
       func(x, y);
 
-      for(int i = 0; i < outputs; ++i) {
-        tape.registerOutput(y[i]);
+      for(size_t curDim = 0; curDim < curSize; ++curDim) {
+        for(int curOut = 0; curOut < outputs; ++curOut) {
+          std::cout << curIn * DIM + curDim << " " << curOut << " " << y[curOut].getGradient()[curDim] << std::endl;
+        }
       }
 
-      for(int i = 0; i < outputs; ++i) {
-        y[i].setGradient(i == curOut ? 1.0:0.0);
-      }
-
-      tape.evaluate();
-
-      for(int curIn = 0; curIn < inputs; ++curIn) {
-        jac[curOut].push_back(x[curIn].getGradient());
-      }
-
-      tape.reset();
-    }
-
-    for(int curIn = 0; curIn < inputs; ++curIn) {
-      for(int curOut = 0; curOut < outputs; ++curOut) {
-        std::cout << curIn << " " << curOut << " " << jac[curOut][curIn] << std::endl;
+      for(size_t curDim = 0; curDim < curSize; ++curDim) {
+        x[curIn * DIM + curDim].setGradient(Gradient());
       }
     }
   }

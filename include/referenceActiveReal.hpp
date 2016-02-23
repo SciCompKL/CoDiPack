@@ -54,12 +54,12 @@ namespace codi {
     typedef typename Tape::GradientData GradientData;
 
   private:
-    const ActiveReal<Real, Tape>& reference;
+    const ActiveReal<Tape>& reference;
     mutable Real jacobi;
 
   public:
 
-    inline ReferenceActiveReal(const ActiveReal<Real, Tape>& reference) :
+    inline ReferenceActiveReal(const ActiveReal<Tape>& reference) :
       reference(reference),
       jacobi() {}
 
