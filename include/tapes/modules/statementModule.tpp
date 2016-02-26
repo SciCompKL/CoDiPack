@@ -202,30 +202,37 @@
     }
 
     /**
-     * @brief Prints statistics about the tape on the screen
+     * @brief Prints statistics about the statements.
      *
-     * Prints information such as stored statements/adjoints and memory usage on screen.
+     * Displays the number of chunks, the total number of statements, the
+     * allocated memory and the used memory.
+     *
+     * @param[in,out]   out  The information is written to the stream.
+     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     *
+     * @tparam Stream The type of the stream.
      */
-    void printStmtStatistics() const {
+    template<typename Stream>
+    void printStmtStatistics(Stream& out, const std::string hLine) const {
       size_t nChunksStmts  = stmtVector.getNumChunks();
       size_t totalStmts    = (nChunksStmts-1)*stmtVector.getChunkSize()
                              +stmtVector.getChunkUsedData(nChunksStmts-1);
       double  memoryUsedStmts = (double)totalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
       double  memoryAllocStmts= (double)nChunksStmts*(double)stmtVector.getChunkSize()
                                 *(double)sizeof(StatementInt)* BYTE_TO_MB;
-      std::cout << std::endl
-                << "Statements " << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Chunks: " << std::setw(10) << nChunksStmts << std::endl
-                << "  Total Number:     " << std::setw(10) << totalStmts   << std::endl
-                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryAllocStmts << " MB" << std::endl
-                << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryUsedStmts << " MB" << std::endl;
+      out << hLine
+          << "Statements \n"
+          << hLine
+          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
+          << "  Total Number:     " << std::setw(10) << totalStmts   << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocStmts << " MB" << "\n"
+          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryUsedStmts << " MB" << "\n";
 
     }
 

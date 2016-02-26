@@ -177,13 +177,19 @@ namespace codi {
       /**
        * @brief Output statistics about the used indices.
        *
-       * Writes the 
+       * Writes the
        *   maximum number of live indices,
        *   the current number of lives indices,
        *   the indices that are stored and
        *   the memory for the allocated indices.
+       *
+       * @param[in,out] out  The information is written to the stream.
+       * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+       *
+       * @tparam Stream The type of the stream.
        */
-      void printStatistics() const {
+      template<typename Stream>
+      void printStatistics(Stream& out, const std::string hLine) const {
         size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
         size_t storedIndices          = (size_t)this->getNumberStoredIndices();
         size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();
@@ -191,20 +197,20 @@ namespace codi {
         double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * BYTE_TO_MB;
         double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
 
-        std::cout << "---------------------------------------------" << std::endl
-                  << "Indices"                                       << std::endl
-                  << "---------------------------------------------" << std::endl
-                  << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << std::endl
-                  << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << std::endl
-                  << "  Indices stored:    " << std::setw(10) << storedIndices << std::endl
-                  << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
-                                             << std::setprecision(2)
-                                             << std::setw(10)
-                                             << memoryAllocatedIndices << " MB" << std::endl
-                  << "  Memory used:       " << std::setiosflags(std::ios::fixed)
-                                             << std::setprecision(2)
-                                             << std::setw(10)
-                                             << memoryStoredIndices << " MB" << std::endl;
+        out << hLine
+            << "Indices\n"
+            << hLine
+            << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << "\n"
+            << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << "\n"
+            << "  Indices stored:    " << std::setw(10) << storedIndices << "\n"
+            << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
+                                       << std::setprecision(2)
+                                       << std::setw(10)
+                                       << memoryAllocatedIndices << " MB" << "\n"
+            << "  Memory used:       " << std::setiosflags(std::ios::fixed)
+                                       << std::setprecision(2)
+                                       << std::setw(10)
+                                       << memoryStoredIndices << " MB" << "\n";
       }
   };
 }

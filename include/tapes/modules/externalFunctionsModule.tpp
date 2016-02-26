@@ -237,19 +237,25 @@
     }
 
     /**
-     * @brief Prints statistics about the tape on the screen
+     * @brief Prints statistics about the external functions stored in the tape.
      *
-     * Prints information such as stored statements/adjoints and memory usage on screen.
+     * Displays the number of registered external function.
+     *
+     * @param[in,out]   out  The information is written to the stream.
+     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     *
+     * @tparam Stream The type of the stream.
      */
-    void printExtFuncStatistics() const {
+    template<typename Stream>
+    void printExtFuncStatistics(Stream& out, const std::string hLine) const {
       size_t nExternalFunc = (extFuncVector.getNumChunks()-1)*extFuncVector.getChunkSize()
           +extFuncVector.getChunkUsedData(extFuncVector.getNumChunks()-1);
 
 
-      std::cout << "-------------------------------------" << std::endl
-                << "External functions  "                  << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Total Number:     " << std::setw(10) << nExternalFunc << std::endl;
+      out << hLine
+          << "External functions  \n"
+          << hLine
+          << "  Total Number:     " << std::setw(10) << nExternalFunc << "\n";
 
     }
 

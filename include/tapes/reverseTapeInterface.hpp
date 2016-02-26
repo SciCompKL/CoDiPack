@@ -150,9 +150,14 @@ namespace codi {
     virtual Position getPosition() const = 0;
 
     /**
-    * @brief Print some statistics about the currently stored information.
-    */
-    virtual void printStatistics() const = 0;
+     * @brief Print some statistics about the currently stored information.
+     *
+     * @param[in,out] out  The information is written to the stream.
+     *
+     * @tparam Stream The type of the stream.
+     */
+    template<typename Stream = std::ostream>
+    void printStatistics(Stream& out = std::cout) const;
 
     /**
      * @brief Add a external function to the tape.

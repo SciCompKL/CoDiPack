@@ -148,8 +148,13 @@ namespace codi {
 
       /**
        * @ brief There are no statistics for this handler.
+       * @param[in,out] out  The information is written to the stream.
+       *
+       * @tparam Stream The type of the stream.
        */
-      inline void printStatistics() const {
+      template<typename Stream>
+      void printStatistics(Stream& out, const std::string hLine) const {
+        CODI_UNUSED(out);
         // Do nothing
       }
   };

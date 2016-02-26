@@ -399,22 +399,26 @@ namespace codi {
     }
 
     /**
-     * @brief Prints statistics about the tape on the screen
+     * @brief Prints statistics about the tape on the screen or into a stream
      *
-     * Prints information such as stored statements/adjoints and memory usage on screen.
+     * Prints information such as stored statements/adjoints and memory usage on screen or into
+     * the stream when an argument is provided.
+     *
+     * @param[in,out] out  The information is written to the stream.
+     *
+     * @tparam Stream The type of the stream.
      */
-    void printStatistics() const {
+    template<typename Stream = std::ostream>
+    void printStatistics(Stream& out = std::cout) const {
 
-      std::cout << std::endl
-                << "-------------------------------------" << std::endl
-                << "CoDi Tape Statistics (" << TapeTypes::tapeName << ")" << std::endl
-                << "-------------------------------------" << std::endl;
-      printTapeBaseStatistics();
-      printStmtStatistics();
-      printJacobiStatistics();
-      printExtFuncStatistics();
-      indexHandler.printStatistics();
-      std::cout << std::endl;
+      const std::string hLine = "-------------------------------------\n";
+
+      out << hLine
+          << "CoDi Tape Statistics (" << TapeTypes::tapeName << ")\n";
+      printTapeBaseStatistics(out, hLine);
+      printStmtStatistics(out, hLine);
+      printJacobiStatistics(out, hLine);
+      printExtFuncStatistics(out, hLine);
 
     }
 

@@ -219,26 +219,38 @@
 
 
     /**
-     * @brief Prints statistics about the tape on the screen
+     * @brief Prints statistics about the stored Jacobie entries.
      *
-     * Prints information such as stored statements/adjoints and memory usage on screen.
+     * Displays the number of chunks, the total number of jacobies, the
+     * allocated memory and the used memory.
+     *
+     * @param[in,out]   out  The information is written to the stream.
+     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     *
+     * @tparam Stream The type of the stream.
      */
-    void printJacobiStatistics() const {
+    template<typename Stream>
+    void printJacobiStatistics(Stream& out, const std::string hLine) const {
       size_t nChunksData  = jacobiVector.getNumChunks();
       size_t totalData    = (nChunksData-1)*jacobiVector.getChunkSize()
                              +jacobiVector.getChunkUsedData(nChunksData-1);
+      double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
       double  memoryAllocData= (double)nChunksData*(double)jacobiVector.getChunkSize()
                                 *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
 
-      std::cout << "-------------------------------------" << std::endl
-                << "Jacobi entries "                       << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Chunks: " << std::setw(10) << nChunksData << std::endl
-                << "  Total Number:     " << std::setw(10) << totalData   << std::endl
-                << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryAllocData << " MB" << std::endl;
+      out << hLine
+          << "Jacobi entries \n"
+          << hLine
+          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
+          << "  Total Number:     " << std::setw(10) << totalData   << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocData << " MB" << "\n"
+          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryUsedData << " MB" << "\n";
     }
 
 #undef CHILD_VECTOR_TYPE

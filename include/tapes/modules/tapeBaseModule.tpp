@@ -272,25 +272,31 @@
     }
 
     /**
-     * @brief Prints statistics about the tape on the screen
+     * @brief Prints statistics about the adjoint vector.
      *
-     * Prints information such as stored number of adjoints and the memory that is allocated for the adjoints.
+     * Displays the number of adjoints and the allocated memory. Also
+     * displays the information about the index handler.
+     *
+     * @param[in,out]   out  The information is written to the stream.
+     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     *
+     * @tparam Stream The type of the stream.
      */
-    void printTapeBaseStatistics() const {
+    template<typename Stream>
+    void printTapeBaseStatistics(Stream& out, const std::string hLine) const {
 
       size_t nAdjoints      = indexHandler.getMaximumGlobalIndex() + 1;
       double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
-      std::cout << std::endl
-                << "-------------------------------------" << std::endl
-                << "Adjoint vector"                        << std::endl
-                << "-------------------------------------" << std::endl
-                << "  Number of Adjoints: " << std::setw(10) << nAdjoints << std::endl
-                << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
-                                            << std::setprecision(2)
-                                            << std::setw(10)
-                                            << memoryAdjoints << " MB" << std::endl;
-     indexHandler.printStatistics();
+      out << hLine
+          << "Adjoint vector \n"
+          << hLine
+          << "  Number of Adjoints: " << std::setw(10) << nAdjoints << "\n"
+          << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                      << std::setprecision(2)
+                                      << std::setw(10)
+                                      << memoryAdjoints << " MB" << "\n";
+      indexHandler.printStatistics(out, hLine);
     }
 
 #undef POSITION_TYPE
