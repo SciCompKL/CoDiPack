@@ -167,7 +167,7 @@
      * @return The gradient value corresponding to the given index.
      */
     inline GradientValue getGradient(const IndexType& index) const {
-      if(adjointsSize <= index) {
+      if(0 == index || adjointsSize <= index) {
         return GradientValue();
       } else {
         return adjoints[index];
@@ -198,8 +198,10 @@
      * @brief Sets all adjoint/gradients to zero.
      */
     inline void clearAdjoints(){
-      for(IndexType i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
-        adjoints[i] = GradientValue();
+      if(NULL != adjoints) {
+        for(IndexType i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
+          adjoints[i] = GradientValue();
+        }
       }
     }
 

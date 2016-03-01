@@ -155,6 +155,16 @@
 
           indexHandler.checkIndex(lhsIndex);
           STATEMENT_PUSH_FUNCTION_NAME((StatementInt)activeVariables, lhsIndex);
+
+#if CODI_AdjointHandle
+          Real* jacobies = NULL;
+          IndexType* rhsIndices = NULL;
+
+          auto pos = JACOBI_VECTOR_NAME.getPosition();
+          JACOBI_VECTOR_NAME.getDataAtPosition(pos.chunk, startSize, jacobies, rhsIndices);
+
+          handleAdjointOperation(rhs.getValue(), lhsIndex, jacobies, rhsIndices, activeVariables);
+#endif
         } else {
           indexHandler.freeIndex(lhsIndex);
         }

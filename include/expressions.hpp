@@ -597,8 +597,21 @@ namespace codi {
   CODI_DEFINE_CONDITIONAL(operator<, <)
   CODI_DEFINE_CONDITIONAL(operator>=, >=)
   CODI_DEFINE_CONDITIONAL(operator<=, <=)
+  CODI_DEFINE_CONDITIONAL(operator&&, &&)
+  CODI_DEFINE_CONDITIONAL(operator||, ||)
 
   #undef CODI_DEFINE_CONDITIONAL
+
+  #define CODI_DEFINE_UNARY_CONDITIONAL(OPERATOR, OP) \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
+    template<typename Real, class A> \
+    inline bool OPERATOR(const Expression<Real, A>& a) { \
+      return OP a.getValue(); \
+    }
+
+  CODI_DEFINE_UNARY_CONDITIONAL(operator!, !)
+
+  #undef CODI_DEFINE_UNARY_CONDITIONAL
 
   #define CODI_OPERATOR_HELPER(NAME, OP) \
     /** @brief Helper function to call operators as a function. @param[in] a The argument of the operation. @return The value of OP b @tparam A The expression for the argument of the function*/ \
@@ -855,6 +868,7 @@ namespace codi {
   /***************************************************************************************
    * Functions that do not need derivatives.
    ****************************************************************************************/
+  using std::isinf;
   /**
    * @brief Overload for the isinf function with expressions.
    *
@@ -870,6 +884,7 @@ namespace codi {
     return isinf(a.getValue());
   }
 
+  using std::isnan;
   /**
    * @brief Overload for the isnan function with expressions.
    *
