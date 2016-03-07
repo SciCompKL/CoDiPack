@@ -30,6 +30,8 @@
 
 #include <vector>
 
+#include "../../configure.h"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
@@ -44,15 +46,14 @@ namespace codi {
    * @tparam Index  The type for the handled indices.
    */
   template<typename Index>
-  class ReuseIndexHandler {
+  class ReuseIndexHandlerAssignOptimization {
     public:
       /**
        * @brief The type definition for other tapes who want to access the type.
        */
       typedef Index IndexType;
 
-
-      const static bool AssignNeedsStatment = true;
+      const static bool AssignNeedsStatment = false;
 
     private:
 
@@ -71,15 +72,22 @@ namespace codi {
        */
       std::vector<Index> freeIndices;
 
+      size_t chunkIncrement;
+      Index* indexUse;
+      size_t indexUseSize;
+
     public:
 
       /**
        * @brief Create a handler that has no indices in use.
        */
-      ReuseIndexHandler() :
+      ReuseIndexHandlerAssignOptimization() :
         globalMaximumIndex(0),
         currentMaximumIndex(0),
-        freeIndices() {}
+        freeIndices(),
+        chunkIncrement(DefaultChunkSize),
+        indexUse(NULL),
+        indexUseSize(0){}
 
       /**
        * @brief Free the index that is given to the method.
@@ -92,11 +100,15 @@ namespace codi {
        */
       inline void freeIndex(Index& index) {
         if(0 != index) { // do not free the zero index
-          if(currentMaximumIndex == index) {
-            // freed index is the maximum one so we can decrease the count
-            --currentMaximumIndex;
-          } else {
-            freeIndices.push_back(index);
+          indexUse[index] -= 1;
+
+          if(indexUse[index] == 0) { // only free the index if it not used anylonger
+            if(currentMaximumIndex == index) {
+              // freed index is the maximum one so we can decrease the count
+              --currentMaximumIndex;
+            } else {
+              freeIndices.push_back(index);
+            }
           }
 
           index = 0;
@@ -109,18 +121,22 @@ namespace codi {
        * @return The new index that can be used.
        */
       inline Index createIndex() {
+        Index index;
         if(0 != freeIndices.size()) {
-          Index index = freeIndices.back();
+          index = freeIndices.back();
           freeIndices.pop_back();
-          return index;
         } else {
           if(globalMaximumIndex == currentMaximumIndex) {
             ++globalMaximumIndex;
-          }
-          ++currentMaximumIndex;
 
-          return currentMaximumIndex;
+            checkIndexUseSize();
+          }
+          index = ++currentMaximumIndex;
         }
+
+        indexUse[index] = 1;
+
+        return index;
       }
 
       /**
@@ -129,20 +145,35 @@ namespace codi {
        * @param[inout] index The current value of the index. If 0 then a new index is generated.
        */
       inline void assignIndex(Index& index) {
+        //TODO: merge the if statemetns
         if(0 == index) {
           index = this->createIndex();
+        } else {
+          if(indexUse[index] > 1) {
+
+            indexUse[index] -= 1;
+
+            index = this->createIndex();
+          } else {
+            indexUse[index] = 1;
+          }
         }
       }
 
       inline void copyIndex(Index& lhs, const Index& rhs) {
-        assignIndex(lhs);
+        freeIndex(lhs);
+
+        if(0 != rhs) { // do not handle the zero index
+          indexUse[rhs] += 1;
+
+          lhs = rhs;
+        }
       }
 
       /**
        * @brief Placeholder for further developments.
        */
       inline void reset() const {
-        /* do nothing */
       }
 
       /**
@@ -203,6 +234,7 @@ namespace codi {
 
         double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * BYTE_TO_MB;
         double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
+        double memoryIndexUse         = (double)this->indexUseSize*(double)(sizeof(Index)) * BYTE_TO_MB;
 
         out << hLine
             << "Indices\n"
@@ -217,7 +249,20 @@ namespace codi {
             << "  Memory used:       " << std::setiosflags(std::ios::fixed)
                                        << std::setprecision(2)
                                        << std::setw(10)
-                                       << memoryStoredIndices << " MB" << "\n";
+                                       << memoryStoredIndices << " MB" << "\n"
+            << "  Memory index use:  " << std::setiosflags(std::ios::fixed)
+                                       << std::setprecision(2)
+                                       << std::setw(10)
+                                       << memoryIndexUse << " MB" << "\n";
+      }
+
+    private:
+      inline void checkIndexUseSize() {
+        if(indexUseSize <= globalMaximumIndex) {
+          indexUseSize += chunkIncrement;
+        }
+
+        this->indexUse = (Index*)realloc(this->indexUse, sizeof(Index) * indexUseSize);
       }
   };
 }

@@ -226,12 +226,14 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
-          indexHandler.checkIndex(lhsIndex);
+          indexHandler.copyIndex(lhsIndex, rhs.getGradientData());
 
-          stmtVector.reserveItems(1);
-          jacobiVector.reserveItems(1);
-          jacobiVector.setDataAndMove(1.0, rhs.getGradientData());
-          stmtVector.setDataAndMove((StatementInt)1, lhsIndex);
+          if(IndexHandler::AssignNeedsStatment) {
+            stmtVector.reserveItems(1);
+            jacobiVector.reserveItems(1);
+            jacobiVector.setDataAndMove(1.0, rhs.getGradientData());
+            stmtVector.setDataAndMove((StatementInt)1, lhsIndex);
+          }
         } else {
           indexHandler.freeIndex(lhsIndex);
         }
@@ -385,7 +387,7 @@ namespace codi {
      * @param[inout] value The value which will be marked as an active variable.
      */
     inline void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
-      indexHandler.checkIndex(value.getGradientData());
+      indexHandler.assignIndex(value.getGradientData());
     }
 
     /**

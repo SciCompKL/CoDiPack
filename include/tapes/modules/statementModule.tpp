@@ -153,7 +153,7 @@
         size_t activeVariables = JACOBI_VECTOR_NAME.getChunkPosition() - startSize;
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
 
-          indexHandler.checkIndex(lhsIndex);
+          indexHandler.assignIndex(lhsIndex);
           STATEMENT_PUSH_FUNCTION_NAME((StatementInt)activeVariables, lhsIndex);
 
 #if CODI_AdjointHandle
@@ -206,7 +206,7 @@
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(size);
-        indexHandler.checkIndex(lhsIndex);
+        indexHandler.assignIndex(lhsIndex);
         STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
       }
     }
