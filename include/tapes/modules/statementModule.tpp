@@ -96,14 +96,6 @@
     }
 
     /**
-     * @brief Return the number of used statements.
-     * @return The number of used statements.
-     */
-    size_t getUsedStatementsSize() const {
-      return stmtVector.getDataSize();
-    }
-
-    /**
      * @brief Resize the statement data.
      *
      * Ensure that enough size is allocated such that dataSize number of items
@@ -245,6 +237,15 @@
                                     << memoryUsedStmts << " MB" << "\n";
 
     }
+
+    /**
+     * @brief Return the number of used statements.
+     * @return The number of used statements.
+     */
+    size_t getUsedStatementsSize() const {
+      return stmtVector.getDataSize();
+    }
+
 
 #undef CHILD_VECTOR_TYPE
 #undef JACOBI_VECTOR_NAME

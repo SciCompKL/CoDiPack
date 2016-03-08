@@ -301,6 +301,10 @@
       indexHandler.printStatistics(out, hLine);
     }
 
+    size_t getAdjointSize() {
+      return indexHandler.getMaximumGlobalIndex();
+    }
+
 #undef POSITION_TYPE
 #undef INDEX_HANDLER_TYPE
 #undef RESET_FUNCTION_NAME

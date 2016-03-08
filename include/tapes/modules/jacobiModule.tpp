@@ -151,14 +151,6 @@
     }
 
     /**
-     * @brief Return the number of used data entries.
-     * @return The number of used data entries.
-     */
-    size_t getUsedDataEntriesSize() const {
-      return jacobiVector.getDataSize();
-    }
-
-    /**
      * @brief Resize the jacobi data.
      *
      * Ensure that enough size is allocated such that dataSize number of items
@@ -251,6 +243,14 @@
                                     << std::setprecision(2)
                                     << std::setw(10)
                                     << memoryUsedData << " MB" << "\n";
+    }
+
+    /**
+     * @brief Return the number of used data entries.
+     * @return The number of used data entries.
+     */
+    size_t getUsedJacobiesSize() const {
+      return jacobiVector.getDataSize();
     }
 
 #undef CHILD_VECTOR_TYPE
