@@ -154,8 +154,6 @@ namespace codi {
             indexUse[index] -= 1;
 
             index = this->createIndex();
-          } else {
-            indexUse[index] = 1;
           }
         }
       }
