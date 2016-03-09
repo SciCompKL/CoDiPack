@@ -231,18 +231,18 @@
                                 *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
 
       out << hLine
-          << "Jacobi entries \n"
+          << "Jacobi entries\n"
           << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
           << "  Total Number:     " << std::setw(10) << totalData   << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocData << " MB" << "\n"
+          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
           << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                     << std::setprecision(2)
                                     << std::setw(10)
-                                    << memoryUsedData << " MB" << "\n";
+                                    << memoryUsedData << " MB" << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocData << " MB" << "\n";
     }
 
     /**

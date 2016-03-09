@@ -291,7 +291,7 @@
       double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
       out << hLine
-          << "Adjoint vector \n"
+          << "Adjoint vector\n"
           << hLine
           << "  Number of Adjoints: " << std::setw(10) << nAdjoints << "\n"
           << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)

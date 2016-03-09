@@ -53,6 +53,10 @@ namespace codi {
        */
       typedef Index IndexType;
 
+
+      /**
+       * @brief Defines for the tapes if the need to write an assign statement after the index is copied.
+       */
       const static bool AssignNeedsStatment = false;
 
     private:
@@ -148,13 +152,10 @@ namespace codi {
         //TODO: merge the if statemetns
         if(0 == index) {
           index = this->createIndex();
-        } else {
-          if(indexUse[index] > 1) {
+        } else if(indexUse[index] > 1) {
+          indexUse[index] -= 1;
 
-            indexUse[index] -= 1;
-
-            index = this->createIndex();
-          }
+          index = this->createIndex();
         }
       }
 
@@ -172,6 +173,7 @@ namespace codi {
        * @brief Placeholder for further developments.
        */
       inline void reset() const {
+        /* do nothing */
       }
 
       /**
@@ -231,30 +233,37 @@ namespace codi {
         size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();
 
         double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * BYTE_TO_MB;
-        double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
         double memoryIndexUse         = (double)this->indexUseSize*(double)(sizeof(Index)) * BYTE_TO_MB;
+        double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
 
         out << hLine
             << "Indices\n"
             << hLine
-            << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << "\n"
-            << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << "\n"
-            << "  Indices stored:    " << std::setw(10) << storedIndices << "\n"
-            << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
-                                       << std::setprecision(2)
-                                       << std::setw(10)
-                                       << memoryAllocatedIndices << " MB" << "\n"
-            << "  Memory used:       " << std::setiosflags(std::ios::fixed)
-                                       << std::setprecision(2)
-                                       << std::setw(10)
-                                       << memoryStoredIndices << " MB" << "\n"
-            << "  Memory index use:  " << std::setiosflags(std::ios::fixed)
-                                       << std::setprecision(2)
-                                       << std::setw(10)
-                                       << memoryIndexUse << " MB" << "\n";
+            << "  Max. live indices:    " << std::setw(10) << maximumGlobalIndex << "\n"
+            << "  Cur. live indices:    " << std::setw(10) << currentLiveIndices << "\n"
+            << "  Indices stored:       " << std::setw(10) << storedIndices << "\n"
+            << "  Memory used:          " << std::setiosflags(std::ios::fixed)
+                                          << std::setprecision(2)
+                                          << std::setw(10)
+                                          << memoryStoredIndices << " MB" << "\n"
+            << "  Memory allocated:     " << std::setiosflags(std::ios::fixed)
+                                          << std::setprecision(2)
+                                          << std::setw(10)
+                                          << memoryAllocatedIndices << " MB" << "\n"
+            << "  Memory index use vec: " << std::setiosflags(std::ios::fixed)
+                                          << std::setprecision(2)
+                                          << std::setw(10)
+                                          << memoryIndexUse << " MB" << "\n";
       }
 
     private:
+
+      /**
+       * @brief Ensure that the index use vector is big enough for all indices.
+       *
+       * The method increases the size of the index use vector by the chunk
+       * increment defined in the constructor.
+       */
       inline void checkIndexUseSize() {
         if(indexUseSize <= globalMaximumIndex) {
           indexUseSize += chunkIncrement;

@@ -217,24 +217,24 @@
     template<typename Stream>
     void printStmtStatistics(Stream& out, const std::string hLine) const {
       size_t nChunksStmts  = stmtVector.getNumChunks();
-      size_t totalStmts    = (nChunksStmts-1)*stmtVector.getChunkSize()
-                             +stmtVector.getChunkUsedData(nChunksStmts-1);
+      size_t totalStmts    = stmtVector.getDataSize();
+
       double  memoryUsedStmts = (double)totalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
       double  memoryAllocStmts= (double)nChunksStmts*(double)stmtVector.getChunkSize()
                                 *(double)sizeof(StatementInt)* BYTE_TO_MB;
       out << hLine
-          << "Statements \n"
+          << "Statements\n"
           << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
           << "  Total Number:     " << std::setw(10) << totalStmts   << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocStmts << " MB" << "\n"
+          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
           << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                     << std::setprecision(2)
                                     << std::setw(10)
-                                    << memoryUsedStmts << " MB" << "\n";
+                                    << memoryUsedStmts << " MB" << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocStmts << " MB" << "\n";
 
     }
 

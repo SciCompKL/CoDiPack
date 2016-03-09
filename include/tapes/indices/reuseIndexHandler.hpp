@@ -52,6 +52,9 @@ namespace codi {
       typedef Index IndexType;
 
 
+      /**
+       * @brief Defines for the tapes if the need to write an assign statement after the index is copied.
+       */
       const static bool AssignNeedsStatment = true;
 
     private:
@@ -109,18 +112,18 @@ namespace codi {
        * @return The new index that can be used.
        */
       inline Index createIndex() {
+        Index index;
         if(0 != freeIndices.size()) {
-          Index index = freeIndices.back();
+          index = freeIndices.back();
           freeIndices.pop_back();
-          return index;
         } else {
           if(globalMaximumIndex == currentMaximumIndex) {
             ++globalMaximumIndex;
           }
-          ++currentMaximumIndex;
-
-          return currentMaximumIndex;
+          index = ++currentMaximumIndex;
         }
+
+        return index;
       }
 
       /**
@@ -134,6 +137,11 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief The index on the rhs is ignored in this manager.
+       *
+       * The manager ensures only that the lhs index is valid.
+       */
       inline void copyIndex(Index& lhs, const Index& rhs) {
         assignIndex(lhs);
       }
@@ -210,14 +218,14 @@ namespace codi {
             << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << "\n"
             << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << "\n"
             << "  Indices stored:    " << std::setw(10) << storedIndices << "\n"
-            << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
-                                       << std::setprecision(2)
-                                       << std::setw(10)
-                                       << memoryAllocatedIndices << " MB" << "\n"
             << "  Memory used:       " << std::setiosflags(std::ios::fixed)
                                        << std::setprecision(2)
                                        << std::setw(10)
-                                       << memoryStoredIndices << " MB" << "\n";
+                                       << memoryStoredIndices << " MB" << "\n"
+            << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
+                                       << std::setprecision(2)
+                                       << std::setw(10)
+                                       << memoryAllocatedIndices << " MB" << "\n";
       }
   };
 }
