@@ -46,7 +46,7 @@
 /**
  * @brief Combine two preprocessor variables into one.
  *
- * This helper routine is needed in order two expand the arguments.
+ * This helper routine is needed in order to expand the arguments.
  *
  * @param A First parameter that is combined
  * @param B Second parameter that is combined
@@ -60,3 +60,20 @@
  * @param B Second parameter that is combined
  */
 #define COMBINE(A,B) COMBINE2(A,B)
+
+/**
+ * @brief Create a string from the expression.
+ *
+ * This helper routine is needed in order to expand the argument.
+ *
+ * @param expression the expression that is stringified.
+ */
+#define CODI_TO_STRING2(expression) #expression
+
+/**
+ * @brief Create a string from the expression.
+ *
+ * @param expression the expression that is stringified.
+ */
+#define CODI_TO_STRING(expression) CODI_TO_STRING2(expression)
+

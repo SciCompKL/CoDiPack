@@ -177,14 +177,14 @@
     /**
      * @brief Get a reference to the gradient value of the corresponding index.
      *
-     * An index of 0 will raise an assert exception.
+     * An index of 0 will raise an codiAssert exception.
      *
      * @param[in] index The index of the active type.
      * @return The reference to the gradient data.
      */
     inline GradientValue& gradient(IndexType& index) {
-      assert(0 != index);
-      assert(index <= indexHandler.getMaximumGlobalIndex());
+      codiAssert(0 != index);
+      codiAssert(index <= indexHandler.getMaximumGlobalIndex());
 
       //TODO: Add error when index is bigger than expression count
       if(adjointsSize <= index) {

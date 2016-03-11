@@ -161,7 +161,7 @@ namespace codi {
      * @param value  The value which are set to the data.
      */
     inline void setDataAndMove(const Data& value) {
-      assert(getUnusedSize() != 0);
+      codiAssert(getUnusedSize() != 0);
       data[usedSize] = value;
       ++usedSize;
     }
@@ -172,7 +172,7 @@ namespace codi {
      * @param dataPointer Pointer that is set to the internal data pointer.
      */
     inline void dataPointer(const size_t& index, Data* &pointer) {
-      assert(index <= ChunkInterface::size);
+      codiAssert(index <= ChunkInterface::size);
 
       pointer = &data[index];
     }
@@ -232,7 +232,7 @@ namespace codi {
      * @param value2  The value for the second data array.
      */
     inline void setDataAndMove(const Data1& value1, const Data2& value2) {
-      assert(getUnusedSize() != 0);
+      codiAssert(getUnusedSize() != 0);
       data1[usedSize] = value1;
       data2[usedSize] = value2;
       ++usedSize;
@@ -246,7 +246,7 @@ namespace codi {
      * @return A pointer to the data.
      */
     inline void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2) {
-      assert(index <= ChunkInterface::size);
+      codiAssert(index <= ChunkInterface::size);
       pointer1 = &data1[index];
       pointer2 = &data2[index];
     }

@@ -65,5 +65,23 @@ namespace codi {
     fprintf(stderr, "\n");
     exit(-1);
   }
+
+  /**
+   * @brief Checks the assert statement and aborts the program if the statement is false.
+   *
+   * The method prints an error message that contains the failed expression, the function name, the file and the line.
+   *
+   * @param[in]       condition  The evaluated value of the condition.
+   * @param[in] conditionString  The condition as a string value.
+   * @param[in]        function  The name of the function that caused the assert.
+   * @param[in]            file  The file were the function is defined.
+   * @param[in]            line  The line in the file were the assert is defined.
+   */
+  inline void checkAndOutputAssert(const bool condition, const char *conditionString, const char *function, const char *file, int line) {
+    if(!condition) {
+      std::cerr << "codiAssertion failed: " << conditionString << " in function " << function << " at " << file << ":" << line << std::endl;
+      abort();
+    }
+  }
 }
 

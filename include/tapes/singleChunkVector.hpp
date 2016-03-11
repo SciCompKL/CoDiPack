@@ -45,7 +45,7 @@ namespace codi {
    * The vector stores one data chunk.
    * The data in the chunk can be accessed in a stack like fashion. The user
    * has to ensure that enough data is present. All the usual checks with reserveItems
-   * are only performed in assert statements.
+   * are only performed in codiAssert statements.
    *
    * The read access to the data is provided by the function forEach, which will
    * call the provided function handle on every data item. A second option is to
@@ -152,7 +152,7 @@ namespace codi {
      * @param pos   The position to reset to.
      */
     void reset(const Position& pos) {
-      assert(pos.data < chunk.getSize());
+      codiAssert(pos.data < chunk.getSize());
 
       chunk.setUsedSize(pos.data);
 
@@ -167,12 +167,12 @@ namespace codi {
     }
 
     /**
-     * @brief Performs no check only does an assert.
+     * @brief Performs no check only does an codiAssert.
      *
      * @param items   The maximum number of items to store.
      */
     inline void reserveItems(const size_t items) const {
-      assert(chunk.getUsedSize() + items < chunk.getSize());
+      codiAssert(chunk.getUsedSize() + items < chunk.getSize());
     }
 
     /**
@@ -218,7 +218,7 @@ namespace codi {
      * @return The position of the nested chunk vector when the chunk was loaded.
      */
     inline NestedPosition getInnerPosition(const size_t& chunkIndex) const {
-      assert(0 == chunkIndex);
+      codiAssert(0 == chunkIndex);
       return NestedPosition();
     }
 
@@ -232,7 +232,7 @@ namespace codi {
      */
     template<typename ... Pointers>
     inline void getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos, Pointers* &... pointers) {
-      assert(0 == chunkIndex);
+      codiAssert(0 == chunkIndex);
 
       chunk.dataPointer(dataPos, pointers...);
     }
@@ -243,7 +243,7 @@ namespace codi {
      * @return The number of data items used in the chunk.
      */
     inline size_t getChunkUsedData(const size_t& chunkIndex) const {
-      assert(0 == chunkIndex);
+      codiAssert(0 == chunkIndex);
 
       return chunk.getUsedSize();
     }
@@ -290,7 +290,7 @@ namespace codi {
      */
     template<typename FunctionObject, typename ... Pointers>
     inline void forEachData(const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
-      assert(start >= end);
+      codiAssert(start >= end);
 
       // we do not initialize dataPos with start - 1 because the type can be unsigned
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
@@ -319,10 +319,10 @@ namespace codi {
      */
     template<typename FunctionObject, typename ... Pointers>
     inline void forEach(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
-      assert(start.chunk == 0);
-      assert(end.chunk == 0);
-      assert(start.data >= end.data);
-      assert(start.data <= chunk.getSize());
+      codiAssert(start.chunk == 0);
+      codiAssert(end.chunk == 0);
+      codiAssert(start.data >= end.data);
+      codiAssert(start.data <= chunk.getSize());
 
       forEachData(start.data, end.data, function, pointers...);
     }

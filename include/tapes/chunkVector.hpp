@@ -222,8 +222,8 @@ namespace codi {
      * @param pos   The position to reset to.
      */
     void reset(const Position& pos) {
-      assert(pos.chunk < chunks.size());
-      assert(pos.data < chunkSize);
+      codiAssert(pos.chunk < chunks.size());
+      codiAssert(pos.data < chunkSize);
 
       for(size_t i = curChunkIndex; i > pos.chunk; --i) {
         chunks[i]->reset();
@@ -253,7 +253,7 @@ namespace codi {
      * @param items   The maximum number of items to store.
      */
     inline void reserveItems(const size_t items) {
-      assert(items <= chunkSize);
+      codiAssert(items <= chunkSize);
 
       if(chunkSize < curChunk->getUsedSize() + items) {
         nextChunk();
@@ -300,7 +300,7 @@ namespace codi {
      * @return The position of the nested chunk vector when the chunk was loaded.
      */
     inline NestedPosition getInnerPosition(const size_t& chunkIndex) const {
-      assert(chunkIndex < positions.size());
+      codiAssert(chunkIndex < positions.size());
       return positions[chunkIndex];
     }
 
@@ -314,7 +314,7 @@ namespace codi {
      */
     template< typename ... Pointers>
     inline void getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos, Pointers* &... pointers) {
-      assert(chunkIndex < chunks.size());
+      codiAssert(chunkIndex < chunks.size());
 
       chunks[chunkIndex]->dataPointer(dataPos, pointers...);
     }
@@ -325,7 +325,7 @@ namespace codi {
      * @return The number of data items used in the chunk.
      */
     inline size_t getChunkUsedData(const size_t& chunkIndex) const {
-      assert(chunkIndex < chunks.size());
+      codiAssert(chunkIndex < chunks.size());
 
       return chunks[chunkIndex]->getUsedSize();
     }
@@ -377,8 +377,8 @@ namespace codi {
      */
     template<typename FunctionObject, typename ... Pointers>
     inline void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
-      assert(start >= end);
-      assert(chunkPos < chunks.size());
+      codiAssert(start >= end);
+      codiAssert(chunkPos < chunks.size());
 
       // we do not initialize dataPos with start - 1 because the type can be unsigned
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
@@ -407,8 +407,8 @@ namespace codi {
      */
     template<typename FunctionObject, typename ... Pointers>
     inline void forEach(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
-      assert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
-      assert(start.chunk < chunks.size());
+      codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
+      codiAssert(start.chunk < chunks.size());
 
       size_t dataStart = start.data;
       for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {

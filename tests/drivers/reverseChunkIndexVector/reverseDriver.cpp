@@ -81,8 +81,11 @@ int main(int nargs, char** args) {
         tape.registerOutput(y[i]);
       }
 
+      Gradient grad;
       for(size_t curDim = 0; curDim < curSize; ++curDim) {
-        y[curOut * DIM + curDim].gradient()[curDim] = 1.0;
+        grad[curDim] = 1.0;
+        y[curOut * DIM + curDim].setGradient(grad);
+        grad[curDim] = 0.0;
       }
 
       tape.evaluate();

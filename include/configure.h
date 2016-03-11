@@ -30,10 +30,8 @@
 
 #include <stdint.h>
 
-#ifndef NDEBUG
-  #define NDEBUG
-#endif
-#include <assert.h>
+#include "exceptions.hpp"
+#include "macros.h"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -202,6 +200,27 @@ namespace codi {
      */
     template<typename Real, typename IndexType>
     void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
+  #endif
+
+  #ifndef CODI_EnableAssert
+    #define CODI_EnableAssert false
+  #endif
+  #ifndef codiAssert
+    #if CODI_EnableAssert
+      /**
+       * @brief The assert function for CoDiPack it can be enabled with the preprocessor macro CODI_EnableAssert=true
+       *
+       * @param x The expression that is checked in the assert.
+       */
+      #define codiAssert(x) codi::checkAndOutputAssert(x, CODI_TO_STRING(x), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+    #else
+      /**
+       * @brief The assert function for CoDiPack it can be enabled with the preprocessor macro CODI_EnableAssert=true
+       *
+       * @param x The expression that is checked in the assert.
+       */
+      #define codiAssert(x) /* disabled by CODI_EnableAssert */
+    #endif
   #endif
 
   /**
