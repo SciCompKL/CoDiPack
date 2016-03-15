@@ -7,4 +7,5 @@ Performance:
   - Early out fuer passive values
   - Create an assert just for CoDiPack
   - Move static tapes out of the active real type.
+  - Add support for intermixed complex and double data types.
 
