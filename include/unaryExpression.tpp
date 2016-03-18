@@ -163,18 +163,18 @@ struct OP : public Expression<Real, OP<Real, A> > {
   static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
     const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
 
-    return FUNC(aPrimal);
+    return PRIMAL_CALL(aPrimal);
   }
 
   template<typename IndexType>
   static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
-    evalAdjointOffset<IndexType, 0, 0>(seed, indices, primalValues, adjointValues);
+    evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);
   }
 
   template<typename IndexType, size_t offset, size_t passiveOffset>
   static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
     const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
-    const Real resPrimal = FUNC(aPrimal);
+    const Real resPrimal = PRIMAL_CALL(aPrimal);
 
     const Real aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
     A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
