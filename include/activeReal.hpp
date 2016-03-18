@@ -489,7 +489,10 @@ namespace codi {
     static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       CODI_UNUSED(passiveValues);
       CODI_UNUSED(primalValues);
-      adjointValues[indices[offset]] += seed;
+
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(seed)) {
+        adjointValues[indices[offset]] += seed;
+      }
     }
 
     template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
