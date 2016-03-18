@@ -588,21 +588,29 @@ namespace codi {
   template<typename Data, typename Real, typename A> inline void derv10_Min(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     if(a.getValue() < b) {
       a.calcGradient(data);
+    } else {
+      a.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename A> inline void derv10M_Min(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     if(a.getValue() < b) {
       a.calcGradient(data, multiplier);
+    } else {
+      a.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename B> inline void derv01_Min(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     if(a >= b.getValue()) {
       b.calcGradient(data);
+    } else {
+      b.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename B> inline void derv01M_Min(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     if(a >= b.getValue()) {
       b.calcGradient(data, multiplier);
+    } else {
+      b.calcGradient(data, 0.0);
     }
   }
   using std::min;
@@ -647,21 +655,29 @@ namespace codi {
   template<typename Data, typename Real, typename A> inline void derv10_Max(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
     if(a.getValue() > b) {
       a.calcGradient(data);
+    } else {
+      a.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename A> inline void derv10M_Max(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
     if(a.getValue() > b) {
       a.calcGradient(data, multiplier);
+    } else {
+      a.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename B> inline void derv01_Max(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
     if(a <= b.getValue()) {
       b.calcGradient(data);
+    } else {
+      b.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename B> inline void derv01M_Max(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     if(a <= b.getValue()) {
       b.calcGradient(data, multiplier);
+    } else {
+      b.calcGradient(data, 0.0);
     }
   }
   using std::max;

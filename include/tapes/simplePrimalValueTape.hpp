@@ -135,9 +135,11 @@ namespace codi {
    * @tparam      Real  The floating point type used in the ActiveReal.
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
-  template <typename Real, typename IndexType>
-  class SimplePrimalValueTape : public ReverseTapeInterface<Real, IndexType, Real, SimplePrimalValueTape<Real, IndexType>, SimplePrimalValueTapePosition > {
+  template <typename RealType, typename IndexType>
+  class SimplePrimalValueTape : public ReverseTapeInterface<RealType, IndexType, RealType, SimplePrimalValueTape<RealType, IndexType>, SimplePrimalValueTapePosition > {
   public:
+
+    typedef RealType Real;
 
     /**
      * @brief The type used to store the position of the tape.
@@ -265,7 +267,7 @@ namespace codi {
         codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
         codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
         codiAssert(statements.getUsedSize() < statements.size);
-        statements.setDataAndMove(std::make_tuple(ExpressionHandleStore<Real*, Real, IndexType, Rhs, ReverseEvalType>::getHandle()));
+        statements.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs, ReverseEvalType>::getHandle());
         primalAdjointValues.data1[statements.getUsedSize()] = rhs.getValue();
         lhsIndex = statements.getUsedSize();
 
@@ -321,7 +323,7 @@ namespace codi {
       ENABLE_CHECK(OptTapeActivity, active){
         codiAssert(statements.getUsedSize() < statements.size);
 
-        statements.setDataAndMove(std::make_tuple(&InputHandle));
+        statements.setDataAndMove(&InputHandle);
         lhsIndex = statements.getUsedSize();
 
         codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
@@ -336,7 +338,7 @@ namespace codi {
     inline void pushPassive(const PassiveReal& value) {
       codiAssert(passiveData.getUsedSize() < passiveData.size);
 
-      passiveData.setDataAndMove(std::make_tuple(value));
+      passiveData.setDataAndMove(value);
     }
 
     /**
@@ -354,14 +356,14 @@ namespace codi {
       if(0 == index) {
         codiAssert(statements.getUsedSize() < statements.size);
         // create temporary index
-        statements.setDataAndMove(std::make_tuple(&InputHandle));
+        statements.setDataAndMove(&InputHandle);
         IndexType tempIndex = statements.getUsedSize();
         primalAdjointValues.data1[tempIndex] = value;
-        data.setDataAndMove(std::make_tuple(tempIndex));
+        data.setDataAndMove(tempIndex);
 
         passiveDataHelper.push(index);
       } else {
-        data.setDataAndMove(std::make_tuple(index));
+        data.setDataAndMove(index);
       }
     }
 
@@ -382,14 +384,14 @@ namespace codi {
       if(0 == index) {
         codiAssert(statements.getUsedSize() < statements.size);
         // create temporary index
-        statements.setDataAndMove(std::make_tuple(&InputHandle));
+        statements.setDataAndMove(&InputHandle);
         IndexType tempIndex = statements.getUsedSize();
         primalAdjointValues.data1[tempIndex] = value;
-        data.setDataAndMove(std::make_tuple(tempIndex));
+        data.setDataAndMove(tempIndex);
 
         passiveDataHelper.push(index);
       } else {
-        data.setDataAndMove(std::make_tuple(index));
+        data.setDataAndMove(index);
       }
     }
 
@@ -402,7 +404,7 @@ namespace codi {
       ENABLE_CHECK(OptTapeActivity, active){
         codiAssert(statements.getUsedSize() < statements.size);
 
-        statements.setDataAndMove(std::make_tuple(&InputHandle));
+        statements.setDataAndMove(&InputHandle);
         index = statements.getUsedSize();
 
         codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
@@ -471,7 +473,7 @@ namespace codi {
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getPosition() {
+    inline Position getPosition() const {
       return Position(statements.getUsedSize(), data.getUsedSize(), passiveData.getUsedSize(), externalFunctions.getUsedSize());
     }
 
@@ -596,7 +598,7 @@ namespace codi {
     inline void registerInput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
       codiAssert(statements.getUsedSize() < statements.size);
 
-      statements.setDataAndMove(std::make_tuple(&InputHandle));
+      statements.setDataAndMove(&InputHandle);
       value.getGradientData() = statements.getUsedSize();
 
       codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
@@ -631,7 +633,7 @@ namespace codi {
      * @brief Check if the tape is active.
      * @return true if the tape is active.
      */
-    inline bool isActive(){
+    inline bool isActive() const {
       ENABLE_CHECK(OptTapeActivity, true) {
         // default branch will return the tape activity
         return active;
@@ -679,7 +681,7 @@ namespace codi {
      */
     void pushExternalFunctionHandle(const ExternalFunction& function){
       codiAssert(0 != externalFunctions.getUnusedSize());
-      externalFunctions.setDataAndMove(std::make_tuple(function, getPosition()));
+      externalFunctions.setDataAndMove(function, getPosition());
     }
 
   };
