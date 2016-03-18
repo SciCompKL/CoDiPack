@@ -14,6 +14,8 @@ However, it also gives experienced AD developers the full access to all the data
 The [Scientific Computing Group](http://www.scicomp.uni-kl.de) at the TU Kaiserslautern develops CoDiPack and
 will enhance and extend CoDiPack in the future.
 
+[![Build Status](https://travis-ci.org/SciCompKL/CoDiPack.svg?branch=develop)](https://travis-ci.org/SciCompKL/CoDiPack)
+
 ## Usage
 
 CoDiPack is a header only library.
@@ -22,11 +24,34 @@ The only other requirement is a c++11 compliant compiler
 where one usually needs to specify '--std=c++11' in compiler arguments.
 CoDiPack is tested with gcc and the intel compiler.
 
-The file `codi.hpp` defines the datatypes `RealForward`, `RealReverse` and `RealReverseUnchecked`.
+The file `codi.hpp` defines the datatypes `RealForward`, `RealReverse`, `RealReverseUnchecked` and several others.
 For RealForward type implements the forward mode of AD and
 the RealReverse type implements the reverse mode of AD.
 The third type is also an implementation of the reverse mode of AD but it should only be used by experienced users.
 For each type there is also a type with single precession e.g. RealForwardFloat.
+
+For further details please visit our [CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) web page.
+
+## Miscellaneous information
+
+### Debugging with gdb
+
+The ActiveReal type contains the tape as an static member.
+GDB prints the information of these members in its default settings, which makes the output quite verbose.
+We recommend to disable the output of the static class members.
+This can be done with
+~~~~{.txt}
+set print static-members off
+~~~~
+
+### Intel compiler options
+
+Because CoDiPack relies on inlining of the compiler the performance can drop if it is not done or ignored.
+With some specific applications the performance can be improved if the inline factor of the intel compiler is increased.
+The options are
+~~~~{.txt}
+-inline-factor=600 -inline-forceinline
+~~~~
 
 ## Hello World Example
 

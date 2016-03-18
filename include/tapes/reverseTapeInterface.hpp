@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -34,6 +34,9 @@
 #include "tapeInterface.hpp"
 
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
   /**
    * @brief Interface common to all reverse tapes.
@@ -46,13 +49,14 @@ namespace codi {
    * @tparam   GradientDataType  The data the tape uses to identify each active variable
    *                               and where the tape can store information about the
    *                               gradient.
+   * @tparam   GradientValueType The value type that is used for the gradient calculation.
    * @tparam TapeImplementation  The implementing tape of the interface. It is needed to define the active type
    *                               for the registration of the variables.
    * @tparam           Position  Position used by the implementing tape.
    *
    */
-  template <typename Real, typename GradientDataType, typename TapeImplementation, typename Position>
-  class ReverseTapeInterface : public TapeInterface<Real, GradientDataType> {
+  template <typename Real, typename GradientDataType, typename GradientValueType, typename TapeImplementation, typename Position>
+  class ReverseTapeInterface : public TapeInterface<Real, GradientDataType, GradientValueType> {
   public:
 
     /**
@@ -78,14 +82,14 @@ namespace codi {
      *
      * @param[inout] value The input variable.
      */
-    virtual void registerInput(ActiveReal<Real, TapeImplementation>& value) = 0;
+    virtual void registerInput(ActiveReal<TapeImplementation>& value) = 0;
 
     /**
      * @brief Declare a variable as an output variable.
      *
      * @param[inout] value The output variable.
      */
-    virtual void registerOutput(ActiveReal<Real, TapeImplementation>& value) = 0;
+    virtual void registerOutput(ActiveReal<TapeImplementation>& value) = 0;
 
     /**
     * @brief Set the tape to active.
@@ -110,7 +114,7 @@ namespace codi {
     *
     * @return The current state. If true the tape is active.
     */
-    virtual bool isActive() = 0;
+    virtual bool isActive() const = 0;
 
     /**
     * @brief Clears the currently stored adjoints.
@@ -143,7 +147,17 @@ namespace codi {
      *
      * @return The current position of the tape.
      */
-    virtual Position getPosition() = 0;
+    virtual Position getPosition() const = 0;
+
+    /**
+     * @brief Print some statistics about the currently stored information.
+     *
+     * @param[in,out] out  The information is written to the stream.
+     *
+     * @tparam Stream The type of the stream.
+     */
+    template<typename Stream = std::ostream>
+    void printStatistics(Stream& out = std::cout) const;
 
     /**
      * @brief Add a external function to the tape.

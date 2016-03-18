@@ -41,11 +41,13 @@ namespace codi {
   /**
    * @brief Position for the simple tape.
    */
-  struct SimpleTapePosition {
+  struct SimplePrimalValueTapePosition {
     /** @brief The current statement recorded on the tape. */
     size_t stmt;
     /** @brief The current jacobi data recorded on the tape. */
     size_t data;
+    /** @brief The current passive value data recorded on the tape. */
+    size_t passiveData;
     /** @brief The current external function recorded on the tape. */
     size_t extFunc;
 
@@ -55,16 +57,72 @@ namespace codi {
      * @param[in]    data  The current jacobi recorded on the tape.
      * @param[in] extFunc  The current external function recorded on the tape.
      */
-    SimpleTapePosition(const size_t& stmt, const size_t& data, const size_t& extFunc) :
+    SimplePrimalValueTapePosition(const size_t& stmt, const size_t& data, const size_t& passiveData, const size_t& extFunc) :
       stmt(stmt),
       data(data),
+      passiveData(passiveData),
       extFunc(extFunc) {}
+  };
+
+  template <typename Real, typename IndexType>
+  class ReverseEvaluationTapeHelper {
+    public:
+
+      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      typedef IndexType GradientData;
+
+      ReverseEvaluationTapeHelper() {}
+
+      template<typename Data>
+      inline void pushJacobi(Data& adjointVec, const Real& jacobi, const Real& value, const IndexType& index) {
+        CODI_UNUSED(value);
+        CODI_UNUSED(jacobi);
+
+        codiAssert(0 != index); // passive values are currently not supported
+
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+          adjointVec[index] += jacobi;
+        }
+      }
+
+      inline void pushPassive(const PassiveReal& value) {
+        CODI_UNUSED(value);
+      }
+
+      inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<ReverseEvaluationTapeHelper< Real, IndexType> >& rhs) {
+        lhsIndex = rhs.getGradientData();
+        lhsValue = rhs.getValue();
+      }
+
+
+      inline void destroyGradientData(Real& value, IndexType& index) {
+        CODI_UNUSED(value);
+        CODI_UNUSED(index);
+        /* nothing to do */
+      }
+  };
+
+  template<typename IndexType, size_t n>
+  struct PassiveDataHelper {
+    size_t pos;
+    IndexType indices[n];
+
+    PassiveDataHelper() : pos(0) {}
+
+    inline void push(const IndexType& index) {
+      indices[pos++] = index;
+    }
+
+    inline void reset() {
+      pos = 0;
+    }
   };
 
   /**
    * @brief A tape with a simple implementation and no bounds checking.
    *
-   * The SimpleTape implements a fully featured ReverseTapeInterface in a
+   * The SimplePrimalValueTape implements a fully featured ReverseTapeInterface in a
    * simple fashion. This tape is not intended for simple usage. Actually the
    * tape has no bounds checking, therefore it can produce segmentation faults
    * if it is not used with care.
@@ -79,48 +137,54 @@ namespace codi {
    * @tparam      Real  The floating point type used in the ActiveReal.
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
-  template <typename Real, typename IndexType>
-  class SimpleTape : public ReverseTapeInterface<Real, IndexType, SimpleTape<Real, IndexType>, SimpleTapePosition > {
+  template <typename RealType, typename IndexType>
+  class SimplePrimalValueTape : public ReverseTapeInterface<RealType, IndexType, RealType, SimplePrimalValueTape<RealType, IndexType>, SimplePrimalValueTapePosition > {
   public:
+
+    typedef RealType Real;
 
     /**
      * @brief The type used to store the position of the tape.
      */
-    typedef SimpleTapePosition Position;
+    typedef SimplePrimalValueTapePosition Position;
 
   private:
-    /**
-     * @brief The jacobi and index data for the reverse evaluation.
-     */
-    Chunk2<Real, IndexType> data;
-    /**
-     * @brief The number of active variables in each statement.
-     */
-    Chunk1<StatementInt> statements;
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+    typedef ActiveReal<ReverseEvaluationTapeHelper<Real, IndexType> > ReverseEvalType;
+
+    template<typename AdjointData>
+    //static void inputHandleFunc(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues) {}
+    static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {}
+    const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
+
+    Chunk1<IndexType> data;
+    Chunk1<PassiveReal> passiveData;
+    Chunk1<const ExpressionHandle<Real*, Real, IndexType>* > statements;
     /**
      * @brief The external function data and the position where the external function has been inserted.
      */
     Chunk2<ExternalFunction, Position> externalFunctions;
 
-    /**
-     * @brief The adjoint vector.
-     */
-    Chunk1<Real> adjoints;
+    Chunk2<Real, Real> primalAdjointValues;
 
     /**
      * @brief Determines if statements are recorded or ignored.
      */
     bool active;
 
+    PassiveDataHelper<IndexType, 256> passiveDataHelper;
+
   public:
     /**
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
-    SimpleTape() :
+    SimplePrimalValueTape() :
       data(0),
+      passiveData(0),
       statements(0),
       externalFunctions(0),
-      adjoints(1),
+      primalAdjointValues(1),
       active(false){}
 
     /**
@@ -135,12 +199,32 @@ namespace codi {
       externalFunctions.resize(extChunkSize);
     }
 
-    size_t getUsedStatementSize() {
+    void setPassiveDataSize(const size_t& passiveDataSize) {
+      passiveData.resize(passiveDataSize);
+    }
+
+    /**
+     * @brief Return the number of used statements.
+     * @return The number of used statements.
+     */
+    size_t getUsedStatementsSize() {
       return statements.getUsedSize();
     }
 
-    size_t getUsedDataSize() {
+    /**
+     * @brief Return the number of used data entries.
+     * @return The number of used data entries.
+     */
+    size_t getUsedDataEntriesSize() {
       return data.getUsedSize();
+    }
+
+    /**
+     * @brief Return the number of passive data entries.
+     * @return The number of passive data entries.
+     */
+    size_t getUsedPassiveDataSize() {
+      return passiveData.getUsedSize();
     }
 
     /**
@@ -151,7 +235,7 @@ namespace codi {
     void resize(const size_t& dataSize, const size_t& stmtSize) {
       data.resize(dataSize);
       statements.resize(stmtSize);
-      adjoints.resize(stmtSize + 1);
+      primalAdjointValues.resize(stmtSize + 1);
     }
 
     /**
@@ -173,23 +257,31 @@ namespace codi {
      */
     template<typename Rhs>
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
-      Real gradient; /* This value will not be used */
 
       ENABLE_CHECK(OptTapeActivity, active){
-        assert(ExpressionTraits<Rhs>::maxActiveVariables < data.getUnusedSize());
-        /* first store the size of the current stack position and evaluate the
-         rhs expression. If there was an active variable on the rhs, update
-         the index of the lhs */
-        size_t startSize = data.getUsedSize();
-        rhs.calcGradient(gradient);
-        size_t activeVariables = data.getUsedSize() - startSize;
-        if(0 == activeVariables) {
-          lhsIndex = 0;
-        } else {
-          assert(statements.getUsedSize() < statements.size);
-          statements.setDataAndMove(std::make_tuple((StatementInt)activeVariables));
-          lhsIndex = statements.getUsedSize();
+        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables <= data.getUnusedSize());
+        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables <= passiveData.getUnusedSize());
+        size_t dataSize = data.getUsedSize();
+        size_t passiveDataSize = passiveData.getUsedSize();
+        CODI_UNUSED(dataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+        CODI_UNUSED(passiveDataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+        rhs.calcGradient(passiveDataHelper);
+        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
+        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
+        codiAssert(statements.getUsedSize() < statements.size);
+        statements.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs, ReverseEvalType>::getHandle());
+        primalAdjointValues.data1[statements.getUsedSize()] = rhs.getValue();
+        lhsIndex = statements.getUsedSize();
+
+        // clear the generated temproal indices
+        if(0 != passiveDataHelper.pos) {
+          for(size_t i = 0; i < passiveDataHelper.pos; ++i) {
+            destroyGradientData(primalAdjointValues.data1[passiveDataHelper.indices[i]], passiveDataHelper.indices[i]);
+          }
+          passiveDataHelper.reset();
         }
+      } else {
+        lhsIndex = 0;
       }
 
       /* now set the value of the lhs */
@@ -208,7 +300,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimpleTape<Real, IndexType> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<SimplePrimalValueTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       } else {
@@ -230,12 +322,25 @@ namespace codi {
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      lhsIndex = 0;
+      ENABLE_CHECK(OptTapeActivity, active){
+        codiAssert(statements.getUsedSize() < statements.size);
+
+        statements.setDataAndMove(&InputHandle);
+        lhsIndex = statements.getUsedSize();
+
+        codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
+        primalAdjointValues.data1[statements.getUsedSize()] = rhs;
+      } else {
+        lhsIndex = 0;
+      }
+
       lhsValue = rhs;
     }
 
-    inline void pushPassive(const typename TypeTraits<Real>::PassiveReal& value) {
-      CODI_UNUSED(value);
+    inline void pushPassive(const PassiveReal& value) {
+      codiAssert(passiveData.getUsedSize() < passiveData.size);
+
+      passiveData.setDataAndMove(value);
     }
 
     /**
@@ -245,14 +350,22 @@ namespace codi {
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
      */
-    inline void pushJacobi(Real& gradient, const Real& value, const IndexType& index) {
-      CODI_UNUSED(gradient);
+    template<typename Data>
+    inline void pushJacobi(Data& passiveDataHelper, const Real& value, const IndexType& index) {
       CODI_UNUSED(value);
 
-      if(0 != index) {
-        assert(data.getUsedSize() < data.size);
+      codiAssert(data.getUsedSize() < data.size);
+      if(0 == index) {
+        codiAssert(statements.getUsedSize() < statements.size);
+        // create temporary index
+        statements.setDataAndMove(&InputHandle);
+        IndexType tempIndex = statements.getUsedSize();
+        primalAdjointValues.data1[tempIndex] = value;
+        data.setDataAndMove(tempIndex);
 
-        data.setDataAndMove(std::make_tuple(1.0, index));
+        passiveDataHelper.push(index);
+      } else {
+        data.setDataAndMove(index);
       }
     }
 
@@ -264,18 +377,23 @@ namespace codi {
      * @param[in]    value Not used in this implementation.
      * @param[in]    index Used to check if the variable is active.
      */
-    inline void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(gradient);
+    template<typename Data>
+    inline void pushJacobi(Data& passiveDataHelper, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(value);
+      CODI_UNUSED(jacobi);
 
-      if(0 != index) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
-          ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
-            assert(data.getUsedSize() < data.size);
+      codiAssert(data.getUsedSize() < data.size);
+      if(0 == index) {
+        codiAssert(statements.getUsedSize() < statements.size);
+        // create temporary index
+        statements.setDataAndMove(&InputHandle);
+        IndexType tempIndex = statements.getUsedSize();
+        primalAdjointValues.data1[tempIndex] = value;
+        data.setDataAndMove(tempIndex);
 
-            data.setDataAndMove(std::make_tuple(jacobi, index));
-          }
-        }
+        passiveDataHelper.push(index);
+      } else {
+        data.setDataAndMove(index);
       }
     }
 
@@ -285,8 +403,17 @@ namespace codi {
      * @param[out] index The index of the active type.
      */
     inline void initGradientData(Real& value, IndexType& index) {
-      CODI_UNUSED(value);
-      index = 0;
+      ENABLE_CHECK(OptTapeActivity, active){
+        codiAssert(statements.getUsedSize() < statements.size);
+
+        statements.setDataAndMove(&InputHandle);
+        index = statements.getUsedSize();
+
+        codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
+        primalAdjointValues.data1[statements.getUsedSize()] = value;
+      } else {
+        index = 0;
+      }
     }
 
     /**
@@ -322,8 +449,8 @@ namespace codi {
      * @return The gradient value corresponding to the given index.
      */
     inline Real getGradient(const IndexType& index) const {
-      assert((size_t)index < statements.size);
-      return adjoints.data[index];
+      codiAssert((size_t)index < statements.size);
+      return primalAdjointValues.data2[index];
     }
 
     /**
@@ -335,10 +462,10 @@ namespace codi {
      * @return The reference to the gradient data.
      */
     inline Real& gradient(IndexType& index) {
-      assert((size_t)index <= statements.size);
-      assert(0 != index);
+      codiAssert((size_t)index < statements.size);
+      codiAssert(0 != index);
 
-      return adjoints.data[index];
+      return primalAdjointValues.data2[index];
     }
 
     /**
@@ -348,8 +475,8 @@ namespace codi {
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getPosition() {
-      return Position(statements.getUsedSize(), data.getUsedSize(), externalFunctions.getUsedSize());
+    inline Position getPosition() const {
+      return Position(statements.getUsedSize(), data.getUsedSize(), passiveData.getUsedSize(), externalFunctions.getUsedSize());
     }
 
     /**
@@ -358,12 +485,14 @@ namespace codi {
      * @param[in] pos Reset the state of the tape to the given position.
      */
     inline void reset(const Position& pos) {
-      assert(pos.stmt < statements.size);
-      assert(pos.data < data.size);
-      assert(pos.extFunc < externalFunctions.size);
+      codiAssert(pos.stmt < statements.size);
+      codiAssert(pos.data < data.size);
+      codiAssert(pos.passiveData < passiveData.size);
+      codiAssert(pos.extFunc < externalFunctions.size);
 
       for(size_t i = pos.stmt; i <= statements.getUsedSize(); ++i) {
-        adjoints.data[i] = 0.0;
+        primalAdjointValues.data1[i] = 0.0;
+        primalAdjointValues.data2[i] = 0.0;
       }
 
       for(size_t i = pos.extFunc; i < externalFunctions.getUsedSize(); ++i) {
@@ -372,6 +501,7 @@ namespace codi {
 
       statements.setUsedSize(pos.stmt);
       data.setUsedSize(pos.data);
+      passiveData.setUsedSize(pos.passiveData);
       externalFunctions.setUsedSize(pos.extFunc);
     }
 
@@ -379,7 +509,7 @@ namespace codi {
      * @brief Reset the tape to its initial state.
      */
     inline void reset() {
-      reset(Position(0,0,0));
+      reset(Position(0,0,0,0));
     }
 
     /**
@@ -387,7 +517,7 @@ namespace codi {
      */
     inline void clearAdjoints(){
       for(size_t i = 0; i <= statements.getUsedSize(); ++i) {
-        adjoints.data[i] = 0.0;
+        primalAdjointValues.data2[i] = 0.0;
       }
     }
 
@@ -404,17 +534,17 @@ namespace codi {
       Position curPos = start;
 
       while(curPos.stmt > end.stmt) {
-        const Real& adj = adjoints.data[curPos.stmt];
+        const Real& adj = primalAdjointValues.data2[curPos.stmt];
         --curPos.stmt;
-        const StatementInt& activeVariables = statements.data[curPos.stmt];
+        const ExpressionHandle<Real*, Real, IndexType>* exprHandle = statements.data[curPos.stmt];
+        curPos.data -= exprHandle->maxAcitveVariables;
+        curPos.passiveData -= exprHandle->maxPassiveVariables;
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
-          for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
-            --curPos.data;
 
-            adjoints.data[data.data2[curPos.data]] += adj * data.data1[curPos.data];
-          }
-        } else {
-          curPos.data -= activeVariables;
+          const IndexType* indices = &data.data[curPos.data];
+          const PassiveReal* passiveValues = &passiveData.data[curPos.passiveData];
+          //exprHandle->adjointFunc(primalAdjointValues.data2, adj, primalAdjointValues.data1, indices, passiveValues);
+          exprHandle->adjointFunc(adj, indices, passiveValues, primalAdjointValues.data1, primalAdjointValues.data2);
         }
       }
     }
@@ -429,9 +559,9 @@ namespace codi {
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
     inline void evaluate(const Position& start, const Position& end) {
-      assert(start.data >= end.data);
-      assert(start.stmt >= end.stmt);
-      assert(start.extFunc >= end.extFunc);
+      codiAssert(start.data >= end.data);
+      codiAssert(start.stmt >= end.stmt);
+      codiAssert(start.extFunc >= end.extFunc);
 
       Position curPos = start;
 
@@ -458,7 +588,7 @@ namespace codi {
      * @brief Perform the adjoint evaluation from the current position to the initial position.
      */
     inline void evaluate() {
-      evaluate(getPosition(), Position(0,0,0));
+      evaluate(getPosition(), Position(0,0,0,0));
     }
 
     /**
@@ -467,11 +597,14 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
-      assert(statements.getUsedSize() < statements.size);
+    inline void registerInput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
+      codiAssert(statements.getUsedSize() < statements.size);
 
-      statements.setDataAndMove(std::make_tuple((StatementInt) 0));
+      statements.setDataAndMove(&InputHandle);
       value.getGradientData() = statements.getUsedSize();
+
+      codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
+      primalAdjointValues.data1[statements.getUsedSize()] = value.getValue();
     }
 
     /**
@@ -479,9 +612,8 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<Real, SimpleTape<Real, IndexType> >& value) {
-      CODI_UNUSED(value);
-      /* do nothing */
+    inline void registerOutput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
+      value = 1.0 * value;
     }
 
     /**
@@ -502,7 +634,7 @@ namespace codi {
      * @brief Check if the tape is active.
      * @return true if the tape is active.
      */
-    inline bool isActive(){
+    inline bool isActive() const {
       ENABLE_CHECK(OptTapeActivity, true) {
         // default branch will return the tape activity
         return active;
@@ -549,9 +681,12 @@ namespace codi {
      * @param[in] function The external function structure to push.
      */
     void pushExternalFunctionHandle(const ExternalFunction& function){
-      assert(0 != externalFunctions.getUnusedSize());
-      externalFunctions.setDataAndMove(std::make_tuple(function, getPosition()));
+      codiAssert(0 != externalFunctions.getUnusedSize());
+      externalFunctions.setDataAndMove(function, getPosition());
     }
 
   };
+
+  template <typename Real, typename IndexType>
+  const ExpressionHandle<Real*, Real, IndexType> SimplePrimalValueTape<Real, IndexType>::InputHandle(&SimplePrimalValueTape<Real, IndexType>::inputHandleFunc<Real*>, 0, 0);
 }

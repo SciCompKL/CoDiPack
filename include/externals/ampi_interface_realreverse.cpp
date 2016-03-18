@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -26,7 +26,8 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 #include "ampi_tape.hpp"
-#include "tools/dataStore.hpp"
+#include "../tools/dataStore.hpp"
+#include "../codi.hpp"
 
 //#define INT64 int
 
@@ -89,13 +90,13 @@ extern "C" {
      }
   }
 
-  void ampi_create_dummies(void *buf, int *size) {
+  void ampi_create_dummies_displ(void *buf, int* displ, int *size) {
       if (codi::RealReverse::getGlobalTape().isActive()){
 
         type *values=static_cast<type*>(buf);
         for(int i=0;i<*size;++i) {
           //type &dummy=values[i];
-          values[i]=0;
+          values[*displ + i]=0;
           codi::RealReverse::getGlobalTape().registerInput(values[i]);
         }
      }

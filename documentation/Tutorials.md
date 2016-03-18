@@ -6,3 +6,4 @@ The CoDiPack tutorials:
   - \subpage Tutorial2 "Tutorial 2": Explains the basic usage for the RealReverse type.
   - \subpage Tutorial3 "Tutorial 3": Computes the full Jacobi matrix of a function with the RealForward type.
   - \subpage Tutorial4 "Tutorial 4": Computes the full Jacobi matrix of a function with the RealReverse type.
+  - \subpage Tutorial5 "Tutorial 5": ReferenceActiveReal demonstration

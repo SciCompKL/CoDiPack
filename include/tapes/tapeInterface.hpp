@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -31,6 +31,9 @@
 #include "../configure.h"
 #include "../typeTraits.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
@@ -45,21 +48,29 @@ namespace codi {
    * @tparam GradientDataType  The data the tape uses to identify each active variable
    *                             and where the tape can store information about the
    *                             gradient.
+   * @tparam GradientValueType The value type that is used for the gradient calculation.
    */
-  template <typename Real, typename GradientDataType>
+  template <typename Real, typename GradientDataType, typename GradientValueType>
   class TapeInterface {
   public:
 
     /**
      * @brief The data for the gradient information of the tape.
      *
-     * Each tape can define a data for the gradient which each active type will
+     * Each tape can define data for the gradient which each active type will
      * define in its own class. The tape can use this data to identify each active
      * type and compute the gradient information.
      */
     typedef GradientDataType GradientData;
 
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The actual values for the gradient information of the tape.
+     *
+     * The actual floating point or vector valued data for the gradient information.
+     */
+    typedef GradientValueType GradientValue;
 
     /**
      * This functions are called from the expression templates. They tell the
@@ -97,11 +108,14 @@ namespace codi {
      * The optimized version of push jacobi which signals the tape that the jacobi
      * corresponding to the tape is 1.0.
      *
-     * @param[inout]   gradient  A handle to the gradient of the operation. Mostly used for the forward mode.
+     * @param[inout]       data  A handle for data the tape can use for the evaluation.
      * @param[in]         value  The value of the active type which pushes the jacobi.
      * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
+     *
+     * @tparam Data  The type of the data for the tape.
      */
-    virtual void pushJacobi(Real& gradient, const Real& value, const GradientData& gradientData) = 0;
+    template<typename Data>
+    void pushJacobi(Data& data, const Real& value, const GradientData& gradientData);
 
     /**
      * @brief Add a jacobi to the tape.
@@ -109,12 +123,15 @@ namespace codi {
      * The general version of push jacobi which signals the tape that the jacobi is used
      * in the evaluation and needs to be evaluated or stored.
      *
-     * @param[inout]   gradient  A handle to the gradient of the operation. Mostly used for the forward mode.
+     * @param[inout]       data  A handle for data the tape can use for the evaluation.
      * @param[in]        jacobi  The value of the jacobi.
      * @param[in]         value  The value of the active type which pushes the jacobi.
      * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
+     *
+     * @tparam Data  The type of the data for the tape.
      */
-    virtual void pushJacobi(Real& gradient, const Real& jacobi, const Real& value, const GradientData& gradientData) = 0;
+    template<typename Data>
+    void pushJacobi(Data& data, const Real& jacobi, const Real& value, const GradientData& gradientData);
 
     /**
      * @brief Called in the construction of a active type.
@@ -150,7 +167,7 @@ namespace codi {
      * @param[inout]  value  The gradient data of the active type.
      * @param[in]   gradient  The new gradient value for the active type.
      */
-    virtual void setGradient(GradientData& value, const Real& gradient) = 0;
+    virtual void setGradient(GradientData& value, const GradientValue& gradient) = 0;
 
     /**
      * @brief Get the gradient of the gradient data.
@@ -161,7 +178,7 @@ namespace codi {
      *
      * @return The gradient which belongs to the active type.
      */
-    virtual Real getGradient(const GradientData& value) const = 0;
+    virtual GradientValue getGradient(const GradientData& value) const = 0;
 
     /**
     * @brief Get the gradient of the gradient data as reference.
@@ -172,6 +189,6 @@ namespace codi {
     *
     * @return The gradient which belongs to the active type as a reference.
     */
-    virtual Real& gradient(GradientData& value) = 0;
+    virtual GradientValue& gradient(GradientData& value) = 0;
   };
 }
