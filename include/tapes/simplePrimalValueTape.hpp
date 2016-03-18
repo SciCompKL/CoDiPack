@@ -81,7 +81,9 @@ namespace codi {
 
         codiAssert(0 != index); // passive values are currently not supported
 
-        adjointVec[index] += jacobi;
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+          adjointVec[index] += jacobi;
+        }
       }
 
       inline void pushPassive(const PassiveReal& value) {
@@ -611,8 +613,7 @@ namespace codi {
      * @param[in] value Not used.
      */
     inline void registerOutput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
-      CODI_UNUSED(value);
-      /* do nothing */
+      value = 1.0 * value;
     }
 
     /**
