@@ -88,7 +88,7 @@ namespace codi {
         CODI_UNUSED(value);
       }
 
-      inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, ReverseEvaluationTapeHelper< Real, IndexType> >& rhs) {
+      inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<ReverseEvaluationTapeHelper< Real, IndexType> >& rhs) {
         lhsIndex = rhs.getGradientData();
         lhsValue = rhs.getValue();
       }
@@ -136,7 +136,7 @@ namespace codi {
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
   template <typename Real, typename IndexType>
-  class SimplePrimalValueTape : public ReverseTapeInterface<Real, IndexType, SimplePrimalValueTape<Real, IndexType>, SimplePrimalValueTapePosition > {
+  class SimplePrimalValueTape : public ReverseTapeInterface<Real, IndexType, Real, SimplePrimalValueTape<Real, IndexType>, SimplePrimalValueTapePosition > {
   public:
 
     /**
@@ -147,7 +147,7 @@ namespace codi {
   private:
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
-    typedef ActiveReal<Real, ReverseEvaluationTapeHelper<Real, IndexType> > ReverseEvalType;
+    typedef ActiveReal<ReverseEvaluationTapeHelper<Real, IndexType> > ReverseEvalType;
 
     template<typename AdjointData>
     //static void inputHandleFunc(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues) {}
@@ -296,7 +296,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<Real, SimplePrimalValueTape<Real, IndexType> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<SimplePrimalValueTape<Real, IndexType> >& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       } else {
@@ -593,7 +593,7 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<Real, SimplePrimalValueTape<Real, IndexType> >& value) {
+    inline void registerInput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
       codiAssert(statements.getUsedSize() < statements.size);
 
       statements.setDataAndMove(std::make_tuple(&InputHandle));
@@ -608,7 +608,7 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<Real, SimplePrimalValueTape<Real, IndexType> >& value) {
+    inline void registerOutput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
       CODI_UNUSED(value);
       /* do nothing */
     }

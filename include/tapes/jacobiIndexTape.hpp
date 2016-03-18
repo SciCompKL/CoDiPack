@@ -166,6 +166,8 @@ namespace codi {
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
 

@@ -157,6 +157,8 @@ namespace codi {
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
     // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiTape
 
