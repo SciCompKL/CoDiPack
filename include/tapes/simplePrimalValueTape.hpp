@@ -674,6 +674,83 @@ namespace codi {
       pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));\
     }
 
+    template<typename Stream = std::ostream>
+    void printStatistics(Stream& out = std::cout) const {
+
+      const std::string hLine = "-------------------------------------\n";
+
+      size_t nChunksData  = 1;
+      size_t totalData    =  data.getUsedSize();
+      double  memoryUsedData = (double)totalData*(double)(sizeof(IndexType))* BYTE_TO_MB;
+      double  memoryAllocData= (double)data.getSize() *(double)(sizeof(IndexType))* BYTE_TO_MB;
+
+      size_t nChunksStmts  = 1;
+      size_t totalStmts    = statements.getUsedSize();
+
+      double  memoryUsedStmts = (double)totalStmts*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
+      double  memoryAllocStmts= (double)statements.getSize()*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
+
+      size_t nAdjoints      = statements.getUsedSize() + 1;
+      double memoryAdjoints = (double)nAdjoints * 2.0 * (double)sizeof(Real) * BYTE_TO_MB;
+
+      size_t nChunksPassive  = 1;
+      size_t totalPassive    =  passiveData.getUsedSize();
+      double  memoryUsedPassive = (double)totalPassive*(double)(sizeof(PassiveReal))* BYTE_TO_MB;
+      double  memoryAllocPassive = (double)passiveData.getSize() *(double)(sizeof(PassiveReal))* BYTE_TO_MB;
+
+      out << hLine
+          << "CoDi Tape Statistics ( simple primal value tape)\n";
+      out << hLine
+          << "Adjoint vector \n"
+          << hLine
+          << "  Number of Adjoints: " << std::setw(10) << nAdjoints << "\n"
+          << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
+                                      << std::setprecision(2)
+                                      << std::setw(10)
+                                      << memoryAdjoints << " MB" << "\n";
+      out << hLine
+          << "Statements \n"
+          << hLine
+          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
+          << "  Total Number:     " << std::setw(10) << totalStmts   << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocStmts << " MB" << "\n"
+          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryUsedStmts << " MB" << "\n";
+      out << hLine
+          << "Data entries \n"
+          << hLine
+          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
+          << "  Total Number:     " << std::setw(10) << totalData   << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocData << " MB" << "\n"
+          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryUsedData << " MB" << "\n";
+      out << hLine
+          << "Passive data entries \n"
+          << hLine
+          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
+          << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocPassive << " MB" << "\n"
+          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryUsedPassive << " MB" << "\n";
+
+
+    }
+
   private:
     /**
      * @brief Private common method to add to the external function stack.
