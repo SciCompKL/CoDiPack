@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -37,9 +37,9 @@
  *
  * The defines NAME, FUNCTION and PRIMAL_FUNCTION will be undefined at the end of this template.
  *
- * The user needs to define further the following functions:
+ * The user needs to define the following functions:
  *
- * gradName
+ * gradNAME: Computes the derivative df(x)/dx for y = f(x)
  */
 
 #ifndef NAME
@@ -52,8 +52,7 @@
   #error Please define a function which calls the primal functions representation.
 #endif
 
-#define COMBINE2(A,B) A ## B
-#define COMBINE(A,B) COMBINE2(A,B)
+#include "macros.h"
 
 #define OP NAME
 #define FUNC FUNCTION
@@ -64,7 +63,7 @@
 template<typename Real, class A> struct OP;
 
 template <typename Real, class A>
-inline  codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a);
+inline OP<Real, A> FUNC(const Expression<Real, A>& a);
 
 /** 
  * @brief Expression implementation for OP.
@@ -75,8 +74,10 @@ inline  codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a);
 template<typename Real, class A>
 struct OP : public Expression<Real, OP<Real, A> > {
   private:
+
     /** @brief The argument of the function. */
-    const A a_;
+    CODI_CREATE_STORE_TYPE(A) a_;
+
     /** @brief The result of the function. It is always precomputed. */
     Real result_;
   public:
@@ -88,12 +89,15 @@ struct OP : public Expression<Real, OP<Real, A> > {
      */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /** @brief Because these are temporary objects they need to be stored as values. */
+    static const bool storeAsReference = false;
+
     /** 
      * @brief Stores the argument of the expression.
      *
      * @param[in] a Argument of the expression.
      */
-    OP(const Expression<Real, A>& a) :
+    explicit OP(const Expression<Real, A>& a) :
       a_(a.cast()),
       result_(PRIMAL_CALL(a.getValue())) {}
 
@@ -124,6 +128,11 @@ struct OP : public Expression<Real, OP<Real, A> > {
   template<typename Data>
   inline void calcGradient(Data& data, const Real& multiplier) const {
     a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_)*multiplier);
+  }
+
+  template<typename Data>
+  inline void pushLazyJacobies(Data& data) const {
+    a_.pushLazyJacobies(data);
   }
 
   /** 
@@ -176,7 +185,37 @@ struct OP : public Expression<Real, OP<Real, A> > {
   }
 };
 
-/** 
+
+/**
+ * @brief Specialization of the TypeTraits for the unary operator type.
+ *
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    A  The type of the argument of the unary operator.
+ */
+template<typename RealType, typename A>
+class TypeTraits< OP<RealType, A> > {
+  public:
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The definition of the Real type for other classes.
+     */
+    typedef RealType Real;
+
+    /**
+     * @brief Get the primal value of the origin of this type.
+     * @param[in] t The value from which the primal is extracted.
+     * @return The primal value of the origin of this type..
+     */
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP<RealType, A>& t) {
+      return TypeTraits<RealType>::getBaseValue(t.getValue());
+    }
+};
+
+/**
  * @brief Overload for FUNC with the CoDiPack expressions.
  *
  * @param[in] a The argument of the operation.
@@ -187,16 +226,14 @@ struct OP : public Expression<Real, OP<Real, A> > {
  * @tparam A The expression for the first argument of the function.
  */
 template <typename Real, class A>
-inline codi:: OP<Real, A> FUNC(const codi::Expression<Real, A>& a) {
-  return codi:: OP<Real, A>(a.cast());
+inline OP<Real, A> FUNC(const Expression<Real, A>& a) {
+  return OP<Real, A>(a.cast());
 }
 
 #undef OP
 #undef FUNC
 #undef PRIMAL_CALL
 #undef GRADIENT_FUNC
-#undef COMBINE
-#undef COMBINE2
 
 #undef PRIMAL_FUNCTION
 #undef FUNCTION

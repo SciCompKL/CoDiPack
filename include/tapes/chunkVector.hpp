@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -32,36 +32,12 @@
 #include <vector>
 
 #include "chunk.hpp"
+#include "emptyChunkVector.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
-
-  /**
-   * @brief Implementation for a terminal sequence chunk vector
-   *
-   * This interface provides the basic implementation for a terminal point
-   * in a chain of chunk vectors.
-   */
-  struct EmptyChunkVector {
-    /**
-     * @brief Position without any data.
-     */
-    struct Position {};
-
-    /**
-     * @brief Empty position.
-     * @return Empty position
-     */
-    inline Position getPosition() {
-      return Position();
-    }
-
-    /**
-     * @brief Will do nothing.
-     */
-    inline void reset(const Position& pos) {
-      CODI_UNUSED(pos);
-    }
-  };
 
   /**
    * @brief A vector which manages chunks of data for the taping process.
@@ -98,6 +74,11 @@ namespace codi {
     typedef typename NestedVector::Position NestedPosition;
 
     /**
+     * @brief Typedef of the ChunkData for other classes
+     */
+    typedef ChunkData ChunkType;
+
+    /**
      * @brief Position of this chunk vector.
      *
      * The position also includes the position of the nested vector,
@@ -105,9 +86,6 @@ namespace codi {
      * is available to the user.
      */
     struct Position {
-      /**
-       * @brief chunk
-       */
       size_t chunk; /**< Index of the chunk */
       size_t data;  /**< Data position in the chunk */
 
@@ -170,7 +148,7 @@ namespace codi {
     {
       curChunk = new ChunkData(chunkSize);
       chunks.push_back(curChunk);
-      positions.push_back(nested.getPosition());
+      positions.push_back(NestedPosition());
     }
 
     /**
@@ -244,8 +222,8 @@ namespace codi {
      * @param pos   The position to reset to.
      */
     void reset(const Position& pos) {
-      assert(pos.chunk < chunks.size());
-      assert(pos.data < chunkSize);
+      codiAssert(pos.chunk < chunks.size());
+      codiAssert(pos.data < chunkSize);
 
       for(size_t i = curChunkIndex; i > pos.chunk; --i) {
         chunks[i]->reset();
@@ -275,7 +253,7 @@ namespace codi {
      * @param items   The maximum number of items to store.
      */
     inline void reserveItems(const size_t items) {
-      assert(items <= chunkSize);
+      codiAssert(items <= chunkSize);
 
       if(chunkSize < curChunk->getUsedSize() + items) {
         nextChunk();
@@ -290,17 +268,20 @@ namespace codi {
      * method.
      *
      * @param data  The data set to the current position in the chunk.
+     *
+     * @tparam Data  The data types for the data to be set.
      */
-    inline void setDataAndMove(const typename ChunkData::DataValues& data) {
+    template<typename ... Data>
+    inline void setDataAndMove(const Data& ... data) {
       // this method should only be called if reserveItems has been called
-      curChunk->setDataAndMove(data);
+      curChunk->setDataAndMove(data...);
     }
 
     /**
      * @brief The position inside the data of the current chunk.
      * @return The current position in the current chunk.
      */
-    inline size_t getChunkPosition() {
+    inline size_t getChunkPosition() const {
       return curChunk->getUsedSize();
     }
 
@@ -308,7 +289,7 @@ namespace codi {
      * @brief Get the position of the chunk vector and the nested vectors.
      * @return The position of the chunk vector.
      */
-    inline Position getPosition() {
+    inline Position getPosition() const {
       return Position(curChunkIndex, curChunk->getUsedSize(), nested.getPosition());
     }
 
@@ -318,21 +299,24 @@ namespace codi {
      * @param chunkIndex  The index of the chunk for which the position is required.
      * @return The position of the nested chunk vector when the chunk was loaded.
      */
-    inline NestedPosition getInnerPosition(const size_t& chunkIndex) {
-      assert(chunkIndex < positions.size());
+    inline NestedPosition getInnerPosition(const size_t& chunkIndex) const {
+      codiAssert(chunkIndex < positions.size());
       return positions[chunkIndex];
     }
 
     /**
      * @brief Get a pointer to the data at the given position.
-     * @param chunkIndex  The index of the chunk.
-     * @param    dataPos  The index for the data in the chunk.
-     * @return A pointer to the data of the chunk at the given position.
+     * @param  chunkIndex  The index of the chunk.
+     * @param     dataPos  The index for the data in the chunk.
+     * @param    pointers  The pointers to the data of the chunk at the given position.
+     *
+     * @tparam  Pointers  The data types for the pointers.
      */
-    inline typename ChunkData::DataPointer getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos) {
-      assert(chunkIndex < chunks.size());
+    template< typename ... Pointers>
+    inline void getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos, Pointers* &... pointers) {
+      codiAssert(chunkIndex < chunks.size());
 
-      return chunks[chunkIndex]->dataPointer(dataPos);
+      chunks[chunkIndex]->dataPointer(dataPos, pointers...);
     }
 
     /**
@@ -340,10 +324,39 @@ namespace codi {
      * @param chunkIndex  The chunk from which the information is extracted.
      * @return The number of data items used in the chunk.
      */
-    inline size_t getChunkUsedData(const size_t& chunkIndex) {
-      assert(chunkIndex < chunks.size());
+    inline size_t getChunkUsedData(const size_t& chunkIndex) const {
+      codiAssert(chunkIndex < chunks.size());
 
       return chunks[chunkIndex]->getUsedSize();
+    }
+
+    /**
+     * @brief Get the number of currently allocated chunks.
+     * @return The number of currently allocated chunks.
+     */
+    inline int getNumChunks() const {
+      return chunks.size();
+    }
+
+    /**
+     * @brief Get the chunk size.
+     * @return The chunk size.
+     */
+    inline size_t getChunkSize() const {
+      return chunkSize;
+    }
+
+    /**
+     * @brief Get the total number of data items used.
+     * @return The number of data items used in all chunks.
+     */
+    inline size_t getDataSize() const {
+      size_t size = curChunk->getUsedSize();
+      if(getNumChunks() != 0) {
+        size += (getNumChunks() - 1) * chunkSize;
+      }
+
+      return size;
     }
 
   private:
@@ -358,19 +371,21 @@ namespace codi {
      * @param    start  The starting point inside the data of the chunk.
      * @param      end  The end point inside the data of the chunk.
      * @param function  The function called for each data entry.
+     * @param pointers  The pointers are used as the arguments for the function. They will be populated with the data in the chunks.
+     *
+     * @tparam  Pointers  The data types for the pointers.
      */
-    template<typename FunctionObject>
-    inline void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function) {
-      assert(start >= end);
-      assert(chunkPos < chunks.size());
+    template<typename FunctionObject, typename ... Pointers>
+    inline void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
+      codiAssert(start >= end);
+      codiAssert(chunkPos < chunks.size());
 
-      typename ChunkData::DataPointer data;
       // we do not initialize dataPos with start - 1 because the type can be unsigned
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
         --dataPos; // decrement of loop variable
 
-        data = getDataAtPosition(chunkPos, dataPos);
-        function(data);
+        getDataAtPosition(chunkPos, dataPos, pointers...);
+        function(pointers...);
       }
     }
 
@@ -386,22 +401,25 @@ namespace codi {
      * @param    start  The starting point of the range.
      * @param      end  The end point of the range.
      * @param function  The function called for each data entry.
+     * @param pointers  The pointers are used as the arguments for the function. They will be populated with the data in the chunks.
+     *
+     * @tparam  Pointers  The data types for the pointers.
      */
-    template<typename FunctionObject>
-    inline void forEach(const Position& start, const Position& end, FunctionObject& function) {
-      assert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
-      assert(start.chunk < chunks.size());
+    template<typename FunctionObject, typename ... Pointers>
+    inline void forEach(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
+      codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
+      codiAssert(start.chunk < chunks.size());
 
       size_t dataStart = start.data;
       for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
 
-        forEachData(chunkPos, dataStart, 0, function);
+        forEachData(chunkPos, dataStart, 0, function, pointers...);
 
         dataStart = chunks[--chunkPos]->getUsedSize(); // decrement of loop variable
 
       }
 
-      forEachData(end.chunk, dataStart, end.data, function);
+      forEachData(end.chunk, dataStart, end.data, function, pointers...);
     }
   };
 }

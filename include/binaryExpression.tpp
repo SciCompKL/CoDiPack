@@ -1,4 +1,4 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -37,7 +37,21 @@
  *
  * The defines NAME, FUNCTION and PRIMAL_FUNCTION will be undefined at the end of this template.
  *
- * The user needs to define further the following functions:
+ * The user needs to define the derivative computation functions that calculate the derivative
+ * with respect to the first and/or second argument. The naming convention is:
+ *
+ *  dervBB[M]_Name.
+ *
+ * BB tells which variable is active. Thus we have the combinations
+ * 11 -> both are active
+ * 10 -> first argument is active
+ * 01 -> second argument is active
+ *
+ * If the M is present the method the jacobi from the lower expression not equal to 1.0.
+ * If the M is no present the jacobi is assumed to be equal to 1.0.
+ *
+ * These functions needs to compute the derivatives with respect to the active variables and
+ * call the pushJacobi function on the arguments.That results in the following combinations:
  *
  * derv11_NAME
  * derv11M_NAME
@@ -57,8 +71,7 @@
   #error Please define a function which calls the primal functions representation.
 #endif
 
-#define COMBINE2(A,B) A ## B
-#define COMBINE(A,B) COMBINE2(A,B)
+#include "macros.h"
 
 #define OP NAME
 #define OP11 COMBINE(NAME,11)
@@ -82,13 +95,13 @@ template <typename Real, class A> struct OP10;
 template <typename Real, class B> struct OP01;
 
 template <typename Real, class A, class B>
-inline  OP11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b);
+inline  OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b);
 
 template <typename Real, class A>
-inline  OP10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b);
+inline  OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b);
 
 template <typename Real, class B>
-inline  OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b);
+inline  OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b);
 
 /**
  * @brief Expression implementation for OP with two active variables.
@@ -100,10 +113,13 @@ inline  OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, cons
 template<typename Real, class A, class B>
 struct OP11: public Expression<Real, OP11<Real, A, B> > {
   private:
+
     /** @brief The first argument of the function. */
-    const A a_;
+    CODI_CREATE_STORE_TYPE(A) a_;
+
     /** @brief The second argument of the function. */
-    const B b_;
+    CODI_CREATE_STORE_TYPE(B) b_;
+
   public:
     /**
      * @brief The passive type used in the origin.
@@ -113,13 +129,16 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /** @brief Because these are temporary objects they need to be stored as values. */
+    static const bool storeAsReference = false;
+
     /**
      * @brief Stores both arguments of the expression.
      *
      * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
-    OP11(const Expression<Real, A>& a, const Expression<Real, B>& b) :
+    explicit OP11(const Expression<Real, A>& a, const Expression<Real, B>& b) :
       a_(a.cast()), b_(b.cast()) {}
 
     /**
@@ -149,6 +168,12 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     template<typename Data>
     inline void calcGradient(Data& data, const Real& multiplier) const {
       DERIVATIVE_FUNC_11M(data, a_, b_, getValue(), multiplier);
+    }
+
+    template<typename Data>
+    inline void pushLazyJacobies(Data& data) const {
+      a_.pushLazyJacobies(data);
+      b_.pushLazyJacobies(data);
     }
 
     /**
@@ -224,19 +249,20 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
  */
 template<typename Real, class A>
 struct OP10: public Expression<Real, OP10<Real, A> > {
-  public:
-    /**
-     * @brief The passive type used in the origin.
-     *
-     * If Real is not an ActiveReal this value corresponds to Real,
-     * otherwise the PassiveValue from Real is used.
-     */
+  private:
+    /** @brief The type for the passive values. */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
-  private:
-    const A a_;
-    const PassiveReal& b_;
+    /** @brief Active first argument of the function */
+    CODI_CREATE_STORE_TYPE(A) a_;
+
+    /** @brief Passive second argument of the function */
+    const PassiveReal b_;
+
   public:
+
+    /** @brief Because these are temporary objects they need to be stored as values. */
+    static const bool storeAsReference = false;
 
     /**
      * @brief Stores both arguments of the expression.
@@ -244,7 +270,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
-    OP10(const Expression<Real, A>& a, const PassiveReal& b) :
+    explicit OP10(const Expression<Real, A>& a, const PassiveReal& b) :
       a_(a.cast()), b_(b) {}
 
     /**
@@ -276,6 +302,11 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     inline void calcGradient(Data& data, const Real& multiplier) const {
       DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
       a_.pushPassive(b_);
+    }
+
+    template<typename Data>
+    inline void pushLazyJacobies(Data& data) const {
+      a_.pushLazyJacobies(data);
     }
 
     /**
@@ -339,19 +370,20 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
  */
 template<typename Real, class B>
 struct OP01 : public Expression<Real, OP01<Real, B> > {
-  public:
-    /**
-     * @brief The passive type used in the origin.
-     *
-     * If Real is not an ActiveReal this value corresponds to Real,
-     * otherwise the PassiveValue from Real is used.
-     */
+  private:
+
+    /** @brief The type for the passive values. */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
-  private:
-    const PassiveReal& a_;
-    const B b_;
+    /** @brief Passive first argument of the function */
+    const PassiveReal a_;
+
+    /** @brief Active second argument of the function */
+    CODI_CREATE_STORE_TYPE(B) b_;
   public:
+
+    /** @brief Because these are temporary objects they need to be stored as values. */
+    static const bool storeAsReference = false;
 
     /**
      * @brief Stores both arguments of the expression.
@@ -359,7 +391,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
-    OP01(const PassiveReal& a, const Expression<Real, B>& b) :
+    explicit OP01(const PassiveReal& a, const Expression<Real, B>& b) :
       a_(a), b_(b.cast()) {}
 
     /**
@@ -391,6 +423,11 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     inline void calcGradient(Data& data, const Real& multiplier) const {
       b_.pushPassive(a_);
       DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
+    }
+
+    template<typename Data>
+    inline void pushLazyJacobies(Data& data) const {
+      b_.pushLazyJacobies(data);
     }
 
     /**
@@ -447,6 +484,94 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
 };
 
 /**
+ * @brief Specialization of the TypeTraits for the binary operator type.
+ *
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    A  The type of the first argument of the binary operator.
+ * @tparam    B  The type of the second argument of the binary operator.
+ */
+template<typename RealType, typename A, typename B>
+class TypeTraits< OP11<RealType, A, B> > {
+  public:
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The definition of the Real type for other classes.
+     */
+    typedef RealType Real;
+
+    /**
+     * @brief Get the primal value of the origin of this type.
+     * @param[in] t The value from which the primal is extracted.
+     * @return The primal value of the origin of this type..
+     */
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP11<RealType, A, B>& t) {
+      return TypeTraits<RealType>::getBaseValue(t.getValue());
+    }
+};
+
+/**
+ * @brief Specialization of the TypeTraits for the binary operator type.
+ *
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    A  The type of the first argument of the binary operator.
+ */
+template<typename RealType, typename A>
+class TypeTraits< OP10<RealType, A> > {
+  public:
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The definition of the Real type for other classes.
+     */
+    typedef RealType Real;
+
+    /**
+     * @brief Get the primal value of the origin of this type.
+     * @param[in] t The value from which the primal is extracted.
+     * @return The primal value of the origin of this type..
+     */
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP10<RealType, A>& t) {
+      return TypeTraits<RealType>::getBaseValue(t.getValue());
+    }
+};
+
+/**
+ * @brief Specialization of the TypeTraits for the binary operator type.
+ *
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    B  The type of the second argument of the binary operator.
+ */
+template<typename RealType, typename B>
+class TypeTraits< OP01<RealType, B> > {
+  public:
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef RealType Real;
+
+    /**
+     * @brief Get the primal value of the origin of this type.
+     * @param[in] t The value from which the primal is extracted.
+     * @return The primal value of the origin of this type..
+     */
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP01<RealType, B>& t) {
+      return TypeTraits<RealType>::getBaseValue(t.getValue());
+    }
+};
+
+/**
  * @brief Overload for FUNC with the CoDiPack expressions.
  *
  * @param[in] a  The first argument of the operation.
@@ -459,7 +584,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
  * @tparam    B  The expression for the second argument of the function
  */
 template <typename Real, class A, class B>
-inline OP11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Expression<Real, B>& b) {
+inline OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b) {
   return OP11<Real, A, B>(a.cast(), b.cast());
 }
 /**
@@ -474,7 +599,7 @@ inline OP11<Real, A, B> FUNC(const codi::Expression<Real, A>& a, const codi::Exp
  * @tparam    A  The expression for the first argument of the function
  */
 template <typename Real, class A>
-inline OP10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+inline OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
   return OP10<Real, A>(a.cast(), b);
 }
 /**
@@ -489,7 +614,7 @@ inline OP10<Real, A> FUNC(const codi::Expression<Real, A>& a, const typename Typ
  * @tparam    B  The expression for the second argument of the function
  */
 template <typename Real, class B>
-inline OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const codi::Expression<Real, B>& b) {
+inline OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
   return OP01<Real, B>(a, b.cast());
 }
 
@@ -507,9 +632,6 @@ inline OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const
 #undef DERIVATIVE_FUNC_01M
 #undef GRADIENT_FUNC_A
 #undef GRADIENT_FUNC_B
-
-#undef COMBINE
-#undef COMBINE2
 
 #undef PRIMAL_FUNCTION
 #undef FUNCTION

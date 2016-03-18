@@ -44,12 +44,21 @@ const int ITER = 5;
 
 static void extFunc(void* checkpoint){
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
-  NUMBER *x, w0, w1;
-  check->getData(x);
-  check->getData(w0);
-  check->getData(w1);
-  w0.gradient() += x[1].getValue()*w1.getGradient();
-  x[1].gradient() += w0.getValue()*w1.getGradient();
+  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
+
+  typename NUMBER::Real x_v, w0_v;
+  typename NUMBER::GradientData x_i, w0_i, w1_i;
+  check->getData(x_v);
+  check->getData(x_i);
+  check->getData(w0_v);
+  check->getData(w0_i);
+  check->getData(w1_i);
+
+  typename NUMBER::GradientValue w1_b = tape.gradient(w1_i);
+  tape.gradient(w1_i) = typename NUMBER::GradientValue();
+
+  tape.gradient(w0_i) += x_v*w1_b;
+  tape.gradient(x_i)  += w0_v*w1_b;
 }
 
 static void delFunc(void* checkpoint){
@@ -70,9 +79,11 @@ void func(NUMBER* x, NUMBER* y) {
 
     codi::DataStore *checkpoint = new codi::DataStore();
     tape.registerInput(w[i]);
-    checkpoint->addData(x);
-    checkpoint->addData(w[i-1]);
-    checkpoint->addData(w[i]);
+    checkpoint->addData(x[1].getValue());
+    checkpoint->addData(x[1].getGradientData());
+    checkpoint->addData(w[i-1].getValue());
+    checkpoint->addData(w[i-1].getGradientData());
+    checkpoint->addData(w[i].getGradientData());
     tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
   }
 

@@ -79,7 +79,7 @@ namespace codi {
         CODI_UNUSED(value);
         CODI_UNUSED(jacobi);
 
-        assert(0 != index); // passive values are currently not supported
+        codiAssert(0 != index); // passive values are currently not supported
 
         adjointVec[index] += jacobi;
       }
@@ -255,16 +255,16 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
 
       ENABLE_CHECK(OptTapeActivity, active){
-        assert(ExpressionTraits<Rhs>::maxActiveVariables <= data.getUnusedSize());
-        assert(ExpressionTraits<Rhs>::maxPassiveVariables <= passiveData.getUnusedSize());
+        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables <= data.getUnusedSize());
+        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables <= passiveData.getUnusedSize());
         size_t dataSize = data.getUsedSize();
         size_t passiveDataSize = passiveData.getUsedSize();
         CODI_UNUSED(dataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
         CODI_UNUSED(passiveDataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
         rhs.calcGradient(passiveDataHelper);
-        assert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
-        assert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
-        assert(statements.getUsedSize() < statements.size);
+        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
+        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
+        codiAssert(statements.getUsedSize() < statements.size);
         statements.setDataAndMove(std::make_tuple(ExpressionHandleStore<Real*, Real, IndexType, Rhs, ReverseEvalType>::getHandle()));
         primalAdjointValues.data1[statements.getUsedSize()] = rhs.getValue();
         lhsIndex = statements.getUsedSize();
@@ -319,12 +319,12 @@ namespace codi {
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
-        assert(statements.getUsedSize() < statements.size);
+        codiAssert(statements.getUsedSize() < statements.size);
 
         statements.setDataAndMove(std::make_tuple(&InputHandle));
         lhsIndex = statements.getUsedSize();
 
-        assert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
+        codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
         primalAdjointValues.data1[statements.getUsedSize()] = rhs;
       } else {
         lhsIndex = 0;
@@ -334,7 +334,7 @@ namespace codi {
     }
 
     inline void pushPassive(const PassiveReal& value) {
-      assert(passiveData.getUsedSize() < passiveData.size);
+      codiAssert(passiveData.getUsedSize() < passiveData.size);
 
       passiveData.setDataAndMove(std::make_tuple(value));
     }
@@ -350,9 +350,9 @@ namespace codi {
     inline void pushJacobi(Data& passiveDataHelper, const Real& value, const IndexType& index) {
       CODI_UNUSED(value);
 
-      assert(data.getUsedSize() < data.size);
+      codiAssert(data.getUsedSize() < data.size);
       if(0 == index) {
-        assert(statements.getUsedSize() < statements.size);
+        codiAssert(statements.getUsedSize() < statements.size);
         // create temporary index
         statements.setDataAndMove(std::make_tuple(&InputHandle));
         IndexType tempIndex = statements.getUsedSize();
@@ -378,9 +378,9 @@ namespace codi {
       CODI_UNUSED(value);
       CODI_UNUSED(jacobi);
 
-      assert(data.getUsedSize() < data.size);
+      codiAssert(data.getUsedSize() < data.size);
       if(0 == index) {
-        assert(statements.getUsedSize() < statements.size);
+        codiAssert(statements.getUsedSize() < statements.size);
         // create temporary index
         statements.setDataAndMove(std::make_tuple(&InputHandle));
         IndexType tempIndex = statements.getUsedSize();
@@ -400,12 +400,12 @@ namespace codi {
      */
     inline void initGradientData(Real& value, IndexType& index) {
       ENABLE_CHECK(OptTapeActivity, active){
-        assert(statements.getUsedSize() < statements.size);
+        codiAssert(statements.getUsedSize() < statements.size);
 
         statements.setDataAndMove(std::make_tuple(&InputHandle));
         index = statements.getUsedSize();
 
-        assert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
+        codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
         primalAdjointValues.data1[statements.getUsedSize()] = value;
       } else {
         index = 0;
@@ -445,7 +445,7 @@ namespace codi {
      * @return The gradient value corresponding to the given index.
      */
     inline Real getGradient(const IndexType& index) const {
-      assert((size_t)index < statements.size);
+      codiAssert((size_t)index < statements.size);
       return primalAdjointValues.data2[index];
     }
 
@@ -458,8 +458,8 @@ namespace codi {
      * @return The reference to the gradient data.
      */
     inline Real& gradient(IndexType& index) {
-      assert((size_t)index < statements.size);
-      assert(0 != index);
+      codiAssert((size_t)index < statements.size);
+      codiAssert(0 != index);
 
       return primalAdjointValues.data2[index];
     }
@@ -481,10 +481,10 @@ namespace codi {
      * @param[in] pos Reset the state of the tape to the given position.
      */
     inline void reset(const Position& pos) {
-      assert(pos.stmt < statements.size);
-      assert(pos.data < data.size);
-      assert(pos.passiveData < passiveData.size);
-      assert(pos.extFunc < externalFunctions.size);
+      codiAssert(pos.stmt < statements.size);
+      codiAssert(pos.data < data.size);
+      codiAssert(pos.passiveData < passiveData.size);
+      codiAssert(pos.extFunc < externalFunctions.size);
 
       for(size_t i = pos.stmt; i <= statements.getUsedSize(); ++i) {
         primalAdjointValues.data1[i] = 0.0;
@@ -555,9 +555,9 @@ namespace codi {
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
     inline void evaluate(const Position& start, const Position& end) {
-      assert(start.data >= end.data);
-      assert(start.stmt >= end.stmt);
-      assert(start.extFunc >= end.extFunc);
+      codiAssert(start.data >= end.data);
+      codiAssert(start.stmt >= end.stmt);
+      codiAssert(start.extFunc >= end.extFunc);
 
       Position curPos = start;
 
@@ -594,12 +594,12 @@ namespace codi {
      * @param[inout] value The value which will be marked as an active variable.
      */
     inline void registerInput(ActiveReal<Real, SimplePrimalValueTape<Real, IndexType> >& value) {
-      assert(statements.getUsedSize() < statements.size);
+      codiAssert(statements.getUsedSize() < statements.size);
 
       statements.setDataAndMove(std::make_tuple(&InputHandle));
       value.getGradientData() = statements.getUsedSize();
 
-      assert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
+      codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
       primalAdjointValues.data1[statements.getUsedSize()] = value.getValue();
     }
 
@@ -678,7 +678,7 @@ namespace codi {
      * @param[in] function The external function structure to push.
      */
     void pushExternalFunctionHandle(const ExternalFunction& function){
-      assert(0 != externalFunctions.getUnusedSize());
+      codiAssert(0 != externalFunctions.getUnusedSize());
       externalFunctions.setDataAndMove(std::make_tuple(function, getPosition()));
     }
 

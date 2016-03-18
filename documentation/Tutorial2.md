@@ -43,7 +43,7 @@ The driver for the primal evaluation of the function is inside the main routine:
 
       double y = func(x);
 
-      stc::cout << "f(4.0) = " << y << std::endl;
+      std::cout << "f(4.0) = " << y << std::endl;
 
       return 0;
     }
@@ -73,7 +73,7 @@ The code which gets a reference to the tape, activates it and registers the inpu
    tape.registerInput(x);
 
    codi::RealReverse y = func(x);
-   tape.registerOutput(x);
+   tape.registerOutput(y);
    tape.setPassive();
 ~~~~
 The last three lines in the code block call the function evaluation which records the tape for \f$f\f$ and
@@ -119,7 +119,7 @@ The implementation of the main method is now extended by these calls:
 
       tape.registerInput(x);
       codi::RealReverse y = func(x);
-      tape.registerOutput(x);
+      tape.registerOutput(y);
 
       tape.setPassive();
       y.setGradient(1.0);
@@ -151,7 +151,7 @@ The full code of the example is now:
 
       tape.registerInput(x);
       codi::RealReverse y = func(x);
-      tape.registerOutput(x);
+      tape.registerOutput(y);
 
       tape.setPassive();
       y.setGradient(1.0);
