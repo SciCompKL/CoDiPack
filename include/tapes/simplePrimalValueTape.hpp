@@ -403,17 +403,8 @@ namespace codi {
      * @param[out] index The index of the active type.
      */
     inline void initGradientData(Real& value, IndexType& index) {
-      ENABLE_CHECK(OptTapeActivity, active){
-        codiAssert(statements.getUsedSize() < statements.size);
-
-        statements.setDataAndMove(&InputHandle);
-        index = statements.getUsedSize();
-
-        codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
-        primalAdjointValues.data1[statements.getUsedSize()] = value;
-      } else {
-        index = 0;
-      }
+      CODI_UNUSED(value);
+      index = 0;
     }
 
     /**
