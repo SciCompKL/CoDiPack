@@ -35,7 +35,7 @@
 #include "tapes/jacobiIndexTape.hpp"
 #include "tapes/indices/linearIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandler.hpp"
-#include "tapes/indices/reuseIndexHandlerAssignOpt.hpp"
+#include "tapes/indices/reuseIndexHandlerUseCount.hpp"
 #include "tools/dataStore.hpp"
 
 /**
@@ -104,7 +104,6 @@ namespace codi {
    * \endcode
    */
   typedef ActiveReal<JacobiTape<ChunkTapeTypes<double, LinearIndexHandler<int> > > > RealReverse;
-  typedef ReferenceActiveReal<RealReverse > ReferenceRealReverse;
 
   /**
    * @brief The default reverse type in CoDiPack with float as the real value type.
