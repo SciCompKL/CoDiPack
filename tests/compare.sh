@@ -35,9 +35,12 @@ then Usage;
 fi;
 
 # arguments have been read now iterate over the files and compare them
+fail=0
 res=
 if [[ 0 == $# ]];
-then res+=" $failure no drivers run this test.";
+then
+    res+=" $failure no drivers run this test."
+    fail=-1
 else
     while [ $# -gt 0 ]
     do
@@ -47,9 +50,13 @@ else
         cmp $baseFileName $1
         if [ $? -eq 0 ];
         then res+=$ok;
-        else res+=$failure;
+        else
+            res+=$failure
+            fail=-1
         fi;
         shift
     done
 fi;
 echo Test$testName:$res
+
+exit $fail
