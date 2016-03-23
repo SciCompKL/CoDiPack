@@ -66,10 +66,13 @@
   private:
 
   // ----------------------------------------------------------------------
-  // All definitons of the module
+  // All definitions of the module
   // ----------------------------------------------------------------------
 
+    /** @brief The child vector for the external function data vector. */
     typedef CHILD_VECTOR_TYPE ExtFuncChildVector;
+
+    /** @brief The position type of the external function child vector */
     typedef typename ExtFuncChildVector::Position ExtFuncChildPosition;
 
     /** @brief The vector for the external function data. */
@@ -77,6 +80,7 @@
     /** @brief The data for the external functions. */
     typedef typename ExtFuncVector::ChunkType ExtFuncChunk;
 
+    /** @brief The position type of the external function module. */
     typedef typename ExtFuncVector::Position ExtFuncPosition;
 
     /** @brief The data for the external functions. */
@@ -86,7 +90,7 @@
   // Private function of the module
   // ----------------------------------------------------------------------
 
-    /*
+    /**
      * Function object for the evaluation of the external functions.
      *
      * It stores the last position for the statement vector. With this
@@ -95,15 +99,28 @@
      * external function.
      */
     struct ExtFuncEvaluator {
-      ExtFuncChildPosition curInnerPos;
+      ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
 
+      /** The reference to the tape. The method evalExtFuncCallback is used to evaluate the data between the expressions.*/
       TAPE_NAME& tape;
 
+      /**
+       * @brief Create the function object.
+       *
+       * @param[in] curInnerPos  The position were the evaluation starts.
+       * @param[inout]     tape  The reference to the actual tape.
+       */
       ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, TAPE_NAME& tape) :
         curInnerPos(curInnerPos),
         tape(tape){}
 
-      void operator () (ExternalFunction* extFunc, ExtFuncChildPosition* endInnerPos) {
+      /**
+       * @brief The operator evaluates the tape to the position were the next external function was stored and then the function is evaluated
+       *
+       * @param[in]     extFunc  The external function object.
+       * @param[in] endInnerPos  The position were the external function object was stored.
+       */
+      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos) {
         // always evaluate the stack to the point of the external function
         tape.evalExtFuncCallback(curInnerPos, *endInnerPos);
 
@@ -242,7 +259,7 @@
      * Displays the number of registered external function.
      *
      * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     * @param[in]     hLine  The horizontal line that separates the sections of the output.
      *
      * @tparam Stream The type of the stream.
      */

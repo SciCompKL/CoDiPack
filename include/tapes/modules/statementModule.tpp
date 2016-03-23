@@ -64,10 +64,13 @@
   private:
 
   // ----------------------------------------------------------------------
-  // All definitons of the module
+  // All definitions of the module
   // ----------------------------------------------------------------------
 
+    /** @brief The child vector for the statement data vector. */
     typedef CHILD_VECTOR_TYPE StmtChildVector;
+
+    /** @brief The position type of the statement child vector */
     typedef typename StmtChildVector::Position StmtChildPosition;
 
     /** @brief The chunk vector for the statement data. */
@@ -75,6 +78,7 @@
     /** @brief The data for each statement. */
     typedef typename StmtVector::ChunkType StmtChunk;
 
+    /** @brief The position type of the statement module. */
     typedef typename StmtVector::Position StmtPosition;
 
     /** @brief The data for the statements. */
@@ -210,7 +214,7 @@
      * allocated memory and the used memory.
      *
      * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     * @param[in]     hLine  The horizontal line that separates the sections of the output.
      *
      * @tparam Stream The type of the stream.
      */

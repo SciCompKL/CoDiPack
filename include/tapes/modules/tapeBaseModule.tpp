@@ -87,7 +87,7 @@
      */
     GradientValue* adjoints;
 
-    /* @brief The current size of the adjoint vector. */
+    /** @brief The current size of the adjoint vector. */
     IndexType adjointsSize;
 
     /**

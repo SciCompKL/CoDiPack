@@ -55,10 +55,13 @@
 		private:
 
   // ----------------------------------------------------------------------
-  // All definitons of the module
+  // All definitions of the module
   // ----------------------------------------------------------------------
 
+    /** @brief The child vector for the Jacobi data vector. */
     typedef CHILD_VECTOR_TYPE JacobiChildVector;
+
+    /** @brief The position type of the Jacobi child vector */
     typedef typename JacobiChildVector::Position JacobiChildPosition;
 
     /** @brief The vector for the jacobi data. */
@@ -67,6 +70,7 @@
     /** @brief The data for the jacobies */
     typedef typename JacobiVector::ChunkType JacobiChunk;
 
+    /** @brief The position type of the jacobi module. */
     typedef typename JacobiVector::Position JacobiPosition;
 
     /** @brief The data for the jacobies of each statements. */
@@ -217,7 +221,7 @@
      * allocated memory and the used memory.
      *
      * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     * @param[in]     hLine  The horizontal line that separates the sections of the output.
      *
      * @tparam Stream The type of the stream.
      */
