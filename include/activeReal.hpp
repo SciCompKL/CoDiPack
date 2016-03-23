@@ -223,6 +223,16 @@ namespace codi {
       globalTape.pushJacobi(data, jacobi, primalValue, gradientData);
     }
 
+    /**
+     * @brief Not needed by this type.
+     *
+     * The method is called for types that accumulate the jacobies before
+     * they are pushed to the tape.
+     *
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
+     */
     template<typename Data>
     inline void pushLazyJacobies(Data& data) const {
       CODI_UNUSED(data);

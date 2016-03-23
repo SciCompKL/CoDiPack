@@ -160,6 +160,16 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       DERIVATIVE_FUNC_11M(data, a_, b_, getValue(), multiplier);
     }
 
+    /**
+     * @brief The call is forwarded to both arguments.
+     *
+     * The method is called for types that accumulate the jacobies before
+     * they are pushed to the tape.
+     *
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
+     */
     template<typename Data>
     inline void pushLazyJacobies(Data& data) const {
       a_.pushLazyJacobies(data);
@@ -238,6 +248,16 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
     }
 
+    /**
+     * @brief The call is forwarded to the active argument.
+     *
+     * The method is called for types that accumulate the jacobies before
+     * they are pushed to the tape.
+     *
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
+     */
     template<typename Data>
     inline void pushLazyJacobies(Data& data) const {
       a_.pushLazyJacobies(data);
@@ -314,6 +334,16 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
       DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
     }
 
+    /**
+     * @brief The call is forwarded to the active argument.
+     *
+     * The method is called for types that accumulate the jacobies before
+     * they are pushed to the tape.
+     *
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
+     */
     template<typename Data>
     inline void pushLazyJacobies(Data& data) const {
       b_.pushLazyJacobies(data);

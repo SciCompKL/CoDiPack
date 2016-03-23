@@ -199,7 +199,7 @@ namespace codi {
        *   the memory for the allocated indices.
        *
        * @param[in,out] out  The information is written to the stream.
-       * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+       * @param[in]     hLine  The horizontal line that separates the sections of the output.
        *
        * @tparam Stream The type of the stream.
        */

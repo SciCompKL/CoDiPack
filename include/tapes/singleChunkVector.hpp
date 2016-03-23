@@ -274,7 +274,7 @@ namespace codi {
 
   private:
     /**
-     * @brief Iterates of the data entries in the chunk.
+     * @brief Iterates over the data entries in the chunk.
      *
      * Iterates of the data entries and calls the function object with each data item.
      *
@@ -304,7 +304,7 @@ namespace codi {
   public:
 
     /**
-     * @brief Iterates of all data entries in the given range
+     * @brief Iterates over all data entries in the given range
      *
      * Iterates of the data entries and calls the function object with each data item.
      *

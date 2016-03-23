@@ -123,6 +123,16 @@ struct OP : public Expression<Real, OP<Real, A> > {
     a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_)*multiplier);
   }
 
+  /**
+   * @brief The call is forwarded to the arguments.
+   *
+   * The method is called for types that accumulate the jacobies before
+   * they are pushed to the tape.
+   *
+   * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+   *
+   * @tparam Data The type for the tape data.
+   */
   template<typename Data>
   inline void pushLazyJacobies(Data& data) const {
     a_.pushLazyJacobies(data);

@@ -77,3 +77,21 @@
  */
 #define CODI_TO_STRING(expression) CODI_TO_STRING2(expression)
 
+/**
+ * @brief Enable the check only if the option is set
+ *
+ * The macro ca be used to surround a code block with an if statement. If the option is set to true
+ * the condition is evaluated and only if the condition is true the block after the macro is
+ * executed. If the option is false the block will always be executed.
+ *
+ * @param    option  A constant global boolean. Only than the compiler can optimize the statement.
+ * @param condition  The condition which is only evaluated if 'option' is set to true.
+ */
+#define ENABLE_CHECK(option, condition) if(!(option) || (condition))
+
+/**
+ * @brief Needed to disable warnings about unused parameters.
+ *
+ * Is also necessary because of doxygen parameter handling.
+ */
+#define CODI_UNUSED(name) (void)name
