@@ -44,7 +44,7 @@
 namespace codi {
 
   /**
-   * @brief Vector defintion for the ChunkIndexTape.
+   * @brief Vector definition for the ChunkIndexTape.
    *
    * The structure defines all vectors as chunk vectors.
    *
@@ -86,7 +86,7 @@ namespace codi {
   };
 
   /**
-   * @brief Vector defintion for the SimpleIndexTape.
+   * @brief Vector definition for the SimpleIndexTape.
    *
    * The structure defines all vectors as single chunk vectors.
    *
