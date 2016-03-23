@@ -37,6 +37,7 @@
 #include "chunkVector.hpp"
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
+#include "singleChunkVector.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -44,7 +45,7 @@
 namespace codi {
 
   /**
-   * @brief Vector defintion for the ChunkIndexTape.
+   * @brief Vector definition for the ChunkIndexTape.
    *
    * The structure defines all vectors as chunk vectors.
    *
@@ -86,7 +87,7 @@ namespace codi {
   };
 
   /**
-   * @brief Vector defintion for the SimpleIndexTape.
+   * @brief Vector definition for the SimpleIndexTape.
    *
    * The structure defines all vectors as single chunk vectors.
    *
@@ -226,12 +227,14 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
-          indexHandler.checkIndex(lhsIndex);
+          indexHandler.copyIndex(lhsIndex, rhs.getGradientData());
 
-          stmtVector.reserveItems(1);
-          jacobiVector.reserveItems(1);
-          jacobiVector.setDataAndMove(1.0, rhs.getGradientData());
-          stmtVector.setDataAndMove((StatementInt)1, lhsIndex);
+          if(IndexHandler::AssignNeedsStatement) {
+            stmtVector.reserveItems(1);
+            jacobiVector.reserveItems(1);
+            jacobiVector.setDataAndMove(1.0, rhs.getGradientData());
+            stmtVector.setDataAndMove((StatementInt)1, lhsIndex);
+          }
         } else {
           indexHandler.freeIndex(lhsIndex);
         }
@@ -385,7 +388,7 @@ namespace codi {
      * @param[inout] value The value which will be marked as an active variable.
      */
     inline void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
-      indexHandler.checkIndex(value.getGradientData());
+      indexHandler.assignIndex(value.getGradientData());
     }
 
     /**
@@ -394,8 +397,9 @@ namespace codi {
      * @param[in] value Not used.
      */
     inline void registerOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
-      CODI_UNUSED(value);
-      /* do nothing */
+      if(!IndexHandler::AssignNeedsStatement) {
+        value = 1.0 * value;
+      }
     }
 
     /**

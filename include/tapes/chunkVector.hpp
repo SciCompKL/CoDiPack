@@ -351,9 +351,9 @@ namespace codi {
      * @return The number of data items used in all chunks.
      */
     inline size_t getDataSize() const {
-      size_t size = curChunk->getUsedSize();
-      if(getNumChunks() != 0) {
-        size += (getNumChunks() - 1) * chunkSize;
+      size_t size = 0;
+      for(size_t i = 0; i < chunks.size(); ++i) {
+        size += chunks[i]->getUsedSize();
       }
 
       return size;

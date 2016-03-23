@@ -48,11 +48,24 @@ namespace codi {
    */
   typedef uint8_t StatementInt;
 
+  #ifndef CODI_SmallChunkSize
+    #define CODI_SmallChunkSize 32768
+  #endif
+  /**
+   * @brief Default number of entries for all chunks that need smaller sizes.
+   *
+   * Default is 128 kb for 4 byte entries.
+   */
+  static size_t DefaultSmallChunkSize = CODI_SmallChunkSize; //TODO: Find optimal value
+  #undef CODI_SmallChunkSize
+
   #ifndef CODI_ChunkSize
-    #define CODI_ChunkSize 13107200
+    #define CODI_ChunkSize 2097152
   #endif
   /**
    * @brief Default number of entries for all chunks.
+   *
+   * Default is 24 Mb for 12 byte entries.
    */
   static size_t DefaultChunkSize = CODI_ChunkSize; //TODO: Find optimal value
   #undef CODI_ChunkSize
