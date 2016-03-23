@@ -50,7 +50,7 @@ namespace codi {
    * @tparam Index  The type for the handled indices.
    */
   template<typename Index>
-  class ReuseIndexHandlerAssignOptimization {
+  class ReuseIndexHandlerUseCount {
     public:
       /**
        * @brief The type definition for other tapes who want to access the type.
@@ -98,7 +98,7 @@ namespace codi {
       /**
        * @brief Create a handler that has no indices in use.
        */
-      ReuseIndexHandlerAssignOptimization() :
+      ReuseIndexHandlerUseCount() :
         globalMaximumIndex(0),
         currentMaximumIndex(0),
         freeIndices(),

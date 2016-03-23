@@ -397,8 +397,9 @@ namespace codi {
      * @param[in] value Not used.
      */
     inline void registerOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
-      CODI_UNUSED(value);
-      /* do nothing */
+      if(!IndexHandler::AssignNeedsStatement) {
+        value = 1.0 * value;
+      }
     }
 
     /**
