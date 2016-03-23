@@ -37,6 +37,7 @@
 #include "chunkVector.hpp"
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
+#include "singleChunkVector.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -44,7 +45,7 @@
 namespace codi {
 
   /**
-   * @brief Vector defintion for the ChunkIndexTape.
+   * @brief Vector definition for the ChunkIndexTape.
    *
    * The structure defines all vectors as chunk vectors.
    *
@@ -86,7 +87,7 @@ namespace codi {
   };
 
   /**
-   * @brief Vector defintion for the SimpleIndexTape.
+   * @brief Vector definition for the SimpleIndexTape.
    *
    * The structure defines all vectors as single chunk vectors.
    *
@@ -228,7 +229,7 @@ namespace codi {
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
           indexHandler.copyIndex(lhsIndex, rhs.getGradientData());
 
-          if(IndexHandler::AssignNeedsStatment) {
+          if(IndexHandler::AssignNeedsStatement) {
             stmtVector.reserveItems(1);
             jacobiVector.reserveItems(1);
             jacobiVector.setDataAndMove(1.0, rhs.getGradientData());

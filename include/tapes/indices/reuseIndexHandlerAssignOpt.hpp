@@ -38,10 +38,14 @@
 namespace codi {
 
   /**
-   * @brief Handles the indices that can be used and reused.
+   * @brief Handles the indices that can be used and reused and counts the use of indices.
    *
    * New indices are generated if required. All the freed indices are stored in a list
    * and are reused when indices are needed.
+   *
+   * There is also a count for the indices that stores how often an index is used by a variable.
+   * Therefor a tape that uses this handler does not need to write a statement if an assign operation
+   * is evaluated.
    *
    * @tparam Index  The type for the handled indices.
    */
@@ -55,14 +59,15 @@ namespace codi {
 
 
       /**
-       * @brief Defines for the tapes if the need to write an assign statement after the index is copied.
+       * @brief If it is required to write an assign statement after the index is copied.
        */
-      const static bool AssignNeedsStatment = false;
+      const static bool AssignNeedsStatement = false;
 
     private:
 
       /** @brief The maximum index that was used over the whole process */
       Index globalMaximumIndex;
+
       /**
        * @brief The maximum index that is currently used.
        *
@@ -76,9 +81,17 @@ namespace codi {
        */
       std::vector<Index> freeIndices;
 
-      size_t chunkIncrement;
-      Index* indexUse;
-      size_t indexUseSize;
+      /**
+       * @brief The vector that count for the indices how often they are used.
+       */
+      std::vector<Index> indexUse;
+
+      /**
+       * @brief The size increment for the index use vector.
+       *
+       * The size of the vector is incremented every time when the maximum global index does no longer fit in the vector.
+       */
+      size_t indexUseSizeIncrement;
 
     public:
 
@@ -89,9 +102,8 @@ namespace codi {
         globalMaximumIndex(0),
         currentMaximumIndex(0),
         freeIndices(),
-        chunkIncrement(DefaultChunkSize),
-        indexUse(NULL),
-        indexUseSize(0){}
+        indexUseSizeIncrement(DefaultSmallChunkSize),
+        indexUse(DefaultSmallChunkSize){}
 
       /**
        * @brief Free the index that is given to the method.
@@ -106,7 +118,7 @@ namespace codi {
         if(0 != index) { // do not free the zero index
           indexUse[index] -= 1;
 
-          if(indexUse[index] == 0) { // only free the index if it not used anylonger
+          if(indexUse[index] == 0) { // only free the index if it not used any longer
             if(currentMaximumIndex == index) {
               // freed index is the maximum one so we can decrease the count
               --currentMaximumIndex;
@@ -144,12 +156,11 @@ namespace codi {
       }
 
       /**
-       * @brief Check if the index is active if not a new index is generated.
+       * @brief Check if the index is active and if it is only used by this instance if not a new index is generated.
        *
        * @param[inout] index The current value of the index. If 0 then a new index is generated.
        */
       inline void assignIndex(Index& index) {
-        //TODO: merge the if statemetns
         if(0 == index) {
           index = this->createIndex();
         } else if(indexUse[index] > 1) {
@@ -170,7 +181,7 @@ namespace codi {
       }
 
       /**
-       * @brief Placeholder for further developments.
+       * @brief Not needed by this manager.
        */
       inline void reset() const {
         /* do nothing */
@@ -218,11 +229,12 @@ namespace codi {
        * Writes the
        *   maximum number of live indices,
        *   the current number of lives indices,
-       *   the indices that are stored and
-       *   the memory for the allocated indices.
+       *   the indices that are stored,
+       *   the memory for the allocated indices and
+       *   the memory for the index use vector.
        *
        * @param[in,out] out  The information is written to the stream.
-       * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+       * @param[in]     hLine  The horizontal line that separates the sections of the output.
        *
        * @tparam Stream The type of the stream.
        */
@@ -233,7 +245,7 @@ namespace codi {
         size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();
 
         double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * BYTE_TO_MB;
-        double memoryIndexUse         = (double)this->indexUseSize*(double)(sizeof(Index)) * BYTE_TO_MB;
+        double memoryIndexUse         = (double)this->indexUse.size()*(double)(sizeof(Index)) * BYTE_TO_MB;
         double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
 
         out << hLine
@@ -265,11 +277,9 @@ namespace codi {
        * increment defined in the constructor.
        */
       inline void checkIndexUseSize() {
-        if(indexUseSize <= globalMaximumIndex) {
-          indexUseSize += chunkIncrement;
+        if(indexUse.size() <= globalMaximumIndex) {
+          this->indexUse.resize(indexUse.size() + indexUseSizeIncrement);
         }
-
-        this->indexUse = (Index*)realloc(this->indexUse, sizeof(Index) * indexUseSize);
       }
   };
 }

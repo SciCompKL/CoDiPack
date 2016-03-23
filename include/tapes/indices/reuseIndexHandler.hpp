@@ -53,9 +53,9 @@ namespace codi {
 
 
       /**
-       * @brief Defines for the tapes if the need to write an assign statement after the index is copied.
+       * @brief If it is required to write an assign statement after the index is copied.
        */
-      const static bool AssignNeedsStatment = true;
+      const static bool AssignNeedsStatement = true;
 
     private:
 
@@ -147,7 +147,7 @@ namespace codi {
       }
 
       /**
-       * @brief Placeholder for further developments.
+       * @brief Not needed by this index manager.
        */
       inline void reset() const {
         /* do nothing */
