@@ -81,6 +81,5 @@ void func(NUMBER* x, NUMBER* y) {
   checkpoint->addData(w.getGradientData());
   tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
 
-
   y[0] = w*w;
 }
