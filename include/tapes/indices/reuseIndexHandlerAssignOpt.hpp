@@ -102,8 +102,8 @@ namespace codi {
         globalMaximumIndex(0),
         currentMaximumIndex(0),
         freeIndices(),
-        indexUseSizeIncrement(DefaultSmallChunkSize),
-        indexUse(DefaultSmallChunkSize){}
+        indexUse(DefaultSmallChunkSize),
+        indexUseSizeIncrement(DefaultSmallChunkSize) {}
 
       /**
        * @brief Free the index that is given to the method.
@@ -277,7 +277,7 @@ namespace codi {
        * increment defined in the constructor.
        */
       inline void checkIndexUseSize() {
-        if(indexUse.size() <= globalMaximumIndex) {
+        if(indexUse.size() <= (size_t)globalMaximumIndex) {
           this->indexUse.resize(indexUse.size() + indexUseSizeIncrement);
         }
       }
