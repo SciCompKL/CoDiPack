@@ -58,8 +58,11 @@ namespace codi {
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
   struct ChunkTapeTypes {
+    /** @brief The type for the primal values. */
     typedef Real RealType;
+    /** @brief The handler for the indices. */
     typedef IndexHandler IndexHandlerType;
+    /** @brief The type for the adjoint values. */
     typedef GradientValue GradientValueType;
 
     /** @brief The data for each statement. */
@@ -80,6 +83,7 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    /** @brief The name of the tape as a string. */
     constexpr static const char* tapeName = "ChunkTape";
 
   };
@@ -122,6 +126,7 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    /** @brief The name of the tape as a string. */
     constexpr static const char* tapeName = "SimpleTape";
 
   };

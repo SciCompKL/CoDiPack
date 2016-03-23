@@ -301,6 +301,11 @@
       indexHandler.printStatistics(out, hLine);
     }
 
+    /**
+     * @brief Return the size of the adjoint vector.
+     *
+     * @return The size of the adjoint vector.
+     */
     size_t getAdjointSize() {
       return indexHandler.getMaximumGlobalIndex();
     }

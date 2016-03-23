@@ -82,6 +82,7 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    /** @brief The name of the tape as a string. */
     constexpr static const char* tapeName = "ChunkIndexTape";
 
   };
@@ -124,6 +125,7 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    /** @brief The name of the tape as a string. */
     constexpr static const char* tapeName = "SimpleIndexTape";
 
   };

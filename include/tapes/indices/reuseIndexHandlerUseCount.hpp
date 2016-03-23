@@ -170,6 +170,15 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Copies the index from rhs to lhs.
+       *
+       * The lhs index is freed and then the use of the rhs index
+       * is incremented by one.
+       *
+       * @param[inout] lhs  The index of the lhs. It is overwritten with the index of the rhs.
+       * @param[in]    rhs  The index of the rhs.
+       */
       inline void copyIndex(Index& lhs, const Index& rhs) {
         freeIndex(lhs);
 

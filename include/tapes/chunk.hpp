@@ -168,8 +168,8 @@ namespace codi {
 
     /**
      * @brief Returns a pointer to the data array at the given position.
-     * @param index       The index in the data array.
-     * @param dataPointer Pointer that is set to the internal data pointer.
+     * @param   index  The index in the data array.
+     * @param pointer  Pointer that is set to the internal data pointer.
      */
     inline void dataPointer(const size_t& index, Data* &pointer) {
       codiAssert(index <= ChunkInterface::size);

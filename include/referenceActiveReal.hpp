@@ -219,6 +219,11 @@ namespace codi {
     }
   };
 
+  /**
+   * @brief Specialization of the ExpressionTraits for the ReferenceActiveReal type.
+   *
+   * @tparam ActiveType  The active type which is stored in this reference object.
+   */
   template<typename ActiveType>
   struct ExpressionTraits<ReferenceActiveReal<ActiveType> >  {
     /**

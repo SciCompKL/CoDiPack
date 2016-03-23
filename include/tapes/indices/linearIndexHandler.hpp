@@ -149,6 +149,7 @@ namespace codi {
       /**
        * @ brief There are no statistics for this handler.
        * @param[in,out] out  The information is written to the stream.
+       * @param[in]   hLine  The horizontal line that seperates the sections of the output.
        *
        * @tparam Stream The type of the stream.
        */
