@@ -32,8 +32,8 @@
 #include <tools/direction.hpp>
 
 const size_t DIM = 5;
-typedef codi::Direction<double, DIM> Gradient;
-typedef codi::ActiveReal<codi::JacobiTape<codi::ChunkTapeTypes<double, codi::LinearIndexHandler<int> , Gradient> > > NUMBER;
+typedef codi::RealReverseVec<DIM> NUMBER;
+typedef NUMBER::GradientValue Gradient;
 
 #include "../globalDefines.h"
 

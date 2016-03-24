@@ -36,6 +36,10 @@ The file `codi.hpp` defines the datatypes:
    - codi::RealReverseIndexFloat
    - codi::RealReverseUncheckedFloat
    - codi::RealReverseIndexUncheckedFloat
+ - Vector versions of the above AD types:
+   - codi::RealForwardVec<dim>
+   - codi::RealReverseVec<dim>
+   - codi::RealReverseIndexVec<dim>
 
 The reverse types support various use cases. The regular type codi::RealReverse is the most used type and provides
 the most common use case. This type can be used in c-like memory operation like memset and memcpy.
@@ -43,6 +47,8 @@ The 'Index' variant of the reverse type uses an indexing sheme that reuses freed
 reduces the amout of memory that is needed. This type is no longer compatible with c-like memory operations.
 The 'Unchecked' variant is also an implementation of the reverse mode of AD but it should only be used by experienced users. This type performs no bounds checking for the memory access.
 For each type there is also a type with single precession e.g. codi::RealForwardFloat.
+The 'Vec' variant implements the vector mode of the corresponding AD type.
+The dimension is fixed and can be defined via the template argument.
 
 ## Hello World Example
 

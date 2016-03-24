@@ -7,3 +7,4 @@ The CoDiPack tutorials:
   - \subpage Tutorial3 "Tutorial 3": Computes the full Jacobi matrix of a function with the RealForward type.
   - \subpage Tutorial4 "Tutorial 4": Computes the full Jacobi matrix of a function with the RealReverse type.
   - \subpage Tutorial5 "Tutorial 5": ReferenceActiveReal demonstration
+  - \subpage Tutorial6 "Tutorial 6": Vector mode demonstration

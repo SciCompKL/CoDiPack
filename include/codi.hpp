@@ -37,6 +37,7 @@
 #include "tapes/indices/reuseIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandlerUseCount.hpp"
 #include "tools/dataStore.hpp"
+#include "tools/direction.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -65,6 +66,18 @@ namespace codi {
    * \endcode
    */
   typedef ActiveReal<ForwardEvaluation<double> > RealForward;
+
+  /**
+   * @brief Vector mode of the #RealForward type.
+   *
+   * The type of the direction can be accessed with RealForwardVec<dim>::GradientValue<br>
+   *
+   * See @ref Tutorial6 for details.
+   *
+   * @tparam dim  The fixed dimension of the vector.
+   */
+  template<size_t dim>
+  using RealForwardVec = ActiveReal<ForwardEvaluation<double, Direction<double, dim> > >;
 
   /**
    * @brief The default forward type in CoDiPack with float as the real value type.
@@ -104,6 +117,19 @@ namespace codi {
    * \endcode
    */
   typedef ActiveReal<JacobiTape<ChunkTapeTypes<double, LinearIndexHandler<int> > > > RealReverse;
+
+  /**
+   * @brief Vector mode of the #RealReverse type.
+   *
+   * The type of the direction can be accessed with RealReverseVec<dim>::GradientValue<br>
+   *
+   * See @ref Tutorial6 for details.
+   *
+   * @tparam dim  The fixed dimension of the vector.
+   */
+  template<size_t dim>
+  using RealReverseVec = ActiveReal<JacobiTape<ChunkTapeTypes<double, LinearIndexHandler<int>, Direction<double, dim> > > >;
+
 
   /**
    * @brief The default reverse type in CoDiPack with float as the real value type.
@@ -167,6 +193,18 @@ namespace codi {
    *
    */
   typedef ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReverseIndex;
+
+  /**
+   * @brief Vector mode of the #RealReverseIndex type.
+   *
+   * The type of the direction can be accessed with RealReverseIndexVec<dim>::GradientValue<br>
+   *
+   * See @ref Tutorial6 for details.
+   *
+   * @tparam dim  The fixed dimension of the vector.
+   */
+  template<size_t dim>
+  using RealReverseIndexVec = ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<double, ReuseIndexHandlerUseCount<int>, Direction<double, dim> > > >;
 
   /**
    * @brief The reverse type in CoDiPack with float as the real value type and an index reuse tape.

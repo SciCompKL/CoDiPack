@@ -50,7 +50,7 @@ namespace codi {
    * \endcode
    * then only one argument is stored instead of two.
    *
-   * For a more detailed explanation see #Tutorial5
+   * For a more detailed explanation see @ref Tutorial5
    *
    * @tparam ActiveType  The type that is referenced in this structure.
    */
