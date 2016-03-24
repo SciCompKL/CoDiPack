@@ -15,7 +15,7 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
-FLAGS = -Wall -pedantic -std=gnu++0x -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true
+FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true
 
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
