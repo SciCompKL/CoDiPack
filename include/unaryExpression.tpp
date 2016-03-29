@@ -135,10 +135,10 @@ struct OP : public Expression<Real, OP<Real, A> > {
     a_.pushLazyJacobies(data);
   }
 
-  /** 
-   * @brief Return the numerical value of the expression. 
+  /**
+   * @brief Return the numerical value of the expression.
    *
-   * @return The value of the expression. 
+   * @return The value of the expression.
    */
   inline const Real& getValue() const {
     return result_;
@@ -160,8 +160,14 @@ struct OP : public Expression<Real, OP<Real, A> > {
     A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
   }
 
-  inline void pushPassive(const PassiveReal& passive) const {
-    a_.pushPassive(passive);
+  template<typename Data>
+  inline void pushPassive(Data data) const {
+    a_.pushPassive(data);
+  }
+
+  template<typename Data>
+  inline void pushIndices(Data data) const {
+    a_.pushIndices(data);
   }
 };
 

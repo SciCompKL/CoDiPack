@@ -214,8 +214,16 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
             (bJac, indices, passiveValues, primalValues, adjointValues);
     }
 
-    inline void pushPassive(const PassiveReal& passive) const {
-      a_.pushPassive(passive);
+    template<typename Data>
+    inline void pushPassive(Data data) const {
+      a_.pushPassive(data);
+      b_.pushPassive(data);
+    }
+
+    template<typename Data>
+    inline void pushIndices(Data data) const {
+      a_.pushIndices(data);
+      b_.pushIndices(data);
     }
 };
 
@@ -263,7 +271,6 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     template<typename Data>
     inline void calcGradient(Data& data) const {
       DERIVATIVE_FUNC_10(data, a_, b_, getValue());
-      a_.pushPassive(b_);
     }
 
     /**
@@ -279,7 +286,6 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     template<typename Data>
     inline void calcGradient(Data& data, const Real& multiplier) const {
       DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
-      a_.pushPassive(b_);
     }
 
     template<typename Data>
@@ -314,8 +320,15 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
     }
 
-    inline void pushPassive(const PassiveReal& passive) const {
-      a_.pushPassive(passive);
+    template<typename Data>
+    inline void pushPassive(Data data) const {
+      a_.pushPassive(data);
+      data->pushPassive(b_);
+    }
+
+    template<typename Data>
+    inline void pushIndices(Data data) const {
+      a_.pushIndices(data);
     }
 };
 
@@ -362,7 +375,6 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      */
     template<typename Data>
     inline void calcGradient(Data& data) const {
-      b_.pushPassive(a_);
       DERIVATIVE_FUNC_01(data, a_, b_, getValue());
     }
 
@@ -378,7 +390,6 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      */
     template<typename Data>
     inline void calcGradient(Data& data, const Real& multiplier) const {
-      b_.pushPassive(a_);
       DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
     }
 
@@ -414,8 +425,15 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
       B::template evalAdjointOffset<IndexType, offset, passiveOffset + 1>(bJac, indices, passiveValues, primalValues, adjointValues);
     }
 
-    inline void pushPassive(const PassiveReal& passive) const {
-      b_.pushPassive(passive);
+    template<typename Data>
+    inline void pushPassive(Data data) const {
+      data->pushPassive(a_);
+      b_.pushPassive(data);
+    }
+
+    template<typename Data>
+    inline void pushIndices(Data data) const {
+      b_.pushIndices(data);
     }
 };
 

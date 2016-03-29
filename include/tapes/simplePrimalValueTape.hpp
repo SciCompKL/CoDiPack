@@ -224,7 +224,8 @@ namespace codi {
         size_t passiveDataSize = passiveData.getUsedSize();
         CODI_UNUSED(dataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
         CODI_UNUSED(passiveDataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
-        rhs.calcGradient(passiveDataHelper);
+        rhs.pushIndices(this);
+        rhs.pushPassive(this);
         codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
         codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
         codiAssert(statements.getUsedSize() < statements.size);
@@ -302,18 +303,9 @@ namespace codi {
       passiveData.setDataAndMove(value);
     }
 
-    /**
-     * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
-     *
-     * @param[in] gradient Not used in this implementation.
-     * @param[in]    value Not used in this implementation.
-     * @param[in]    index Used to check if the variable is active.
-     */
-    template<typename Data>
-    inline void pushJacobi(Data& passiveDataHelper, const Real& value, const IndexType& index) {
-      CODI_UNUSED(value);
-
+    inline void pushIndices(const Real& value, const IndexType& index) {
       codiAssert(data.getUsedSize() < data.size);
+
       if(0 == index) {
         codiAssert(statements.getUsedSize() < statements.size);
         // create temporary index
@@ -329,6 +321,22 @@ namespace codi {
     }
 
     /**
+     * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
+     *
+     * @param[in] gradient Not used in this implementation.
+     * @param[in]    value Not used in this implementation.
+     * @param[in]    index Used to check if the variable is active.
+     */
+    template<typename Data>
+    inline void pushJacobi(Data& passiveDataHelper, const Real& value, const IndexType& index) {
+      CODI_UNUSED(passiveDataHelper);
+      CODI_UNUSED(value);
+      CODI_UNUSED(index);
+
+      codiAssert(false || "Should not be called.");
+    }
+
+    /**
      * @brief Stores the jacobi on the tape if the index is active.
      *
      * @param[in] gradient Not used in this implementation.
@@ -338,22 +346,12 @@ namespace codi {
      */
     template<typename Data>
     inline void pushJacobi(Data& passiveDataHelper, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(value);
+      CODI_UNUSED(passiveDataHelper);
       CODI_UNUSED(jacobi);
+      CODI_UNUSED(value);
+      CODI_UNUSED(index);
 
-      codiAssert(data.getUsedSize() < data.size);
-      if(0 == index) {
-        codiAssert(statements.getUsedSize() < statements.size);
-        // create temporary index
-        statements.setDataAndMove(&InputHandle);
-        IndexType tempIndex = statements.getUsedSize();
-        primalAdjointValues.data1[tempIndex] = value;
-        data.setDataAndMove(tempIndex);
-
-        passiveDataHelper.push(index);
-      } else {
-        data.setDataAndMove(index);
-      }
+      codiAssert(false || "Should not be called.");
     }
 
     /**

@@ -227,8 +227,14 @@ namespace codi {
       CODI_UNUSED(data);
     }
 
-    inline void pushPassive(const PassiveReal& passive) const {
-      globalTape.pushPassive(passive);
+    template<typename Data>
+    inline void pushPassive(Data data) const {
+      CODI_UNUSED(data);
+    }
+
+    template<typename Data>
+    inline void pushIndices(Data& data) const {
+      data->pushIndices(primalValue, gradientData);
     }
 
     /**
