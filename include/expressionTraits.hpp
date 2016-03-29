@@ -46,7 +46,6 @@ namespace codi {
     private:
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
     public:
-      //typedef void (*StatementFuncPointer)(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues);
       typedef void (*StatementFuncPointer)(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues);
 
       const StatementFuncPointer adjointFunc;
@@ -69,8 +68,6 @@ namespace codi {
       }
   };
 
-//  template<typename AdjointData, typename Real, typename IndexType, typename Expr, typename NewActiveType>
-//  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr, NewActiveType>::handle(Expr::template evalAdjoint2<AdjointData, IndexType, NewActiveType, IndexType>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
   template<typename AdjointData, typename Real, typename IndexType, typename Expr, typename NewActiveType>
   const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr, NewActiveType>::handle(Expr::template evalAdjoint<IndexType>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
 

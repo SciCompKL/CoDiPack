@@ -145,17 +145,16 @@ namespace codi {
       globalTape.initGradientData(this->primalValue, gradientData);
     }
 
-//    /**
-//     * @brief Sets the primal value of this ActiveReal and sets the gradient after it was initialized.
-//     *
-//     * @param[in]    value  The primal value for this type.
-//     * @param[in] gradient  The gradient value for this type.
-//     */
-//    inline ActiveReal(const Real& value, const Real& gradient) : primalValue(value) {
-//      globalTape.initGradientData(this->primalValue, gradientData);
-//      globalTape.setGradient(gradientData, gradient);
-//    }
-    inline ActiveReal(const Real& value, const GradientData& gradient) : primalValue(value), gradientData(gradient) {}
+    /**
+     * @brief Sets the primal value of this ActiveReal and sets the gradient after it was initialized.
+     *
+     * @param[in]    value  The primal value for this type.
+     * @param[in] gradient  The gradient value for this type.
+     */
+    inline ActiveReal(const Real& value, const Real& gradient) : primalValue(value) {
+      globalTape.initGradientData(this->primalValue, gradientData);
+      globalTape.setGradient(gradientData, gradient);
+    }
 
     /**
      * @brief Forwards the evaluation of the expression to the tape.
@@ -480,11 +479,6 @@ namespace codi {
       return primalValues[indices[offset]];
     }
 
-    template<typename IndexType>
-    static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
-      evalAdjointOffset<IndexType, 0, 0>(seed, indices, passiveValues, primalValues, adjointValues);
-    }
-
     template<typename IndexType, size_t offset, size_t passiveOffset> \
     static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       CODI_UNUSED(passiveValues);
@@ -493,12 +487,6 @@ namespace codi {
       ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(seed)) {
         adjointValues[indices[offset]] += seed;
       }
-    }
-
-    template<typename NewActiveType, typename NewGradientData, size_t activeOffset, size_t passiveOffset>
-    static inline NewActiveType exchangeActiveType(const Real* primalValues, const NewGradientData* gradientData, const PassiveReal* passiveValues) {
-      CODI_UNUSED(passiveValues);
-      return NewActiveType (primalValues[gradientData[activeOffset]], gradientData[activeOffset]);
     }
   };
 
