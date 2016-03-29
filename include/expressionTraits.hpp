@@ -49,12 +49,12 @@ namespace codi {
       typedef void (*StatementFuncPointer)(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues);
 
       const StatementFuncPointer adjointFunc;
-      const size_t maxAcitveVariables;
+      const size_t maxActiveVariables;
       const size_t maxPassiveVariables;
 
-      ExpressionHandle(const StatementFuncPointer adjointFunc, const size_t maxAcitveVariables, const size_t maxPassiveVariables) :
+      ExpressionHandle(const StatementFuncPointer adjointFunc, const size_t maxActiveVariables, const size_t maxPassiveVariables) :
         adjointFunc(adjointFunc),
-        maxAcitveVariables(maxAcitveVariables),
+        maxActiveVariables(maxActiveVariables),
         maxPassiveVariables(maxPassiveVariables) {}
   };
 

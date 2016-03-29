@@ -487,7 +487,7 @@ namespace codi {
         const Real& adj = primalAdjointValues.data2[curPos.stmt];
         --curPos.stmt;
         const ExpressionHandle<Real*, Real, IndexType>* exprHandle = statements.data[curPos.stmt];
-        curPos.data -= exprHandle->maxAcitveVariables;
+        curPos.data -= exprHandle->maxActiveVariables;
         curPos.passiveData -= exprHandle->maxPassiveVariables;
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
 
