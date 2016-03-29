@@ -33,7 +33,7 @@
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/jacobiTape.hpp"
 #include "tapes/jacobiIndexTape.hpp"
-#include "tapes/simplePrimalValueTape.hpp"
+#include "tapes/primalValueTape.hpp"
 #include "tapes/indices/linearIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandlerAssignOpt.hpp"

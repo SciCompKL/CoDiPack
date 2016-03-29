@@ -35,6 +35,7 @@
 #include "../activeReal.hpp"
 #include "../expressionHandle.hpp"
 #include "chunk.hpp"
+#include "indices/linearIndexHandler.hpp"
 #include "reverseTapeInterface.hpp"
 
 namespace codi {
@@ -63,6 +64,12 @@ namespace codi {
       data(data),
       passiveData(passiveData),
       extFunc(extFunc) {}
+
+    SimplePrimalValueTapePosition() :
+      stmt(0),
+      data(0),
+      passiveData(0),
+      extFunc(0) {}
   };
 
   template<typename IndexType, size_t n>
@@ -103,18 +110,29 @@ namespace codi {
   class SimplePrimalValueTape : public ReverseTapeInterface<RealType, IndexType, RealType, SimplePrimalValueTape<RealType, IndexType>, SimplePrimalValueTapePosition > {
   public:
 
+    /** @brief The type for the primal values. */
     typedef RealType Real;
+    /** @brief The type for the adjoint values. */
+    typedef Real GradientValue;
+    /** @brief The type for the index handler. */
+    typedef LinearIndexHandler<IndexType> IndexHandler;
 
-    /**
-     * @brief The type used to store the position of the tape.
-     */
-    typedef SimplePrimalValueTapePosition Position;
+    /** @brief The type for the indices that are used for the identification of the adjoint variables. */
+    //typedef typename IndexHandler::IndexType IndexType;
+    /** @brief The gradient data is just the index type. */
+    typedef IndexType GradientData;
 
-  private:
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    #define TAPE_NAME SimplePrimalValueTape
+
+    #define POSITION_TYPE SimplePrimalValueTapePosition
+    #define INDEX_HANDLER_TYPE IndexHandler
+    #define RESET_FUNCTION_NAME resetInt
+    #define EVALUATE_FUNCTION_NAME evaluateInt
+    #include "modules/tapeBaseModule.tpp"
+
     template<typename AdjointData>
-    //static void inputHandleFunc(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues) {}
     static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {}
     const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
 
@@ -126,12 +144,9 @@ namespace codi {
      */
     Chunk2<ExternalFunction, Position> externalFunctions;
 
-    Chunk2<Real, Real> primalAdjointValues;
-
-    /**
-     * @brief Determines if statements are recorded or ignored.
-     */
-    bool active;
+    Real* primals;
+    IndexType primalsSize;
+    IndexType primalsIncr;
 
     PassiveDataHelper<IndexType, 256> passiveDataHelper;
 
@@ -140,12 +155,52 @@ namespace codi {
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
     SimplePrimalValueTape() :
+      /* defined in tapeBaseModule */indexHandler(),
+      /* defined in tapeBaseModule */adjoints(NULL),
+      /* defined in tapeBaseModule */adjointsSize(0),
+      /* defined in tapeBaseModule */active(false),
       data(0),
       passiveData(0),
       statements(0),
       externalFunctions(0),
-      primalAdjointValues(1),
-      active(false){}
+      primals(NULL),
+      primalsSize(0),
+      primalsIncr(DefaultSmallChunkSize) {}
+
+    /**
+     * @brief Helper function: Sets the primal vector to a new size.
+     *
+     * @param[in] size The new size for the primal vector.
+     */
+    void resizePrimals(const IndexType& size) {
+      IndexType oldSize = primalsSize;
+      primalsSize = size;
+
+      primals = (Real*)realloc(adjoints, sizeof(Real) * (size_t)primalsSize);
+    }
+
+    inline void checkPrimalsSize() {
+      //if(primalsSize <= indexHandler.getMaximumGlobalIndex()) {
+      if(primalsSize <= statements.getUsedSize()) {
+        IndexType newSize = 1 + (statements.getUsedSize() + 1) / primalsIncr;
+        newSize = newSize * primalsIncr;
+        resizePrimals(newSize);
+      }
+    }
+
+    /**
+     * @brief Sets all adjoint/gradients to zero.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in] start  The starting position for the reset of the vector.
+     * @param[in]   end  The ending position for the reset of the vector.
+     */
+    inline void clearAdjoints(const Position& start, const Position& end){
+      for(IndexType i = end.stmt; i <= start.stmt; ++i) {
+        adjoints[i] = GradientValue();
+      }
+    }
 
     /**
      * @brief Set the size for the external functions.
@@ -195,7 +250,8 @@ namespace codi {
     void resize(const size_t& dataSize, const size_t& stmtSize) {
       data.resize(dataSize);
       statements.resize(stmtSize);
-      primalAdjointValues.resize(stmtSize + 1);
+
+      resizePrimals(stmtSize + 1);
     }
 
     /**
@@ -231,13 +287,14 @@ namespace codi {
         codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
         codiAssert(statements.getUsedSize() < statements.size);
         statements.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
-        primalAdjointValues.data1[statements.getUsedSize()] = rhs.getValue();
+        checkPrimalsSize();
+        primals[statements.getUsedSize()] = rhs.getValue();
         lhsIndex = statements.getUsedSize();
 
         // clear the generated temproal indices
         if(0 != passiveDataHelper.pos) {
           for(size_t i = 0; i < passiveDataHelper.pos; ++i) {
-            destroyGradientData(primalAdjointValues.data1[passiveDataHelper.indices[i]], passiveDataHelper.indices[i]);
+            destroyGradientData(primals[passiveDataHelper.indices[i]], passiveDataHelper.indices[i]);
           }
           passiveDataHelper.reset();
         }
@@ -289,8 +346,8 @@ namespace codi {
         statements.setDataAndMove(&InputHandle);
         lhsIndex = statements.getUsedSize();
 
-        codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
-        primalAdjointValues.data1[statements.getUsedSize()] = rhs;
+        checkPrimalsSize();
+        primals[statements.getUsedSize()] = rhs;
       } else {
         lhsIndex = 0;
       }
@@ -312,7 +369,8 @@ namespace codi {
         // create temporary index
         statements.setDataAndMove(&InputHandle);
         IndexType tempIndex = statements.getUsedSize();
-        primalAdjointValues.data1[tempIndex] = value;
+        checkPrimalsSize();
+        primals[tempIndex] = value;
         data.setDataAndMove(tempIndex);
 
         passiveDataHelper.push(index);
@@ -356,68 +414,6 @@ namespace codi {
     }
 
     /**
-     * @brief Set the index to zero.
-     * @param[in] value Not used in this implementation.
-     * @param[out] index The index of the active type.
-     */
-    inline void initGradientData(Real& value, IndexType& index) {
-      CODI_UNUSED(value);
-      index = 0;
-    }
-
-    /**
-     * @brief Does nothing.
-     * @param[in] value Not used in this implementation.
-     * @param[in] index Not used in this implementation.
-     */
-    inline void destroyGradientData(Real& value, IndexType& index) {
-      CODI_UNUSED(value);
-      CODI_UNUSED(index);
-      /* nothing to do */
-    }
-
-
-    /**
-     * @brief Set the gradient value of the corresponding index.
-     *
-     * If the index 0 is the inactive indicator and is ignored.
-     *
-     * @param[in]    index  The index of the active type.
-     * @param[in] gradient  The new value for the gradient.
-     */
-    void setGradient(IndexType& index, const Real& gradient) {
-      if(0 != index) {
-        this->gradient(index) = gradient;
-      }
-    }
-
-    /**
-     * @brief Get the gradient value of the corresponding index.
-     *
-     * @param[in] index The index of the active type.
-     * @return The gradient value corresponding to the given index.
-     */
-    inline Real getGradient(const IndexType& index) const {
-      codiAssert((size_t)index < statements.size);
-      return primalAdjointValues.data2[index];
-    }
-
-    /**
-     * @brief Get a reference to the gradient value of the corresponding index.
-     *
-     * An index of 0 will raise an assert exception.
-     *
-     * @param[in] index The index of the active type.
-     * @return The reference to the gradient data.
-     */
-    inline Real& gradient(IndexType& index) {
-      codiAssert((size_t)index < statements.size);
-      codiAssert(0 != index);
-
-      return primalAdjointValues.data2[index];
-    }
-
-    /**
      * @brief Get the current position of the tape.
      *
      * The position can be used to reset the tape to that position or to
@@ -433,15 +429,14 @@ namespace codi {
      *
      * @param[in] pos Reset the state of the tape to the given position.
      */
-    inline void reset(const Position& pos) {
+    inline void resetInt(const Position& pos) {
       codiAssert(pos.stmt < statements.size);
       codiAssert(pos.data < data.size);
       codiAssert(pos.passiveData < passiveData.size);
       codiAssert(pos.extFunc < externalFunctions.size);
 
-      for(size_t i = pos.stmt; i <= statements.getUsedSize(); ++i) {
-        primalAdjointValues.data1[i] = 0.0;
-        primalAdjointValues.data2[i] = 0.0;
+      for(size_t i = pos.stmt; i <= primalsSize; ++i) {
+        primals[i] = 0.0;
       }
 
       for(size_t i = pos.extFunc; i < externalFunctions.getUsedSize(); ++i) {
@@ -452,22 +447,6 @@ namespace codi {
       data.setUsedSize(pos.data);
       passiveData.setUsedSize(pos.passiveData);
       externalFunctions.setUsedSize(pos.extFunc);
-    }
-
-    /**
-     * @brief Reset the tape to its initial state.
-     */
-    inline void reset() {
-      reset(Position(0,0,0,0));
-    }
-
-    /**
-     * @brief Sets all adjoint/gradients to zero.
-     */
-    inline void clearAdjoints(){
-      for(size_t i = 0; i <= statements.getUsedSize(); ++i) {
-        primalAdjointValues.data2[i] = 0.0;
-      }
     }
 
   private:
@@ -483,7 +462,7 @@ namespace codi {
       Position curPos = start;
 
       while(curPos.stmt > end.stmt) {
-        const Real& adj = primalAdjointValues.data2[curPos.stmt];
+        const Real& adj = adjoints[curPos.stmt];
         --curPos.stmt;
         const ExpressionHandle<Real*, Real, IndexType>* exprHandle = statements.data[curPos.stmt];
         curPos.data -= exprHandle->maxActiveVariables;
@@ -492,8 +471,7 @@ namespace codi {
 
           const IndexType* indices = &data.data[curPos.data];
           const PassiveReal* passiveValues = &passiveData.data[curPos.passiveData];
-          //exprHandle->adjointFunc(primalAdjointValues.data2, adj, primalAdjointValues.data1, indices, passiveValues);
-          exprHandle->adjointFunc(adj, indices, passiveValues, primalAdjointValues.data1, primalAdjointValues.data2);
+          exprHandle->adjointFunc(adj, indices, passiveValues, primals, adjoints);
         }
       }
     }
@@ -507,7 +485,7 @@ namespace codi {
      * @param[in] start  The starting position for the adjoint evaluation.
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
-    inline void evaluate(const Position& start, const Position& end) {
+    inline void evaluateInt(const Position& start, const Position& end) {
       codiAssert(start.data >= end.data);
       codiAssert(start.stmt >= end.stmt);
       codiAssert(start.extFunc >= end.extFunc);
@@ -534,13 +512,6 @@ namespace codi {
     }
 
     /**
-     * @brief Perform the adjoint evaluation from the current position to the initial position.
-     */
-    inline void evaluate() {
-      evaluate(getPosition(), Position(0,0,0,0));
-    }
-
-    /**
      * @brief Register a variable as an active variable.
      *
      * The index of the variable is set to a non zero number.
@@ -552,8 +523,8 @@ namespace codi {
       statements.setDataAndMove(&InputHandle);
       value.getGradientData() = statements.getUsedSize();
 
-      codiAssert(primalAdjointValues.getUsedSize() < primalAdjointValues.size);
-      primalAdjointValues.data1[statements.getUsedSize()] = value.getValue();
+      checkPrimalsSize();
+      primals[statements.getUsedSize()] = value.getValue();
     }
 
     /**
@@ -563,34 +534,6 @@ namespace codi {
      */
     inline void registerOutput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
       value = 1.0 * value;
-    }
-
-    /**
-     * @brief Start recording.
-     */
-    inline void setActive(){
-      active = true;
-    }
-
-    /**
-     * @brief Stop recording.
-     */
-    inline void setPassive(){
-      active = false;
-    }
-
-    /**
-     * @brief Check if the tape is active.
-     * @return true if the tape is active.
-     */
-    inline bool isActive() const {
-      ENABLE_CHECK(OptTapeActivity, true) {
-        // default branch will return the tape activity
-        return active;
-      } else {
-        // if we do not check for the tape activity, the tape is always active
-        return true;
-      }
     }
 
     /**
@@ -639,9 +582,6 @@ namespace codi {
       double  memoryUsedStmts = (double)totalStmts*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
       double  memoryAllocStmts= (double)statements.getSize()*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
 
-      size_t nAdjoints      = statements.getUsedSize() + 1;
-      double memoryAdjoints = (double)nAdjoints * 2.0 * (double)sizeof(Real) * BYTE_TO_MB;
-
       size_t nChunksPassive  = 1;
       size_t totalPassive    =  passiveData.getUsedSize();
       double  memoryUsedPassive = (double)totalPassive*(double)(sizeof(PassiveReal))* BYTE_TO_MB;
@@ -649,14 +589,7 @@ namespace codi {
 
       out << hLine
           << "CoDi Tape Statistics ( simple primal value tape)\n";
-      out << hLine
-          << "Adjoint vector \n"
-          << hLine
-          << "  Number of Adjoints: " << std::setw(10) << nAdjoints << "\n"
-          << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
-                                      << std::setprecision(2)
-                                      << std::setw(10)
-                                      << memoryAdjoints << " MB" << "\n";
+      printTapeBaseStatistics(out, hLine);
       out << hLine
           << "Statements \n"
           << hLine
