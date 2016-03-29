@@ -64,45 +64,6 @@ namespace codi {
       extFunc(extFunc) {}
   };
 
-  template <typename Real, typename IndexType>
-  class ReverseEvaluationTapeHelper {
-    public:
-
-      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-
-      typedef IndexType GradientData;
-
-      ReverseEvaluationTapeHelper() {}
-
-      template<typename Data>
-      inline void pushJacobi(Data& adjointVec, const Real& jacobi, const Real& value, const IndexType& index) {
-        CODI_UNUSED(value);
-        CODI_UNUSED(jacobi);
-
-        codiAssert(0 != index); // passive values are currently not supported
-
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
-          adjointVec[index] += jacobi;
-        }
-      }
-
-      inline void pushPassive(const PassiveReal& value) {
-        CODI_UNUSED(value);
-      }
-
-      inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<ReverseEvaluationTapeHelper< Real, IndexType> >& rhs) {
-        lhsIndex = rhs.getGradientData();
-        lhsValue = rhs.getValue();
-      }
-
-
-      inline void destroyGradientData(Real& value, IndexType& index) {
-        CODI_UNUSED(value);
-        CODI_UNUSED(index);
-        /* nothing to do */
-      }
-  };
-
   template<typename IndexType, size_t n>
   struct PassiveDataHelper {
     size_t pos;
@@ -150,8 +111,6 @@ namespace codi {
 
   private:
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-
-    typedef ActiveReal<ReverseEvaluationTapeHelper<Real, IndexType> > ReverseEvalType;
 
     template<typename AdjointData>
     //static void inputHandleFunc(AdjointData& gradient, const Real& seed, const Real* primalValues, const IndexType* indices, const PassiveReal* passiveValues) {}
@@ -269,7 +228,7 @@ namespace codi {
         codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
         codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
         codiAssert(statements.getUsedSize() < statements.size);
-        statements.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs, ReverseEvalType>::getHandle());
+        statements.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
         primalAdjointValues.data1[statements.getUsedSize()] = rhs.getValue();
         lhsIndex = statements.getUsedSize();
 

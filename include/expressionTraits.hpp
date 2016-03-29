@@ -58,7 +58,7 @@ namespace codi {
         maxPassiveVariables(maxPassiveVariables) {}
   };
 
-  template<typename AdjointData, typename Real, typename IndexType, typename Expr, typename NewActiveType>
+  template<typename AdjointData, typename Real, typename IndexType, typename Expr>
   class ExpressionHandleStore {
     private:
       static const ExpressionHandle<AdjointData, Real, IndexType> handle;
@@ -68,8 +68,8 @@ namespace codi {
       }
   };
 
-  template<typename AdjointData, typename Real, typename IndexType, typename Expr, typename NewActiveType>
-  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr, NewActiveType>::handle(Expr::template evalAdjoint<IndexType>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
+  template<typename AdjointData, typename Real, typename IndexType, typename Expr>
+  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr>::handle(Expr::template evalAdjointOffset<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
 
   /**
    * @brief Information about the expression.
