@@ -24,9 +24,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
- *
- * Originally based on Adept 1.0 (http://www.met.rdg.ac.uk/clouds/adept/)
- * released under GPL 3.0 (Copyright (C) 2012-2013 Robin Hogan and the University of Reading).
  */
 
 #pragma once

@@ -41,36 +41,6 @@
  */
 namespace codi {
 
-  template<typename AdjointData, typename Real, typename IndexType>
-  class ExpressionHandle {
-    private:
-      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-    public:
-      typedef void (*StatementFuncPointer)(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues);
-
-      const StatementFuncPointer adjointFunc;
-      const size_t maxActiveVariables;
-      const size_t maxPassiveVariables;
-
-      ExpressionHandle(const StatementFuncPointer adjointFunc, const size_t maxActiveVariables, const size_t maxPassiveVariables) :
-        adjointFunc(adjointFunc),
-        maxActiveVariables(maxActiveVariables),
-        maxPassiveVariables(maxPassiveVariables) {}
-  };
-
-  template<typename AdjointData, typename Real, typename IndexType, typename Expr>
-  class ExpressionHandleStore {
-    private:
-      static const ExpressionHandle<AdjointData, Real, IndexType> handle;
-    public:
-      static const ExpressionHandle<AdjointData, Real, IndexType>* getHandle() {
-        return &handle;
-      }
-  };
-
-  template<typename AdjointData, typename Real, typename IndexType, typename Expr>
-  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr>::handle(Expr::template evalAdjointOffset<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
-
   /**
    * @brief Information about the expression.
    *

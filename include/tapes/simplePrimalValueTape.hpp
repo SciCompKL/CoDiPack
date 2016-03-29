@@ -33,6 +33,7 @@
 #include <tuple>
 
 #include "../activeReal.hpp"
+#include "../expressionHandle.hpp"
 #include "chunk.hpp"
 #include "reverseTapeInterface.hpp"
 
