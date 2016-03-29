@@ -209,10 +209,6 @@
       }
     }
 
-    inline void pushPassive(const PassiveReal& value) {
-      CODI_UNUSED(value);
-    }
-
     /**
      * @brief Prints statistics about the stored Jacobie entries.
      *
