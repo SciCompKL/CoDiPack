@@ -291,7 +291,7 @@
       double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
 
       out << hLine
-          << "Adjoint vector \n"
+          << "Adjoint vector\n"
           << hLine
           << "  Number of Adjoints: " << std::setw(10) << nAdjoints << "\n"
           << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
@@ -299,6 +299,10 @@
                                       << std::setw(10)
                                       << memoryAdjoints << " MB" << "\n";
       indexHandler.printStatistics(out, hLine);
+    }
+
+    size_t getAdjointSize() {
+      return indexHandler.getMaximumGlobalIndex();
     }
 
 #undef POSITION_TYPE

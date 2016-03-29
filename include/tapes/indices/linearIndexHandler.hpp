@@ -103,7 +103,7 @@ namespace codi {
        *
        * @param[out] index Will be set to a new index.
        */
-      inline void checkIndex(Index& index) {
+      inline void assignIndex(Index& index) {
         index = this->createIndex();
       }
 

@@ -151,14 +151,6 @@
     }
 
     /**
-     * @brief Return the number of used data entries.
-     * @return The number of used data entries.
-     */
-    size_t getUsedDataEntriesSize() const {
-      return jacobiVector.getDataSize();
-    }
-
-    /**
      * @brief Resize the jacobi data.
      *
      * Ensure that enough size is allocated such that dataSize number of items
@@ -235,25 +227,33 @@
     template<typename Stream>
     void printJacobiStatistics(Stream& out, const std::string hLine) const {
       size_t nChunksData  = jacobiVector.getNumChunks();
-      size_t totalData    = (nChunksData-1)*jacobiVector.getChunkSize()
-                             +jacobiVector.getChunkUsedData(nChunksData-1);
+      size_t totalData    = jacobiVector.getDataSize();
+
       double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
       double  memoryAllocData= (double)nChunksData*(double)jacobiVector.getChunkSize()
                                 *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
 
       out << hLine
-          << "Jacobi entries \n"
+          << "Jacobi entries\n"
           << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
           << "  Total Number:     " << std::setw(10) << totalData   << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocData << " MB" << "\n"
+          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
           << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                     << std::setprecision(2)
                                     << std::setw(10)
-                                    << memoryUsedData << " MB" << "\n";
+                                    << memoryUsedData << " MB" << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocData << " MB" << "\n";
+    }
+
+    /**
+     * @brief Return the number of used data entries.
+     * @return The number of used data entries.
+     */
+    size_t getUsedJacobiesSize() const {
+      return jacobiVector.getDataSize();
     }
 
 #undef CHILD_VECTOR_TYPE

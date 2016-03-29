@@ -37,8 +37,8 @@
 #include "chunk.hpp"
 #include "chunkVector.hpp"
 #include "externalFunctions.hpp"
-#include "singleChunkVector.hpp"
 #include "reverseTapeInterface.hpp"
+#include "singleChunkVector.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -97,8 +97,11 @@ namespace codi {
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
   struct SimpleTapeTypes {
+    /** @brief The type for the primal values. */
     typedef Real RealType;
+    /** @brief The handler for the indices. */
     typedef IndexHandler IndexHandlerType;
+    /** @brief The type for the adjoint values. */
     typedef GradientValue GradientValueType;
 
     /** @brief The data for each statement. */

@@ -253,7 +253,7 @@
 
 
       out << hLine
-          << "External functions  \n"
+          << "External functions\n"
           << hLine
           << "  Total Number:     " << std::setw(10) << nExternalFunc << "\n";
 
