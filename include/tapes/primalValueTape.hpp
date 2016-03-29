@@ -41,35 +41,54 @@
 namespace codi {
 
   /**
-   * @brief Position for the simple tape.
+   * @brief Vector defintion for the SimplePrimalValueTape.
+   *
+   * The structure defines all vectors as single chunk vectors.
+   *
+   * See PrimalValueTape for details.
+   *
+   * @tparam Real  The type for the primal values.
+   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
+   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
-  struct SimplePrimalValueTapePosition {
-    /** @brief The current statement recorded on the tape. */
-    size_t stmt;
-    /** @brief The current jacobi data recorded on the tape. */
-    size_t data;
-    /** @brief The current passive value data recorded on the tape. */
-    size_t passiveData;
-    /** @brief The current external function recorded on the tape. */
-    size_t extFunc;
+  template <typename Real, typename IndexHandler, typename GradientValue = Real>
+  struct SimplePrimaValuelTapeTypes {
+    /** @brief The type for the primal values. */
+    typedef Real RealType;
+    /** @brief The handler for the indices. */
+    typedef IndexHandler IndexHandlerType;
+    /** @brief The type for the adjoint values. */
+    typedef GradientValue GradientValueType;
 
-    /**
-     * @brief Simple constructor for convenience.
-     * @param[in]    stmt  The current statement recorded on the tape.
-     * @param[in]    data  The current jacobi recorded on the tape.
-     * @param[in] extFunc  The current external function recorded on the tape.
-     */
-    SimplePrimalValueTapePosition(const size_t& stmt, const size_t& data, const size_t& passiveData, const size_t& extFunc) :
-      stmt(stmt),
-      data(data),
-      passiveData(passiveData),
-      extFunc(extFunc) {}
+    typedef typename IndexHandler::IndexType IndexType;
 
-    SimplePrimalValueTapePosition() :
-      stmt(0),
-      data(0),
-      passiveData(0),
-      extFunc(0) {}
+    typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType;
+
+    /** @brief The data for each statement. */
+    typedef Chunk1<HandleType> StatementChunk;
+    /** @brief The chunk vector for the statement data. */
+    typedef SingleChunkVector<StatementChunk, IndexHandler> StatementVector;
+
+    /** @brief The data for the indices of each statement */
+    typedef Chunk1< typename IndexHandler::IndexType> IndexChunk;
+    /** @brief The chunk vector for the index data. */
+    typedef SingleChunkVector<IndexChunk, StatementVector> IndexVector;
+
+    /** @brief The data for the passive values of each statement */
+    typedef Chunk1< typename TypeTraits<Real>::PassiveReal> PassiveChunk;
+    /** @brief The chunk vector for the passive data. */
+    typedef SingleChunkVector<PassiveChunk, IndexVector> PassiveVector;
+
+    /** @brief The data for the external functions. */
+    typedef Chunk2<ExternalFunction,typename PassiveVector::Position> ExternalFunctionChunk;
+    /** @brief The chunk vector for the external  function data. */
+    typedef SingleChunkVector<ExternalFunctionChunk, PassiveVector> ExternalFunctionVector;
+
+    /** @brief The position for all the different data vectors. */
+    typedef typename ExternalFunctionVector::Position Position;
+
+    constexpr static const char* tapeName = "SimplePrimalValueTape";
+
   };
 
   template<typename IndexType, size_t n>
@@ -106,43 +125,54 @@ namespace codi {
    * @tparam      Real  The floating point type used in the ActiveReal.
    * @tparam IndexType  The type for the indexing of the adjoint variables.
    */
-  template <typename RealType, typename IndexType>
-  class SimplePrimalValueTape : public ReverseTapeInterface<RealType, IndexType, RealType, SimplePrimalValueTape<RealType, IndexType>, SimplePrimalValueTapePosition > {
+  template <typename TapeTypes>
+  class PrimalValueTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, PrimalValueTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
     /** @brief The type for the primal values. */
-    typedef RealType Real;
+    typedef typename TapeTypes::RealType Real;
     /** @brief The type for the adjoint values. */
-    typedef Real GradientValue;
+    typedef typename TapeTypes::GradientValueType GradientValue;
     /** @brief The type for the index handler. */
-    typedef LinearIndexHandler<IndexType> IndexHandler;
+    typedef typename TapeTypes::IndexHandlerType IndexHandler;
 
     /** @brief The type for the indices that are used for the identification of the adjoint variables. */
-    //typedef typename IndexHandler::IndexType IndexType;
+    typedef typename TapeTypes::IndexType IndexType;
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+    typedef typename TapeTypes::HandleType Handle;
 
-    #define TAPE_NAME SimplePrimalValueTape
+    typedef typename TapeTypes::PassiveVector PassiveVector;
+    typedef typename TapeTypes::IndexVector IndexVector;
+    typedef typename TapeTypes::StatementVector StatementVector;
 
-    #define POSITION_TYPE SimplePrimalValueTapePosition
+    typedef typename TapeTypes::PassiveVector::Position PassivePosition;
+    typedef typename TapeTypes::IndexVector::Position IndexPosition;
+    typedef typename TapeTypes::StatementVector::Position StmtPosition;
+
+    #define TAPE_NAME PrimalValueTape
+
+    #define POSITION_TYPE typename TapeTypes::Position
     #define INDEX_HANDLER_TYPE IndexHandler
     #define RESET_FUNCTION_NAME resetInt
-    #define EVALUATE_FUNCTION_NAME evaluateInt
+    #define EVALUATE_FUNCTION_NAME evaluateExtFunc
     #include "modules/tapeBaseModule.tpp"
 
-    template<typename AdjointData>
+    typename TapeTypes::StatementVector stmtVector;
+    typename TapeTypes::IndexVector indexVector;
+    typename TapeTypes::PassiveVector passiveVector;
+
+    #define CHILD_VECTOR_TYPE PassiveVector
+    #define CHILD_VECTOR_NAME passiveVector
+    #define VECTOR_TYPE typename TapeTypes::ExternalFunctionVector
+    #include "modules/externalFunctionsModule.tpp"
+
+    #undef TAPE_NAME
+
     static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {}
     const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
-
-    Chunk1<IndexType> data;
-    Chunk1<PassiveReal> passiveData;
-    Chunk1<const ExpressionHandle<Real*, Real, IndexType>* > statements;
-    /**
-     * @brief The external function data and the position where the external function has been inserted.
-     */
-    Chunk2<ExternalFunction, Position> externalFunctions;
 
     Real* primals;
     IndexType primalsSize;
@@ -154,18 +184,18 @@ namespace codi {
     /**
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
-    SimplePrimalValueTape() :
+    PrimalValueTape() :
       /* defined in tapeBaseModule */indexHandler(),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
-      data(0),
-      passiveData(0),
-      statements(0),
-      externalFunctions(0),
+      stmtVector(DefaultChunkSize, indexHandler),
+      indexVector(DefaultChunkSize, stmtVector),
+      passiveVector(DefaultChunkSize, indexVector),
+      /* defined in externalFunctionsModule */extFuncVector(1000, passiveVector),
       primals(NULL),
       primalsSize(0),
-      primalsIncr(DefaultSmallChunkSize) {}
+      primalsIncr(DefaultSmallChunkSize){}
 
     /**
      * @brief Helper function: Sets the primal vector to a new size.
@@ -180,9 +210,8 @@ namespace codi {
     }
 
     inline void checkPrimalsSize() {
-      //if(primalsSize <= indexHandler.getMaximumGlobalIndex()) {
-      if(primalsSize <= statements.getUsedSize()) {
-        IndexType newSize = 1 + (statements.getUsedSize() + 1) / primalsIncr;
+      if(primalsSize <= indexHandler.getMaximumGlobalIndex()) {
+        IndexType newSize = 1 + (indexHandler.getMaximumGlobalIndex() + 1) / primalsIncr;
         newSize = newSize * primalsIncr;
         resizePrimals(newSize);
       }
@@ -197,49 +226,13 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = end.stmt; i <= start.stmt; ++i) {
+      for(IndexType i = end.inner.inner.inner.inner; i <= start.inner.inner.inner.inner; ++i) {
         adjoints[i] = GradientValue();
       }
     }
 
-    /**
-     * @brief Set the size for the external functions.
-     *
-     * The method is called this way in order to be compatible with the ChunkTape. It sets the
-     * total size of the external functions.
-     *
-     * @param[in] extChunkSize The new size of
-     */
-    void setExternalFunctionChunkSize(const size_t& extChunkSize) {
-      externalFunctions.resize(extChunkSize);
-    }
-
     void setPassiveDataSize(const size_t& passiveDataSize) {
-      passiveData.resize(passiveDataSize);
-    }
-
-    /**
-     * @brief Return the number of used statements.
-     * @return The number of used statements.
-     */
-    size_t getUsedStatementsSize() {
-      return statements.getUsedSize();
-    }
-
-    /**
-     * @brief Return the number of used data entries.
-     * @return The number of used data entries.
-     */
-    size_t getUsedDataEntriesSize() {
-      return data.getUsedSize();
-    }
-
-    /**
-     * @brief Return the number of passive data entries.
-     * @return The number of passive data entries.
-     */
-    size_t getUsedPassiveDataSize() {
-      return passiveData.getUsedSize();
+      passiveVector.resize(passiveDataSize);
     }
 
     /**
@@ -248,8 +241,8 @@ namespace codi {
      * @param[in] stmtSize  The new size of the statement vector.
      */
     void resize(const size_t& dataSize, const size_t& stmtSize) {
-      data.resize(dataSize);
-      statements.resize(stmtSize);
+      indexVector.resize(dataSize);
+      stmtVector.resize(stmtSize);
 
       resizePrimals(stmtSize + 1);
     }
@@ -275,23 +268,26 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
 
       ENABLE_CHECK(OptTapeActivity, active){
-        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables <= data.getUnusedSize());
-        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables <= passiveData.getUnusedSize());
-        size_t dataSize = data.getUsedSize();
-        size_t passiveDataSize = passiveData.getUsedSize();
-        CODI_UNUSED(dataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
-        CODI_UNUSED(passiveDataSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+        indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
+        size_t indexSize = indexVector.getChunkPosition();
+        CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
         rhs.pushIndices(this);
-        rhs.pushPassive(this);
-        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == data.getUsedSize() - dataSize);
-        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveData.getUsedSize() - passiveDataSize);
-        codiAssert(statements.getUsedSize() < statements.size);
-        statements.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
-        checkPrimalsSize();
-        primals[statements.getUsedSize()] = rhs.getValue();
-        lhsIndex = statements.getUsedSize();
+        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
 
-        // clear the generated temproal indices
+        passiveVector.reserveItems(ExpressionTraits<Rhs>::maxPassiveVariables);
+        size_t passiveSize = passiveVector.getChunkPosition();
+        CODI_UNUSED(passiveSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+        rhs.pushPassive(this);
+        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveVector.getChunkPosition() - passiveSize);
+
+        stmtVector.reserveItems(1);
+        stmtVector.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
+        indexHandler.assignIndex(lhsIndex);
+
+        checkPrimalsSize();
+        primals[lhsIndex] = rhs.getValue();
+
+        // clear the generated temporal indices
         if(0 != passiveDataHelper.pos) {
           for(size_t i = 0; i < passiveDataHelper.pos; ++i) {
             destroyGradientData(primals[passiveDataHelper.indices[i]], passiveDataHelper.indices[i]);
@@ -318,7 +314,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<SimplePrimalValueTape<Real, IndexType> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<PrimalValueTape<TapeTypes> >& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       } else {
@@ -341,41 +337,42 @@ namespace codi {
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
-        codiAssert(statements.getUsedSize() < statements.size);
-
-        statements.setDataAndMove(&InputHandle);
-        lhsIndex = statements.getUsedSize();
+        // the default behaviour is to activate passive assignments in order to have less passive values
+        // in the store for expression routines
+        stmtVector.reserveItems(1);
+        stmtVector.setDataAndMove(&InputHandle);
+        indexHandler.assignIndex(lhsIndex);
 
         checkPrimalsSize();
-        primals[statements.getUsedSize()] = rhs;
+        primals[lhsIndex] = rhs;
       } else {
-        lhsIndex = 0;
+        indexHandler.freeIndex(lhsIndex);
       }
 
       lhsValue = rhs;
     }
 
     inline void pushPassive(const PassiveReal& value) {
-      codiAssert(passiveData.getUsedSize() < passiveData.size);
-
-      passiveData.setDataAndMove(value);
+      passiveVector.setDataAndMove(value);
     }
 
     inline void pushIndices(const Real& value, const IndexType& index) {
-      codiAssert(data.getUsedSize() < data.size);
-
       if(0 == index) {
-        codiAssert(statements.getUsedSize() < statements.size);
         // create temporary index
-        statements.setDataAndMove(&InputHandle);
-        IndexType tempIndex = statements.getUsedSize();
+        stmtVector.reserveItems(1);
+        stmtVector.setDataAndMove(&InputHandle);
+
+        IndexType tempIndex = 0;
+        indexHandler.assignIndex(tempIndex);
+
         checkPrimalsSize();
         primals[tempIndex] = value;
-        data.setDataAndMove(tempIndex);
 
-        passiveDataHelper.push(index);
+        passiveDataHelper.push(tempIndex);
+
+        indexVector.setDataAndMove(tempIndex);
       } else {
-        data.setDataAndMove(index);
+        indexVector.setDataAndMove(index);
       }
     }
 
@@ -421,7 +418,7 @@ namespace codi {
      * @return The current position of the tape.
      */
     inline Position getPosition() const {
-      return Position(statements.getUsedSize(), data.getUsedSize(), passiveData.getUsedSize(), externalFunctions.getUsedSize());
+      return getExtFuncPosition();
     }
 
     /**
@@ -430,23 +427,12 @@ namespace codi {
      * @param[in] pos Reset the state of the tape to the given position.
      */
     inline void resetInt(const Position& pos) {
-      codiAssert(pos.stmt < statements.size);
-      codiAssert(pos.data < data.size);
-      codiAssert(pos.passiveData < passiveData.size);
-      codiAssert(pos.extFunc < externalFunctions.size);
-
-      for(size_t i = pos.stmt; i <= primalsSize; ++i) {
+      for(IndexType i = pos.inner.inner.inner.inner + 1; i < primalsSize; ++i) {
         primals[i] = 0.0;
       }
 
-      for(size_t i = pos.extFunc; i < externalFunctions.getUsedSize(); ++i) {
-        externalFunctions.data1[i].deleteData();
-      }
+      resetExtFunc(pos);
 
-      statements.setUsedSize(pos.stmt);
-      data.setUsedSize(pos.data);
-      passiveData.setUsedSize(pos.passiveData);
-      externalFunctions.setUsedSize(pos.extFunc);
     }
 
   private:
@@ -458,58 +444,106 @@ namespace codi {
      * @param[in] start The starting position for the adjoint evaluation.
      * @param[in]   end The ending position for the adjoint evaluation.
      */
-    inline void evaluateStack(const Position& start, const Position& end) {
-      Position curPos = start;
+    inline void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, Handle* &statements, size_t& indexPos, IndexType* &indices, size_t& passivePos, PassiveReal* &passives) {
+      size_t adjPos = startAdjPos;
 
-      while(curPos.stmt > end.stmt) {
-        const Real& adj = adjoints[curPos.stmt];
-        --curPos.stmt;
-        const ExpressionHandle<Real*, Real, IndexType>* exprHandle = statements.data[curPos.stmt];
-        curPos.data -= exprHandle->maxActiveVariables;
-        curPos.passiveData -= exprHandle->maxPassiveVariables;
+      while(adjPos > endAdjPos) {
+        const Real& adj = adjoints[adjPos];
+        --adjPos;
+        --stmtPos;
+        Handle exprHandle = statements[stmtPos];
+        indexPos -= exprHandle->maxActiveVariables;
+        passivePos -= exprHandle->maxPassiveVariables;
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
 
-          const IndexType* indices = &data.data[curPos.data];
-          const PassiveReal* passiveValues = &passiveData.data[curPos.passiveData];
-          exprHandle->adjointFunc(adj, indices, passiveValues, primals, adjoints);
+          exprHandle->adjointFunc(adj, &indices[indexPos], &passives[passivePos], primals, adjoints);
         }
       }
     }
 
-  public:
     /**
-     * @brief Perform the adjoint evaluation from start to end.
+     * @brief Evaluate a part of the statement vector.
      *
      * It has to hold start >= end.
      *
-     * @param[in] start  The starting position for the adjoint evaluation.
-     * @param[in]   end  The ending position for the adjoint evaluation.
+     * The function calls the evaluation method for the jacobi vector.
+     *
+     * @param[in] start The starting point for the statement vector.
+     * @param[in]   end The ending point for the statement vector.
      */
-    inline void evaluateInt(const Position& start, const Position& end) {
-      codiAssert(start.data >= end.data);
-      codiAssert(start.stmt >= end.stmt);
-      codiAssert(start.extFunc >= end.extFunc);
+    template<typename ... Args>
+    inline void evalStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
+      Handle* data;
+      size_t dataPos = start.data;
+      auto curInnerPos = start.inner;
+      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
+        stmtVector.getDataAtPosition(curChunk, 0, data);
 
-      Position curPos = start;
+        auto endInnerPos = stmtVector.getInnerPosition(curChunk);
+        evaluateStack(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
 
+        curInnerPos = endInnerPos;
 
-      for(size_t curExtFunc = start.extFunc; curExtFunc > end.extFunc; /* decrement is done inside the loop */) {
-        --curExtFunc; // decrement of loop variable
-
-        ExternalFunction& extFunc = externalFunctions.data1[curExtFunc];
-        const Position& extFuncPos = externalFunctions.data2[curExtFunc];
-
-        // always evaluate the stack to the point of the external function
-        evaluateStack(curPos, extFuncPos);
-
-        extFunc.evaluate();
-
-        curPos = extFuncPos;
+        dataPos = stmtVector.getChunkUsedData(curChunk - 1);
       }
 
-      // Iterate over the reminder also covers the case if the there are no external functions
-      evaluateStack(curPos, end);
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      stmtVector.getDataAtPosition(end.chunk, 0, data);
+      evaluateStack(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
     }
+
+    template<typename ... Args>
+    inline void evalIndices(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
+      IndexType* data;
+      size_t dataPos = start.data;
+      auto curInnerPos = start.inner;
+      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
+        indexVector.getDataAtPosition(curChunk, 0, data);
+
+        auto endInnerPos = indexVector.getInnerPosition(curChunk);
+        evalStmt(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
+
+        curInnerPos = endInnerPos;
+
+        dataPos = indexVector.getChunkUsedData(curChunk - 1);
+      }
+
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      indexVector.getDataAtPosition(end.chunk, 0, data);
+      evalStmt(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
+    }
+
+    /**
+     * @brief Evaluate a part of the statement vector.
+     *
+     * It has to hold start >= end.
+     *
+     * The function calls the evaluation method for the jacobi vector.
+     *
+     * @param[in] start The starting point for the statement vector.
+     * @param[in]   end The ending point for the statement vector.
+     */
+    inline void evalExtFuncCallback(const PassivePosition& start, const PassivePosition& end) {
+      PassiveReal* data;
+      size_t dataPos = start.data;
+      auto curInnerPos = start.inner;
+      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
+        passiveVector.getDataAtPosition(curChunk, 0, data);
+
+        auto endInnerPos = passiveVector.getInnerPosition(curChunk);
+        evalIndices(curInnerPos, endInnerPos, dataPos, data);
+
+        curInnerPos = endInnerPos;
+
+        dataPos = passiveVector.getChunkUsedData(curChunk - 1);
+      }
+
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      passiveVector.getDataAtPosition(end.chunk, 0, data);
+      evalIndices(curInnerPos, end.inner, dataPos, data);
+    }
+
+  public:
 
     /**
      * @brief Register a variable as an active variable.
@@ -517,14 +551,13 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
-      codiAssert(statements.getUsedSize() < statements.size);
-
-      statements.setDataAndMove(&InputHandle);
-      value.getGradientData() = statements.getUsedSize();
+    inline void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove(&InputHandle);
+      indexHandler.assignIndex(value.getGradientData());
 
       checkPrimalsSize();
-      primals[statements.getUsedSize()] = value.getValue();
+      primals[value.getGradientData()] = value.getValue();
     }
 
     /**
@@ -532,38 +565,8 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<SimplePrimalValueTape<Real, IndexType> >& value) {
+    inline void registerOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       value = 1.0 * value;
-    }
-
-    /**
-     * @brief Add an external function with a void handle as user data.
-     *
-     * The data handle provided to the tape is considered in possession of the tape. The tape will now be responsible to
-     * free the handle. For this it will use the delete function provided by the user.
-     *
-     * @param[in] extFunc  The external function which is called by the tape.
-     * @param[inout] data  The data for the external function. The tape takes ownership over the data.
-     * @param[in] delData  The delete function for the data.
-     */
-    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData){
-      pushExternalFunctionHandle(ExternalFunction(extFunc, data, delData));
-    }
-
-
-    /**
-     * @brief Add an external function with a specific data type.
-     *
-     * The data pointer provided to the tape is considered in possession of the tape. The tape will now be responsible to
-     * free the data. For this it will use the delete function provided by the user.
-     *
-     * @param[in] extFunc  The external function which is called by the tape.
-     * @param[inout] data  The data for the external function. The tape takes ownership over the data.
-     * @param[in] delData  The delete function for the data.
-     */
-    template<typename Data>
-    void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<Data>::DeleteFunction delData){
-      pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));\
     }
 
     template<typename Stream = std::ostream>
@@ -571,81 +574,70 @@ namespace codi {
 
       const std::string hLine = "-------------------------------------\n";
 
-      size_t nChunksData  = 1;
-      size_t totalData    =  data.getUsedSize();
-      double  memoryUsedData = (double)totalData*(double)(sizeof(IndexType))* BYTE_TO_MB;
-      double  memoryAllocData= (double)data.getSize() *(double)(sizeof(IndexType))* BYTE_TO_MB;
-
-      size_t nChunksStmts  = 1;
-      size_t totalStmts    = statements.getUsedSize();
-
-      double  memoryUsedStmts = (double)totalStmts*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
-      double  memoryAllocStmts= (double)statements.getSize()*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
-
-      size_t nChunksPassive  = 1;
-      size_t totalPassive    =  passiveData.getUsedSize();
-      double  memoryUsedPassive = (double)totalPassive*(double)(sizeof(PassiveReal))* BYTE_TO_MB;
-      double  memoryAllocPassive = (double)passiveData.getSize() *(double)(sizeof(PassiveReal))* BYTE_TO_MB;
+//      size_t nChunksData  = 1;
+//      size_t totalData    =  data.getUsedSize();
+//      double  memoryUsedData = (double)totalData*(double)(sizeof(IndexType))* BYTE_TO_MB;
+//      double  memoryAllocData= (double)data.getSize() *(double)(sizeof(IndexType))* BYTE_TO_MB;
+//
+//      size_t nChunksStmts  = 1;
+//      size_t totalStmts    = statements.getUsedSize();
+//
+//      double  memoryUsedStmts = (double)totalStmts*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
+//      double  memoryAllocStmts= (double)statements.getSize()*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
+//
+//      size_t nChunksPassive  = 1;
+//      size_t totalPassive    =  passiveData.getUsedSize();
+//      double  memoryUsedPassive = (double)totalPassive*(double)(sizeof(PassiveReal))* BYTE_TO_MB;
+//      double  memoryAllocPassive = (double)passiveData.getSize() *(double)(sizeof(PassiveReal))* BYTE_TO_MB;
 
       out << hLine
-          << "CoDi Tape Statistics ( simple primal value tape)\n";
+          << "CoDi Tape Statistics (simple primal value tape)\n";
       printTapeBaseStatistics(out, hLine);
-      out << hLine
-          << "Statements \n"
-          << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
-          << "  Total Number:     " << std::setw(10) << totalStmts   << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocStmts << " MB" << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedStmts << " MB" << "\n";
-      out << hLine
-          << "Data entries \n"
-          << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
-          << "  Total Number:     " << std::setw(10) << totalData   << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocData << " MB" << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedData << " MB" << "\n";
-      out << hLine
-          << "Passive data entries \n"
-          << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
-          << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocPassive << " MB" << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedPassive << " MB" << "\n";
+//      out << hLine
+//          << "Statements \n"
+//          << hLine
+//          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
+//          << "  Total Number:     " << std::setw(10) << totalStmts   << "\n"
+//          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+//                                    << std::setprecision(2)
+//                                    << std::setw(10)
+//                                    << memoryAllocStmts << " MB" << "\n"
+//          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+//                                    << std::setprecision(2)
+//                                    << std::setw(10)
+//                                    << memoryUsedStmts << " MB" << "\n";
+//      out << hLine
+//          << "Data entries \n"
+//          << hLine
+//          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
+//          << "  Total Number:     " << std::setw(10) << totalData   << "\n"
+//          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+//                                    << std::setprecision(2)
+//                                    << std::setw(10)
+//                                    << memoryAllocData << " MB" << "\n"
+//          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+//                                    << std::setprecision(2)
+//                                    << std::setw(10)
+//                                    << memoryUsedData << " MB" << "\n";
+//      out << hLine
+//          << "Passive data entries \n"
+//          << hLine
+//          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
+//          << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
+//          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+//                                    << std::setprecision(2)
+//                                    << std::setw(10)
+//                                    << memoryAllocPassive << " MB" << "\n"
+//          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+//                                    << std::setprecision(2)
+//                                    << std::setw(10)
+//                                    << memoryUsedPassive << " MB" << "\n";
+      printExternalFunctionStatistics(out, hLine);
 
 
     }
-
-  private:
-    /**
-     * @brief Private common method to add to the external function stack.
-     *
-     * @param[in] function The external function structure to push.
-     */
-    void pushExternalFunctionHandle(const ExternalFunction& function){
-      codiAssert(0 != externalFunctions.getUnusedSize());
-      externalFunctions.setDataAndMove(function, getPosition());
-    }
-
   };
 
-  template <typename Real, typename IndexType>
-  const ExpressionHandle<Real*, Real, IndexType> SimplePrimalValueTape<Real, IndexType>::InputHandle(&SimplePrimalValueTape<Real, IndexType>::inputHandleFunc<Real*>, 0, 0);
+  template <typename TapeTypes>
+  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> PrimalValueTape<TapeTypes>::InputHandle(&PrimalValueTape<TapeTypes>::inputHandleFunc, 0, 0);
 }

@@ -195,7 +195,7 @@ namespace codi {
    */
   typedef ActiveReal<JacobiIndexTape<SimpleIndexTapeTypes<float, ReuseIndexHandlerUseCount<int> > > > RealReverseIndexUncheckedFloat;
 
-  typedef ActiveReal<SimplePrimalValueTape<double, int> > RealPrimalValueTape;
+  typedef ActiveReal<PrimalValueTape<SimplePrimaValuelTapeTypes<double, LinearIndexHandler<int> > > > RealPrimalValueTape;
 
 
 }

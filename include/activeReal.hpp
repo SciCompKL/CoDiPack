@@ -485,7 +485,7 @@ namespace codi {
       return primalValues[indices[offset]];
     }
 
-    template<typename IndexType, size_t offset, size_t passiveOffset> \
+    template<typename IndexType, size_t offset, size_t passiveOffset>
     static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       CODI_UNUSED(passiveValues);
       CODI_UNUSED(primalValues);
