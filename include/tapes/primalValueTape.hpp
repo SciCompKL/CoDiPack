@@ -37,6 +37,7 @@
 #include "chunk.hpp"
 #include "indices/linearIndexHandler.hpp"
 #include "reverseTapeInterface.hpp"
+#include "singleChunkVector.hpp"
 
 namespace codi {
 
@@ -173,6 +174,13 @@ namespace codi {
 
     static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {}
     const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
+
+    static void copyHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+      CODI_UNUSED(passiveValues);
+      CODI_UNUSED(primalValues);
+      adjointValues[indices[0]] += seed;
+    }
+    const static ExpressionHandle<Real*, Real, IndexType> CopyHandle;
 
     Real* primals;
     IndexType primalsSize;
@@ -339,12 +347,8 @@ namespace codi {
       ENABLE_CHECK(OptTapeActivity, active){
         // the default behaviour is to activate passive assignments in order to have less passive values
         // in the store for expression routines
-        stmtVector.reserveItems(1);
-        stmtVector.setDataAndMove(&InputHandle);
         indexHandler.assignIndex(lhsIndex);
-
-        checkPrimalsSize();
-        primals[lhsIndex] = rhs;
+        pushInputHandle(rhs, lhsIndex);
       } else {
         indexHandler.freeIndex(lhsIndex);
       }
@@ -357,23 +361,17 @@ namespace codi {
     }
 
     inline void pushIndices(const Real& value, const IndexType& index) {
-      if(0 == index) {
+      IndexType pushIndex = index;
+      if(0 == pushIndex) {
         // create temporary index
-        stmtVector.reserveItems(1);
-        stmtVector.setDataAndMove(&InputHandle);
+        indexHandler.assignIndex(pushIndex);
 
-        IndexType tempIndex = 0;
-        indexHandler.assignIndex(tempIndex);
+        pushInputHandle(value, pushIndex);
 
-        checkPrimalsSize();
-        primals[tempIndex] = value;
-
-        passiveDataHelper.push(tempIndex);
-
-        indexVector.setDataAndMove(tempIndex);
-      } else {
-        indexVector.setDataAndMove(index);
+        passiveDataHelper.push(pushIndex);
       }
+
+      indexVector.setDataAndMove(pushIndex);
     }
 
     /**
@@ -552,12 +550,11 @@ namespace codi {
      * @param[inout] value The value which will be marked as an active variable.
      */
     inline void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
-      stmtVector.reserveItems(1);
-      stmtVector.setDataAndMove(&InputHandle);
-      indexHandler.assignIndex(value.getGradientData());
+      if(isActive()) {
+        indexHandler.assignIndex(value.getGradientData());
 
-      checkPrimalsSize();
-      primals[value.getGradientData()] = value.getValue();
+        pushInputHandle(value.getValue(), value.getGradientData());
+      }
     }
 
     /**
@@ -566,7 +563,12 @@ namespace codi {
      * @param[in] value Not used.
      */
     inline void registerOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
-      value = 1.0 * value;
+      if(isActive() && value.getGradientData() != 0) {
+        IndexType rhsIndex = value.getGradientData();
+        indexHandler.assignIndex(value.getGradientData());
+
+        pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
+      }
     }
 
     template<typename Stream = std::ostream>
@@ -633,11 +635,34 @@ namespace codi {
 //                                    << std::setw(10)
 //                                    << memoryUsedPassive << " MB" << "\n";
       printExternalFunctionStatistics(out, hLine);
+    }
 
+  private:
+    inline void pushInputHandle(const Real& value, const IndexType& index) {
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove(&InputHandle);
+
+      checkPrimalsSize();
+      primals[index] = value;
 
     }
+
+    inline void pushCopyHandle(const Real& lhsValue, const IndexType& lhsIndex, const IndexType& rhsIndex) {
+      indexVector.reserveItems(1);
+      indexVector.setDataAndMove(rhsIndex);
+
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove(&CopyHandle);
+
+      checkPrimalsSize();
+      primals[lhsIndex] = lhsValue;
+
+    }
+
   };
 
   template <typename TapeTypes>
   const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> PrimalValueTape<TapeTypes>::InputHandle(&PrimalValueTape<TapeTypes>::inputHandleFunc, 0, 0);
+  template <typename TapeTypes>
+  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> PrimalValueTape<TapeTypes>::CopyHandle(&PrimalValueTape<TapeTypes>::copyHandleFunc, 1, 0);
 }
