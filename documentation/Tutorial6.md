@@ -2,6 +2,7 @@ Tutorial 6: Vector mode demonstration      {#Tutorial6}
 ============
 
 This is the same tutorial as [Tutorial 3](@ref Tutorial3) and [Tutorial 4](@ref Tutorial4) but uses the vector mode to compute the full Jacobian matrix.
+The vector mode of AD can be used to evaluate multiple tangent or adjoint directions in one sweep.
 
 The function we want to differentiate is implemented as
 ~~~~{.cpp}
@@ -15,7 +16,7 @@ The function we want to differentiate is implemented as
     }
 ~~~~
 
-The derivative computation with the vector mode of CoDiPack needs the same steps as in the orignal tutorials but the tangent and adjoint directions are set for multiple values.
+The derivative computation with the vector mode of CoDiPack needs the same steps as in the original tutorials but instead of setting the tangent or adjoint direction on one input or output variable, the tangent and adjoint directions are set for multiple input or output variables.
 Each value is set to a different unit vector e.g. \f$(1, 0, \ldots, 0)\f$, \f$(0, 1, 0, \ldots, 0)\f$, etc.
 
 This time the function is not implemented for a specific type but templated in order to allow the evaluation with the codi::RealForwardVec type and codi::RealReverseVec type.
@@ -41,7 +42,7 @@ can be extended to the AD forward vector mode
   \dot Y = \frac{\d f}{\d x}(x) \cdot \dot X
 \f]
 were \f$\dot X \in \R^{(n \times k)}\f$ is now a matrix.
-Each column of the matrix can be set to a unit vector and then the full Jacobian of \f$f\f$ can be evaluated.
+Each column of the matrix can be set to a unit vector and then the full Jacobian of \f$f\f$ can be evaluated in one sweep.
 The code for the driver is:
 
 ~~~~{.cpp}
@@ -67,10 +68,13 @@ The code for the driver is:
    }
 ~~~~
 
-The size 5 is choosen for the dimension of the vector because this allows to compute the Jacobian in one sweep.
+The number of input variables in this example is 5 and therefore the size for the tangent direction is also chosen as 5.
+This allows to compute the Jacobian in one sweep.
+If the size for the tangent direction is smaller e.g. 3 then 2 sweeps would be needed.
 The gradient values are now accessed via the direct accessor `.gradient()`.
 This function returns a reference to the tangent direction.
-The entries of the direction can be accesses via the array operator `[]` and in order to set the unit vectors the i-th entry of the i-th argument is set to 1.0.
+The entries of the direction can be accesses via the array operator `[]`.
+In order to set the unit vectors, the i-th entry of the i-th argument is set to 1.0.
 
 The result for the primal computation will be \f$(15, 120)\f$ and the Jacobi will be
 

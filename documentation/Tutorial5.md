@@ -1,9 +1,13 @@
-Tutorial 5: ReferenceActiveReal demonstration {#Tutorial5}
+Tutorial 5: ReferenceActiveReal Demonstration {#Tutorial5}
 ============
 
 The [ReferenceActiveReal](@ref codi::ReferenceActiveReal) can help to optimize statements where one variable is used multiple times.
 AD could detect if a variable is used multiple times in a statement but this would be a n*log(n) + n operation for each statement where n is the number of arguments.
 Most of the times n would be very small but it would still be a big overhead.
+With the [ReferenceActiveReal](@ref codi::ReferenceActiveReal) a different approach is taken.
+It hides the variable from the tape and accumulates all the computed Jacobians for the variable.
+After the statement is evaluated the accumulated Jacobian is forwarded only once to the tape.
+Therefore only one Jacobian needs to be stored and not one for each occurrence of the variable in the statement.
 
 The function that demonstrates the effect is implemented as:
 ~~~~{.cpp}
@@ -11,7 +15,7 @@ The function that demonstrates the effect is implemented as:
       y = 3.0*x*x*x*x + 5.0*x*x*x - 3.0*x*x + 2.0*x -4.0;
     }
 ~~~~
-and the modified version with the reference real is:
+and the version with the reference real is:
 ~~~~{.cpp}
     typedef codi::ReferenceActiveReal<codi::RealReverse> RefReal;
 
@@ -21,9 +25,9 @@ and the modified version with the reference real is:
       y = 3.0*xRef*xRef*xRef*xRef + 5.0*xRef*xRef*xRef - 3.0*xRef*xRef + 2.0*xRef -4.0;
     }
 ~~~~
-In order to use the reference real you have to declare a variable and initialize the variable with an [ActiveReal](@ref codi::ActiveReal).
+In order to use the reference real you have to declare a variable `xRef` and initialize it with the variable that is used multiple times in the statement.
 It is not possible to do this inside the statement like y = RefReal(x) * RefReal(x).
-This would still yield two Jacobie entries instead of one.
+This would yield two Jacobian entries instead of one.
 
 The driver for these two functions is analog to the ones in the previous tutorials.
 It computes the derivatives for func and funcRef and prints the results.
@@ -117,7 +121,7 @@ Jacobi entries
   Total Number:              2
 ~~~~
 
-The number of statements is the same but the number of Jacobies changed, because the ReferenceActiveType summarizes the Jacobies in the statements.
+The number of statements is the same but the number of Jacobian entries changed, because the ReferenceActiveType accumulates the Jacobians in the statements.
 
 The full program is then
 
