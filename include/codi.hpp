@@ -34,6 +34,7 @@
 #include "tapes/jacobiTape.hpp"
 #include "tapes/jacobiIndexTape.hpp"
 #include "tapes/primalValueTape.hpp"
+#include "tapes/primalValueIndexTape.hpp"
 #include "tapes/indices/linearIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandlerAssignOpt.hpp"
@@ -198,5 +199,7 @@ namespace codi {
   typedef ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<double, LinearIndexHandler<int> > > > RealReversePrimal;
   typedef ActiveReal<PrimalValueTape<SimplePrimalValueTapeTypes<double, LinearIndexHandler<int> > > > RealReversePrimalUnchecked;
 
+  typedef ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<double, ReuseIndexHandler<int> > > > RealReversePrimalIndex;
+  typedef ActiveReal<PrimalValueIndexTape<SimpleIndexPrimalValueTapeTypes<double, ReuseIndexHandler<int> > > > RealReversePrimalIndexUnchecked;
 
 }
