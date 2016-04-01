@@ -35,7 +35,7 @@
 #include "../activeReal.hpp"
 #include "../expressionHandle.hpp"
 #include "chunkVector.hpp"
-#include "indices/linearIndexHandler.hpp"
+#include "indices/reuseIndexHandler.hpp"
 #include "passiveDataHelper.h"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
@@ -43,18 +43,18 @@
 namespace codi {
 
   /**
-   * @brief Vector defintion for the ChunkPrimalValueTape.
+   * @brief Vector defintion for the ChunkPrimalValueIndexTape.
    *
    * The structure defines all vectors as chunk vectors.
    *
-   * See PrimalValueTape for details.
+   * See PrimalValueIndexTape for details.
    *
    * @tparam Real  The type for the primal values.
    * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct ChunkPrimalValueTapeTypes {
+  struct ChunkIndexPrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
     /** @brief The handler for the indices. */
@@ -67,9 +67,9 @@ namespace codi {
     typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType;
 
     /** @brief The data for each statement. */
-    typedef Chunk1<HandleType> StatementChunk;
+    typedef Chunk3<IndexType, Real, HandleType> StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StatementChunk, IndexHandler> StatementVector;
+    typedef ChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
 
     /** @brief The data for the indices of each statement */
     typedef Chunk1< typename IndexHandler::IndexType> IndexChunk;
@@ -89,23 +89,23 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
-    constexpr static const char* tapeName = "ChunkPrimalValueTape";
+    constexpr static const char* tapeName = "ChunkPrimalValueIndexTape";
 
   };
 
   /**
-   * @brief Vector defintion for the SimplePrimalValueTape.
+   * @brief Vector defintion for the SimplePrimalValueIndexTape.
    *
    * The structure defines all vectors as single chunk vectors.
    *
-   * See PrimalValueTape for details.
+   * See PrimalValueIndexTape for details.
    *
    * @tparam Real  The type for the primal values.
    * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct SimplePrimalValueTapeTypes {
+  struct SimpleIndexPrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
     /** @brief The handler for the indices. */
@@ -118,9 +118,9 @@ namespace codi {
     typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType;
 
     /** @brief The data for each statement. */
-    typedef Chunk1<HandleType> StatementChunk;
+    typedef Chunk3<IndexType, Real, HandleType> StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef SingleChunkVector<StatementChunk, IndexHandler> StatementVector;
+    typedef SingleChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
 
     /** @brief The data for the indices of each statement */
     typedef Chunk1< typename IndexHandler::IndexType> IndexChunk;
@@ -140,30 +140,12 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
-    constexpr static const char* tapeName = "SimplePrimalValueTape";
+    constexpr static const char* tapeName = "SimplePrimalValueIndexTape";
 
   };
 
-  /**
-   * @brief A tape with a simple implementation and no bounds checking.
-   *
-   * The SimplePrimalValueTape implements a fully featured ReverseTapeInterface in a
-   * simple fashion. This tape is not intended for simple usage. Actually the
-   * tape has no bounds checking, therefore it can produce segmentation faults
-   * if it is not used with care.
-   *
-   * The size of the tape can be set with the resize function and the setExternalFunctionChunkSize.
-   *
-   * For details on how this tape works please read the general documentation //TODO: Add reference to chapter.
-   *
-   * Assertions are placed in all the functions such that during development no
-   * bounds are overwritten.
-   *
-   * @tparam      Real  The floating point type used in the ActiveReal.
-   * @tparam IndexType  The type for the indexing of the adjoint variables.
-   */
   template <typename TapeTypes>
-  class PrimalValueTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, PrimalValueTape<TapeTypes>, typename TapeTypes::Position > {
+  class PrimalValueIndexTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, PrimalValueIndexTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
     /** @brief The type for the primal values. */
@@ -189,12 +171,15 @@ namespace codi {
     typedef typename TapeTypes::IndexVector::Position IndexPosition;
     typedef typename TapeTypes::StatementVector::Position StmtPosition;
 
-    #define TAPE_NAME PrimalValueTape
+    /** @brief The counter for the current expression. */
+    EmptyChunkVector emptyVector;
+
+    #define TAPE_NAME PrimalValueIndexTape
 
     #define POSITION_TYPE typename TapeTypes::Position
     #define INDEX_HANDLER_TYPE IndexHandler
     #define RESET_FUNCTION_NAME resetInt
-    #define EVALUATE_FUNCTION_NAME evaluateExtFunc
+    #define EVALUATE_FUNCTION_NAME evaluateInt
     #include "modules/tapeBaseModule.tpp"
 
     typename TapeTypes::StatementVector stmtVector;
@@ -219,6 +204,7 @@ namespace codi {
     const static ExpressionHandle<Real*, Real, IndexType> CopyHandle;
 
     Real* primals;
+    Real* primalValueCopy;
     IndexType primalsSize;
     IndexType primalsIncr;
 
@@ -228,16 +214,18 @@ namespace codi {
     /**
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
-    PrimalValueTape() :
+    PrimalValueIndexTape() :
+      emptyVector(),
       /* defined in tapeBaseModule */indexHandler(),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
-      stmtVector(DefaultChunkSize, indexHandler),
+      stmtVector(DefaultChunkSize, emptyVector),
       indexVector(DefaultChunkSize, stmtVector),
       passiveVector(DefaultChunkSize, indexVector),
       /* defined in externalFunctionsModule */extFuncVector(1000, passiveVector),
       primals(NULL),
+      primalValueCopy(NULL),
       primalsSize(0),
       primalsIncr(DefaultSmallChunkSize){}
 
@@ -270,9 +258,8 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     inline void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = end.inner.inner.inner.inner; i <= start.inner.inner.inner.inner; ++i) {
-        adjoints[i] = GradientValue();
-      }
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
     }
 
     void setPassiveDataSize(const size_t& passiveDataSize) {
@@ -324,11 +311,11 @@ namespace codi {
         rhs.pushPassive(this);
         codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveVector.getChunkPosition() - passiveSize);
 
-        stmtVector.reserveItems(1);
-        stmtVector.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
         indexHandler.assignIndex(lhsIndex);
-
         checkPrimalsSize();
+        stmtVector.reserveItems(1);
+        stmtVector.setDataAndMove(lhsIndex, primals[lhsIndex], ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
+
         primals[lhsIndex] = rhs.getValue();
 
         // clear the generated temporal indices
@@ -339,7 +326,7 @@ namespace codi {
           passiveDataHelper.reset();
         }
       } else {
-        lhsIndex = 0;
+        indexHandler.freeIndex(lhsIndex);
       }
 
       /* now set the value of the lhs */
@@ -358,12 +345,24 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<PrimalValueTape<TapeTypes> >& rhs) {
+    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<PrimalValueIndexTape<TapeTypes> >& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
-        lhsIndex = rhs.getGradientData();
+        ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
+          indexHandler.copyIndex(lhsIndex, rhs.getGradientData());
+
+          if(IndexHandler::AssignNeedsStatement) {
+            pushCopyHandle(rhs.getValue(), lhsIndex, rhs.getGradientData());
+          }
+        } else {
+          // the default behaviour is to activate passive assignments in order to have less passive values
+          // in the store for expression routines
+          indexHandler.assignIndex(lhsIndex);
+          pushInputHandle(rhs.getValue(), lhsIndex);
+        }
       } else {
-        lhsIndex = 0;
+        indexHandler.freeIndex(lhsIndex);
       }
+
       lhsValue = rhs.getValue();
     }
 
@@ -461,9 +460,6 @@ namespace codi {
      * @param[in] pos Reset the state of the tape to the given position.
      */
     inline void resetInt(const Position& pos) {
-      for(IndexType i = pos.inner.inner.inner.inner + 1; i < primalsSize; ++i) {
-        primals[i] = 0.0;
-      }
 
       resetExtFunc(pos);
 
@@ -478,19 +474,20 @@ namespace codi {
      * @param[in] start The starting position for the adjoint evaluation.
      * @param[in]   end The ending position for the adjoint evaluation.
      */
-    inline void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, Handle* &statements, size_t& indexPos, IndexType* &indices, size_t& passivePos, PassiveReal* &passives) {
-      size_t adjPos = startAdjPos;
-
-      while(adjPos > endAdjPos) {
-        const Real& adj = adjoints[adjPos];
-        --adjPos;
+    inline void evaluateStack(size_t& stmtPos, const size_t& endStmtPos, IndexType* lhsIndices, Real* storedPrimals, Handle* &statements, size_t& indexPos, IndexType* &indices, size_t& passivePos, PassiveReal* &passives, Real* primalVector) {
+      while(stmtPos > endStmtPos) {
         --stmtPos;
+        const IndexType& lhsIndex = lhsIndices[stmtPos];
         Handle exprHandle = statements[stmtPos];
+
+        primalVector[lhsIndex] = storedPrimals[stmtPos];
+        const GradientValue adj = adjoints[lhsIndex];
+        adjoints[lhsIndex] = GradientValue();
+
         indexPos -= exprHandle->maxActiveVariables;
         passivePos -= exprHandle->maxPassiveVariables;
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
-
-          exprHandle->adjointFunc(adj, &indices[indexPos], &passives[passivePos], primals, adjoints);
+          exprHandle->adjointFunc(adj, &indices[indexPos], &passives[passivePos], primalVector, adjoints);
         }
       }
     }
@@ -507,23 +504,22 @@ namespace codi {
      */
     template<typename ... Args>
     inline void evalStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
-      Handle* data;
+      IndexType* data1;
+      Real* data2;
+      Handle* data3;
+
       size_t dataPos = start.data;
-      auto curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        stmtVector.getDataAtPosition(curChunk, 0, data);
+        stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3);
 
-        auto endInnerPos = stmtVector.getInnerPosition(curChunk);
-        evaluateStack(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
-
-        curInnerPos = endInnerPos;
+        evaluateStack(dataPos, 0, data1, data2, data3, std::forward<Args>(args)..., primalValueCopy);
 
         dataPos = stmtVector.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      stmtVector.getDataAtPosition(end.chunk, 0, data);
-      evaluateStack(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
+      stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3);
+      evaluateStack(dataPos, end.data, data1, data2, data3, std::forward<Args>(args)..., primalValueCopy);
     }
 
     template<typename ... Args>
@@ -557,7 +553,8 @@ namespace codi {
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalExtFuncCallback(const PassivePosition& start, const PassivePosition& end) {
+    template<typename ... Args>
+    inline void evalExtFuncCallback(const PassivePosition& start, const PassivePosition& end, Args&&... args) {
       PassiveReal* data;
       size_t dataPos = start.data;
       auto curInnerPos = start.inner;
@@ -565,7 +562,7 @@ namespace codi {
         passiveVector.getDataAtPosition(curChunk, 0, data);
 
         auto endInnerPos = passiveVector.getInnerPosition(curChunk);
-        evalIndices(curInnerPos, endInnerPos, dataPos, data);
+        evalIndices(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
 
         curInnerPos = endInnerPos;
 
@@ -574,8 +571,19 @@ namespace codi {
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       passiveVector.getDataAtPosition(end.chunk, 0, data);
-      evalIndices(curInnerPos, end.inner, dataPos, data);
+      evalIndices(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
     }
+
+    inline void evaluateInt(const Position& start, const Position& end) {
+      primalValueCopy = (Real*)malloc(sizeof(Real) * primalsSize);
+      memcpy(primalValueCopy, primals, sizeof(Real) * primalsSize);
+
+      evaluateExtFunc(start, end);
+
+      free(primalValueCopy);
+    }
+
+
 
   public:
 
@@ -585,11 +593,12 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
+    inline void registerInput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       if(isActive()) {
         indexHandler.assignIndex(value.getGradientData());
 
-        pushInputHandle(value.getValue(), value.getGradientData());
+        checkPrimalsSize();
+        primals[value.getGradientData()] = value.getValue();
       }
     }
 
@@ -598,12 +607,14 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
+    inline void registerOutput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       if(isActive() && value.getGradientData() != 0) {
-        IndexType rhsIndex = value.getGradientData();
-        indexHandler.assignIndex(value.getGradientData());
+        if(!IndexHandler::AssignNeedsStatement) {
+          IndexType rhsIndex = value.getGradientData();
+          indexHandler.assignIndex(value.getGradientData());
 
-        pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
+          pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
+        }
       }
     }
 
@@ -670,15 +681,15 @@ namespace codi {
 //                                    << std::setprecision(2)
 //                                    << std::setw(10)
 //                                    << memoryUsedPassive << " MB" << "\n";
-      printExtFuncStatistics(out, hLine);
+      printExternalFunctionStatistics(out, hLine);
     }
 
   private:
     inline void pushInputHandle(const Real& value, const IndexType& index) {
-      stmtVector.reserveItems(1);
-      stmtVector.setDataAndMove(&InputHandle);
-
       checkPrimalsSize();
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove(index, primals[index], &InputHandle);
+
       primals[index] = value;
 
     }
@@ -687,18 +698,17 @@ namespace codi {
       indexVector.reserveItems(1);
       indexVector.setDataAndMove(rhsIndex);
 
-      stmtVector.reserveItems(1);
-      stmtVector.setDataAndMove(&CopyHandle);
-
       checkPrimalsSize();
-      primals[lhsIndex] = lhsValue;
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove(lhsIndex, primals[lhsIndex], &CopyHandle);
 
+      primals[lhsIndex] = lhsValue;
     }
 
   };
 
   template <typename TapeTypes>
-  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> PrimalValueTape<TapeTypes>::InputHandle(&PrimalValueTape<TapeTypes>::inputHandleFunc, 0, 0);
+  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> PrimalValueIndexTape<TapeTypes>::InputHandle(&PrimalValueIndexTape<TapeTypes>::inputHandleFunc, 0, 0);
   template <typename TapeTypes>
-  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> PrimalValueTape<TapeTypes>::CopyHandle(&PrimalValueTape<TapeTypes>::copyHandleFunc, 1, 0);
+  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> PrimalValueIndexTape<TapeTypes>::CopyHandle(&PrimalValueIndexTape<TapeTypes>::copyHandleFunc, 1, 0);
 }

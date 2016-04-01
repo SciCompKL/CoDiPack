@@ -30,7 +30,7 @@
 
 #include <codi.hpp>
 
-typedef codi::RealReversePrimalUnchecked NUMBER;
+typedef codi::RealReversePrimal NUMBER;
 
 #include "../globalDefines.h"
 
