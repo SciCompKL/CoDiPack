@@ -34,12 +34,64 @@
 
 #include "../activeReal.hpp"
 #include "../expressionHandle.hpp"
-#include "chunk.hpp"
+#include "chunkVector.hpp"
 #include "indices/linearIndexHandler.hpp"
+#include "passiveDataHelper.h"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 
 namespace codi {
+
+  /**
+   * @brief Vector defintion for the ChunkPrimalValueTape.
+   *
+   * The structure defines all vectors as chunk vectors.
+   *
+   * See PrimalValueTape for details.
+   *
+   * @tparam Real  The type for the primal values.
+   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
+   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
+   */
+  template <typename Real, typename IndexHandler, typename GradientValue = Real>
+  struct ChunkPrimalValueTapeTypes {
+    /** @brief The type for the primal values. */
+    typedef Real RealType;
+    /** @brief The handler for the indices. */
+    typedef IndexHandler IndexHandlerType;
+    /** @brief The type for the adjoint values. */
+    typedef GradientValue GradientValueType;
+
+    typedef typename IndexHandler::IndexType IndexType;
+
+    typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType;
+
+    /** @brief The data for each statement. */
+    typedef Chunk1<HandleType> StatementChunk;
+    /** @brief The chunk vector for the statement data. */
+    typedef ChunkVector<StatementChunk, IndexHandler> StatementVector;
+
+    /** @brief The data for the indices of each statement */
+    typedef Chunk1< typename IndexHandler::IndexType> IndexChunk;
+    /** @brief The chunk vector for the index data. */
+    typedef ChunkVector<IndexChunk, StatementVector> IndexVector;
+
+    /** @brief The data for the passive values of each statement */
+    typedef Chunk1< typename TypeTraits<Real>::PassiveReal> PassiveChunk;
+    /** @brief The chunk vector for the passive data. */
+    typedef ChunkVector<PassiveChunk, IndexVector> PassiveVector;
+
+    /** @brief The data for the external functions. */
+    typedef Chunk2<ExternalFunction,typename PassiveVector::Position> ExternalFunctionChunk;
+    /** @brief The chunk vector for the external  function data. */
+    typedef ChunkVector<ExternalFunctionChunk, PassiveVector> ExternalFunctionVector;
+
+    /** @brief The position for all the different data vectors. */
+    typedef typename ExternalFunctionVector::Position Position;
+
+    constexpr static const char* tapeName = "ChunkPrimalValueTape";
+
+  };
 
   /**
    * @brief Vector defintion for the SimplePrimalValueTape.
@@ -53,7 +105,7 @@ namespace codi {
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct SimplePrimaValuelTapeTypes {
+  struct SimplePrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
     /** @brief The handler for the indices. */
