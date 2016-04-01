@@ -632,7 +632,7 @@ namespace codi {
 //                                    << std::setprecision(2)
 //                                    << std::setw(10)
 //                                    << memoryUsedPassive << " MB" << "\n";
-      printExternalFunctionStatistics(out, hLine);
+      printExtFuncStatistics(out, hLine);
 
 
     }
