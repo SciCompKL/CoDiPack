@@ -144,22 +144,6 @@ namespace codi {
 
   };
 
-  template<typename IndexType, size_t n>
-  struct PassiveDataHelper {
-    size_t pos;
-    IndexType indices[n];
-
-    PassiveDataHelper() : pos(0) {}
-
-    inline void push(const IndexType& index) {
-      indices[pos++] = index;
-    }
-
-    inline void reset() {
-      pos = 0;
-    }
-  };
-
   /**
    * @brief A tape with a simple implementation and no bounds checking.
    *
