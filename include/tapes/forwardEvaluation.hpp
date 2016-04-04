@@ -208,6 +208,16 @@ namespace codi {
     inline GradientValue& gradient(GradientData& tangent) {
       return tangent;
     }
+
+    /**
+     * @brief Check whether the gradient data is zero.
+     *
+     * @param[in] index The index of the active type.
+     * @return False if the gradient data is zero, otherwise returns true.
+     */
+    bool isActive(const GradientData& tangent) const{
+      return (tangent != 0.0);
+    }
   };
 }
 

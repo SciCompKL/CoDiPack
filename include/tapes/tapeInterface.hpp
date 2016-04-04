@@ -183,5 +183,15 @@ namespace codi {
     * @return The gradient which belongs to the active type as a reference.
     */
     virtual GradientValue& gradient(GradientData& value) = 0;
+
+    /**
+    * @brief Check if the gradient data has a nontrivial value.
+    *
+    * @param[in] value  The gradient data of the active type.
+    *
+    * @return Returns true if it has a nontrivial value. Otherwise returns false.
+    */
+    virtual bool isActive(const GradientData& value) const = 0;
+
   };
 }
