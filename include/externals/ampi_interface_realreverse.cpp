@@ -31,7 +31,11 @@
 
 //#define INT64 int
 
-typedef codi::RealReverse type;
+#ifndef AD_TYPE
+  #error Please specify the ad type with AD_TYPE.
+#endif
+
+typedef AD_TYPE type;
 
 extern "C" {
   //forward declare von AMPI
@@ -53,7 +57,7 @@ extern "C" {
   void ampi_get_adj(INT64 *idx, double *x) {
     //if(*idx) *x = *(*idx);
     if(*idx!=0) {
-        *x = codi::RealReverse::getGlobalTape().getGradient(*idx);
+        *x = type::getGlobalTape().getGradient(*idx);
     } else {
         *x = 0.0;
     }
@@ -62,7 +66,7 @@ extern "C" {
   void ampi_set_adj(INT64 *idx, double *x) {
    int index = *idx;
     if(*idx!=0 && *x != 0.0){
-        codi::RealReverse::getGlobalTape().gradient(index) += *x;
+        type::getGlobalTape().gradient(index) += *x;
     }
   }
 
@@ -82,27 +86,27 @@ extern "C" {
   }
 
   void ampi_create_tape_entry(void* handle) {
-     if (codi::RealReverse::getGlobalTape().isActive()){
+     if (type::getGlobalTape().isActive()){
       ampi_tape_entry* ampi_entry = static_cast<ampi_tape_entry*>(handle);
       codi::DataStore *handler = new codi::DataStore;
       handler->addData(ampi_entry);
-         codi::RealReverse::getGlobalTape().pushExternalFunctionHandle(&ampi_tape_wrapper,handler,&delete_handler);
+         type::getGlobalTape().pushExternalFunctionHandle(&ampi_tape_wrapper,handler,&delete_handler);
      }
   }
 
   void ampi_create_dummies_displ(void *buf, int* displ, int *size) {
-      if (codi::RealReverse::getGlobalTape().isActive()){
+      if (type::getGlobalTape().isActive()){
 
         type *values=static_cast<type*>(buf);
         for(int i=0;i<*size;++i) {
           //type &dummy=values[i];
           values[*displ + i]=0;
-          codi::RealReverse::getGlobalTape().registerInput(values[i]);
+          type::getGlobalTape().registerInput(values[i]);
         }
      }
   }
 
   int ampi_is_tape_active () {
-     return codi::RealReverse::getGlobalTape().isActive();
+     return type::getGlobalTape().isActive();
   }
 }
