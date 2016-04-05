@@ -4,6 +4,8 @@ Changelog      {#Changelog}
 ### v 1.2 - 2016-04-07
 
  - ReferenceActiveReal type for the optimizations of arguments
+   -(e.g. w = x*x*x + sin(x));
+ - Assign optimization index manger (new default one)
  - Full vector mode support
  - Module based implementation of the tapes
  - Own assert command
