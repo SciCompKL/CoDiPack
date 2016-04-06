@@ -30,25 +30,51 @@
 
 #include <stdint.h>
 
-
-#define NDEBUG
-#include <assert.h>
+#include "exceptions.hpp"
+#include "macros.h"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
 
+  #define CODI_MAJOR_VERSION 1
+  #define CODI_MINOR_VERSION 2
+  #define CODI_BUILD_VERSION 0
+  #define CODI_VERSION "1.2"
+
+  /**
+   * @brief Constant for the conversion from byte to megabyte.
+   */
+  const double BYTE_TO_MB = 1.0/1024.0/1024.0;
+
   /**
    * @brief Type for the maximum number of variables a operation can have.
    */
   typedef uint8_t StatementInt;
 
+  #ifndef CODI_SmallChunkSize
+    #define CODI_SmallChunkSize 32768
+  #endif
+  /**
+   * @brief Default number of entries for all chunks that need smaller sizes.
+   *
+   * Default is 128 kb for 4 byte entries.
+   *
+   * It can be set with the preprocessor macro CODI_SmallChunkSize=<size>
+   */
+  static size_t DefaultSmallChunkSize = CODI_SmallChunkSize; //TODO: Find optimal value
+  #undef CODI_SmallChunkSize
+
   #ifndef CODI_ChunkSize
-    #define CODI_ChunkSize 13107200
+    #define CODI_ChunkSize 2097152
   #endif
   /**
    * @brief Default number of entries for all chunks.
+   *
+   * Default is 24 Mb for 12 byte entries.
+   *
+   * It can be set with the preprocessor macro CODI_ChunkSize=<size>
    */
   static size_t DefaultChunkSize = CODI_ChunkSize; //TODO: Find optimal value
   #undef CODI_ChunkSize
@@ -63,6 +89,8 @@ namespace codi {
    * in a lazy fashion. The memory is then acquired on first use which can cause
    * performance issues. If the data is set to zero with memset the system will
    * directly allocate all the memory.
+   *
+   * It can be set with the preprocessor macro CODI_UseMemsetInChunks=<true/false>
    */
   const bool UseMemsetInChunks = CODI_UseMemsetInChunks;
   #undef CODI_UseMemsetInChunks
@@ -76,6 +104,8 @@ namespace codi {
    * The check enables for all function the validation of the arguments for
    * gradient evaluation. If the arguments are not valid a CoDiPack exceptions is
    * generated.
+   *
+   * It can be set with the preprocessor macro CODI_CheckExpressionArguments=<true/false>
    */
   const bool CheckExpressionArguments = CODI_CheckExpressionArguments;
   #undef CODI_CheckExpressionArguments
@@ -89,6 +119,8 @@ namespace codi {
    *
    * The check is used in the tape 'pushJacobi' function to disable the pushing of the
    * jacobies if they are nan or inf.
+   *
+   * It can be set with the preprocessor macro CODI_OptIgnoreInvalidJacobies=<true/false>
    */
   const bool OptIgnoreInvalidJacobies = CODI_OptIgnoreInvalidJacobies;
   #undef CODI_OptIgnoreInvalidJacobies
@@ -102,6 +134,8 @@ namespace codi {
    *
    * The check is used in the tape 'pushJacobi' function to disable the pushing of the
    * jacobies if they are zero.
+   *
+   * It can be set with the preprocessor macro CODI_OptJacobiIsZero=<true/false>
    */
   const bool OptJacobiIsZero = CODI_OptJacobiIsZero;
   #undef CODI_OptJacobiIsZero
@@ -114,6 +148,8 @@ namespace codi {
    *
    * The check is used in the tape 'pushJacobi' and 'store' functions to disable the pushing of the
    * jacobies if there index is zero.
+   *
+   * It can be set with the preprocessor macro CODI_OptCheckZeroIndex=<true/false>
    */
   const bool OptCheckZeroIndex = CODI_OptCheckZeroIndex;
   #undef CODI_OptCheckZeroIndex
@@ -126,6 +162,8 @@ namespace codi {
    *
    * The check is used in the tape 'store' function to disable the pushing of the
    * statement if no jacobi was pushed.
+   *
+   * It can be set with the preprocessor macro CODI_OptCheckEmptyStatements=<true/false>
    */
   const bool OptCheckEmptyStatements = CODI_OptCheckEmptyStatements;
   #undef CODI_OptCheckEmptyStatements
@@ -139,6 +177,8 @@ namespace codi {
    * If the option is set to true a tape can be enable or disabled which can be used to
    * disable the tape for code parts which do not need to be taped. If the option is set
    * to false the tape will always be active.
+   *
+   * It can be set with the preprocessor macro CODI_OptTapeActivity=<true/false>
    */
   const bool OptTapeActivity = CODI_OptTapeActivity;
   #undef CODI_OptTapeActivity
@@ -151,26 +191,81 @@ namespace codi {
    *
    * If an adjoint seed is zero during the reverse sweep, all the updates for the
    * adjoint vector will be zero. Therefore the loop does not need to be evaluated.
+   *
+   * It can be set with the preprocessor macro CODI_OptZeroAdjoint=<true/false>
    */
   const bool OptZeroAdjoint = CODI_OptZeroAdjoint;
   #undef CODI_OptZeroAdjoint
 
+  #ifndef CODI_DisableAssignOptimization
+    #define CODI_DisableAssignOptimization false
+  #endif
   /**
-   * @brief Enable the check only if the option is set
+   * @brief Disables the assign optimization for linear index tapes.
    *
-   * The macro ca be used to surround a code block with an if statement. If the option is set to true
-   * the condition is evaluated and only if the condition is true the block after the macro is
-   * executed. If the option is false the block will always be executed.
+   * An assign statement usually does not need to be written for tapes
+   * that use a linear increasing index scheme. The correspoinding
+   * entry on the tape would just add the accumulated values for
+   * the lhs to the rhs. This optimization can be dissabled with
+   * this switch.
    *
-   * @param option     A constant global boolean. Only than the compiler can optimize the statement.
-   * @param condition  The condition which is only evaluated if 'option' is set to true.
+   * It can be set with the preprocessor macro CODI_DisableAssignOptimization=<true/false>
    */
-#  define ENABLE_CHECK(option, condition) if(!(option) || (condition))
+  const bool OptDisableAssignOptimization = CODI_DisableAssignOptimization;
+  #undef CODI_DisableAssignOptimization
 
-  /**
-   * @brief Needed to disable warnings about unused parameters.
-   *
-   * Is also necessary because of doxygen parameter handling.
-   */
-#  define CODI_UNUSED(name) (void)name
+  #ifndef CODI_AdjointHandle
+    #define CODI_AdjointHandle false
+  #endif
+  #if CODI_AdjointHandle
+    /**
+     * @brief A function that is called for every statement that is written on the
+     *        Jacobie tapes.
+     *
+     * The function can be used to extract information from the taping process.
+     *
+     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     *
+     * @param[in]      value  The primal value of the statement.
+     * @param[in]   lhsIndex  The index on the left hand side of the statement, that
+     *                        will be recorded.
+     * @param[in]   jacobies  The pointer to the array of the Jacobies that will be stored
+     *                        for the statement. jacobies[0] is the first argument, jacobies[1]
+     *                        the second, etc.
+     * @param[in] rhsIndices  The pointer to the array of the indices that will be stored
+     *                        for the statement. rhsIndices[0] is the first argument, rhsIndices[1]
+     *                        the second, etc.
+     * @param[in]       size  The number of arguments that are stored for the statement.
+     *
+     * @tparam      Real  The type of the floating point values that are used in the tape.
+     * @tparam IndexType  The type of the indices that are used in the tape.
+     */
+    template<typename Real, typename IndexType>
+    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
+  #endif
+
+  #ifndef CODI_EnableAssert
+    #define CODI_EnableAssert false
+  #endif
+  #ifndef codiAssert
+    #if CODI_EnableAssert
+      /**
+       * @brief The assert function for CoDiPack it can be enabled with the preprocessor macro CODI_EnableAssert=true
+       *
+       * @param x The expression that is checked in the assert.
+       *
+       * It can be set with the preprocessor macro CODI_EnableAssert=<true/false>
+       */
+      #define codiAssert(x) codi::checkAndOutputAssert(x, CODI_TO_STRING(x), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+    #else
+      /**
+       * @brief The assert function for CoDiPack it can be enabled with the preprocessor macro CODI_EnableAssert=true
+       *
+       * It can be set with the preprocessor macro CODI_EnableAssert=<true/false>
+       *
+       * @param x The expression that is checked in the assert.
+       */
+      #define codiAssert(x) /* disabled by CODI_EnableAssert */
+    #endif
+  #endif
 }

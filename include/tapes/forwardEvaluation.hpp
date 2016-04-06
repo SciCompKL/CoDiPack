@@ -51,18 +51,28 @@ namespace codi {
    * GradientData is just the same as the active type
    * uses for the storage of the floating point values.
    *
-   * @tparam  Real  The floating point type of the tangent data.
+   * @tparam           Real  The floating point type of the primal data.
+   * @tparam  GradientValue  The floating point type of the tangent data.
    */
-  template<typename Real>
-  class ForwardEvaluation : public TapeInterface<Real, Real>{
+  template<typename RealType, typename GradientValueType = RealType>
+  class ForwardEvaluation : public TapeInterface<RealType, GradientValueType, GradientValueType>{
   public:
+
+    /**
+     * @brief The real type for the primal values.
+     */
+    typedef RealType Real;
+    /**
+     * @brief The real type for the tangent values.
+     */
+    typedef GradientValueType GradientValue;
 
     /**
      * @brief The tangent value for the active variable.
      *
-     * The tangent data has the same type as the primal data.
+     * The tangent data has the same type as the GradientValue data.
      */
-    typedef Real GradientData;
+    typedef GradientValue GradientData;
 
     /**
      * @brief Evaluates the primal expression and the tangent
@@ -75,8 +85,8 @@ namespace codi {
      */
     template<typename Rhs>
     inline void store(Real& value, GradientData& lhsTangent, const Rhs& rhs) {
-      Real gradient = Real();
-      rhs.template calcGradient<Real>(gradient);
+      GradientValue gradient = GradientValue();
+      rhs.template calcGradient<GradientValue>(gradient);
       lhsTangent  = gradient;
       value = rhs.getValue();
     }
@@ -90,7 +100,7 @@ namespace codi {
      * @param[out] lhsTangent  The tangent of the lhs.
      * @param[in]         rhs  The expression of the rhs.
      */
-    inline void store(Real& value, GradientData& lhsTangent, const ActiveReal<Real, ForwardEvaluation<Real> >& rhs) {
+    inline void store(Real& value, GradientData& lhsTangent, const ActiveReal<ForwardEvaluation<Real> >& rhs) {
       lhsTangent = rhs.getGradient();
       value = rhs.getValue();
     }
@@ -102,7 +112,7 @@ namespace codi {
      * is inactive.
      */
     inline void store(Real& value, GradientData& tangent, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      tangent = Real();
+      tangent = GradientValue();
       value = rhs;
     }
 
@@ -155,7 +165,7 @@ namespace codi {
      */
     inline void initGradientData(Real& value, GradientData& tangent) {
       CODI_UNUSED(value);
-      tangent = Real();
+      tangent = GradientData();
     }
 
     /**
@@ -173,7 +183,7 @@ namespace codi {
      * @param[out]   tangent  The tangent value of the active type.
      * @param[in] newTangent  The new tangent value.
      */
-    inline void setGradient(GradientData& tangent, const Real& newTangent) {
+    inline void setGradient(GradientData& tangent, const GradientValue& newTangent) {
       tangent = newTangent;
     }
 
@@ -184,7 +194,7 @@ namespace codi {
      *
      * @return The tangent value of the active type.
      */
-    inline Real getGradient(const GradientData& tangent) const {
+    inline GradientValue getGradient(const GradientData& tangent) const {
       return tangent;
     }
 
@@ -195,7 +205,7 @@ namespace codi {
      *
      * @return The tangent value of the active type.
      */
-    inline Real& gradient(GradientData& tangent) {
+    inline GradientValue& gradient(GradientData& tangent) {
       return tangent;
     }
   };

@@ -17,7 +17,7 @@ The mathematical representation of the function is
 \f[
   y = f(x) = \left( \sum_i x_i, \prod_i x_i \right)^T \eqdot
 \f]
-As the function is quite simple the jacobi of the function can be computed by hand and is
+As the function is quite simple the Jacobi of the function can be computed by hand and is
 \f[
   \tag{T4.1}
   \frac{\d f_1}{\d x_j}(x) = 1.0 \eqdot
@@ -35,7 +35,7 @@ The derivative computation with the reverse mode of CoDiPack needs now the same 
   - The tape recorded by CoDiPack has to be evaluated.
   - The result of the derivative has to be received.
 
-In order to get the full jacobi matrix the last three steps have to be evaluated multiple times.
+In order to get the full Jacobi matrix the last three steps have to be evaluated multiple times.
 
 The implementation with the RealReverse type is similar as in tutorial 2.
 The type in the function is exchanged and the same is done for the driver function.

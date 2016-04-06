@@ -67,12 +67,16 @@ namespace codi {
    *
    * For more information on how to use this class please refer to the #RealForward and #RealReverse.
    *
-   * @tparam Real The floating point type which is used for the computation. Can also be another ActiveReal type.
    * @tparam Tape The tape which handles the derivative calculation. This type has to implement the TapeInterface.
    */
-  template<typename Real, typename Tape>
-  class ActiveReal : public Expression<Real, ActiveReal<Real, Tape> > {
+  template<typename Tape>
+  class ActiveReal : public Expression<typename Tape::Real, ActiveReal<Tape> > {
   public:
+
+    /**
+     * @brief The floating point type used for the calculations.
+     */
+    typedef typename Tape::Real Real;
 
     /**
      * @brief Defines that the active real's are stored as references in the expression templates.
@@ -83,11 +87,6 @@ namespace codi {
      * @brief Static definition of the tape.
      */
     static Tape globalTape;
-
-    /**
-     * @brief The floating point type used for the calculations.
-     */
-    typedef Real RealType;
 
     /**
      * @brief The tape used for the derivative calculations.
@@ -103,9 +102,15 @@ namespace codi {
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /**
-     * @brief The gradient data needed by the tape to compute the derivatives.
+     * @brief The gradient data needed by the tape to store information about the derivatives.
      */
     typedef typename Tape::GradientData GradientData;
+
+    /**
+     * @brief The gradient value needed by the tape to compute the derivatives.
+     */
+    typedef typename Tape::GradientValue GradientValue;
+
 
   private:
     /**
@@ -176,9 +181,14 @@ namespace codi {
      *
      * @param[in] v The value to copy.
      */
-    inline ActiveReal(const ActiveReal<Real, Tape>& v) {
-      globalTape.initGradientData(this->primalValue, gradientData);
-      globalTape.store(primalValue, gradientData, v);
+    inline ActiveReal(const ActiveReal<Tape>& v) {
+      globalTape.initGradientData(primalValue, gradientData);
+
+      if(OptDisableAssignOptimization) {
+        *this = 1.0 * v;
+      } else {
+        globalTape.store(primalValue, gradientData, v);
+      }
     }
 
     /**
@@ -213,6 +223,20 @@ namespace codi {
       globalTape.pushJacobi(data, jacobi, primalValue, gradientData);
     }
 
+    /**
+     * @brief Not needed by this type.
+     *
+     * The method is called for types that accumulate the jacobies before
+     * they are pushed to the tape.
+     *
+     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     *
+     * @tparam Data The type for the tape data.
+     */
+    template<typename Data>
+    inline void pushLazyJacobies(Data& data) const {
+      CODI_UNUSED(data);
+    }
 
     /**
      * @brief Helper function for the tape to get its information about this type.
@@ -234,7 +258,7 @@ namespace codi {
      * @brief Get a reference to the actual gradient value of this instance.
      * @return Reference to the gradient value.
      */
-    inline Real& gradient() {
+    inline GradientValue& gradient() {
       return globalTape.gradient(gradientData);
     }
 
@@ -243,7 +267,7 @@ namespace codi {
      * @brief Get the value of the gradient of this instance.
      * @return The gradient value.
      */
-    inline Real getGradient() const {
+    inline GradientValue getGradient() const {
       return globalTape.getGradient(gradientData);
     }
 
@@ -251,7 +275,7 @@ namespace codi {
      * @brief Set the value of the gradient of this instance.
      * @param gradient  The new gradient value.
      */
-    inline void setGradient(const Real& gradient) {
+    inline void setGradient(const GradientValue& gradient) {
       globalTape.setGradient(gradientData, gradient);
     }
 
@@ -288,7 +312,7 @@ namespace codi {
      * @param[in] rhs The rhs value.
      * @return Reference to this.
      */
-    inline ActiveReal<Real, Tape>& operator=(const PassiveReal& rhs){
+    inline ActiveReal<Tape>& operator=(const PassiveReal& rhs){
       globalTape.store(primalValue, gradientData, rhs);
       return *this;
     }
@@ -303,7 +327,7 @@ namespace codi {
      * @return Reference to this.
      */
     template<class R>
-    inline ActiveReal<Real, Tape>& operator=(const Expression<Real, R>& rhs){
+    inline ActiveReal<Tape>& operator=(const Expression<Real, R>& rhs){
       globalTape.store(primalValue, gradientData, rhs.cast());
       return *this;
     }
@@ -317,8 +341,12 @@ namespace codi {
      * @param[in] rhs The other value on the rhs.
      * @return Reference to this.
      */
-    inline ActiveReal<Real, Tape>& operator=(const ActiveReal<Real, Tape>& rhs) {
-      globalTape.store(primalValue, gradientData, rhs);
+    inline ActiveReal<Tape>& operator=(const ActiveReal<Tape>& rhs) {
+      if(OptDisableAssignOptimization) {
+           *this = 1.0 * rhs;
+      } else {
+          globalTape.store(primalValue, gradientData, rhs);
+      }
       return *this;
     }
 
@@ -329,7 +357,7 @@ namespace codi {
      * @tparam R The type of the expression on the rhs.
      */
     template<class R>
-    inline ActiveReal<Real, Tape>& operator+=(const Expression<Real, R>& rhs) {
+    inline ActiveReal<Tape>& operator+=(const Expression<Real, R>& rhs) {
       return *this = (*this + rhs);
     }
     /**
@@ -339,7 +367,7 @@ namespace codi {
      * @tparam R The type of the expression on the rhs.
      */
     template<class R>
-    inline ActiveReal<Real, Tape>& operator-=(const Expression<Real, R>& rhs) {
+    inline ActiveReal<Tape>& operator-=(const Expression<Real, R>& rhs) {
       return *this = (*this - rhs);
     }
     /**
@@ -349,7 +377,7 @@ namespace codi {
      * @tparam R The type of the expression on the rhs.
      */
     template<class R>
-    inline ActiveReal<Real, Tape>& operator*=(const Expression<Real, R>& rhs) {
+    inline ActiveReal<Tape>& operator*=(const Expression<Real, R>& rhs) {
       return *this = (*this * rhs);
     }
     /**
@@ -359,7 +387,7 @@ namespace codi {
      * @tparam R The type of the expression on the rhs.
      */
     template<class R>
-    inline ActiveReal<Real, Tape>& operator/=(const Expression<Real, R>& rhs) {
+    inline ActiveReal<Tape>& operator/=(const Expression<Real, R>& rhs) {
       return *this = (*this / rhs);
     }
 
@@ -372,7 +400,7 @@ namespace codi {
      *
      * @param[in] rhs The passive value on the rhs.
      */
-    inline ActiveReal<Real, Tape>& operator+=(const PassiveReal& rhs) {
+    inline ActiveReal<Tape>& operator+=(const PassiveReal& rhs) {
       // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
       primalValue += rhs;
       return *this;
@@ -386,7 +414,7 @@ namespace codi {
      *
      * @param[in] rhs The passive value on the rhs.
      */
-    inline ActiveReal<Real, Tape>& operator-=(const PassiveReal& rhs) {
+    inline ActiveReal<Tape>& operator-=(const PassiveReal& rhs) {
       // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
       primalValue -= rhs;
       return *this;
@@ -396,7 +424,7 @@ namespace codi {
      *
      * @param[in] rhs The passive value on the rhs.
      */
-    inline ActiveReal<Real, Tape>& operator*=(const PassiveReal& rhs) {
+    inline ActiveReal<Tape>& operator*=(const PassiveReal& rhs) {
       return *this = (*this * rhs);
     }
     /**
@@ -404,14 +432,14 @@ namespace codi {
      *
      * @param[in] rhs The passive value on the rhs.
      */
-    inline ActiveReal<Real, Tape>& operator/=(const PassiveReal& rhs) {
+    inline ActiveReal<Tape>& operator/=(const PassiveReal& rhs) {
       return *this = (*this / rhs);
     }
 
     /**
      * @brief The expression is unfolded to *this += 1.0
      */
-    inline ActiveReal<Real, Tape> operator++() {
+    inline ActiveReal<Tape> operator++() {
       return *this += 1.0;
     }
     /**
@@ -419,16 +447,16 @@ namespace codi {
      *
      * @param u Indicator for postfix operator.
      */
-    inline ActiveReal<Real, Tape> operator++(int u) {
+    inline ActiveReal<Tape> operator++(int u) {
       CODI_UNUSED(u);
-      ActiveReal<Real, Tape> r(*this);
+      ActiveReal<Tape> r(*this);
       *this += *this + 1.0;
       return r;
     }
     /**
      * @brief The expression is unfolded to *this -= 1.0
      */
-    inline ActiveReal<Real, Tape> operator--() {
+    inline ActiveReal<Tape> operator--() {
       return *this = *this - 1.0;
     }
     /**
@@ -436,9 +464,9 @@ namespace codi {
      *
      * @param u Indicator for postfix operator.
      */
-    inline ActiveReal<Real, Tape> operator--(int u) {
+    inline ActiveReal<Tape> operator--(int u) {
       CODI_UNUSED(u);
-      ActiveReal<Real, Tape> r(*this);
+      ActiveReal<Tape> r(*this);
       *this = *this - 1.0;
       return r;
     }
@@ -455,12 +483,17 @@ namespace codi {
   /**
    * @brief Specialization of the TypeTraits for the ActiveReal type.
    *
-   * @tparam Real The floating point value of the active real.
    * @tparam Tape The tape of the active real.
    */
-  template<typename Real, typename Tape>
-  class TypeTraits<ActiveReal<Real, Tape> > {
+  template<typename Tape>
+  class TypeTraits<ActiveReal<Tape> > {
     public:
+
+      /**
+       * @brief The the calculation type.
+       */
+      typedef typename Tape::Real Real;
+
       /**
        * @brief The passive type is the passive type of Real.
        */
@@ -471,7 +504,7 @@ namespace codi {
        * @param[in] t The value from which the primal is extracted.
        * @return The primal value of the origin of this type..
        */
-      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ActiveReal<Real, Tape>& t) {
+      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ActiveReal<Tape>& t) {
         return TypeTraits<Real>::getBaseValue(t.getValue());
       }
   };
@@ -479,17 +512,16 @@ namespace codi {
   /**
    * @brief The instantiation of the tape for the ActiveReal.
    */
-  template<typename Real, typename Tape>
-  Tape ActiveReal<Real, Tape>::globalTape;
+  template<typename Tape>
+  Tape ActiveReal<Tape>::globalTape;
 
   /**
    * @brief Specialization of the ExpressionTraits for the ActiveReal type.
    *
-   * @tparam Real The floating point value of the active real.
    * @tparam Tape The tape of the active real.
    */
-  template<typename Real, typename Tape>
-  struct ExpressionTraits<ActiveReal<Real, Tape> >  {
+  template<typename Tape>
+  struct ExpressionTraits<ActiveReal<Tape> >  {
     /**
      * @brief The maximum number of active values for an ActiveReal is one.
      */
@@ -521,12 +553,11 @@ namespace codi {
    *
    * @return The modified stream.
    *
-   * @tparam Real The floating point value of the active real.
    * @tparam Tape The tape of the active real.
    */
-  template<typename Real, typename Tape>
-  std::istream& operator>>(std::istream& os, ActiveReal<Real, Tape>& rhs){
-    Real temp;
+  template<typename Tape>
+  std::istream& operator>>(std::istream& os, ActiveReal<Tape>& rhs){
+    typename Tape::Real temp;
     os >> temp;
     rhs.setValue(temp);
     return os;

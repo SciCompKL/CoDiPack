@@ -17,7 +17,7 @@ The mathematical representation of the function is
 \f[
   y = f(x) = \left( \sum_i x_i, \prod_i x_i \right)^T \eqdot
 \f]
-As the function is quite simple the jacobi of the function can be computed by hand and is
+As the function is quite simple the Jacobi of the function can be computed by hand and is
 \f[
   \tag{T3.1}
   \frac{\d f_1}{\d x_j}(x) = 1.0 \eqdot
@@ -27,13 +27,13 @@ As the function is quite simple the jacobi of the function can be computed by ha
   \frac{\d f_2}{\d x_j}(x) = \prod_{i \not= j} x_i \eqdot
 \f]
 
-The derivative computation with the forward mode of CoDiPack needs now the same four steps as in [Tutorial 1](@ref Tutorial1):
+The derivative computation with the forward mode of CoDiPack needs now the same four steps as in [tutorial 1](@ref Tutorial1):
   - An implementation of the function with the CoDiPack forward type [RealForward](@ref codi::RealForward).
   - The direction of the derivative has to be set.
   - The evaluation of the function with the RealForward type.
   - The result of the derivative has to be received from the result.
 
-In order to get the full jacobi matrix the last three steps have to be evaluated multiple times.
+In order to get the full Jacobi matrix the last three steps have to be evaluated multiple times.
 
 The implementation with the RealForward type is similar as in tutorial 1.
 The type in the function is exchanged and the same is done for the driver function.
@@ -87,7 +87,7 @@ The code for the evaluation is
        x[i].setGradient(0.0);
      } .
 ~~~~
-The function is evaluated five times and each time one gradient is set to \f$1.0\f$.
+The function is evaluated five times and each time gradient of one input value is set to \f$1.0\f$.
 
 The result for the primal computation will be \f$(15, 120)\f$ and the Jacobi will be
 

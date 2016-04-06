@@ -67,9 +67,17 @@ int main(int nargs, char** args) {
       }
 
       func(x, y);
+
+      for(int i = 0; i < outputs; ++i) {
+        tape.registerOutput(y[i]);
+      }
+
       tape.setPassive();
 
-      y[curOut].setGradient(1.0);
+      for(int i = 0; i < outputs; ++i) {
+        y[i].setGradient(i == curOut ? 1.0:0.0);
+      }
+
       tape.evaluate();
 
       for(int curIn = 0; curIn < inputs; ++curIn) {
@@ -77,6 +85,7 @@ int main(int nargs, char** args) {
       }
 
       tape.reset();
+      tape.clearAdjoints();
     }
 
     for(int curIn = 0; curIn < inputs; ++curIn) {

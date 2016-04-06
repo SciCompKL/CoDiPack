@@ -123,6 +123,21 @@ struct OP : public Expression<Real, OP<Real, A> > {
     a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_)*multiplier);
   }
 
+  /**
+   * @brief The call is forwarded to the arguments.
+   *
+   * The method is called for types that accumulate the jacobies before
+   * they are pushed to the tape.
+   *
+   * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+   *
+   * @tparam Data The type for the tape data.
+   */
+  template<typename Data>
+  inline void pushLazyJacobies(Data& data) const {
+    a_.pushLazyJacobies(data);
+  }
+
   /** 
    * @brief Return the numerical value of the expression. 
    *
@@ -133,7 +148,37 @@ struct OP : public Expression<Real, OP<Real, A> > {
   }
 };
 
-/** 
+
+/**
+ * @brief Specialization of the TypeTraits for the unary operator type.
+ *
+ * @tparam Real  The floating point value of the active real.
+ * @tparam    A  The type of the argument of the unary operator.
+ */
+template<typename RealType, typename A>
+class TypeTraits< OP<RealType, A> > {
+  public:
+    /**
+     * @brief The passive type is the passive type of Real.
+     */
+    typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
+
+    /**
+     * @brief The definition of the Real type for other classes.
+     */
+    typedef RealType Real;
+
+    /**
+     * @brief Get the primal value of the origin of this type.
+     * @param[in] t The value from which the primal is extracted.
+     * @return The primal value of the origin of this type..
+     */
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP<RealType, A>& t) {
+      return TypeTraits<RealType>::getBaseValue(t.getValue());
+    }
+};
+
+/**
  * @brief Overload for FUNC with the CoDiPack expressions.
  *
  * @param[in] a The argument of the operation.
