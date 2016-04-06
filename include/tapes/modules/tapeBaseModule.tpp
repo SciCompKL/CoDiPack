@@ -161,6 +161,16 @@
     }
 
     /**
+     * @brief Check whether the gradient data is zero.
+     *
+     * @param[in] index The index of the active type.
+     * @return False if the gradient data is zero, otherwise returns true.
+     */
+    bool isActive(const IndexType& index) const{
+      return (index != 0);
+    }
+
+    /**
      * @brief Get the gradient value of the corresponding index.
      *
      * @param[in] index The index of the active type.

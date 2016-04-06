@@ -280,6 +280,14 @@ namespace codi {
     }
 
     /**
+     * @brief Check whether the variable is active.
+     * @return True if the variables is active, otherwise false.
+     */
+    inline bool isActive() const{
+      return globalTape.isActive(this->gradientData);
+    }
+
+    /**
      * @brief Get a reference to the primal value of this instance.
      * @return  Reference to the primal value.
      */
