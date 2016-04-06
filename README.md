@@ -50,7 +50,7 @@ Because CoDiPack relies on inlining of the compiler the performance can drop if 
 With some specific applications the performance can be improved if the inline factor of the intel compiler is increased.
 The options are
 ~~~~{.txt}
--inline-factor=600 -inline-forceinline
+-ipo -inline-factor=600 -inline-forceinline
 ~~~~
 
 ## Hello World Example
