@@ -241,6 +241,18 @@ namespace codi {
       primalsSize(0),
       primalsIncr(DefaultSmallChunkSize){}
 
+    size_t getUsedStatementsSize() const {
+      return stmtVector.getDataSize();
+    }
+
+    size_t getUsedDataEntriesSize() const {
+      return indexVector.getDataSize();
+    }
+
+    size_t getUsedPassiveDataSize() const {
+      return passiveVector.getDataSize();
+    }
+
     /**
      * @brief Helper function: Sets the primal vector to a new size.
      *
@@ -612,64 +624,78 @@ namespace codi {
 
       const std::string hLine = "-------------------------------------\n";
 
-//      size_t nChunksData  = 1;
-//      size_t totalData    =  data.getUsedSize();
-//      double  memoryUsedData = (double)totalData*(double)(sizeof(IndexType))* BYTE_TO_MB;
-//      double  memoryAllocData= (double)data.getSize() *(double)(sizeof(IndexType))* BYTE_TO_MB;
-//
-//      size_t nChunksStmts  = 1;
-//      size_t totalStmts    = statements.getUsedSize();
-//
-//      double  memoryUsedStmts = (double)totalStmts*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
-//      double  memoryAllocStmts= (double)statements.getSize()*(double)sizeof(const ExpressionHandle<Real*, Real, IndexType>*)* BYTE_TO_MB;
-//
-//      size_t nChunksPassive  = 1;
-//      size_t totalPassive    =  passiveData.getUsedSize();
-//      double  memoryUsedPassive = (double)totalPassive*(double)(sizeof(PassiveReal))* BYTE_TO_MB;
-//      double  memoryAllocPassive = (double)passiveData.getSize() *(double)(sizeof(PassiveReal))* BYTE_TO_MB;
+      size_t nChunksIndex  = indexVector.getNumChunks();
+      size_t totalIndex    = indexVector.getDataSize();
+      size_t sizeIndexEntry = sizeof(IndexType);
+      double memoryUsedIndex = (double)totalIndex*(double)sizeIndexEntry* BYTE_TO_MB;
+      double memoryAllocIndex= (double)nChunksIndex*(double)indexVector.getChunkSize()*(double)sizeIndexEntry* BYTE_TO_MB;
+
+      size_t nChunksStmt  = stmtVector.getNumChunks();
+      size_t totalStmt    = stmtVector.getDataSize();
+      size_t sizeStmtEntry = sizeof(const ExpressionHandle<Real*, Real, IndexType>*);
+      double memoryUsedStmt = (double)totalStmt*(double)sizeStmtEntry* BYTE_TO_MB;
+      double memoryAllocStmt= (double)nChunksStmt*(double)stmtVector.getChunkSize()*(double)sizeStmtEntry* BYTE_TO_MB;
+
+      size_t nChunksPassive  = passiveVector.getNumChunks();
+      size_t totalPassive    = passiveVector.getDataSize();
+      size_t sizePassiveEntry = sizeof(PassiveReal);
+      double memoryUsedPassive = (double)totalPassive*(double)sizePassiveEntry* BYTE_TO_MB;
+      double memoryAllocPassive= (double)nChunksPassive*(double)passiveVector.getChunkSize()*(double)sizePassiveEntry* BYTE_TO_MB;
+
+      size_t totalPrimal   = primalsSize;
+      size_t sizePrimalEntry = sizeof(Real);
+      double memoryAllocPrimal = (double)totalPrimal*(double)sizePrimalEntry* BYTE_TO_MB;
 
       out << hLine
-          << "CoDi Tape Statistics (simple primal value tape)\n";
+          << "CoDi Tape Statistics (" << TapeTypes::tapeName << ")\n";
       printTapeBaseStatistics(out, hLine);
-//      out << hLine
-//          << "Statements \n"
-//          << hLine
-//          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
-//          << "  Total Number:     " << std::setw(10) << totalStmts   << "\n"
-//          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-//                                    << std::setprecision(2)
-//                                    << std::setw(10)
-//                                    << memoryAllocStmts << " MB" << "\n"
-//          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-//                                    << std::setprecision(2)
-//                                    << std::setw(10)
-//                                    << memoryUsedStmts << " MB" << "\n";
-//      out << hLine
-//          << "Data entries \n"
-//          << hLine
-//          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
-//          << "  Total Number:     " << std::setw(10) << totalData   << "\n"
-//          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-//                                    << std::setprecision(2)
-//                                    << std::setw(10)
-//                                    << memoryAllocData << " MB" << "\n"
-//          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-//                                    << std::setprecision(2)
-//                                    << std::setw(10)
-//                                    << memoryUsedData << " MB" << "\n";
-//      out << hLine
-//          << "Passive data entries \n"
-//          << hLine
-//          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
-//          << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
-//          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-//                                    << std::setprecision(2)
-//                                    << std::setw(10)
-//                                    << memoryAllocPassive << " MB" << "\n"
-//          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-//                                    << std::setprecision(2)
-//                                    << std::setw(10)
-//                                    << memoryUsedPassive << " MB" << "\n";
+      out << hLine
+          << "Primal Vector \n"
+          << hLine
+          << "  Total Number:     " << std::setw(10) << totalPrimal << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocPrimal << " MB" << "\n";
+      out << hLine
+          << "Statements \n"
+          << hLine
+          << "  Number of Chunks: " << std::setw(10) << nChunksStmt << "\n"
+          << "  Total Number:     " << std::setw(10) << totalStmt   << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocStmt << " MB" << "\n"
+          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryUsedStmt << " MB" << "\n";
+      out << hLine
+          << "Index entries \n"
+          << hLine
+          << "  Number of Chunks: " << std::setw(10) << nChunksIndex << "\n"
+          << "  Total Number:     " << std::setw(10) << totalIndex << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocIndex << " MB" << "\n"
+          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryUsedIndex << " MB" << "\n";
+      out << hLine
+          << "Passive data entries \n"
+          << hLine
+          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
+          << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocPassive << " MB" << "\n"
+          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryUsedPassive << " MB" << "\n";
       printExtFuncStatistics(out, hLine);
     }
 
