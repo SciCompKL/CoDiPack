@@ -41,7 +41,7 @@
  *
  * It defines the methods pushJacobi(1.0), pushJacobi(Mul) printJacobiStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods evaluateJacobies, incrementAdjoints, setDataChunkSize, getUsedDataEntriesSize, resizeJacobi as interface functions for the
+ * It defines the methods evaluateJacobies, incrementAdjoints, setDataChunkSize, getUsedJacobiesSize, resizeJacobi as interface functions for the
  * including class.
  */
 
