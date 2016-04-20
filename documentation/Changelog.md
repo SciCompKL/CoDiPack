@@ -1,6 +1,10 @@
 Changelog      {#Changelog}
 ============
 
+### v 1.2.1 - 2016-04-20
+
+ - Introduction of the macro CODI_INLINE. This can be used to force the inlining of CoDiPack.
+
 ### v 1.2 - 2016-04-07
 
  - ReferenceActiveReal type for the optimizations of arguments

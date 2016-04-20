@@ -135,7 +135,7 @@
      * @tparam Rhs The expression on the rhs of the statement.
      */
     template<typename Rhs>
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
@@ -183,7 +183,7 @@
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
       lhsValue = rhs;
     }
@@ -198,7 +198,7 @@
      * @param[out]   lhsIndex    The gradient data of the lhs.
      * @param[in]        size    The number of Jacobi entries.
      */
-    inline void store(IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void store(IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(size);

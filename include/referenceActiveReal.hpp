@@ -104,7 +104,7 @@ namespace codi {
      *
      * @param[in] reference  The value for which the accumulation is done.
      */
-    inline ReferenceActiveReal(const ActiveType& reference) :
+    CODI_INLINE ReferenceActiveReal(const ActiveType& reference) :
       reference(reference),
       jacobi() {}
 
@@ -117,7 +117,7 @@ namespace codi {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data) const {
+    CODI_INLINE void calcGradient(Data& data) const {
       this->jacobi += 1.0;
     }
 
@@ -130,7 +130,7 @@ namespace codi {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data, const Real& jacobi) const {
+    CODI_INLINE void calcGradient(Data& data, const Real& jacobi) const {
       this->jacobi += jacobi;
     }
 
@@ -144,7 +144,7 @@ namespace codi {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void pushLazyJacobies(Data& data) const {
+    CODI_INLINE void pushLazyJacobies(Data& data) const {
       if(0.0 != jacobi) {
         reference.calcGradient(data, jacobi);
         jacobi = 0.0; // reset jacobi for the next statement or the next call for this statement
@@ -156,7 +156,7 @@ namespace codi {
      *
      * @return The gradient data from the referenced ActiveReal.
      */
-    inline const GradientData& getGradientData() const {
+    CODI_INLINE const GradientData& getGradientData() const {
       return reference.getGradientData();
     }
 
@@ -165,7 +165,7 @@ namespace codi {
      *
      * @return The gradient from the referenced ActiveReal.
      */
-    inline Real getGradient() const {
+    CODI_INLINE Real getGradient() const {
       return reference.getGradient();
     }
 
@@ -174,7 +174,7 @@ namespace codi {
      *
      * @return The value from the referenced ActiveReal.
      */
-    inline const Real& getValue() const {
+    CODI_INLINE const Real& getValue() const {
       return reference.getValue();
     }
 
@@ -182,7 +182,7 @@ namespace codi {
     /**
      * @brief Forbid assignment onn this type.
      */
-    inline ReferenceActiveReal<ActiveType>& operator=(const ReferenceActiveReal& rhs){}
+    CODI_INLINE ReferenceActiveReal<ActiveType>& operator=(const ReferenceActiveReal& rhs){}
   };
 
   /**

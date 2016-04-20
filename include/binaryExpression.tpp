@@ -92,13 +92,13 @@ template <typename Real, class A> struct OP10;
 template <typename Real, class B> struct OP01;
 
 template <typename Real, class A, class B>
-inline  OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b);
+CODI_INLINE  OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b);
 
 template <typename Real, class A>
-inline  OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b);
+CODI_INLINE  OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b);
 
 template <typename Real, class B>
-inline  OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b);
+CODI_INLINE  OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b);
 
 /** 
  * @brief Expression implementation for OP with two active variables. 
@@ -141,7 +141,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data) const {
+    CODI_INLINE void calcGradient(Data& data) const {
       DERIVATIVE_FUNC_11(data, a_, b_, getValue());
     }
 
@@ -156,7 +156,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data, const Real& multiplier) const {
+    CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
       DERIVATIVE_FUNC_11M(data, a_, b_, getValue(), multiplier);
     }
 
@@ -171,7 +171,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void pushLazyJacobies(Data& data) const {
+    CODI_INLINE void pushLazyJacobies(Data& data) const {
       a_.pushLazyJacobies(data);
       b_.pushLazyJacobies(data);
     }
@@ -181,7 +181,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      *
      * @return The value of the expression.
      */
-    inline const Real getValue() const {
+    CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_.getValue(), b_.getValue());
     }
 };
@@ -229,7 +229,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data) const {
+    CODI_INLINE void calcGradient(Data& data) const {
       DERIVATIVE_FUNC_10(data, a_, b_, getValue());
     }
 
@@ -244,7 +244,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data, const Real& multiplier) const {
+    CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
       DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
     }
 
@@ -259,7 +259,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void pushLazyJacobies(Data& data) const {
+    CODI_INLINE void pushLazyJacobies(Data& data) const {
       a_.pushLazyJacobies(data);
     }
 
@@ -268,7 +268,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      *
      * @return The value of the expression.
      */
-    inline const Real getValue() const {
+    CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_.getValue(), b_);
     }
 };
@@ -315,7 +315,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data) const {
+    CODI_INLINE void calcGradient(Data& data) const {
       DERIVATIVE_FUNC_01(data, a_, b_, getValue());
     }
 
@@ -330,7 +330,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data, const Real& multiplier) const {
+    CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
       DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
     }
 
@@ -345,7 +345,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void pushLazyJacobies(Data& data) const {
+    CODI_INLINE void pushLazyJacobies(Data& data) const {
       b_.pushLazyJacobies(data);
     }
 
@@ -354,7 +354,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      *
      * @return The value of the expression. 
      */
-    inline const Real getValue() const {
+    CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_, b_.getValue());
     }
 };
@@ -461,7 +461,7 @@ class TypeTraits< OP01<RealType, B> > {
  * @tparam    B  The expression for the second argument of the function
  */
 template <typename Real, class A, class B>
-inline OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b) {
+CODI_INLINE OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b) {
   return OP11<Real, A, B>(a.cast(), b.cast());
 }
 /**
@@ -476,7 +476,7 @@ inline OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real
  * @tparam    A  The expression for the first argument of the function
  */
 template <typename Real, class A>
-inline OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+CODI_INLINE OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
   return OP10<Real, A>(a.cast(), b);
 }
 /**
@@ -491,7 +491,7 @@ inline OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTrait
  * @tparam    B  The expression for the second argument of the function
  */
 template <typename Real, class B>
-inline OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
+CODI_INLINE OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
   return OP01<Real, B>(a, b.cast());
 }
 

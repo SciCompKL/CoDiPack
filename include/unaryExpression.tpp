@@ -63,7 +63,7 @@
 template<typename Real, class A> struct OP;
 
 template <typename Real, class A>
-inline OP<Real, A> FUNC(const Expression<Real, A>& a);
+CODI_INLINE OP<Real, A> FUNC(const Expression<Real, A>& a);
 
 /** 
  * @brief Expression implementation for OP.
@@ -104,7 +104,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * @tparam Data The type for the tape data.
    */
   template<typename Data>
-  inline void calcGradient(Data& data) const {
+  CODI_INLINE void calcGradient(Data& data) const {
     a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_));
   }
 
@@ -119,7 +119,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * @tparam Data The type for the tape data.
    */
   template<typename Data>
-  inline void calcGradient(Data& data, const Real& multiplier) const {
+  CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
     a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_)*multiplier);
   }
 
@@ -134,7 +134,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * @tparam Data The type for the tape data.
    */
   template<typename Data>
-  inline void pushLazyJacobies(Data& data) const {
+  CODI_INLINE void pushLazyJacobies(Data& data) const {
     a_.pushLazyJacobies(data);
   }
 
@@ -143,7 +143,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    *
    * @return The value of the expression. 
    */
-  inline const Real& getValue() const {
+  CODI_INLINE const Real& getValue() const {
     return result_;
   }
 };
@@ -189,7 +189,7 @@ class TypeTraits< OP<RealType, A> > {
  * @tparam A The expression for the first argument of the function.
  */
 template <typename Real, class A>
-inline OP<Real, A> FUNC(const Expression<Real, A>& a) {
+CODI_INLINE OP<Real, A> FUNC(const Expression<Real, A>& a) {
   return OP<Real, A>(a.cast());
 }
 

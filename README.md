@@ -47,10 +47,9 @@ set print static-members off
 ### Intel compiler options
 
 Because CoDiPack relies on inlining of the compiler the performance can drop if it is not done or ignored.
-With some specific applications the performance can be improved if the inline factor of the intel compiler is increased.
-The options are
+Therefore we recomend to force inlining of CoDiPack with the option
 ~~~~{.txt}
--ipo -inline-factor=600 -inline-forceinline
+-DCODI_UseForcedInlines 
 ~~~~
 
 ## Hello World Example
