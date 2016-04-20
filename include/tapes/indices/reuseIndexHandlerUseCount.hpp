@@ -114,7 +114,7 @@ namespace codi {
        *
        * @param[inout] index  The index that is freed. It is set to zero in the method.
        */
-      inline void freeIndex(Index& index) {
+      CODI_INLINE void freeIndex(Index& index) {
         if(0 != index) { // do not free the zero index
           indexUse[index] -= 1;
 
@@ -136,7 +136,7 @@ namespace codi {
        *
        * @return The new index that can be used.
        */
-      inline Index createIndex() {
+      CODI_INLINE Index createIndex() {
         Index index;
         if(0 != freeIndices.size()) {
           index = freeIndices.back();
@@ -160,7 +160,7 @@ namespace codi {
        *
        * @param[inout] index The current value of the index. If 0 then a new index is generated.
        */
-      inline void assignIndex(Index& index) {
+      CODI_INLINE void assignIndex(Index& index) {
         if(0 == index) {
           index = this->createIndex();
         } else if(indexUse[index] > 1) {
@@ -179,7 +179,7 @@ namespace codi {
        * @param[inout] lhs  The index of the lhs. It is overwritten with the index of the rhs.
        * @param[in]    rhs  The index of the rhs.
        */
-      inline void copyIndex(Index& lhs, const Index& rhs) {
+      CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {
         freeIndex(lhs);
 
         if(0 != rhs) { // do not handle the zero index
@@ -192,7 +192,7 @@ namespace codi {
       /**
        * @brief Not needed by this manager.
        */
-      inline void reset() const {
+      CODI_INLINE void reset() const {
         /* do nothing */
       }
 
@@ -201,7 +201,7 @@ namespace codi {
        *
        * @return The maximum index that was used during the lifetime of this index handler.
        */
-      inline Index getMaximumGlobalIndex() const {
+      CODI_INLINE Index getMaximumGlobalIndex() const {
         return globalMaximumIndex;
       }
 
@@ -210,7 +210,7 @@ namespace codi {
        *
        * @return The current maximum index that is in use.
        */
-      inline Index getCurrentIndex() const {
+      CODI_INLINE Index getCurrentIndex() const {
         return currentMaximumIndex;
       }
 
@@ -285,7 +285,7 @@ namespace codi {
        * The method increases the size of the index use vector by the chunk
        * increment defined in the constructor.
        */
-      inline void checkIndexUseSize() {
+      CODI_INLINE void checkIndexUseSize() {
         if(indexUse.size() <= (size_t)globalMaximumIndex) {
           this->indexUse.resize(indexUse.size() + indexUseSizeIncrement);
         }

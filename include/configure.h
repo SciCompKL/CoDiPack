@@ -48,6 +48,32 @@ namespace codi {
    */
   const double BYTE_TO_MB = 1.0/1024.0/1024.0;
 
+   /**
+   * @brief Macro for forcing the inlining of the expression templates.
+   *
+   * The macro defines the attribute of the function such that it is directly inlined
+   * and not just an recomendation for the compiler.
+   *
+   * Currently it is defined for intel and gcc.
+   */
+  #ifndef CODI_UseForcedInlines
+    #define CODI_UseForcedInlines 0
+  #endif
+  #if CODI_UseForcedInlines
+    #if defined(__INTEL_COMPILER)
+      #define CODI_INLINE __forceinline
+    #elif defined(__GNUC__)
+      #define CODI_INLINE __attribute__((always_inline))
+    #else
+      #warning Could not determine compiler for forced inline definitions. Using inline.
+      #define CODI_INLINE inline
+    #endif
+  #else
+    #define CODI_INLINE inline
+  #endif
+  #undef CODI_UseForcedInlines
+
+
   /**
    * @brief Type for the maximum number of variables a operation can have.
    */

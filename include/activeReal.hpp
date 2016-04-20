@@ -131,7 +131,7 @@ namespace codi {
     /**
      * @brief Constructs the equivalent of zero and initializes the gradient data.
      */
-    inline ActiveReal() : primalValue() {
+    CODI_INLINE ActiveReal() : primalValue() {
       globalTape.initGradientData(primalValue, gradientData);
     }
 
@@ -142,7 +142,7 @@ namespace codi {
      *
      * @param[in] value   The primal value of the active type.
      */
-    inline ActiveReal(const PassiveReal& value) : primalValue(value) {
+    CODI_INLINE ActiveReal(const PassiveReal& value) : primalValue(value) {
       globalTape.initGradientData(this->primalValue, gradientData);
     }
 
@@ -152,7 +152,7 @@ namespace codi {
      * @param[in]    value  The primal value for this type.
      * @param[in] gradient  The gradient value for this type.
      */
-    inline ActiveReal(const Real& value, const Real& gradient) : primalValue(value) {
+    CODI_INLINE ActiveReal(const Real& value, const Real& gradient) : primalValue(value) {
       globalTape.initGradientData(this->primalValue, gradientData);
       globalTape.setGradient(gradientData, gradient);
     }
@@ -168,7 +168,7 @@ namespace codi {
      * @tparam R The type of the expression.
      */
     template<class R>
-    inline ActiveReal(const Expression<Real, R>& rhs) {
+    CODI_INLINE ActiveReal(const Expression<Real, R>& rhs) {
       globalTape.initGradientData(this->primalValue, gradientData);
       globalTape.store(primalValue, gradientData, rhs.cast());
     }
@@ -181,7 +181,7 @@ namespace codi {
      *
      * @param[in] v The value to copy.
      */
-    inline ActiveReal(const ActiveReal<Tape>& v) {
+    CODI_INLINE ActiveReal(const ActiveReal<Tape>& v) {
       globalTape.initGradientData(primalValue, gradientData);
 
       if(OptDisableAssignOptimization) {
@@ -194,7 +194,7 @@ namespace codi {
     /**
      * @brief Call the tape to destroy the gradient data.
      */
-    inline ~ActiveReal() {
+    CODI_INLINE ~ActiveReal() {
       globalTape.destroyGradientData(primalValue, gradientData);
     }
 
@@ -206,7 +206,7 @@ namespace codi {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data) const {
+    CODI_INLINE void calcGradient(Data& data) const {
       globalTape.pushJacobi(data, primalValue, gradientData);
     }
 
@@ -219,7 +219,7 @@ namespace codi {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void calcGradient(Data& data, const Real& jacobi) const {
+    CODI_INLINE void calcGradient(Data& data, const Real& jacobi) const {
       globalTape.pushJacobi(data, jacobi, primalValue, gradientData);
     }
 
@@ -234,7 +234,7 @@ namespace codi {
      * @tparam Data The type for the tape data.
      */
     template<typename Data>
-    inline void pushLazyJacobies(Data& data) const {
+    CODI_INLINE void pushLazyJacobies(Data& data) const {
       CODI_UNUSED(data);
     }
 
@@ -242,7 +242,7 @@ namespace codi {
      * @brief Helper function for the tape to get its information about this type.
      * @return The gradient data from the tape stored in this type.
      */
-    inline GradientData& getGradientData() {
+    CODI_INLINE GradientData& getGradientData() {
       return gradientData;
     }
 
@@ -250,7 +250,7 @@ namespace codi {
      * @brief Helper function for the tape to get its information about this type.
      * @return The gradient data from the tape stored in this type.
      */
-    inline const GradientData& getGradientData() const {
+    CODI_INLINE const GradientData& getGradientData() const {
       return gradientData;
     }
 
@@ -258,7 +258,7 @@ namespace codi {
      * @brief Get a reference to the actual gradient value of this instance.
      * @return Reference to the gradient value.
      */
-    inline GradientValue& gradient() {
+    CODI_INLINE GradientValue& gradient() {
       return globalTape.gradient(gradientData);
     }
 
@@ -267,7 +267,7 @@ namespace codi {
      * @brief Get the value of the gradient of this instance.
      * @return The gradient value.
      */
-    inline GradientValue getGradient() const {
+    CODI_INLINE GradientValue getGradient() const {
       return globalTape.getGradient(gradientData);
     }
 
@@ -275,7 +275,7 @@ namespace codi {
      * @brief Set the value of the gradient of this instance.
      * @param gradient  The new gradient value.
      */
-    inline void setGradient(const GradientValue& gradient) {
+    CODI_INLINE void setGradient(const GradientValue& gradient) {
       globalTape.setGradient(gradientData, gradient);
     }
 
@@ -283,7 +283,7 @@ namespace codi {
      * @brief Get a reference to the primal value of this instance.
      * @return  Reference to the primal value.
      */
-    inline Real& value() {
+    CODI_INLINE Real& value() {
       return primalValue;
     }
 
@@ -291,7 +291,7 @@ namespace codi {
      * @brief Get the primal value of this instance.
      * @return The primal value.
      */
-    inline const Real& getValue() const {
+    CODI_INLINE const Real& getValue() const {
       return primalValue;
     }
 
@@ -299,7 +299,7 @@ namespace codi {
      * @brief Set the primal value of this instance.
      * @param value The new primal value.
      */
-    inline void setValue(const Real& value) {
+    CODI_INLINE void setValue(const Real& value) {
       this->primalValue = value;
     }
 
@@ -312,7 +312,7 @@ namespace codi {
      * @param[in] rhs The rhs value.
      * @return Reference to this.
      */
-    inline ActiveReal<Tape>& operator=(const PassiveReal& rhs){
+    CODI_INLINE ActiveReal<Tape>& operator=(const PassiveReal& rhs){
       globalTape.store(primalValue, gradientData, rhs);
       return *this;
     }
@@ -327,7 +327,7 @@ namespace codi {
      * @return Reference to this.
      */
     template<class R>
-    inline ActiveReal<Tape>& operator=(const Expression<Real, R>& rhs){
+    CODI_INLINE ActiveReal<Tape>& operator=(const Expression<Real, R>& rhs){
       globalTape.store(primalValue, gradientData, rhs.cast());
       return *this;
     }
@@ -341,7 +341,7 @@ namespace codi {
      * @param[in] rhs The other value on the rhs.
      * @return Reference to this.
      */
-    inline ActiveReal<Tape>& operator=(const ActiveReal<Tape>& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator=(const ActiveReal<Tape>& rhs) {
       if(OptDisableAssignOptimization) {
            *this = 1.0 * rhs;
       } else {
@@ -357,7 +357,7 @@ namespace codi {
      * @tparam R The type of the expression on the rhs.
      */
     template<class R>
-    inline ActiveReal<Tape>& operator+=(const Expression<Real, R>& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator+=(const Expression<Real, R>& rhs) {
       return *this = (*this + rhs);
     }
     /**
@@ -367,7 +367,7 @@ namespace codi {
      * @tparam R The type of the expression on the rhs.
      */
     template<class R>
-    inline ActiveReal<Tape>& operator-=(const Expression<Real, R>& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator-=(const Expression<Real, R>& rhs) {
       return *this = (*this - rhs);
     }
     /**
@@ -377,7 +377,7 @@ namespace codi {
      * @tparam R The type of the expression on the rhs.
      */
     template<class R>
-    inline ActiveReal<Tape>& operator*=(const Expression<Real, R>& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator*=(const Expression<Real, R>& rhs) {
       return *this = (*this * rhs);
     }
     /**
@@ -387,7 +387,7 @@ namespace codi {
      * @tparam R The type of the expression on the rhs.
      */
     template<class R>
-    inline ActiveReal<Tape>& operator/=(const Expression<Real, R>& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator/=(const Expression<Real, R>& rhs) {
       return *this = (*this / rhs);
     }
 
@@ -400,7 +400,7 @@ namespace codi {
      *
      * @param[in] rhs The passive value on the rhs.
      */
-    inline ActiveReal<Tape>& operator+=(const PassiveReal& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator+=(const PassiveReal& rhs) {
       // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
       primalValue += rhs;
       return *this;
@@ -414,7 +414,7 @@ namespace codi {
      *
      * @param[in] rhs The passive value on the rhs.
      */
-    inline ActiveReal<Tape>& operator-=(const PassiveReal& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator-=(const PassiveReal& rhs) {
       // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
       primalValue -= rhs;
       return *this;
@@ -424,7 +424,7 @@ namespace codi {
      *
      * @param[in] rhs The passive value on the rhs.
      */
-    inline ActiveReal<Tape>& operator*=(const PassiveReal& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator*=(const PassiveReal& rhs) {
       return *this = (*this * rhs);
     }
     /**
@@ -432,14 +432,14 @@ namespace codi {
      *
      * @param[in] rhs The passive value on the rhs.
      */
-    inline ActiveReal<Tape>& operator/=(const PassiveReal& rhs) {
+    CODI_INLINE ActiveReal<Tape>& operator/=(const PassiveReal& rhs) {
       return *this = (*this / rhs);
     }
 
     /**
      * @brief The expression is unfolded to *this += 1.0
      */
-    inline ActiveReal<Tape> operator++() {
+    CODI_INLINE ActiveReal<Tape> operator++() {
       return *this += 1.0;
     }
     /**
@@ -447,7 +447,7 @@ namespace codi {
      *
      * @param u Indicator for postfix operator.
      */
-    inline ActiveReal<Tape> operator++(int u) {
+    CODI_INLINE ActiveReal<Tape> operator++(int u) {
       CODI_UNUSED(u);
       ActiveReal<Tape> r(*this);
       *this += *this + 1.0;
@@ -456,7 +456,7 @@ namespace codi {
     /**
      * @brief The expression is unfolded to *this -= 1.0
      */
-    inline ActiveReal<Tape> operator--() {
+    CODI_INLINE ActiveReal<Tape> operator--() {
       return *this = *this - 1.0;
     }
     /**
@@ -464,7 +464,7 @@ namespace codi {
      *
      * @param u Indicator for postfix operator.
      */
-    inline ActiveReal<Tape> operator--(int u) {
+    CODI_INLINE ActiveReal<Tape> operator--(int u) {
       CODI_UNUSED(u);
       ActiveReal<Tape> r(*this);
       *this = *this - 1.0;
@@ -475,7 +475,7 @@ namespace codi {
      * @brief Get the reference to the global tape for this type.
      * @return  The global reference to the tape.
      */
-    static inline Tape& getGlobalTape() {
+    static CODI_INLINE Tape& getGlobalTape() {
       return globalTape;
     }
   };

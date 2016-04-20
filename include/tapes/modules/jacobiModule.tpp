@@ -95,7 +95,7 @@
      * @param[in]  statements The pointer to the statement vector.
      */
     template<typename ... Args>
-    inline void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
+    CODI_INLINE void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
       Real* jacobiData;
       IndexType* indexData;
       size_t dataPos = start.data;
@@ -133,7 +133,7 @@
      * @param[in]             jacobies  The jacobies from the arguments of the statement.
      * @param[in]              indices  The indices from the arguments of the statements.
      */
-     inline void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+     CODI_INLINE void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
       ENABLE_CHECK(OptZeroAdjoint, adj != 0){
         for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
           --dataPos;
@@ -182,7 +182,7 @@
      * @tparam Data  The type of the data for the tape.
      */
     template<typename Data>
-    inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
@@ -201,7 +201,7 @@
      * @tparam Data  The type of the data for the tape.
      */
     template<typename Data>
-    inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {

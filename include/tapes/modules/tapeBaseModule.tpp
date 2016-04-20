@@ -129,7 +129,7 @@
      * @param[in] value Not used in this implementation.
      * @param[out] index The index of the active type.
      */
-    inline void initGradientData(Real& value, IndexType& index) {
+    CODI_INLINE void initGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
       index = IndexType();
     }
@@ -139,7 +139,7 @@
      * @param[in] value Not used in this implementation.
      * @param[in] index Not used in this implementation.
      */
-    inline void destroyGradientData(Real& value, IndexType& index) {
+    CODI_INLINE void destroyGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
 
       indexHandler.freeIndex(index);
@@ -166,7 +166,7 @@
      * @param[in] index The index of the active type.
      * @return The gradient value corresponding to the given index.
      */
-    inline GradientValue getGradient(const IndexType& index) const {
+    CODI_INLINE GradientValue getGradient(const IndexType& index) const {
       if(0 == index || adjointsSize <= index) {
         return GradientValue();
       } else {
@@ -182,7 +182,7 @@
      * @param[in] index The index of the active type.
      * @return The reference to the gradient data.
      */
-    inline GradientValue& gradient(IndexType& index) {
+    CODI_INLINE GradientValue& gradient(IndexType& index) {
       codiAssert(0 != index);
       codiAssert(index <= indexHandler.getMaximumGlobalIndex());
 
@@ -197,7 +197,7 @@
     /**
      * @brief Sets all adjoint/gradients to zero.
      */
-    inline void clearAdjoints(){
+    CODI_INLINE void clearAdjoints(){
       if(NULL != adjoints) {
         for(IndexType i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
           adjoints[i] = GradientValue();
@@ -210,7 +210,7 @@
      *
      * @param[in] pos Reset the state of the tape to the given position.
      */
-    inline void reset(const Position& pos) {
+    CODI_INLINE void reset(const Position& pos) {
       clearAdjoints(getPosition(), pos);
 
       // reset will be done iteratively through the vectors
@@ -221,7 +221,7 @@
     /**
      * @brief Reset the tape to its initial state.
      */
-    inline void reset() {
+    CODI_INLINE void reset() {
       clearAdjoints();
 
       // reset will be done iteratively through the vectors
@@ -254,14 +254,14 @@
     /**
      * @brief Start recording.
      */
-    inline void setActive(){
+    CODI_INLINE void setActive(){
       active = true;
     }
 
     /**
      * @brief Stop recording.
      */
-    inline void setPassive(){
+    CODI_INLINE void setPassive(){
       active = false;
     }
 
@@ -269,7 +269,7 @@
      * @brief Check if the tape is active.
      * @return true if the tape is active.
      */
-    inline bool isActive() const {
+    CODI_INLINE bool isActive() const {
       return active;
     }
 

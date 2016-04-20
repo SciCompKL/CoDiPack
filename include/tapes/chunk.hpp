@@ -62,7 +62,7 @@ namespace codi {
      * @brief Get the maximum size of the chunk
      * @return The maximum number of items.
      */
-    inline size_t getSize() const {
+    CODI_INLINE size_t getSize() const {
       return size;
     }
 
@@ -70,7 +70,7 @@ namespace codi {
      * @brief Get the number of used items.
      * @return The number of used items.
      */
-    inline size_t getUsedSize() const {
+    CODI_INLINE size_t getUsedSize() const {
       return usedSize;
     }
 
@@ -78,14 +78,14 @@ namespace codi {
      * @brief Get the number of free items.
      * @return The number of free items.
      */
-    inline size_t getUnusedSize() const {
+    CODI_INLINE size_t getUnusedSize() const {
       return size - usedSize;
     }
 
     /**
      * @brief Fully reset the data in this chunk.
      */
-    inline void reset() {
+    CODI_INLINE void reset() {
       usedSize = 0;
     }
 
@@ -93,7 +93,7 @@ namespace codi {
      * @brief Set the number of used items in this chunk.
      * @param usage   The number of used items.
      */
-    inline void setUsedSize(const size_t& usage) {
+    CODI_INLINE void setUsedSize(const size_t& usage) {
       usedSize = usage;
     }
 
@@ -103,7 +103,7 @@ namespace codi {
      * This method is called when the data of a chunk is no
      * longer directly needed and can be stored somewhere else.
      */
-    inline void store() {}
+    CODI_INLINE void store() {}
 
     /**
      * @brief Load the data of the chunk.
@@ -111,7 +111,7 @@ namespace codi {
      * This method is called when the data of a chunk is needed by the
      * evaluation process.
      */
-    inline void load() {}
+    CODI_INLINE void load() {}
   };
 
   /**
@@ -160,7 +160,7 @@ namespace codi {
      * @brief Set the data values to the current position and increment the used size.
      * @param value  The value which are set to the data.
      */
-    inline void setDataAndMove(const Data& value) {
+    CODI_INLINE void setDataAndMove(const Data& value) {
       codiAssert(getUnusedSize() != 0);
       data[usedSize] = value;
       ++usedSize;
@@ -171,7 +171,7 @@ namespace codi {
      * @param   index  The index in the data array.
      * @param pointer  Pointer that is set to the internal data pointer.
      */
-    inline void dataPointer(const size_t& index, Data* &pointer) {
+    CODI_INLINE void dataPointer(const size_t& index, Data* &pointer) {
       codiAssert(index <= ChunkInterface::size);
 
       pointer = &data[index];
@@ -231,7 +231,7 @@ namespace codi {
      * @param value1  The value for the first data array.
      * @param value2  The value for the second data array.
      */
-    inline void setDataAndMove(const Data1& value1, const Data2& value2) {
+    CODI_INLINE void setDataAndMove(const Data1& value1, const Data2& value2) {
       codiAssert(getUnusedSize() != 0);
       data1[usedSize] = value1;
       data2[usedSize] = value2;
@@ -245,7 +245,7 @@ namespace codi {
      * @param pointer2  Pointer that is set to the internal data pointer of the second array.
      * @return A pointer to the data.
      */
-    inline void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2) {
+    CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2) {
       codiAssert(index <= ChunkInterface::size);
       pointer1 = &data1[index];
       pointer2 = &data2[index];

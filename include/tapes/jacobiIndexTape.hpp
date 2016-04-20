@@ -226,7 +226,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
+    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
           indexHandler.copyIndex(lhsIndex, rhs.getGradientData());
@@ -266,7 +266,7 @@ namespace codi {
      * @param[in] start Not used
      * @param[in] end Not used
      */
-    inline void clearAdjoints(const Position& start, const Position& end){
+    CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
       CODI_UNUSED(start);
       CODI_UNUSED(end);
     }
@@ -278,7 +278,7 @@ namespace codi {
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getPosition() const {
+    CODI_INLINE Position getPosition() const {
       return getExtFuncPosition();
     }
 
@@ -294,7 +294,7 @@ namespace codi {
      * @param[in] numberOfArguments  The number of arguments in the statements that have been pushed as jacobies.
      * @param[in]          lhsIndex  The index of the lhs value of the operation.
      */
-    inline void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
+    CODI_INLINE void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
       stmtVector.setDataAndMove(numberOfArguments, lhsIndex);
     }
 
@@ -311,7 +311,7 @@ namespace codi {
      * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
      * @param[in]              indices The pointer the indices of the rhs arguments.
      */
-    inline void evalStmtCallback(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, IndexType* lhsIndices, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    CODI_INLINE void evalStmtCallback(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, IndexType* lhsIndices, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
 
       while(stmtPos > endStmtPos) {
         --stmtPos;
@@ -334,7 +334,7 @@ namespace codi {
      * @param[in]   end The ending point for the statement vector.
      */
     template<typename ... Args>
-    inline void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
+    CODI_INLINE void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
       StatementInt* numberOfArgumentsData;
       IndexType* lhsIndexData;
 
@@ -363,7 +363,7 @@ namespace codi {
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
       evaluateStmt(start, end, dataPos, jacobies, indices);
     }
 
@@ -377,7 +377,7 @@ namespace codi {
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalExtFuncCallback(const JacobiPosition& start, const JacobiPosition& end) {
+    CODI_INLINE void evalExtFuncCallback(const JacobiPosition& start, const JacobiPosition& end) {
       evaluateJacobies(start, end);
     }
 
@@ -389,7 +389,7 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
+    CODI_INLINE void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       indexHandler.assignIndex(value.getGradientData());
     }
 
@@ -398,7 +398,7 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
+    CODI_INLINE void registerOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       if(!IndexHandler::AssignNeedsStatement) {
         value = 1.0 * value;
       }

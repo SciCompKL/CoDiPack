@@ -171,7 +171,7 @@ namespace codi {
      *
      * @param items   The maximum number of items to store.
      */
-    inline void reserveItems(const size_t items) const {
+    CODI_INLINE void reserveItems(const size_t items) const {
       codiAssert(chunk.getUsedSize() + items < chunk.getSize());
     }
 
@@ -190,7 +190,7 @@ namespace codi {
      * @tparam Data  The data types for the data to be set.
      */
     template<typename ... Data>
-    inline void setDataAndMove(const Data& ... data) {
+    CODI_INLINE void setDataAndMove(const Data& ... data) {
       // this method should only be called if reserveItems has been called
       chunk.setDataAndMove(data...);
     }
@@ -199,7 +199,7 @@ namespace codi {
      * @brief The position inside the data of the current chunk.
      * @return The current position in the current chunk.
      */
-    inline size_t getChunkPosition() const {
+    CODI_INLINE size_t getChunkPosition() const {
       return chunk.getUsedSize();
     }
 
@@ -207,7 +207,7 @@ namespace codi {
      * @brief Get the position of the chunk vector and the nested vectors.
      * @return The position of the chunk vector.
      */
-    inline Position getPosition() const {
+    CODI_INLINE Position getPosition() const {
       return Position(chunk.getUsedSize(), nested.getPosition());
     }
 
@@ -217,7 +217,7 @@ namespace codi {
      * @param chunkIndex  The index of the chunk for which the position is required.
      * @return The position of the nested chunk vector when the chunk was loaded.
      */
-    inline NestedPosition getInnerPosition(const size_t& chunkIndex) const {
+    CODI_INLINE NestedPosition getInnerPosition(const size_t& chunkIndex) const {
       codiAssert(0 == chunkIndex);
       return NestedPosition();
     }
@@ -231,7 +231,7 @@ namespace codi {
      * @tparam  Pointers  The data types for the pointers.
      */
     template<typename ... Pointers>
-    inline void getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos, Pointers* &... pointers) {
+    CODI_INLINE void getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos, Pointers* &... pointers) {
       codiAssert(0 == chunkIndex);
 
       chunk.dataPointer(dataPos, pointers...);
@@ -242,7 +242,7 @@ namespace codi {
      * @param chunkIndex  The chunk from which the information is extracted.
      * @return The number of data items used in the chunk.
      */
-    inline size_t getChunkUsedData(const size_t& chunkIndex) const {
+    CODI_INLINE size_t getChunkUsedData(const size_t& chunkIndex) const {
       codiAssert(0 == chunkIndex);
 
       return chunk.getUsedSize();
@@ -252,7 +252,7 @@ namespace codi {
      * @brief Get the number of currently allocated chunks.
      * @return The number of currently allocated chunks.
      */
-    inline int getNumChunks() const {
+    CODI_INLINE int getNumChunks() const {
       return 1;
     }
 
@@ -260,7 +260,7 @@ namespace codi {
      * @brief Get the chunk size.
      * @return The chunk size.
      */
-    inline size_t getChunkSize() const {
+    CODI_INLINE size_t getChunkSize() const {
       return chunk.getSize();
     }
 
@@ -268,7 +268,7 @@ namespace codi {
      * @brief Get the total number of data items used.
      * @return The number of data items used in all chunks.
      */
-    inline size_t getDataSize() const {
+    CODI_INLINE size_t getDataSize() const {
       return chunk.getUsedSize();
     }
 
@@ -289,7 +289,7 @@ namespace codi {
      * @tparam  Pointers  The data types for the pointers.
      */
     template<typename FunctionObject, typename ... Pointers>
-    inline void forEachData(const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
+    CODI_INLINE void forEachData(const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
       codiAssert(start >= end);
 
       // we do not initialize dataPos with start - 1 because the type can be unsigned
@@ -318,7 +318,7 @@ namespace codi {
      * @tparam  Pointers  The data types for the pointers.
      */
     template<typename FunctionObject, typename ... Pointers>
-    inline void forEach(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
+    CODI_INLINE void forEach(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
       codiAssert(start.chunk == 0);
       codiAssert(end.chunk == 0);
       codiAssert(start.data >= end.data);
