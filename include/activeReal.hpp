@@ -440,7 +440,7 @@ namespace codi {
      * @brief The expression is unfolded to *this += 1.0
      */
     CODI_INLINE ActiveReal<Tape> operator++() {
-      return *this += 1.0;
+      return *this = *this + 1.0;
     }
     /**
      * @brief The expression is unfolded to *this += 1.0
@@ -450,7 +450,7 @@ namespace codi {
     CODI_INLINE ActiveReal<Tape> operator++(int u) {
       CODI_UNUSED(u);
       ActiveReal<Tape> r(*this);
-      *this += *this + 1.0;
+      *this = *this + 1.0;
       return r;
     }
     /**
