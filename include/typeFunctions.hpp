@@ -43,7 +43,7 @@ namespace codi {
   //call t == 0 for all arithmetic types e.g. double, int @internal */
   template <typename T>
   struct IsTotalZeroImpl<T, true> {
-      static inline const bool isTotalZero(const T &t) {
+      static inline bool isTotalZero(const T &t) {
         return t == T();
       }
   };
@@ -51,7 +51,7 @@ namespace codi {
   //call t.isTotalZero for all other types */
   template <typename T>
   struct IsTotalZeroImpl<T, false> {
-      static inline const bool isTotalZero(const T &t) {
+      static inline bool isTotalZero(const T &t) {
         return t.isTotalZero();
       }
   };
@@ -70,6 +70,6 @@ namespace codi {
    * @return true if all primal values and gradient values(if they exist are zero) otherwise false.
    */
   template <typename T>
-  inline const bool isTotalZero(const T& t) {
+  inline bool isTotalZero(const T& t) {
     return IsTotalZeroImpl<T, std::is_arithmetic<T>::value>::isTotalZero(t);}
 }
