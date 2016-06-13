@@ -30,6 +30,7 @@
 #pragma once
 
 #include "../configure.h"
+#include "../typeFunctions.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -112,6 +113,21 @@ namespace codi {
         }
 
         return *this;
+      }
+
+      /**
+       * @brief Checks if all entries in the direction are also a total zero.
+       *
+       * @return true if all entires are a total zero.
+       */
+      CODI_INLINE bool isTotalZero() const {
+        for(size_t i = 0; i < dim; ++i) {
+          if( !codi::isTotalZero(vector[i])) {
+            return false;
+          }
+        }
+
+        return true;
       }
   };
 

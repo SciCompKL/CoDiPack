@@ -30,6 +30,7 @@
 
 #include "expressions.hpp"
 #include "typeTraits.hpp"
+#include "typeFunctions.hpp"
 #include "expressionTraits.hpp"
 #include <iostream>
 
@@ -312,6 +313,14 @@ namespace codi {
     }
 
     /**
+     * @brief Checks if the primal value and the gradient value is zero.
+     * @return true if both are zero.
+     */
+    CODI_INLINE bool isTotalZero() const {
+      return codi::isTotalZero(this->primalValue) && globalTape.isGradientTotalZero(this->gradientData);
+    }
+
+    /**
      * @brief Assignment for a passive value on the rhs. E.g a = 1.0;
      *
      * The logic is handled by the tape. The tape is required to set the primal value of
@@ -448,7 +457,7 @@ namespace codi {
      * @brief The expression is unfolded to *this += 1.0
      */
     CODI_INLINE ActiveReal<Tape> operator++() {
-      return *this += 1.0;
+      return *this = *this + 1.0;
     }
     /**
      * @brief The expression is unfolded to *this += 1.0
@@ -458,7 +467,7 @@ namespace codi {
     CODI_INLINE ActiveReal<Tape> operator++(int u) {
       CODI_UNUSED(u);
       ActiveReal<Tape> r(*this);
-      *this += *this + 1.0;
+      *this = *this + 1.0;
       return r;
     }
     /**

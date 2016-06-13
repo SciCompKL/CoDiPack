@@ -512,6 +512,56 @@ namespace codi {
   #include "binaryExpression.tpp"
 
   /*
+   * Forwar of fmin to min
+   */
+  /**
+   * @brief Overload for fmin with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Min11.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    A  The expression for the first argument of the function
+   * @tparam    B  The expression for the second argument of the function
+   */
+  template <typename Real, class A, class B>
+  CODI_INLINE Min11<Real, A, B> fmin(const Expression<Real, A>& a, const Expression<Real, B>& b) {
+    return Min11<Real, A, B>(a.cast(), b.cast());
+  }
+  /**
+   * @brief Overload for fmin with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Min10.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    A  The expression for the first argument of the function
+   */
+  template <typename Real, class A>
+  CODI_INLINE Min10<Real, A> fmin(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+    return Min10<Real, A>(a.cast(), b);
+  }
+  /**
+   * @brief Overload for fmin with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Min01.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    B  The expression for the second argument of the function
+   */
+  template <typename Real, class B>
+  CODI_INLINE Min01<Real, B> fmin(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
+    return Min01<Real, B>(a, b.cast());
+  }
+
+  /*
    * Implementation for f(a,b) = Max(a,b)
    */
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Max(Data& data, const A& a, const B& b, const Real& result) {
@@ -553,6 +603,57 @@ namespace codi {
   #define FUNCTION max
   #define PRIMAL_FUNCTION max
   #include "binaryExpression.tpp"
+
+  /*
+   * Forwar of fmax to max
+   */
+  /**
+   * @brief Overload for fmax with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Max11.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    A  The expression for the first argument of the function
+   * @tparam    B  The expression for the second argument of the function
+   */
+  template <typename Real, class A, class B>
+  CODI_INLINE Max11<Real, A, B> fmax(const Expression<Real, A>& a, const Expression<Real, B>& b) {
+    return Max11<Real, A, B>(a.cast(), b.cast());
+  }
+  /**
+   * @brief Overload for fmax with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Max10.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    A  The expression for the first argument of the function
+   */
+  template <typename Real, class A>
+  CODI_INLINE Max10<Real, A> fmax(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+    return Max10<Real, A>(a.cast(), b);
+  }
+  /**
+   * @brief Overload for fmax with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Max01.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    B  The expression for the second argument of the function
+   */
+  template <typename Real, class B>
+  CODI_INLINE Max01<Real, B> fmax(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
+    return Max01<Real, B>(a, b.cast());
+  }
+
 
   #undef CODI_OPERATOR_HELPER
 

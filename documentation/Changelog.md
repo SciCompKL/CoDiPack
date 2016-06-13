@@ -1,6 +1,16 @@
 Changelog      {#Changelog}
 ============
 
+### v 1.2.3 - 2016-06-13
+
+ - Bugfix for higher order derivatives:
+   * The check for zero Jacobians and adjoints was wrong
+ - Added fmin and fmax as expressions
+
+### v 1.2.2 - 2016-05-26
+
+ - Bugfix for prefix increment operator
+
 ### v 1.2.1 - 2016-04-20
 
  - Introduction of the macro CODI_INLINE. This can be used to force the inlining of CoDiPack.

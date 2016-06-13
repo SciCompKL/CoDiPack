@@ -33,6 +33,7 @@
 #include <tuple>
 
 #include "../activeReal.hpp"
+#include "../typeFunctions.hpp"
 #include "chunk.hpp"
 #include "chunkVector.hpp"
 #include "externalFunctions.hpp"

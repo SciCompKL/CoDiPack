@@ -134,7 +134,7 @@
      * @param[in]              indices  The indices from the arguments of the statements.
      */
      CODI_INLINE void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
-      ENABLE_CHECK(OptZeroAdjoint, adj != 0){
+      ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
         for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
           --dataPos;
           adjoints[indices[dataPos]] += adj * jacobies[dataPos];
@@ -206,7 +206,7 @@
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
-          ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
+          ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
             this->jacobiVector.setDataAndMove(jacobi, index);
           }
         }

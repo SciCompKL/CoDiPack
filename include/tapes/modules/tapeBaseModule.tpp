@@ -135,14 +135,26 @@
     }
 
     /**
-     * @brief Does nothing.
+     * @brief The free method is called with the index on the index handler.
      * @param[in] value Not used in this implementation.
-     * @param[in] index Not used in this implementation.
+     * @param[in] index The index of the active type.
      */
     CODI_INLINE void destroyGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
 
       indexHandler.freeIndex(index);
+    }
+
+    /**
+     * @brief No check is performed because the gradient values do not exist.
+     *
+     * @param[in] gradientData  No used in this implementation.
+     * @return always true
+     */
+    CODI_INLINE bool isGradientTotalZero(const GradientData& gradientData) {
+      CODI_UNUSED(gradientData);
+
+      return true;
     }
 
 
