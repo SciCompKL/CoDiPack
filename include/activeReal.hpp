@@ -30,6 +30,7 @@
 
 #include "expressions.hpp"
 #include "typeTraits.hpp"
+#include "typeFunctions.hpp"
 #include "expressionTraits.hpp"
 #include <iostream>
 
@@ -301,6 +302,14 @@ namespace codi {
      */
     CODI_INLINE void setValue(const Real& value) {
       this->primalValue = value;
+    }
+
+    /**
+     * @brief Checks if the primal value and the gradient value is zero.
+     * @return true if both are zero.
+     */
+    CODI_INLINE bool isTotalZero() const {
+      return codi::isTotalZero(this->primalValue) && globalTape.isGradientTotalZero(this->gradientData);
     }
 
     /**

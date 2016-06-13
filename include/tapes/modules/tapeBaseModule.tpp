@@ -145,6 +145,18 @@
       indexHandler.freeIndex(index);
     }
 
+    /**
+     * @brief No check is performed because the gradient values do not exist.
+     *
+     * @param[in] gradientData  No used in this implementation.
+     * @return always true
+     */
+    CODI_INLINE bool isGradientTotalZero(const GradientData& gradientData) {
+      CODI_UNUSED(gradientData);
+
+      return true;
+    }
+
 
     /**
      * @brief Set the gradient value of the corresponding index.

@@ -29,6 +29,7 @@
 #pragma once
 
 #include "../activeReal.hpp"
+#include "../typeFunctions.hpp"
 #include "tapeInterface.hpp"
 
 /**
@@ -175,6 +176,16 @@ namespace codi {
       CODI_UNUSED(value);
       CODI_UNUSED(tangent);
       /* do nothing */
+    }
+
+    /**
+     * @brief Calls isTotalZero on the tangent direction.
+     *
+     * @param[in] gradientData  The tangent direction in this case.
+     * @return true if all entries are zero.
+     */
+    CODI_INLINE bool isGradientTotalZero(const GradientData& gradientData) {
+      return codi::isTotalZero(gradientData);
     }
 
     /**
