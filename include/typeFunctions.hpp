@@ -35,6 +35,7 @@
  */
 namespace codi {
 
+#ifndef DOXYGEN_DISABLE
   // default definition
   template <typename T, const bool isArithmetic>
   struct IsTotalZeroImpl {};
@@ -54,6 +55,7 @@ namespace codi {
         return t.isTotalZero();
       }
   };
+#endif
 
   /**
    * @brief Check if all values in the type are zero

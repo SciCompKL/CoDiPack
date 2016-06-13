@@ -135,9 +135,9 @@
     }
 
     /**
-     * @brief Does nothing.
+     * @brief The free method is called with the index on the index handler.
      * @param[in] value Not used in this implementation.
-     * @param[in] index Not used in this implementation.
+     * @param[in] index The index of the active type.
      */
     CODI_INLINE void destroyGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
