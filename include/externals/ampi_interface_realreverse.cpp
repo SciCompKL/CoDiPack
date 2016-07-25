@@ -55,13 +55,13 @@ extern "C" {
 
 
   void ampi_get_adj(INT64 *idx, double *x) {
-    //if(*idx) *x = *(*idx);
-    if(*idx!=0) {
-        *x = type::getGlobalTape().getGradient(*idx);
+    int index = *idx;
+    if(index!=0) {
+        *x = type::getGlobalTape().getGradient(index);
+        type::getGlobalTape().setGradient(index, 0.0);
     } else {
         *x = 0.0;
     }
-
   }
   void ampi_set_adj(INT64 *idx, double *x) {
    int index = *idx;
