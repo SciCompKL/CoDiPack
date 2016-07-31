@@ -45,7 +45,7 @@
  * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), setActive, setPassive, isActive, printTapeBaseStatistics
  * from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods resizeAdjoints as interface functions for the
+ * It defines the methods resizeAdjoints, cleanTapeBase as interface functions for the
  * including class.
  */
 
@@ -118,6 +118,17 @@
 
       for(IndexType i = oldSize; i < adjointsSize; ++i) {
         adjoints[i] = GradientValue();
+      }
+    }
+
+    /**
+     * @brief Helper function: Deletes all arrays
+     */
+    void cleanTapeBase() {
+      if(NULL != adjoints) {
+        free(adjoints);
+        adjoints = NULL;
+        adjointsSize = 0;
       }
     }
 

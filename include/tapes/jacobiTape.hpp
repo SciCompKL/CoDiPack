@@ -207,6 +207,9 @@ namespace codi {
       /* defined in externalFunctionsModule */extFuncVector(1000, jacobiVector) {
     }
 
+    ~JacobiTape() {
+      cleanTapeBase();
+    }
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.
      *
