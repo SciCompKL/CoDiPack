@@ -133,7 +133,7 @@ namespace codi {
      * @param size The size of the data in the chunk.
      */
     Chunk1(const size_t& size) : ChunkInterface(size) {
-      data = (Data*)malloc(sizeof(Data) * size);
+      data = new Data[size];
       if(UseMemsetInChunks) {
         memset(data, 0, sizeof(Data) * size);
       }
@@ -143,7 +143,7 @@ namespace codi {
      * @brief Deletes the data array
      */
     ~Chunk1() {
-      free(data);
+      delete [] data;
       data = NULL;
     }
 
@@ -199,8 +199,8 @@ namespace codi {
      * @param size The size of the data in the chunk.
      */
     Chunk2(const size_t& size) : ChunkInterface(size) {
-      data1 = (Data1*)malloc(sizeof(Data1) * size);
-      data2 = (Data2*)malloc(sizeof(Data2) * size);
+      data1 = new Data1[size];
+      data2 = new Data2[size];
       if(UseMemsetInChunks) {
         memset(data1, 0, sizeof(Data1) * size);
         memset(data2, 0, sizeof(Data2) * size);
@@ -211,8 +211,8 @@ namespace codi {
      * @brief Deletes the data arrays
      */
     ~Chunk2() {
-      free(data1);
-      free(data2);
+      delete [] data1;
+      delete [] data2;
       data1 = NULL;
       data2 = NULL;
     }

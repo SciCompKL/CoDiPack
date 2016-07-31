@@ -112,6 +112,10 @@
 
       adjoints = (GradientValue*)realloc(adjoints, sizeof(GradientValue) * (size_t)adjointsSize);
 
+      if(NULL == adjoints) {
+        throw std::bad_alloc();
+      }
+
       for(IndexType i = oldSize; i < adjointsSize; ++i) {
         adjoints[i] = GradientValue();
       }
