@@ -252,7 +252,7 @@
      * @brief Return the number of used data entries.
      * @return The number of used data entries.
      */
-    size_t getUsedJacobiesSize() const {
+    size_t getUsedDataEntriesSize() const {
       return jacobiVector.getDataSize();
     }
 
