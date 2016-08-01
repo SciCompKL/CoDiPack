@@ -190,7 +190,7 @@ namespace codi {
      *
      * @return The ExternalFunction object with strong typed data.
      */
-    static inline ExternalFunction createHandle(CallFunction func, Data* data, DeleteFunction deleteData) {
+    static CODI_INLINE ExternalFunction createHandle(CallFunction func, Data* data, DeleteFunction deleteData) {
       ExternalFunctionDataHelper<Data>* functionHelper = new ExternalFunctionDataHelper<Data>(func, data, deleteData);
       return ExternalFunction(ExternalFunctionDataHelper<Data>::callFunction, functionHelper, ExternalFunctionDataHelper<Data>::deleteFunction);
     }

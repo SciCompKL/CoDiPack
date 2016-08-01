@@ -41,7 +41,7 @@
  *
  * It defines the methods pushJacobi(1.0), pushJacobi(Mul) printJacobiStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods evaluateJacobies, incrementAdjoints, setDataChunkSize, getUsedDataEntriesSize, resizeJacobi as interface functions for the
+ * It defines the methods evaluateJacobies, incrementAdjoints, setDataChunkSize, getUsedJacobiesSize, resizeJacobi as interface functions for the
  * including class.
  */
 
@@ -55,10 +55,13 @@
 		private:
 
   // ----------------------------------------------------------------------
-  // All definitons of the module
+  // All definitions of the module
   // ----------------------------------------------------------------------
 
+    /** @brief The child vector for the Jacobi data vector. */
     typedef CHILD_VECTOR_TYPE JacobiChildVector;
+
+    /** @brief The position type of the Jacobi child vector */
     typedef typename JacobiChildVector::Position JacobiChildPosition;
 
     /** @brief The vector for the jacobi data. */
@@ -67,6 +70,7 @@
     /** @brief The data for the jacobies */
     typedef typename JacobiVector::ChunkType JacobiChunk;
 
+    /** @brief The position type of the jacobi module. */
     typedef typename JacobiVector::Position JacobiPosition;
 
     /** @brief The data for the jacobies of each statements. */
@@ -91,7 +95,7 @@
      * @param[in]  statements The pointer to the statement vector.
      */
     template<typename ... Args>
-    inline void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
+    CODI_INLINE void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
       Real* jacobiData;
       IndexType* indexData;
       size_t dataPos = start.data;
@@ -129,8 +133,8 @@
      * @param[in]             jacobies  The jacobies from the arguments of the statement.
      * @param[in]              indices  The indices from the arguments of the statements.
      */
-     inline void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
-      ENABLE_CHECK(OptZeroAdjoint, adj != 0){
+     CODI_INLINE void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+      ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
         for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
           --dataPos;
           adjoints[indices[dataPos]] += adj * jacobies[dataPos];
@@ -178,7 +182,7 @@
      * @tparam Data  The type of the data for the tape.
      */
     template<typename Data>
-    inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
@@ -197,12 +201,12 @@
      * @tparam Data  The type of the data for the tape.
      */
     template<typename Data>
-    inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
-          ENABLE_CHECK(OptJacobiIsZero, 0.0 != jacobi) {
+          ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
             this->jacobiVector.setDataAndMove(jacobi, index);
           }
         }
@@ -216,7 +220,7 @@
      * allocated memory and the used memory.
      *
      * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     * @param[in]     hLine  The horizontal line that separates the sections of the output.
      *
      * @tparam Stream The type of the stream.
      */

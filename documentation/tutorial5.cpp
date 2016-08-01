@@ -6,8 +6,10 @@ void func(const codi::RealReverse& x, codi::RealReverse& y) {
   y = 3.0*x*x*x*x + 5.0*x*x*x - 3.0*x*x + 2.0*x -4.0;
 }
 
+typedef codi::ReferenceActiveReal<codi::RealReverse> RefReal;
+
 void funcRef(const codi::RealReverse& x, codi::RealReverse& y) {
-  codi::ReferenceRealReverse xRef = x;
+  RefReal xRef = x;
 
   y = 3.0*xRef*xRef*xRef*xRef + 5.0*xRef*xRef*xRef - 3.0*xRef*xRef + 2.0*xRef -4.0;
 }

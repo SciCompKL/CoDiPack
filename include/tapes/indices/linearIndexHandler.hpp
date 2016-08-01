@@ -83,7 +83,7 @@ namespace codi {
        *
        * @param[inout] index  The index that is freed. It is set to zero in the method.
        */
-      inline void freeIndex(Index& index) const {
+      CODI_INLINE void freeIndex(Index& index) const {
         index = 0;
       }
 
@@ -94,7 +94,7 @@ namespace codi {
        *
        * @return The new index that can be used.
        */
-      inline Index createIndex() {
+      CODI_INLINE Index createIndex() {
         return ++count;
       }
 
@@ -103,7 +103,7 @@ namespace codi {
        *
        * @param[out] index Will be set to a new index.
        */
-      inline void assignIndex(Index& index) {
+      CODI_INLINE void assignIndex(Index& index) {
         index = this->createIndex();
       }
 
@@ -112,7 +112,7 @@ namespace codi {
        *
        * @return The maximum index that was used during the lifetime of this index handler.
        */
-      inline Index getMaximumGlobalIndex() const {
+      CODI_INLINE Index getMaximumGlobalIndex() const {
         return count;
       }
 
@@ -121,7 +121,7 @@ namespace codi {
        *
        * @return The current maximum index that is in use.
        */
-      inline Index getCurrentIndex() const {
+      CODI_INLINE Index getCurrentIndex() const {
         return count;
       }
 
@@ -131,7 +131,7 @@ namespace codi {
        * The method returns the current state of the count value.
        * @return The current value of count.
        */
-      inline Position getPosition() const {
+      CODI_INLINE Position getPosition() const {
         return count;
       }
 
@@ -142,13 +142,14 @@ namespace codi {
        *
        * @param pos The new value of count.
        */
-      inline void reset(const Position& pos) {
+      CODI_INLINE void reset(const Position& pos) {
         count = pos;
       }
 
       /**
        * @ brief There are no statistics for this handler.
        * @param[in,out] out  The information is written to the stream.
+       * @param[in]   hLine  The horizontal line that seperates the sections of the output.
        *
        * @tparam Stream The type of the stream.
        */

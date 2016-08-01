@@ -29,6 +29,7 @@
 #pragma once
 
 #include "../activeReal.hpp"
+#include "../typeFunctions.hpp"
 #include "tapeInterface.hpp"
 
 /**
@@ -84,7 +85,7 @@ namespace codi {
      * @param[in]         rhs  The expression of the rhs.
      */
     template<typename Rhs>
-    inline void store(Real& value, GradientData& lhsTangent, const Rhs& rhs) {
+    CODI_INLINE void store(Real& value, GradientData& lhsTangent, const Rhs& rhs) {
       GradientValue gradient = GradientValue();
       rhs.template calcGradient<GradientValue>(gradient);
       lhsTangent  = gradient;
@@ -100,7 +101,7 @@ namespace codi {
      * @param[out] lhsTangent  The tangent of the lhs.
      * @param[in]         rhs  The expression of the rhs.
      */
-    inline void store(Real& value, GradientData& lhsTangent, const ActiveReal<ForwardEvaluation<Real> >& rhs) {
+    CODI_INLINE void store(Real& value, GradientData& lhsTangent, const ActiveReal<ForwardEvaluation<Real> >& rhs) {
       lhsTangent = rhs.getGradient();
       value = rhs.getValue();
     }
@@ -111,7 +112,7 @@ namespace codi {
      * This implementation of store sets the gradient of th active type to zero as the rhs
      * is inactive.
      */
-    inline void store(Real& value, GradientData& tangent, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& value, GradientData& tangent, const typename TypeTraits<Real>::PassiveReal& rhs) {
       tangent = GradientValue();
       value = rhs;
     }
@@ -129,7 +130,7 @@ namespace codi {
      * @tparam Data  A Real.
      */
     template<typename Data>
-    inline void pushJacobi(Data& lhsTangent, const Real& value, const GradientData& curTangent) {
+    CODI_INLINE void pushJacobi(Data& lhsTangent, const Real& value, const GradientData& curTangent) {
       CODI_UNUSED(value);
       lhsTangent += curTangent;
     }
@@ -148,7 +149,7 @@ namespace codi {
      * @tparam Data  A Real.
      */
     template<typename Data>
-    inline void pushJacobi(Data& lhsTangent, const Real& jacobi, const Real& value, const GradientData& curTangent) {
+    CODI_INLINE void pushJacobi(Data& lhsTangent, const Real& jacobi, const Real& value, const GradientData& curTangent) {
       CODI_UNUSED(value);
       ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
         lhsTangent += jacobi * curTangent;
@@ -163,7 +164,7 @@ namespace codi {
      * @param[in]    value  Not used.
      * @param[out] tangent  Set to zero.
      */
-    inline void initGradientData(Real& value, GradientData& tangent) {
+    CODI_INLINE void initGradientData(Real& value, GradientData& tangent) {
       CODI_UNUSED(value);
       tangent = GradientData();
     }
@@ -171,10 +172,20 @@ namespace codi {
     /**
      * @brief Nothing to do.
      */
-    inline void destroyGradientData(Real& value, GradientData& tangent) {
+    CODI_INLINE void destroyGradientData(Real& value, GradientData& tangent) {
       CODI_UNUSED(value);
       CODI_UNUSED(tangent);
       /* do nothing */
+    }
+
+    /**
+     * @brief Calls isTotalZero on the tangent direction.
+     *
+     * @param[in] gradientData  The tangent direction in this case.
+     * @return true if all entries are zero.
+     */
+    CODI_INLINE bool isGradientTotalZero(const GradientData& gradientData) {
+      return codi::isTotalZero(gradientData);
     }
 
     /**
@@ -183,7 +194,7 @@ namespace codi {
      * @param[out]   tangent  The tangent value of the active type.
      * @param[in] newTangent  The new tangent value.
      */
-    inline void setGradient(GradientData& tangent, const GradientValue& newTangent) {
+    CODI_INLINE void setGradient(GradientData& tangent, const GradientValue& newTangent) {
       tangent = newTangent;
     }
 
@@ -194,7 +205,7 @@ namespace codi {
      *
      * @return The tangent value of the active type.
      */
-    inline GradientValue getGradient(const GradientData& tangent) const {
+    CODI_INLINE GradientValue getGradient(const GradientData& tangent) const {
       return tangent;
     }
 
@@ -205,8 +216,18 @@ namespace codi {
      *
      * @return The tangent value of the active type.
      */
-    inline GradientValue& gradient(GradientData& tangent) {
+    CODI_INLINE GradientValue& gradient(GradientData& tangent) {
       return tangent;
+    }
+
+    /**
+     * @brief Check whether the gradient data is zero.
+     *
+     * @param[in] index The index of the active type.
+     * @return False if the gradient data is zero, otherwise returns true.
+     */
+    bool isActive(const GradientData& tangent) const{
+      return (tangent != 0.0);
     }
   };
 }

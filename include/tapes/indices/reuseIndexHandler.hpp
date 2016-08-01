@@ -93,7 +93,7 @@ namespace codi {
        *
        * @param[inout] index  The index that is freed. It is set to zero in the method.
        */
-      inline void freeIndex(Index& index) {
+      CODI_INLINE void freeIndex(Index& index) {
         if(0 != index) { // do not free the zero index
           if(currentMaximumIndex == index) {
             // freed index is the maximum one so we can decrease the count
@@ -111,7 +111,7 @@ namespace codi {
        *
        * @return The new index that can be used.
        */
-      inline Index createIndex() {
+      CODI_INLINE Index createIndex() {
         Index index;
         if(0 != freeIndices.size()) {
           index = freeIndices.back();
@@ -131,7 +131,7 @@ namespace codi {
        *
        * @param[inout] index The current value of the index. If 0 then a new index is generated.
        */
-      inline void assignIndex(Index& index) {
+      CODI_INLINE void assignIndex(Index& index) {
         if(0 == index) {
           index = this->createIndex();
         }
@@ -142,14 +142,14 @@ namespace codi {
        *
        * The manager ensures only that the lhs index is valid.
        */
-      inline void copyIndex(Index& lhs, const Index& rhs) {
+      CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {
         assignIndex(lhs);
       }
 
       /**
        * @brief Not needed by this index manager.
        */
-      inline void reset() const {
+      CODI_INLINE void reset() const {
         /* do nothing */
       }
 
@@ -158,7 +158,7 @@ namespace codi {
        *
        * @return The maximum index that was used during the lifetime of this index handler.
        */
-      inline Index getMaximumGlobalIndex() const {
+      CODI_INLINE Index getMaximumGlobalIndex() const {
         return globalMaximumIndex;
       }
 
@@ -167,7 +167,7 @@ namespace codi {
        *
        * @return The current maximum index that is in use.
        */
-      inline Index getCurrentIndex() const {
+      CODI_INLINE Index getCurrentIndex() const {
         return currentMaximumIndex;
       }
 
@@ -199,7 +199,7 @@ namespace codi {
        *   the memory for the allocated indices.
        *
        * @param[in,out] out  The information is written to the stream.
-       * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+       * @param[in]     hLine  The horizontal line that separates the sections of the output.
        *
        * @tparam Stream The type of the stream.
        */

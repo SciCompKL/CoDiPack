@@ -29,6 +29,9 @@
 
 #pragma once
 
+#include "../configure.h"
+#include "../typeFunctions.hpp"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
@@ -53,7 +56,7 @@ namespace codi {
       /**
        * @brief Creates a zero direction.
        */
-      inline Direction() :
+      CODI_INLINE Direction() :
         vector() {}
 
       /**
@@ -65,7 +68,7 @@ namespace codi {
        *
        * @return The element from the vector.
        */
-      inline Real& operator[] (const size_t& i) {
+      CODI_INLINE Real& operator[] (const size_t& i) {
         return vector[i];
       }
 
@@ -78,7 +81,7 @@ namespace codi {
        *
        * @return The element from the vector.
        */
-      inline const Real& operator[] (const size_t& i) const {
+      CODI_INLINE const Real& operator[] (const size_t& i) const {
         return vector[i];
       }
 
@@ -89,7 +92,7 @@ namespace codi {
        *
        * @return Reference to this object.
        */
-      inline Direction<Real, dim>& operator = (const Direction<Real, dim>& v) {
+      CODI_INLINE Direction<Real, dim>& operator = (const Direction<Real, dim>& v) {
         for(size_t i = 0; i < dim; ++i) {
           this->vector[i] = v.vector[i];
         }
@@ -104,12 +107,27 @@ namespace codi {
        *
        * @return Reference to this object.
        */
-      inline Direction<Real, dim>& operator += (const Direction<Real, dim>& v) {
+      CODI_INLINE Direction<Real, dim>& operator += (const Direction<Real, dim>& v) {
         for(size_t i = 0; i < dim; ++i) {
           this->vector[i] += v.vector[i];
         }
 
         return *this;
+      }
+
+      /**
+       * @brief Checks if all entries in the direction are also a total zero.
+       *
+       * @return true if all entires are a total zero.
+       */
+      CODI_INLINE bool isTotalZero() const {
+        for(size_t i = 0; i < dim; ++i) {
+          if( !codi::isTotalZero(vector[i])) {
+            return false;
+          }
+        }
+
+        return true;
       }
   };
 
@@ -127,7 +145,7 @@ namespace codi {
    * @tparam  dim  The dimension of the direction.
    */
   template<typename Real, size_t dim>
-  inline Direction<Real, dim> operator * (const Real& s, const Direction<Real, dim>& v) {
+  CODI_INLINE Direction<Real, dim> operator * (const Real& s, const Direction<Real, dim>& v) {
     Direction<Real, dim> r;
     for(size_t i = 0; i < dim; ++i) {
       r[i] = s * v[i];
@@ -150,7 +168,7 @@ namespace codi {
    * @tparam  dim  The dimension of the direction.
    */
   template<typename Real, size_t dim>
-  inline Direction<Real, dim> operator * (const Direction<Real, dim>& v, const Real& s) {
+  CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const Real& s) {
     return s * v;
   }
 
@@ -170,7 +188,7 @@ namespace codi {
    * @tparam  dim  The dimension of the direction.
    */
   template<typename A, typename Real, size_t dim>
-  inline bool operator != (const A& s, const Direction<Real, dim>& v) {
+  CODI_INLINE bool operator != (const A& s, const Direction<Real, dim>& v) {
     for(size_t i = 0; i < dim; ++i) {
       if( s != v[i] ) {
         return true;
@@ -196,7 +214,7 @@ namespace codi {
    * @tparam  dim  The dimension of the direction.
    */
   template<typename A, typename Real, size_t dim>
-  inline bool operator != (const Direction<Real, dim>& v, const A& s) {
+  CODI_INLINE bool operator != (const Direction<Real, dim>& v, const A& s) {
     return s != v;
   }
 }

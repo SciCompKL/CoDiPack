@@ -26,13 +26,27 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-#pragma once
+#include <toolDefines.h>
 
-#include <codi.hpp>
+IN(1)
+OUT(8)
+POINTS(3) =
+{
+  {-1.0},
+  { 0.0},
+  { 1.0}
+};
 
-typedef codi::RealReverseIndexAssignOpt NUMBER;
+void func(NUMBER* x, NUMBER* y) {
+  y[0] = x[0];
+  y[1] = ++y[0];
 
-#include "../globalDefines.h"
+  y[2] = x[0];
+  y[3] = y[2]++;
 
-#define CHUNK_TAPE
-#define REVERSE_TAPE
+  y[4] = x[0];
+  y[5] = --y[4];
+
+  y[6] = x[0];
+  y[7] = y[6]--;
+}

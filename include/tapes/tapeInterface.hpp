@@ -147,8 +147,15 @@ namespace codi {
      */
     virtual void destroyGradientData(Real& value, GradientData& gradientData) = 0;
 
-
     /**
+     * @brief Checks if all entries of the gradient are zero.
+     *
+     * @param[in] gradientData  The correspoinding gradient data for the gradient.
+     * @return true if all entries are zero.
+     */
+    virtual CODI_INLINE bool isGradientTotalZero(const GradientData& gradientData) = 0;
+
+    /*
      * Access functions for the gradient information.
      */
 
@@ -183,5 +190,15 @@ namespace codi {
     * @return The gradient which belongs to the active type as a reference.
     */
     virtual GradientValue& gradient(GradientData& value) = 0;
+
+    /**
+    * @brief Check if the gradient data has a nontrivial value.
+    *
+    * @param[in] value  The gradient data of the active type.
+    *
+    * @return Returns true if it has a nontrivial value. Otherwise returns false.
+    */
+    virtual bool isActive(const GradientData& value) const = 0;
+
   };
 }

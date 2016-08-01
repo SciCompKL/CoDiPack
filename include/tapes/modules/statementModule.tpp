@@ -64,10 +64,13 @@
   private:
 
   // ----------------------------------------------------------------------
-  // All definitons of the module
+  // All definitions of the module
   // ----------------------------------------------------------------------
 
+    /** @brief The child vector for the statement data vector. */
     typedef CHILD_VECTOR_TYPE StmtChildVector;
+
+    /** @brief The position type of the statement child vector */
     typedef typename StmtChildVector::Position StmtChildPosition;
 
     /** @brief The chunk vector for the statement data. */
@@ -75,6 +78,7 @@
     /** @brief The data for each statement. */
     typedef typename StmtVector::ChunkType StmtChunk;
 
+    /** @brief The position type of the statement module. */
     typedef typename StmtVector::Position StmtPosition;
 
     /** @brief The data for the statements. */
@@ -131,7 +135,7 @@
      * @tparam Rhs The expression on the rhs of the statement.
      */
     template<typename Rhs>
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
@@ -179,7 +183,7 @@
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
       lhsValue = rhs;
     }
@@ -194,7 +198,7 @@
      * @param[out]   lhsIndex    The gradient data of the lhs.
      * @param[in]        size    The number of Jacobi entries.
      */
-    inline void store(IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void store(IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(size);
@@ -210,7 +214,7 @@
      * allocated memory and the used memory.
      *
      * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     * @param[in]     hLine  The horizontal line that separates the sections of the output.
      *
      * @tparam Stream The type of the stream.
      */

@@ -49,14 +49,14 @@ namespace codi {
      * @brief Empty position.
      * @return Empty position
      */
-    inline Position getPosition() const {
+    CODI_INLINE Position getPosition() const {
       return Position();
     }
 
     /**
      * @brief Will do nothing.
      */
-    inline void reset(const Position& pos) const {
+    CODI_INLINE void reset(const Position& pos) const {
       CODI_UNUSED(pos);
     }
   };
