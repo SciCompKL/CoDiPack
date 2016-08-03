@@ -97,7 +97,7 @@ extern "C" {
         for(int i=0;i<*size;++i) {
           //type &dummy=values[i];
           values[*displ + i]=0;
-          codi::RealReverse::getGlobalTape().registerInput(values[i]);
+          codi::RealReverse::getGlobalTape().registerInput(values[*displ + i]);
         }
      }
   }
