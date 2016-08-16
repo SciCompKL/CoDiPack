@@ -153,7 +153,7 @@ namespace codi {
      * @param[in] gradientData  The correspoinding gradient data for the gradient.
      * @return true if all entries are zero.
      */
-    virtual CODI_INLINE bool isGradientTotalZero(const GradientData& gradientData) = 0;
+    virtual bool isGradientTotalZero(const GradientData& gradientData) = 0;
 
     /*
      * Access functions for the gradient information.
