@@ -604,7 +604,7 @@ namespace codi {
   #include "binaryExpression.tpp"
 
   /*
-   * Forwar of fmin to min
+   * Forward of fmin to min
    */
   /**
    * @brief Overload for fmin with the CoDiPack expressions.

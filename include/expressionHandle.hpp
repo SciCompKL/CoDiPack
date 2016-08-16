@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "typeTraits.hpp"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */

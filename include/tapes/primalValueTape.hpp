@@ -262,7 +262,11 @@ namespace codi {
       IndexType oldSize = primalsSize;
       primalsSize = size;
 
-      primals = (Real*)realloc(adjoints, sizeof(Real) * (size_t)primalsSize);
+      primals = (Real*)realloc(primals, sizeof(Real) * (size_t)primalsSize);
+
+      for(IndexType i = oldSize; i < primalsSize; ++i) {
+        primals[i] = Real();
+      }
     }
 
     inline void checkPrimalsSize() {
