@@ -343,6 +343,20 @@ namespace codi {
         checkPrimalsSize();
         primals[lhsIndex] = rhs.getValue();
 
+#if CODI_AdjointHandle
+          IndexType* rhsIndices = NULL;
+          PassiveReal* passives = NULL;
+
+          auto posIndex = indexVector.getPosition();
+          indexVector.getDataAtPosition(posIndex.chunk, indexSize, rhsIndices);
+
+          auto posPassive = passiveVector.getPosition();
+          passiveVector.getDataAtPosition(posPassive.chunk, passiveSize, passives);
+
+          resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
+          handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passives, rhsIndices, primals, adjoints);
+#endif
+
         // clear the generated temporal indices
         if(0 != passiveDataHelper.pos) {
           for(size_t i = 0; i < passiveDataHelper.pos; ++i) {
