@@ -262,7 +262,11 @@ namespace codi {
       IndexType oldSize = primalsSize;
       primalsSize = size;
 
-      primals = (Real*)realloc(adjoints, sizeof(Real) * (size_t)primalsSize);
+      primals = (Real*)realloc(primals, sizeof(Real) * (size_t)primalsSize);
+
+      for(IndexType i = oldSize; i < primalsSize; ++i) {
+        primals[i] = Real();
+      }
     }
 
     inline void checkPrimalsSize() {
@@ -342,6 +346,20 @@ namespace codi {
 
         checkPrimalsSize();
         primals[lhsIndex] = rhs.getValue();
+
+#if CODI_AdjointHandle
+          IndexType* rhsIndices = NULL;
+          PassiveReal* passives = NULL;
+
+          auto posIndex = indexVector.getPosition();
+          indexVector.getDataAtPosition(posIndex.chunk, indexSize, rhsIndices);
+
+          auto posPassive = passiveVector.getPosition();
+          passiveVector.getDataAtPosition(posPassive.chunk, passiveSize, passives);
+
+          resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
+          handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passives, rhsIndices, primals, adjoints);
+#endif
 
         // clear the generated temporal indices
         if(0 != passiveDataHelper.pos) {
