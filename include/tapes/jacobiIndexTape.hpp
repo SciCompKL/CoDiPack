@@ -155,7 +155,7 @@ namespace codi {
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
-  class JacobiIndexTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
+  class JacobiIndexTape final : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
     /** @brief The type for the primal values. */

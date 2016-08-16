@@ -56,7 +56,7 @@ namespace codi {
    * @tparam  GradientValue  The floating point type of the tangent data.
    */
   template<typename RealType, typename GradientValueType = RealType>
-  class ForwardEvaluation : public TapeInterface<RealType, GradientValueType, GradientValueType>{
+  class ForwardEvaluation final : public TapeInterface<RealType, GradientValueType, GradientValueType>{
   public:
 
     /**
