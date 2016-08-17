@@ -967,6 +967,38 @@ namespace codi {
   }
 
   /***************************************************************************************
+   * Unary functions that have additional arguments
+   ****************************************************************************************/
+  using std::ldexp;
+  template<typename Real> CODI_INLINE Real gradLdexp(const Real& a, const int b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(result);
+
+    return ldexp(1.0, b);
+  }
+  #define NAME Ldexp
+  #define FUNCTION ldexp
+  #define PRIMAL_FUNCTION ldexp
+  #define ARG_TYPE int
+  #include "unaryExpressionExtended.tpp"
+
+  using std::frexp;
+  using std::ldexp;
+  template<typename Real> CODI_INLINE Real gradFrexp(const Real& a, const int* b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(result);
+
+    /* The result is always computed beforehand therefore we can safely use the value of b */
+    return ldexp(1.0, -(*b));
+  }
+  #define NAME Frexp
+  #define FUNCTION frexp
+  #define PRIMAL_FUNCTION frexp
+  #define ARG_TYPE int*
+  #include "unaryExpressionExtended.tpp"
+
+
+  /***************************************************************************************
    * Functions that do not need derivatives.
    ****************************************************************************************/
   using std::isinf;
@@ -1048,5 +1080,4 @@ namespace codi {
   CODI_INLINE typename codi::TypeTraits<Real>::PassiveReal ceil(const codi::Expression<Real, A>& a) {
     return ceil(a.getValue());
   }
-
 }
