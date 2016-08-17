@@ -29,6 +29,7 @@
 #pragma once
 
 #include "activeReal.hpp"
+#include "numericLimits.hpp"
 #include "referenceActiveReal.hpp"
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/jacobiTape.hpp"
