@@ -235,6 +235,12 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       a_.pushIndices(data);
       b_.pushIndices(data);
     }
+
+    template<typename Data>
+    inline void pushPassiveIndices(Data data) const {
+      a_.pushPassiveIndices(data);
+      b_.pushPassiveIndices(data);
+    }
 };
 
 /**
@@ -350,6 +356,11 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     inline void pushIndices(Data data) const {
       a_.pushIndices(data);
     }
+
+    template<typename Data>
+    inline void pushPassiveIndices(Data data) const {
+      a_.pushPassiveIndices(data);
+    }
 };
 
 /**
@@ -464,6 +475,11 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     template<typename Data>
     inline void pushIndices(Data data) const {
       b_.pushIndices(data);
+    }
+
+    template<typename Data>
+    inline void pushPassiveIndices(Data data) const {
+      b_.pushPassiveIndices(data);
     }
 };
 

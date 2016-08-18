@@ -328,17 +328,20 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
 
       ENABLE_CHECK(OptTapeActivity, active){
-        indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
-        size_t indexSize = indexVector.getChunkPosition();
-        CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
-        rhs.pushIndices(this);
-        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
+        rhs.pushPassiveIndices(this);
+        passiveDataHelper.pos = 0; // value is recounted in the pushIndices method
 
         passiveVector.reserveItems(ExpressionTraits<Rhs>::maxPassiveVariables);
         size_t passiveSize = passiveVector.getChunkPosition();
         CODI_UNUSED(passiveSize);  /* needed to avoid unused variable when the assersts are not enabled. */
         rhs.pushPassive(this);
         codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveVector.getChunkPosition() - passiveSize);
+
+        indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
+        size_t indexSize = indexVector.getChunkPosition();
+        CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+        rhs.pushIndices(this);
+        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
 
         stmtVector.reserveItems(1);
         stmtVector.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
@@ -413,7 +416,6 @@ namespace codi {
       ENABLE_CHECK(OptTapeActivity, active){
         // the default behaviour is to activate passive assignments in order to have less passive values
         // in the store for expression routines
-        indexHandler.assignIndex(lhsIndex);
         pushInputHandle(rhs, lhsIndex);
       } else {
         indexHandler.freeIndex(lhsIndex);
@@ -426,15 +428,22 @@ namespace codi {
       passiveVector.setDataAndMove(value);
     }
 
-    inline void pushIndices(const Real& value, const IndexType& index) {
+    inline void pushPassiveIndices(const Real& value, const IndexType& index) {
       IndexType pushIndex = index;
       if(0 == pushIndex) {
         // create temporary index
-        indexHandler.assignIndex(pushIndex);
-
         pushInputHandle(value, pushIndex);
 
         passiveDataHelper.push(pushIndex);
+      }
+    }
+
+    inline void pushIndices(const Real& value, const IndexType& index) {
+      CODI_UNUSED(value);
+      IndexType pushIndex = index;
+      if(0 == pushIndex) {
+        pushIndex = passiveDataHelper.indices[passiveDataHelper.pos];
+        passiveDataHelper.pos += 1;
       }
 
       indexVector.setDataAndMove(pushIndex);
@@ -546,6 +555,8 @@ namespace codi {
         auto endInnerPos = stmtVector.getInnerPosition(curChunk);
         evaluateStack(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
 
+        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
+
         curInnerPos = endInnerPos;
 
         dataPos = stmtVector.getChunkUsedData(curChunk - 1);
@@ -566,6 +577,8 @@ namespace codi {
 
         auto endInnerPos = indexVector.getInnerPosition(curChunk);
         evalStmt(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
+
+        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
 
         curInnerPos = endInnerPos;
 
@@ -597,6 +610,8 @@ namespace codi {
         auto endInnerPos = passiveVector.getInnerPosition(curChunk);
         evalIndices(curInnerPos, endInnerPos, dataPos, data);
 
+        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
+
         curInnerPos = endInnerPos;
 
         dataPos = passiveVector.getChunkUsedData(curChunk - 1);
@@ -617,8 +632,6 @@ namespace codi {
      */
     inline void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive()) {
-        indexHandler.assignIndex(value.getGradientData());
-
         pushInputHandle(value.getValue(), value.getGradientData());
       }
     }
@@ -631,7 +644,6 @@ namespace codi {
     inline void registerOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive() && value.getGradientData() != 0) {
         IndexType rhsIndex = value.getGradientData();
-        indexHandler.assignIndex(value.getGradientData());
 
         pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
       }
@@ -718,21 +730,24 @@ namespace codi {
     }
 
   private:
-    inline void pushInputHandle(const Real& value, const IndexType& index) {
+    inline void pushInputHandle(const Real& value, IndexType& index) {
       stmtVector.reserveItems(1);
       stmtVector.setDataAndMove(&InputHandle);
+      indexHandler.assignIndex(index);
 
       checkPrimalsSize();
       primals[index] = value;
 
     }
 
-    inline void pushCopyHandle(const Real& lhsValue, const IndexType& lhsIndex, const IndexType& rhsIndex) {
+    inline void pushCopyHandle(const Real& lhsValue, IndexType& lhsIndex, const IndexType& rhsIndex) {
       indexVector.reserveItems(1);
       indexVector.setDataAndMove(rhsIndex);
 
       stmtVector.reserveItems(1);
       stmtVector.setDataAndMove(&CopyHandle);
+
+      indexHandler.assignIndex(lhsIndex);
 
       checkPrimalsSize();
       primals[lhsIndex] = lhsValue;

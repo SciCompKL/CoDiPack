@@ -248,6 +248,11 @@ namespace codi {
       data->pushIndices(primalValue, gradientData);
     }
 
+    template<typename Data>
+    inline void pushPassiveIndices(Data& data) const {
+      data->pushPassiveIndices(primalValue, gradientData);
+    }
+
     /**
      * @brief Helper function for the tape to get its information about this type.
      * @return The gradient data from the tape stored in this type.
