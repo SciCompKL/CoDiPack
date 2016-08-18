@@ -489,6 +489,14 @@ namespace codi {
     }
 
     /**
+     * @brief The expression is cast to type T
+     */
+    template<typename T>
+    CODI_INLINE explicit operator T() const {
+      return static_cast<T>(primalValue);
+    }
+
+    /**
      * @brief Get the reference to the global tape for this type.
      * @return  The global reference to the tape.
      */
