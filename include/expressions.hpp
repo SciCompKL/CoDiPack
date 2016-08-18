@@ -1069,7 +1069,7 @@ namespace codi {
 
   template<typename Real> CODI_INLINE Real gradErf(const Real& a, const Real& result) {
     CODI_UNUSED(result);
-    return 1.128379167095513 / exp( a * a ); // erf'(a) = 2.0 / sqrt(pi) * exp(-a^2)
+    return 1.128379167095513 * exp( -(a * a) ); // erf'(a) = 2.0 / sqrt(pi) * exp(-a^2)
   }
   using std::erf;
   #define NAME Erf
@@ -1079,7 +1079,7 @@ namespace codi {
 
   template<typename Real> CODI_INLINE Real gradErfc(const Real& a, const Real& result) {
     CODI_UNUSED(result);
-    return -1.128379167095513 / exp( a * a ); // erfc'(a) = - 2.0 / sqrt(pi) * exp(-a^2)
+    return -1.128379167095513 * exp( -(a * a) ); // erfc'(a) = - 2.0 / sqrt(pi) * exp(-a^2)
   }
   using std::erfc;
   #define NAME Erfc
