@@ -29,7 +29,7 @@
 #include <toolDefines.h>
 
 IN(1)
-OUT(15)
+OUT(17)
 POINTS(41) =
 {
   {-10.0000},
@@ -92,4 +92,6 @@ void func(NUMBER* x, NUMBER* y) {
   y[13] = ldexp(x[0], 7);  // R
   int temp = 0;
   y[14] = frexp(x[0], &temp);  // R
+  y[15] =   erf(x[0]);  // R
+  y[16] =  erfc(x[0]);  // R
 }
