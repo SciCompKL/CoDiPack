@@ -253,6 +253,11 @@ namespace codi {
       data->pushPassiveIndices(primalValue, gradientData);
     }
 
+    template<typename Data, typename Func>
+    inline void valueAction(Data data, Func func) const {
+      CODI_CALL_MEMBER_FN(globalTape, func)(data, primalValue, gradientData);
+    }
+
     /**
      * @brief Helper function for the tape to get its information about this type.
      * @return The gradient data from the tape stored in this type.

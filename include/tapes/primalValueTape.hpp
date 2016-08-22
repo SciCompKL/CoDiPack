@@ -328,48 +328,57 @@ namespace codi {
     inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
 
       ENABLE_CHECK(OptTapeActivity, active){
-        rhs.pushPassiveIndices(this);
-        passiveDataHelper.pos = 0; // value is recounted in the pushIndices method
 
-        passiveVector.reserveItems(ExpressionTraits<Rhs>::maxPassiveVariables);
-        size_t passiveSize = passiveVector.getChunkPosition();
-        CODI_UNUSED(passiveSize);  /* needed to avoid unused variable when the assersts are not enabled. */
-        rhs.pushPassive(this);
-        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveVector.getChunkPosition() - passiveSize);
+        int activeCount = 0;
+        rhs.valueAction(&activeCount, &PrimalValueTape<TapeTypes>::countActiveValues);
 
-        indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
-        size_t indexSize = indexVector.getChunkPosition();
-        CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
-        rhs.pushIndices(this);
-        codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
+        if(0 != activeCount) {
 
-        stmtVector.reserveItems(1);
-        stmtVector.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
-        indexHandler.assignIndex(lhsIndex);
+          rhs.pushPassiveIndices(this);
+          passiveDataHelper.pos = 0; // value is recounted in the pushIndices method
 
-        checkPrimalsSize();
-        primals[lhsIndex] = rhs.getValue();
+          passiveVector.reserveItems(ExpressionTraits<Rhs>::maxPassiveVariables);
+          size_t passiveSize = passiveVector.getChunkPosition();
+          CODI_UNUSED(passiveSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+          rhs.pushPassive(this);
+          codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveVector.getChunkPosition() - passiveSize);
 
-#if CODI_AdjointHandle
-          IndexType* rhsIndices = NULL;
-          PassiveReal* passives = NULL;
+          indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
+          size_t indexSize = indexVector.getChunkPosition();
+          CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+          rhs.valueAction(nullptr, &PrimalValueTape<TapeTypes>::pushIndices);
+          codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
 
-          auto posIndex = indexVector.getPosition();
-          indexVector.getDataAtPosition(posIndex.chunk, indexSize, rhsIndices);
+          stmtVector.reserveItems(1);
+          stmtVector.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle());
+          indexHandler.assignIndex(lhsIndex);
 
-          auto posPassive = passiveVector.getPosition();
-          passiveVector.getDataAtPosition(posPassive.chunk, passiveSize, passives);
+          checkPrimalsSize();
+          primals[lhsIndex] = rhs.getValue();
 
-          resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
-          handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passives, rhsIndices, primals, adjoints);
-#endif
+  #if CODI_AdjointHandle
+            IndexType* rhsIndices = NULL;
+            PassiveReal* passives = NULL;
 
-        // clear the generated temporal indices
-        if(0 != passiveDataHelper.pos) {
-          for(size_t i = 0; i < passiveDataHelper.pos; ++i) {
-            destroyGradientData(primals[passiveDataHelper.indices[i]], passiveDataHelper.indices[i]);
+            auto posIndex = indexVector.getPosition();
+            indexVector.getDataAtPosition(posIndex.chunk, indexSize, rhsIndices);
+
+            auto posPassive = passiveVector.getPosition();
+            passiveVector.getDataAtPosition(posPassive.chunk, passiveSize, passives);
+
+            resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
+            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passives, rhsIndices, primals, adjoints);
+  #endif
+
+          // clear the generated temporal indices
+          if(0 != passiveDataHelper.pos) {
+            for(size_t i = 0; i < passiveDataHelper.pos; ++i) {
+              destroyGradientData(primals[passiveDataHelper.indices[i]], passiveDataHelper.indices[i]);
+            }
+            passiveDataHelper.reset();
           }
-          passiveDataHelper.reset();
+        } else {
+          lhsIndex = 0;
         }
       } else {
         lhsIndex = 0;
@@ -413,13 +422,13 @@ namespace codi {
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-      ENABLE_CHECK(OptTapeActivity, active){
-        // the default behaviour is to activate passive assignments in order to have less passive values
-        // in the store for expression routines
-        pushInputHandle(rhs, lhsIndex);
-      } else {
+//      ENABLE_CHECK(OptTapeActivity, active){
+//        // the default behaviour is to activate passive assignments in order to have less passive values
+//        // in the store for expression routines
+//        pushInputHandle(rhs, lhsIndex);
+//      } else {
         indexHandler.freeIndex(lhsIndex);
-      }
+//      }
 
       lhsValue = rhs;
     }
@@ -438,7 +447,15 @@ namespace codi {
       }
     }
 
-    inline void pushIndices(const Real& value, const IndexType& index) {
+    inline void countActiveValues(int* count, const Real& value, const IndexType& index) {
+      CODI_UNUSED(value);
+      if(0 != index) {
+        *count += 1;
+      }
+    }
+
+    inline void pushIndices(void* data, const Real& value, const IndexType& index) {
+      CODI_UNUSED(data);
       CODI_UNUSED(value);
       IndexType pushIndex = index;
       if(0 == pushIndex) {

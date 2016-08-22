@@ -184,6 +184,11 @@ struct OP : public Expression<Real, OP<Real, A> > {
   inline void pushPassiveIndices(Data data) const {
     a_.pushPassiveIndices(data);
   }
+
+  template<typename Data, typename Func>
+  inline void valueAction(Data data, Func func) const {
+    a_.valueAction(data, func);
+  }
 };
 
 
