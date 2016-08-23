@@ -465,6 +465,17 @@ namespace codi {
     }
 
     /**
+     * @brief Get the current position of the tape.
+     *
+     * The position can be used to reset the tape to that position or to
+     * evaluate only parts of the tape.
+     * @return The current position of the tape.
+     */
+    inline Position getZeroPosition() const {
+      return getExtFuncZeroPosition();
+    }
+
+    /**
      * @brief Reset the tape to the given position.
      *
      * @param[in] pos Reset the state of the tape to the given position.

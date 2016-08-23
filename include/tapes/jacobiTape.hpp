@@ -200,7 +200,7 @@ namespace codi {
      * external functions defined in the configuration.
      */
     JacobiTape() :
-      /* defined in tapeBaseModule */indexHandler(),
+      /* defined in tapeBaseModule */indexHandler(0),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
@@ -270,6 +270,17 @@ namespace codi {
      */
     CODI_INLINE Position getPosition() const {
       return getExtFuncPosition();
+    }
+
+    /**
+     * @brief Get the initial position of the tape.
+     *
+     * The position can be used to reset the tape to that position or to
+     * evaluate only parts of the tape.
+     * @return The initial position of the tape.
+     */
+    CODI_INLINE Position getZeroPosition() const {
+      return getExtFuncZeroPosition();
     }
 
 

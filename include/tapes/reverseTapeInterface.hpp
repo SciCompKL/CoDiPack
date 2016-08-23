@@ -150,6 +150,16 @@ namespace codi {
     virtual Position getPosition() const = 0;
 
     /**
+     * @brief Get the initial position of the tape.
+     *
+     * The position can be used to reset the tape to that position,
+     * as a start point or end point for the evaluation.
+     *
+     * @return The initial position of the tape.
+     */
+    virtual Position getZeroPosition() const = 0;
+
+    /**
      * @brief Print some statistics about the currently stored information.
      *
      * @param[in,out] out  The information is written to the stream.

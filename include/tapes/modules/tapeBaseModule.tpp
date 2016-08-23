@@ -262,7 +262,7 @@
       clearAdjoints();
 
       // reset will be done iteratively through the vectors
-      RESET_FUNCTION_NAME(Position());
+      RESET_FUNCTION_NAME(getZeroPosition());
     }
 
     /**
@@ -285,7 +285,7 @@
      * @brief Perform the adjoint evaluation from the current position to the initial position.
      */
     void evaluate() {
-      evaluate(getPosition(), Position());
+      evaluate(getPosition(), getZeroPosition());
     }
 
     /**

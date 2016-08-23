@@ -54,6 +54,14 @@ namespace codi {
     }
 
     /**
+     * @brief Empty position.
+     * @return Empty position
+     */
+    CODI_INLINE Position getZeroPosition() const {
+      return Position();
+    }
+
+    /**
      * @brief Will do nothing.
      */
     CODI_INLINE void reset(const Position& pos) const {

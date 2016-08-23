@@ -148,7 +148,7 @@ namespace codi {
     {
       curChunk = new ChunkData(chunkSize);
       chunks.push_back(curChunk);
-      positions.push_back(NestedPosition());
+      positions.push_back(nested.getZeroPosition());
     }
 
     /**
@@ -241,7 +241,7 @@ namespace codi {
      * @brief Resets the complete chunk vector.
      */
     void reset() {
-      reset(Position());
+      reset(getZeroPosition());
     }
 
     /**
@@ -291,6 +291,14 @@ namespace codi {
      */
     CODI_INLINE Position getPosition() const {
       return Position(curChunkIndex, curChunk->getUsedSize(), nested.getPosition());
+    }
+
+    /**
+     * @brief Get the zero position of the chunk vector and the nested vectors.
+     * @return The zero position of the chunk vector.
+     */
+    CODI_INLINE Position getZeroPosition() const {
+      return Position(0, 0, nested.getZeroPosition());
     }
 
     /**

@@ -229,7 +229,7 @@ namespace codi {
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
     PrimalValueTape() :
-      /* defined in tapeBaseModule */indexHandler(),
+      /* defined in tapeBaseModule */indexHandler(0),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
@@ -509,6 +509,17 @@ namespace codi {
      */
     inline Position getPosition() const {
       return getExtFuncPosition();
+    }
+
+    /**
+     * @brief Get the current position of the tape.
+     *
+     * The position can be used to reset the tape to that position or to
+     * evaluate only parts of the tape.
+     * @return The current position of the tape.
+     */
+    inline Position getZeroPosition() const {
+      return getExtFuncZeroPosition();
     }
 
     /**
