@@ -79,6 +79,12 @@ namespace codi {
    */
   typedef uint8_t StatementInt;
 
+  /**
+   * @brief The maximum value of a statement int.
+   */
+  const StatementInt MaxStatementIntSize = 256;
+
+
   #ifndef CODI_SmallChunkSize
     #define CODI_SmallChunkSize 32768
   #endif
