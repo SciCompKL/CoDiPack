@@ -36,7 +36,6 @@
 #include "../expressionHandle.hpp"
 #include "chunkVector.hpp"
 #include "indices/linearIndexHandler.hpp"
-#include "passiveDataHelper.h"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 
@@ -453,8 +452,8 @@ namespace codi {
      * @param[in]    index Used to check if the variable is active.
      */
     template<typename Data>
-    inline void pushJacobi(Data& passiveDataHelper, const Real& value, const IndexType& index) {
-      CODI_UNUSED(passiveDataHelper);
+    inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+      CODI_UNUSED(data);
       CODI_UNUSED(value);
       CODI_UNUSED(index);
 
@@ -470,8 +469,8 @@ namespace codi {
      * @param[in]    index Used to check if the variable is active.
      */
     template<typename Data>
-    inline void pushJacobi(Data& passiveDataHelper, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(passiveDataHelper);
+    inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
+      CODI_UNUSED(data);
       CODI_UNUSED(jacobi);
       CODI_UNUSED(value);
       CODI_UNUSED(index);
