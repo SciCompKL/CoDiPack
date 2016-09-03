@@ -446,13 +446,15 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs.
      * @param[in]        size    The number of Jacobi entries.
      */
-    CODI_INLINE void store(IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         passiveVector.reserveItems(size);
         indexVector.reserveItems(size);
         stmtVector.reserveItems(1);
         indexHandler.assignIndex(lhsIndex);
         stmtVector.setDataAndMove(&PreaccHandles[size], 0);
+
+        primals[lhsIndex] = lhsValue;
       }
     }
 
