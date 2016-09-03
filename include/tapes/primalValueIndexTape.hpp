@@ -331,7 +331,7 @@ namespace codi {
 
           constantValueVector.reserveItems(ExpressionTraits<Rhs>::maxConstantVariables + passiveVariableNumber); // the additional passives are create in pushIndices
           size_t constantSize = constantValueVector.getChunkPosition();
-          rhs.pushPassive(this);
+          rhs.passiveAction(*this, NULL, &PrimalValueIndexTape<TapeTypes>::pushPassive);
           codiAssert(ExpressionTraits<Rhs>::maxConstantVariables == constantValueVector.getChunkPosition() - constantSize);
 
           indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
@@ -444,7 +444,8 @@ namespace codi {
       }
     }
 
-    inline void pushPassive(const PassiveReal& value) {
+    inline void pushPassive(int data, const PassiveReal& value) {
+      CODI_UNUSED(data);
       constantValueVector.setDataAndMove(value);
     }
 
