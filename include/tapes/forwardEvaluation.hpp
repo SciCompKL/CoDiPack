@@ -90,6 +90,11 @@ namespace codi {
       rhs.template calcGradient<GradientValue>(gradient);
       lhsTangent  = gradient;
       value = rhs.getValue();
+
+#if CODI_AdjointHandle
+      handleTangentOperation(value, lhsTangent);
+#endif
+
     }
 
     /**
@@ -104,6 +109,10 @@ namespace codi {
     CODI_INLINE void store(Real& value, GradientData& lhsTangent, const ActiveReal<ForwardEvaluation<Real> >& rhs) {
       lhsTangent = rhs.getGradient();
       value = rhs.getValue();
+
+#if CODI_AdjointHandle
+      handleTangentOperation(value, lhsTangent);
+#endif
     }
 
     /**

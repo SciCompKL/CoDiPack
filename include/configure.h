@@ -268,6 +268,9 @@ namespace codi {
      */
     template<typename Real, typename IndexType>
     void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
+
+    template<typename Real, typename TangentReal>
+    void handleTangentOperation(const Real& value, const TangentReal& tangent);
   #endif
 
   #ifndef CODI_EnableAssert
