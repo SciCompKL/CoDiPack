@@ -248,6 +248,16 @@ namespace codi {
       data->pushIndices(primalValue, gradientData);
     }
 
+    template<typename Data>
+    inline void pushPassiveIndices(Data& data) const {
+      data->pushPassiveIndices(primalValue, gradientData);
+    }
+
+    template<typename Data, typename Func>
+    inline void valueAction(Data data, Func func) const {
+      CODI_CALL_MEMBER_FN(globalTape, func)(data, primalValue, gradientData);
+    }
+
     /**
      * @brief Helper function for the tape to get its information about this type.
      * @return The gradient data from the tape stored in this type.
@@ -573,7 +583,7 @@ namespace codi {
     /**
      * @brief The maximum number of passive values for an ActiveReal is zero.
      */
-    static const size_t maxPassiveVariables = 0;
+    static const size_t maxConstantVariables = 0;
   };
 
   /**

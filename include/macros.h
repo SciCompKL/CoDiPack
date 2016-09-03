@@ -39,6 +39,8 @@
 #define CODI_CREATE_STORE_TYPE(Name) \
   typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
 
+#define CODI_CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
+
 
 /**
  * @brief Combine two preprocessor variables into one.

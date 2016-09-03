@@ -285,6 +285,16 @@ namespace codi {
       return getExtFuncPosition();
     }
 
+    /**
+     * @brief Get the initial position of the tape.
+     *
+     * The position can be used to reset the tape to that position or to
+     * evaluate only parts of the tape.
+     * @return The initial position of the tape.
+     */
+    CODI_INLINE Position getZeroPosition() const {
+      return getExtFuncZeroPosition();
+    }
 
   private:
 

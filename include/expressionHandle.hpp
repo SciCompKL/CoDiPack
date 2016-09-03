@@ -44,12 +44,12 @@ namespace codi {
 
       const StatementFuncPointer adjointFunc;
       const size_t maxActiveVariables;
-      const size_t maxPassiveVariables;
+      const size_t maxConstantVariables;
 
-      ExpressionHandle(const StatementFuncPointer adjointFunc, const size_t maxActiveVariables, const size_t maxPassiveVariables) :
+      ExpressionHandle(const StatementFuncPointer adjointFunc, const size_t maxActiveVariables, const size_t maxConstantVariables) :
         adjointFunc(adjointFunc),
         maxActiveVariables(maxActiveVariables),
-        maxPassiveVariables(maxPassiveVariables) {}
+        maxConstantVariables(maxConstantVariables) {}
   };
 
   template<typename AdjointData, typename Real, typename IndexType, typename Expr>
@@ -63,5 +63,5 @@ namespace codi {
   };
 
   template<typename AdjointData, typename Real, typename IndexType, typename Expr>
-  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr>::handle(Expr::template evalAdjointOffset<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxPassiveVariables);
+  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr>::handle(Expr::template evalAdjointOffset<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables);
 }
