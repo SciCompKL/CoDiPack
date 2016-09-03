@@ -54,7 +54,7 @@ namespace codi {
    * @param[in]     line  Line inside the file where the exception was generated.
    * @param[in]  message  The exception message and the arguments for the formatting in the message.
    */
-  CODI_INLINE void outputException(const char function[], const char file[], const int line, const char* message, ...) {
+  inline void outputException(const char function[], const char file[], const int line, const char* message, ...) {
     fprintf(stderr, "Error in function %s (%s:%d)\nThe message is: ", function, file, line);
 
     va_list vl;
@@ -77,7 +77,7 @@ namespace codi {
    * @param[in]            file  The file were the function is defined.
    * @param[in]            line  The line in the file were the assert is defined.
    */
-  CODI_INLINE void checkAndOutputAssert(const bool condition, const char *conditionString, const char *function, const char *file, int line) {
+  inline void checkAndOutputAssert(const bool condition, const char *conditionString, const char *function, const char *file, int line) {
     if(!condition) {
       std::cerr << "codiAssertion failed: " << conditionString << " in function " << function << " at " << file << ":" << line << std::endl;
       abort();
