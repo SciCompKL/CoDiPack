@@ -223,7 +223,7 @@ namespace codi {
      */
     void reset(const Position& pos) {
       codiAssert(pos.chunk < chunks.size());
-      codiAssert(pos.data < chunkSize);
+      codiAssert(pos.data <= chunkSize);
 
       for(size_t i = curChunkIndex; i > pos.chunk; --i) {
         chunks[i]->reset();

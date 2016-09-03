@@ -292,8 +292,12 @@ namespace codi {
      * @param[in] start  The starting position for the reset of the vector.
      * @param[in]   end  The ending position for the reset of the vector.
      */
-    inline void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = end.inner.inner.inner.inner; i <= start.inner.inner.inner.inner; ++i) {
+    inline void clearAdjoints(const Position& start, const Position& end) {
+
+      IndexType startPos = min(end.inner.inner.inner.inner, adjointsSize - 1);
+      IndexType endPos = min(start.inner.inner.inner.inner, adjointsSize - 1);
+
+      for(IndexType i = startPos + 1; i <= endPos; ++i) {
         adjoints[i] = GradientValue();
       }
     }
@@ -374,7 +378,7 @@ namespace codi {
             passiveVector.getDataAtPosition(posPassive.chunk, passiveSize, passives);
 
             resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
-            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passives, rhsIndices, primals, adjoints);
+            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveActiveVariableNumber, passives, rhsIndices, primals, adjoints);
   #endif
         } else {
           lhsIndex = 0;

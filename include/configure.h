@@ -278,7 +278,7 @@ namespace codi {
     template<typename AdjointData, typename Real, typename IndexType> class ExpressionHandle;
 
     template<typename Real, typename PassiveReal, typename Gradient, typename IndexType>
-    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const ExpressionHandle<Real*, Real, IndexType>* handle, const PassiveReal* passives, const IndexType* rhsIndices, const Real* primalVec, Gradient* adjointVec);
+    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const ExpressionHandle<Real*, Real, IndexType>* handle, const StatementInt& passiveActives, const PassiveReal* passives, const IndexType* rhsIndices, const Real* primalVec, Gradient* adjointVec);
   #endif
 
   #ifndef CODI_EnableAssert

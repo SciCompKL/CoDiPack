@@ -256,7 +256,10 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = end.inner.inner.inner + 1; i <= start.inner.inner.inner; ++i) { //TODO: check the + 1
+      IndexType startPos = min(end.inner.inner.inner, adjointsSize - 1);
+      IndexType endPos = min(start.inner.inner.inner, adjointsSize - 1);
+
+      for(IndexType i = startPos + 1; i <= endPos; ++i) {
         adjoints[i] = GradientValue();
       }
     }
