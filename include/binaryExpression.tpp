@@ -196,7 +196,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
       const Real bPrimal = B::template getValue<IndexType,
           offset + ExpressionTraits<A>::maxActiveVariables,
@@ -207,7 +207,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
       const Real bPrimal = B::template getValue<IndexType,
           offset + ExpressionTraits<A>::maxActiveVariables,
@@ -226,13 +226,13 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
 
 
     template<typename Tape, typename Data, typename Func>
-    inline void passiveAction(Tape& tape, Data data, Func func) const {
+    CODI_INLINE void passiveAction(Tape& tape, Data data, Func func) const {
       a_.passiveAction(tape, data, func);
       b_.passiveAction(tape, data, func);
     }
 
     template<typename Data, typename Func>
-    inline void valueAction(Data data, Func func) const {
+    CODI_INLINE void valueAction(Data data, Func func) const {
       a_.valueAction(data, func);
       b_.valueAction(data, func);
     }
@@ -324,7 +324,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
       const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxConstantVariables];
 
@@ -332,7 +332,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
       const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxConstantVariables];
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
@@ -343,13 +343,13 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
 
 
     template<typename Tape, typename Data, typename Func>
-    inline void passiveAction(Tape& tape, Data data, Func func) const {
+    CODI_INLINE void passiveAction(Tape& tape, Data data, Func func) const {
       a_.passiveAction(tape, data, func);
       CODI_CALL_MEMBER_FN(tape, func)(data, b_);
     }
 
     template<typename Data, typename Func>
-    inline void valueAction(Data data, Func func) const {
+    CODI_INLINE void valueAction(Data data, Func func) const {
       a_.valueAction(data, func);
     }
 };
@@ -440,7 +440,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
       const PassiveReal& aPrimal = passiveValues[passiveOffset];
       const Real bPrimal = B::template getValue<IndexType, offset, passiveOffset + 1>(indices, passiveValues, primalValues);
 
@@ -448,7 +448,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       const PassiveReal& aPrimal = passiveValues[passiveOffset];
       const Real bPrimal = B::template getValue<IndexType, offset, passiveOffset + 1>(indices, passiveValues, primalValues);
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
@@ -458,13 +458,13 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     }
 
     template<typename Tape, typename Data, typename Func>
-    inline void passiveAction(Tape& tape, Data data, Func func) const {
+    CODI_INLINE void passiveAction(Tape& tape, Data data, Func func) const {
       CODI_CALL_MEMBER_FN(tape, func)(data, a_);
       b_.passiveAction(tape, data, func);
     }
 
     template<typename Data, typename Func>
-    inline void valueAction(Data data, Func func) const {
+    CODI_INLINE void valueAction(Data data, Func func) const {
       b_.valueAction(data, func);
     }
 };

@@ -311,7 +311,7 @@ namespace codi {
      * @param value1  The value for the first data array.
      * @param value2  The value for the second data array.
      */
-    inline void setDataAndMove(const Data1& value1, const Data2& value2, const Data3& value3) {
+    CODI_INLINE void setDataAndMove(const Data1& value1, const Data2& value2, const Data3& value3) {
       codiAssert(getUnusedSize() != 0);
       data1[usedSize] = value1;
       data2[usedSize] = value2;
@@ -327,7 +327,7 @@ namespace codi {
      * @param pointer3  Pointer that is set to the internal data pointer of the third array.
      * @return A pointer to the data.
      */
-    inline void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3) {
+    CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3) {
       codiAssert(index <= ChunkInterface::size);
       pointer1 = &data1[index];
       pointer2 = &data2[index];
@@ -400,7 +400,7 @@ namespace codi {
      * @param value1  The value for the first data array.
      * @param value2  The value for the second data array.
      */
-    inline void setDataAndMove(const Data1& value1, const Data2& value2, const Data3& value3, const Data4& value4) {
+    CODI_INLINE void setDataAndMove(const Data1& value1, const Data2& value2, const Data3& value3, const Data4& value4) {
       codiAssert(getUnusedSize() != 0);
       data1[usedSize] = value1;
       data2[usedSize] = value2;
@@ -418,7 +418,7 @@ namespace codi {
      * @param pointer4  Pointer that is set to the internal data pointer of the fourth array.
      * @return A pointer to the data.
      */
-    inline void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3, Data4* &pointer4) {
+    CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3, Data4* &pointer4) {
       codiAssert(index <= ChunkInterface::size);
       pointer1 = &data1[index];
       pointer2 = &data2[index];
