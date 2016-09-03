@@ -239,14 +239,14 @@ namespace codi {
     }
 
     template<typename CallTape, typename Data, typename Func>
-    inline void passiveAction(CallTape& tape, Data data, Func func) const {
+    CODI_INLINE void passiveAction(CallTape& tape, Data data, Func func) const {
       CODI_UNUSED(tape);
       CODI_UNUSED(data);
       CODI_UNUSED(func);
     }
 
     template<typename Data, typename Func>
-    inline void valueAction(Data data, Func func) const {
+    CODI_INLINE void valueAction(Data data, Func func) const {
       CODI_CALL_MEMBER_FN(globalTape, func)(data, primalValue, gradientData);
     }
 
@@ -509,13 +509,13 @@ namespace codi {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline const Real& getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+    static CODI_INLINE const Real& getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
       CODI_UNUSED(passiveValues);
       return primalValues[indices[offset]];
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       CODI_UNUSED(passiveValues);
       CODI_UNUSED(primalValues);
 

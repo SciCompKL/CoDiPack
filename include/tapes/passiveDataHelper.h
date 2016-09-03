@@ -40,11 +40,11 @@ namespace codi {
 
     PassiveDataHelper() : pos(0) {}
 
-    inline void push(const IndexType& index) {
+    CODI_INLINE void push(const IndexType& index) {
       indices[pos++] = index;
     }
 
-    inline void reset() {
+    CODI_INLINE void reset() {
       pos = 0;
     }
   };

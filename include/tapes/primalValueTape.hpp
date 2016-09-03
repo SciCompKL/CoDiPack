@@ -276,7 +276,7 @@ namespace codi {
       }
     }
 
-    inline void checkPrimalsSize() {
+    CODI_INLINE void checkPrimalsSize() {
       if(primalsSize <= indexHandler.getMaximumGlobalIndex()) {
         IndexType newSize = 1 + (indexHandler.getMaximumGlobalIndex() + 1) / primalsIncr;
         newSize = newSize * primalsIncr;
@@ -292,7 +292,7 @@ namespace codi {
      * @param[in] start  The starting position for the reset of the vector.
      * @param[in]   end  The ending position for the reset of the vector.
      */
-    inline void clearAdjoints(const Position& start, const Position& end) {
+    CODI_INLINE void clearAdjoints(const Position& start, const Position& end) {
 
       IndexType startPos = min(end.inner.inner.inner.inner, adjointsSize - 1);
       IndexType endPos = min(start.inner.inner.inner.inner, adjointsSize - 1);
@@ -336,7 +336,7 @@ namespace codi {
      * @tparam Rhs The expression on the rhs of the statement.
      */
     template<typename Rhs>
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
 
       ENABLE_CHECK(OptTapeActivity, active){
 
@@ -404,7 +404,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<PrimalValueTape<TapeTypes> >& rhs) {
+    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<PrimalValueTape<TapeTypes> >& rhs) {
       ENABLE_CHECK(OptTapeActivity, active){
         lhsIndex = rhs.getGradientData();
       } else {
@@ -425,7 +425,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
 
       lhsValue = rhs;
@@ -453,19 +453,19 @@ namespace codi {
       }
     }
 
-    inline void pushPassive(int data, const PassiveReal& value) {
+    CODI_INLINE void pushPassive(int data, const PassiveReal& value) {
       CODI_UNUSED(data);
       constantValueVector.setDataAndMove(value);
     }
 
-    inline void countActiveValues(int* count, const Real& value, const IndexType& index) {
+    CODI_INLINE void countActiveValues(int* count, const Real& value, const IndexType& index) {
       CODI_UNUSED(value);
       if(0 != index) {
         *count += 1;
       }
     }
 
-    inline void pushIndices(int* passiveVariableCount, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushIndices(int* passiveVariableCount, const Real& value, const IndexType& index) {
       IndexType pushIndex = index;
       if(0 == pushIndex) {
         *passiveVariableCount += 1;
@@ -484,7 +484,7 @@ namespace codi {
      * @param[in]    index Used to check if the variable is active.
      */
     template<typename Data>
-    inline void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       CODI_UNUSED(index);
@@ -501,7 +501,7 @@ namespace codi {
      * @param[in]    index Used to check if the variable is active.
      */
     template<typename Data>
-    inline void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       CODI_UNUSED(index);
@@ -517,7 +517,7 @@ namespace codi {
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getPosition() const {
+    CODI_INLINE Position getPosition() const {
       return getExtFuncPosition();
     }
 
@@ -528,7 +528,7 @@ namespace codi {
      * evaluate only parts of the tape.
      * @return The current position of the tape.
      */
-    inline Position getZeroPosition() const {
+    CODI_INLINE Position getZeroPosition() const {
       return getExtFuncZeroPosition();
     }
 
@@ -537,7 +537,7 @@ namespace codi {
      *
      * @param[in] pos Reset the state of the tape to the given position.
      */
-    inline void resetInt(const Position& pos) {
+    CODI_INLINE void resetInt(const Position& pos) {
       resetExtFunc(pos);
     }
 
@@ -550,7 +550,7 @@ namespace codi {
      * @param[in] start The starting position for the adjoint evaluation.
      * @param[in]   end The ending position for the adjoint evaluation.
      */
-    inline void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants) {
+    CODI_INLINE void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants) {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
@@ -587,7 +587,7 @@ namespace codi {
      * @param[in]   end The ending point for the statement vector.
      */
     template<typename ... Args>
-    inline void evalStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
+    CODI_INLINE void evalStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
       Handle* data;
       StatementInt* passiveActiveReal;
       size_t dataPos = start.data;
@@ -611,7 +611,7 @@ namespace codi {
     }
 
     template<typename ... Args>
-    inline void evalIndices(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
+    CODI_INLINE void evalIndices(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
       IndexType* data;
       size_t dataPos = start.data;
       auto curInnerPos = start.inner;
@@ -643,7 +643,7 @@ namespace codi {
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    inline void evalExtFuncCallback(const PassivePosition& start, const PassivePosition& end) {
+    CODI_INLINE void evalExtFuncCallback(const PassivePosition& start, const PassivePosition& end) {
       PassiveReal* data;
       size_t dataPos = start.data;
       auto curInnerPos = start.inner;
@@ -673,7 +673,7 @@ namespace codi {
      * The index of the variable is set to a non zero number.
      * @param[inout] value The value which will be marked as an active variable.
      */
-    inline void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
+    CODI_INLINE void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive()) {
         pushInputHandle(value.getValue(), value.getGradientData());
       }
@@ -684,7 +684,7 @@ namespace codi {
      *
      * @param[in] value Not used.
      */
-    inline void registerOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
+    CODI_INLINE void registerOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive() && value.getGradientData() != 0) {
         IndexType rhsIndex = value.getGradientData();
 
@@ -774,7 +774,7 @@ namespace codi {
     }
 
   private:
-    inline void pushInputHandle(const Real& value, IndexType& index) {
+    CODI_INLINE void pushInputHandle(const Real& value, IndexType& index) {
       stmtVector.reserveItems(1);
       stmtVector.setDataAndMove(&InputHandle, StatementInt(0));
       indexHandler.assignIndex(index);
@@ -784,7 +784,7 @@ namespace codi {
 
     }
 
-    inline void pushCopyHandle(const Real& lhsValue, IndexType& lhsIndex, const IndexType& rhsIndex) {
+    CODI_INLINE void pushCopyHandle(const Real& lhsValue, IndexType& lhsIndex, const IndexType& rhsIndex) {
       indexVector.reserveItems(1);
       indexVector.setDataAndMove(rhsIndex);
 
