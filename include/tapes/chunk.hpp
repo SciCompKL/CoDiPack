@@ -123,6 +123,12 @@ namespace codi {
    */
   template<typename Data>
   struct Chunk1 final : public ChunkInterface {
+
+    /**
+     * @brief The combined size of one entry in all data arrays.
+     */
+    const static size_t EntrySize = sizeof(Data);
+
     Data* data; /**< The data of the chunk */
 
     /**
@@ -188,6 +194,12 @@ namespace codi {
    */
   template<typename Data1, typename Data2>
   struct Chunk2 final : public ChunkInterface {
+
+    /**
+     * @brief The combined size of one entry in all data arrays.
+     */
+    const static size_t EntrySize = sizeof(Data1) + sizeof(Data2);
+
     Data1* data1; /**< First data item of the chunk */
     Data2* data2; /**< Second data item of the chunk */
 
@@ -263,6 +275,12 @@ namespace codi {
    */
   template<typename Data1, typename Data2, typename Data3>
   struct Chunk3 final : public ChunkInterface {
+
+    /**
+     * @brief The combined size of one entry in all data arrays.
+     */
+    const static size_t EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3);
+
     Data1* data1; /**< First data item of the chunk */
     Data2* data2; /**< Second data item of the chunk */
     Data3* data3; /**< Third data item of the chunk */
@@ -347,6 +365,12 @@ namespace codi {
    */
   template<typename Data1, typename Data2, typename Data3, typename Data4>
   struct Chunk4 final : public ChunkInterface {
+
+    /**
+     * @brief The combined size of one entry in all data arrays.
+     */
+    const static size_t EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3) + sizeof(Data4);
+
     Data1* data1; /**< First data item of the chunk */
     Data2* data2; /**< Second data item of the chunk */
     Data3* data3; /**< Third data item of the chunk */
