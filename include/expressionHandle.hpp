@@ -63,5 +63,5 @@ namespace codi {
   };
 
   template<typename AdjointData, typename Real, typename IndexType, typename Expr>
-  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr>::handle(Expr::template evalAdjointOffset<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables);
+  const ExpressionHandle<AdjointData, Real, IndexType> ExpressionHandleStore<AdjointData, Real, IndexType, Expr>::handle(Expr::template evalAdjoint<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables);
 }

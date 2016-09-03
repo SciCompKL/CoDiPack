@@ -238,19 +238,11 @@ namespace codi {
       CODI_UNUSED(data);
     }
 
-    template<typename Data>
-    inline void pushPassive(Data data) const {
+    template<typename CallTape, typename Data, typename Func>
+    inline void passiveAction(CallTape& tape, Data data, Func func) const {
+      CODI_UNUSED(tape);
       CODI_UNUSED(data);
-    }
-
-    template<typename Data>
-    inline void pushIndices(Data& data) const {
-      data->pushIndices(primalValue, gradientData);
-    }
-
-    template<typename Data>
-    inline void pushPassiveIndices(Data& data) const {
-      data->pushPassiveIndices(primalValue, gradientData);
+      CODI_UNUSED(func);
     }
 
     template<typename Data, typename Func>
@@ -523,7 +515,7 @@ namespace codi {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static inline void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       CODI_UNUSED(passiveValues);
       CODI_UNUSED(primalValues);
 

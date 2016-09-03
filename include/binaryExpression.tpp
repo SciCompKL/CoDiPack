@@ -207,7 +207,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static inline void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
       const Real bPrimal = B::template getValue<IndexType,
           offset + ExpressionTraits<A>::maxActiveVariables,
@@ -217,29 +217,18 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
 
       const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
       const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
-      A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
-      B::template evalAdjointOffset<IndexType,
+      A::template evalAdjoint<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
+      B::template evalAdjoint<IndexType,
           offset + ExpressionTraits<A>::maxActiveVariables,
           passiveOffset + ExpressionTraits<A>::maxConstantVariables>
             (bJac, indices, passiveValues, primalValues, adjointValues);
     }
 
-    template<typename Data>
-    inline void pushPassive(Data data) const {
-      a_.pushPassive(data);
-      b_.pushPassive(data);
-    }
 
-    template<typename Data>
-    inline void pushIndices(Data data) const {
-      a_.pushIndices(data);
-      b_.pushIndices(data);
-    }
-
-    template<typename Data>
-    inline void pushPassiveIndices(Data data) const {
-      a_.pushPassiveIndices(data);
-      b_.pushPassiveIndices(data);
+    template<typename Tape, typename Data, typename Func>
+    inline void passiveAction(Tape& tape, Data data, Func func) const {
+      a_.passiveAction(tape, data, func);
+      b_.passiveAction(tape, data, func);
     }
 
     template<typename Data, typename Func>
@@ -343,29 +332,20 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static inline void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
       const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxConstantVariables];
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
 
       const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
-      A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
+      A::template evalAdjoint<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
     }
 
-    template<typename Data>
-    inline void pushPassive(Data data) const {
-      a_.pushPassive(data);
-      data->pushPassive(b_);
-    }
 
-    template<typename Data>
-    inline void pushIndices(Data data) const {
-      a_.pushIndices(data);
-    }
-
-    template<typename Data>
-    inline void pushPassiveIndices(Data data) const {
-      a_.pushPassiveIndices(data);
+    template<typename Tape, typename Data, typename Func>
+    inline void passiveAction(Tape& tape, Data data, Func func) const {
+      a_.passiveAction(tape, data, func);
+      CODI_CALL_MEMBER_FN(tape, func)(data, b_);
     }
 
     template<typename Data, typename Func>
@@ -468,29 +448,19 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     }
 
     template<typename IndexType, size_t offset, size_t passiveOffset>
-    static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static inline void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       const PassiveReal& aPrimal = passiveValues[passiveOffset];
       const Real bPrimal = B::template getValue<IndexType, offset, passiveOffset + 1>(indices, passiveValues, primalValues);
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
 
       const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
-      B::template evalAdjointOffset<IndexType, offset, passiveOffset + 1>(bJac, indices, passiveValues, primalValues, adjointValues);
+      B::template evalAdjoint<IndexType, offset, passiveOffset + 1>(bJac, indices, passiveValues, primalValues, adjointValues);
     }
 
-    template<typename Data>
-    inline void pushPassive(Data data) const {
-      data->pushPassive(a_);
-      b_.pushPassive(data);
-    }
-
-    template<typename Data>
-    inline void pushIndices(Data data) const {
-      b_.pushIndices(data);
-    }
-
-    template<typename Data>
-    inline void pushPassiveIndices(Data data) const {
-      b_.pushPassiveIndices(data);
+    template<typename Tape, typename Data, typename Func>
+    inline void passiveAction(Tape& tape, Data data, Func func) const {
+      CODI_CALL_MEMBER_FN(tape, func)(data, a_);
+      b_.passiveAction(tape, data, func);
     }
 
     template<typename Data, typename Func>
