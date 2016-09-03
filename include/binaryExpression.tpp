@@ -200,7 +200,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
       const Real bPrimal = B::template getValue<IndexType,
           offset + ExpressionTraits<A>::maxActiveVariables,
-          passiveOffset + ExpressionTraits<A>::maxPassiveVariables>
+          passiveOffset + ExpressionTraits<A>::maxConstantVariables>
             (indices, passiveValues, primalValues);
 
       return PRIMAL_CALL(aPrimal, bPrimal);
@@ -211,7 +211,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
       const Real bPrimal = B::template getValue<IndexType,
           offset + ExpressionTraits<A>::maxActiveVariables,
-          passiveOffset + ExpressionTraits<A>::maxPassiveVariables>
+          passiveOffset + ExpressionTraits<A>::maxConstantVariables>
             (indices, passiveValues, primalValues);
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
 
@@ -220,7 +220,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       A::template evalAdjointOffset<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
       B::template evalAdjointOffset<IndexType,
           offset + ExpressionTraits<A>::maxActiveVariables,
-          passiveOffset + ExpressionTraits<A>::maxPassiveVariables>
+          passiveOffset + ExpressionTraits<A>::maxConstantVariables>
             (bJac, indices, passiveValues, primalValues, adjointValues);
     }
 
@@ -337,7 +337,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     template<typename IndexType, size_t offset, size_t passiveOffset>
     static inline Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
-      const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxPassiveVariables];
+      const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxConstantVariables];
 
       return PRIMAL_CALL(aPrimal, bPrimal);
     }
@@ -345,7 +345,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     template<typename IndexType, size_t offset, size_t passiveOffset>
     static inline void evalAdjointOffset(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
-      const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxPassiveVariables];
+      const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxConstantVariables];
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
 
       const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;

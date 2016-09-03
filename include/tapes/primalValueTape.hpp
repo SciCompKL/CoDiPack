@@ -75,15 +75,15 @@ namespace codi {
     /** @brief The chunk vector for the index data. */
     typedef ChunkVector<IndexChunk, StatementVector> IndexVector;
 
-    /** @brief The data for the passive values of each statement */
-    typedef Chunk1< typename TypeTraits<Real>::PassiveReal> PassiveChunk;
-    /** @brief The chunk vector for the passive data. */
-    typedef ChunkVector<PassiveChunk, IndexVector> PassiveVector;
+    /** @brief The data for the constant values of each statement */
+    typedef Chunk1< typename TypeTraits<Real>::PassiveReal> ConstantValueChunk;
+    /** @brief The chunk vector for the constant data. */
+    typedef ChunkVector<ConstantValueChunk, IndexVector> ConstantValueVector;
 
     /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename PassiveVector::Position> ExternalFunctionChunk;
+    typedef Chunk2<ExternalFunction,typename ConstantValueVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<ExternalFunctionChunk, PassiveVector> ExternalFunctionVector;
+    typedef ChunkVector<ExternalFunctionChunk, ConstantValueVector> ExternalFunctionVector;
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
@@ -126,15 +126,15 @@ namespace codi {
     /** @brief The chunk vector for the index data. */
     typedef SingleChunkVector<IndexChunk, StatementVector> IndexVector;
 
-    /** @brief The data for the passive values of each statement */
-    typedef Chunk1< typename TypeTraits<Real>::PassiveReal> PassiveChunk;
-    /** @brief The chunk vector for the passive data. */
-    typedef SingleChunkVector<PassiveChunk, IndexVector> PassiveVector;
+    /** @brief The data for the constant values of each statement */
+    typedef Chunk1< typename TypeTraits<Real>::PassiveReal> ConstantValueChunk;
+    /** @brief The chunk vector for the constant data. */
+    typedef SingleChunkVector<ConstantValueChunk, IndexVector> ConstantValueVector;
 
     /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename PassiveVector::Position> ExternalFunctionChunk;
+    typedef Chunk2<ExternalFunction,typename ConstantValueVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef SingleChunkVector<ExternalFunctionChunk, PassiveVector> ExternalFunctionVector;
+    typedef SingleChunkVector<ExternalFunctionChunk, ConstantValueVector> ExternalFunctionVector;
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
@@ -180,11 +180,11 @@ namespace codi {
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
     typedef typename TapeTypes::HandleType Handle;
 
-    typedef typename TapeTypes::PassiveVector PassiveVector;
+    typedef typename TapeTypes::ConstantValueVector ConstantValueVector;
     typedef typename TapeTypes::IndexVector IndexVector;
     typedef typename TapeTypes::StatementVector StatementVector;
 
-    typedef typename TapeTypes::PassiveVector::Position PassivePosition;
+    typedef typename TapeTypes::ConstantValueVector::Position PassivePosition;
     typedef typename TapeTypes::IndexVector::Position IndexPosition;
     typedef typename TapeTypes::StatementVector::Position StmtPosition;
 
@@ -198,31 +198,31 @@ namespace codi {
 
     typename TapeTypes::StatementVector stmtVector;
     typename TapeTypes::IndexVector indexVector;
-    typename TapeTypes::PassiveVector passiveVector;
+    typename TapeTypes::ConstantValueVector constantValueVector;
 
-    #define CHILD_VECTOR_TYPE PassiveVector
-    #define CHILD_VECTOR_NAME passiveVector
+    #define CHILD_VECTOR_TYPE ConstantValueVector
+    #define CHILD_VECTOR_NAME constantValueVector
     #define VECTOR_TYPE typename TapeTypes::ExternalFunctionVector
     #include "modules/externalFunctionsModule.tpp"
 
     #undef TAPE_NAME
 
-    static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {}
+    static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {}
     const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
 
-    static void copyHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
-      CODI_UNUSED(passiveValues);
+    static void copyHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+      CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
       adjointValues[indices[0]] += seed;
     }
     const static ExpressionHandle<Real*, Real, IndexType> CopyHandle;
 
     template<int size>
-    static void preaccHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    static void preaccHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
       CODI_UNUSED(primalValues);
       for(int i = 0; i < size; ++i) {
-        // jacobies are stored in the passive values
-        adjointValues[indices[i]] += passiveValues[i] * seed;
+        // jacobies are stored in the constant values
+        adjointValues[indices[i]] += constantValues[i] * seed;
       }
     }
     const static ExpressionHandle<Real*, Real, IndexType> PreaccHandles[MaxStatementIntSize];
@@ -242,8 +242,8 @@ namespace codi {
       /* defined in tapeBaseModule */active(false),
       stmtVector(DefaultChunkSize, indexHandler),
       indexVector(DefaultChunkSize, stmtVector),
-      passiveVector(DefaultChunkSize, indexVector),
-      /* defined in externalFunctionsModule */extFuncVector(1000, passiveVector),
+      constantValueVector(DefaultChunkSize, indexVector),
+      /* defined in externalFunctionsModule */extFuncVector(1000, constantValueVector),
       primals(NULL),
       primalsSize(0),
       primalsIncr(DefaultSmallChunkSize){}
@@ -257,7 +257,7 @@ namespace codi {
     }
 
     size_t getUsedPassiveDataSize() const {
-      return passiveVector.getDataSize();
+      return constantValueVector.getDataSize();
     }
 
     /**
@@ -302,8 +302,8 @@ namespace codi {
       }
     }
 
-    void setPassiveDataSize(const size_t& passiveDataSize) {
-      passiveVector.resize(passiveDataSize);
+    void setConstantDataSize(const size_t& constantDataSize) {
+      constantValueVector.resize(constantDataSize);
     }
 
     /**
@@ -344,47 +344,48 @@ namespace codi {
         rhs.valueAction(&activeCount, &PrimalValueTape<TapeTypes>::countActiveValues);
 
         if(0 != activeCount) {
-          int passiveActiveVariableNumber = ExpressionTraits<Rhs>::maxActiveVariables - activeCount;
+          int passiveVariableNumber = ExpressionTraits<Rhs>::maxActiveVariables - activeCount;
 
-          passiveVector.reserveItems(ExpressionTraits<Rhs>::maxPassiveVariables + passiveActiveVariableNumber); // the additional passives are create in pushIndices
-          size_t passiveSize = passiveVector.getChunkPosition();
-          CODI_UNUSED(passiveSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+          constantValueVector.reserveItems(ExpressionTraits<Rhs>::maxConstantVariables + passiveVariableNumber); // the additional passives are create in pushIndices
+          size_t constantSize = constantValueVector.getChunkPosition();
           rhs.pushPassive(this);
-          codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveVector.getChunkPosition() - passiveSize);
+          codiAssert(ExpressionTraits<Rhs>::maxConstantVariables == constantValueVector.getChunkPosition() - constantSize);
 
           indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
           size_t indexSize = indexVector.getChunkPosition();
-          CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
           int passieveVariableCount = 0;
           rhs.valueAction(&passieveVariableCount, &PrimalValueTape<TapeTypes>::pushIndices);
           codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
-          codiAssert(passieveVariableCount == passiveActiveVariableNumber);
+          codiAssert(passieveVariableCount == passiveVariableNumber);
 
           stmtVector.reserveItems(1);
-          stmtVector.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveActiveVariableNumber);
+          stmtVector.setDataAndMove(ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveVariableNumber);
           indexHandler.assignIndex(lhsIndex);
 
           checkPrimalsSize();
           primals[lhsIndex] = rhs.getValue();
 
-  #if CODI_AdjointHandle
+          CODI_UNUSED(constantSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+          CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
+
+#if CODI_AdjointHandle
             IndexType* rhsIndices = NULL;
-            PassiveReal* passives = NULL;
+            PassiveReal* constants = NULL;
 
             auto posIndex = indexVector.getPosition();
             indexVector.getDataAtPosition(posIndex.chunk, indexSize, rhsIndices);
 
-            auto posPassive = passiveVector.getPosition();
-            passiveVector.getDataAtPosition(posPassive.chunk, passiveSize, passives);
+            auto posPassive = constantValueVector.getPosition();
+            constantValueVector.getDataAtPosition(posPassive.chunk, constantSize, constants);
 
             resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
-            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveActiveVariableNumber, passives, rhsIndices, primals, adjoints);
-  #endif
+            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveVariableNumber, constants, rhsIndices, primals, adjoints);
+#endif
         } else {
-          lhsIndex = 0;
+          indexHandler.freeIndex(lhsIndex);
         }
       } else {
-        lhsIndex = 0;
+        indexHandler.freeIndex(lhsIndex);
       }
 
       /* now set the value of the lhs */
@@ -425,13 +426,7 @@ namespace codi {
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
     inline void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
-//      ENABLE_CHECK(OptTapeActivity, active){
-//        // the default behaviour is to activate passive assignments in order to have less passive values
-//        // in the store for expression routines
-//        pushInputHandle(rhs, lhsIndex);
-//      } else {
-        indexHandler.freeIndex(lhsIndex);
-//      }
+      indexHandler.freeIndex(lhsIndex);
 
       lhsValue = rhs;
     }
@@ -448,7 +443,7 @@ namespace codi {
      */
     CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
-        passiveVector.reserveItems(size);
+        constantValueVector.reserveItems(size);
         indexVector.reserveItems(size);
         stmtVector.reserveItems(1);
         indexHandler.assignIndex(lhsIndex);
@@ -459,7 +454,7 @@ namespace codi {
     }
 
     inline void pushPassive(const PassiveReal& value) {
-      passiveVector.setDataAndMove(value);
+      constantValueVector.setDataAndMove(value);
     }
 
     inline void countActiveValues(int* count, const Real& value, const IndexType& index) {
@@ -474,7 +469,7 @@ namespace codi {
       if(0 == pushIndex) {
         *passiveVariableCount += 1;
         pushIndex = *passiveVariableCount;
-        passiveVector.setDataAndMove(value);
+        constantValueVector.setDataAndMove(value);
       }
 
       indexVector.setDataAndMove(pushIndex);
@@ -510,7 +505,7 @@ namespace codi {
       CODI_UNUSED(value);
       CODI_UNUSED(index);
 
-      passiveVector.setDataAndMove(jacobi);
+      constantValueVector.setDataAndMove(jacobi);
       indexVector.setDataAndMove(index);
     }
 
@@ -554,7 +549,7 @@ namespace codi {
      * @param[in] start The starting position for the adjoint evaluation.
      * @param[in]   end The ending position for the adjoint evaluation.
      */
-    inline void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, IndexType* &indices, size_t& passivePos, PassiveReal* &passives) {
+    inline void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants) {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
@@ -565,17 +560,17 @@ namespace codi {
 
         // first restore the primal values of the passive indices
         StatementInt passiveActives = passiveActiveReal[stmtPos];
-        passivePos -= passiveActives;
+        constantPos -= passiveActives;
         for(StatementInt i = 0; i < passiveActives; ++i) {
-          primals[i + 1] = passives[passivePos + i];
+          primals[i + 1] = constants[constantPos + i];
         }
 
         // now update the regular pointers
         indexPos -= exprHandle->maxActiveVariables;
-        passivePos -= exprHandle->maxPassiveVariables;
+        constantPos -= exprHandle->maxConstantVariables;
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
 
-          exprHandle->adjointFunc(adj, &indices[indexPos], &passives[passivePos], primals, adjoints);
+          exprHandle->adjointFunc(adj, &indices[indexPos], &constants[constantPos], primals, adjoints);
         }
       }
     }
@@ -652,20 +647,20 @@ namespace codi {
       size_t dataPos = start.data;
       auto curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        passiveVector.getDataAtPosition(curChunk, 0, data);
+        constantValueVector.getDataAtPosition(curChunk, 0, data);
 
-        auto endInnerPos = passiveVector.getInnerPosition(curChunk);
+        auto endInnerPos = constantValueVector.getInnerPosition(curChunk);
         evalIndices(curInnerPos, endInnerPos, dataPos, data);
 
         codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
 
         curInnerPos = endInnerPos;
 
-        dataPos = passiveVector.getChunkUsedData(curChunk - 1);
+        dataPos = constantValueVector.getChunkUsedData(curChunk - 1);
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      passiveVector.getDataAtPosition(end.chunk, 0, data);
+      constantValueVector.getDataAtPosition(end.chunk, 0, data);
       evalIndices(curInnerPos, end.inner, dataPos, data);
     }
 
@@ -709,15 +704,15 @@ namespace codi {
 
       size_t nChunksStmt  = stmtVector.getNumChunks();
       size_t totalStmt    = stmtVector.getDataSize();
-      size_t sizeStmtEntry = sizeof(const ExpressionHandle<Real*, Real, IndexType>*);
+      size_t sizeStmtEntry = sizeof(const ExpressionHandle<Real*, Real, IndexType>*) + sizeof(StatementInt);
       double memoryUsedStmt = (double)totalStmt*(double)sizeStmtEntry* BYTE_TO_MB;
       double memoryAllocStmt= (double)nChunksStmt*(double)stmtVector.getChunkSize()*(double)sizeStmtEntry* BYTE_TO_MB;
 
-      size_t nChunksPassive  = passiveVector.getNumChunks();
-      size_t totalPassive    = passiveVector.getDataSize();
+      size_t nChunksPassive  = constantValueVector.getNumChunks();
+      size_t totalPassive    = constantValueVector.getDataSize();
       size_t sizePassiveEntry = sizeof(PassiveReal);
       double memoryUsedPassive = (double)totalPassive*(double)sizePassiveEntry* BYTE_TO_MB;
-      double memoryAllocPassive= (double)nChunksPassive*(double)passiveVector.getChunkSize()*(double)sizePassiveEntry* BYTE_TO_MB;
+      double memoryAllocPassive= (double)nChunksPassive*(double)constantValueVector.getChunkSize()*(double)sizePassiveEntry* BYTE_TO_MB;
 
       size_t totalPrimal   = primalsSize;
       size_t sizePrimalEntry = sizeof(Real);

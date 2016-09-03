@@ -79,9 +79,9 @@ namespace codi {
            ExpressionTraits<A>::maxActiveVariables            \
          + ExpressionTraits<B>::maxActiveVariables;           \
       /** @brief Number of maximum passive variables is the sum of the passive variables from both arguments. */ \
-      static const size_t maxPassiveVariables =                \
-           ExpressionTraits<A>::maxPassiveVariables            \
-         + ExpressionTraits<B>::maxPassiveVariables;           \
+      static const size_t maxConstantVariables =                \
+           ExpressionTraits<A>::maxConstantVariables            \
+         + ExpressionTraits<B>::maxConstantVariables;           \
     };                                                         \
     /** @brief Specialization for OP  with only the first argument active. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
     template<typename Real, typename A>                       \
@@ -90,8 +90,8 @@ namespace codi {
       static const size_t maxActiveVariables =                \
            ExpressionTraits<A>::maxActiveVariables;           \
       /** @brief Number of maximum passive variables is the number of passive variables from the first argument plus the passive value from this expression. */ \
-      static const size_t maxPassiveVariables =                \
-           1 + ExpressionTraits<A>::maxPassiveVariables;       \
+      static const size_t maxConstantVariables =                \
+           1 + ExpressionTraits<A>::maxConstantVariables;       \
     };                                                         \
     /** @brief Specialization for OP with only the second argument active. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function */ \
     template<typename Real, typename B>                       \
@@ -100,8 +100,8 @@ namespace codi {
       static const size_t maxActiveVariables =                \
            ExpressionTraits<B>::maxActiveVariables;           \
       /** @brief Number of maximum passive variables is the number of passive variables from the second argument plus the passive value from this expression. */ \
-      static const size_t maxPassiveVariables =               \
-           1 + ExpressionTraits<B>::maxPassiveVariables;      \
+      static const size_t maxConstantVariables =               \
+           1 + ExpressionTraits<B>::maxConstantVariables;      \
     };
 
   CODI_DEFINE_BINARY_TRAIT(Add)
@@ -124,8 +124,8 @@ namespace codi {
       static const size_t maxActiveVariables                  \
          = ExpressionTraits<A>::maxActiveVariables;           \
       /** @brief Number of maximum passive variables is the number of passive variables from the expression in the argument. */ \
-      static const size_t maxPassiveVariables                  \
-         = ExpressionTraits<A>::maxPassiveVariables;           \
+      static const size_t maxConstantVariables                  \
+         = ExpressionTraits<A>::maxConstantVariables;           \
     };
 
   CODI_DEFINE_UNARY_TRAIT(UnaryMinus)

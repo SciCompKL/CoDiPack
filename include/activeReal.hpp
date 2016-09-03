@@ -583,7 +583,7 @@ namespace codi {
     /**
      * @brief The maximum number of passive values for an ActiveReal is zero.
      */
-    static const size_t maxPassiveVariables = 0;
+    static const size_t maxConstantVariables = 0;
   };
 
   /**

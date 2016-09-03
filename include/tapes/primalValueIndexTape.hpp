@@ -315,11 +315,11 @@ namespace codi {
         rhs.pushIndices(this);
         codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
 
-        passiveVector.reserveItems(ExpressionTraits<Rhs>::maxPassiveVariables);
+        passiveVector.reserveItems(ExpressionTraits<Rhs>::maxConstantVariables);
         size_t passiveSize = passiveVector.getChunkPosition();
         CODI_UNUSED(passiveSize);  /* needed to avoid unused variable when the assersts are not enabled. */
         rhs.pushPassive(this);
-        codiAssert(ExpressionTraits<Rhs>::maxPassiveVariables == passiveVector.getChunkPosition() - passiveSize);
+        codiAssert(ExpressionTraits<Rhs>::maxConstantVariables == passiveVector.getChunkPosition() - passiveSize);
 
         indexHandler.assignIndex(lhsIndex);
         checkPrimalsSize();
@@ -506,7 +506,7 @@ namespace codi {
         adjoints[lhsIndex] = GradientValue();
 
         indexPos -= exprHandle->maxActiveVariables;
-        passivePos -= exprHandle->maxPassiveVariables;
+        passivePos -= exprHandle->maxConstantVariables;
         ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
           exprHandle->adjointFunc(adj, &indices[indexPos], &passives[passivePos], primalVector, adjoints);
         }
