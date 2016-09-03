@@ -1065,4 +1065,6 @@ namespace codi {
     CREATE_PREACC_HANDLE(254),
     CREATE_PREACC_HANDLE(255)
   };
+
+#undef CREATE_PREACC_HANDLE
 }
