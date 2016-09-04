@@ -45,7 +45,7 @@
  * It defines the methods setExternalFunctionChunkSize, pushExternalFunctionHandle, pushExternalFunction,
  * printExtFuncStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods getExtFuncPosition, resetExtFunc, evaluateExtFunc as interface functions for the
+ * It defines the methods getExtFuncPosition, getExtFuncZeroPosition, resetExtFunc, evaluateExtFunc as interface functions for the
  * including class.
  */
 
@@ -164,6 +164,17 @@
      */
     ExtFuncPosition getExtFuncPosition() const {
       return extFuncVector.getPosition();
+    }
+
+    /**
+     * @brief Get the zero position from the external function vector.
+     *
+     * The position contains also the positions information for all nested vectors.
+     *
+     * @return The zero position for the external function vector.
+     */
+    ExtFuncPosition getExtFuncZeroPosition() const {
+      return extFuncVector.getZeroPosition();
     }
 
     /**

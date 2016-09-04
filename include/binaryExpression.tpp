@@ -64,10 +64,10 @@
 #ifndef NAME
   #error Please define a name for the binary expression.
 #endif
-#ifndef FUNCTION 
+#ifndef FUNCTION
   #error Please define the primal function representation.
 #endif
-#ifndef PRIMAL_FUNCTION 
+#ifndef PRIMAL_FUNCTION
   #error Please define a function which calls the primal functions representation.
 #endif
 
@@ -86,6 +86,9 @@
 #define DERIVATIVE_FUNC_01   COMBINE(derv01_, NAME)
 #define DERIVATIVE_FUNC_01M  COMBINE(derv01M_, NAME)
 
+#define GRADIENT_FUNC_A COMBINE(gradientA_, NAME)
+#define GRADIENT_FUNC_B COMBINE(gradientB_, NAME)
+
 /* predefine the structs and the functions for higher order derivatives */
 template <typename Real, class A, class B> struct OP11;
 template <typename Real, class A> struct OP10;
@@ -100,11 +103,11 @@ CODI_INLINE  OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename Typ
 template <typename Real, class B>
 CODI_INLINE  OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b);
 
-/** 
- * @brief Expression implementation for OP with two active variables. 
+/**
+ * @brief Expression implementation for OP with two active variables.
  *
- * @tparam Real The real type used in the active types. 
- * @tparam A The expression for the first argument of the function 
+ * @tparam Real The real type used in the active types.
+ * @tparam A The expression for the first argument of the function
  * @tparam B The expression for the second argument of the function
  */
 template<typename Real, class A, class B>
@@ -118,11 +121,18 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     CODI_CREATE_STORE_TYPE(B) b_;
 
   public:
+    /**
+     * @brief The passive type used in the origin.
+     *
+     * If Real is not an ActiveReal this value corresponds to Real,
+     * otherwise the PassiveValue from Real is used.
+     */
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
-    /** 
+    /**
      * @brief Stores both arguments of the expression.
      *
      * @param[in] a  First argument of the expression.
@@ -131,7 +141,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     explicit OP11(const Expression<Real, A>& a, const Expression<Real, B>& b) :
       a_(a.cast()), b_(b.cast()) {}
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
      * For f(x,y) it calculates df/dx and df/dy and passes these values as the multipliers to the arguments.
@@ -145,7 +155,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       DERIVATIVE_FUNC_11(data, a_, b_, getValue());
     }
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
      * For f(x,y) it calculates multiplier * df/dx and multiplier * df/dy and passes these values as the multipliers to the arguments.
@@ -176,17 +186,59 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       b_.pushLazyJacobies(data);
     }
 
-    /** 
-     * @brief Return the numerical value of the expression. 
+    /**
+     * @brief Return the numerical value of the expression.
      *
      * @return The value of the expression.
      */
     CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_.getValue(), b_.getValue());
     }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+      const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
+      const Real bPrimal = B::template getValue<IndexType,
+          offset + ExpressionTraits<A>::maxActiveVariables,
+          passiveOffset + ExpressionTraits<A>::maxConstantVariables>
+            (indices, passiveValues, primalValues);
+
+      return PRIMAL_CALL(aPrimal, bPrimal);
+    }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+      const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
+      const Real bPrimal = B::template getValue<IndexType,
+          offset + ExpressionTraits<A>::maxActiveVariables,
+          passiveOffset + ExpressionTraits<A>::maxConstantVariables>
+            (indices, passiveValues, primalValues);
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      A::template evalAdjoint<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
+      B::template evalAdjoint<IndexType,
+          offset + ExpressionTraits<A>::maxActiveVariables,
+          passiveOffset + ExpressionTraits<A>::maxConstantVariables>
+            (bJac, indices, passiveValues, primalValues, adjointValues);
+    }
+
+
+    template<typename Tape, typename Data, typename Func>
+    CODI_INLINE void passiveAction(Tape& tape, Data data, Func func) const {
+      a_.passiveAction(tape, data, func);
+      b_.passiveAction(tape, data, func);
+    }
+
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      a_.valueAction(data, func);
+      b_.valueAction(data, func);
+    }
 };
 
-/** 
+/**
  * @brief Expression implementation for OP with one active variables.
  *
  * @tparam Real The real type used in the active types.
@@ -195,7 +247,6 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
 template<typename Real, class A>
 struct OP10: public Expression<Real, OP10<Real, A> > {
   private:
-
     /** @brief The type for the passive values. */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
@@ -210,7 +261,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
-    /** 
+    /**
      * @brief Stores both arguments of the expression.
      *
      * @param[in] a  First argument of the expression.
@@ -219,8 +270,8 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     explicit OP10(const Expression<Real, A>& a, const PassiveReal& b) :
       a_(a.cast()), b_(b) {}
 
-    /** 
-     * @brief Calculates the jacobies of the expression and hands them down to the arguments. 
+    /**
+     * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
      * For f(x,y) it calculates df/dx passes this value as the multiplier to the argument.
      *
@@ -233,10 +284,10 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       DERIVATIVE_FUNC_10(data, a_, b_, getValue());
     }
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
-     * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. 
+     * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument.
      *
      * @param[inout]     data A helper value which the tape can define and use for the evaluation.
      * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
@@ -263,7 +314,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       a_.pushLazyJacobies(data);
     }
 
-    /** 
+    /**
      * @brief Return the numerical value of the expression.
      *
      * @return The value of the expression.
@@ -271,12 +322,42 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_.getValue(), b_);
     }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+      const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
+      const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxConstantVariables];
+
+      return PRIMAL_CALL(aPrimal, bPrimal);
+    }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+      const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
+      const PassiveReal& bPrimal = passiveValues[passiveOffset + ExpressionTraits<A>::maxConstantVariables];
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      A::template evalAdjoint<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
+    }
+
+
+    template<typename Tape, typename Data, typename Func>
+    CODI_INLINE void passiveAction(Tape& tape, Data data, Func func) const {
+      a_.passiveAction(tape, data, func);
+      CODI_CALL_MEMBER_FN(tape, func)(data, b_);
+    }
+
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      a_.valueAction(data, func);
+    }
 };
 
-/** 
- * @brief Expression implementation for OP with one active variables. 
+/**
+ * @brief Expression implementation for OP with one active variables.
  *
- * @tparam Real The real type used in the active types. 
+ * @tparam Real The real type used in the active types.
  * @tparam B The expression for the second argument of the function
  */
 template<typename Real, class B>
@@ -296,16 +377,16 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
-    /** 
+    /**
      * @brief Stores both arguments of the expression.
      *
-     * @param[in] a  First argument of the expression. 
+     * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
     explicit OP01(const PassiveReal& a, const Expression<Real, B>& b) :
       a_(a), b_(b.cast()) {}
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
      * For f(x,y) it calculates df/dx passes this value as the multiplier to the argument.
@@ -319,10 +400,10 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
       DERIVATIVE_FUNC_01(data, a_, b_, getValue());
     }
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
-     * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. 
+     * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument.
      *
      * @param[inout]     data A helper value which the tape can define and use for the evaluation.
      * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
@@ -349,16 +430,44 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
       b_.pushLazyJacobies(data);
     }
 
-    /** 
-     * @brief Return the numerical value of the expression. 
+    /**
+     * @brief Return the numerical value of the expression.
      *
-     * @return The value of the expression. 
+     * @return The value of the expression.
      */
     CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_, b_.getValue());
     }
-};
 
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+      const PassiveReal& aPrimal = passiveValues[passiveOffset];
+      const Real bPrimal = B::template getValue<IndexType, offset, passiveOffset + 1>(indices, passiveValues, primalValues);
+
+      return PRIMAL_CALL(aPrimal, bPrimal);
+    }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+      const PassiveReal& aPrimal = passiveValues[passiveOffset];
+      const Real bPrimal = B::template getValue<IndexType, offset, passiveOffset + 1>(indices, passiveValues, primalValues);
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      B::template evalAdjoint<IndexType, offset, passiveOffset + 1>(bJac, indices, passiveValues, primalValues, adjointValues);
+    }
+
+    template<typename Tape, typename Data, typename Func>
+    CODI_INLINE void passiveAction(Tape& tape, Data data, Func func) const {
+      CODI_CALL_MEMBER_FN(tape, func)(data, a_);
+      b_.passiveAction(tape, data, func);
+    }
+
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      b_.valueAction(data, func);
+    }
+};
 
 /**
  * @brief Specialization of the TypeTraits for the binary operator type.
@@ -507,6 +616,8 @@ CODI_INLINE OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, 
 #undef DERIVATIVE_FUNC_10M
 #undef DERIVATIVE_FUNC_01
 #undef DERIVATIVE_FUNC_01M
+#undef GRADIENT_FUNC_A
+#undef GRADIENT_FUNC_B
 
 #undef PRIMAL_FUNCTION
 #undef FUNCTION

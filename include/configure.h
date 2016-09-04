@@ -79,6 +79,12 @@ namespace codi {
    */
   typedef uint8_t StatementInt;
 
+  /**
+   * @brief The maximum value of a statement int.
+   */
+  const size_t MaxStatementIntSize = 256;
+
+
   #ifndef CODI_SmallChunkSize
     #define CODI_SmallChunkSize 32768
   #endif
@@ -268,6 +274,11 @@ namespace codi {
      */
     template<typename Real, typename IndexType>
     void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
+
+    template<typename AdjointData, typename Real, typename IndexType> class ExpressionHandle;
+
+    template<typename Real, typename PassiveReal, typename Gradient, typename IndexType>
+    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const ExpressionHandle<Real*, Real, IndexType>* handle, const StatementInt& passiveActives, const PassiveReal* passives, const IndexType* rhsIndices, const Real* primalVec, Gradient* adjointVec);
 
     template<typename Real, typename TangentReal>
     void handleTangentOperation(const Real& value, const TangentReal& tangent);

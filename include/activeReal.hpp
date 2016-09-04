@@ -112,7 +112,6 @@ namespace codi {
      */
     typedef typename Tape::GradientValue GradientValue;
 
-
   private:
     /**
      * @brief The primal value of this floating point type.
@@ -237,6 +236,18 @@ namespace codi {
     template<typename Data>
     CODI_INLINE void pushLazyJacobies(Data& data) const {
       CODI_UNUSED(data);
+    }
+
+    template<typename CallTape, typename Data, typename Func>
+    CODI_INLINE void passiveAction(CallTape& tape, Data data, Func func) const {
+      CODI_UNUSED(tape);
+      CODI_UNUSED(data);
+      CODI_UNUSED(func);
+    }
+
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      CODI_CALL_MEMBER_FN(globalTape, func)(data, primalValue, gradientData);
     }
 
     /**
@@ -459,6 +470,7 @@ namespace codi {
     CODI_INLINE ActiveReal<Tape> operator++() {
       return *this = *this + 1.0;
     }
+
     /**
      * @brief The expression is unfolded to *this += 1.0
      *
@@ -494,6 +506,22 @@ namespace codi {
      */
     static CODI_INLINE Tape& getGlobalTape() {
       return globalTape;
+    }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static CODI_INLINE const Real& getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+      CODI_UNUSED(passiveValues);
+      return primalValues[indices[offset]];
+    }
+
+    template<typename IndexType, size_t offset, size_t passiveOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+      CODI_UNUSED(passiveValues);
+      CODI_UNUSED(primalValues);
+
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(seed)) {
+        adjointValues[indices[offset]] += seed;
+      }
     }
   };
 
@@ -543,6 +571,11 @@ namespace codi {
      * @brief The maximum number of active values for an ActiveReal is one.
      */
     static const size_t maxActiveVariables = 1;
+
+    /**
+     * @brief The maximum number of passive values for an ActiveReal is zero.
+     */
+    static const size_t maxConstantVariables = 0;
   };
 
   /**

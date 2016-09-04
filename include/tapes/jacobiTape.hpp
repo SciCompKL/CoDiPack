@@ -166,6 +166,8 @@ namespace codi {
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
     // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiTape
 
@@ -198,7 +200,7 @@ namespace codi {
      * external functions defined in the configuration.
      */
     JacobiTape() :
-      /* defined in tapeBaseModule */indexHandler(),
+      /* defined in tapeBaseModule */indexHandler(0),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
@@ -254,7 +256,10 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = end.inner.inner.inner; i <= start.inner.inner.inner; ++i) {
+      IndexType startPos = min(end.inner.inner.inner, adjointsSize - 1);
+      IndexType endPos = min(start.inner.inner.inner, adjointsSize - 1);
+
+      for(IndexType i = startPos + 1; i <= endPos; ++i) {
         adjoints[i] = GradientValue();
       }
     }
@@ -268,6 +273,17 @@ namespace codi {
      */
     CODI_INLINE Position getPosition() const {
       return getExtFuncPosition();
+    }
+
+    /**
+     * @brief Get the initial position of the tape.
+     *
+     * The position can be used to reset the tape to that position or to
+     * evaluate only parts of the tape.
+     * @return The initial position of the tape.
+     */
+    CODI_INLINE Position getZeroPosition() const {
+      return getExtFuncZeroPosition();
     }
 
 

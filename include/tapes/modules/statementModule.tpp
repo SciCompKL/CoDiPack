@@ -198,7 +198,9 @@
      * @param[out]   lhsIndex    The gradient data of the lhs.
      * @param[in]        size    The number of Jacobi entries.
      */
-    CODI_INLINE void store(IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
+      CODI_UNUSED(lhsValue);
+
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(size);

@@ -33,6 +33,8 @@
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/jacobiTape.hpp"
 #include "tapes/jacobiIndexTape.hpp"
+#include "tapes/primalValueTape.hpp"
+#include "tapes/primalValueIndexTape.hpp"
 #include "tapes/indices/linearIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandlerUseCount.hpp"
@@ -192,8 +194,7 @@ namespace codi {
    * like memset and memcpy.
    *
    */
-  typedef ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReverseIndex;
-
+  typedef ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReverseIndex; 
   /**
    * @brief Vector mode of the #RealReverseIndex type.
    *
@@ -226,4 +227,11 @@ namespace codi {
    * See the documentation of #RealReverseIndexUnchecked.
    */
   typedef ActiveReal<JacobiIndexTape<SimpleIndexTapeTypes<float, ReuseIndexHandlerUseCount<int> > > > RealReverseIndexUncheckedFloat;
+
+  typedef ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<double, LinearIndexHandler<int> > > > RealReversePrimal;
+  typedef ActiveReal<PrimalValueTape<SimplePrimalValueTapeTypes<double, LinearIndexHandler<int> > > > RealReversePrimalUnchecked;
+
+  typedef ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReversePrimalIndex;
+  typedef ActiveReal<PrimalValueIndexTape<SimpleIndexPrimalValueTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReversePrimalIndexUnchecked;
+
 }

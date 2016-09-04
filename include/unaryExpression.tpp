@@ -81,6 +81,13 @@ struct OP : public Expression<Real, OP<Real, A> > {
     /** @brief The result of the function. It is always precomputed. */
     Real result_;
   public:
+    /**
+     * @brief The passive type used in the origin.
+     *
+     * If Real is not an ActiveReal this value corresponds to Real,
+     * otherwise the PassiveValue from Real is used.
+     */
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
@@ -138,13 +145,39 @@ struct OP : public Expression<Real, OP<Real, A> > {
     a_.pushLazyJacobies(data);
   }
 
-  /** 
-   * @brief Return the numerical value of the expression. 
+  /**
+   * @brief Return the numerical value of the expression.
    *
-   * @return The value of the expression. 
+   * @return The value of the expression.
    */
   CODI_INLINE const Real& getValue() const {
     return result_;
+  }
+
+  template<typename IndexType, size_t offset, size_t passiveOffset>
+  static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
+    const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
+
+    return PRIMAL_CALL(aPrimal);
+  }
+
+  template<typename IndexType, size_t offset, size_t passiveOffset>
+  static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
+    const Real aPrimal = A::template getValue<IndexType, offset, passiveOffset>(indices, passiveValues, primalValues);
+    const Real resPrimal = PRIMAL_CALL(aPrimal);
+
+    const Real aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
+    A::template evalAdjoint<IndexType, offset, passiveOffset>(aJac, indices, passiveValues, primalValues, adjointValues);
+  }
+
+  template<typename Tape, typename Data, typename Func>
+  CODI_INLINE void passiveAction(Tape& tape, Data data, Func func) const {
+    a_.passiveAction(tape, data, func);
+  }
+
+  template<typename Data, typename Func>
+  CODI_INLINE void valueAction(Data data, Func func) const {
+    a_.valueAction(data, func);
   }
 };
 

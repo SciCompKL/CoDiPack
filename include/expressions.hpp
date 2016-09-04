@@ -46,6 +46,8 @@
  */
 namespace codi {
 
+  template<typename A> struct ExpressionTraits;
+
   /**
    * The Expression type from which all other types of expression
    * derive. Each member function simply calls the specialized version
@@ -162,6 +164,9 @@ namespace codi {
    * 10 -> first argument is active
    * 01 -> second argument is active
    *
+   * There are also the functions gradientA_Name and gradientB_Name which calculate the jacobie with respect to the first and
+   * second argument respectivly.
+   *
    * There is no implementation for 00 because no variable is active and thus the derivative would be zero.
    *
    * If the M is present the method is implemented with the multiplier as an argument.
@@ -172,6 +177,18 @@ namespace codi {
    * df/da = 1 and likewise for df/db so simply
    * call a and b's versions of calcGradient
    */
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientA_Add(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(b);
+    CODI_UNUSED(result);
+    return 1.0;
+  }
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientB_Add(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(b);
+    CODI_UNUSED(result);
+    return 1.0;
+  }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Add(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     a.calcGradient(data);
@@ -208,6 +225,18 @@ namespace codi {
    * Implementation for f(a,b) = a - b
    * df/da = 1 so simply call a
    */
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientA_Subtract(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(b);
+    CODI_UNUSED(result);
+    return 1.0;
+  }
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientB_Subtract(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(b);
+    CODI_UNUSED(result);
+    return -1.0;
+  }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Subtract(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     a.calcGradient(data);
@@ -243,6 +272,16 @@ namespace codi {
   /*
    * Implementation for f(a,b) = a * b
    */
+  template<typename Real, typename A, typename B> CODI_INLINE const B& gradientA_Multiply(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(result);
+    return b;
+  }
+  template<typename Real, typename A, typename B> CODI_INLINE const A& gradientB_Multiply(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(b);
+    CODI_UNUSED(result);
+    return a;
+  }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Multiply(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     a.calcGradient(data, b.getValue());
@@ -292,6 +331,19 @@ namespace codi {
         CODI_EXCEPTION("Division called with divisor of zero.");
       }
     }
+  }
+  // TODO: optimize return type
+  template<typename Real, typename A, typename B> CODI_INLINE const Real gradientA_Divide(const A& a, const B& b, const Real& result) {
+    checkArgumentsDivide(b);
+    CODI_UNUSED(a);
+    CODI_UNUSED(result);
+    return 1.0 / b;
+  }
+  // TODO: optimize return type
+  template<typename Real, typename A, typename B> CODI_INLINE const Real gradientB_Divide(const A& a, const B& b, const Real& result) {
+    checkArgumentsDivide(b);
+    CODI_UNUSED(a);
+    return -result / b;
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Divide(Data& data, const A& a, const B& b, const Real& result) {
     checkArgumentsDivide(b.getValue());
@@ -350,6 +402,23 @@ namespace codi {
         CODI_EXCEPTION("atan2 called at point (0,0).");
       }
     }
+  }
+  // TODO: optimize return type
+  template<typename Real, typename A, typename B> CODI_INLINE const Real gradientA_Atan2(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    checkArgumentsAtan2(a, b);
+    Real divisor = a * a + b * b;
+    divisor = 1.0 / divisor;
+    return b * divisor;
+
+  }
+  // TODO: optimize return type
+  template<typename Real, typename A, typename B> CODI_INLINE const Real gradientB_Atan2(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    checkArgumentsAtan2(a, b);
+    Real divisor = a * a + b * b;
+    divisor = 1.0 / divisor;
+    return -a * divisor;
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Atan2(Data& data, const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
@@ -420,13 +489,26 @@ namespace codi {
       }
     }
   }
+  // TODO: optimize return type
+  template<typename Real, typename A, typename B> CODI_INLINE Real gradientA_Pow(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    checkArgumentsPow(a);
+    return b * pow(a, b - 1.0);
+  }
+  // TODO: optimize return type
+  template<typename Real, typename A, typename B> CODI_INLINE Real gradientB_Pow(const A& a, const B& b, const Real& result) {
+    checkArgumentsPow(a);
+    if (a > 0.0) {
+      return log(a) * result;
+    } else {
+      return 0.0;
+    }
+  }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Pow(Data& data, const A& a, const B& b, const Real& result) {
     checkArgumentsPow(a.getValue());
     a.calcGradient(data, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
       b.calcGradient(data, log(a.getValue()) * result);
-    } else {
-      b.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11M_Pow(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
@@ -434,8 +516,6 @@ namespace codi {
     a.calcGradient(data, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
     if (a.getValue() > 0.0) {
       b.calcGradient(data, multiplier * log(a.getValue()) * result);
-    } else {
-      b.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10_Pow(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
@@ -450,16 +530,12 @@ namespace codi {
     checkArgumentsPow(a);
     if (a > 0.0) {
       b.calcGradient(data, log(a) * result);
-    } else {
-      b.calcGradient(data, 0.0);
     }
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01M_Pow(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
     checkArgumentsPow(a);
     if (a > 0.0) {
       b.calcGradient(data, multiplier * log(a) * result);
-    } else {
-      b.calcGradient(data, 0.0);
     }
   }
   using std::pow;
@@ -471,6 +547,22 @@ namespace codi {
   /*
    * Implementation for f(a,b) = Min(a,b)
    */
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientA_Min(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    if(a < b) {
+      return 1.0;
+    } else {
+      return 0.0;
+    }
+  }
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientB_Min(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    if(a < b) {
+      return 0.0;
+    } else {
+      return 1.0;
+    }
+  }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Min(Data& data, const A& a, const B& b, const Real& result) {
     if(a.getValue() < b.getValue()) {
       a.calcGradient(data);
@@ -512,7 +604,7 @@ namespace codi {
   #include "binaryExpression.tpp"
 
   /*
-   * Forwar of fmin to min
+   * Forward of fmin to min
    */
   /**
    * @brief Overload for fmin with the CoDiPack expressions.
@@ -564,6 +656,22 @@ namespace codi {
   /*
    * Implementation for f(a,b) = Max(a,b)
    */
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientA_Max(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    if(a > b) {
+      return 1.0;
+    } else {
+      return 0.0;
+    }
+  }
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientB_Max(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    if(a > b) {
+      return 0.0;
+    } else {
+      return 1.0;
+    }
+  }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Max(Data& data, const A& a, const B& b, const Real& result) {
     if(a.getValue() > b.getValue()) {
       a.calcGradient(data);

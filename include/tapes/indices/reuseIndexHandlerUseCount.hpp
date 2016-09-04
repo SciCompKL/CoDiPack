@@ -81,6 +81,8 @@ namespace codi {
        */
       std::vector<Index> freeIndices;
 
+      size_t freeIndexPos;
+
       /**
        * @brief The vector that count for the indices how often they are used.
        */
@@ -102,6 +104,7 @@ namespace codi {
         globalMaximumIndex(0),
         currentMaximumIndex(0),
         freeIndices(),
+        freeIndexPos(0),
         indexUse(DefaultSmallChunkSize),
         indexUseSizeIncrement(DefaultSmallChunkSize) {}
 
@@ -123,7 +126,12 @@ namespace codi {
               // freed index is the maximum one so we can decrease the count
               --currentMaximumIndex;
             } else {
-              freeIndices.push_back(index);
+              if(freeIndexPos == freeIndices.size()) {
+                increaseFreeIndicesSize();
+              }
+
+              freeIndices[freeIndexPos] = index;
+              freeIndexPos += 1;
             }
           }
 
@@ -138,14 +146,16 @@ namespace codi {
        */
       CODI_INLINE Index createIndex() {
         Index index;
-        if(0 != freeIndices.size()) {
-          index = freeIndices.back();
-          freeIndices.pop_back();
+        if(0 != freeIndexPos) {
+          freeIndexPos -= 1;
+          index = freeIndices[freeIndexPos];
         } else {
           if(globalMaximumIndex == currentMaximumIndex) {
             ++globalMaximumIndex;
 
-            checkIndexUseSize();
+            if(indexUse.size() <= (size_t)globalMaximumIndex) {
+              increaseIndexUseSize();
+            }
           }
           index = ++currentMaximumIndex;
         }
@@ -220,7 +230,7 @@ namespace codi {
        * @return The number of stored indices.
        */
       size_t getNumberStoredIndices() const {
-        return freeIndices.size();
+        return freeIndexPos;
       }
 
       /**
@@ -285,10 +295,12 @@ namespace codi {
        * The method increases the size of the index use vector by the chunk
        * increment defined in the constructor.
        */
-      CODI_INLINE void checkIndexUseSize() {
-        if(indexUse.size() <= (size_t)globalMaximumIndex) {
-          this->indexUse.resize(indexUse.size() + indexUseSizeIncrement);
-        }
+      CODI_INLINE void increaseIndexUseSize() {
+        this->indexUse.resize(indexUse.size() + indexUseSizeIncrement);
+      }
+
+      CODI_INLINE void increaseFreeIndicesSize() {
+        freeIndices.resize(freeIndices.size() + indexUseSizeIncrement);
       }
   };
 }

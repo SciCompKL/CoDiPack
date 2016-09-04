@@ -33,39 +33,19 @@
  */
 namespace codi {
 
-  /**
-   * @brief Implementation for a terminal sequence chunk vector
-   *
-   * This interface provides the basic implementation for a terminal point
-   * in a chain of chunk vectors.
-   */
-  struct EmptyChunkVector {
-    /**
-     * @brief Position without any data.
-     */
-    struct Position {};
+  template<typename IndexType, size_t n>
+  struct PassiveDataHelper {
+    size_t pos;
+    IndexType indices[n];
 
-    /**
-     * @brief Empty position.
-     * @return Empty position
-     */
-    CODI_INLINE Position getPosition() const {
-      return Position();
+    PassiveDataHelper() : pos(0) {}
+
+    CODI_INLINE void push(const IndexType& index) {
+      indices[pos++] = index;
     }
 
-    /**
-     * @brief Empty position.
-     * @return Empty position
-     */
-    CODI_INLINE Position getZeroPosition() const {
-      return Position();
-    }
-
-    /**
-     * @brief Will do nothing.
-     */
-    CODI_INLINE void reset(const Position& pos) const {
-      CODI_UNUSED(pos);
+    CODI_INLINE void reset() {
+      pos = 0;
     }
   };
 }
