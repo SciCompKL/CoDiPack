@@ -73,6 +73,23 @@ namespace codi {
   #endif
   #undef CODI_UseForcedInlines
 
+   /**
+   * @brief Macro for avoiding the inlinging of function.
+   *
+   * The macro defines the attribute of the function such that it is no longer considered for inlining.
+   *
+   * It is defined as an function attribute.
+   */
+  #ifndef CODI_UseAvoidedInlines
+    #define CODI_UseAvoidedInlines 1
+  #endif
+  #if CODI_UseAvoidedInlines
+    #define CODI_NO_INLINE __attribute__((noinline))
+  #else
+    #define CODI_NO_INLINE /* no avoiding of inline defined */
+  #endif
+  #undef CODI_UseAvoidedInlines
+
 
   /**
    * @brief Type for the maximum number of variables a operation can have.

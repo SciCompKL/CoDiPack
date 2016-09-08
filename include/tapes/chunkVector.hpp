@@ -196,7 +196,7 @@ namespace codi {
      *
      * Always the position of the nested chunk vector is stored.
      */
-    void __attribute__ ((noinline)) nextChunk() {
+    CODI_NO_INLINE void nextChunk() {
       curChunk->store();
 
       curChunkIndex += 1;
