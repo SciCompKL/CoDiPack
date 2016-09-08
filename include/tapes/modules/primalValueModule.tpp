@@ -433,7 +433,7 @@
       double memoryAllocPrimal = (double)totalPrimal*(double)sizePrimalEntry* BYTE_TO_MB;
 
       out << hLine
-          << "Primal Vector \n"
+          << "Primal Vector\n"
           << hLine
           << "  Total Number:     " << std::setw(10) << totalPrimal << "\n"
           << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
@@ -441,44 +441,44 @@
                                     << std::setw(10)
                                     << memoryAllocPrimal << " MB" << "\n";
       out << hLine
-          << "Statements \n"
+          << "Statements\n"
           << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksStmt << "\n"
           << "  Total Number:     " << std::setw(10) << totalStmt   << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocStmt << " MB" << "\n"
+          << "  Number of Chunks: " << std::setw(10) << nChunksStmt << "\n"
           << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                     << std::setprecision(2)
                                     << std::setw(10)
-                                    << memoryUsedStmt << " MB" << "\n";
+                                    << memoryUsedStmt << " MB" << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocStmt << " MB" << "\n";
       out << hLine
-          << "Index entries \n"
+          << "Index entries\n"
           << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksIndex << "\n"
           << "  Total Number:     " << std::setw(10) << totalIndex << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocIndex << " MB" << "\n"
+          << "  Number of Chunks: " << std::setw(10) << nChunksIndex << "\n"
           << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                     << std::setprecision(2)
                                     << std::setw(10)
-                                    << memoryUsedIndex << " MB" << "\n";
+                                    << memoryUsedIndex << " MB" << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocIndex << " MB" << "\n";
       out << hLine
-          << "Passive data entries \n"
+          << "Passive data entries\n"
           << hLine
-          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
           << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocPassive << " MB" << "\n"
+          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
           << "  Memory used:      " << std::setiosflags(std::ios::fixed)
                                     << std::setprecision(2)
                                     << std::setw(10)
-                                    << memoryUsedPassive << " MB" << "\n";
+                                    << memoryUsedPassive << " MB" << "\n"
+          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
+                                    << std::setprecision(2)
+                                    << std::setw(10)
+                                    << memoryAllocPassive << " MB" << "\n";
     }
 
     size_t getUsedStatementsSize() const {
