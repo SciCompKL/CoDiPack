@@ -369,7 +369,11 @@ namespace codi {
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       if(isActive()) {
-        pushStmtData(value.getGradientData(), value.getValue(), &InputHandle, StatementInt(0));
+        //TODO: Test if register of already acitve value will yield errors.
+        indexHandler.assignIndex(value.getGradientData());
+
+        checkPrimalsSize();
+        primals[value.getGradientData()] = value.getValue();
       }
     }
 
