@@ -79,7 +79,7 @@ namespace codi {
        */
       LinearIndexHandler(Index zeroState) :
         zeroState(zeroState),
-        count() {}
+        count(zeroState) {}
 
       /**
        * @brief Free the index that is given to the method.
