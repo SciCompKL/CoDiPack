@@ -36,10 +36,20 @@ The file `codi.hpp` defines the datatypes:
    - codi::RealReverseIndexFloat
    - codi::RealReverseUncheckedFloat
    - codi::RealReverseIndexUncheckedFloat
+   - codi::RealReversePrimal
+   - codi::RealReversePrimalIndex
+   - codi::RealReversePrimalUnchecked
+   - codi::RealReversePrimalIndexUnchecked
+   - codi::RealReversePrimalFloat
+   - codi::RealReversePrimalIndexFloat
+   - codi::RealReversePrimalUncheckedFloat
+   - codi::RealReversePrimalIndexUncheckedFloat
  - Vector versions of the above AD types:
    - codi::RealForwardVec<dim>
    - codi::RealReverseVec<dim>
    - codi::RealReverseIndexVec<dim>
+   - codi::RealReversePrimalVec<dim>
+   - codi::RealReversePrimalIndexVec<dim>
 
 The reverse types support various use cases. The regular type codi::RealReverse is the most used type and provides
 the most common use case. This type can be used in c-like memory operation like memset and memcpy.

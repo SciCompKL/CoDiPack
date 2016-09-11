@@ -41,7 +41,7 @@
  * The module defines the types StmtChildVector, StmtChildPosition, StmtVector, StmtChunk,
  * StmtPosition.
  *
- * It defines the methods store(Expr), store(const), store(User) and printStmtStatistics from the TapeInterface and ReverseTapeInterface.
+ * It defines the methods store(Expr), store(const), store(User), printStmtStatistics from the TapeInterface and ReverseTapeInterface.
  *
  * It defines the methods setStatementChunkSize, getUsedStatementSize, resizeStmt as interface functions for the
  * including class.
@@ -195,8 +195,9 @@
      *
      * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
      *
-     * @param[out]   lhsIndex    The gradient data of the lhs.
-     * @param[in]        size    The number of Jacobi entries.
+     * @param[in]    lhsValue  The primal value of the lhs.
+     * @param[out]   lhsIndex  The gradient data of the lhs.
+     * @param[in]        size  The number of Jacobi entries.
      */
     CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
       CODI_UNUSED(lhsValue);

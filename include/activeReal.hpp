@@ -238,13 +238,36 @@ namespace codi {
       CODI_UNUSED(data);
     }
 
+    /**
+     * @brief constantValueActions are not executed for active reals.
+     *
+     * The action is only called for constant values in the expression.
+     * E.g. values that have the type PassiveReal.
+     *
+     * @param[inout] tape  The tape that calls the action.
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every constant item.
+     *
+     * @tparam CallTape  The type of the tape that calls the action.
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
     template<typename CallTape, typename Data, typename Func>
-    CODI_INLINE void passiveAction(CallTape& tape, Data data, Func func) const {
+    CODI_INLINE void constantValueAction(CallTape& tape, Data data, Func func) const {
       CODI_UNUSED(tape);
       CODI_UNUSED(data);
       CODI_UNUSED(func);
     }
 
+    /**
+     * @brief The action is called on the tape for every active real.
+     *
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every active real in the expression.
+     *
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
     template<typename Data, typename Func>
     CODI_INLINE void valueAction(Data data, Func func) const {
       CODI_CALL_MEMBER_FN(globalTape, func)(data, primalValue, gradientData);
@@ -508,15 +531,52 @@ namespace codi {
       return globalTape;
     }
 
-    template<typename IndexType, size_t offset, size_t passiveOffset>
-    static CODI_INLINE const Real& getValue(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues) {
-      CODI_UNUSED(passiveValues);
+    /**
+     * @brief Get the value from a static evaluation context.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It returns the primal value the is defined by the corresponding index.
+     * The index is defined by the offset in the index vector.
+     *
+     * E.g. primalValues[indices[offset]]
+     *
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     *
+     * @return The corresponding primal value for the active real.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE const Real& getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      CODI_UNUSED(constantValues);
       return primalValues[indices[offset]];
     }
 
-    template<typename IndexType, size_t offset, size_t passiveOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues) {
-      CODI_UNUSED(passiveValues);
+    /**
+     * @brief Update the adjoint of the corresponding value in the expression.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It updates the adjoints of the values in the expressions with the calculated
+     * adjoint values.
+     *
+     * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+     *                            for the operators and used as the upadte in the terminal points.
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     * @param[in]  adjointValues  The global adjoint value vector.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+      CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
       ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(seed)) {

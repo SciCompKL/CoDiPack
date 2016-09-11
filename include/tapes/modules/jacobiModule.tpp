@@ -89,10 +89,11 @@
      *
      * It calls the evaluation method for the expression counter.
      *
-     * @param[in]       start The starting point for the jacobi vector.
-     * @param[in]         end The ending point for the jacobi vector.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]  statements The pointer to the statement vector.
+     * @param[in]    start  The starting point for the jacobi vector.
+     * @param[in]      end  The ending point for the jacobi vector.
+     * @param[in,out] args  The data from the other vectors.
+     *
+     * @tparam Args The types for the arguments from the other vectors.
      */
     template<typename ... Args>
     CODI_INLINE void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
@@ -105,6 +106,8 @@
 
         JacobiChildPosition endInnerPos = jacobiVector.getInnerPosition(curChunk);
         evalJacobiesCallback(curInnerPos, endInnerPos, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
+
+        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
 
         curInnerPos = endInnerPos;
 

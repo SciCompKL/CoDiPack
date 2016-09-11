@@ -119,7 +119,7 @@ namespace codi {
    *
    * This chunk contains one data array which is stored in memory.
    *
-   * @tparam Data   The type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
+   * @tparam Data   The type of the stored data.
    */
   template<typename Data>
   struct Chunk1 final : public ChunkInterface {
@@ -134,15 +134,10 @@ namespace codi {
     /**
      * @brief Creates the data of the chunk.
      *
-     * The data of the chunk is set with memset to zero.
-     *
      * @param size The size of the data in the chunk.
      */
     Chunk1(const size_t& size) : ChunkInterface(size) {
       data = new Data[size];
-      if(UseMemsetInChunks) {
-        memset(data, 0, sizeof(Data) * size);
-      }
     }
 
     /**
@@ -189,8 +184,8 @@ namespace codi {
    *
    * This chunk contains two data arrays which are stored in memory.
    *
-   * @tparam Data1   The first type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
-   * @tparam Data2   The second type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
+   * @tparam Data1   The first type of the stored data.
+   * @tparam Data2   The second type of the stored data.
    */
   template<typename Data1, typename Data2>
   struct Chunk2 final : public ChunkInterface {
@@ -206,17 +201,11 @@ namespace codi {
     /**
      * @brief Creates the data of the chunk.
      *
-     * The data of the chunk is set with memset to zero.
-     *
      * @param size The size of the data in the chunk.
      */
     Chunk2(const size_t& size) : ChunkInterface(size) {
       data1 = new Data1[size];
       data2 = new Data2[size];
-      if(UseMemsetInChunks) {
-        memset(data1, 0, sizeof(Data1) * size);
-        memset(data2, 0, sizeof(Data2) * size);
-      }
     }
 
     /**
@@ -269,9 +258,9 @@ namespace codi {
    *
    * This chunk contains three data arrays which are stored in memory.
    *
-   * @tparam Data1   The first type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
-   * @tparam Data2   The second type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
-   * @tparam Data3   The third type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
+   * @tparam Data1   The first type of the stored data.
+   * @tparam Data2   The second type of the stored data.
+   * @tparam Data3   The third type of the stored data.
    */
   template<typename Data1, typename Data2, typename Data3>
   struct Chunk3 final : public ChunkInterface {
@@ -288,28 +277,21 @@ namespace codi {
     /**
      * @brief Creates the data of the chunk.
      *
-     * The data of the chunk is set with memset to zero.
-     *
      * @param size The size of the data in the chunk.
      */
     Chunk3(const size_t& size) : ChunkInterface(size) {
-      data1 = (Data1*)malloc(sizeof(Data1) * size);
-      data2 = (Data2*)malloc(sizeof(Data2) * size);
-      data3 = (Data3*)malloc(sizeof(Data3) * size);
-      if(UseMemsetInChunks) {
-        memset(data1, 0, sizeof(Data1) * size);
-        memset(data2, 0, sizeof(Data2) * size);
-        memset(data3, 0, sizeof(Data3) * size);
-      }
+      data1 = new Data1[size];
+      data2 = new Data2[size];
+      data3 = new Data3[size];
     }
 
     /**
      * @brief Deletes the data arrays
      */
     ~Chunk3() {
-      free(data1);
-      free(data2);
-      free(data3);
+      delete [] data1;
+      delete [] data2;
+      delete [] data3;
       data1 = NULL;
       data2 = NULL;
       data3 = NULL;
@@ -358,10 +340,10 @@ namespace codi {
    *
    * This chunk contains four data arrays which are stored in memory.
    *
-   * @tparam Data1   The first type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
-   * @tparam Data2   The second type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
-   * @tparam Data3   The third type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
-   * @tparam Data4   The fourth type of the stored data. This type has to be a POD type as we use malloc, free and memset on it.
+   * @tparam Data1   The first type of the stored data.
+   * @tparam Data2   The second type of the stored data.
+   * @tparam Data3   The third type of the stored data.
+   * @tparam Data4   The fourth type of the stored data.
    */
   template<typename Data1, typename Data2, typename Data3, typename Data4>
   struct Chunk4 final : public ChunkInterface {
@@ -379,31 +361,23 @@ namespace codi {
     /**
      * @brief Creates the data of the chunk.
      *
-     * The data of the chunk is set with memset to zero.
-     *
      * @param size The size of the data in the chunk.
      */
     Chunk4(const size_t& size) : ChunkInterface(size) {
-      data1 = (Data1*)malloc(sizeof(Data1) * size);
-      data2 = (Data2*)malloc(sizeof(Data2) * size);
-      data3 = (Data3*)malloc(sizeof(Data3) * size);
-      data4 = (Data4*)malloc(sizeof(Data4) * size);
-      if(UseMemsetInChunks) {
-        memset(data1, 0, sizeof(Data1) * size);
-        memset(data2, 0, sizeof(Data2) * size);
-        memset(data3, 0, sizeof(Data3) * size);
-        memset(data4, 0, sizeof(Data4) * size);
-      }
+      data1 = new Data1[size];
+      data2 = new Data2[size];
+      data3 = new Data3[size];
+      data4 = new Data4[size];
     }
 
     /**
      * @brief Deletes the data arrays
      */
     ~Chunk4() {
-      free(data1);
-      free(data2);
-      free(data3);
-      free(data4);
+      delete [] data1;
+      delete [] data2;
+      delete [] data3;
+      delete [] data4;
       data1 = NULL;
       data2 = NULL;
       data3 = NULL;

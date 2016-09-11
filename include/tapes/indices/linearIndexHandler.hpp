@@ -65,6 +65,11 @@ namespace codi {
 
     private:
 
+      /**
+       * @brief The amount of indices that is not given to statements.
+       *
+       * The indices 1 to zeroState can be used by the tape.
+       */
       Index zeroState;
 
       /**

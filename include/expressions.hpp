@@ -124,6 +124,36 @@ namespace codi {
       return cast().getValue();
     }
 
+    /**
+     * @brief constantValueActions are called for every constant real in the expression.
+     *
+     * @param[inout] tape  The tape that calls the action.
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every constant item.
+     *
+     * @tparam CallTape  The type of the tape that calls the action.
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename CallTape, typename Data, typename Func>
+    CODI_INLINE void constantValueAction(CallTape& tape, Data data, Func func) const {
+      cast().constantValueAction(tape, data, func);
+    }
+
+    /**
+     * @brief The action is called for every active real in the expression.
+     *
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every active real in the expression.
+     *
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      cast().valueAction(data, func);
+    }
+
   private:
     /**
      * Intentionally inaccessible to prevent an expression appearing
@@ -332,14 +362,12 @@ namespace codi {
       }
     }
   }
-  // TODO: optimize return type
   template<typename Real, typename A, typename B> CODI_INLINE const Real gradientA_Divide(const A& a, const B& b, const Real& result) {
     checkArgumentsDivide(b);
     CODI_UNUSED(a);
     CODI_UNUSED(result);
     return 1.0 / b;
   }
-  // TODO: optimize return type
   template<typename Real, typename A, typename B> CODI_INLINE const Real gradientB_Divide(const A& a, const B& b, const Real& result) {
     checkArgumentsDivide(b);
     CODI_UNUSED(a);
@@ -403,7 +431,6 @@ namespace codi {
       }
     }
   }
-  // TODO: optimize return type
   template<typename Real, typename A, typename B> CODI_INLINE const Real gradientA_Atan2(const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a, b);
@@ -412,7 +439,6 @@ namespace codi {
     return b * divisor;
 
   }
-  // TODO: optimize return type
   template<typename Real, typename A, typename B> CODI_INLINE const Real gradientB_Atan2(const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsAtan2(a, b);
@@ -489,13 +515,11 @@ namespace codi {
       }
     }
   }
-  // TODO: optimize return type
   template<typename Real, typename A, typename B> CODI_INLINE Real gradientA_Pow(const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsPow(a);
     return b * pow(a, b - 1.0);
   }
-  // TODO: optimize return type
   template<typename Real, typename A, typename B> CODI_INLINE Real gradientB_Pow(const A& a, const B& b, const Real& result) {
     checkArgumentsPow(a);
     if (a > 0.0) {

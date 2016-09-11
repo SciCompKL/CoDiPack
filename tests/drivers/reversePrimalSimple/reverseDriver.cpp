@@ -40,7 +40,7 @@ int main(int nargs, char** args) {
 
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
   tape.resize(1000, 1000);
-  tape.setPassiveDataSize(1000);
+  tape.setConstantDataSize(1000);
   tape.setExternalFunctionChunkSize(1000);
   tape.setActive();
 

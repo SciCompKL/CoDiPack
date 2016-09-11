@@ -112,7 +112,7 @@ namespace codi {
    *
    * It can be set with the preprocessor macro CODI_SmallChunkSize=<size>
    */
-  static size_t DefaultSmallChunkSize = CODI_SmallChunkSize; //TODO: Find optimal value
+  static size_t DefaultSmallChunkSize = CODI_SmallChunkSize;
   #undef CODI_SmallChunkSize
 
   #ifndef CODI_ChunkSize
@@ -125,24 +125,8 @@ namespace codi {
    *
    * It can be set with the preprocessor macro CODI_ChunkSize=<size>
    */
-  static size_t DefaultChunkSize = CODI_ChunkSize; //TODO: Find optimal value
+  static size_t DefaultChunkSize = CODI_ChunkSize;
   #undef CODI_ChunkSize
-
-  #ifndef CODI_UseMemsetInChunks
-    #define CODI_UseMemsetInChunks true
-  #endif
-  /**
-   * @brief Enables the use of memset to preallocate the memory.
-   *
-   * Modern systems can initialize the memory acquired with malloc or calloc
-   * in a lazy fashion. The memory is then acquired on first use which can cause
-   * performance issues. If the data is set to zero with memset the system will
-   * directly allocate all the memory.
-   *
-   * It can be set with the preprocessor macro CODI_UseMemsetInChunks=<true/false>
-   */
-  const bool UseMemsetInChunks = CODI_UseMemsetInChunks;
-  #undef CODI_UseMemsetInChunks
 
   #ifndef CODI_CheckExpressionArguments
     #define CODI_CheckExpressionArguments false
@@ -292,11 +276,55 @@ namespace codi {
     template<typename Real, typename IndexType>
     void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
 
+    /**
+     * @brief Pre definition of the the expression handles.
+     *
+     * @tparam AdjointData  The type of the adjoint data.
+     * @tparam        Real  The type for the real values.
+     * @tparam   IndexType  The index types for the management.
+     */
     template<typename AdjointData, typename Real, typename IndexType> class ExpressionHandle;
 
-    template<typename Real, typename PassiveReal, typename Gradient, typename IndexType>
-    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const ExpressionHandle<Real*, Real, IndexType>* handle, const StatementInt& passiveActives, const PassiveReal* passives, const IndexType* rhsIndices, const Real* primalVec, Gradient* adjointVec);
+    /**
+     * @brief A function that is called for every statement that is written on the
+     *        primal value tapes.
+     *
+     * The function can be used to extract information from the taping process.
+     *
+     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     *
+     * @param[in]          value  The primal value of the statement.
+     * @param[in]       lhsIndex  The index on the left hand side of the statement, that
+     *                            will be recorded.
+     * @param[in]         handle  The handle that describes the whole expression that will be recorded on the tape.
+     * @param[in] passiveActives  The number of active real variables that are passive in the statement (e.g. index == 0)
+     * @param[in]      constants  The constant values that will be stored on the tape. The number
+     *                            is the constant variable count from the expression and the passiveActives number.
+     * @param[in]     rhsIndices  The pointer to the array of the indices that will be stored
+     *                            for the statement. rhsIndices[0] is the first argument, rhsIndices[1]
+     *                            the second, etc.
+     * @param[in]      primalVec  The global vector of the primal variables.
+     *
+     * @tparam        Real  The type of the floating point values that are used in the tape.
+     * @tparam PassiveReal  The type of the passive floating point values that are used in the tape.
+     * @tparam   IndexType  The type of the indices that are used in the tape.
+     */
+    template<typename Real, typename PassiveReal, typename IndexType>
+    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const ExpressionHandle<Real*, Real, IndexType>* handle, const StatementInt& passiveActives, const PassiveReal* constants, const IndexType* rhsIndices, const Real* primalVec);
 
+    /**
+     * @brief A function that is called for every statement that is evaluated in the forward tape.
+     *
+     * The function can be used to extract information from the taping process.
+     *
+     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     *
+     * @param[in]   value  The primal value of the statement.
+     * @param[in] tangent  The tangent value of the statement.
+     *
+     * @tparam        Real  The type of the floating point values that are used in the tape.
+     * @tparam TangentReal  The type of the tangent value that is used in the tape.
+     */
     template<typename Real, typename TangentReal>
     void handleTangentOperation(const Real& value, const TangentReal& tangent);
   #endif

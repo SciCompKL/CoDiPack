@@ -48,8 +48,8 @@ namespace codi {
    *
    * See PrimalValueTape for details.
    *
-   * @tparam Real  The type for the primal values.
-   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
+   * @tparam          Real  The type for the primal values.
+   * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
@@ -60,9 +60,9 @@ namespace codi {
     typedef IndexHandler IndexHandlerType;
     /** @brief The type for the adjoint values. */
     typedef GradientValue GradientValueType;
-
+    /** @brief The type for indices. */
     typedef typename IndexHandler::IndexType IndexType;
-
+    /** @brief The type for expression handles in the reverse evaluation. */
     typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType;
 
     /** @brief The data for each statement. */
@@ -88,6 +88,7 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    /** @brief The name of the tape as a string. */
     constexpr static const char* tapeName = "ChunkPrimalValueTape";
 
   };
@@ -99,8 +100,8 @@ namespace codi {
    *
    * See PrimalValueTape for details.
    *
-   * @tparam Real  The type for the primal values.
-   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
+   * @tparam          Real  The type for the primal values.
+   * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real>
@@ -111,9 +112,9 @@ namespace codi {
     typedef IndexHandler IndexHandlerType;
     /** @brief The type for the adjoint values. */
     typedef GradientValue GradientValueType;
-
+    /** @brief The type for indices. */
     typedef typename IndexHandler::IndexType IndexType;
-
+    /** @brief The type for expression handles in the reverse evaluation. */
     typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType;
 
     /** @brief The data for each statement. */
@@ -139,27 +140,26 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    /** @brief The name of the tape as a string. */
     constexpr static const char* tapeName = "SimplePrimalValueTape";
 
   };
 
   /**
-   * @brief A tape with a simple implementation and no bounds checking.
+   * @brief A reverse AD tape that stores primal values for the reverse evaluation.
    *
-   * The SimplePrimalValueTape implements a fully featured ReverseTapeInterface in a
-   * simple fashion. This tape is not intended for simple usage. Actually the
-   * tape has no bounds checking, therefore it can produce segmentation faults
-   * if it is not used with care.
+   * The PrimalValueTape implements a fully featured ReverseTapeInterface. Depending on
+   * the specified TapeTypes, new memory is automatically allocated or needs to be specified in advance.
    *
-   * The size of the tape can be set with the resize function and the setExternalFunctionChunkSize.
+   * The current implementation uses 4 nested vectors
+   * and the linear index handler as the terminator. The relation is
    *
-   * For details on how this tape works please read the general documentation //TODO: Add reference to chapter.
+   * externalFunctions -> constantValues -> indexData -> statements -> indexHandler
    *
-   * Assertions are placed in all the functions such that during development no
-   * bounds are overwritten.
+   * The size of the tape can be set with the resize function,
+   * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
    *
-   * @tparam      Real  The floating point type used in the ActiveReal.
-   * @tparam IndexType  The type for the indexing of the adjoint variables.
+   * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
   class PrimalValueTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, PrimalValueTape<TapeTypes>, typename TapeTypes::Position > {
@@ -177,7 +177,10 @@ namespace codi {
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
+    /** @brief The coresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+    /** @brief The type for expression handles in the reverse evaluation. */
     typedef typename TapeTypes::HandleType Handle;
 
 
@@ -220,6 +223,11 @@ namespace codi {
       /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
       /* defined in externalFunctionsModule */extFuncVector(1000, constantValueVector) {}
 
+    /** @brief Tear down the tape. Delete all values from the modules */
+    ~PrimalValueTape() {
+      cleanTapeBase();
+    }
+
     /**
      * @brief Sets all adjoint/gradients to zero.
      *
@@ -239,8 +247,8 @@ namespace codi {
     }
 
     /**
-     * @brief Set the size of the jacobi and statement data and the adjoint vector.
-     * @param[in] dataSize  The new size of the jacobi vector.
+     * @brief Set the size of the index and statement data and the primal vector.
+     * @param[in] dataSize  The new size of the index vector.
      * @param[in] stmtSize  The new size of the statement vector.
      */
     void resize(const size_t& dataSize, const size_t& stmtSize) {
@@ -250,6 +258,16 @@ namespace codi {
       resizePrimals(stmtSize + 1);
     }
 
+    /**
+     * @brief Pushes the handle to the stament vector and assigns a new index.
+     *
+     * The method also updates the value in the primal value vector.
+     *
+     * @param[in,out]          lhsIndex  The index of the lhs value. Will be renewed.
+     * @pram[in]               rhsValue  The value of the rhs. Is set in the primal value vector.
+     * @param[in]                handle  The handle for the rhs expression.
+     * @param[in] passiveVariableNumber  The number of passive values in the rhs.
+     */
     CODI_INLINE void pushStmtData(IndexType& lhsIndex, const Real& rhsValue, const Handle& handle, const StatementInt& passiveVariableNumber) {
       stmtVector.reserveItems(1);
       stmtVector.setDataAndMove(handle, passiveVariableNumber);
@@ -308,8 +326,15 @@ namespace codi {
      *
      * It has to hold start >= end.
      *
-     * @param[in] start The starting position for the adjoint evaluation.
-     * @param[in]   end The ending position for the adjoint evaluation.
+     * @param[in]       startAdjPos  The starting position for the adjoint evaluation.
+     * @param[in]         endAdjPos  The ending position for the adjoint evaluation.
+     * @param[in,out]       stmtPos  The current position in the statment data. It will decremented in the method.
+     * @param[in]        statements  The vector with the handles for each statment.
+     * @param[in] passiveActiveReal  The number passive values for each statement.
+     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
+     * @param[in]           indices  The indices for the arguments of the rhs.
+     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
+     * @param[in]         constants  The constant values in the rhs expressions.
      */
     CODI_INLINE void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants) {
       size_t adjPos = startAdjPos;
@@ -319,7 +344,7 @@ namespace codi {
         --adjPos;
         --stmtPos;
 
-        evaluateHandle(adj, statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants);
+        evaluateHandle(adj, statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals);
       }
     }
 
@@ -328,10 +353,13 @@ namespace codi {
      *
      * It has to hold start >= end.
      *
-     * The function calls the evaluation method for the jacobi vector.
+     * The function calls the evaluation method for the stack.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @param[in] start  The starting point for the statement vector.
+     * @param[in]   end  The ending point for the statement vector.
+     * @param[in]  args  The arguments from the other vectors.
+     *
+     * @tparam Args  The types of the other arguments.
      */
     template<typename ... Args>
     CODI_INLINE void evalStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
@@ -357,6 +385,24 @@ namespace codi {
       evaluateStack(curInnerPos, end.inner, dataPos, data, passiveActiveReal, std::forward<Args>(args)...);
     }
 
+    /**
+     * @brief Evaluate a part of the statement vector.
+     *
+     * It has to hold start >= end.
+     *
+     * The function calls the evaluation method for the constant value vector.
+     *
+     * @param[in] start  The starting point for the constant value vector.
+     * @param[in]   end  The ending point for the constant value vector.
+     * @param[in]  args  The arguments from the other vectors.
+     *
+     * @tparam Args  The types of the other arguments.
+     */
+    template<typename ... Args>
+    CODI_INLINE void evalExtFuncCallback(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
+      evaluateConstantValues(start, end, std::forward<Args>(args)...);
+    }
+
 
   public:
 
@@ -372,10 +418,10 @@ namespace codi {
       }
     }
 
-    /**
-     * @brief Not needed in this implementation.
+    /*
+     * @brief It is ensured that each output variable has a unique index.
      *
-     * @param[in] value Not used.
+     * @param[in] value  The value will have an unique index that is used by no other variable.
      */
     CODI_INLINE void registerOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive() && value.getGradientData() != 0) {

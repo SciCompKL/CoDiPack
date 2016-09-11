@@ -38,13 +38,17 @@
  *
  * All these macros, except TAPE_NAME, are undefined at the end of the file.
  *
- * The module defines the structures TODO.
- * The module defines the types TODO.
+ * The module defines the structures stmtVector, indexVector, constantValueVector, primals, primalsSize, primalsIncr.
+ * The module defines the static structures InputHandle, CopyHandle and PreaccHandles,
+ * The module defines the types PrimalChildVector, PrimalChildPosition, StatmentVector, StatementChunk, StmtPosition, IndexVector, IndexChunk,
+ * IndexPosition, ConstantValueVector, ConstantValueChunk, ConstantValuePosition.
  *
- * It defines the methods TODO from the TapeInterface and ReverseTapeInterface.
+ * It defines the methods store(Expr), store(const), store(User), pushJacobi, printPrimalValueStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods TODO  as interface functions for the
- * including class.
+ * It defines the methods resizePrimals, checkPrimalsSize, evaluateHandle, evaluateConstantValues, getUsedStatementsSize,
+ * getUsedDataEntiresSize, getUsedConstantDataSize, setConstantDataSize as interface functions for the including class.
+ *
+ * It defines the static methods inputHandleFunc, copyHandleFunc, preaccHandleFunc as interface functions for the
  */
 
 #ifndef CHILD_VECTOR_TYPE
@@ -76,45 +80,84 @@
     /** @brief The position type of the primal child vector */
     typedef typename PrimalChildVector::Position PrimalChildPosition;
 
-    /** @brief The vector for the primal statement data. */
+    /** @brief The vector for the statement data. */
     typedef STMT_VECTOR_TYPE StatementVector;
-    /** @brief The vector for the primal constant data. */
-    typedef CONSTANT_VECTOR_TYPE ConstantValueVector;
-    /** @brief The vector for the primal index data. */
-    typedef INDEX_VECTOR_TYPE IndexVector;
-
     /** @brief The data for the statments */
     typedef typename StatementVector::ChunkType StatementChunk;
-    /** @brief The data for the constants*/
-    typedef typename ConstantValueVector::ChunkType ConstantValueChunk;
-    /** @brief The data for the indices*/
-    typedef typename IndexVector::ChunkType IndexChunk;
-
     /** @brief The position type of the statment data. */
     typedef typename StatementVector::Position StmtPosition;
-    /** @brief The position type of the constant data. */
-    typedef typename ConstantValueVector::Position ConstantValuePosition;
-    /** @brief The position type of the index data. */
-    typedef typename IndexVector::Position IndexPosition;
-
     /** @brief The data for the each statements. */
     StatementVector stmtVector;
+
+    /** @brief The vector for the index data. */
+    typedef INDEX_VECTOR_TYPE IndexVector;
+    /** @brief The data for the indices*/
+    typedef typename IndexVector::ChunkType IndexChunk;
+    /** @brief The position type of the index data. */
+    typedef typename IndexVector::Position IndexPosition;
     /** @brief The data for the indices of each statements. */
     IndexVector indexVector;
+
+    /** @brief The vector for the constant data. */
+    typedef CONSTANT_VECTOR_TYPE ConstantValueVector;
+    /** @brief The data for the constants*/
+    typedef typename ConstantValueVector::ChunkType ConstantValueChunk;
+    /** @brief The position type of the constant data. */
+    typedef typename ConstantValueVector::Position ConstantValuePosition;
     /** @brief The data for the constant values of each statements. */
     ConstantValueVector constantValueVector;
 
 
+    /**
+     * @brief Handle for the input function.
+     *
+     * It does not need to do anything.
+     *
+     * @param[in]               seed  The seed for the adjoint of the lhs value.
+     * @param[in]            indices  The indices for the arguments of the rhs.
+     * @param[in]     constantValues  The array of the constant values in the rhs.
+     * @param[in]       primalValues  The global vector with the primal values.
+     * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     */
     static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {}
+
+    /** @brief The static handle for the input function. */
     const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
 
+    /**
+     * @brief Handle for the copy function.
+     *
+     * It updates the adjoint of the rhs with the seed.
+     *
+     * @param[in]               seed  The seed for the adjoint of the lhs value.
+     * @param[in]            indices  The indices for the arguments of the rhs.
+     * @param[in]     constantValues  The array of the constant values in the rhs.
+     * @param[in]       primalValues  The global vector with the primal values.
+     * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     */
     static void copyHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
       adjointValues[indices[0]] += seed;
     }
+
+    /** @brief The static handle for the copy function. */
     const static ExpressionHandle<Real*, Real, IndexType> CopyHandle;
 
+    /**
+     * @brief Handle for the pre accumulation.
+     *
+     * It assumes that there are size constant values, that represent the Jacobian.
+     * Each Jacobian is multiplied with the seed and used to update the rhs value.
+     *
+     * @param[in]               seed  The seed for the adjoint of the lhs value.
+     * @param[in]            indices  The indices for the arguments of the rhs.
+     * @param[in]     constantValues  The array of the constant values in the rhs.
+     * @param[in]       primalValues  The global vector with the primal values.
+     * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     *
+     * @tparam size  The number of arguments of the preaccumulated function.
+     */
     template<int size>
     static void preaccHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
       CODI_UNUSED(primalValues);
@@ -123,10 +166,21 @@
         adjointValues[indices[i]] += constantValues[i] * seed;
       }
     }
+
+    /** @brief The static array of handles for the preaccumulation. */
     const static ExpressionHandle<Real*, Real, IndexType> PreaccHandles[MaxStatementIntSize];
 
+    /** @brief The vector with the primal value for each statement. */
     Real* primals;
+
+    /** @brief The current size of the primal vector. */
     IndexType primalsSize;
+
+    /**
+     * @brief The increment of the size of the primal vector.
+     *
+     * The primals are incremented, when the indices are bigger than the current size.
+     */
     IndexType primalsIncr;
 
   private:
@@ -151,6 +205,11 @@
       }
     }
 
+    /**
+     * @brief Helper function: Cheks if the primal vector is big enough. Increases the vector size otherwise.
+     *
+     * @param[in] size The new size for the primal vector.
+     */
     CODI_INLINE void checkPrimalsSize() {
       if(primalsSize <= indexHandler.getMaximumGlobalIndex()) {
         IndexType newSize = 1 + (indexHandler.getMaximumGlobalIndex() + 1) / primalsIncr;
@@ -159,11 +218,26 @@
       }
     }
 
+    /**
+     * @brief Action that pushes all passive values to the constant value vector.
+     *
+     * The function is used on the expression templates as an action.
+     *
+     * @param[in]  data  Not used in the action.
+     * @param[in] value  The passive value that is pushed on the vector.
+     */
     CODI_INLINE void pushPassive(int data, const PassiveReal& value) {
       CODI_UNUSED(data);
       constantValueVector.setDataAndMove(value);
     }
 
+    /**
+     * @brief Action that counts all active values, that is they have a non zero index.
+     *
+     * @param[in,out] count  The actual count of the active variables.
+     * @param[in]     value  Not used in the action.
+     * @param[in]     index  The index of the active real.
+     */
     CODI_INLINE void countActiveValues(int* count, const Real& value, const IndexType& index) {
       CODI_UNUSED(value);
       if(0 != index) {
@@ -171,6 +245,17 @@
       }
     }
 
+    /**
+     * @brief Action that adds all indices to the index vector.
+     *
+     * For passive indices one of the temporary indices is used. e.g 1 to 255.
+     * The correspoinding primal value is then pushed to the constant value vector.
+     * The constant value is then used in the reverse sweep.
+     *
+     * @param[in,out] count  The current count of the  inactive variables.
+     * @param[in]     value  The primal value of the active real.
+     * @param[in]     index  The index of the active real.
+     */
     CODI_INLINE void pushIndices(int* passiveVariableCount, const Real& value, const IndexType& index) {
       IndexType pushIndex = index;
       if(0 == pushIndex) {
@@ -182,24 +267,52 @@
       indexVector.setDataAndMove(pushIndex);
     }
 
-    CODI_INLINE void evaluateHandle(const GradientValue& adj, Handle& exprHandle, StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants) {
+
+    /**
+     * @brief Evaluate one handle in the reverse sweep.
+     *
+     * The function sets the primal values in the primal value vector for the inactive values.
+     * Then it updates the genaral positions and calls the adjoint function of the handle.
+     *
+     * @param[in]              adj  The seed from the lhs of the statement.
+     * @param[in]       exprHandle  The handle for the statement.
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     */
+    CODI_INLINE void evaluateHandle(const GradientValue& adj, const Handle& exprHandle, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
       // first restore the primal values of the passive indices
       constantPos -= passiveActives;
       for(StatementInt i = 0; i < passiveActives; ++i) {
-        primals[i + 1] = constants[constantPos + i];
+        primalVector[i + 1] = constants[constantPos + i];
       }
 
       // now update the regular pointers
       indexPos -= exprHandle->maxActiveVariables;
       constantPos -= exprHandle->maxConstantVariables;
       ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
-
-        exprHandle->adjointFunc(adj, &indices[indexPos], &constants[constantPos], primals, adjoints);
+        exprHandle->adjointFunc(adj, &indices[indexPos], &constants[constantPos], primalVector, adjoints);
       }
     }
 
+    /**
+     * @brief Evaluate a part of the index vector.
+     *
+     * It has to hold start >= end.
+     *
+     * The function calls the evaluation method for the statement vector.
+     *
+     * @param[in]    start  The starting point for the index vector.
+     * @param[in]      end  The ending point for the index vector.
+     * @param[in,out] args  Other arguments for the following functions.
+     *
+     * @tparam Args  The types of the other arguments.
+     */
     template<typename ... Args>
-    CODI_INLINE void evalIndices(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
+    CODI_INLINE void evaluateIndices(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
       IndexType* data;
       size_t dataPos = start.data;
       auto curInnerPos = start.inner;
@@ -222,17 +335,20 @@
     }
 
     /**
-     * @brief Evaluate a part of the statement vector.
+     * @brief Evaluate a part of the constant value vector.
      *
      * It has to hold start >= end.
      *
-     * The function calls the evaluation method for the jacobi vector.
+     * The function calls the evaluation method for the index vector.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @param[in]    start  The starting point for the constant value vector.
+     * @param[in]      end  The ending point for the constant value vector.
+     * @param[in,out] args  Other arguments for the following functions.
+     *
+     * @tparam Args  The types of the other arguments.
      */
     template<typename ... Args>
-    CODI_INLINE void evalExtFuncCallback(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
+    CODI_INLINE void evaluateConstantValues(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
       PassiveReal* data;
       size_t dataPos = start.data;
       auto curInnerPos = start.inner;
@@ -240,7 +356,7 @@
         constantValueVector.getDataAtPosition(curChunk, 0, data);
 
         auto endInnerPos = constantValueVector.getInnerPosition(curChunk);
-        evalIndices(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
+        evaluateIndices(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
 
         codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
 
@@ -251,9 +367,18 @@
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       constantValueVector.getDataAtPosition(end.chunk, 0, data);
-      evalIndices(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
+      evaluateIndices(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
     }
 
+    /**
+     * @brief Push a copy handle to the tape and all data that is rquired by the handle.
+     *
+     * The index of the lhs is updated.
+     *
+     * @param[in]     lhsValue  The value of the active real.
+     * @param[in,out] lhsIndex  The index of the active real. The index is renewed in this method.
+     * @param[in]     rhsIndex  The index of the rhs value.
+     */
     CODI_INLINE void pushCopyHandle(const Real& lhsValue, IndexType& lhsIndex, const IndexType& rhsIndex) {
       indexVector.reserveItems(1);
       indexVector.setDataAndMove(rhsIndex);
@@ -268,11 +393,13 @@
   // ----------------------------------------------------------------------
 
     /**
-     * @brief Store the jacobies of the statement on the tape.
+     * @brief Store the indices of the statement on the tape.
      *
-     * The jacobies and the indices of the rhs expression are
-     * stored on the tape. Also the number of active variables
-     * is stored in the statement vector.
+     * The indices of the rhs expression are stored on the tape.
+     * In addition the constant values of the expression are stored in
+     * the constant vector and the passive arguments are also stored in the
+     * constant vector. For the statement the handle of the rhs expression
+     * is written to the tape.
      *
      * The gradient data of the lhs will get a new index.
      * The primal value of the lhs is set to the primal value of the rhs.
@@ -297,7 +424,7 @@
 
           constantValueVector.reserveItems(ExpressionTraits<Rhs>::maxConstantVariables + passiveVariableNumber); // the additional passives are create in pushIndices
           size_t constantSize = constantValueVector.getChunkPosition();
-          rhs.passiveAction(*this, NULL, &TAPE_NAME<TapeTypes>::pushPassive);
+          rhs.constantValueAction(*this, NULL, &TAPE_NAME<TapeTypes>::pushPassive);
           codiAssert(ExpressionTraits<Rhs>::maxConstantVariables == constantValueVector.getChunkPosition() - constantSize);
 
           indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
@@ -343,10 +470,10 @@
      *
      * The primal value of the lhs is set to the primal value of the rhs.
      *
-     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
-     *                           of the right hand side.
-     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
-     * @param[in]         rhs    The right hand side expression of the assignment.
+     * @param[out]   lhsValue  The primal value of the lhs. This value is set to the value
+     *                         of the right hand side.
+     * @param[out]   lhsIndex  The gradient data of the lhs. The index will be set to zero.
+     * @param[in]         rhs  The right hand side expression of the assignment.
      */
     CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
@@ -361,8 +488,9 @@
      *
      * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
      *
-     * @param[out]   lhsIndex    The gradient data of the lhs.
-     * @param[in]        size    The number of Jacobi entries.
+     * @param[out]   lhsValue  The primal value of the lhs.
+     * @param[out]   lhsIndex  The gradient data of the lhs.
+     * @param[in]        size  The number of Jacobi entries.
      */
     CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
@@ -374,11 +502,11 @@
     }
 
     /**
-     * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
+     * @brief Not used in this implementation.
      *
-     * @param[in] gradient Not used in this implementation.
-     * @param[in]    value Not used in this implementation.
-     * @param[in]    index Used to check if the variable is active.
+     * @param[in] gradient  Not used in this implementation.
+     * @param[in]    value  Not used in this implementation.
+     * @param[in]    index  Not used in this implementation.
      */
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
@@ -390,12 +518,15 @@
     }
 
     /**
-     * @brief Stores the jacobi on the tape if the index is active.
+     * @brief Only used in combination with the manual store.
      *
-     * @param[in] gradient Not used in this implementation.
-     * @param[in]   jacobi Stored on the tape if the variable is active.
-     * @param[in]    value Not used in this implementation.
-     * @param[in]    index Used to check if the variable is active.
+     * The indices are stored in the index vector. The jacobies
+     * are stored in the constant vector.
+     *
+     * @param[in]     data  Not used in this implementation.
+     * @param[in]   jacobi  Stored in the constant vector.
+     * @param[in]    value  Not used in this implementation.
+     * @param[in]    index  Stored in the index vector.
      */
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
@@ -407,6 +538,18 @@
       indexVector.setDataAndMove(index);
     }
 
+    /**
+     * @brief Prints statistics about the stored data for the primal value tape.
+     *
+     * Displays the number of chunks, the total number of entries, the
+     * allocated memory and the used memory for the constant vector, the statement
+     * vector and the index vector.
+     *
+     * @param[in,out]   out  The information is written to the stream.
+     * @param[in]     hLine  The horizontal line that separates the sections of the output.
+     *
+     * @tparam Stream  The type of the stream.
+     */
     template<typename Stream>
     void printPrimalValueStatistics(Stream& out, const std::string& hLine) const {
 
@@ -481,18 +624,35 @@
                                     << memoryAllocPassive << " MB" << "\n";
     }
 
+    /**
+     * @brief Return the number of used stement entries
+     * @return The number of used statement entries.
+     */
     size_t getUsedStatementsSize() const {
       return stmtVector.getDataSize();
     }
 
+    /**
+     * @brief Return the number of used index entries
+     * @return The number of used index entries.
+     */
     size_t getUsedDataEntriesSize() const {
       return indexVector.getDataSize();
     }
 
+    /**
+     * @brief Return the number of used constant data entries
+     * @return The number of used constant data entries.
+     */
     size_t getUsedConstantDataSize() const {
       return constantValueVector.getDataSize();
     }
 
+    /**
+     * @brief Set the number of constant data etnres that should be available.
+     *
+     * @param[in] constantDataSize  The number of entries that should be available.
+     */
     void setConstantDataSize(const size_t& constantDataSize) {
       constantValueVector.resize(constantDataSize);
     }

@@ -39,6 +39,18 @@
 #define CODI_CREATE_STORE_TYPE(Name) \
   typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
 
+/**
+ * @brief Call the member function of an object.
+ *
+ * The object is given as a value or reference and the function as a pointer.
+ *
+ * Example: CODI_CALL_MEMBER_FN(*this, &MyClass::doSomething)(arg1, arg2);
+ *
+ * Ref: http://www.csse.monash.edu.au/courseware/cse3400/2006/c++-faq/pointers-to-members.html
+ *
+ * @param      object  The object on which the function is called. Has to be a value.
+ * @param ptrToMember  The pointer to the member function
+ */
 #define CODI_CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
 
 
