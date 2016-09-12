@@ -232,7 +232,7 @@ namespace codi {
     /**
      * @brief Check whether the gradient data is zero.
      *
-     * @param[in] index The index of the active type.
+     * @param[in] tangent  The tangent value for the check.
      * @return False if the gradient data is zero, otherwise returns true.
      */
     bool isActive(const GradientData& tangent) const{

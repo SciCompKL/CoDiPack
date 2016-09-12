@@ -310,6 +310,7 @@ namespace codi {
      * @brief Set the data values to the current position and increment the used size.
      * @param value1  The value for the first data array.
      * @param value2  The value for the second data array.
+     * @param value3  The value for the third data array.
      */
     CODI_INLINE void setDataAndMove(const Data1& value1, const Data2& value2, const Data3& value3) {
       codiAssert(getUnusedSize() != 0);
@@ -397,6 +398,8 @@ namespace codi {
      * @brief Set the data values to the current position and increment the used size.
      * @param value1  The value for the first data array.
      * @param value2  The value for the second data array.
+     * @param value3  The value for the third data array.
+     * @param value4  The value for the fourth data array.
      */
     CODI_INLINE void setDataAndMove(const Data1& value1, const Data2& value2, const Data3& value3, const Data4& value4) {
       codiAssert(getUnusedSize() != 0);

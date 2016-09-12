@@ -264,7 +264,7 @@ namespace codi {
      * The method also updates the value in the primal value vector.
      *
      * @param[in,out]          lhsIndex  The index of the lhs value. Will be renewed.
-     * @pram[in]               rhsValue  The value of the rhs. Is set in the primal value vector.
+     * @param[in]              rhsValue  The value of the rhs. Is set in the primal value vector.
      * @param[in]                handle  The handle for the rhs expression.
      * @param[in] passiveVariableNumber  The number of passive values in the rhs.
      */

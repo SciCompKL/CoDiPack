@@ -61,8 +61,10 @@ namespace codi {
     /** @brief The type for the adjoint values. */
     typedef GradientValue GradientValueType;
 
+    /** @brief The type for the indices that are used for the identification of the adjoint variables. */
     typedef typename IndexHandler::IndexType IndexType;
 
+    /** @brief The type for expression handles in the reverse evaluation. */
     typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType;
 
     /** @brief The data for each statement. */
@@ -113,8 +115,10 @@ namespace codi {
     /** @brief The type for the adjoint values. */
     typedef GradientValue GradientValueType;
 
+    /** @brief The type for the indices that are used for the identification of the adjoint variables. */
     typedef typename IndexHandler::IndexType IndexType;
 
+    /** @brief The type for expression handles in the reverse evaluation. */
     typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType;
 
     /** @brief The data for each statement. */
@@ -273,7 +277,7 @@ namespace codi {
      * The method also updates the value in the primal value vector.
      *
      * @param[in,out]          lhsIndex  The index of the lhs value. Will be renewed.
-     * @pram[in]               rhsValue  The value of the rhs. Is set in the primal value vector.
+     * @param[in]              rhsValue  The value of the rhs. Is set in the primal value vector.
      * @param[in]                handle  The handle for the rhs expression.
      * @param[in] passiveVariableNumber  The number of passive values in the rhs.
      */

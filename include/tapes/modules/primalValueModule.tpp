@@ -504,9 +504,9 @@
     /**
      * @brief Not used in this implementation.
      *
-     * @param[in] gradient  Not used in this implementation.
-     * @param[in]    value  Not used in this implementation.
-     * @param[in]    index  Not used in this implementation.
+     * @param[in]  data  Not used in this implementation.
+     * @param[in] value  Not used in this implementation.
+     * @param[in] index  Not used in this implementation.
      */
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
