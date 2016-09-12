@@ -1067,6 +1067,26 @@ namespace codi {
   #define PRIMAL_FUNCTION tan
   #include "unaryExpression.tpp"
 
+  template<typename Real> CODI_INLINE Real gradErf(const Real& a, const Real& result) {
+    CODI_UNUSED(result);
+    return 1.128379167095513 * exp( -(a * a) ); // erf'(a) = 2.0 / sqrt(pi) * exp(-a^2)
+  }
+  using std::erf;
+  #define NAME Erf
+  #define FUNCTION erf
+  #define PRIMAL_FUNCTION erf
+  #include "unaryExpression.tpp"
+
+  template<typename Real> CODI_INLINE Real gradErfc(const Real& a, const Real& result) {
+    CODI_UNUSED(result);
+    return -1.128379167095513 * exp( -(a * a) ); // erfc'(a) = - 2.0 / sqrt(pi) * exp(-a^2)
+  }
+  using std::erfc;
+  #define NAME Erfc
+  #define FUNCTION erfc
+  #define PRIMAL_FUNCTION erfc
+  #include "unaryExpression.tpp"
+
   #undef CODI_OPERATOR_HELPER
 
   /**
