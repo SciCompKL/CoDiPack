@@ -8,6 +8,7 @@ Changelog      {#Changelog}
    * New unchecked types: RealReversePrimalUnchecked, RealReversePrimalIndexUnchecked
    * New vector types: RealReversePrimalVec, RealReversePrimalIndexVec
  - Specialization for numeric_limits
+ - Added erf and erfc
 
 ### v 1.2.3 - 2016-06-13
 
