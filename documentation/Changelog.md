@@ -1,6 +1,14 @@
 Changelog      {#Changelog}
 ============
 
+### v 1.3.0 - 2016-09-14
+
+ - Primal value taping
+   * New chunk types: RealReversePrimal, RealReversePrimalIndex
+   * New unchecked types: RealReversePrimalUnchecked, RealReversePrimalIndexUnchecked
+   * New vector types: RealReversePrimalVec, RealReversePrimalIndexVec
+ - Specialization for numeric_limits
+
 ### v 1.2.3 - 2016-06-13
 
  - Bugfix for higher order derivatives:
