@@ -35,45 +35,87 @@
 
 namespace std {
 
-  template <typename Tape> class numeric_limits<codi::ActiveReal<Tape> > {
+  /**
+   * @brief The numeric limts for the ActiveReal's are based on the numeric limits for the
+   *        passive type (aka the start of the ActiveReal chain).
+   *
+   * @tparam Tape  The tape that defines the properties of the ActiveReal.
+   */
+  template <typename Tape>
+  class numeric_limits<codi::ActiveReal<Tape> > {
+    private:
+      /** @brief The active type for which the numeric limts are specialized */
+      typedef codi::ActiveReal<Tape> Real;
 
-      typedef codi::ActiveReal<Tape> T;
-      typedef typename codi::TypeTraits<codi::ActiveReal<Tape> >::PassiveReal Real;
-  public:
-    static constexpr bool is_specialized = false;
-    static constexpr T min() noexcept { return T(numeric_limits<Real>::min()); }
-    static constexpr T max() noexcept { return T(numeric_limits<Real>::max()); }
-    static constexpr T lowest() noexcept { return T(numeric_limits<Real>::lowest()); }
-    static constexpr int  digits = numeric_limits<Real>::digits;
-    static constexpr int  digits10 = numeric_limits<Real>::digits10;
-    static constexpr bool is_signed = numeric_limits<Real>::is_signed;
-    static constexpr bool is_integer = numeric_limits<Real>::is_integer;
-    static constexpr bool is_exact = numeric_limits<Real>::is_exact;
-    static constexpr int radix = numeric_limits<Real>::is_exact;
-    static constexpr T epsilon() noexcept { return T(numeric_limits<Real>::epsilon()); }
-    static constexpr T round_error() noexcept { return T(numeric_limits<Real>::round_error()); }
+      /** @brief The passive type from which the values are taken */
+      typedef typename codi::TypeTraits<codi::ActiveReal<Tape> >::PassiveReal Passive;
+    public:
 
-    static constexpr int  min_exponent = numeric_limits<Real>::min_exponent;
-    static constexpr int  min_exponent10 = numeric_limits<Real>::max_exponent10;
-    static constexpr int  max_exponent = numeric_limits<Real>::max_exponent;
-    static constexpr int  max_exponent10 = numeric_limits<Real>::max_exponent10;
+      /** @brief Needs to be false per definition */
+      static constexpr bool is_specialized = false;
+      /** @brief Use the value from the passive type */
+      static constexpr Real min() noexcept { return Real(numeric_limits<Passive>::min()); }
+      /** @brief Use the value from the passive type */
+      static constexpr Real max() noexcept { return Real(numeric_limits<Passive>::max()); }
+      /** @brief Use the value from the passive type */
+      static constexpr Real lowest() noexcept { return Real(numeric_limits<Passive>::lowest()); }
+      /** @brief Use the value from the passive type */
+      static constexpr int  digits = numeric_limits<Passive>::digits;
+      /** @brief Use the value from the passive type */
+      static constexpr int  digits10 = numeric_limits<Passive>::digits10;
+      /** @brief Use the value from the passive type */
+      static constexpr bool is_signed = numeric_limits<Passive>::is_signed;
+      /** @brief Use the value from the passive type */
+      static constexpr bool is_integer = numeric_limits<Passive>::is_integer;
+      /** @brief Use the value from the passive type */
+      static constexpr bool is_exact = numeric_limits<Passive>::is_exact;
+      /** @brief Use the value from the passive type */
+      static constexpr int radix = numeric_limits<Passive>::is_exact;
+      /** @brief Use the value from the passive type */
+      static constexpr Real epsilon() noexcept { return Real(numeric_limits<Passive>::epsilon()); }
+      /** @brief Use the value from the passive type */
+      static constexpr Real round_error() noexcept { return Real(numeric_limits<Passive>::round_error()); }
 
-    static constexpr bool has_infinity = numeric_limits<Real>::has_infinity;
-    static constexpr bool has_quiet_NaN = numeric_limits<Real>::has_quiet_NaN;
-    static constexpr bool has_signaling_NaN = numeric_limits<Real>::has_signaling_NaN;
-    static constexpr float_denorm_style has_denorm = numeric_limits<Real>::has_denorm;
-    static constexpr bool has_denorm_loss = numeric_limits<Real>::has_denorm_loss;
-    static constexpr T infinity() noexcept { return T(numeric_limits<Real>::infinity()); }
-    static constexpr T quiet_NaN() noexcept { return T(numeric_limits<Real>::quiet_NaN()); }
-    static constexpr T signaling_NaN() noexcept { return T(numeric_limits<Real>::signaling_NaN()); }
-    static constexpr T denorm_min() noexcept { return T(numeric_limits<Real>::denorm_min()); }
+      /** @brief Use the value from the passive type */
+      static constexpr int  min_exponent = numeric_limits<Passive>::min_exponent;
+      /** @brief Use the value from the passive type */
+      static constexpr int  min_exponent10 = numeric_limits<Passive>::max_exponent10;
+      /** @brief Use the value from the passive type */
+      static constexpr int  max_exponent = numeric_limits<Passive>::max_exponent;
+      /** @brief Use the value from the passive type */
+      static constexpr int  max_exponent10 = numeric_limits<Passive>::max_exponent10;
 
-    static constexpr bool is_iec559 = numeric_limits<Real>::is_iec559;
-    static constexpr bool is_bounded = numeric_limits<Real>::is_bounded;
-    static constexpr bool is_modulo = numeric_limits<Real>::is_modulo;
+      /** @brief Use the value from the passive type */
+      static constexpr bool has_infinity = numeric_limits<Passive>::has_infinity;
+      /** @brief Use the value from the passive type */
+      static constexpr bool has_quiet_NaN = numeric_limits<Passive>::has_quiet_NaN;
+      /** @brief Use the value from the passive type */
+      static constexpr bool has_signaling_NaN = numeric_limits<Passive>::has_signaling_NaN;
+      /** @brief Use the value from the passive type */
+      static constexpr float_denorm_style has_denorm = numeric_limits<Passive>::has_denorm;
+      /** @brief Use the value from the passive type */
+      static constexpr bool has_denorm_loss = numeric_limits<Passive>::has_denorm_loss;
+      /** @brief Use the value from the passive type */
+      static constexpr Real infinity() noexcept { return Real(numeric_limits<Passive>::infinity()); }
+      /** @brief Use the value from the passive type */
+      static constexpr Real quiet_NaN() noexcept { return Real(numeric_limits<Passive>::quiet_NaN()); }
+      /** @brief Use the value from the passive type */
+      static constexpr Real signaling_NaN() noexcept { return Real(numeric_limits<Passive>::signaling_NaN()); }
+      /** @brief Use the value from the passive type */
+      static constexpr Real denorm_min() noexcept { return Real(numeric_limits<Passive>::denorm_min()); }
 
-    static constexpr bool traps = numeric_limits<Real>::traps;
-    static constexpr bool tinyness_before = numeric_limits<Real>::tinyness_before;
-    static constexpr float_round_style round_style = numeric_limits<Real>::round_style;
+      /** @brief Use the value from the passive type */
+      static constexpr bool is_iec559 = numeric_limits<Passive>::is_iec559;
+      /** @brief Use the value from the passive type */
+      static constexpr bool is_bounded = numeric_limits<Passive>::is_bounded;
+      /** @brief Use the value from the passive type */
+      static constexpr bool is_modulo = numeric_limits<Passive>::is_modulo;
+
+      /** @brief Use the value from the passive type */
+      static constexpr bool traps = numeric_limits<Passive>::traps;
+      /** @brief Use the value from the passive type */
+      static constexpr bool tinyness_before = numeric_limits<Passive>::tinyness_before;
+      /** @brief Use the value from the passive type */
+      static constexpr float_round_style round_style = numeric_limits<Passive>::round_style;
   };
 }
