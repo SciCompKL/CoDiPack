@@ -63,7 +63,7 @@ namespace codi {
     #if defined(__INTEL_COMPILER)
       #define CODI_INLINE __forceinline
     #elif defined(__GNUC__)
-      #define CODI_INLINE __attribute__((always_inline))
+      #define CODI_INLINE inline __attribute__((always_inline))
     #else
       #warning Could not determine compiler for forced inline definitions. Using inline.
       #define CODI_INLINE inline
