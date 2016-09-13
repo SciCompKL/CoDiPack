@@ -144,9 +144,25 @@ namespace codi {
   CODI_DEFINE_UNARY_TRAIT(Tanh)
   CODI_DEFINE_UNARY_TRAIT(Abs)
   CODI_DEFINE_UNARY_TRAIT(Atanh)
-  CODI_DEFINE_UNARY_TRAIT(Ldexp)
-  CODI_DEFINE_UNARY_TRAIT(Frexp)
   CODI_DEFINE_UNARY_TRAIT(Erf)
   CODI_DEFINE_UNARY_TRAIT(Erfc)
+# undef CODI_DEFINE_UNARY_TRAIT
+
+  // Macro for expressions with one argument and a constant
+# define CODI_DEFINE_UNARY_TRAIT_CONST(OP)                    \
+    /** @brief Specialization for OP. @tparam Real The real type used in the active types. @tparam A The expression for the argument of the function */ \
+    template<typename Real, typename A>                       \
+    struct ExpressionTraits<OP<Real, A> > {                   \
+      /** @brief Number of maximum active variables is the number of active variables from the expression in the argument. */ \
+      static const size_t maxActiveVariables                  \
+         = ExpressionTraits<A>::maxActiveVariables;           \
+      /** @brief Number of maximum passive variables is the number of passive variables from the expression in the argument. */ \
+      static const size_t maxConstantVariables                  \
+         = ExpressionTraits<A>::maxConstantVariables + 1;       \
+    };
+
+  CODI_DEFINE_UNARY_TRAIT_CONST(Ldexp)
+  CODI_DEFINE_UNARY_TRAIT_CONST(Frexp)
+
 # undef CODI_DEFINE_UNARY_TRAIT
 }

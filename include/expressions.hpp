@@ -1128,10 +1128,18 @@ namespace codi {
 
     return ldexp(1.0, b);
   }
+  inline double intToDouble(const int i) {
+    return (double)i;
+  }
+  inline int doubleToInt(const double d) {
+    return (int)d;
+  }
   #define NAME Ldexp
   #define FUNCTION ldexp
   #define PRIMAL_FUNCTION ldexp
   #define ARG_TYPE int
+  #define ARG_TO_DOUBLE intToDouble
+  #define DOUBLE_TO_ARG doubleToInt
   #include "unaryExpressionExtended.tpp"
 
   using std::frexp;
@@ -1143,10 +1151,19 @@ namespace codi {
     /* The result is always computed beforehand therefore we can safely use the value of b */
     return ldexp(1.0, -(*b));
   }
+  inline double intPointerToDouble(const int* i) {
+    return (double)*i;
+  }
+  inline int* doubleToIntPointer(const double d) {
+    static int i = (int)d;
+    return &i;
+  }
   #define NAME Frexp
   #define FUNCTION frexp
   #define PRIMAL_FUNCTION frexp
   #define ARG_TYPE int*
+  #define ARG_TO_DOUBLE intPointerToDouble
+  #define DOUBLE_TO_ARG doubleToIntPointer
   #include "unaryExpressionExtended.tpp"
 
 
