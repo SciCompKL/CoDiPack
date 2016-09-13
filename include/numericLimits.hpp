@@ -54,11 +54,11 @@ namespace std {
       /** @brief Needs to be false per definition */
       static constexpr bool is_specialized = false;
       /** @brief Use the value from the passive type */
-      static constexpr Real min() noexcept { return Real(numeric_limits<Passive>::min()); }
+      static constexpr Real min() { return Real(numeric_limits<Passive>::min()); }
       /** @brief Use the value from the passive type */
-      static constexpr Real max() noexcept { return Real(numeric_limits<Passive>::max()); }
+      static constexpr Real max() { return Real(numeric_limits<Passive>::max()); }
       /** @brief Use the value from the passive type */
-      static constexpr Real lowest() noexcept { return Real(numeric_limits<Passive>::lowest()); }
+      static constexpr Real lowest() { return Real(numeric_limits<Passive>::lowest()); }
       /** @brief Use the value from the passive type */
       static constexpr int  digits = numeric_limits<Passive>::digits;
       /** @brief Use the value from the passive type */
@@ -72,9 +72,9 @@ namespace std {
       /** @brief Use the value from the passive type */
       static constexpr int radix = numeric_limits<Passive>::is_exact;
       /** @brief Use the value from the passive type */
-      static constexpr Real epsilon() noexcept { return Real(numeric_limits<Passive>::epsilon()); }
+      static constexpr Real epsilon() { return Real(numeric_limits<Passive>::epsilon()); }
       /** @brief Use the value from the passive type */
-      static constexpr Real round_error() noexcept { return Real(numeric_limits<Passive>::round_error()); }
+      static constexpr Real round_error() { return Real(numeric_limits<Passive>::round_error()); }
 
       /** @brief Use the value from the passive type */
       static constexpr int  min_exponent = numeric_limits<Passive>::min_exponent;
@@ -96,13 +96,13 @@ namespace std {
       /** @brief Use the value from the passive type */
       static constexpr bool has_denorm_loss = numeric_limits<Passive>::has_denorm_loss;
       /** @brief Use the value from the passive type */
-      static constexpr Real infinity() noexcept { return Real(numeric_limits<Passive>::infinity()); }
+      static constexpr Real infinity() { return Real(numeric_limits<Passive>::infinity()); }
       /** @brief Use the value from the passive type */
-      static constexpr Real quiet_NaN() noexcept { return Real(numeric_limits<Passive>::quiet_NaN()); }
+      static constexpr Real quiet_NaN() { return Real(numeric_limits<Passive>::quiet_NaN()); }
       /** @brief Use the value from the passive type */
-      static constexpr Real signaling_NaN() noexcept { return Real(numeric_limits<Passive>::signaling_NaN()); }
+      static constexpr Real signaling_NaN() { return Real(numeric_limits<Passive>::signaling_NaN()); }
       /** @brief Use the value from the passive type */
-      static constexpr Real denorm_min() noexcept { return Real(numeric_limits<Passive>::denorm_min()); }
+      static constexpr Real denorm_min() { return Real(numeric_limits<Passive>::denorm_min()); }
 
       /** @brief Use the value from the passive type */
       static constexpr bool is_iec559 = numeric_limits<Passive>::is_iec559;
