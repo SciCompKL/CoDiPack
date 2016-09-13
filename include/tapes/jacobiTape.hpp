@@ -133,17 +133,15 @@ namespace codi {
   };
 
   /**
-   * @brief A tape which grows if more space is needed.
+   * @brief A reverse AD tape that stores Jaboie values for the reverse evaluation.
    *
-   * The JacobiTape implements a fully featured ReverseTapeInterface in a most
-   * user friendly fashion. The storage vectors of the tape are grown if the
-   * tape runs out of space.
+   * The JacobiTape implements a fully featured ReverseTapeInterface. Depending on
+   * the specified TapeTypes new memory, is automatically allocated or needs to be specified in advance.
    *
-   * This is handled by a nested definition of multiple ChunkVectors which hold
-   * the different data vectors. The current implementation uses 3 ChunkVectors
-   * and one terminator. The relation is
+   * The current implementation uses 3 nested vectors
+   * and the linear index handler as the terminator. The relation is
    *
-   * externalFunctions -> jacobiData -> statements -> indexHandler.
+   * externalFunctions -> jacobiData -> statements -> indexHandler
    *
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
@@ -165,6 +163,9 @@ namespace codi {
     typedef typename IndexHandler::IndexType IndexType;
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
+
+    /** @brief The coresponding passive value to the real */
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiTape
@@ -198,7 +199,7 @@ namespace codi {
      * external functions defined in the configuration.
      */
     JacobiTape() :
-      /* defined in tapeBaseModule */indexHandler(),
+      /* defined in tapeBaseModule */indexHandler(0),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
@@ -207,6 +208,7 @@ namespace codi {
       /* defined in externalFunctionsModule */extFuncVector(1000, jacobiVector) {
     }
 
+    /** @brief Tear down the tape. Delete all values from the modules */
     ~JacobiTape() {
       cleanTapeBase();
     }
@@ -254,7 +256,10 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
-      for(IndexType i = end.inner.inner.inner; i <= start.inner.inner.inner; ++i) {
+      IndexType startPos = min(end.inner.inner.inner, adjointsSize - 1);
+      IndexType endPos = min(start.inner.inner.inner, adjointsSize - 1);
+
+      for(IndexType i = startPos + 1; i <= endPos; ++i) {
         adjoints[i] = GradientValue();
       }
     }
@@ -268,6 +273,17 @@ namespace codi {
      */
     CODI_INLINE Position getPosition() const {
       return getExtFuncPosition();
+    }
+
+    /**
+     * @brief Get the initial position of the tape.
+     *
+     * The position can be used to reset the tape to that position or to
+     * evaluate only parts of the tape.
+     * @return The initial position of the tape.
+     */
+    CODI_INLINE Position getZeroPosition() const {
+      return getExtFuncZeroPosition();
     }
 
 
@@ -318,8 +334,11 @@ namespace codi {
      *
      * The function calls the evaluation method for the jacobi vector.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @param[in] start  The starting point for the statement vector.
+     * @param[in]   end  The ending point for the statement vector.
+     * @param[in]  args  The arguments from the other vectors.
+     *
+     * @tparam Args  The types of the other arguments.
      */
     template<typename ... Args>
     CODI_INLINE void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {

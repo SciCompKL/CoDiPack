@@ -90,6 +90,11 @@ namespace codi {
       rhs.template calcGradient<GradientValue>(gradient);
       lhsTangent  = gradient;
       value = rhs.getValue();
+
+#if CODI_AdjointHandle
+      handleTangentOperation(value, lhsTangent);
+#endif
+
     }
 
     /**
@@ -104,6 +109,10 @@ namespace codi {
     CODI_INLINE void store(Real& value, GradientData& lhsTangent, const ActiveReal<ForwardEvaluation<Real> >& rhs) {
       lhsTangent = rhs.getGradient();
       value = rhs.getValue();
+
+#if CODI_AdjointHandle
+      handleTangentOperation(value, lhsTangent);
+#endif
     }
 
     /**
@@ -223,7 +232,7 @@ namespace codi {
     /**
      * @brief Check whether the gradient data is zero.
      *
-     * @param[in] index The index of the active type.
+     * @param[in] tangent  The tangent value for the check.
      * @return False if the gradient data is zero, otherwise returns true.
      */
     bool isActive(const GradientData& tangent) const{

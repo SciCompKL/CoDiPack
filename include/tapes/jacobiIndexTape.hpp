@@ -132,14 +132,12 @@ namespace codi {
   };
 
   /**
-   * @brief A tape which grows if more space is needed.
+   * @brief A reverse AD tape that stores Jacobie values for the reverse evaluation.
    *
-   * The JacobiIndexTape implements a fully featured ReverseTapeInterface in a most
-   * user friendly fashion. The storage vectors of the tape are grown if the
-   * tape runs out of space.
+   * The JacobiIndexTape implements a fully featured ReverseTapeInterface. Depending on
+   * the specified TapeTypes, new memory is automatically allocated or needs to be specified in advance.
    *
-   * This is handled by a nested definition of multiple ChunkVectors which hold
-   * the different data vectors. The current implementation uses 3 ChunkVectors
+   * The current implementation uses 3 nested vectors
    * and an empty terminator. The relation is
    *
    * externalFunctions -> jacobiData -> statements
@@ -147,7 +145,7 @@ namespace codi {
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
    *
-   * The tape also uses the index manager IndexHandler to reuse the indices that are deleted.
+   * The tape also uses the specified index manager to reuse the indices that are deleted.
    * That means that ActiveReal's which use this tape need to be copied by usual means and deleted after
    * they are no longer used. No c-like memory operations like memset and memcpy should be applied
    * to these types.
@@ -169,6 +167,9 @@ namespace codi {
     typedef typename IndexHandler::IndexType IndexType;
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
+
+    /** @brief The corresponding pasive value to the real type of this tape. */
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
@@ -215,6 +216,10 @@ namespace codi {
       /* defined in externalFunctionsModule */extFuncVector(1000, jacobiVector) {
     }
 
+    /** @brief Tear down the tape. Delete all values from the modules */
+    ~JacobiIndexTape() {
+      cleanTapeBase();
+    }
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.
      *
@@ -283,6 +288,16 @@ namespace codi {
       return getExtFuncPosition();
     }
 
+    /**
+     * @brief Get the initial position of the tape.
+     *
+     * The position can be used to reset the tape to that position or to
+     * evaluate only parts of the tape.
+     * @return The initial position of the tape.
+     */
+    CODI_INLINE Position getZeroPosition() const {
+      return getExtFuncZeroPosition();
+    }
 
   private:
 

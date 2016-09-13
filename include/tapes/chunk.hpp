@@ -119,24 +119,25 @@ namespace codi {
    *
    * This chunk contains one data array which is stored in memory.
    *
-   * @tparam Data   The type of the stored data. This type has to be a POD type as we use new, free and memset on it.
+   * @tparam Data   The type of the stored data.
    */
   template<typename Data>
-  struct Chunk1 : public ChunkInterface {
+  struct Chunk1 final : public ChunkInterface {
+
+    /**
+     * @brief The combined size of one entry in all data arrays.
+     */
+    const static size_t EntrySize = sizeof(Data);
+
     Data* data; /**< The data of the chunk */
 
     /**
      * @brief Creates the data of the chunk.
      *
-     * The data of the chunk is set with memset to zero.
-     *
      * @param size The size of the data in the chunk.
      */
     Chunk1(const size_t& size) : ChunkInterface(size) {
       data = new Data[size];
-      if(UseMemsetInChunks) {
-        memset(data, 0, sizeof(Data) * size);
-      }
     }
 
     /**
@@ -183,28 +184,28 @@ namespace codi {
    *
    * This chunk contains two data arrays which are stored in memory.
    *
-   * @tparam Data1   The first type of the stored data. This type has to be a POD type as we use new, free and memset on it.
-   * @tparam Data2   The second type of the stored data. This type has to be a POD type as we use new, free and memset on it.
+   * @tparam Data1   The first type of the stored data.
+   * @tparam Data2   The second type of the stored data.
    */
   template<typename Data1, typename Data2>
-  struct Chunk2 : public ChunkInterface {
+  struct Chunk2 final : public ChunkInterface {
+
+    /**
+     * @brief The combined size of one entry in all data arrays.
+     */
+    const static size_t EntrySize = sizeof(Data1) + sizeof(Data2);
+
     Data1* data1; /**< First data item of the chunk */
     Data2* data2; /**< Second data item of the chunk */
 
     /**
      * @brief Creates the data of the chunk.
      *
-     * The data of the chunk is set with memset to zero.
-     *
      * @param size The size of the data in the chunk.
      */
     Chunk2(const size_t& size) : ChunkInterface(size) {
       data1 = new Data1[size];
       data2 = new Data2[size];
-      if(UseMemsetInChunks) {
-        memset(data1, 0, sizeof(Data1) * size);
-        memset(data2, 0, sizeof(Data2) * size);
-      }
     }
 
     /**
@@ -249,6 +250,181 @@ namespace codi {
       codiAssert(index <= ChunkInterface::size);
       pointer1 = &data1[index];
       pointer2 = &data2[index];
+    }
+  };
+
+  /**
+   * @brief Chunk with three data arrays.
+   *
+   * This chunk contains three data arrays which are stored in memory.
+   *
+   * @tparam Data1   The first type of the stored data.
+   * @tparam Data2   The second type of the stored data.
+   * @tparam Data3   The third type of the stored data.
+   */
+  template<typename Data1, typename Data2, typename Data3>
+  struct Chunk3 final : public ChunkInterface {
+
+    /**
+     * @brief The combined size of one entry in all data arrays.
+     */
+    const static size_t EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3);
+
+    Data1* data1; /**< First data item of the chunk */
+    Data2* data2; /**< Second data item of the chunk */
+    Data3* data3; /**< Third data item of the chunk */
+
+    /**
+     * @brief Creates the data of the chunk.
+     *
+     * @param size The size of the data in the chunk.
+     */
+    Chunk3(const size_t& size) : ChunkInterface(size) {
+      data1 = new Data1[size];
+      data2 = new Data2[size];
+      data3 = new Data3[size];
+    }
+
+    /**
+     * @brief Deletes the data arrays
+     */
+    ~Chunk3() {
+      delete [] data1;
+      delete [] data2;
+      delete [] data3;
+      data1 = NULL;
+      data2 = NULL;
+      data3 = NULL;
+    }
+
+    /**
+     * @brief Set the size of the arrays.
+     * @param size  The new size of the arrays.
+     */
+    void resize(const size_t &size) {
+      this->~Chunk3();
+      new (this) Chunk3(size);
+    }
+
+    /**
+     * @brief Set the data values to the current position and increment the used size.
+     * @param value1  The value for the first data array.
+     * @param value2  The value for the second data array.
+     * @param value3  The value for the third data array.
+     */
+    CODI_INLINE void setDataAndMove(const Data1& value1, const Data2& value2, const Data3& value3) {
+      codiAssert(getUnusedSize() != 0);
+      data1[usedSize] = value1;
+      data2[usedSize] = value2;
+      data3[usedSize] = value3;
+      ++usedSize;
+    }
+
+    /**
+     * @brief Returns a pointer to the data array at the given position.
+     * @param    index  The index in the data array.
+     * @param pointer1  Pointer that is set to the internal data pointer of the first array.
+     * @param pointer2  Pointer that is set to the internal data pointer of the second array.
+     * @param pointer3  Pointer that is set to the internal data pointer of the third array.
+     * @return A pointer to the data.
+     */
+    CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3) {
+      codiAssert(index <= ChunkInterface::size);
+      pointer1 = &data1[index];
+      pointer2 = &data2[index];
+      pointer3 = &data3[index];
+    }
+  };
+
+  /**
+   * @brief Chunk with four data arrays.
+   *
+   * This chunk contains four data arrays which are stored in memory.
+   *
+   * @tparam Data1   The first type of the stored data.
+   * @tparam Data2   The second type of the stored data.
+   * @tparam Data3   The third type of the stored data.
+   * @tparam Data4   The fourth type of the stored data.
+   */
+  template<typename Data1, typename Data2, typename Data3, typename Data4>
+  struct Chunk4 final : public ChunkInterface {
+
+    /**
+     * @brief The combined size of one entry in all data arrays.
+     */
+    const static size_t EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3) + sizeof(Data4);
+
+    Data1* data1; /**< First data item of the chunk */
+    Data2* data2; /**< Second data item of the chunk */
+    Data3* data3; /**< Third data item of the chunk */
+    Data4* data4; /**< Fourth data item of the chunk */
+
+    /**
+     * @brief Creates the data of the chunk.
+     *
+     * @param size The size of the data in the chunk.
+     */
+    Chunk4(const size_t& size) : ChunkInterface(size) {
+      data1 = new Data1[size];
+      data2 = new Data2[size];
+      data3 = new Data3[size];
+      data4 = new Data4[size];
+    }
+
+    /**
+     * @brief Deletes the data arrays
+     */
+    ~Chunk4() {
+      delete [] data1;
+      delete [] data2;
+      delete [] data3;
+      delete [] data4;
+      data1 = NULL;
+      data2 = NULL;
+      data3 = NULL;
+      data4 = NULL;
+    }
+
+    /**
+     * @brief Set the size of the arrays.
+     * @param size  The new size of the arrays.
+     */
+    void resize(const size_t &size) {
+      this->~Chunk4();
+      new (this) Chunk4(size);
+    }
+
+    /**
+     * @brief Set the data values to the current position and increment the used size.
+     * @param value1  The value for the first data array.
+     * @param value2  The value for the second data array.
+     * @param value3  The value for the third data array.
+     * @param value4  The value for the fourth data array.
+     */
+    CODI_INLINE void setDataAndMove(const Data1& value1, const Data2& value2, const Data3& value3, const Data4& value4) {
+      codiAssert(getUnusedSize() != 0);
+      data1[usedSize] = value1;
+      data2[usedSize] = value2;
+      data3[usedSize] = value3;
+      data4[usedSize] = value4;
+      ++usedSize;
+    }
+
+    /**
+     * @brief Returns a pointer to the data array at the given position.
+     * @param    index  The index in the data array.
+     * @param pointer1  Pointer that is set to the internal data pointer of the first array.
+     * @param pointer2  Pointer that is set to the internal data pointer of the second array.
+     * @param pointer3  Pointer that is set to the internal data pointer of the third array.
+     * @param pointer4  Pointer that is set to the internal data pointer of the fourth array.
+     * @return A pointer to the data.
+     */
+    CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3, Data4* &pointer4) {
+      codiAssert(index <= ChunkInterface::size);
+      pointer1 = &data1[index];
+      pointer2 = &data2[index];
+      pointer3 = &data3[index];
+      pointer4 = &data4[index];
     }
   };
 

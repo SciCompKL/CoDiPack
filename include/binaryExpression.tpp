@@ -50,6 +50,12 @@
  * If the M is present the method the jacobi from the lower expression not equal to 1.0.
  * If the M is no present the jacobi is assumed to be equal to 1.0.
  *
+ * In addition the user needs to define the gradient computations with respect to both arguments.
+ * The naming convention is
+ *
+ *   gradientA_Name
+ *   gradientB_Name
+ *
  * These functions needs to compute the derivatives with respect to the active variables and
  * call the pushJacobi function on the arguments.That results in the following combinations:
  *
@@ -59,15 +65,17 @@
  * derv10M_NAME
  * derv01_NAME
  * derv01M_NAME
+ * gradientA_NAME
+ * gradientB_NAME
  */
 
 #ifndef NAME
   #error Please define a name for the binary expression.
 #endif
-#ifndef FUNCTION 
+#ifndef FUNCTION
   #error Please define the primal function representation.
 #endif
-#ifndef PRIMAL_FUNCTION 
+#ifndef PRIMAL_FUNCTION
   #error Please define a function which calls the primal functions representation.
 #endif
 
@@ -86,6 +94,9 @@
 #define DERIVATIVE_FUNC_01   COMBINE(derv01_, NAME)
 #define DERIVATIVE_FUNC_01M  COMBINE(derv01M_, NAME)
 
+#define GRADIENT_FUNC_A COMBINE(gradientA_, NAME)
+#define GRADIENT_FUNC_B COMBINE(gradientB_, NAME)
+
 /* predefine the structs and the functions for higher order derivatives */
 template <typename Real, class A, class B> struct OP11;
 template <typename Real, class A> struct OP10;
@@ -100,11 +111,11 @@ CODI_INLINE  OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename Typ
 template <typename Real, class B>
 CODI_INLINE  OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b);
 
-/** 
- * @brief Expression implementation for OP with two active variables. 
+/**
+ * @brief Expression implementation for OP with two active variables.
  *
- * @tparam Real The real type used in the active types. 
- * @tparam A The expression for the first argument of the function 
+ * @tparam Real The real type used in the active types.
+ * @tparam A The expression for the first argument of the function
  * @tparam B The expression for the second argument of the function
  */
 template<typename Real, class A, class B>
@@ -118,11 +129,18 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     CODI_CREATE_STORE_TYPE(B) b_;
 
   public:
+    /**
+     * @brief The passive type used in the origin.
+     *
+     * If Real is not an ActiveReal this value corresponds to Real,
+     * otherwise the PassiveValue from Real is used.
+     */
+    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
-    /** 
+    /**
      * @brief Stores both arguments of the expression.
      *
      * @param[in] a  First argument of the expression.
@@ -131,7 +149,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     explicit OP11(const Expression<Real, A>& a, const Expression<Real, B>& b) :
       a_(a.cast()), b_(b.cast()) {}
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
      * For f(x,y) it calculates df/dx and df/dy and passes these values as the multipliers to the arguments.
@@ -145,7 +163,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       DERIVATIVE_FUNC_11(data, a_, b_, getValue());
     }
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
      * For f(x,y) it calculates multiplier * df/dx and multiplier * df/dy and passes these values as the multipliers to the arguments.
@@ -176,17 +194,116 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
       b_.pushLazyJacobies(data);
     }
 
-    /** 
-     * @brief Return the numerical value of the expression. 
+    /**
+     * @brief Return the numerical value of the expression.
      *
      * @return The value of the expression.
      */
     CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_.getValue(), b_.getValue());
     }
+
+    /**
+     * @brief Get the value from a static evaluation context.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It calls the same method on the arguments with updated offsets for the second argument.
+     * The adjustment of the offsets is take from the first argument.
+     *
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     *
+     * @return The corresponding primal value for the active real.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+      const Real bPrimal = B::template getValue<IndexType,
+          offset + ExpressionTraits<A>::maxActiveVariables,
+          constantOffset + ExpressionTraits<A>::maxConstantVariables>
+            (indices, constantValues, primalValues);
+
+      return PRIMAL_CALL(aPrimal, bPrimal);
+    }
+
+    /**
+     * @brief Calculate the gradient of the expression and update the seed. The updated seed is then
+     *        given to the argument expressions.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It updates the adjoints of the values in the expressions with the calculated
+     * adjoint values.
+     * It calls the same method on the arguments with updated offsets for the second argument.
+     * The adjustment of the offsets is take from the first argument.
+     *
+     * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+     *                            for the operators and used as the upadte in the terminal points.
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     * @param[in]  adjointValues  The global adjoint value vector.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+      const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+      const Real bPrimal = B::template getValue<IndexType,
+          offset + ExpressionTraits<A>::maxActiveVariables,
+          constantOffset + ExpressionTraits<A>::maxConstantVariables>
+            (indices, constantValues, primalValues);
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      A::template evalAdjoint<IndexType, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
+      B::template evalAdjoint<IndexType,
+          offset + ExpressionTraits<A>::maxActiveVariables,
+          constantOffset + ExpressionTraits<A>::maxConstantVariables>
+            (bJac, indices, constantValues, primalValues, adjointValues);
+    }
+
+    /**
+     * @brief constantValueActions are called for every constant real in the expression.
+     *
+     * @param[inout] tape  The tape that calls the action.
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every constant item.
+     *
+     * @tparam CallTape  The type of the tape that calls the action.
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename Tape, typename Data, typename Func>
+    CODI_INLINE void constantValueAction(Tape& tape, Data data, Func func) const {
+      a_.constantValueAction(tape, data, func);
+      b_.constantValueAction(tape, data, func);
+    }
+
+    /**
+     * @brief The action is called on the tape for every active real.
+     *
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every active real in the expression.
+     *
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      a_.valueAction(data, func);
+      b_.valueAction(data, func);
+    }
 };
 
-/** 
+/**
  * @brief Expression implementation for OP with one active variables.
  *
  * @tparam Real The real type used in the active types.
@@ -195,7 +312,6 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
 template<typename Real, class A>
 struct OP10: public Expression<Real, OP10<Real, A> > {
   private:
-
     /** @brief The type for the passive values. */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
@@ -210,7 +326,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
-    /** 
+    /**
      * @brief Stores both arguments of the expression.
      *
      * @param[in] a  First argument of the expression.
@@ -219,8 +335,8 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     explicit OP10(const Expression<Real, A>& a, const PassiveReal& b) :
       a_(a.cast()), b_(b) {}
 
-    /** 
-     * @brief Calculates the jacobies of the expression and hands them down to the arguments. 
+    /**
+     * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
      * For f(x,y) it calculates df/dx passes this value as the multiplier to the argument.
      *
@@ -233,10 +349,10 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       DERIVATIVE_FUNC_10(data, a_, b_, getValue());
     }
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
-     * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. 
+     * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument.
      *
      * @param[inout]     data A helper value which the tape can define and use for the evaluation.
      * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
@@ -263,7 +379,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       a_.pushLazyJacobies(data);
     }
 
-    /** 
+    /**
      * @brief Return the numerical value of the expression.
      *
      * @return The value of the expression.
@@ -271,12 +387,99 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_.getValue(), b_);
     }
+
+    /**
+     * @brief Get the value from a static evaluation context.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It calls the same method on the arguments with updated offsets for the second argument.
+     * The adjustment of the offsets is take from the first argument.
+     *
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     *
+     * @return The corresponding primal value for the active real.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+      const PassiveReal& bPrimal = constantValues[constantOffset + ExpressionTraits<A>::maxConstantVariables];
+
+      return PRIMAL_CALL(aPrimal, bPrimal);
+    }
+
+    /**
+     * @brief Calculate the gradient of the expression and update the seed. The updated seed is then
+     *        given to the argument expressions.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It updates the adjoints of the values in the expressions with the calculated
+     * adjoint values.
+     * It calls the same method on the arguments with updated offsets for the second argument.
+     * The adjustment of the offsets is take from the first argument.
+     *
+     * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+     *                            for the operators and used as the upadte in the terminal points.
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     * @param[in]  adjointValues  The global adjoint value vector.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+      const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+      const PassiveReal& bPrimal = constantValues[constantOffset + ExpressionTraits<A>::maxConstantVariables];
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      A::template evalAdjoint<IndexType, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
+    }
+
+    /**
+     * @brief constantValueActions are called for every constant real in the expression.
+     *
+     * @param[inout] tape  The tape that calls the action.
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every constant item.
+     *
+     * @tparam CallTape  The type of the tape that calls the action.
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename Tape, typename Data, typename Func>
+    CODI_INLINE void constantValueAction(Tape& tape, Data data, Func func) const {
+      a_.constantValueAction(tape, data, func);
+      CODI_CALL_MEMBER_FN(tape, func)(data, b_);
+    }
+
+    /**
+     * @brief The action is called on the tape for every active real.
+     *
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every active real in the expression.
+     *
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      a_.valueAction(data, func);
+    }
 };
 
-/** 
- * @brief Expression implementation for OP with one active variables. 
+/**
+ * @brief Expression implementation for OP with one active variables.
  *
- * @tparam Real The real type used in the active types. 
+ * @tparam Real The real type used in the active types.
  * @tparam B The expression for the second argument of the function
  */
 template<typename Real, class B>
@@ -296,16 +499,16 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     /** @brief Because these are temporary objects they need to be stored as values. */
     static const bool storeAsReference = false;
 
-    /** 
+    /**
      * @brief Stores both arguments of the expression.
      *
-     * @param[in] a  First argument of the expression. 
+     * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
     explicit OP01(const PassiveReal& a, const Expression<Real, B>& b) :
       a_(a), b_(b.cast()) {}
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
      * For f(x,y) it calculates df/dx passes this value as the multiplier to the argument.
@@ -319,10 +522,10 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
       DERIVATIVE_FUNC_01(data, a_, b_, getValue());
     }
 
-    /** 
+    /**
      * @brief Calculates the jacobies of the expression and hands them down to the arguments.
      *
-     * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument. 
+     * For f(x,y) it calculates multiplier * df/dx and passes this value as the multiplier to the argument.
      *
      * @param[inout]     data A helper value which the tape can define and use for the evaluation.
      * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
@@ -349,16 +552,102 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
       b_.pushLazyJacobies(data);
     }
 
-    /** 
-     * @brief Return the numerical value of the expression. 
+    /**
+     * @brief Return the numerical value of the expression.
      *
-     * @return The value of the expression. 
+     * @return The value of the expression.
      */
     CODI_INLINE const Real getValue() const {
       return PRIMAL_CALL(a_, b_.getValue());
     }
-};
 
+    /**
+     * @brief Get the value from a static evaluation context.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It calls the same method on the arguments with updated offsets for the second argument.
+     * The adjustment of the offsets is take from the first argument.
+     *
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     *
+     * @return The corresponding primal value for the active real.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      const PassiveReal& aPrimal = constantValues[constantOffset];
+      const Real bPrimal = B::template getValue<IndexType, offset, constantOffset + 1>(indices, constantValues, primalValues);
+
+      return PRIMAL_CALL(aPrimal, bPrimal);
+    }
+
+    /**
+     * @brief Calculate the gradient of the expression and update the seed. The updated seed is then
+     *        given to the argument expressions.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It updates the adjoints of the values in the expressions with the calculated
+     * adjoint values.
+     * It calls the same method on the arguments with updated offsets for the second argument.
+     * The adjustment of the offsets is take from the first argument.
+     *
+     * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+     *                            for the operators and used as the upadte in the terminal points.
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     * @param[in]  adjointValues  The global adjoint value vector.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+      const PassiveReal& aPrimal = constantValues[constantOffset];
+      const Real bPrimal = B::template getValue<IndexType, offset, constantOffset + 1>(indices, constantValues, primalValues);
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      B::template evalAdjoint<IndexType, offset, constantOffset + 1>(bJac, indices, constantValues, primalValues, adjointValues);
+    }
+
+    /**
+     * @brief constantValueActions are called for every constant real in the expression.
+     *
+     * @param[inout] tape  The tape that calls the action.
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every constant item.
+     *
+     * @tparam CallTape  The type of the tape that calls the action.
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename Tape, typename Data, typename Func>
+    CODI_INLINE void constantValueAction(Tape& tape, Data data, Func func) const {
+      CODI_CALL_MEMBER_FN(tape, func)(data, a_);
+      b_.constantValueAction(tape, data, func);
+    }
+
+    /**
+     * @brief The action is called on the tape for every active real.
+     *
+     * @param[inout] data  The data that can be used by the action.
+     * @param[in]    func  The function that is called for every active real in the expression.
+     *
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      b_.valueAction(data, func);
+    }
+};
 
 /**
  * @brief Specialization of the TypeTraits for the binary operator type.
@@ -434,7 +723,7 @@ class TypeTraits< OP01<RealType, B> > {
     typedef typename TypeTraits<RealType>::PassiveReal PassiveReal;
 
     /**
-     * @brief The passive type is the passive type of Real.
+     * @brief The real is just the type that is defined as the template argument.
      */
     typedef RealType Real;
 
@@ -507,6 +796,8 @@ CODI_INLINE OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, 
 #undef DERIVATIVE_FUNC_10M
 #undef DERIVATIVE_FUNC_01
 #undef DERIVATIVE_FUNC_01M
+#undef GRADIENT_FUNC_A
+#undef GRADIENT_FUNC_B
 
 #undef PRIMAL_FUNCTION
 #undef FUNCTION

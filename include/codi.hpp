@@ -34,6 +34,8 @@
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/jacobiTape.hpp"
 #include "tapes/jacobiIndexTape.hpp"
+#include "tapes/primalValueTape.hpp"
+#include "tapes/primalValueIndexTape.hpp"
 #include "tapes/indices/linearIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandlerUseCount.hpp"
@@ -227,4 +229,87 @@ namespace codi {
    * See the documentation of #RealReverseIndexUnchecked.
    */
   typedef ActiveReal<JacobiIndexTape<SimpleIndexTapeTypes<float, ReuseIndexHandlerUseCount<int> > > > RealReverseIndexUncheckedFloat;
+
+  /**
+   * @brief A reverse type like the default reverse type in CoDiPack but with primal value taping instead of Jacobian taping.
+   *
+   * The difference between this type and the #RealReverse is how the derivatives are computed and stored
+   * the Jacobian approach computes the derivatives directly and stores them. The primal value taping
+   * stores the primal values of the expression. With these primal values it computes the derivatives in the
+   * reverse mode.
+   */
+  typedef ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<double, LinearIndexHandler<int> > > > RealReversePrimal;
+
+  /**
+   * @brief Vector mode of the #RealReversePrimal type.
+   *
+   * The type of the direction can be accessed with RealReversePrimalVec<dim>::GradientValue<br>
+   *
+   * See @ref Tutorial6 for details.
+   *
+   * @tparam dim  The fixed dimension of the vector.
+   */
+  template<size_t dim>
+  using RealReversePrimalVec = ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<double, LinearIndexHandler<int>, Direction<double, dim> > > >;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with float as the real value type.
+   *
+   * See the documentation of #RealReversePrimal.
+   */
+  typedef ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<float, LinearIndexHandler<int> > > > RealReversePrimalFloat;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with an unchecked tape.
+   *
+   * See the documentation of #RealReversePrimal and #RealReverseUnchecked.
+   */
+  typedef ActiveReal<PrimalValueTape<SimplePrimalValueTapeTypes<double, LinearIndexHandler<int> > > > RealReversePrimalUnchecked;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with float as the real value type and an unchecked version.
+   *
+   * See the documentation of #RealReversePrimal.
+   */
+  typedef ActiveReal<PrimalValueTape<SimplePrimalValueTapeTypes<float, LinearIndexHandler<int> > > > RealReversePrimalUncheckedFloat;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with an index management.
+   *
+   * See the documentation of #RealReversePrimal and #RealReverseIndex.
+   */
+  typedef ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReversePrimalIndex;
+
+  /**
+   * @brief Vector mode of the #RealReversePrimalIndex type.
+   *
+   * The type of the direction can be accessed with RealReversePrimalIndexVec<dim>::GradientValue<br>
+   *
+   * See @ref Tutorial6 for details.
+   *
+   * @tparam dim  The fixed dimension of the vector.
+   */
+  template<size_t dim>
+  using RealReversePrimalIndexVec = ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<double, ReuseIndexHandlerUseCount<int>, Direction<double, dim> > > > ;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with an index management and float as the base type.
+   *
+   * See the documentation of #RealReversePrimal and #RealReverseIndex.
+   */
+  typedef ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<float, ReuseIndexHandlerUseCount<int> > > > RealReversePrimalIndexFloat;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with an index management in an unchecked version.
+   *
+   * See the documentation of #RealReversePrimal, #RealReverseIndex and #RealReverseUnchecked
+   */
+  typedef ActiveReal<PrimalValueIndexTape<SimpleIndexPrimalValueTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReversePrimalIndexUnchecked;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with an index management in an unchecked version and with float as the base type.
+   *
+   * See the documentation of #RealReversePrimal, #RealReverseIndex and #RealReverseUnchecked
+   */
+  typedef ActiveReal<PrimalValueIndexTape<SimpleIndexPrimalValueTapeTypes<float, ReuseIndexHandlerUseCount<int> > > > RealReversePrimalIndexUncheckedFloat;
 }

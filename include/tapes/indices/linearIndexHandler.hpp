@@ -30,6 +30,9 @@
 
 #include <vector>
 
+#include "../../configure.h"
+#include "../../macros.h"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
@@ -63,18 +66,25 @@ namespace codi {
     private:
 
       /**
+       * @brief The amount of indices that is not given to statements.
+       *
+       * The indices 1 to zeroState can be used by the tape.
+       */
+      Index zeroState;
+
+      /**
        * @brief The current count for the indices or statements.
        */
       Index count;
-
     public:
 
 
       /**
        * @brief Create a handler that starts with the index one.
        */
-      LinearIndexHandler() :
-        count() {}
+      LinearIndexHandler(Index zeroState) :
+        zeroState(zeroState),
+        count(zeroState) {}
 
       /**
        * @brief Free the index that is given to the method.
@@ -136,6 +146,16 @@ namespace codi {
       }
 
       /**
+       * @brief The needed getZeroPosition method for a ChunkVector sequence terminator.
+       *
+       * The method returns the zero state of terminator.
+       * @return The zero state of the terminator.
+       */
+      CODI_INLINE Position getZeroPosition() const {
+        return zeroState;
+      }
+
+      /**
        * @brief The needed reset method for a ChunkVector sequence terminator.
        *
        * The method sets count to the value from the argument.
@@ -143,6 +163,8 @@ namespace codi {
        * @param pos The new value of count.
        */
       CODI_INLINE void reset(const Position& pos) {
+        codiAssert(pos >= zeroState);
+
         count = pos;
       }
 
