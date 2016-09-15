@@ -100,7 +100,7 @@ extern "C" {
         type *values=static_cast<type*>(buf);
         for(int i=0;i<*size;++i) {
           //type &dummy=values[i];
-          //values[*displ + i]=0;
+          values[*displ + i]=0;
           type::getGlobalTape().registerInput(values[*displ + i]);
         }
      }

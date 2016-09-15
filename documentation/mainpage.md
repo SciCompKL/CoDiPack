@@ -23,7 +23,19 @@ The only other requirement is a c++11 compliant compiler
 where one usually needs to specify '--std=c++11' in compiler arguments.
 CoDiPack is tested with gcc and the intel compiler.
 
-The file `codi.hpp` defines the datatypes:
+The file `codi.hpp` defines several datatypes. The most important ones are:
+ - Implementations of the forward mode of AD:
+   - codi::RealForward
+ - Implementation of the reverse mode of AD:
+   - codi::RealReverse (most common type, works everywhere, c-compatible)
+   - codi::RealReverseIndex (reduced tape size w.r.t. codi::RealReverse, no c-like memory operations (e.g. memcpy))
+   - codi::RealReversePrimal (reduced tape size w.r.t. codi::RealReverseIndex, works everywhere, c-compatible, increased type complexity)
+   - codi::RealReversePrimalIndex (reduced tape size w.r.t. codi::RealReversePrimal, no c-like memory operations (e.g. memcpy), increased type complexity)
+
+We recommend to use the codi::RealReverse type when AD is first introduced to an application.
+After that there should be no difficulties in replacing the codi::RealReverse type with other types.
+
+The full type list of the file 'codi.hpp' is:
  - Implementations of the forward mode of AD:
    - codi::RealForward
    - codi::RealForwardFloat
@@ -53,8 +65,11 @@ The file `codi.hpp` defines the datatypes:
 
 The reverse types support various use cases. The regular type codi::RealReverse is the most used type and provides
 the most common use case. This type can be used in c-like memory operation like memset and memcpy.
-The 'Index' variant of the reverse type uses an indexing sheme that reuses freed indices and therefore
-reduces the amout of memory that is needed. This type is no longer compatible with c-like memory operations.
+The 'Index' variant of the reverse type uses an indexing scheme that reuses freed indices and therefore
+reduces the amount of memory that is needed. This type is no longer compatible with c-like memory operations.
+The 'Primal' variants implement a different strategy for storing the data.
+Instead of storing the partial derivatives for each statement, they store the primal values.
+This change reduces the required memory of the 'Primal' types.
 The 'Unchecked' variant is also an implementation of the reverse mode of AD but it should only be used by experienced users. This type performs no bounds checking for the memory access.
 For each type there is also a type with single precession e.g. codi::RealForwardFloat.
 The 'Vec' variant implements the vector mode of the corresponding AD type.
@@ -83,11 +98,11 @@ A very small and simple example for the usage of the RealForward type is the cod
 
 It is compiled with
 ~~~~{.txt}
-  g++  -I<path to codi>/include --std=c++11 -g -o forward forward.cpp
+  g++  -I<path to codi>/include -std=c++11 -g -o forward forward.cpp
 ~~~~
 for the gcc compiler or with
 ~~~~{.txt}
-  icpc  -I<path to codi>/include --std=c++11 -g -o forward forward.cpp
+  icpc  -I<path to codi>/include -std=c++11 -g -o forward forward.cpp
 ~~~~
 for the intel compiler.
 
