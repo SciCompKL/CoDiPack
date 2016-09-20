@@ -325,7 +325,7 @@
     void printTapeBaseStatistics(Stream& out, const std::string hLine) const {
 
       size_t nAdjoints      = indexHandler.getMaximumGlobalIndex() + 1;
-      double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+      double memoryAdjoints = (double)nAdjoints * (double)sizeof(GradientValue) * BYTE_TO_MB;
 
       out << hLine
           << "Adjoint vector\n"

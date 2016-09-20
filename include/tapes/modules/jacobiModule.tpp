@@ -229,12 +229,13 @@
      */
     template<typename Stream>
     void printJacobiStatistics(Stream& out, const std::string hLine) const {
-      size_t nChunksData  = jacobiVector.getNumChunks();
-      size_t totalData    = jacobiVector.getDataSize();
+      size_t nChunksData   = jacobiVector.getNumChunks();
+      size_t totalData     = jacobiVector.getDataSize();
+      size_t sizeDataEntry = JacobiChunk::EntrySize;
 
-      double  memoryUsedData = (double)totalData*(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
+      double  memoryUsedData = (double)totalData*(double)(sizeDataEntry)* BYTE_TO_MB;
       double  memoryAllocData= (double)nChunksData*(double)jacobiVector.getChunkSize()
-                                *(double)(sizeof(Real)+sizeof(IndexType))* BYTE_TO_MB;
+                                *(double)(sizeDataEntry)* BYTE_TO_MB;
 
       out << hLine
           << "Jacobi entries\n"
