@@ -41,7 +41,7 @@ all:
 .SECONDARY:
 
 # define general sets for tests
-BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp)
+BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp) $(wildcard $(TEST_DIR)/jacobiOptimizations/Test**.cpp)
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp)
 
 # The first 3 lines of each driver define the basic parameters for this driver.
