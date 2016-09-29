@@ -75,6 +75,9 @@ namespace codi {
      */
     typedef GradientValue GradientData;
 
+    /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
+    static const bool AllowJacobiOptimization = true;
+
     /**
      * @brief Evaluates the primal expression and the tangent
      *

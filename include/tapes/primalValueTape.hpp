@@ -183,6 +183,8 @@ namespace codi {
     /** @brief The type for expression handles in the reverse evaluation. */
     typedef typename TapeTypes::HandleType Handle;
 
+    /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
+    static const bool AllowJacobiOptimization = false;
 
     #define TAPE_NAME PrimalValueTape
 

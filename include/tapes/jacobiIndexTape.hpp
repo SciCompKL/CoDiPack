@@ -174,6 +174,9 @@ namespace codi {
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
 
+    /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
+    static const bool AllowJacobiOptimization = true;
+
     // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiIndexTape
 

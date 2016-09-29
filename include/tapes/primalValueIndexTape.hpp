@@ -190,6 +190,9 @@ namespace codi {
     /** @brief The termination of the vector sequence. */
     EmptyChunkVector emptyVector;
 
+    /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
+    static const bool AllowJacobiOptimization = false;
+
     #define TAPE_NAME PrimalValueIndexTape
 
     #define POSITION_TYPE typename TapeTypes::Position

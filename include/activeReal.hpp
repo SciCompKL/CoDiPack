@@ -452,8 +452,11 @@ namespace codi {
      * @param[in] rhs The passive value on the rhs.
      */
     CODI_INLINE ActiveReal<Tape>& operator+=(const PassiveReal& rhs) {
-      // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
-      primalValue += rhs;
+      if(Tape::AllowJacobiOptimization) {
+        primalValue += rhs;
+      } else {
+        *this = (*this + rhs);
+      }
       return *this;
     }
     /**
@@ -466,8 +469,11 @@ namespace codi {
      * @param[in] rhs The passive value on the rhs.
      */
     CODI_INLINE ActiveReal<Tape>& operator-=(const PassiveReal& rhs) {
-      // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
-      primalValue -= rhs;
+      if(Tape::AllowJacobiOptimization) {
+        primalValue -= rhs;
+      } else {
+        *this = (*this - rhs);
+      }
       return *this;
     }
     /**

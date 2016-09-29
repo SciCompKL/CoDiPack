@@ -167,6 +167,9 @@ namespace codi {
     /** @brief The coresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
+    static const bool AllowJacobiOptimization = true;
+
     // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiTape
 
