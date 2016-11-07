@@ -214,9 +214,9 @@ namespace codi {
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
-      /* defined in statementModule */stmtVector(DefaultChunkSize, emptyVector),
-      /* defined in jacobiModule */jacobiVector(DefaultChunkSize, stmtVector),
-      /* defined in externalFunctionsModule */extFuncVector(1000, jacobiVector) {
+      /* defined in statementModule */stmtVector(DefaultChunkSize, &emptyVector),
+      /* defined in jacobiModule */jacobiVector(DefaultChunkSize, &stmtVector),
+      /* defined in externalFunctionsModule */extFuncVector(1000, &jacobiVector) {
     }
 
     /** @brief Tear down the tape. Delete all values from the modules */

@@ -128,7 +128,7 @@ namespace codi {
 
     size_t chunkSize; /**< Global size of the chunks. If this size is set all the chunks are set to this size. */
 
-    NestedVector& nested; /**< Reference to the nested vector. */
+    NestedVector* nested; /**< Pointer to the nested vector. */
 
   public:
 
@@ -138,7 +138,7 @@ namespace codi {
      * @param chunkSize   The size for the chunks.
      * @param    nested   The nested chunk vector.
      */
-    ChunkVector(const size_t& chunkSize, NestedVector& nested) :
+    ChunkVector(const size_t& chunkSize, NestedVector* nested) :
       chunks(),
       positions(),
       curChunk(NULL),
@@ -148,7 +148,7 @@ namespace codi {
     {
       curChunk = new ChunkData(chunkSize);
       chunks.push_back(curChunk);
-      positions.push_back(nested.getZeroPosition());
+      positions.push_back(nested->getZeroPosition());
     }
 
     /**
@@ -184,7 +184,7 @@ namespace codi {
 
       for(size_t i = chunks.size(); i < noOfChunks; ++i) {
         chunks.push_back(new ChunkData(chunkSize));
-        positions.push_back(nested.getPosition());
+        positions.push_back(nested->getPosition());
       }
     }
 
@@ -203,11 +203,11 @@ namespace codi {
       if(chunks.size() == curChunkIndex) {
         curChunk = new ChunkData(chunkSize);
         chunks.push_back(curChunk);
-        positions.push_back(nested.getPosition());
+        positions.push_back(nested->getPosition());
       } else {
         curChunk = chunks[curChunkIndex];
         curChunk->reset();
-        positions[curChunkIndex] = nested.getPosition();
+        positions[curChunkIndex] = nested->getPosition();
       }
     }
 
@@ -234,7 +234,7 @@ namespace codi {
       curChunk->setUsedSize(pos.data);
       curChunkIndex = pos.chunk;
 
-      nested.reset(pos.inner);
+      nested->reset(pos.inner);
     }
 
     /**
@@ -290,7 +290,7 @@ namespace codi {
      * @return The position of the chunk vector.
      */
     CODI_INLINE Position getPosition() const {
-      return Position(curChunkIndex, curChunk->getUsedSize(), nested.getPosition());
+      return Position(curChunkIndex, curChunk->getUsedSize(), nested->getPosition());
     }
 
     /**
@@ -298,7 +298,7 @@ namespace codi {
      * @return The zero position of the chunk vector.
      */
     CODI_INLINE Position getZeroPosition() const {
-      return Position(0, 0, nested.getZeroPosition());
+      return Position(0, 0, nested->getZeroPosition());
     }
 
     /**

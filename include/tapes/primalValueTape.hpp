@@ -217,13 +217,13 @@ namespace codi {
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
-      /* defined in the primalValueModule */stmtVector(DefaultChunkSize, indexHandler),
-      /* defined in the primalValueModule */indexVector(DefaultChunkSize, stmtVector),
-      /* defined in the primalValueModule */constantValueVector(DefaultChunkSize, indexVector),
+      /* defined in the primalValueModule */stmtVector(DefaultChunkSize, &indexHandler),
+      /* defined in the primalValueModule */indexVector(DefaultChunkSize, &stmtVector),
+      /* defined in the primalValueModule */constantValueVector(DefaultChunkSize, &indexVector),
       /* defined in the primalValueModule */primals(NULL),
       /* defined in the primalValueModule */primalsSize(0),
       /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
-      /* defined in externalFunctionsModule */extFuncVector(1000, constantValueVector) {}
+      /* defined in externalFunctionsModule */extFuncVector(1000, &constantValueVector) {}
 
     /** @brief Tear down the tape. Delete all values from the modules */
     ~PrimalValueTape() {

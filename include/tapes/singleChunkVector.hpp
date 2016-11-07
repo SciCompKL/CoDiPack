@@ -112,7 +112,7 @@ namespace codi {
 
     ChunkData chunk; /**< The data chunk. */
 
-    NestedVector& nested; /**< Reference to the nested vector. */
+    NestedVector* nested; /**< Pointer to the nested vector. */
 
   public:
 
@@ -121,7 +121,7 @@ namespace codi {
      * @param chunkSize   The size for the chunks.
      * @param    nested   The nested chunk vector.
      */
-    SingleChunkVector(const size_t& chunkSize, NestedVector& nested) :
+    SingleChunkVector(const size_t& chunkSize, NestedVector* nested) :
       chunk(chunkSize),
       nested(nested)
     {}
@@ -156,7 +156,7 @@ namespace codi {
 
       chunk.setUsedSize(pos.data);
 
-      nested.reset(pos.inner);
+      nested->reset(pos.inner);
     }
 
     /**
@@ -208,7 +208,7 @@ namespace codi {
      * @return The position of the chunk vector.
      */
     CODI_INLINE Position getPosition() const {
-      return Position(chunk.getUsedSize(), nested.getPosition());
+      return Position(chunk.getUsedSize(), nested->getPosition());
     }
 
     /**
@@ -216,7 +216,7 @@ namespace codi {
      * @return The zero position of the chunk vector.
      */
     CODI_INLINE Position getZeroPosition() const {
-      return Position(0, nested.getZeroPosition());
+      return Position(0, nested->getZeroPosition());
     }
 
     /**
