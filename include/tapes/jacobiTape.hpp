@@ -215,6 +215,12 @@ namespace codi {
     ~JacobiTape() {
       cleanTapeBase();
     }
+
+    void swap(JacobiTape& other) {
+      swapTapeBaseModule(other);
+
+      extFuncVector.swap(other.extFuncVector);
+    }
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.
      *

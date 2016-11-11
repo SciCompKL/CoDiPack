@@ -28,7 +28,7 @@
 
 /*
  * In order to include this file the user has to define the preprocessor macro POSITION_TYPE, INDEX_HANDLER_TYPE
- * RESET_FUNCTION_NAME and EVALUATE_FUNCTION_NAME.
+ * RESET_FUNCTION_NAME, EVALUATE_FUNCTION_NAME and TAPE_NAME.
  *
  * POSITION_TYPE defines the type of the position structure that is used in the tape.
  * INDEX_HANDLER_TYPE defines the type of the index handler class that is used in the tape.
@@ -36,6 +36,8 @@
  * EVALUATE_FUNCTION_NAME is the name of the tape evaluation function that is implemented in the including class.
  *
  * All these macros are undefined at the end of the file.
+ *
+ * TAPE_NAME defines the type name of the tape and is not undefined at the end of the file.
  *
  * The module defines the structures indexHandler, adjoints, adjointSize and active that have to initialized
  * in the including class.
@@ -45,9 +47,13 @@
  * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), setActive, setPassive, isActive, printTapeBaseStatistics
  * from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods resizeAdjoints, cleanTapeBase as interface functions for the
+ * It defines the methods resizeAdjoints, cleanTapeBase, swapTapeBaseModule as interface functions for the
  * including class.
  */
+
+#ifndef TAPE_NAME
+  #error Please define the name of the tape.
+#endif
 
 #ifndef POSITION_TYPE
 #error Please define the position type.
@@ -130,6 +136,12 @@
         adjoints = NULL;
         adjointsSize = 0;
       }
+    }
+
+    void swapTapeBaseModule(TAPE_NAME<TapeTypes>& other) {
+      std::swap(adjoints, other.adjoints);
+      std::swap(adjointsSize, other.adjointsSize);
+      std::swap(active, other.active);
     }
 
   public:

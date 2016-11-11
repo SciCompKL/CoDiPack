@@ -86,6 +86,11 @@ namespace codi {
         zeroState(zeroState),
         count(zeroState) {}
 
+      void swap(LinearIndexHandler<Index>& other) {
+        std::swap(zeroState, other.zeroState);
+        std::swap(count, other.count);
+      }
+
       /**
        * @brief Free the index that is given to the method.
        *

@@ -160,6 +160,19 @@ namespace codi {
       }
     }
 
+    void swap(ChunkVector<ChunkData, NestedVector>& other) {
+      std::swap(chunks, other.chunks);
+      std::swap(positions, other.positions);
+      std::swap(curChunkIndex, other.curChunkIndex);
+      std::swap(chunkSize, other.chunkSize);
+
+      curChunk = chunks[curChunkIndex];
+      other.curChunk = other.chunks[other.curChunkIndex];
+
+      nested->swap(*other.nested);
+
+    }
+
     /**
      * @brief Sets the global chunk size and sets the size of all chunks.
      * @param chunkSize   The new chunk size.
