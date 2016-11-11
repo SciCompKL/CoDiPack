@@ -308,6 +308,8 @@ namespace codi {
      * @param[in]          lhsIndex  The index of the lhs value of the operation.
      */
     CODI_INLINE void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
+      CODI_UNUSED(lhsIndex);
+
       stmtVector.setDataAndMove(numberOfArguments);
     }
 

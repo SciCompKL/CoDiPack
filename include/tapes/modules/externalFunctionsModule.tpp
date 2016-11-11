@@ -145,6 +145,8 @@
      * @param extFunction The external function in the vector.
      */
     static void popExternalFunction(ExternalFunction* extFunc, ExtFuncChildPosition* endInnerPos) {
+      CODI_UNUSED(endInnerPos);
+
       /* we just need to call the delete function */
       extFunc->deleteData();
     }
