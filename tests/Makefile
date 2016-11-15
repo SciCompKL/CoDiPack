@@ -45,7 +45,7 @@ BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/ex
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp)
 
 # The other lines create the rules and dependencies to run the tests for this driver.
-define DRIVER_INST =
+define DRIVER_INST
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
@@ -130,13 +130,12 @@ $(eval $(value DRIVER_INST))
 DRIVER_NAME  := RWS_ChunkIndVec
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkIndexVector/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndexVector
-$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
+$(eval $(value DRIVER_INST))
 
 # Driver for reverse over forward
 DRIVER_NAME  := RWS2nd
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseOverForward/reverseOverForwardDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseOverForward
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 $(eval $(value DRIVER_INST))
 
 # rules for generating the test files
