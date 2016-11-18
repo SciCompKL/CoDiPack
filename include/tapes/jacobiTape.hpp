@@ -453,5 +453,35 @@ namespace codi {
 
     }
 
+    static void writeFunction(ChunkInterface* chunk, CoDiIoHandle& handle) {
+      chunk->writeData(handle);
+    }
+
+    static void readFunction(ChunkInterface* chunk, CoDiIoHandle& handle) {
+      chunk->readData(handle);
+    }
+
+    static void deleteFunction(ChunkInterface* chunk) {
+      chunk->deleteData();
+    }
+
+    void writeToFile(const std::string& filePrefix) {
+      CoDiIoHandle ioHandle(filePrefix + "jacobiTape.txt", true);
+
+      // we ignore the external function vector here because the data there should not be written
+      jacobiVector.forEachChunk(writeFunction, true, ioHandle);
+    }
+
+    void readFromFile(const std::string& filePrefix) {
+      CoDiIoHandle ioHandle(filePrefix + "jacobiTape.txt", false);
+
+      // we ignore the external function vector here because the data there should not be written
+      jacobiVector.forEachChunk(readFunction, true, ioHandle);
+    }
+
+    void deleteData() {
+      // we ignore the external function vector here because the data there should not be written
+      jacobiVector.forEachChunk(deleteFunction, true);
+    }
   };
 }

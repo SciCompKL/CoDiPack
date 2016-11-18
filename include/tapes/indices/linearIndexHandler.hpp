@@ -185,5 +185,11 @@ namespace codi {
         CODI_UNUSED(out);
         // Do nothing
       }
+
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
+        CODI_UNUSED(function);
+        CODI_UNUSED(recursive);
+      }
   };
 }

@@ -442,5 +442,18 @@ namespace codi {
 
       forEachData(end.chunk, dataStart, end.data, function, pointers...);
     }
+
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
+
+      for(size_t chunkPos = 0; chunkPos < chunks.size(); ++chunkPos) {
+
+        function(chunks[chunkPos], args...);
+      }
+
+      if(recursive) {
+        nested->forEachChunk(function, recursive, args...);
+      }
+    }
   };
 }
