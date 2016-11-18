@@ -257,6 +257,21 @@ namespace codi {
       reset(getZeroPosition());
     }
 
+    void resetHard() {
+      for(size_t i = 1; i < chunks.size(); ++i) {
+        delete chunks[i];
+      }
+
+      chunks.resize(1);
+      curChunk = chunks[0];
+      curChunk->load();
+
+      curChunk->setUsedSize(0);
+      curChunkIndex = 0;
+
+      nested->resetHard();
+    }
+
     /**
      * @brief Checks if the current chunk has enough items left.
      *

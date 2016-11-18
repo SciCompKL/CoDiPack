@@ -173,6 +173,11 @@ namespace codi {
         count = pos;
       }
 
+      CODI_INLINE void resetHard() {
+        count = zeroState;
+      }
+
+
       /**
        * @ brief There are no statistics for this handler.
        * @param[in,out] out  The information is written to the stream.

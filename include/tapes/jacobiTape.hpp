@@ -483,5 +483,13 @@ namespace codi {
       // we ignore the external function vector here because the data there should not be written
       jacobiVector.forEachChunk(deleteFunction, true);
     }
+
+    void resetHard() {
+
+      reset(); // required to delete all the external functions properly
+
+      cleanTapeBase();
+      extFuncVector.resetHard();
+    }
   };
 }
