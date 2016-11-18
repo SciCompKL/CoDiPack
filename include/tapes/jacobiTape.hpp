@@ -465,15 +465,15 @@ namespace codi {
       chunk->deleteData();
     }
 
-    void writeToFile(const std::string& filePrefix) {
-      CoDiIoHandle ioHandle(filePrefix + "jacobiTape.txt", true);
+    void writeToFile(const std::string& filename) {
+      CoDiIoHandle ioHandle(filename, true);
 
       // we ignore the external function vector here because the data there should not be written
       jacobiVector.forEachChunk(writeFunction, true, ioHandle);
     }
 
-    void readFromFile(const std::string& filePrefix) {
-      CoDiIoHandle ioHandle(filePrefix + "jacobiTape.txt", false);
+    void readFromFile(const std::string& filename) {
+      CoDiIoHandle ioHandle(filename, false);
 
       // we ignore the external function vector here because the data there should not be written
       jacobiVector.forEachChunk(readFunction, true, ioHandle);
