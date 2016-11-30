@@ -30,12 +30,36 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <errno.h>
 #include <string>
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
+
+  enum struct IoError {
+    Mode,
+    Open,
+    Write,
+    Read
+  };
+
+  struct IoException {
+      std::string text;
+      IoError id;
+
+      IoException(IoError id, const std::string& text, bool appendErrno) :
+        id(id),
+        text(text)
+      {
+        if(appendErrno) {
+          this->text += " (Internal error: ";
+          this->text += strerror(errno);
+          this->text += ")";
+        }
+      }
+  };
 
   class CoDiIoHandle {
 
@@ -46,34 +70,49 @@ namespace codi {
 
       CoDiIoHandle(const std::string& file, bool write) {
         writeMode = write;
+        fileHandle = NULL;
+
         if(write) {
           fileHandle = fopen(file.c_str(), "wb");
         } else {
           fileHandle = fopen(file.c_str(), "rb");
         }
+
+        if(NULL == fileHandle) {
+          throw IoException(IoError::Open , "Could not open file: " + file, true);
+        }
       }
 
       ~CoDiIoHandle() {
-        fclose(fileHandle);
+        if(NULL != fileHandle) {
+          fclose(fileHandle);
+        }
       }
 
       template<typename Data>
       void writeData(Data* data, size_t length) {
         if(writeMode) {
-          fwrite(data, sizeof(Data), length, fileHandle);
+          size_t s = fwrite(data, sizeof(Data), length, fileHandle);
+
+          if(s != length) {
+            throw IoException(IoError::Read, "Wrong number of bytes written.", true);
+          }
         } else {
-          std::cerr << "Error: using io handle in wrong mode." << std::endl;
+          throw IoException(IoError::Mode, "Using write io handle in wrong mode.", false);
         }
       }
 
       template<typename Data>
       void readData(Data* data, size_t length) {
         if(!writeMode) {
-          fread(data, sizeof(Data), length, fileHandle);
+          size_t s = fread(data, sizeof(Data), length, fileHandle);
+
+          if(s != length) {
+            throw IoException(IoError::Read, "Wrong number of bytes read.", false);
+          }
         } else {
-          std::cerr << "Error: using io handle in wrong mode." << std::endl;
+          throw IoException(IoError::Mode, "Using read io handle in wrong mode.", false);
         }
       }
-
   };
 }
