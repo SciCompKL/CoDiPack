@@ -50,8 +50,8 @@ namespace codi {
       IoError id;
 
       IoException(IoError id, const std::string& text, bool appendErrno) :
-        id(id),
-        text(text)
+        text(text),
+        id(id)
       {
         if(appendErrno) {
           this->text += " (Internal error: ";
