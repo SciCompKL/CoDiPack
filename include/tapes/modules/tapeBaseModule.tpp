@@ -248,7 +248,7 @@
      */
     CODI_INLINE void clearAdjoints(){
       if(NULL != adjoints) {
-        for(IndexType i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
+        for(IndexType i = 0; i < adjointsSize; ++i) {
           adjoints[i] = GradientValue();
         }
       }

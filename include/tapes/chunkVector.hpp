@@ -263,6 +263,7 @@ namespace codi {
       }
 
       chunks.resize(1);
+      positions.resize(1);
       curChunk = chunks[0];
       curChunk->load();
 
