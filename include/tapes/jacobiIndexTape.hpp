@@ -363,6 +363,8 @@ namespace codi {
 
         evalStmtCallback(dataPos, 0, numberOfArgumentsData, lhsIndexData, std::forward<Args>(args)...);
 
+        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
+
         dataPos = stmtVector.getChunkUsedData(curChunk - 1);
       }
 

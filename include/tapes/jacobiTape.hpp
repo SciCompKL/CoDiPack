@@ -362,6 +362,8 @@ namespace codi {
         StmtChildPosition endInnerPos = stmtVector.getInnerPosition(curChunk);
         evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData, std::forward<Args>(args)...);
 
+        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
+
         curInnerPos = endInnerPos;
 
         dataPos = stmtVector.getChunkUsedData(curChunk - 1);

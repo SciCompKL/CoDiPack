@@ -400,6 +400,8 @@ namespace codi {
 
         evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)..., primalValueCopy);
 
+        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
+
         dataPos = stmtVector.getChunkUsedData(curChunk - 1);
       }
 
