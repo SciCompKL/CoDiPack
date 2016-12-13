@@ -91,15 +91,6 @@
   // ----------------------------------------------------------------------
 
     /**
-     * @brief Set the size of the statement data chunks.
-     *
-     * @param[in] statementChunkSize The new size for the statement data chunks.
-     */
-    void setStatementChunkSize(const size_t& statementChunkSize) {
-      stmtVector.setChunkSize(statementChunkSize);
-    }
-
-    /**
      * @brief Resize the statement data.
      *
      * Ensure that enough size is allocated such that dataSize number of items
@@ -116,6 +107,16 @@
   // ----------------------------------------------------------------------
   // Public function from the TapeInterface and ReverseTapeInterface
   // ----------------------------------------------------------------------
+
+    /**
+     * @brief Set the size of the statement data chunks.
+     *
+     * @param[in] statementChunkSize The new size for the statement data chunks.
+     */
+    void setStatementChunkSize(const size_t& statementChunkSize) {
+      stmtVector.setChunkSize(statementChunkSize);
+    }
+
 
     /**
      * @brief Store the jacobies of the statement on the tape.

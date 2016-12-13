@@ -149,15 +149,6 @@
     }
 
     /**
-     * @brief Set the size of the jacobi data chunks.
-     *
-     * @param[in] dataChunkSize The new size for the jacobi data chunks.
-     */
-    void setDataChunkSize(const size_t& dataChunkSize) {
-      jacobiVector.setChunkSize(dataChunkSize);
-    }
-
-    /**
      * @brief Resize the jacobi data.
      *
      * Ensure that enough size is allocated such that dataSize number of items
@@ -174,6 +165,16 @@
   // ----------------------------------------------------------------------
   // Public function from the TapeInterface and ReverseTapeInterface
   // ----------------------------------------------------------------------
+
+    /**
+     * @brief Set the size of the jacobi data chunks.
+     *
+     * @param[in] dataChunkSize The new size for the jacobi data chunks.
+     */
+    void setDataChunkSize(const size_t& dataChunkSize) {
+      jacobiVector.setChunkSize(dataChunkSize);
+    }
+
 
     /**
      * @brief Stores the jacobi with the value 1.0 on the tape if the index is active.
