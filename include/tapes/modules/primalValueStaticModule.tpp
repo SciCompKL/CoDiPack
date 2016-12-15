@@ -60,15 +60,14 @@
  *
  * @param[in] size  The size of the preaccumulation handle. This is the size of the index vector and the constant vector.
  */
-#define CREATE_PREACC_HANDLE(size) ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType>(&TAPE_NAME<TapeTypes>::preaccHandleFunc<size>, size, size)
-
+#define CREATE_PREACC_HANDLE(size) preaccFunction<size>
   /**
    * @brief Instantiation of the preaccumulation handles.
    *
    * @tparam TapeTypes  The definition of the tape types.
    */
   template <typename TapeTypes>
-  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> TAPE_NAME<TapeTypes>::PreaccHandles[MaxStatementIntSize] = {
+  const typename TAPE_NAME<TapeTypes>::Handle TAPE_NAME<TapeTypes>::PreaccHandles[MaxStatementIntSize] = {
     CREATE_PREACC_HANDLE(0), CREATE_PREACC_HANDLE(1), CREATE_PREACC_HANDLE(2), CREATE_PREACC_HANDLE(3), CREATE_PREACC_HANDLE(4),
     CREATE_PREACC_HANDLE(5), CREATE_PREACC_HANDLE(6), CREATE_PREACC_HANDLE(7), CREATE_PREACC_HANDLE(8), CREATE_PREACC_HANDLE(9),
     CREATE_PREACC_HANDLE(10), CREATE_PREACC_HANDLE(11), CREATE_PREACC_HANDLE(12), CREATE_PREACC_HANDLE(13), CREATE_PREACC_HANDLE(14),

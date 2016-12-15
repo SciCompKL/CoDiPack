@@ -120,6 +120,7 @@
      * @param[in,out]  adjointValues  The global vector with the adjoint values.
      */
     static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {}
+    static void inputFunction(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {}
 
     /** @brief The static handle for the input function. */
     const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
@@ -139,6 +140,11 @@
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
       adjointValues[indices[0]] += seed;
+    }
+    static void copyFunction(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {
+      indexPos -= 1;
+
+      adjoints[indices[0]] += adj;
     }
 
     /** @brief The static handle for the copy function. */
@@ -166,9 +172,20 @@
         adjointValues[indices[i]] += constantValues[i] * seed;
       }
     }
+    template<int size>
+    static void preaccFunction(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {
+      constantPos -= size;
+      indexPos -= size;
+
+      for(int i = 0; i < size; ++i) {
+        // jacobies are stored in the constant values
+        adjoints[indices[i]] += constants[i] * adj;
+      }
+
+    }
 
     /** @brief The static array of handles for the preaccumulation. */
-    const static ExpressionHandle<Real*, Real, IndexType> PreaccHandles[MaxStatementIntSize];
+    const static Handle PreaccHandles[MaxStatementIntSize];
 
     /** @brief The vector with the primal value for each statement. */
     Real* primals;
@@ -283,7 +300,8 @@
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
      */
-    CODI_INLINE void evaluateHandle(const GradientValue& adj, const Handle& exprHandle, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
+    template<typename Expr>
+    static void evaluateHandle(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, Real* adjoints) {
       // first restore the primal values of the passive indices
       constantPos -= passiveActives;
       for(StatementInt i = 0; i < passiveActives; ++i) {
@@ -291,10 +309,10 @@
       }
 
       // now update the regular pointers
-      indexPos -= exprHandle->maxActiveVariables;
-      constantPos -= exprHandle->maxConstantVariables;
+      indexPos -= ExpressionTraits<Expr>::maxActiveVariables;
+      constantPos -= ExpressionTraits<Expr>::maxConstantVariables;
       ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
-        exprHandle->adjointFunc(adj, &indices[indexPos], &constants[constantPos], primalVector, adjoints);
+        Expr::template evalAdjoint<IndexType, 0, 0>(adj, &indices[indexPos], &constants[constantPos], primalVector, adjoints);
       }
     }
 
@@ -383,7 +401,7 @@
       indexVector.reserveItems(1);
       indexVector.setDataAndMove(rhsIndex);
 
-      pushStmtData(lhsIndex, lhsValue, &CopyHandle, StatementInt(0));
+      pushStmtData(lhsIndex, lhsValue, &copyFunction, StatementInt(0));
     }
 
   public:
@@ -434,7 +452,7 @@
           codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
           codiAssert(passieveVariableCount == passiveVariableNumber);
 
-          pushStmtData(lhsIndex, rhs.getValue(), ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveVariableNumber);
+          pushStmtData(lhsIndex, rhs.getValue(), &evaluateHandle<Rhs>, passiveVariableNumber);
 
           CODI_UNUSED(constantSize);  /* needed to avoid unused variable when the assersts are not enabled. */
           CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
@@ -497,7 +515,7 @@
         constantValueVector.reserveItems(size);
         indexVector.reserveItems(size);
 
-        pushStmtData(lhsIndex, lhsValue, &PreaccHandles[size], 0);
+        pushStmtData(lhsIndex, lhsValue, PreaccHandles[size], 0);
       }
     }
 
