@@ -69,43 +69,6 @@
 
   public:
 
-    struct FunctionHandleFactory {
-
-      typedef void (*Handle)(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, typename TypeTraits<Real>::PassiveReal* &constants, Real* primalVector, GradientValue* adjoints);
-
-      template<typename Expr>
-      static CODI_INLINE Handle createHandle() {
-
-        return &curryEvaluateHandle<Expr>;
-      }
-
-      template<typename Expr>
-      static CODI_INLINE void curryEvaluateHandle(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, Real* adjoints) {
-        evaluateHandle(Expr::template evalAdjoint<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables, adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
-      }
-
-      static CODI_INLINE void callHandle(Handle handle, const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, Real* adjoints) {
-        handle(adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
-      }
-
-    };
-
-    struct StaticObjectHandleFactory {
-
-      typedef const ExpressionHandle<Real*, Real, IndexType>* Handle;
-
-      template<typename Expr>
-      static CODI_INLINE Handle createHandle() {
-
-        return ExpressionHandleStore<Real*, Real, IndexType, Expr>::getHandle();
-      }
-
-      static CODI_INLINE void callHandle(Handle handle, const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, Real* adjoints) {
-
-        evaluateHandle(handle->adjointFunc, handle->maxActiveVariables, handle->maxConstantVariables, adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
-      }
-    };
-
 
 
 		private:
@@ -249,6 +212,7 @@
       indexVector.setDataAndMove(pushIndex);
     }
 
+  public:
     /**
      * @brief Evaluate one handle in the reverse sweep.
      *
@@ -279,6 +243,8 @@
         funcObj(adj, &indices[indexPos], &constants[constantPos], primalVector, adjoints);
       }
     }
+
+    private:
 
     /**
      * @brief Evaluate a part of the index vector.
@@ -365,7 +331,7 @@
       indexVector.reserveItems(1);
       indexVector.setDataAndMove(rhsIndex);
 
-      pushStmtData(lhsIndex, lhsValue, HandleFactory::template createHandle<CopyExpr<Real> >(), StatementInt(0));
+      pushStmtData(lhsIndex, lhsValue, HandleFactory::template createHandle<CopyExpr<Real>, TAPE_NAME<TapeTypes> >(), StatementInt(0));
     }
 
   public:
@@ -416,7 +382,7 @@
           codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
           codiAssert(passieveVariableCount == passiveVariableNumber);
 
-          pushStmtData(lhsIndex, rhs.getValue(), HandleFactory::template createHandle<Rhs>(), passiveVariableNumber);
+          pushStmtData(lhsIndex, rhs.getValue(), HandleFactory::template createHandle<Rhs, TAPE_NAME<TapeTypes> >(), passiveVariableNumber);
 
           CODI_UNUSED(constantSize);  /* needed to avoid unused variable when the assersts are not enabled. */
           CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */

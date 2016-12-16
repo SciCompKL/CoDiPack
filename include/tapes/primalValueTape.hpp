@@ -36,6 +36,7 @@
 #include "../expressionHandle.hpp"
 #include "chunkVector.hpp"
 #include "indices/linearIndexHandler.hpp"
+#include "handles/functionHandleFactory.hpp"
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
@@ -53,7 +54,7 @@ namespace codi {
    * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real>
+  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, Real> >
   struct ChunkPrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
@@ -63,8 +64,10 @@ namespace codi {
     typedef GradientValue GradientValueType;
     /** @brief The type for indices. */
     typedef typename IndexHandler::IndexType IndexType;
+
+    typedef HandleFactory HandleFactoryType;
     /** @brief The type for expression handles in the reverse evaluation. */
-    CODI_HandleType;
+    typedef typename HandleFactory::Handle HandleType;
 
     /** @brief The data for each statement. */
     typedef Chunk2<HandleType, StatementInt> StatementChunk;
@@ -105,7 +108,7 @@ namespace codi {
    * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real>
+  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, Real> >
   struct SimplePrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
@@ -115,8 +118,10 @@ namespace codi {
     typedef GradientValue GradientValueType;
     /** @brief The type for indices. */
     typedef typename IndexHandler::IndexType IndexType;
+
+    typedef HandleFactory HandleFactoryType;
     /** @brief The type for expression handles in the reverse evaluation. */
-    CODI_HandleType;
+    typedef typename HandleFactory::Handle HandleType;
 
     /** @brief The data for each statement. */
     typedef Chunk2<HandleType, StatementInt> StatementChunk;
@@ -180,6 +185,8 @@ namespace codi {
 
     /** @brief The coresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+    typedef typename TapeTypes::HandleFactoryType HandleFactory;
 
     /** @brief The type for expression handles in the reverse evaluation. */
     typedef typename TapeTypes::HandleType Handle;
@@ -347,7 +354,7 @@ namespace codi {
         --adjPos;
         --stmtPos;
 
-        HandleFactory::callHandle(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjoints);
+        HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjoints);
       }
     }
 
@@ -417,7 +424,7 @@ namespace codi {
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive()) {
-        pushStmtData(value.getGradientData(), value.getValue(), HandleFactory::template createHandle<InputExpr<Real> >(), StatementInt(0));
+        pushStmtData(value.getGradientData(), value.getValue(), HandleFactory::template createHandle<InputExpr<Real>, PrimalValueTape<TapeTypes> >(), StatementInt(0));
       }
     }
 
