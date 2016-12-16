@@ -39,35 +39,20 @@
   #error Please define the name of the tape.
 #endif
 
-  /**
-   * @brief Instantiation of the input handle.
-   *
-   * @tparam TapeTypes  The definition of the tape types.
-   */
-  template <typename TapeTypes>
-  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> TAPE_NAME<TapeTypes>::InputHandle(&TAPE_NAME<TapeTypes>::inputHandleFunc, 0, 0);
-
-  /**
-   * @brief Instantiation of the copy handle.
-   *
-   * @tparam TapeTypes  The definition of the tape types.
-   */
-  template <typename TapeTypes>
-  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> TAPE_NAME<TapeTypes>::CopyHandle(&TAPE_NAME<TapeTypes>::copyHandleFunc, 1, 0);
-
 /**
  * @brief Creates a preaccumulation handle for a spcific size
  *
  * @param[in] size  The size of the preaccumulation handle. This is the size of the index vector and the constant vector.
  */
-#define CREATE_PREACC_HANDLE(size) preaccFunction<size>
+#define CREATE_PREACC_HANDLE(size) HandleFactory::template createHandle<PreaccExpr<typename TapeTypes::RealType, size>>()
+
   /**
    * @brief Instantiation of the preaccumulation handles.
    *
    * @tparam TapeTypes  The definition of the tape types.
    */
   template <typename TapeTypes>
-  const typename TAPE_NAME<TapeTypes>::Handle TAPE_NAME<TapeTypes>::PreaccHandles[MaxStatementIntSize] = {
+  const typename TapeTypes::HandleType TAPE_NAME<TapeTypes>::preaccHandles[MaxStatementIntSize] = {
     CREATE_PREACC_HANDLE(0), CREATE_PREACC_HANDLE(1), CREATE_PREACC_HANDLE(2), CREATE_PREACC_HANDLE(3), CREATE_PREACC_HANDLE(4),
     CREATE_PREACC_HANDLE(5), CREATE_PREACC_HANDLE(6), CREATE_PREACC_HANDLE(7), CREATE_PREACC_HANDLE(8), CREATE_PREACC_HANDLE(9),
     CREATE_PREACC_HANDLE(10), CREATE_PREACC_HANDLE(11), CREATE_PREACC_HANDLE(12), CREATE_PREACC_HANDLE(13), CREATE_PREACC_HANDLE(14),

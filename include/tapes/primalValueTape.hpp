@@ -36,6 +36,7 @@
 #include "../expressionHandle.hpp"
 #include "chunkVector.hpp"
 #include "indices/linearIndexHandler.hpp"
+#include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 
@@ -63,7 +64,7 @@ namespace codi {
     /** @brief The type for indices. */
     typedef typename IndexHandler::IndexType IndexType;
     /** @brief The type for expression handles in the reverse evaluation. */
-    typedef void (*HandleType)(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, typename TypeTraits<Real>::PassiveReal* &constants, Real* primalVector, GradientValue* adjoints);
+    CODI_HandleType;
 
     /** @brief The data for each statement. */
     typedef Chunk2<HandleType, StatementInt> StatementChunk;
@@ -115,7 +116,7 @@ namespace codi {
     /** @brief The type for indices. */
     typedef typename IndexHandler::IndexType IndexType;
     /** @brief The type for expression handles in the reverse evaluation. */
-    typedef void (*HandleType)(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, typename TypeTraits<Real>::PassiveReal* &constants, Real* primalVector, GradientValue* adjoints);
+    CODI_HandleType;
 
     /** @brief The data for each statement. */
     typedef Chunk2<HandleType, StatementInt> StatementChunk;
@@ -346,7 +347,7 @@ namespace codi {
         --adjPos;
         --stmtPos;
 
-        statements[stmtPos](adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjoints);
+        HandleFactory::callHandle(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjoints);
       }
     }
 
@@ -416,7 +417,7 @@ namespace codi {
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive()) {
-        pushStmtData(value.getGradientData(), value.getValue(), inputFunction, StatementInt(0));
+        pushStmtData(value.getGradientData(), value.getValue(), HandleFactory::template createHandle<InputExpr<Real> >(), StatementInt(0));
       }
     }
 

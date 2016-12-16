@@ -36,6 +36,7 @@
 #include "../expressionHandle.hpp"
 #include "chunkVector.hpp"
 #include "indices/reuseIndexHandler.hpp"
+#include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 
@@ -65,7 +66,7 @@ namespace codi {
     typedef typename IndexHandler::IndexType IndexType;
 
     /** @brief The type for expression handles in the reverse evaluation. */
-    typedef void (*HandleType)(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, typename TypeTraits<Real>::PassiveReal* &constants, Real* primalVector, GradientValue* adjoints);
+    CODI_HandleType;
 
     /** @brief The data for each statement. */
     typedef Chunk4<IndexType, Real, HandleType, StatementInt> StatementChunk;
@@ -119,7 +120,7 @@ namespace codi {
     typedef typename IndexHandler::IndexType IndexType;
 
     /** @brief The type for expression handles in the reverse evaluation. */
-    typedef void (*HandleType)(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, typename TypeTraits<Real>::PassiveReal* &constants, Real* primalVector, GradientValue* adjoints);
+    CODI_HandleType;
 
     /** @brief The data for each statement. */
     typedef Chunk4<IndexType, Real, HandleType, StatementInt> StatementChunk;
@@ -370,7 +371,7 @@ namespace codi {
         const GradientValue adj = adjoints[lhsIndex];
         adjoints[lhsIndex] = GradientValue();
 
-        statements[stmtPos](adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjoints);
+        HandleFactory::callHandle(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjoints);
       }
     }
 

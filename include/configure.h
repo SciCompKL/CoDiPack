@@ -352,5 +352,18 @@ namespace codi {
        */
       #define codiAssert(x) /* disabled by CODI_EnableAssert */
     #endif
+
+  #ifndef CODI_FunctionHandle
+    #define CODI_FunctionHandle true
+  #endif
+  #if CODI_FunctionHandle
+    #define HandleFactory FunctionHandleFactory
+    #define CODI_HandleType typedef void (*HandleType)(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, typename TypeTraits<Real>::PassiveReal* &constants, Real* primalVector, GradientValue* adjoints)
+
+  #else
+    #define HandleFactory StaticObjectHandleFactory
+    #define CODI_HandleType typedef const ExpressionHandle<Real*, Real, IndexType>* HandleType
+  #endif
+
   #endif
 }
