@@ -474,7 +474,7 @@ namespace codi {
     }
 
     /**
-     * @brief Iterates over all chunks in the given range.
+     * @brief Iterates over all chunks.
      *
      * Iterates over all chunks of the vector. If the recursive argument is given
      * the iteration continous with the chunks from the nested vector.

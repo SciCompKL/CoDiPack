@@ -181,6 +181,9 @@ namespace codi {
         count = pos;
       }
 
+      /**
+       * @brief Resets the linear index handler to the inital state.
+       */
       CODI_INLINE void resetHard() {
         count = zeroState;
       }

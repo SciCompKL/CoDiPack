@@ -126,6 +126,22 @@ namespace codi {
       nested(nested)
     {}
 
+    /*
+     * @brief Swap the contents of this chunk vector with the contents of the other
+     *        chunk vector.
+     *
+     * On standard containers the default std::swap method is used.
+     * The method is called also on the nested vector.
+     *
+     * @param[in,out] other  The other chunk vector.
+     */
+    void swap(ChunkVector<ChunkData, NestedVector>& other) {
+      std::swap(chunk, other.chunk);
+
+      nested->swap(*other.nested);
+
+    }
+
     /**
      * @brief Sets the size of the chunk.
      * @param chunkSize   The new chunk size.
@@ -164,6 +180,15 @@ namespace codi {
      */
     void reset() {
       reset(getZeroPosition());
+    }
+
+    /**
+     * @brief Release all the memory, that the single chunk vector has acquired.
+     */
+    void resetHard() {
+      chunk.resize(0);
+
+      nested->resetHard();
     }
 
     /**
@@ -333,6 +358,29 @@ namespace codi {
       codiAssert(start.data <= chunk.getSize());
 
       forEachData(start.data, end.data, function, pointers...);
+    }
+
+    /**
+     * @brief Iterates over the chunk of the vector.
+     *
+     * If the recursive argument is given the iteration continous with the chunks from the nested vector.
+     *
+     * The function object will be called with the chunk as the first argument, followed by the given arguments args.
+     *
+     * @param  function  The function called for each chunk.
+     * @param recursive  If also the chunks of the nested vectors should be iterated.
+     * @param      args  The pointers are used as the arguments for the function.
+     *
+     * @tparam  Args  The data types for the arguments of the function.
+     */
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
+
+      function(&chunk, args...);
+
+      if(recursive) {
+        nested->forEachChunk(function, recursive, args...);
+      }
     }
   };
 }
