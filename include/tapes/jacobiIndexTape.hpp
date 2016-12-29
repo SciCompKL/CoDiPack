@@ -201,6 +201,9 @@ namespace codi {
     #define VECTOR_TYPE typename TapeTypes::ExternalFunctionVector
     #include "modules/externalFunctionsModule.tpp"
 
+    #define ROOT_VECTOR extFuncVector
+    #include "modules/ioModule.tpp"
+
     #undef TAPE_NAME
 
   public:

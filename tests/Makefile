@@ -42,7 +42,7 @@ all:
 
 # define general sets for tests
 BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp) $(wildcard $(TEST_DIR)/jacobiOptimizations/Test**.cpp)
-REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp)
+REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp) $(wildcard $(TEST_DIR)/io/Test**.cpp)
 
 # The other lines create the rules and dependencies to run the tests for this driver.
 define DRIVER_INST

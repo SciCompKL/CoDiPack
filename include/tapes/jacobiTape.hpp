@@ -194,6 +194,9 @@ namespace codi {
     #define VECTOR_TYPE typename TapeTypes::ExternalFunctionVector
     #include "modules/externalFunctionsModule.tpp"
 
+    #define ROOT_VECTOR extFuncVector
+    #include "modules/ioModule.tpp"
+
     #undef TAPE_NAME
 
   public:
@@ -463,45 +466,6 @@ namespace codi {
       printExtFuncStatistics(out, hLine);
       indexHandler.printStatistics(out, hLine);
 
-    }
-
-    static void writeFunction(ChunkInterface* chunk, CoDiIoHandle& handle) {
-      chunk->writeData(handle);
-    }
-
-    static void readFunction(ChunkInterface* chunk, CoDiIoHandle& handle) {
-      chunk->readData(handle);
-    }
-
-    static void deleteFunction(ChunkInterface* chunk) {
-      chunk->deleteData();
-    }
-
-    void writeToFile(const std::string& filename) {
-      CoDiIoHandle ioHandle(filename, true);
-
-      // we ignore the external function vector here because the data there should not be written
-      jacobiVector.forEachChunk(writeFunction, true, ioHandle);
-    }
-
-    void readFromFile(const std::string& filename) {
-      CoDiIoHandle ioHandle(filename, false);
-
-      // we ignore the external function vector here because the data there should not be written
-      jacobiVector.forEachChunk(readFunction, true, ioHandle);
-    }
-
-    void deleteData() {
-      // we ignore the external function vector here because the data there should not be written
-      jacobiVector.forEachChunk(deleteFunction, true);
-    }
-
-    void resetHard() {
-
-      reset(); // required to delete all the external functions properly
-
-      cleanTapeBase();
-      extFuncVector.resetHard();
     }
   };
 }
