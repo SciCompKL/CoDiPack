@@ -59,14 +59,37 @@ namespace codi {
       size(size),
       usedSize(0) {}
 
+    /**
+     * @brief Destructor for the the chunk interface
+     */
     virtual ~ChunkInterface() {}
 
+    /**
+     * @brief Write all the data of the chunk to the io handle.
+     *
+     * The data is given to the io handle such that it can be written.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     virtual void writeData(CoDiIoHandle& handle) = 0;
 
+    /**
+     * @brief Read the data for the chunk from the io handle.
+     *
+     * The method ensures that the data is allocated.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     virtual void readData(CoDiIoHandle& handle) = 0;
 
+    /**
+     * @brief Ensures that the data for the chunk is allocated.
+     */
     virtual void allocateData() = 0;
 
+    /**
+     * @brief Deletes the data of the chunk.
+     */
     virtual void deleteData() = 0;
 
     /**
@@ -147,7 +170,7 @@ namespace codi {
      *
      * @param size The size of the data in the chunk.
      */
-    Chunk1(const size_t& size) : ChunkInterface(size) {
+    Chunk1(const size_t& size) : ChunkInterface(size), data(NULL) {
       allocateData();
     }
 
@@ -158,21 +181,42 @@ namespace codi {
       deleteData();
     }
 
+    /**
+     * @brief Write all the data of the chunk to the io handle.
+     *
+     * The data is given to the io handle such that it can be written.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     void writeData(CoDiIoHandle& handle) {
       handle.writeData(data, size);
     }
 
+    /**
+     * @brief Read the data for the chunk from the io handle.
+     *
+     * The method ensures that the data is allocated.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     void readData(CoDiIoHandle& handle) {
-      if(NULL == data) {
-        allocateData();
-      }
+      allocateData();
+
       handle.readData(data, size);
     }
 
+    /**
+     * @brief Ensures that the data for the chunk is allocated.
+     */
     void allocateData() {
-      data = new Data[size];
+      if(NULL == data) {
+        data = new Data[size];
+      }
     }
 
+    /**
+     * @brief Deletes the data of the chunk.
+     */
     void deleteData() {
       if(NULL != data) {
         delete [] data;
@@ -235,7 +279,7 @@ namespace codi {
      *
      * @param size The size of the data in the chunk.
      */
-    Chunk2(const size_t& size) : ChunkInterface(size) {
+    Chunk2(const size_t& size) : ChunkInterface(size), data1(NULL), data2(NULL) {
       allocateData();
     }
 
@@ -246,24 +290,48 @@ namespace codi {
       deleteData();
     }
 
+    /**
+     * @brief Write all the data of the chunk to the io handle.
+     *
+     * The data is given to the io handle such that it can be written.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     void writeData(CoDiIoHandle& handle) {
       handle.writeData(data1, size);
       handle.writeData(data2, size);
     }
 
+    /**
+     * @brief Read the data for the chunk from the io handle.
+     *
+     * The method ensures that the data is allocated.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     void readData(CoDiIoHandle& handle) {
-      if(NULL == data1) {
-        allocateData();
-      }
+      allocateData();
+
       handle.readData(data1, size);
       handle.readData(data2, size);
     }
 
+    /**
+     * @brief Ensures that the data for the chunk is allocated.
+     */
     void allocateData() {
-      data1 = new Data1[size];
-      data2 = new Data2[size];
+      if(NULL == data1) {
+        data1 = new Data1[size];
+      }
+
+      if(NULL == data2) {
+        data2 = new Data2[size];
+      }
     }
 
+    /**
+     * @brief Deletes the data of the chunk.
+     */
     void deleteData() {
       if(NULL != data1) {
         delete [] data1;
@@ -337,7 +405,11 @@ namespace codi {
      *
      * @param size The size of the data in the chunk.
      */
-    Chunk3(const size_t& size) : ChunkInterface(size) {
+    Chunk3(const size_t& size) : ChunkInterface(size),
+      data1(NULL),
+      data2(NULL),
+      data3(NULL) {
+
       allocateData();
     }
 
@@ -348,27 +420,54 @@ namespace codi {
       deleteData();
     }
 
+    /**
+     * @brief Write all the data of the chunk to the io handle.
+     *
+     * The data is given to the io handle such that it can be written.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     void writeData(CoDiIoHandle& handle) {
       handle.writeData(data1, size);
       handle.writeData(data2, size);
       handle.writeData(data3, size);
     }
 
+    /**
+     * @brief Read the data for the chunk from the io handle.
+     *
+     * The method ensures that the data is allocated.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     void readData(CoDiIoHandle& handle) {
-      if(NULL == data1) {
-        allocateData();
-      }
+      allocateData();
+
       handle.readData(data1, size);
       handle.readData(data2, size);
       handle.readData(data3, size);
     }
 
+    /**
+     * @brief Ensures that the data for the chunk is allocated.
+     */
     void allocateData() {
-      data1 = new Data1[size];
-      data2 = new Data2[size];
-      data3 = new Data3[size];
+      if(NULL == data1) {
+        data1 = new Data1[size];
+      }
+
+      if(NULL == data2) {
+        data2 = new Data2[size];
+      }
+
+      if(NULL == data3) {
+        data3 = new Data3[size];
+      }
     }
 
+    /**
+     * @brief Deletes the data of the chunk.
+     */
     void deleteData() {
       if(NULL != data1) {
         delete [] data1;
@@ -453,7 +552,12 @@ namespace codi {
      *
      * @param size The size of the data in the chunk.
      */
-    Chunk4(const size_t& size) : ChunkInterface(size) {
+    Chunk4(const size_t& size) : ChunkInterface(size),
+      data1(NULL),
+      data2(NULL),
+      data3(NULL),
+      data4(NULL) {
+
       allocateData();
     }
 
@@ -464,6 +568,13 @@ namespace codi {
       deleteData();
     }
 
+    /**
+     * @brief Write all the data of the chunk to the io handle.
+     *
+     * The data is given to the io handle such that it can be written.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     void writeData(CoDiIoHandle& handle) {
       handle.writeData(data1, size);
       handle.writeData(data2, size);
@@ -471,23 +582,46 @@ namespace codi {
       handle.writeData(data4, size);
     }
 
+    /**
+     * @brief Read the data for the chunk from the io handle.
+     *
+     * The method ensures that the data is allocated.
+     *
+     * @pram[in,out] handle  The handle for the io operations.
+     */
     void readData(CoDiIoHandle& handle) {
-      if(NULL == data1) {
-        allocateData();
-      }
+      allocateData();
+
       handle.readData(data1, size);
       handle.readData(data2, size);
       handle.readData(data3, size);
       handle.readData(data4, size);
     }
 
+    /**
+     * @brief Ensures that the data for the chunk is allocated.
+     */
     void allocateData() {
-      data1 = new Data1[size];
-      data2 = new Data2[size];
-      data3 = new Data3[size];
-      data4 = new Data4[size];
+      if(NULL == data1) {
+        data1 = new Data1[size];
+      }
+
+      if(NULL == data2) {
+        data2 = new Data2[size];
+      }
+
+      if(NULL == data3) {
+        data3 = new Data3[size];
+      }
+
+      if(NULL == data4) {
+        data4 = new Data4[size];
+      }
     }
 
+    /**
+     * @brief Deletes the data of the chunk.
+     */
     void deleteData() {
       if(NULL != data1) {
         delete [] data1;
