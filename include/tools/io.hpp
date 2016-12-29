@@ -38,6 +38,14 @@
  */
 namespace codi {
 
+  /**
+   * @brief Types of CoDiPack io errors.
+   *
+   * Mode: The wrong mode was used on the file. e.g. Write on a file opened for read.
+   * Open: File could not be opened.
+   * Write: Error during the write of some data. e.g. No space left.
+   * Read: Error during the read of some data. e.g. eof reached.
+   */
   enum struct IoError {
     Mode,
     Open,
@@ -45,10 +53,29 @@ namespace codi {
     Read
   };
 
+  /**
+   * @brief Common excpetion for all io errors.
+   *
+   * This exception needs to be catched if io operation are performed on any tape.
+   */
   struct IoException {
+
+      /** @brief The text of the error. */
       std::string text;
+
+      /** @brief The id of the error. */
       IoError id;
 
+      /**
+       * @brief Create a new exception from the given text.
+       *
+       * The message of the error is text. If appendErrno is true, then the
+       * error message from errno is converted to a string and appended.
+       *
+       * @param[in]          id  The id of the error.
+       * @param[in]        text  The text of the error message.
+       * @param[in] appendErrno  Flag if the error from errno should be appended to the text.
+       */
       IoException(IoError id, const std::string& text, bool appendErrno) :
         text(text),
         id(id)
@@ -61,13 +88,30 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Contains methods for writing and reading data to and from files.
+   *
+   * The handle provides a save way to open a file and write or read from that file.
+   * The file is opened in binary mode.
+   */
   class CoDiIoHandle {
 
+      /** @brief The handle for the file. */
       FILE* fileHandle;
+
+      /** @brief The write mode of the file. Used for error checking. */
       bool writeMode;
 
     public:
 
+      /**
+       * @brief Create a handle from the given file and with the spedified mode
+       *
+       * The file is opened in binary mode.
+       *
+       * @param[in] file  The name of the file.
+       * @param[in] write  If the file is opened for reading. Otherwise for writing.
+       */
       CoDiIoHandle(const std::string& file, bool write) {
         writeMode = write;
         fileHandle = NULL;
@@ -83,14 +127,25 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Close the file.
+       */
       ~CoDiIoHandle() {
         if(NULL != fileHandle) {
           fclose(fileHandle);
         }
       }
 
+      /**
+       * @brief Write a blob of data to the file.
+       *
+       * @param[in]   data  The data that is writen to the file.
+       * @param[in] length  The number of items of the array.
+       *
+       * @tparam Data  The type of the data items.
+       */
       template<typename Data>
-      void writeData(Data* data, size_t length) {
+      void writeData(const Data* data, const size_t length) {
         if(writeMode) {
           size_t s = fwrite(data, sizeof(Data), length, fileHandle);
 
@@ -102,8 +157,16 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Read a blob of data from the file.
+       *
+       * @param[out]  data  The data that is read from the file.
+       * @param[in] length  The number of items of the array.
+       *
+       * @tparam Data  The type of the data items.
+       */
       template<typename Data>
-      void readData(Data* data, size_t length) {
+      void readData(Data* data, const size_t length) {
         if(!writeMode) {
           size_t s = fread(data, sizeof(Data), length, fileHandle);
 
