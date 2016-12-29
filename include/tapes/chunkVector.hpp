@@ -132,7 +132,6 @@ namespace codi {
 
   public:
 
-    //TODO: maybe create a constructor without the need to supply a nested vector
     /**
      * @brief Creates one chunk and loads it.
      * @param chunkSize   The size for the chunks.
@@ -160,6 +159,15 @@ namespace codi {
       }
     }
 
+    /*
+     * @brief Swap the contents of this chunk vector with the contents of the other
+     *        chunk vector.
+     *
+     * On standard containers the default std::swap method is used.
+     * The method is called also on the nested vector.
+     *
+     * @param[in,out] other  The other chunk vector.
+     */
     void swap(ChunkVector<ChunkData, NestedVector>& other) {
       std::swap(chunks, other.chunks);
       std::swap(positions, other.positions);
@@ -257,6 +265,12 @@ namespace codi {
       reset(getZeroPosition());
     }
 
+    /**
+     * @brief Release all the memory, that the chunk vector has acquired.
+     *
+     * Reverts the chunk vector into its initial state after the construction.
+     * Only the memory of one chunk stays allocated.
+     */
     void resetHard() {
       for(size_t i = 1; i < chunks.size(); ++i) {
         delete chunks[i];
@@ -459,6 +473,20 @@ namespace codi {
       forEachData(end.chunk, dataStart, end.data, function, pointers...);
     }
 
+    /**
+     * @brief Iterates over all chunks in the given range.
+     *
+     * Iterates over all chunks of the vector. If the recursive argument is given
+     * the iteration continous with the chunks from the nested vector.
+     *
+     * The function object will be called with the chunk as the first argument, followed by the given arguments args.
+     *
+     * @param  function  The function called for each chunk.
+     * @param recursive  If also the chunks of the nested vectors should be iterated.
+     * @param      args  The pointers are used as the arguments for the function.
+     *
+     * @tparam  Args  The data types for the arguments of the function.
+     */
     template<typename FunctionObject, typename ... Args>
     CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
 

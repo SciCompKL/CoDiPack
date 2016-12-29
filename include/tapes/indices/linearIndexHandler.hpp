@@ -86,6 +86,14 @@ namespace codi {
         zeroState(zeroState),
         count(zeroState) {}
 
+      /*
+       * @brief Swap the contents of this linear index handler with the contents of the other
+       *        linear index handler.
+       *
+       * On standard containers the default std::swap method is used.
+       *
+       * @param[in,out] other  The other linear index handler.
+       */
       void swap(LinearIndexHandler<Index>& other) {
         std::swap(zeroState, other.zeroState);
         std::swap(count, other.count);
@@ -177,7 +185,6 @@ namespace codi {
         count = zeroState;
       }
 
-
       /**
        * @ brief There are no statistics for this handler.
        * @param[in,out] out  The information is written to the stream.
@@ -188,13 +195,25 @@ namespace codi {
       template<typename Stream>
       void printStatistics(Stream& out, const std::string hLine) const {
         CODI_UNUSED(out);
+
         // Do nothing
       }
 
+    /**
+     * @brief There no chunks, that need to be iterated.
+     *
+     * @param  function  The function called for each chunk.
+     * @param recursive  If also the chunks of the nested vectors should be iterated.
+     * @param      args  The pointers are used as the arguments for the function.
+     *
+     * @tparam  Args  The data types for the arguments of the function.
+     */
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
         CODI_UNUSED(function);
         CODI_UNUSED(recursive);
+
+        // Do nothing
       }
   };
 }
