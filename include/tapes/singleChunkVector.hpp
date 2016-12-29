@@ -183,11 +183,9 @@ namespace codi {
     }
 
     /**
-     * @brief Release all the memory, that the single chunk vector has acquired.
+     * @brief Only calls the nested vector.
      */
     void resetHard() {
-      chunk.resize(0);
-
       nested->resetHard();
     }
 
