@@ -93,6 +93,16 @@ namespace codi {
     virtual void deleteData() = 0;
 
     /**
+     * @brief Swap the data of this chunk interface and the other chunk interface.
+     *
+     * @param[in,out] other The chunk interface for the data swap.
+     */
+    void swapBase(ChunkInterface& other) {
+      std::swap(size, other.size);
+      std::swap(usedSize, other.usedSize);
+    }
+
+    /**
      * @brief Get the maximum size of the chunk
      * @return The maximum number of items.
      */
@@ -225,6 +235,17 @@ namespace codi {
     }
 
     /**
+     * @brief Swap the data of this chunk and the other chunk.
+     *
+     * @param[in,out] other The chunk for the data swap.
+     */
+    void swap(Chunk1<Data>& other) {
+      this->swapBase(other);
+
+      std::swap(data, other.data);
+    }
+
+    /**
      * @brief Set the size of the array.
      * @param size  The new size of the array.
      */
@@ -342,6 +363,18 @@ namespace codi {
         delete [] data2;
         data2 = NULL;
       }
+    }
+
+    /**
+     * @brief Swap the data of this chunk and the other chunk.
+     *
+     * @param[in,out] other The chunk for the data swap.
+     */
+    void swap(Chunk2<Data1, Data2>& other) {
+      this->swapBase(other);
+
+      std::swap(data1, other.data1);
+      std::swap(data2, other.data2);
     }
 
     /**
@@ -483,6 +516,19 @@ namespace codi {
         delete [] data3;
         data3 = NULL;
       }
+    }
+
+    /**
+     * @brief Swap the data of this chunk and the other chunk.
+     *
+     * @param[in,out] other The chunk for the data swap.
+     */
+    void swap(Chunk3<Data1, Data2, Data3>& other) {
+      this->swapBase(other);
+
+      std::swap(data1, other.data1);
+      std::swap(data2, other.data2);
+      std::swap(data3, other.data3);
     }
 
     /**
@@ -642,6 +688,20 @@ namespace codi {
         delete [] data4;
         data4 = NULL;
       }
+    }
+
+    /**
+     * @brief Swap the data of this chunk and the other chunk.
+     *
+     * @param[in,out] other The chunk for the data swap.
+     */
+    void swap(Chunk4<Data1, Data2, Data3, Data4>& other) {
+      this->swapBase(other);
+
+      std::swap(data1, other.data1);
+      std::swap(data2, other.data2);
+      std::swap(data3, other.data3);
+      std::swap(data4, other.data4);
     }
 
     /**

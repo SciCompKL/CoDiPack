@@ -135,8 +135,8 @@ namespace codi {
      *
      * @param[in,out] other  The other chunk vector.
      */
-    void swap(ChunkVector<ChunkData, NestedVector>& other) {
-      std::swap(chunk, other.chunk);
+    void swap(SingleChunkVector<ChunkData, NestedVector>& other) {
+      chunk.swap(other.chunk);
 
       nested->swap(*other.nested);
 

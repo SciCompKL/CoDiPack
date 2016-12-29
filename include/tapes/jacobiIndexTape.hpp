@@ -226,6 +226,25 @@ namespace codi {
     ~JacobiIndexTape() {
       cleanTapeBase();
     }
+
+    /**
+     * @brief Swap the tape with an other tape.
+     *
+     * All data is exchanged between the tapes. The method performs the operation:
+     *
+     * T t = *this;
+     * *this = other;
+     * other = t;
+     *
+     */
+    void swap(JacobiIndexTape& other) {
+      swapTapeBaseModule(other);
+
+      // the index handler is not swaped because the indices of the program state need to stay valid
+
+      extFuncVector.swap(other.extFuncVector);
+    }
+
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.
      *

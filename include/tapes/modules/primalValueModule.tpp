@@ -46,9 +46,9 @@
  * It defines the methods store(Expr), store(const), store(User), pushJacobi, printPrimalValueStatistics from the TapeInterface and ReverseTapeInterface.
  *
  * It defines the methods resizePrimals, checkPrimalsSize, evaluateHandle, evaluateConstantValues, getUsedStatementsSize,
- * getUsedDataEntiresSize, getUsedConstantDataSize, setConstantDataSize as interface functions for the including class.
+ * getUsedDataEntiresSize, getUsedConstantDataSize, setConstantDataSize, swapPrimalValueModule as interface functions for the including class.
  *
- * It defines the static methods inputHandleFunc, copyHandleFunc, preaccHandleFunc as interface functions for the
+ * It defines the static methods inputHandleFunc, copyHandleFunc, preaccHandleFunc as interface functions for the tape.
  */
 
 #ifndef CHILD_VECTOR_TYPE
@@ -188,6 +188,17 @@
   // ----------------------------------------------------------------------
   // Private function for the communication with the including class
   // ----------------------------------------------------------------------
+
+    /**
+     * @brief Swap the data of the primal value module with the data of the other primal tape module.
+     *
+     * @param[in] other  The object with the other primal value module.
+     */
+    void swapPrimalValueModule(TAPE_NAME<TapeTypes>& other) {
+      std::swap(primals, other.primals);
+      std::swap(primalsSize, other.primalsSize);
+      std::swap(primalsIncr, other.primalsIncr);
+    }
 
     /**
      * @brief Helper function: Sets the primal vector to a new size.

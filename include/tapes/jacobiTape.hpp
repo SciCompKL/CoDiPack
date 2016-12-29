@@ -234,6 +234,7 @@ namespace codi {
 
       extFuncVector.swap(other.extFuncVector);
     }
+
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.
      *

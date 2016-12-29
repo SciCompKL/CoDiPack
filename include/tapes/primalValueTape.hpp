@@ -234,6 +234,23 @@ namespace codi {
     }
 
     /**
+     * @brief Swap the tape with an other tape.
+     *
+     * All data is exchanged between the tapes. The method performs the operation:
+     *
+     * T t = *this;
+     * *this = other;
+     * other = t;
+     *
+     */
+    void swap(PrimalValueTape& other) {
+      swapTapeBaseModule(other);
+      swapPrimalValueModule(other);
+
+      extFuncVector.swap(other.extFuncVector);
+    }
+
+    /**
      * @brief Sets all adjoint/gradients to zero.
      *
      * It has to hold start >= end.

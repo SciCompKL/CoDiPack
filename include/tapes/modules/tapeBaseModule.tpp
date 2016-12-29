@@ -138,10 +138,18 @@
       }
     }
 
+    /**
+     * @brief Swap the data of the tape base module with the data of the other tape base module.
+     *
+     * @param[in] other  The object with the other tape base module.
+     */
     void swapTapeBaseModule(TAPE_NAME<TapeTypes>& other) {
       std::swap(adjoints, other.adjoints);
       std::swap(adjointsSize, other.adjointsSize);
       std::swap(active, other.active);
+
+      // the index handler is not swaped because it is either swaped in the recursive call to of the data vectors
+      // or it is handled by the including class
     }
 
   public:
