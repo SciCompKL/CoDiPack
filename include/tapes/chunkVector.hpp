@@ -159,7 +159,7 @@ namespace codi {
       }
     }
 
-    /*
+    /**
      * @brief Swap the contents of this chunk vector with the contents of the other
      *        chunk vector.
      *

@@ -45,7 +45,7 @@ namespace codi {
      */
     struct Position {};
 
-    /*
+    /**
      * @brief Do nothing.
      *
      * @param[in,out] other  The other empty chunk vector.

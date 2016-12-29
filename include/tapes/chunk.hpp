@@ -69,7 +69,7 @@ namespace codi {
      *
      * The data is given to the io handle such that it can be written.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     virtual void writeData(CoDiIoHandle& handle) const = 0;
 
@@ -78,7 +78,7 @@ namespace codi {
      *
      * The method ensures that the data is allocated.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     virtual void readData(CoDiIoHandle& handle) = 0;
 
@@ -196,7 +196,7 @@ namespace codi {
      *
      * The data is given to the io handle such that it can be written.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     void writeData(CoDiIoHandle& handle) const {
       handle.writeData(data, size);
@@ -207,7 +207,7 @@ namespace codi {
      *
      * The method ensures that the data is allocated.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     void readData(CoDiIoHandle& handle) {
       allocateData();
@@ -316,7 +316,7 @@ namespace codi {
      *
      * The data is given to the io handle such that it can be written.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     void writeData(CoDiIoHandle& handle) const {
       handle.writeData(data1, size);
@@ -328,7 +328,7 @@ namespace codi {
      *
      * The method ensures that the data is allocated.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     void readData(CoDiIoHandle& handle) {
       allocateData();
@@ -458,7 +458,7 @@ namespace codi {
      *
      * The data is given to the io handle such that it can be written.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     void writeData(CoDiIoHandle& handle) const {
       handle.writeData(data1, size);
@@ -471,7 +471,7 @@ namespace codi {
      *
      * The method ensures that the data is allocated.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     void readData(CoDiIoHandle& handle) {
       allocateData();
@@ -619,7 +619,7 @@ namespace codi {
      *
      * The data is given to the io handle such that it can be written.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     void writeData(CoDiIoHandle& handle) const {
       handle.writeData(data1, size);
@@ -633,7 +633,7 @@ namespace codi {
      *
      * The method ensures that the data is allocated.
      *
-     * @pram[in,out] handle  The handle for the io operations.
+     * @param[in,out] handle  The handle for the io operations.
      */
     void readData(CoDiIoHandle& handle) {
       allocateData();

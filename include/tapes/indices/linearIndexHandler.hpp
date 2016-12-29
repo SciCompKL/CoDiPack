@@ -86,7 +86,7 @@ namespace codi {
         zeroState(zeroState),
         count(zeroState) {}
 
-      /*
+      /**
        * @brief Swap the contents of this linear index handler with the contents of the other
        *        linear index handler.
        *
