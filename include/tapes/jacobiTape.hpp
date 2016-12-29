@@ -216,6 +216,16 @@ namespace codi {
       cleanTapeBase();
     }
 
+    /**
+     * @brief Swap the tape with an other tape.
+     *
+     * All data is exchanged between the tapes. The method performs the operation:
+     *
+     * T t = *this;
+     * *this = other;
+     * other = t;
+     *
+     */
     void swap(JacobiTape& other) {
       swapTapeBaseModule(other);
 

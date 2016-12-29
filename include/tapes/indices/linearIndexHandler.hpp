@@ -203,7 +203,7 @@ namespace codi {
       }
 
     /**
-     * @brief There no chunks, that need to be iterated.
+     * @brief There are no chunks, that need to be iterated.
      *
      * @param  function  The function called for each chunk.
      * @param recursive  If also the chunks of the nested vectors should be iterated.

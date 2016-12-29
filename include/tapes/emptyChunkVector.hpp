@@ -45,6 +45,22 @@ namespace codi {
      */
     struct Position {};
 
+    /*
+     * @brief Do nothing.
+     *
+     * @param[in,out] other  The other empty chunk vector.
+     */
+    void swap(EmptyChunkVector& other) {
+      //Do nothing
+    }
+
+    /**
+     * @brief Do nothing.
+     */
+    CODI_INLINE void resetHard() {
+      // Do nothing
+    }
+
     /**
      * @brief Empty position.
      * @return Empty position
@@ -67,5 +83,22 @@ namespace codi {
     CODI_INLINE void reset(const Position& pos) const {
       CODI_UNUSED(pos);
     }
+
+    /**
+     * @brief There are no chunks, that need to be iterated.
+     *
+     * @param  function  The function called for each chunk.
+     * @param recursive  If also the chunks of the nested vectors should be iterated.
+     * @param      args  The pointers are used as the arguments for the function.
+     *
+     * @tparam  Args  The data types for the arguments of the function.
+     */
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
+        CODI_UNUSED(function);
+        CODI_UNUSED(recursive);
+
+        // Do nothing
+      }
   };
 }

@@ -71,7 +71,7 @@ namespace codi {
      *
      * @pram[in,out] handle  The handle for the io operations.
      */
-    virtual void writeData(CoDiIoHandle& handle) = 0;
+    virtual void writeData(CoDiIoHandle& handle) const = 0;
 
     /**
      * @brief Read the data for the chunk from the io handle.
@@ -188,7 +188,7 @@ namespace codi {
      *
      * @pram[in,out] handle  The handle for the io operations.
      */
-    void writeData(CoDiIoHandle& handle) {
+    void writeData(CoDiIoHandle& handle) const {
       handle.writeData(data, size);
     }
 
@@ -297,7 +297,7 @@ namespace codi {
      *
      * @pram[in,out] handle  The handle for the io operations.
      */
-    void writeData(CoDiIoHandle& handle) {
+    void writeData(CoDiIoHandle& handle) const {
       handle.writeData(data1, size);
       handle.writeData(data2, size);
     }
@@ -427,7 +427,7 @@ namespace codi {
      *
      * @pram[in,out] handle  The handle for the io operations.
      */
-    void writeData(CoDiIoHandle& handle) {
+    void writeData(CoDiIoHandle& handle) const {
       handle.writeData(data1, size);
       handle.writeData(data2, size);
       handle.writeData(data3, size);
@@ -575,7 +575,7 @@ namespace codi {
      *
      * @pram[in,out] handle  The handle for the io operations.
      */
-    void writeData(CoDiIoHandle& handle) {
+    void writeData(CoDiIoHandle& handle) const {
       handle.writeData(data1, size);
       handle.writeData(data2, size);
       handle.writeData(data3, size);
