@@ -91,7 +91,7 @@
   // ----------------------------------------------------------------------
 
     /**
-     * Function object for the evaluation of the external functions.
+     * @brief Function object for the evaluation of the external functions.
      *
      * It stores the last position for the statement vector. With this
      * position it evaluates the statement vector to the position
@@ -124,7 +124,7 @@
         // always evaluate the stack to the point of the external function
         tape.evalExtFuncCallback(curInnerPos, *endInnerPos);
 
-        extFunc->evaluate();
+        extFunc->evaluate(&tape);
 
         curInnerPos = *endInnerPos;
       }
@@ -141,15 +141,32 @@
     }
 
     /**
-     * @brief Delete the data of the external function.
-     * @param extFunction The external function in the vector.
+     * @brief Function object for the deletion of external functions.
      */
-    static void popExternalFunction(ExternalFunction* extFunc, ExtFuncChildPosition* endInnerPos) {
-      CODI_UNUSED(endInnerPos);
+    struct ExtFuncDeleter {
+      TAPE_NAME& tape;
 
-      /* we just need to call the delete function */
-      extFunc->deleteData();
-    }
+      /**
+       * @brief Create the function object.
+       *
+       * @param[inout]     tape  The reference to the actual tape.
+       */
+      ExtFuncDeleter(TAPE_NAME& tape) :
+        tape(tape){}
+
+      /**
+       * @brief The operator deletes the external function object.
+       *
+       * @param[in]     extFunc  The external function object.
+       * @param[in] endInnerPos  The position were the external function object was stored.
+       */
+      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos) {
+        CODI_UNUSED(endInnerPos);
+
+        /* we just need to call the delete function */
+        extFunc->deleteData(&tape);
+      }
+    };
 
   private:
 
@@ -189,7 +206,9 @@
     void resetExtFunc(const ExtFuncPosition& pos) {
       ExternalFunction* extFunc;
       ExtFuncChildPosition* endInnerPos;
-      extFuncVector.forEach(getExtFuncPosition(), pos, popExternalFunction, extFunc, endInnerPos);
+      ExtFuncDeleter deleter(*this);
+
+      extFuncVector.forEach(getExtFuncPosition(), pos, deleter, extFunc, endInnerPos);
 
       // reset will be done iteratively through the vectors
       extFuncVector.reset(pos);
@@ -260,9 +279,9 @@
      * @param[in] delData  The delete function for the data.
      */
     template<typename Data>
-    void pushExternalFunction(typename ExternalFunctionDataHelper<Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<Data>::DeleteFunction delData){
+    void pushExternalFunction(typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::DeleteFunction delData){
       ENABLE_CHECK (OptTapeActivity, isActive()){
-        pushExternalFunctionHandle(ExternalFunctionDataHelper<Data>::createHandle(extFunc, data, delData));
+        pushExternalFunctionHandle(ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::createHandle(extFunc, data, delData));
       }
     }
 

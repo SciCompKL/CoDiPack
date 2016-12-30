@@ -197,9 +197,9 @@ namespace codi {
      */
     template<typename Data>
     void pushExternalFunction(
-        typename ExternalFunctionDataHelper<Data>::CallFunction extFunc,
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFunc,
         Data* checkpoint,
-        typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint);
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::DeleteFunction delCheckpoint);
 
   };
 }
