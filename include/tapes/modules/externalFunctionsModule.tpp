@@ -108,7 +108,7 @@
        * @brief Create the function object.
        *
        * @param[in] curInnerPos  The position were the evaluation starts.
-       * @param[inout]     tape  The reference to the actual tape.
+       * @param[in,out]     tape  The reference to the actual tape.
        */
       ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, TAPE_NAME& tape) :
         curInnerPos(curInnerPos),
@@ -149,7 +149,7 @@
       /**
        * @brief Create the function object.
        *
-       * @param[inout]     tape  The reference to the actual tape.
+       * @param[in,out]     tape  The reference to the actual tape.
        */
       ExtFuncDeleter(TAPE_NAME& tape) :
         tape(tape){}
@@ -258,7 +258,7 @@
      * free the handle. For this it will use the delete function provided by the user.
      *
      * @param[in] extFunc  The external function which is called by the tape.
-     * @param[inout] data  The data for the external function. The tape takes ownership over the data.
+     * @param[in,out] data  The data for the external function. The tape takes ownership over the data.
      * @param[in] delData  The delete function for the data.
      */
     void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData){
@@ -275,7 +275,7 @@
      * free the data. For this it will use the delete function provided by the user.
      *
      * @param[in] extFunc  The external function which is called by the tape.
-     * @param[inout] data  The data for the external function. The tape takes ownership over the data.
+     * @param[in,out] data  The data for the external function. The tape takes ownership over the data.
      * @param[in] delData  The delete function for the data.
      */
     template<typename Data>

@@ -334,9 +334,9 @@ namespace codi {
      *
      * @param[in] startAdjPos The starting point in the expression evaluation.
      * @param[in]   endAdjPos The ending point in the expression evaluation.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
+     * @param[in,out]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
      * @param[in]  statements The pointer to the statement vector.
-     * @param[inout]  dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in,out]  dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
      * @param[in]    jacobies The pointer to the jacobi vector.
      * @param[in]     indices The pointer to the index vector
      */
@@ -423,7 +423,7 @@ namespace codi {
      * @brief Register a variable as an active variable.
      *
      * The index of the variable is set to a non zero number.
-     * @param[inout] value The value which will be marked as an active variable.
+     * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<JacobiTape<TapeTypes> >& value) {
       stmtVector.reserveItems(1);

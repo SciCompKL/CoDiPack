@@ -91,7 +91,7 @@ namespace codi {
        * then the current maximum is decremented otherwise the index is added
        * to the freed list.
        *
-       * @param[inout] index  The index that is freed. It is set to zero in the method.
+       * @param[in,out] index  The index that is freed. It is set to zero in the method.
        */
       CODI_INLINE void freeIndex(Index& index) {
         if(0 != index) { // do not free the zero index
@@ -129,7 +129,7 @@ namespace codi {
       /**
        * @brief Check if the index is active if not a new index is generated.
        *
-       * @param[inout] index The current value of the index. If 0 then a new index is generated.
+       * @param[in,out] index The current value of the index. If 0 then a new index is generated.
        */
       CODI_INLINE void assignIndex(Index& index) {
         if(0 == index) {

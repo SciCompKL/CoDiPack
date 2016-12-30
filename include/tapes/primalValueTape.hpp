@@ -432,7 +432,7 @@ namespace codi {
      * @brief Register a variable as an active variable.
      *
      * The index of the variable is set to a non zero number.
-     * @param[inout] value The value which will be marked as an active variable.
+     * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive()) {

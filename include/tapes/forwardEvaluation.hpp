@@ -135,7 +135,7 @@ namespace codi {
      * This method is called for each value on the rhs. The tangent of the value is added to the
      * tangent of the lhs.
      *
-     * @param[inout]  lhsTangent  The tangent of the lhs.
+     * @param[in,out]  lhsTangent  The tangent of the lhs.
      * @param[in]          value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
      *
@@ -153,7 +153,7 @@ namespace codi {
      * This method is called for each value on the rhs. The tangent of the value times the jacobi is added to the
      * tangent of the lhs.
      *
-     * @param[inout]  lhsTangent  The tangent of the lhs.
+     * @param[in,out]  lhsTangent  The tangent of the lhs.
      * @param[in]         jacobi  The jacobi value of the operation.
      * @param[in]          value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.

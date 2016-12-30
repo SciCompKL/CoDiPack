@@ -101,7 +101,7 @@ namespace codi {
      * The optimized version of push jacobi which signals the tape that the jacobi
      * corresponding to the tape is 1.0.
      *
-     * @param[inout]       data  A handle for data the tape can use for the evaluation.
+     * @param[in,out]       data  A handle for data the tape can use for the evaluation.
      * @param[in]         value  The value of the active type which pushes the jacobi.
      * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
      *
@@ -116,7 +116,7 @@ namespace codi {
      * The general version of push jacobi which signals the tape that the jacobi is used
      * in the evaluation and needs to be evaluated or stored.
      *
-     * @param[inout]       data  A handle for data the tape can use for the evaluation.
+     * @param[in,out]       data  A handle for data the tape can use for the evaluation.
      * @param[in]        jacobi  The value of the jacobi.
      * @param[in]         value  The value of the active type which pushes the jacobi.
      * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
@@ -131,8 +131,8 @@ namespace codi {
      *
      * The tape can initialize its gradient data for the active type.
      *
-     * @param[inout]        value  The value of the active type.
-     * @param[inout] gradientData  The gradient data which needs to be initialized.
+     * @param[in,out]        value  The value of the active type.
+     * @param[in,out] gradientData  The gradient data which needs to be initialized.
      */
     virtual void initGradientData(Real& value, GradientData& gradientData) = 0;
 
@@ -142,8 +142,8 @@ namespace codi {
      * The tape can destroy the gradient data of the active type. This method is
      * called in the destructor of an active type.
      *
-     * @param[inout]        value  The value of the active type.
-     * @param[inout] gradientData  The gradient data which needs to be destroyed.
+     * @param[in,out]        value  The value of the active type.
+     * @param[in,out] gradientData  The gradient data which needs to be destroyed.
      */
     virtual void destroyGradientData(Real& value, GradientData& gradientData) = 0;
 
@@ -164,7 +164,7 @@ namespace codi {
      *
      * The tape can set the gradient which corresponds to the gradient data.
      *
-     * @param[inout]  value  The gradient data of the active type.
+     * @param[in,out]  value  The gradient data of the active type.
      * @param[in]   gradient  The new gradient value for the active type.
      */
     virtual void setGradient(GradientData& value, const GradientValue& gradient) = 0;

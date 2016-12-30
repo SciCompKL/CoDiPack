@@ -201,7 +201,7 @@ namespace codi {
     /**
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value 1.0.
      *
-     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     * @param[in,out] data A helper value which the tape can define and use for the evaluation.
      *
      * @tparam Data The type for the tape data.
      */
@@ -213,7 +213,7 @@ namespace codi {
     /**
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value jacobi.
      *
-     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in,out]     data A helper value which the tape can define and use for the evaluation.
      * @param[in]      jacobi The Jacobi from the expression where this expression was used as an argument.
      *
      * @tparam Data The type for the tape data.
@@ -229,7 +229,7 @@ namespace codi {
      * The method is called for types that accumulate the jacobies before
      * they are pushed to the tape.
      *
-     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in,out]     data A helper value which the tape can define and use for the evaluation.
      *
      * @tparam Data The type for the tape data.
      */
@@ -244,8 +244,8 @@ namespace codi {
      * The action is only called for constant values in the expression.
      * E.g. values that have the type PassiveReal.
      *
-     * @param[inout] tape  The tape that calls the action.
-     * @param[inout] data  The data that can be used by the action.
+     * @param[in,out] tape  The tape that calls the action.
+     * @param[in,out] data  The data that can be used by the action.
      * @param[in]    func  The function that is called for every constant item.
      *
      * @tparam CallTape  The type of the tape that calls the action.
@@ -262,7 +262,7 @@ namespace codi {
     /**
      * @brief The action is called on the tape for every active real.
      *
-     * @param[inout] data  The data that can be used by the action.
+     * @param[in,out] data  The data that can be used by the action.
      * @param[in]    func  The function that is called for every active real in the expression.
      *
      * @tparam     Data  The type of the data for the action.
@@ -647,7 +647,7 @@ namespace codi {
   /**
    * @brief The primal value of the origin is written to the stream.
    *
-   * @param[inout] os The stream for the operation.
+   * @param[in,out] os The stream for the operation.
    * @param[in]   rhs The expression on the rhs of the stream operation.
    *
    * @return The modified stream.
@@ -664,7 +664,7 @@ namespace codi {
   /**
    * @brief A passive value is read from the stream and set to the primal value of the origin.
    *
-   * @param[inout] os The stream for the operation.
+   * @param[in,out] os The stream for the operation.
    * @param[out]   rhs The activeValue on the rhs of the stream operation.
    *
    * @return The modified stream.
