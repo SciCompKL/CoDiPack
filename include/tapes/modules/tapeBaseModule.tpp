@@ -82,9 +82,6 @@
 
   private:
 
-    /** @brief The index handler for the active real's. */
-    INDEX_HANDLER_TYPE indexHandler;
-
     /**
      * @brief The adjoint vector.
      *

@@ -167,6 +167,9 @@ namespace codi {
     /** @brief The coresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /** @brief The index handler for the active real's. */
+    IndexHandler indexHandler;
+
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
 

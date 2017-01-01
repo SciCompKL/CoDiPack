@@ -42,6 +42,8 @@
 #include "tools/dataStore.hpp"
 #include "tools/direction.hpp"
 
+#include "instantiation.hpp"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */

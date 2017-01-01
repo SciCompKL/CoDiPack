@@ -183,6 +183,9 @@ namespace codi {
     /** @brief The type for expression handles in the reverse evaluation. */
     typedef typename TapeTypes::HandleType Handle;
 
+    /** @brief The index handler for the active real's. */
+    IndexHandler indexHandler;
+
     /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = false;
 

@@ -174,6 +174,9 @@ namespace codi {
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
 
+    /** @brief The index handler for the active real's. */
+    static IndexHandler indexHandler;
+
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
 
@@ -213,7 +216,6 @@ namespace codi {
      */
     JacobiIndexTape() :
       emptyVector(),
-      /* defined in tapeBaseModule */indexHandler(),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
