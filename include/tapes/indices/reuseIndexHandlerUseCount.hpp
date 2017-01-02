@@ -98,18 +98,27 @@ namespace codi {
        */
       size_t indexUseSizeIncrement;
 
+      /**
+       * @brief Helper variable that indicates a constructed object
+       */
+      size_t constructed;
+
     public:
 
       /**
        * @brief Create a handler that has no indices in use.
        */
-      ReuseIndexHandlerUseCount() :
-        globalMaximumIndex(0),
-        currentMaximumIndex(0),
-        freeIndices(),
-        freeIndicesPos(0),
-        indexUse(DefaultSmallChunkSize),
-        indexUseSizeIncrement(DefaultSmallChunkSize) {}
+      ReuseIndexHandlerUseCount() {
+        if(constructed != 42) {
+          constructed = 42;
+          globalMaximumIndex = 0;
+          currentMaximumIndex = 0;
+          new (&freeIndices) std::vector<Index>();
+          freeIndicesPos = 0;
+          new (&indexUse) std::vector<Index>(DefaultSmallChunkSize);
+          indexUseSizeIncrement = DefaultSmallChunkSize;
+        }
+      }
 
       /**
        * @brief Free the index that is given to the method.

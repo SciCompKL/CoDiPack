@@ -241,6 +241,11 @@ namespace codi {
       /* defined in externalFunctionsModule */extFuncVector(1000, &constantValueVector),
       primalValueCopy(NULL)
     {
+
+      // Manually instantiate the index handler. The index handler will avoid multiple constructions.
+      // This hack is necessary to avoid the explicit instantiation of all static members
+      new (&indexHandler) IndexHandler ();
+
       // create the indices for the passive data
       for(size_t i = 0; i < MaxStatementIntSize; ++i) {
         indexHandler.createIndex();
