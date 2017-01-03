@@ -28,6 +28,13 @@
 
 #include <toolDefines.h>
 
+#include <string>
+#include <iostream>
+#include <sstream>
+
+#include <sys/types.h>
+#include <unistd.h>
+
 IN(1)
 OUT(1)
 POINTS(1) = {{1.0}};
@@ -36,10 +43,14 @@ void func(NUMBER* x, NUMBER* y) {
   y[0] = x[0];
 
   auto& tape = NUMBER::getGlobalTape();
-  //TODO generate random name
-  std::string filename = "test.tape";
+  std::stringstream filename;
+  filename << "test" << getpid() << ".tape";
 
-  tape.writeToFile(filename);
+  std::cout << "Filename: " << filename.str() << std::endl;
+
+  tape.writeToFile(filename.str());
   tape.deleteData();
-  tape.readFromFile(filename);
+  tape.readFromFile(filename.str());
+
+  unlink(filename.str().c_str());
 }
