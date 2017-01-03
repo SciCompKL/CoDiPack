@@ -526,6 +526,12 @@ namespace codi {
     }
   };
 
+  /**
+   * @brief The instantiation of the index manager for the primal index tapes.
+   */
+  template <typename TapeTypes>
+  typename TapeTypes::IndexHandlerType PrimalValueIndexTape<TapeTypes>::indexHandler(MaxStatementIntSize - 1);
+
   #include "modules/primalValueStaticModule.tpp"
   #undef TAPE_NAME
 

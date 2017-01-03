@@ -474,4 +474,11 @@ namespace codi {
     }
 
   };
+
+  /**
+   * @brief The instantiation of the index manager for the jacobi index tapes.
+   */
+  template <typename TapeTypes>
+  typename TapeTypes::IndexHandlerType JacobiIndexTape<TapeTypes>::indexHandler(0);
+
 }
