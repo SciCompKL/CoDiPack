@@ -74,24 +74,20 @@ namespace codi {
        */
       std::vector<Index> freeIndices;
 
-      /**
-       * @brief Helper variable that indicates a constructed object
-       */
-      size_t constructed;
-
     public:
 
       /**
        * @brief Create a handler that has no indices in use.
+       *
+       * The argument reserveIndices will cause the index manager to reserve the first n indices, so that there are
+       * not used by the index manager and are freely available to anybody.
+       *
+       * @param[in] reserveIndices  The number of indices that are reserved and not used by the manager.
        */
-      ReuseIndexHandler() {
-        if(constructed != 42) {
-          constructed = 42;
-          globalMaximumIndex = 0;
-          currentMaximumIndex = 0;
-          new (&freeIndices) std::vector<Index>();
-        }
-      }
+      ReuseIndexHandler(const Index reserveIndices) :
+        globalMaximumIndex(reserveIndices),
+        currentMaximumIndex(reserveIndices),
+        freeIndices() {}
 
       /**
        * @brief Free the index that is given to the method.

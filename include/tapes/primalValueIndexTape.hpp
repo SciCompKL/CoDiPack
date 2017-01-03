@@ -239,18 +239,7 @@ namespace codi {
       /* defined in the primalValueModule */primalsSize(0),
       /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
       /* defined in externalFunctionsModule */extFuncVector(1000, &constantValueVector),
-      primalValueCopy(NULL)
-    {
-
-      // Manually instantiate the index handler. The index handler will avoid multiple constructions.
-      // This hack is necessary to avoid the explicit instantiation of all static members
-      new (&indexHandler) IndexHandler ();
-
-      // create the indices for the passive data
-      for(size_t i = 0; i < MaxStatementIntSize; ++i) {
-        indexHandler.createIndex();
-      }
-    }
+      primalValueCopy(NULL) {}
 
     /** @brief Tear down the tape. Delete all values from the modules */
     ~PrimalValueIndexTape() {

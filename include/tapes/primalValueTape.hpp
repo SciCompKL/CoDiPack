@@ -219,7 +219,7 @@ namespace codi {
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
     PrimalValueTape() :
-      /* defined in tapeBaseModule */indexHandler(MaxStatementIntSize - 1),
+      indexHandler(MaxStatementIntSize - 1),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),

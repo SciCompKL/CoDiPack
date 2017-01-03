@@ -208,7 +208,7 @@ namespace codi {
      * external functions defined in the configuration.
      */
     JacobiTape() :
-      /* defined in tapeBaseModule */indexHandler(0),
+      indexHandler(0),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),

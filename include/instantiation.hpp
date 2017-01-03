@@ -41,13 +41,13 @@ namespace codi {
    * @brief The instantiation of the index manager for the jacobi index tapes.
    */
   template <typename TapeTypes>
-  typename TapeTypes::IndexHandlerType JacobiIndexTape<TapeTypes>::indexHandler;
+  typename TapeTypes::IndexHandlerType JacobiIndexTape<TapeTypes>::indexHandler(0);
 
   /**
    * @brief The instantiation of the index manager for the primal index tapes.
    */
   template <typename TapeTypes>
-  typename TapeTypes::IndexHandlerType PrimalValueIndexTape<TapeTypes>::indexHandler;
+  typename TapeTypes::IndexHandlerType PrimalValueIndexTape<TapeTypes>::indexHandler(MaxStatementIntSize - 1);
 
   /**
    * @brief The instantiation of the tape for the ActiveReal.
