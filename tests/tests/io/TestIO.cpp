@@ -46,8 +46,6 @@ void func(NUMBER* x, NUMBER* y) {
   std::stringstream filename;
   filename << "test" << getpid() << ".tape";
 
-  std::cout << "Filename: " << filename.str() << std::endl;
-
   tape.writeToFile(filename.str());
   tape.deleteData();
   tape.readFromFile(filename.str());
