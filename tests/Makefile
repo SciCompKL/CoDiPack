@@ -126,6 +126,12 @@ DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkIndex/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndex
 $(eval $(value DRIVER_INST))
 
+# Driver for RealReverseIndex with tape swap
+DRIVER_NAME  := RWS_ChunkIndSwap
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkIndexTapeSwap/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndexTapeSwap
+$(eval $(value DRIVER_INST))
+
 # Driver for RealReverseIndexVector
 DRIVER_NAME  := RWS_ChunkIndVec
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
