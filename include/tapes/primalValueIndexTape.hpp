@@ -199,7 +199,7 @@ namespace codi {
     #define TAPE_NAME PrimalValueIndexTape
 
     #define POSITION_TYPE typename TapeTypes::Position
-    #define INDEX_HANDLER_TYPE IndexHandler
+    #define INDEX_HANDLER_NAME indexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateInt
     #include "modules/tapeBaseModule.tpp"

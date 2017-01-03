@@ -27,11 +27,11 @@
  */
 
 /*
- * In order to include this file the user has to define the preprocessor macro POSITION_TYPE, INDEX_HANDLER_TYPE
+ * In order to include this file the user has to define the preprocessor macro POSITION_TYPE, INDEX_HANDLER_NAME
  * RESET_FUNCTION_NAME, EVALUATE_FUNCTION_NAME and TAPE_NAME.
  *
  * POSITION_TYPE defines the type of the position structure that is used in the tape.
- * INDEX_HANDLER_TYPE defines the type of the index handler class that is used in the tape.
+ * INDEX_HANDLER_NAME defines the name of the index handler.
  * RESET_FUNCTION_NAME is the name of the reset function that is implemented in the including class.
  * EVALUATE_FUNCTION_NAME is the name of the tape evaluation function that is implemented in the including class.
  *
@@ -39,7 +39,7 @@
  *
  * TAPE_NAME defines the type name of the tape and is not undefined at the end of the file.
  *
- * The module defines the structures indexHandler, adjoints, adjointSize and active that have to initialized
+ * The module defines the structures adjoints, adjointSize and active that have to initialized
  * in the including class.
  * The module defines the types Position.
  *
@@ -59,8 +59,8 @@
 #error Please define the position type.
 #endif
 
-#ifndef INDEX_HANDLER_TYPE
-#error Please define the type for the index handler.
+#ifndef INDEX_HANDLER_NAME
+#error Please define the name of the index handler.
 #endif
 
 #ifndef RESET_FUNCTION_NAME
@@ -174,7 +174,7 @@
     CODI_INLINE void destroyGradientData(Real& value, IndexType& index) {
       CODI_UNUSED(value);
 
-      indexHandler.freeIndex(index);
+      INDEX_HANDLER_NAME.freeIndex(index);
     }
 
     /**
@@ -238,11 +238,11 @@
      */
     CODI_INLINE GradientValue& gradient(IndexType& index) {
       codiAssert(0 != index);
-      codiAssert(index <= indexHandler.getMaximumGlobalIndex());
+      codiAssert(index <= INDEX_HANDLER_NAME.getMaximumGlobalIndex());
 
       //TODO: Add error when index is bigger than expression count
       if(adjointsSize <= index) {
-        resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
+        resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
       }
 
       return adjoints[index];
@@ -291,8 +291,8 @@
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
     void evaluate(const Position& start, const Position& end) {
-      if(adjointsSize <= indexHandler.getMaximumGlobalIndex()) {
-        resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
+      if(adjointsSize <= INDEX_HANDLER_NAME.getMaximumGlobalIndex()) {
+        resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
       }
 
       EVALUATE_FUNCTION_NAME(start, end);
@@ -341,7 +341,7 @@
     template<typename Stream>
     void printTapeBaseStatistics(Stream& out, const std::string hLine) const {
 
-      size_t nAdjoints      = indexHandler.getMaximumGlobalIndex() + 1;
+      size_t nAdjoints      = INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1;
       double memoryAdjoints = (double)nAdjoints * (double)sizeof(GradientValue) * BYTE_TO_MB;
 
       out << hLine
@@ -352,7 +352,7 @@
                                       << std::setprecision(2)
                                       << std::setw(10)
                                       << memoryAdjoints << " MB" << "\n";
-      indexHandler.printStatistics(out, hLine);
+      INDEX_HANDLER_NAME.printStatistics(out, hLine);
     }
 
     /**
@@ -361,10 +361,10 @@
      * @return The size of the adjoint vector.
      */
     size_t getAdjointSize() {
-      return indexHandler.getMaximumGlobalIndex();
+      return INDEX_HANDLER_NAME.getMaximumGlobalIndex();
     }
 
 #undef POSITION_TYPE
-#undef INDEX_HANDLER_TYPE
+#undef INDEX_HANDLER_NAME
 #undef RESET_FUNCTION_NAME
 #undef EVALUATE_FUNCTION_NAME
