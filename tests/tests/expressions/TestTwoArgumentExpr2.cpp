@@ -29,7 +29,7 @@
 #include <toolDefines.h>
 
 IN(2)
-OUT(9)
+OUT(12)
 POINTS(18) =
 {
   {-10.0,   -10},
@@ -62,4 +62,7 @@ void func(NUMBER* x, NUMBER* y) {
   y[6] = atan2(x[0], x[1]);  // R x R \ {0, 0}
   y[7] = atan2(5.00, x[1]);  // R x R \ {0, 0}
   y[8] = atan2(x[0], 5.00);  // R x R \ {0, 0}
+  y[9] = copysign(x[0], x[1]); // R x R
+  y[10]= copysign(5.00, x[1]); // R x R
+  y[11]= copysign(x[0], 5.00); // R x R
 }
