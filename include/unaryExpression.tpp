@@ -121,7 +121,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * For f(x) it calculates multiplier * df/dx and passes this value as the multiplier to the argument.
    *
    * @param[in,out]     data A helper value which the tape can define and use for the evaluation.
-   * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+   * @param[in]   multiplier The Jacobi from the expression where this expression was used as an argument.
    *
    * @tparam Data The type for the tape data.
    */
@@ -213,7 +213,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    *
    * @param[in,out] tape  The tape that calls the action.
    * @param[in,out] data  The data that can be used by the action.
-   * @param[in]    func  The function that is called for every constant item.
+   * @param[in]     func  The function that is called for every constant item.
    *
    * @tparam CallTape  The type of the tape that calls the action.
    * @tparam     Data  The type of the data for the action.
@@ -228,7 +228,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * @brief The action is called on the tape for every active real.
    *
    * @param[in,out] data  The data that can be used by the action.
-   * @param[in]    func  The function that is called for every active real in the expression.
+   * @param[in]     func  The function that is called for every active real in the expression.
    *
    * @tparam     Data  The type of the data for the action.
    * @tparam     Func  The type of the function that is called.

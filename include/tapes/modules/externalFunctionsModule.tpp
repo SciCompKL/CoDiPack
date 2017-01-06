@@ -108,7 +108,7 @@
        * @brief Create the function object.
        *
        * @param[in] curInnerPos  The position were the evaluation starts.
-       * @param[in,out]     tape  The reference to the actual tape.
+       * @param[in,out]    tape  The reference to the actual tape.
        */
       ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, TAPE_NAME& tape) :
         curInnerPos(curInnerPos),
@@ -257,9 +257,9 @@
      * The data handle provided to the tape is considered in possession of the tape. The tape will now be responsible to
      * free the handle. For this it will use the delete function provided by the user.
      *
-     * @param[in] extFunc  The external function which is called by the tape.
+     * @param[in]  extFunc  The external function which is called by the tape.
      * @param[in,out] data  The data for the external function. The tape takes ownership over the data.
-     * @param[in] delData  The delete function for the data.
+     * @param[in]  delData  The delete function for the data.
      */
     void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData){
       ENABLE_CHECK (OptTapeActivity, isActive()){
@@ -274,9 +274,9 @@
      * The data pointer provided to the tape is considered in possession of the tape. The tape will now be responsible to
      * free the data. For this it will use the delete function provided by the user.
      *
-     * @param[in] extFunc  The external function which is called by the tape.
+     * @param[in]  extFunc  The external function which is called by the tape.
      * @param[in,out] data  The data for the external function. The tape takes ownership over the data.
-     * @param[in] delData  The delete function for the data.
+     * @param[in]  delData  The delete function for the data.
      */
     template<typename Data>
     void pushExternalFunction(typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::DeleteFunction delData){

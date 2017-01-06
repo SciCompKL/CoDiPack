@@ -337,9 +337,9 @@ namespace codi {
      *
      * @param[in] startAdjPos The starting point in the expression evaluation.
      * @param[in]   endAdjPos The ending point in the expression evaluation.
-     * @param[in,out]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
+     * @param[in,out] stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
      * @param[in]  statements The pointer to the statement vector.
-     * @param[in,out]  dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in,out] dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
      * @param[in]    jacobies The pointer to the jacobi vector.
      * @param[in]     indices The pointer to the index vector
      */

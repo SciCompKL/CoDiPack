@@ -346,11 +346,11 @@ namespace codi {
      *
      * It has to hold startAdjPos >= endAdjPos.
      *
-     * @param[in,out]           stmtPos The starting point in the expression evaluation. The index is decremented.
+     * @param[in,out]          stmtPos The starting point in the expression evaluation. The index is decremented.
      * @param[in]           endStmtPos The ending point in the expression evaluation.
      * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
      * @param[in]           lhsIndices The pointer the indices of the lhs.
-     * @param[in,out]           dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in,out]          dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
      * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
      * @param[in]              indices The pointer the indices of the rhs arguments.
      */

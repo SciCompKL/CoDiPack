@@ -83,7 +83,7 @@ namespace codi {
      * @brief Create the structure with all data.
      *
      * @param[in]             func  The user function which is called by the data.
-     * @param[in,out]          data  The data for the user function.
+     * @param[in,out]         data  The data for the user function.
      * @param[in] deleteCheckpoint  The function which deletes the user data. The function handle can be NULL.
      */
     ExternalFunction(CallFunction func, void* data, DeleteFunction deleteCheckpoint) :
@@ -168,7 +168,7 @@ namespace codi {
      * @brief Create the structure with all data.
      *
      * @param[in]             func  The user function which is called by the data.
-     * @param[in,out]          data  The data for the user function.
+     * @param[in,out]         data  The data for the user function.
      * @param[in] deleteCheckpoint  The function which deletes the user data. The function handle can be NULL.
      */
     ExternalFunctionDataHelper(CallFunction func, Data* data, DeleteFunction deleteData) :
@@ -220,7 +220,7 @@ namespace codi {
      * @brief Create an ExternalFunction object with strong typed data.
      *
      * @param[in]       func  The user function which is called by the data.
-     * @param[in,out]    data  The data for the user function.
+     * @param[in,out]   data  The data for the user function.
      * @param[in] deleteData  The function which deletes the user data. The function handle can be NULL.
      *
      * @return The ExternalFunction object with strong typed data.

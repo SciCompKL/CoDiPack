@@ -125,7 +125,7 @@ namespace codi {
      * @brief The call is not forwarded to the tape. Instead the local Jacobian is updated.
      *
      * @param[in,out] data  A helper value which the tape can define and use for the evaluation.
-     * @param[in]  jacobi  The value of the Jacobian with respect to this argument of the expression.
+     * @param[in]   jacobi  The value of the Jacobian with respect to this argument of the expression.
      *
      * @tparam Data The type for the tape data.
      */
