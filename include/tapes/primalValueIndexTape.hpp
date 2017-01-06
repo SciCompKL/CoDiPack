@@ -53,6 +53,7 @@ namespace codi {
    * @tparam          Real  The type for the primal values.
    * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
+   * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, Real> >
   struct ChunkIndexPrimalValueTapeTypes {
@@ -66,6 +67,7 @@ namespace codi {
     /** @brief The type for the indices that are used for the identification of the adjoint variables. */
     typedef typename IndexHandler::IndexType IndexType;
 
+    /** @brief The type for the handle factory. */
     typedef HandleFactory HandleFactoryType;
     /** @brief The type for expression handles in the reverse evaluation. */
     typedef typename HandleFactory::Handle HandleType;
@@ -108,6 +110,7 @@ namespace codi {
    * @tparam          Real  The type for the primal values.
    * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
+   * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
   template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, Real> >
   struct SimpleIndexPrimalValueTapeTypes {
@@ -121,6 +124,7 @@ namespace codi {
     /** @brief The type for the indices that are used for the identification of the adjoint variables. */
     typedef typename IndexHandler::IndexType IndexType;
 
+    /** @brief The type for the handle factory. */
     typedef HandleFactory HandleFactoryType;
     /** @brief The type for expression handles in the reverse evaluation. */
     typedef typename HandleFactory::Handle HandleType;

@@ -34,9 +34,15 @@
  */
 namespace codi {
 
+  /**
+   * @brief The reverse interpretation of an input operation.
+   *
+   * @tparam Real  A calculation type that supports all mathematical operations.
+   */
   template<typename Real>
   struct InputExpr {
 
+    /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /**
@@ -60,9 +66,15 @@ namespace codi {
     }
   };
 
+  /**
+   * @brief The reverse interpretation of a copy operation.
+   *
+   * @tparam Real  A calculation type that supports all mathematical operations.
+   */
   template<typename Real>
   struct CopyExpr {
 
+    /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /**
@@ -84,13 +96,20 @@ namespace codi {
     }
   };
 
-  /*
+  /**
+   * @brief The reverse interpretation of a jacobi evaluation.
+   *
+   * The jacobi values are stored in the passive value vector.
+   *
+   * @tparam Real  A calculation type that supports all mathematical operations.
    * @tparam size  The number of arguments of the preaccumulated function.
    */
   template<typename Real, int size>
   struct PreaccExpr {
 
+    /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
     /**
      * @brief Handle for the pre accumulation.
      *
@@ -113,21 +132,43 @@ namespace codi {
     }
   };
 
+  /**
+   * @brief The expression traits for the input expression.
+   *
+   * @tparam Real  A calculation type that supports all mathematical operations.
+   */
   template<typename Real>
   struct ExpressionTraits<InputExpr<Real> >  {
+    /* @brief An input expression has no arguments. */
     static const size_t maxActiveVariables = 0;
+    /* @brief An input expression has no constant arguments. */
     static const size_t maxConstantVariables = 0;
   };
 
+  /**
+   * @brief The expression traits for the copy expression.
+   *
+   * @tparam Real  A calculation type that supports all mathematical operations.
+   */
   template<typename Real>
   struct ExpressionTraits<CopyExpr<Real> >  {
+    /* @brief A copy expression has one argument. */
     static const size_t maxActiveVariables = 1;
+    /* @brief A copy expression has no constant arguments. */
     static const size_t maxConstantVariables = 0;
   };
 
-  template<typename Real, int size>
+  /**
+   * @brief The expression traits for the preaccumulation expression.
+   *
+   * @tparam Real  A calculation type that supports all mathematical operations.
+   * @tparam size  The number of arguments of the preaccumulated function.
+   */
+  template<typename Real, size_t size>
   struct ExpressionTraits<PreaccExpr<Real, size> >  {
-    static const size_t maxActiveVariables = 1;
-    static const size_t maxConstantVariables = 0;
+    /* @brief The preaccumulation expression has the given size of arguments */
+    static const size_t maxActiveVariables = size;
+    /* @brief The preaccumulation expression stores the Jacobi entries in the constant value stream.*/
+    static const size_t maxConstantVariables = size;
   };
 }

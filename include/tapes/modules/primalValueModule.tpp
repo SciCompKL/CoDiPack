@@ -67,10 +67,6 @@
   #error Please define the name of the tape.
 #endif
 
-  public:
-
-
-
 		private:
 
   // ----------------------------------------------------------------------
@@ -219,14 +215,17 @@
      * The function sets the primal values in the primal value vector for the inactive values.
      * Then it updates the genaral positions and calls the adjoint function of the handle.
      *
+     * @param[in]          funcObj  The function object that performs the reverse AD evaluation of an expression.
+     * @param[in]          varSize  The number of variables of the expression.
+     * @param[in]        constSize  The number constant variables of the expression.
      * @param[in]              adj  The seed from the lhs of the statement.
-     * @param[in]       exprHandle  The handle for the statement.
      * @param[in]   passiveActives  The number of inactive values in the statement.
      * @param[in,out]     indexPos  The position in the index array.
      * @param[in]          indices  The index array.
      * @param[in,out]  constantPos  The position in the constant value array.
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
+     * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
      */
     template<typename FuncObj>
     static CODI_INLINE void evaluateHandle(FuncObj funcObj, size_t varSize, size_t constSize, const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, Real* adjoints) {
