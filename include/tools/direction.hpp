@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <initializer_list>
+
 #include "../configure.h"
 #include "../typeFunctions.hpp"
 
@@ -58,6 +60,24 @@ namespace codi {
        */
       CODI_INLINE Direction() :
         vector() {}
+
+      /**
+       * @brief The direction is initialized with the values from the initializer list.
+       *
+       * If the list is to small, then only the first m elements are set.
+       * If the list is to large, then only the first dim elments are set.
+       *
+       * @param[in] l  The list with the values for the direction.
+       */
+      CODI_INLINE Direction(std::initializer_list<Real> l) :
+        vector()
+      {
+        size_t size = std::min(dim, l.size());
+        const Real* array = l.begin(); // this is possible because the standard requires an array storage
+        for(size_t i = 0; i < size; ++i) {
+          vector[i] = array[i];
+        }
+      }
 
       /**
        * @brief Get the i-th element of the direction.
@@ -216,5 +236,32 @@ namespace codi {
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator != (const Direction<Real, dim>& v, const A& s) {
     return s != v;
+  }
+
+  /**
+   * @brief Output the direction to a stream.
+   *
+   * The output format is: {v[0], v[1], ..., v[dim - 1]}
+   *
+   * @param[in,out] os  The output stream that is used for the writing.
+   * @param[in]      v  The direction that is written to the stream.
+   *
+   * @return The output stream os.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
+  template<typename Real, size_t dim>
+  std::ostream& operator<<(std::ostream& os, const Direction<Real, dim>& v){
+    os << "{";
+    for(size_t i = 0; i < dim; ++i) {
+      if(i != 0) {
+        os << ", ";
+      }
+      os << v[i];
+    }
+    os << "}";
+
+    return os;
   }
 }
