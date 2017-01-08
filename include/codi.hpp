@@ -40,6 +40,7 @@
 #include "tapes/indices/reuseIndexHandler.hpp"
 #include "tapes/indices/reuseIndexHandlerUseCount.hpp"
 #include "tools/dataStore.hpp"
+#include "tools/derivativeHelper.hpp"
 #include "tools/direction.hpp"
 
 /**
