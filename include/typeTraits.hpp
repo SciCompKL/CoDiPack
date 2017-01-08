@@ -60,6 +60,13 @@ namespace codi {
     typedef T Real;
 
     /**
+     * @brief The maximum derivative order of the type
+     *
+     * The default implementation assumes that the type contains only primal values.
+     */
+    static const size_t MaxDerivativeOrder = 0;
+
+    /**
      * @brief Get the primal base value of the type.
      *
      * The default implementation returns the identity.

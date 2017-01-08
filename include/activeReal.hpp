@@ -616,15 +616,14 @@ namespace codi {
   class TypeTraits<ActiveReal<Tape> > {
     public:
 
-      /**
-       * @brief The the calculation type.
-       */
+      /** @brief The the calculation type. */
       typedef typename Tape::Real Real;
 
-      /**
-       * @brief The passive type is the passive type of Real.
-       */
+      /** @brief The passive type is the passive type of Real. */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      /** @brief The maximum derivative order that the active type contains. */
+      static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;
 
       /**
        * @brief Get the primal value of the origin of this type.
