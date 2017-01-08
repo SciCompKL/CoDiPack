@@ -233,6 +233,17 @@ namespace codi {
     }
 
     /**
+     * Returns the tangent value of the active type.
+     *
+     * @param[in]  tangent  The gradient data of the active type is the tangent.
+     *
+     * @return The tangent value of the active type.
+     */
+    CODI_INLINE const GradientValue& gradient(const GradientData& tangent) const {
+      return tangent;
+    }
+
+    /**
      * @brief Check whether the gradient data is zero.
      *
      * @param[in] tangent  The tangent value for the check.

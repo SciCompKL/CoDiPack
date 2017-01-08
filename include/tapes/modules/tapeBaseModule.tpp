@@ -252,6 +252,20 @@
     }
 
     /**
+     * @brief Get a constant reference to the gradient value of the corresponding index.
+     *
+     * @param[in] index The index of the active type.
+     * @return The constant reference to the gradient data.
+     */
+    CODI_INLINE const GradientValue& gradient(const IndexType& index) const {
+      if(adjointsSize <= index) {
+        return adjoints[0];
+      } else {
+        return adjoints[index];
+      }
+    }
+
+    /**
      * @brief Sets all adjoint/gradients to zero.
      */
     CODI_INLINE void clearAdjoints(){

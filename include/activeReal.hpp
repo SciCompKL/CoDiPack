@@ -297,6 +297,14 @@ namespace codi {
       return globalTape.gradient(gradientData);
     }
 
+    /**
+     * @brief Get a constant reference to the actual gradient value of this instance.
+     * @return Constant reference to the gradient value.
+     */
+    CODI_INLINE const GradientValue& gradient() const {
+      return globalTape.gradient(gradientData);
+    }
+
 
     /**
      * @brief Get the value of the gradient of this instance.
@@ -327,6 +335,14 @@ namespace codi {
      * @return  Reference to the primal value.
      */
     CODI_INLINE Real& value() {
+      return primalValue;
+    }
+
+    /**
+     * @brief Get a constant reference to the primal value of this instance.
+     * @return  Constant reference to the primal value.
+     */
+    CODI_INLINE const Real& value() const {
       return primalValue;
     }
 
