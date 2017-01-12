@@ -11,6 +11,10 @@
       <tab type="user" title="Tutorial 4" url="@ref Tutorial4"/>
       <tab type="user" title="Tutorial 5" url="@ref Tutorial5"/>
       <tab type="user" title="Tutorial 6" url="@ref Tutorial6"/>
+      <tab type="usergroup" title="Tutorial 7" url="@ref Tutorial7">
+        <tab type="user" title="Tutorial 7.1" url="@ref Tutorial7_1"/>
+        <tab type="user" title="Tutorial 7.2" url="@ref Tutorial7_2"/>
+      </tab>
     </tab>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
