@@ -1,3 +1,3 @@
-Tutorial 7: Higher order derivatives {#Tutorial7}
+Tutorial 7.1: Higher order derivatives with the template interface {#Tutorial7_1}
 ============
 
