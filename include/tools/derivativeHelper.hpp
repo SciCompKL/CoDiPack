@@ -592,7 +592,7 @@ namespace codi {
         CODI_EXCEPTION("The derivative order must be smaller or equal than the maximum provided forward derivative. order: %d, max forward derivative: %d.", order, TypeTraits<Real>::MaxDerivativeOrder - 1);
       }
 
-      DerivativeHelper<typename Real::Real>::setDerivatives<depth - 1>(value.value(), order, derivative);
+      DerivativeHelper<typename Real::Real>::template setDerivatives<depth - 1>(value.value(), order, derivative);
     }
 
     /**
@@ -623,7 +623,7 @@ namespace codi {
         CODI_EXCEPTION("The derivative order must be at least one for reverse derivatives. order: %d.", order);
       }
 
-      DerivativeHelper<typename Real::GradientValue>::setDerivatives<depth - 1>(value.gradient(), order - 1, derivative);
+      DerivativeHelper<typename Real::GradientValue>::template setDerivatives<depth - 1>(value.gradient(), order - 1, derivative);
     }
 
     /**
