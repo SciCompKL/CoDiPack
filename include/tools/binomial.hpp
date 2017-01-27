@@ -26,7 +26,6 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-
 #pragma once
 
 #include "../configure.h"
@@ -44,7 +43,7 @@ namespace codi {
    *
    * @return THe binomial coefficent n over k.
    */
-  size_t binomial(size_t n, size_t k) {
+  CODI_INLINE size_t binomial(size_t n, size_t k) {
     if(k == 0) {
       return 1;
     } else if(n < k) {

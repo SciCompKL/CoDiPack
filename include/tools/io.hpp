@@ -60,11 +60,11 @@ namespace codi {
    */
   struct IoException {
 
-      /** @brief The id of the error. */
-      IoError id;
-
       /** @brief The text of the error. */
       std::string text;
+
+      /** @brief The id of the error. */
+      IoError id;
 
       /**
        * @brief Create a new exception from the given text.
