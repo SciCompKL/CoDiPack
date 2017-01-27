@@ -17,7 +17,7 @@ The mathematical representation of the function is
 \f[
   y = f(x) = 3*x^7 \eqdot
 \f]
-As the function is quite simple all the derivatives up to the 6-th order can be computed by hand and they are:
+As the function is quite simple, all the derivatives up to the 6-th order can be computed by hand and they are:
 \f[
   \frac{\d f}{\d x}(x) = 21 * x^6, \quad
   \frac{\d^2 f}{\d^2 x}(x) = 126 * x^5, \quad
@@ -28,7 +28,7 @@ As the function is quite simple all the derivatives up to the 6-th order can be 
 \f]
 
 Now that we have the gradient formulation of the functions, we can introduce how the same values can be comuted with higher order AD types.
-If the genral formulation of real valued function is taken \f$f: \R \rightarrow \R\f$ with \f$y = f(x)\f$, then the first application of the AD forward mode yields the computation of
+If the genral formulation of real valued function is taken as \f$f: \R \rightarrow \R\f$ with \f$y = f(x)\f$, then the first application of the forward AD mode yields the computation of
 \f{align*}{
   y =& f(x) \\
   \dot y^{(1)} =& \frac{\d f}{\d x}(x) \dot x^{(1)} \eqdot
@@ -44,15 +44,15 @@ The second application of the forward AD mode yields now
   \dot y^{(1,2)} =& \frac{\d^2 f}{\d^2 x}(x) \dot x^{(1)} \dot x^{(2)} + \frac{\d f}{\d x}(x) \dot x^{(1,2)}\eqdot
 \f}
 
-From these equations we learn, that all first order tangent directions \f$\dot x^{(1)}\f$ and \f$\dot x^{(2)}\f$ need to be set in order to get the second order derivative of the function \f$\frac{\d^2 f}{\d^2 x}(x)\f$.
+From these equations we learn, that all first order tangent directions \f$\dot x^{(1)}\f$ and \f$\dot x^{(2)}\f$ need to be set in order to get the second order derivative \f$\frac{\d^2 f}{\d^2 x}(x)\f$.
 The second order tangent direction \f$\dot x^{(1,2)}\f$ needs to be zero, otherwise the result will contain additional information.
 
 The conclusion from this small example can be extended to an arbitrary derivative order.
 When only the highest derivative information is required, then all the first order tangent directions need to be set to one.
 
 The first step for our example is now to define the higher order derivative types.
-Because we want to calculate 6-th order derivatives in this tutorial we generate the types up this order.
-The generation can now be done quite simple by using the "Gen" types of CoDiPack:
+Because we want to calculate 6-th order derivatives in this tutorial, we generate the types up this order.
+The generation can now be done quite simple by using the generic "Gen" types of CoDiPack:
 
 ~~~~{.cpp}
 typedef codi::RealForwardGen<double> t1s;
@@ -78,7 +78,7 @@ The function [derivative](@ref codi::DerivativeHelper::derivative(Real& value, i
 The "order" parameter will give the order of the derivative, e.g. 1 for first order derivatives, and the "l" parameter will select the l-th derivative.
 "l" can go from 0 to \f$s - 1\f$.
 
-If we want to set all the first order derivatives for the "t2s" type then we can do this with:
+If we want to set all the first order derivatives for the "t2s" type, then we can do this with:
 ~~~~{.cpp}
     typedef codi::DerivativeHelper<t2s> DH;
     t2s aFor2 = 2.0;
@@ -149,7 +149,7 @@ The results are same as if they would be computed with the equations from the st
 
 Higher order derivatves can also be computed with the reverse AD mode.
 It is very complex and also not very intuitive to manage several tapes and does not yield any improvements, therefore it is advisable, that the reverse AD type is only used in the last recursion.
-The "r6s" types uses therefore the t5s forward type as the nested computation type.
+The "r6s" types uses therefore the "t5s" forward type as the nested computation type.
 
 The derivative helper has the same functions for the reverse types but more care has to be taken when all first order derivatives are set.
 The reverse AD mode of the function \f$f\f$ is described by
@@ -205,13 +205,13 @@ This are the same results as for the forward mode.
 With the derivative helper it is now quite easy to set specific derivatives of higher order derivative types.
 There are four methods that can be used:
   - [derivative](@ref codi::DerivativeHelper::derivative(Real& value, int order, int l)) for setting single derivatives
-  - [setDerivatives](@ref codi::DerivativeHelper::setDerivatives(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for setting all derivatives
-  - [setDerivativesForward](@ref codi::DerivativeHelper::setDerivativesForward(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for setting all derivatives for the forward run
-  - [setDerivativesReverse](@ref codi::DerivativeHelper::setDerivativesReverse(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for settingg all derivatives for the reverse run
+  - [setDerivatives](@ref codi::DerivativeHelper::setDerivatives(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for setting all derivatives of a specific order
+  - [setDerivativesForward](@ref codi::DerivativeHelper::setDerivativesForward(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for setting all derivatives of a specific order for the forward run
+  - [setDerivativesReverse](@ref codi::DerivativeHelper::setDerivativesReverse(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for settingg all derivatives of a specific order for the reverse run
 
 The advantage of these methods is, that the order and position can by defined at runtime.
 The restriction with this method is, that all primal values and gradient values need to be of the same type.
-Otherwise the compiler will conversion errors, when the derivative helper is used.
+Otherwise the compiler will create conversion errors, when the derivative helper is used.
 
 The full code for this tutorial is:
 ~~~~{.cpp}
