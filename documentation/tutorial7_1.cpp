@@ -41,6 +41,9 @@ typedef codi::RealForwardGen<t5s>    t6s;
 
 typedef codi::RealReverseGen<t5s>    r6s;
 
+typedef codi::RealForwardGen<double, codi::Direction<double, 2>> t1v;
+typedef codi::RealForwardGen<t1v>                                t2v;
+
 template<typename T>
 T func(const T& x) {
   T t = x * x * x * x * x * x * x;
@@ -99,6 +102,22 @@ int main() {
 
     cout << "r0s: " << cRev << std::endl;
     cout << "r6s: " << DH::derivative<6, 0>(aRev) << std::endl;
+  }
+
+  {
+    typedef codi::DerivativeHelper<t2v> DH;
+
+    t2v aFor2 = 2.0;
+    // set all first order directions in order to get the 2. order derivative
+    DH::derivative<1, 0>(aFor2) = {1.0, 2.0};
+    DH::derivative<1, 1>(aFor2) = 1.0;
+
+    t2v cFor2 = func(aFor2);
+
+    cout << "t0v:   " << DH::derivative<0, 0>(cFor2) << std::endl;
+    cout << "t1_1v: " << DH::derivative<1, 0>(cFor2) << std::endl;
+    cout << "t1_2v: " << DH::derivative<1, 1>(cFor2) << std::endl;
+    cout << "t2v:   " << DH::derivative<2, 0>(cFor2) << std::endl;
   }
 
   return 0;

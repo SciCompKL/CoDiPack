@@ -52,16 +52,16 @@ int main() {
   {
     typedef codi::DerivativeHelper<t2s> DH;
 
-    t2s aFor2 = 2.0;
+    t2s aFor = 2.0;
     // set all first order directions in order to get the 2. order derivative
-    DH::setDerivatives(aFor2, 1, 1.0);
+    DH::setDerivatives(aFor, 1, 1.0);
 
-    t2s cFor2 = func(aFor2);
+    t2s cFor = func(aFor);
 
-    cout << "t0s:   " << DH::derivative(cFor2, 0, 0) << std::endl;
-    cout << "t1_1s: " << DH::derivative(cFor2, 1, 0) << std::endl;
-    cout << "t1_2s: " << DH::derivative(cFor2, 1, 1) << std::endl;
-    cout << "t2s:   " << DH::derivative(cFor2, 2, 0) << std::endl;
+    cout << "t0s:   " << DH::derivative(cFor, 0, 0) << std::endl;
+    cout << "t1_1s: " << DH::derivative(cFor, 1, 0) << std::endl;
+    cout << "t1_2s: " << DH::derivative(cFor, 1, 1) << std::endl;
+    cout << "t2s:   " << DH::derivative(cFor, 2, 0) << std::endl;
   }
 
   {

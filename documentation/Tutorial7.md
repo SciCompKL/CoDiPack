@@ -73,7 +73,18 @@ In order to know how many derivatives of a certain type are available, the bonim
   s = \binom{d}{n} \eqdot
 \f]
 \f$s\f$ is then the number of derivatives, that have the order \f$n\f$.
-The derivative helper [DerivativeHelper](@ref codi::DerivativeHelper) can now be used to select specific derivatives.
+If we want to set the derivatives of a second order type manually, the following code would be necessary:
+~~~~{.cpp}
+  t2s aFor = 2.0;
+
+  aFor.value().value() = 1.0;       // <-- select the primal value of the type
+  aFor.value().gradient() = 2.0;    // <-- select the first first order derivative
+  aFor.gradient().value() = 2.0;    // <-- select the second first order derivative
+  aFor.gradient().gradient() = 4.0; // <-- select the second order derivative
+~~~~
+We have to manually select the correct data, which is still quite easy for second order types, but will get more involved for higher order types as it is shown in [Tutorial 7.2](@ref Tutorial7_2)
+
+The derivative helper [DerivativeHelper](@ref codi::DerivativeHelper) can also be used to select specific derivatives in a more convinient fashion.
 The function [derivative](@ref codi::DerivativeHelper::derivative(Real& value, int order, int l)) of the helper structure can be used to select all the derivatives.
 The "order" parameter will give the order of the derivative, e.g. 1 for first order derivatives, and the "l" parameter will select the l-th derivative.
 "l" can go from 0 to \f$s - 1\f$.
@@ -81,7 +92,7 @@ The "order" parameter will give the order of the derivative, e.g. 1 for first or
 If we want to set all the first order derivatives for the "t2s" type, then we can do this with:
 ~~~~{.cpp}
     typedef codi::DerivativeHelper<t2s> DH;
-    t2s aFor2 = 2.0;
+    t2s aFor = 2.0;
 
     DH::derivative(aFor, 1, 0) = 1.0; // set the first first order derivative
     DH::derivative(aFor, 1, 1) = 1.0; // set the second first order derivative
@@ -91,9 +102,9 @@ This can also be done in a loop or with the other helper function [setDerivative
 If the function is used then the above code will look like:
 ~~~~{.cpp}
     typedef codi::DerivativeHelper<t2s> DH;
-    t2s aFor2 = 2.0;
+    t2s aFor = 2.0;
 
-    DH::setDerivatives(aFor2, 1, 1.0);
+    DH::setDerivatives(aFor, 1, 1.0);
 ~~~~
 
 We are now able to compute the second order derivative by setting all the first order derivatives with the derivative helper.
@@ -103,16 +114,16 @@ The code for the second order example is:
  {
     typedef codi::DerivativeHelper<t2s> DH;
 
-    t2s aFor2 = 2.0;
+    t2s aFor = 2.0;
     // set all first order directions in order to get the 2. order derivative
-    DH::setDerivatives(aFor2, 1, 1.0);
+    DH::setDerivatives(aFor, 1, 1.0);
 
-    t2s cFor2 = func(aFor2);
+    t2s cFor = func(aFor);
 
-    cout << "t0s:   " << DH::derivative(cFor2, 0, 0) << std::endl;
-    cout << "t1_1s: " << DH::derivative(cFor2, 1, 0) << std::endl;
-    cout << "t1_2s: " << DH::derivative(cFor2, 1, 1) << std::endl;
-    cout << "t2s:   " << DH::derivative(cFor2, 2, 0) << std::endl;
+    cout << "t0s:   " << DH::derivative(cFor, 0, 0) << std::endl;
+    cout << "t1_1s: " << DH::derivative(cFor, 1, 0) << std::endl;
+    cout << "t1_2s: " << DH::derivative(cFor, 1, 1) << std::endl;
+    cout << "t2s:   " << DH::derivative(cFor, 2, 0) << std::endl;
  }
 ~~~~
 
@@ -148,8 +159,8 @@ t6s: 30240
 The results are same as if they would be computed with the equations from the start of this tutorial.
 
 Higher order derivatves can also be computed with the reverse AD mode.
-It is very complex and also not very intuitive to manage several tapes and does not yield any improvements, therefore it is advisable, that the reverse AD type is only used in the last recursion.
-The "r6s" types uses therefore the "t5s" forward type as the nested computation type.
+It is very complex and also not very intuitive to manage several tapes and it does not yield any improvements, therefore it is advisable, that the reverse AD type is only used as the most outer type.
+That is, lhe "r6s" types uses the "t5s" forward type as the nested computation type.
 
 The derivative helper has the same functions for the reverse types but more care has to be taken when all first order derivatives are set.
 The reverse AD mode of the function \f$f\f$ is described by
@@ -162,7 +173,7 @@ If we now apply the forward AD mode to these equations, we also get second order
   y =& f(x) \\
   \dot y =& \frac{\d f}{\d x}(x) \dot x \\
   \bar x =& \frac{\d f}{\d x}(x) \bar y \\
-  \bar \dot x =& \frac{\d^2 f}{\d^2 x}(x) \dot x \bar y + \frac{\d f}{\d x}(x) \bar \dot y\eqdot
+  \dotb x =& \frac{\d^2 f}{\d^2 x}(x) \dot x \bar y + \frac{\d f}{\d x}(x) \dotb y\eqdot
 \f}
 The fourth equation shows, that we have to set \f$\dot x\f$ and \f$\bar y\f$ in order to get the second order derivative.
 The difference is, that \f$\dot x\f$ needs to be set before the function \f$f\f$ is evaluated and \f$\bar y\f$ needs to be set before the reverse mode is evaluated.
@@ -240,16 +251,16 @@ int main() {
   {
     typedef codi::DerivativeHelper<t2s> DH;
 
-    t2s aFor2 = 2.0;
+    t2s aFor = 2.0;
     // set all first order directions in order to get the 2. order derivative
-    DH::setDerivatives(aFor2, 1, 1.0);
+    DH::setDerivatives(aFor, 1, 1.0);
 
-    t2s cFor2 = func(aFor2);
+    t2s cFor = func(aFor);
 
-    cout << "t0s:   " << DH::derivative(cFor2, 0, 0) << std::endl;
-    cout << "t1_1s: " << DH::derivative(cFor2, 1, 0) << std::endl;
-    cout << "t1_2s: " << DH::derivative(cFor2, 1, 1) << std::endl;
-    cout << "t2s:   " << DH::derivative(cFor2, 2, 0) << std::endl;
+    cout << "t0s:   " << DH::derivative(cFor, 0, 0) << std::endl;
+    cout << "t1_1s: " << DH::derivative(cFor, 1, 0) << std::endl;
+    cout << "t1_2s: " << DH::derivative(cFor, 1, 1) << std::endl;
+    cout << "t2s:   " << DH::derivative(cFor, 2, 0) << std::endl;
   }
 
   {

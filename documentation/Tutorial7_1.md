@@ -65,6 +65,46 @@ t2s:   4032
 The changes for the sixth order derivatives with the forward and reverse mode are the same and therefore we will not show them in detail.
 They are included in the full code example of this tutorial.
 
+As mentioned at the beginning of this tutorial, it is also possible to handle vector types with the templated functions.
+Therefore, we introduce the second order type with a vector adjoint direction:
+~~~~{.cpp}
+typedef codi::RealForwardGen<double, codi::Direction<double, 2>> t1v;
+typedef codi::RealForwardGen<t1v>                                t2v;
+~~~~
+The derivative function of the helper structure can now be used to specify the first order derivatives:
+~~~~{.cpp}
+    typedef codi::DerivativeHelper<t2v> DH;
+
+    t2v aFor2 = 2.0;
+    DH::derivative<1, 0>(aFor2) = {1.0, 2.0};
+    DH::derivative<1, 1>(aFor2) = 1.0;
+~~~~
+That there are a double value and a vector as a derivative comes from the t1v type, where the primal type is a double.
+This type is used in the t2v type as the gradient data and therefore the derivatives can have double values.
+Which derivative is a vector and which is a double value can be determined by the derivative order and the selected derivative.
+If the derivative order is even, then the first selected derivative will be a double value.
+If the derivative order is uneven, then the first selected derivative will be a vector.
+The other derivatives of the same order will be alternating between double values and vector values.
+
+The full code for the vector example is then:
+~~~~{.cpp}
+  {
+    typedef codi::DerivativeHelper<t2v> DH;
+
+    t2v aFor2 = 2.0;
+    // set all first order directions in order to get the 2. order derivative
+    DH::derivative<1, 0>(aFor2) = {1.0, 2.0};
+    DH::derivative<1, 1>(aFor2) = 1.0;
+
+    t2v cFor2 = func(aFor2);
+
+    cout << "t0v:   " << DH::derivative<0, 0>(cFor2) << std::endl;
+    cout << "t1_1v: " << DH::derivative<1, 0>(cFor2) << std::endl;
+    cout << "t1_2v: " << DH::derivative<1, 1>(cFor2) << std::endl;
+    cout << "t2v:   " << DH::derivative<2, 0>(cFor2) << std::endl;
+  }
+~~~~
+
 The full code for this tutorial is:
 
 ~~~~{.cpp}
@@ -82,6 +122,9 @@ typedef codi::RealForwardGen<t4s>    t5s;
 typedef codi::RealForwardGen<t5s>    t6s;
 
 typedef codi::RealReverseGen<t5s>    r6s;
+
+typedef codi::RealForwardGen<double, codi::Direction<double, 2>> t1v;
+typedef codi::RealForwardGen<t1v>                                t2v;
 
 template<typename T>
 T func(const T& x) {
@@ -141,6 +184,22 @@ int main() {
 
     cout << "r0s: " << cRev << std::endl;
     cout << "r6s: " << DH::derivative<6, 0>(aRev) << std::endl;
+  }
+
+  {
+    typedef codi::DerivativeHelper<t2v> DH;
+
+    t2v aFor2 = 2.0;
+    // set all first order directions in order to get the 2. order derivative
+    DH::derivative<1, 0>(aFor2) = {1.0, 2.0};
+    DH::derivative<1, 1>(aFor2) = 1.0;
+
+    t2v cFor2 = func(aFor2);
+
+    cout << "t0v:   " << DH::derivative<0, 0>(cFor2) << std::endl;
+    cout << "t1_1v: " << DH::derivative<1, 0>(cFor2) << std::endl;
+    cout << "t1_2v: " << DH::derivative<1, 1>(cFor2) << std::endl;
+    cout << "t2v:   " << DH::derivative<2, 0>(cFor2) << std::endl;
   }
 
   return 0;
