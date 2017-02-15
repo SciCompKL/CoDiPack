@@ -139,7 +139,6 @@ namespace codi {
      * @brief Definition for the user function.
      *
      * The first parameter gives a pointer to the tape that calls the external function.
-     * It can either be cast to the correct type or to the ReverseTapeInterface.
      *
      * The second parameter gives a pointer to the data from the user.
      */
@@ -148,7 +147,6 @@ namespace codi {
      * @brief Definition for the delete function of the user data.
      *
      * The first parameter gives a pointer to the tape that calls the external function.
-     * It can either be cast to the correct type or to the ReverseTapeInterface.
      *
      * The second parameter gives a pointer to the data from the user.
      */

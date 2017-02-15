@@ -101,7 +101,7 @@ namespace codi {
     public:
 
       /**
-       * @brief Create a handler that has no indices in use.
+       * @brief Create a handler for index reuse.
        *
        * The argument reserveIndices will cause the index manager to reserve the first n indices, so that there are
        * not used by the index manager and are freely available to anybody.
