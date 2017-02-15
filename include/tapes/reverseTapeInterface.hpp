@@ -108,6 +108,7 @@ namespace codi {
     */
     virtual void setPassive() = 0;
 
+    using TapeInterface<Real, GradientDataType, GradientValueType>::isActive; // enable both is active methods in this interface
 
     /**
     * @brief Get the current status if of tape.

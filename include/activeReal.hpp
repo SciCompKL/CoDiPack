@@ -297,6 +297,14 @@ namespace codi {
       return globalTape.gradient(gradientData);
     }
 
+    /**
+     * @brief Get a constant reference to the actual gradient value of this instance.
+     * @return Constant reference to the gradient value.
+     */
+    CODI_INLINE const GradientValue& gradient() const {
+      return globalTape.gradient(gradientData);
+    }
+
 
     /**
      * @brief Get the value of the gradient of this instance.
@@ -327,6 +335,14 @@ namespace codi {
      * @return  Reference to the primal value.
      */
     CODI_INLINE Real& value() {
+      return primalValue;
+    }
+
+    /**
+     * @brief Get a constant reference to the primal value of this instance.
+     * @return  Constant reference to the primal value.
+     */
+    CODI_INLINE const Real& value() const {
       return primalValue;
     }
 
@@ -600,15 +616,14 @@ namespace codi {
   class TypeTraits<ActiveReal<Tape> > {
     public:
 
-      /**
-       * @brief The the calculation type.
-       */
+      /** @brief The the calculation type. */
       typedef typename Tape::Real Real;
 
-      /**
-       * @brief The passive type is the passive type of Real.
-       */
+      /** @brief The passive type is the passive type of Real. */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      /** @brief The maximum derivative order that the active type contains. */
+      static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;
 
       /**
        * @brief Get the primal value of the origin of this type.

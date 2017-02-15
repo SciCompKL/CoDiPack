@@ -181,23 +181,34 @@ namespace codi {
     virtual GradientValue getGradient(const GradientData& value) const = 0;
 
     /**
-    * @brief Get the gradient of the gradient data as reference.
-    *
-    * The tape  returns the gradient which corresponds to the gradient data as a reference.
-    *
-    * @param[in] value  The gradient data of the active type.
-    *
-    * @return The gradient which belongs to the active type as a reference.
-    */
+     * @brief Get the gradient of the gradient data as a reference.
+     *
+     * The tape  returns the gradient which corresponds to the gradient data as a reference.
+     *
+     * @param[in] value  The gradient data of the active type.
+     *
+     * @return The gradient which belongs to the active type as a reference.
+     */
     virtual GradientValue& gradient(GradientData& value) = 0;
 
     /**
-    * @brief Check if the gradient data has a nontrivial value.
-    *
-    * @param[in] value  The gradient data of the active type.
-    *
-    * @return Returns true if it has a nontrivial value. Otherwise returns false.
-    */
+     * @brief Get the gradient of the gradient data as a constant reference.
+     *
+     * The tape  returns the gradient which corresponds to the gradient data as a constant reference.
+     *
+     * @param[in] value  The gradient data of the active type.
+     *
+     * @return The gradient which belongs to the active type as a constant reference.
+     */
+    virtual const GradientValue& gradient(const GradientData& value) const = 0;
+
+    /**
+     * @brief Check if the gradient data has a nontrivial value.
+     *
+     * @param[in] value  The gradient data of the active type.
+     *
+     * @return Returns true if it has a nontrivial value. Otherwise returns false.
+     */
     virtual bool isActive(const GradientData& value) const = 0;
 
   };
