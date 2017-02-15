@@ -65,7 +65,7 @@ namespace codi {
        * @brief The direction is initialized with the values from the initializer list.
        *
        * If the list is to small, then only the first m elements are set.
-       * If the list is to large, then only the first dim elments are set.
+       * If the list is to large, then only the first dim elements are set.
        *
        * @param[in] l  The list with the values for the direction.
        */
@@ -138,7 +138,7 @@ namespace codi {
       /**
        * @brief Checks if all entries in the direction are also a total zero.
        *
-       * @return true if all entires are a total zero.
+       * @return true if all entries are a total zero.
        */
       CODI_INLINE bool isTotalZero() const {
         for(size_t i = 0; i < dim; ++i) {
@@ -203,7 +203,7 @@ namespace codi {
    *
    * @return true if at least one component of v is not equal to s, false otherwise.
    *
-   * @tparam    A  The type of the scalr value.
+   * @tparam    A  The type of the scalar value.
    * @tparam Real  The scalar value type that is used by the direction.
    * @tparam  dim  The dimension of the direction.
    */
@@ -229,7 +229,7 @@ namespace codi {
    *
    * @return true if at least one component of v is not equal to s, false otherwise.
    *
-   * @tparam    A  The type of the scalr value.
+   * @tparam    A  The type of the scalar value.
    * @tparam Real  The scalar value type that is used by the direction.
    * @tparam  dim  The dimension of the direction.
    */

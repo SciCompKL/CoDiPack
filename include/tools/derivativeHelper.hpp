@@ -29,6 +29,9 @@
 
 #pragma once
 
+#include <type_traits>
+#include <typeTraits.hpp>
+
 #include "../configure.h"
 #include "binomial.hpp"
 
@@ -40,7 +43,7 @@ namespace codi {
   namespace DerivativeHelperTemplates {
 
     /**
-     * @brief Creates a reference type from the prived type, that correctly defines the constant modifed.
+     * @brief Creates a reference type from the provided type, that correctly defines the constant modified.
      *
      * The type is defined in type.
      *
@@ -110,12 +113,12 @@ namespace codi {
        * value that is selected with order and l.
        *
        * @param[in] value  The value from which the derivatives are selected.
-       * @param[in] order  The order of the derivastive that should be selected.
+       * @param[in] order  The order of the derivative that should be selected.
        * @param[in]     l  The index of the derivative that should be returned from the specified order.
        *
        * @return The derivative value that is specified through order and l.
        */
-      static ReturnTypeRef select(RealRef value, int order, int l) {
+      static ReturnTypeRef select(RealRef value, size_t order, size_t l) {
         size_t lowerDerivatives = binomial(recursion - 1, order);
 
         if(lowerDerivatives <= l) {
@@ -131,7 +134,7 @@ namespace codi {
     /**
      * @brief The specialization for the termination of the recursion for the walker.
      *
-     * This specialization terminatas the walk through the value graph.
+     * This specialization terminates the walk through the value graph.
      *
      * @tparam      Real  The AD type for which the selection should be done.
      *                    Needs to be an ActiveReal type that uses for the primal ad derivative values the same type.
@@ -144,20 +147,20 @@ namespace codi {
       typedef typename RefType<Real, constant>::type RealRef;
 
       /**
-       * @brief The termination just return the current seleted node.
+       * @brief The termination just return the current selected node.
        *
        * The method walks recursively through the graph of the AD type and return the
        * value that is selected with order and l.
        *
        * @param[in] value  The value from which the derivatives are selected.
-       * @param[in] order  The order of the derivastive that should be selected.
+       * @param[in] order  The order of the derivative that should be selected.
        * @param[in]     l  The index of the derivative that should be returned from the specified order.
        *
        * @return The derivative value that is specified through order and l.
        */
-      static RealRef select(RealRef value, int order, int l) {
-        codiAssert(order == 0); // The order is reduced every time a derivative path is choosen so the order must be 0
-        codiAssert(l == 0); // The selection index is adapted every time a path is choosen so the index must be 0
+      static RealRef select(RealRef value, size_t order, size_t l) {
+        codiAssert(order == 0); // The order is reduced every time a derivative path is chosen so the order must be 0
+        codiAssert(l == 0); // The selection index is adapted every time a path is chosen so the index must be 0
 
         return value;
       }
@@ -418,7 +421,7 @@ namespace codi {
   }
 
   /**
-   * @brief A helper class for the convinient selection of gradient data of higher order AD types.
+   * @brief A helper class for the convenient selection of gradient data of higher order AD types.
    *
    * The algorithm behind the selection walks along the value path of the derivatives. A higher order
    * derivative, that is combined via the CoDiPack types, has \f$2^n\f$ possible derivative values
@@ -458,17 +461,17 @@ namespace codi {
    *   |     /    /         |
    *   o----o----o-----o    |  0     0
    *
-   * The lower branch always stand for the primal value and the upper branch always stands for the drivative
+   * The lower branch always stand for the primal value and the upper branch always stands for the derivative
    * value.
-   * The two columns at the end show the derivative order under the colum 'order' and the index in that order
+   * The two columns at the end show the derivative order under the column 'order' and the index in that order
    * class under the column 'index'. It can be seen that the different derivative values of the same order are
-   * not continously ordered in the graph.
+   * not continuously ordered in the graph.
    *
    * The class provides  methods for the runtime selection of the derivatives. If theses methods are
    * used, then the AD types need to be defined such that all primal and derivative values have the same type.
    * If this is not the case, then the compiler will show errors, that it can not convert a value.
    *
-   * The class privides methos for the compile time selection of the derivatives, too. These methods do not have
+   * The class provides methods for the compile time selection of the derivatives, too. These methods do not have
    * the restriction, that all the primal and derivative types need to have the same type. On the other hand
    * all compile time restrictions apply to the parameters of the templates. That is, they need to be compile
    * time constants.
@@ -482,7 +485,7 @@ namespace codi {
   struct DerivativeHelper {
 
     /**
-     * @brief Seletion of a derivative component from the given value.
+     * @brief Selection of a derivative component from the given value.
      *
      * This methods requires the real type to use the same value for the primal values and the
      * derivative values.
@@ -494,10 +497,10 @@ namespace codi {
      * @return The reference to the selected derivative value.
      *
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
-    static typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnTypeRef derivative(Real& value, int order, int l) {
+    static typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnTypeRef derivative(Real& value, size_t order, size_t l) {
 
       if(order > TypeTraits<Real>::MaxDerivativeOrder) {
         CODI_EXCEPTION("The derivative order must be smaller or equal than the maximum provided derivative. order: %d, max derivative: %d.", order, TypeTraits<Real>::MaxDerivativeOrder);
@@ -512,7 +515,7 @@ namespace codi {
     }
 
     /**
-     * @brief Seletion of a derivative component from the given value.
+     * @brief Selection of a derivative component from the given value.
      *
      * This methods requires the real type to use the same value for the primal values and the
      * derivative values.
@@ -524,10 +527,10 @@ namespace codi {
      * @return The reference to the selected derivative value.
      *
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
-    static typename DerivativeHelperTemplates::DerivativeSelector<Real, true, depth>::ReturnTypeRef derivative(const Real& value, int order, int l) {
+    static typename DerivativeHelperTemplates::DerivativeSelector<Real, true, depth>::ReturnTypeRef derivative(const Real& value, size_t order, size_t l) {
 
       if(order > TypeTraits<Real>::MaxDerivativeOrder) {
         CODI_EXCEPTION("The derivative order must be smaller or equal than the maximum provided derivative. order: %d, max derivative: %d.", order, TypeTraits<Real>::MaxDerivativeOrder);
@@ -554,10 +557,10 @@ namespace codi {
      * @param[in]     derivative  The value that is set on the derivatives.
      *
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
-    static void setDerivatives(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative) {
+    static void setDerivatives(Real& value, size_t order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative) {
 
       if(order > TypeTraits<Real>::MaxDerivativeOrder) {
         CODI_EXCEPTION("The derivative order must be smaller or equal than the maximum provided derivative. order: %d, max derivative: %d.", order, TypeTraits<Real>::MaxDerivativeOrder);
@@ -584,10 +587,10 @@ namespace codi {
      * @param[in]     derivative  The value that is set on the derivatives.
      *
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
-    static void setDerivativesForward(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative) {
+    static void setDerivativesForward(Real& value, size_t order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative) {
       if(order > TypeTraits<Real>::MaxDerivativeOrder - 1) {
         CODI_EXCEPTION("The derivative order must be smaller or equal than the maximum provided forward derivative. order: %d, max forward derivative: %d.", order, TypeTraits<Real>::MaxDerivativeOrder - 1);
       }
@@ -611,10 +614,10 @@ namespace codi {
      * @param[in]     derivative  The value that is set on the derivatives.
      *
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
-    static void setDerivativesReverse(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative) {
+    static void setDerivativesReverse(Real& value, size_t order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative) {
 
       if(order > TypeTraits<Real>::MaxDerivativeOrder) {
         CODI_EXCEPTION("The derivative order must be smaller or equal than the maximum provided reverse derivative. order: %d, max reverse derivative: %d.", order, TypeTraits<Real>::MaxDerivativeOrder);
@@ -627,7 +630,7 @@ namespace codi {
     }
 
     /**
-     * @brief Seletion of a derivative component from the given value.
+     * @brief Selection of a derivative component from the given value.
      *
      * @param[in] value  The value from which the derivative is selected.
      *
@@ -636,7 +639,7 @@ namespace codi {
      * @tparam order  The order of the derivative that should be selected.
      * @tparam     l  The number of the derivative that should be selected in the given order.
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t order, size_t l, size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
     static typename DerivativeHelperTemplates::DerivativeSelectorTemplate<Real, false, depth, order, l>::ReturnTypeRef derivative(Real& value) {
@@ -644,7 +647,7 @@ namespace codi {
     }
 
     /**
-     * @brief Seletion of a derivative component from the given value.
+     * @brief Selection of a derivative component from the given value.
      *
      * @param[in] value  The value from which the derivative is selected.
      *
@@ -653,7 +656,7 @@ namespace codi {
      * @tparam order  The order of the derivative that should be selected.
      * @tparam     l  The number of the derivative that should be selected in the given order.
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t order, size_t l, size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
     static typename DerivativeHelperTemplates::DerivativeSelectorTemplate<Real, true, depth, order, l>::ReturnTypeRef derivative(const Real& value) {
@@ -674,7 +677,7 @@ namespace codi {
      * @tparam order  The order of the derivative that should be selected.
      * @tparam  Type  The type of the value that is set to the derivatives.
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t order, typename Type, size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
     static void setDerivatives(Real& value, const Type& derivative) {
@@ -697,7 +700,7 @@ namespace codi {
      * @tparam order  The order of the derivative that should be selected.
      * @tparam  Type  The type of the value that is set to the derivatives.
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t order, typename Type, size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
     static void setDerivativesForward(Real& value, const Type& derivative) {
@@ -721,7 +724,7 @@ namespace codi {
      * @tparam order  The order of the derivative that should be selected.
      * @tparam  Type  The type of the value that is set to the derivatives.
      * @tparam depth  The selection depth of the algorithm. The default value is the maximum derivative order.
-     *                If a smaller depth is provided, subgraphs can be choosen.
+     *                If a smaller depth is provided, subgraphs can be chosen.
      */
     template<size_t order, typename Type, size_t depth = TypeTraits<Real>::MaxDerivativeOrder>
     static void setDerivativesReverse(Real& value, const Type& derivative) {

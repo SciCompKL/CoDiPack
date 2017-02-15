@@ -226,18 +226,18 @@ namespace codi {
      *
      * @param[in]  tangent  The gradient data of the active type is the tangent.
      *
-     * @return The tangent value of the active type.
+     * @return The reference of the tangent value of the active type.
      */
     CODI_INLINE GradientValue& gradient(GradientData& tangent) {
       return tangent;
     }
 
     /**
-     * Returns the tangent value of the active type.
+     * Returns the constant tangent value of the active type.
      *
      * @param[in]  tangent  The gradient data of the active type is the tangent.
      *
-     * @return The tangent value of the active type.
+     * @return The constant reference to the tangent value of the active type.
      */
     CODI_INLINE const GradientValue& gradient(const GradientData& tangent) const {
       return tangent;

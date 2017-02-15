@@ -36,12 +36,12 @@
 namespace codi {
 
   /**
-   * @brief Computes the binomial coefficent n over k.
+   * @brief Computes the binomial coefficient n over k.
    *
    * @param[in] n  The set size n.
    * @param[in] k  The selection size k.
    *
-   * @return THe binomial coefficent n over k.
+   * @return THe binomial coefficient n over k.
    */
   CODI_INLINE size_t binomial(size_t n, size_t k) {
     if(k == 0) {
@@ -56,12 +56,12 @@ namespace codi {
   }
 
   /**
-   * @brief A helper namespace that computes the binomial coefficent of n over k at compile time.
+   * @brief A helper namespace that computes the binomial coefficient of n over k at compile time.
    */
-  namespace BinomalTemplate {
+  namespace BinomialTemplate {
 
     /* Forward declaration of the binomial class */
-    template<int n, int k>
+    template<size_t n, size_t k>
     struct Binomial;
 
     /**
@@ -74,65 +74,65 @@ namespace codi {
      * @tparam           k  The selection size k.
      * @tparam outOfBounds  The indicator if n < l
      */
-    template<int n, int k, bool outOfBounds>
+    template<size_t n, size_t k, bool outOfBounds>
     struct BinomialCompute;
 
     /**
-     * @brief Specialization for the binomal for the out of bounds case.
+     * @brief Specialization for the binomial for the out of bounds case.
      *
      * The value is defined as zero.
      *
      * @tparam           n  The set size n.
      * @tparam           k  The selection size k.
      */
-    template<int n, int k>
+    template<size_t n, size_t k>
     struct BinomialCompute<n, k, true> {
 
       /** @brief The out of bounds value is zero */
-      static const int value = 0;
+      static const size_t value = 0;
     };
 
     /**
-     * @brief Specialization for the binomal for the regular computation.
+     * @brief Specialization for the binomial for the regular computation.
      *
-     * The value is computed via the addition formulation of binomail coefficent.
+     * The value is computed via the addition formulation of binomial coefficient.
      *
      * @tparam           n  The set size n.
      * @tparam           k  The selection size k.
      */
-    template<int n, int k>
+    template<size_t n, size_t k>
     struct BinomialCompute<n, k, false> {
 
-      /** @brief The addition formulation of the binomial coefficent. */
-      static const int value = (Binomial<n-1,k-1>::value + Binomial<n-1,k>::value);
+      /** @brief The addition formulation of the binomial coefficient. */
+      static const size_t value = (Binomial<n-1,k-1>::value + Binomial<n-1,k>::value);
     };
 
     /**
-     * @brief Binomal value definition and computation during compile time.
+     * @brief Binomial value definition and computation during compile time.
      *
-     * The value is computed by the helper class BinomalCompute, that selects if the
+     * The value is computed by the helper class BinomialCompute, that selects if the
      * provided arguments are out of bounds or not.
      *
-     * The value is computed via the addition formulation of binomail coefficent.
+     * The value is computed via the addition formulation of binomial coefficient.
      *
      * @tparam           n  The set size n.
      * @tparam           k  The selection size k.
      */
-    template<int n, int k>
+    template<size_t n, size_t k>
     struct Binomial {
-      /** @brief The addition formulation of the binomial coefficent. */
-      static const int value =  BinomialCompute<n, k, n < k>::value;
+      /** @brief The addition formulation of the binomial coefficient. */
+      static const size_t value =  BinomialCompute<n, k, n < k>::value;
     };
 
     /**
      * @brief Specialization for the 0, 0 case.
      *
-     * This is necessary to avoid an ambigious error.
+     * This is necessary to avoid an ambiguous error.
      */
     template<>
     struct Binomial<0,0> {
       /** @brief The zero zero case defines a value of one */
-      static const int value = 1;
+      static const size_t value = 1;
     };
 
     /**
@@ -140,10 +140,10 @@ namespace codi {
      *
      * @tparam           n  The set size n.
      */
-    template<int n>
+    template<size_t n>
     struct Binomial<n,0> {
       /** @brief The n zero case defines a value of one */
-      static const int value = 1;
+      static const size_t value = 1;
     };
 
     /**
@@ -151,28 +151,15 @@ namespace codi {
      *
      * @tparam           n  The set size n.
      */
-    template<int n>
+    template<size_t n>
     struct Binomial<n,n> {
       /** @brief The n n case defines a value of one */
-      static const int value = 1;
+      static const size_t value = 1;
     };
-
-    /**
-     * @brief Computes the binomal coefficent n over k at compile time.
-     *
-     * @return The binomial coefficient as a compile time constant.
-     *
-     * @tparam n  The set size n.
-     * @tparam k  The selection size k.
-     */
-    template<size_t n, size_t k>
-    static const size_t binomial() {
-      return Binomial<n,k>::value;
-    }
   }
 
   /**
-   * @brief Computes the binomal coefficent n over k at compile time.
+   * @brief Computes the binomial coefficient n over k at compile time.
    *
    * The binomial coefficient as a compile time constant is stored in value.
    *
@@ -182,11 +169,11 @@ namespace codi {
   template<size_t n, size_t k>
   struct Binomial {
     /** @brief The binomial coefficient as a compile time constant. */
-    static const size_t value = BinomalTemplate::Binomial<n,k>::value;
+    static const size_t value = BinomialTemplate::Binomial<n,k>::value;
   };
 
   /**
-   * @brief Computes the binomal coefficent n over k at compile time.
+   * @brief Computes the binomial coefficient n over k at compile time.
    *
    * @return The binomial coefficient as a compile time constant.
    *
@@ -195,6 +182,6 @@ namespace codi {
    */
   template<size_t n, size_t k>
   const size_t binomial() {
-    return BinomalTemplate::Binomial<n,k>::value;
+    return BinomialTemplate::Binomial<n,k>::value;
   }
 }
