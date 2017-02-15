@@ -55,6 +55,10 @@ namespace codi {
      * @param[in]     constantValues  The array of the constant values in the rhs.
      * @param[in]       primalValues  The global vector with the primal values.
      * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
      */
     template<typename IndexType, size_t offset, size_t constantOffset>
     static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
@@ -87,6 +91,10 @@ namespace codi {
      * @param[in]     constantValues  The array of the constant values in the rhs.
      * @param[in]       primalValues  The global vector with the primal values.
      * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
      */
     template<typename IndexType, size_t offset, size_t constantOffset>
     static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
@@ -121,6 +129,10 @@ namespace codi {
      * @param[in]     constantValues  The array of the constant values in the rhs.
      * @param[in]       primalValues  The global vector with the primal values.
      * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
      */
     template<typename IndexType, size_t offset, size_t constantOffset>
     static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {

@@ -85,7 +85,7 @@ namespace codi {
      */
     struct Position {
       size_t chunk; /**< Index of the chunk */
-      size_t data;  /**< Data position in the chunk (Will always be zero. Required for compatiblity to ChunkVector. */
+      size_t data;  /**< Data position in the chunk (Will always be zero. Required for compatibility to ChunkVector. */
 
       NestedPosition inner; /**< Position of the nested chunk vector */
 
@@ -361,7 +361,7 @@ namespace codi {
     /**
      * @brief Iterates over the chunk of the vector.
      *
-     * If the recursive argument is given the iteration continous with the chunks from the nested vector.
+     * If the recursive argument is given the iteration continuous with the chunks from the nested vector.
      *
      * The function object will be called with the chunk as the first argument, followed by the given arguments args.
      *

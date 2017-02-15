@@ -49,7 +49,7 @@
     /**
      * @brief Helper function, that writes a chunk to the io handle
      *
-     * @param[in] chunk  The chunk which is written by the io handle.
+     * @param[in]      chunk  The chunk which is written by the io handle.
      * @param[in,out] handle  The io handle
      */
     static void writeFunction(const ChunkInterface* chunk, CoDiIoHandle& handle) {
@@ -59,7 +59,7 @@
     /**
      * @brief Helper function, that reads a chunk from the io handle
      *
-     * @param[in,out] chunk  The chunk which is read by the io handle.
+     * @param[in,out]  chunk  The chunk which is read by the io handle.
      * @param[in,out] handle  The io handle
      */
     static void readFunction(ChunkInterface* chunk, CoDiIoHandle& handle) {
@@ -87,6 +87,8 @@
      *
      * The data file can only be read by this tape and can not be used
      * by another tape.
+     *
+     * @param[in] filename  The name of the file.
      */
     void writeToFile(const std::string& filename) {
       CoDiIoHandle ioHandle(filename, true);
@@ -102,6 +104,8 @@
      * The position information is for example not read.
      *
      * See also writeToFile
+     *
+     * @param[in] filename  The name of the file.
      */
     void readFromFile(const std::string& filename) {
       CoDiIoHandle ioHandle(filename, false);
@@ -110,7 +114,7 @@
     }
 
     /**
-     * @brief Delete all the data of the chunks such that it is realeased.
+     * @brief Delete all the data of the chunks such that the data is released.
      *
      * This will leave the structure in an invalid state. Only after a call
      * to readFromFile the state of the structure is valid again.
@@ -121,9 +125,9 @@
     }
 
     /**
-     * @brief Reset the position of the tape to the zero postion and release all acquired data.
+     * @brief Reset the position of the tape to the zero position and release all acquired data.
      *
-     * For chunk tapes all chunks are release.
+     * For chunk tapes all chunks are released.
      * For unchecked tapes, the size is set to zero.
      */
     void resetHard() {

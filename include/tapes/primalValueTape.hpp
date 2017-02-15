@@ -190,6 +190,7 @@ namespace codi {
     /** @brief The coresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /** @brief The type of the handle factory */
     typedef typename TapeTypes::HandleFactoryType HandleFactory;
 
     /** @brief The type for expression handles in the reverse evaluation. */

@@ -48,7 +48,7 @@
  * 01 -> second argument is active
  *
  * If the M is present the jacobi from the lower expression is not equal to 1.0 and given as an argument.
- * If the M is no present the jacobi is assumed to be equal to 1.0 and not given as an argument.
+ * If the M is not present the jacobi is assumed to be equal to 1.0 and not given as an argument.
  *
  * In addition the user needs to define the gradient computations with respect to both arguments.
  * The naming convention is

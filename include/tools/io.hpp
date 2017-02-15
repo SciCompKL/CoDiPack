@@ -54,9 +54,9 @@ namespace codi {
   };
 
   /**
-   * @brief Common excpetion for all io errors.
+   * @brief Common exception for all io errors.
    *
-   * This exception needs to be catched if io operation are performed on any tape.
+   * This exception needs to be caught if io operation are performed on any tape.
    */
   struct IoException {
 
@@ -105,7 +105,7 @@ namespace codi {
     public:
 
       /**
-       * @brief Create a handle from the given file and with the spedified mode
+       * @brief Create a handle from the given file and with the specified mode
        *
        * The file is opened in binary mode.
        *

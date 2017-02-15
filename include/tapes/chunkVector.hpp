@@ -476,8 +476,8 @@ namespace codi {
     /**
      * @brief Iterates over all chunks.
      *
-     * Iterates over all chunks of the vector. If the recursive argument is given
-     * the iteration continous with the chunks from the nested vector.
+     * Iterates over all chunks of the vector. If the recursive argument is given,
+     * the iteration continuous with the chunks from the nested vector.
      *
      * The function object will be called with the chunk as the first argument, followed by the given arguments args.
      *
