@@ -85,7 +85,7 @@ If we want to set the derivatives of a second order type manually, the following
 We have to manually select the correct data, which is still quite easy for second order types, but will get more involved for higher order types as it is shown in [Tutorial 7.2](@ref Tutorial7_2)
 
 The derivative helper [DerivativeHelper](@ref codi::DerivativeHelper) can also be used to select specific derivatives in a more convinient fashion.
-The function [derivative](@ref codi::DerivativeHelper::derivative(Real& value, int order, int l)) of the helper structure can be used to select all the derivatives.
+The function [derivative](@ref codi::DerivativeHelper::derivative) of the helper structure can be used to select all the derivatives.
 The "order" parameter will give the order of the derivative, e.g. 1 for first order derivatives, and the "l" parameter will select the l-th derivative.
 "l" can go from 0 to \f$s - 1\f$.
 
@@ -98,7 +98,7 @@ If we want to set all the first order derivatives for the "t2s" type, then we ca
     DH::derivative(aFor, 1, 1) = 1.0; // set the second first order derivative
 ~~~~
 
-This can also be done in a loop or with the other helper function [setDerivatives](@ref codi::DerivativeHelper::setDerivatives(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)), that will also set all derivatives.
+This can also be done in a loop or with the other helper function [setDerivatives](@ref codi::DerivativeHelper::setDerivatives), that will also set all derivatives.
 If the function is used then the above code will look like:
 ~~~~{.cpp}
     typedef codi::DerivativeHelper<t2s> DH;
@@ -177,7 +177,7 @@ If we now apply the forward AD mode to these equations, we also get second order
 \f}
 The fourth equation shows, that we have to set \f$\dot x\f$ and \f$\bar y\f$ in order to get the second order derivative.
 The difference is, that \f$\dot x\f$ needs to be set before the function \f$f\f$ is evaluated and \f$\bar y\f$ needs to be set before the reverse mode is evaluated.
-For this purpose the derivative helper has two additional functions [setDerivativesForward](@ref codi::DerivativeHelper::setDerivativesForward(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) and [setDerivativesReverse](@ref codi::DerivativeHelper::setDerivativesReverse(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)), which will set all derivatives of the forward run and the reverse run respectively.
+For this purpose the derivative helper has two additional functions [setDerivativesForward](@ref codi::DerivativeHelper::setDerivativesForward) and [setDerivativesReverse](@ref codi::DerivativeHelper::setDerivativesReverse), which will set all derivatives of the forward run and the reverse run respectively.
 
 We can now calculate the sixth order derivatives with the reverse mode:
 ~~~~{.cpp}
@@ -215,10 +215,10 @@ This are the same results as for the forward mode.
 
 With the derivative helper it is now quite easy to set specific derivatives of higher order derivative types.
 There are four methods that can be used:
-  - [derivative](@ref codi::DerivativeHelper::derivative(Real& value, int order, int l)) for setting single derivatives
-  - [setDerivatives](@ref codi::DerivativeHelper::setDerivatives(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for setting all derivatives of a specific order
-  - [setDerivativesForward](@ref codi::DerivativeHelper::setDerivativesForward(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for setting all derivatives of a specific order for the forward run
-  - [setDerivativesReverse](@ref codi::DerivativeHelper::setDerivativesReverse(Real& value, int order, const typename DerivativeHelperTemplates::DerivativeSelector<Real, false, depth>::ReturnType& derivative)) for settingg all derivatives of a specific order for the reverse run
+  - [derivative](@ref codi::DerivativeHelper::derivative) for setting single derivatives
+  - [setDerivatives](@ref codi::DerivativeHelper::setDerivatives) for setting all derivatives of a specific order
+  - [setDerivativesForward](@ref codi::DerivativeHelper::setDerivativesForward) for setting all derivatives of a specific order for the forward run
+  - [setDerivativesReverse](@ref codi::DerivativeHelper::setDerivativesReverse) for settingg all derivatives of a specific order for the reverse run
 
 The advantage of these methods is, that the order and position can by defined at runtime.
 The restriction with this method is, that all primal values and gradient values need to be of the same type.

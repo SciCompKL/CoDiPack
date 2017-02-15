@@ -5,7 +5,7 @@ This is the same tutorial as tutorial [Tutorial 7](@ref Tutorial7) but it will u
 
 The helper class performs some kind of branch selection algorithm on the higher order AD structures.
 The user needs to select the branches manually, for which the functionality were available since the first release of CoDiPack.
-The code will use the two functions [value](@ref codi::ActiveReal::value()) and [gradient](@ref codi::ActiveReal::gradient() const ) of the ActiveReal class in order to select the primal order gradient component of the CoDiPack type.
+The code will use the two functions [value](@ref codi::ActiveReal::value) and [gradient](@ref codi::ActiveReal::gradient) of the ActiveReal class in order to select the primal order gradient component of the CoDiPack type.
 
 For a second order type, there are four different possibilites for the selection process:
 ~~~~{.cpp}

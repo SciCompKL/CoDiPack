@@ -89,6 +89,7 @@ namespace codi {
      * @param[in,out]     indexPos  The position in the index buffer.
      * @param[in]          indices  The index buffer.
      * @param[in,out]  constantPos  The position in the constant value buffer.
+     * @param[in]        constants  The constant value buffer.
      * @param[in,out] primalVector  The vector with the values of the primal variables.
      * @param[in,out]     adjoints  THe vector with the values of the adjoint variables.
      *

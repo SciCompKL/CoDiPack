@@ -151,9 +151,9 @@ namespace codi {
    */
   template<typename Real>
   struct ExpressionTraits<InputExpr<Real> >  {
-    /* @brief An input expression has no arguments. */
+    /** @brief An input expression has no arguments. */
     static const size_t maxActiveVariables = 0;
-    /* @brief An input expression has no constant arguments. */
+    /** @brief An input expression has no constant arguments. */
     static const size_t maxConstantVariables = 0;
   };
 
@@ -164,9 +164,9 @@ namespace codi {
    */
   template<typename Real>
   struct ExpressionTraits<CopyExpr<Real> >  {
-    /* @brief A copy expression has one argument. */
+    /** @brief A copy expression has one argument. */
     static const size_t maxActiveVariables = 1;
-    /* @brief A copy expression has no constant arguments. */
+    /** @brief A copy expression has no constant arguments. */
     static const size_t maxConstantVariables = 0;
   };
 
@@ -178,9 +178,9 @@ namespace codi {
    */
   template<typename Real, size_t size>
   struct ExpressionTraits<PreaccExpr<Real, size> >  {
-    /* @brief The preaccumulation expression has the given size of arguments */
+    /** @brief The preaccumulation expression has the given size of arguments */
     static const size_t maxActiveVariables = size;
-    /* @brief The preaccumulation expression stores the Jacobi entries in the constant value stream.*/
+    /** @brief The preaccumulation expression stores the Jacobi entries in the constant value stream.*/
     static const size_t maxConstantVariables = size;
   };
 }
