@@ -586,7 +586,7 @@ namespace codi {
      * adjoint values.
      *
      * @param[in]           seed  The seeding for the expression. It is updated in the expressions
-     *                            for the operators and used as the upadte in the terminal points.
+     *                            for the operators and used as the update in the terminal points.
      * @param[in]        indices  The indices for the values in the expressions.
      * @param[in] constantValues  The array of constant values in the expression.
      * @param[in]   primalValues  The global primal value vector.

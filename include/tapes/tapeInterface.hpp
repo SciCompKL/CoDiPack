@@ -150,7 +150,7 @@ namespace codi {
     /**
      * @brief Checks if all entries of the gradient are zero.
      *
-     * @param[in] gradientData  The correspoinding gradient data for the gradient.
+     * @param[in] gradientData  The corresponding gradient data for the gradient.
      * @return true if all entries are zero.
      */
     virtual bool isGradientTotalZero(const GradientData& gradientData) = 0;

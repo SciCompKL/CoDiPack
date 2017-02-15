@@ -47,7 +47,7 @@
 namespace codi {
 
   /**
-   * @brief Vector defintion for the ChunkTape.
+   * @brief Vector definition for the ChunkTape.
    *
    * The structure defines all vectors as chunk vectors.
    *
@@ -90,7 +90,7 @@ namespace codi {
   };
 
   /**
-   * @brief Vector defintion for the SimpleTape.
+   * @brief Vector definition for the SimpleTape.
    *
    * The structure defines all vectors as single chunk vectors.
    *
@@ -133,7 +133,7 @@ namespace codi {
   };
 
   /**
-   * @brief A reverse AD tape that stores Jaboie values for the reverse evaluation.
+   * @brief A reverse AD tape that stores Jacobie values for the reverse evaluation.
    *
    * The JacobiTape implements a fully featured ReverseTapeInterface. Depending on
    * the specified TapeTypes new memory, is automatically allocated or needs to be specified in advance.
@@ -164,7 +164,7 @@ namespace codi {
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
-    /** @brief The coresponding passive value to the real */
+    /** @brief The corresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief The index handler for the active real's. */
@@ -436,7 +436,7 @@ namespace codi {
     }
 
     /**
-     * @brief Register the value as an ouput value.
+     * @brief Register the value as an output value.
      *
      * The method ensures that each output value has an unique index. This is done
      * by performing the trivial operation value *= 1.0

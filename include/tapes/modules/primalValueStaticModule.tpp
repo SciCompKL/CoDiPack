@@ -40,7 +40,7 @@
 #endif
 
 /**
- * @brief Creates a preaccumulation handle for a spcific size
+ * @brief Creates a preaccumulation handle for a specific size
  *
  * @param[in] size  The size of the preaccumulation handle. This is the size of the index vector and the constant vector.
  */

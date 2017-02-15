@@ -52,7 +52,7 @@ namespace codi {
    * @brief Macro for forcing the inlining of the expression templates.
    *
    * The macro defines the attribute of the function such that it is directly inlined
-   * and not just an recomendation for the compiler.
+   * and not just an recommendation for the compiler.
    *
    * Currently it is defined for intel and gcc.
    */
@@ -74,7 +74,7 @@ namespace codi {
   #undef CODI_UseForcedInlines
 
    /**
-   * @brief Macro for avoiding the inlinging of function.
+   * @brief Macro for avoiding the inlining of function.
    *
    * The macro defines the attribute of the function such that it is no longer considered for inlining.
    *
@@ -237,9 +237,9 @@ namespace codi {
    * @brief Disables the assign optimization for linear index tapes.
    *
    * An assign statement usually does not need to be written for tapes
-   * that use a linear increasing index scheme. The correspoinding
+   * that use a linear increasing index scheme. The corresponding
    * entry on the tape would just add the accumulated values for
-   * the lhs to the rhs. This optimization can be dissabled with
+   * the lhs to the rhs. This optimization can be disabled with
    * this switch.
    *
    * It can be set with the preprocessor macro CODI_DisableAssignOptimization=<true/false>

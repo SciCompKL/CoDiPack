@@ -36,7 +36,7 @@
 namespace std {
 
   /**
-   * @brief The numeric limts for the ActiveReal's are based on the numeric limits for the
+   * @brief The numeric limits for the ActiveReal's are based on the numeric limits for the
    *        passive type (aka the start of the ActiveReal chain).
    *
    * @tparam Tape  The tape that defines the properties of the ActiveReal.
@@ -44,7 +44,7 @@ namespace std {
   template <typename Tape>
   class numeric_limits<codi::ActiveReal<Tape> > {
     private:
-      /** @brief The active type for which the numeric limts are specialized */
+      /** @brief The active type for which the numeric limits are specialized */
       typedef codi::ActiveReal<Tape> Real;
 
       /** @brief The passive type from which the values are taken */

@@ -182,7 +182,7 @@ namespace codi {
       }
 
       /**
-       * @brief Resets the linear index handler to the inital state.
+       * @brief Resets the linear index handler to the initial state.
        */
       CODI_INLINE void resetHard() {
         count = zeroState;
@@ -191,7 +191,7 @@ namespace codi {
       /**
        * @ brief There are no statistics for this handler.
        * @param[in,out] out  The information is written to the stream.
-       * @param[in]   hLine  The horizontal line that seperates the sections of the output.
+       * @param[in]   hLine  The horizontal line that separates the sections of the output.
        *
        * @tparam Stream The type of the stream.
        */

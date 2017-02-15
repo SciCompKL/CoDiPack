@@ -44,7 +44,7 @@
 namespace codi {
 
   /**
-   * @brief Vector defintion for the ChunkPrimalValueTape.
+   * @brief Vector definition for the ChunkPrimalValueTape.
    *
    * The structure defines all vectors as chunk vectors.
    *
@@ -100,7 +100,7 @@ namespace codi {
   };
 
   /**
-   * @brief Vector defintion for the SimplePrimalValueTape.
+   * @brief Vector definition for the SimplePrimalValueTape.
    *
    * The structure defines all vectors as single chunk vectors.
    *
@@ -187,7 +187,7 @@ namespace codi {
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
-    /** @brief The coresponding passive value to the real */
+    /** @brief The corresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief The type of the handle factory */
@@ -297,7 +297,7 @@ namespace codi {
     }
 
     /**
-     * @brief Pushes the handle to the stament vector and assigns a new index.
+     * @brief Pushes the handle to the statement vector and assigns a new index.
      *
      * The method also updates the value in the primal value vector.
      *
@@ -366,8 +366,8 @@ namespace codi {
      *
      * @param[in]       startAdjPos  The starting position for the adjoint evaluation.
      * @param[in]         endAdjPos  The ending position for the adjoint evaluation.
-     * @param[in,out]       stmtPos  The current position in the statment data. It will decremented in the method.
-     * @param[in]        statements  The vector with the handles for each statment.
+     * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
+     * @param[in]        statements  The vector with the handles for each statement.
      * @param[in] passiveActiveReal  The number passive values for each statement.
      * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
      * @param[in]           indices  The indices for the arguments of the rhs.

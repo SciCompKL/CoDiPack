@@ -168,7 +168,7 @@ namespace codi {
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
-    /** @brief The corresponding pasive value to the real type of this tape. */
+    /** @brief The corresponding passive value to the real type of this tape. */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief The counter for the current expression. */
@@ -242,7 +242,7 @@ namespace codi {
     void swap(JacobiIndexTape& other) {
       swapTapeBaseModule(other);
 
-      // the index handler is not swaped because the indices of the program state need to stay valid
+      // the index handler is not swapped because the indices of the program state need to stay valid
 
       extFuncVector.swap(other.extFuncVector);
     }

@@ -242,7 +242,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * The adjustment of the offsets is take from the first argument.
      *
      * @param[in]           seed  The seeding for the expression. It is updated in the expressions
-     *                            for the operators and used as the upadte in the terminal points.
+     *                            for the operators and used as the update in the terminal points.
      * @param[in]        indices  The indices for the values in the expressions.
      * @param[in] constantValues  The array of constant values in the expression.
      * @param[in]   primalValues  The global primal value vector.
@@ -424,7 +424,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * The adjustment of the offsets is take from the first argument.
      *
      * @param[in]           seed  The seeding for the expression. It is updated in the expressions
-     *                            for the operators and used as the upadte in the terminal points.
+     *                            for the operators and used as the update in the terminal points.
      * @param[in]        indices  The indices for the values in the expressions.
      * @param[in] constantValues  The array of constant values in the expression.
      * @param[in]   primalValues  The global primal value vector.
@@ -597,7 +597,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * The adjustment of the offsets is take from the first argument.
      *
      * @param[in]           seed  The seeding for the expression. It is updated in the expressions
-     *                            for the operators and used as the upadte in the terminal points.
+     *                            for the operators and used as the update in the terminal points.
      * @param[in]        indices  The indices for the values in the expressions.
      * @param[in] constantValues  The array of constant values in the expression.
      * @param[in]   primalValues  The global primal value vector.

@@ -82,7 +82,7 @@ namespace codi {
       std::vector<Index> freeIndices;
 
       /**
-       * @brief Position that indiceates were the lastest free index is in the freeIndices vector.
+       * @brief Position that indicates were the latest free index is in the freeIndices vector.
        */
       size_t freeIndicesPos;
 

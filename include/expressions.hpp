@@ -195,7 +195,7 @@ namespace codi {
    * 01 -> second argument is active
    *
    * There are also the functions gradientA_Name and gradientB_Name which calculate the jacobie with respect to the first and
-   * second argument respectivly.
+   * second argument respectively.
    *
    * There is no implementation for 00 because no variable is active and thus the derivative would be zero.
    *
@@ -737,7 +737,7 @@ namespace codi {
   #include "binaryExpression.tpp"
 
   /*
-   * Forwar of fmax to max
+   * Forward of fmax to max
    */
   /**
    * @brief Overload for fmax with the CoDiPack expressions.

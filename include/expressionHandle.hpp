@@ -123,7 +123,7 @@ namespace codi {
   };
 
   /**
-   * @brief Instanciation of the expression handle store object.
+   * @brief Instantiation of the expression handle store object.
    *
    * @tparam GradientData  The type of the gradient values that are used in the tape.
    * @tparam         Real  The floating point type of the values that are used in the tape.

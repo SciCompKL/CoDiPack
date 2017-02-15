@@ -88,8 +88,8 @@ namespace codi {
    *
    * See the documentation of #RealForward.
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealForwardGen = ActiveReal<ForwardEvaluation<Real, Gradient> >;
@@ -144,8 +144,8 @@ namespace codi {
    *
    * See the documentation of #RealReverse.
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealReverseGen = ActiveReal<JacobiTape<ChunkTapeTypes<Real , LinearIndexHandler<int>, Gradient > > >;
@@ -193,8 +193,8 @@ namespace codi {
    *
    * See the documentation of #RealReverseUnchecked.
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealReverseUncheckedGen = ActiveReal<JacobiTape<SimpleTapeTypes<Real, LinearIndexHandler<int>, Gradient > > >;
@@ -227,8 +227,8 @@ namespace codi {
    *
    * See the documentation of #RealReverseIndex.
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealReverseIndexGen = ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
@@ -245,8 +245,8 @@ namespace codi {
    *
    * See the documentation of #RealReverseIndexUnchecked.
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealReverseIndexUncheckedGen = ActiveReal<JacobiIndexTape<SimpleIndexTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
@@ -278,8 +278,8 @@ namespace codi {
    *
    * See the documentation of #RealReversePrimal.
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealReversePrimalGen = ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<Real, LinearIndexHandler<int>, Gradient > > >;
@@ -296,8 +296,8 @@ namespace codi {
    *
    * See the documentation of #RealReversePrimal.
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealReversePrimalUncheckedGen = ActiveReal<PrimalValueTape<SimplePrimalValueTapeTypes<Real, LinearIndexHandler<int>, Gradient > > >;
@@ -326,8 +326,8 @@ namespace codi {
    *
    * See the documentation of #RealReversePrimal and #RealReverseIndex.
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealReversePrimalIndexGen = ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
@@ -344,8 +344,8 @@ namespace codi {
    *
    * See the documentation of #RealReversePrimal, #RealReverseIndex and #RealReverseUnchecked
    *
-   * @tparam     Real  The unterlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addtion and multiplication operation.
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
   using RealReversePrimalIndexUncheckedGen = ActiveReal<PrimalValueIndexTape<SimpleIndexPrimalValueTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;

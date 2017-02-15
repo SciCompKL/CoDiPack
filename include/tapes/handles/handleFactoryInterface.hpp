@@ -54,7 +54,7 @@ namespace codi {
     /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
-    /** @brief The handle type, that is provieded by this factory.*/
+    /** @brief The handle type, that is provided by this factory.*/
     typedef HandleType Handle;
 
     /**

@@ -44,7 +44,7 @@
 namespace codi {
 
   /**
-   * @brief Vector defintion for the ChunkPrimalValueIndexTape.
+   * @brief Vector definition for the ChunkPrimalValueIndexTape.
    *
    * The structure defines all vectors as chunk vectors.
    *
@@ -101,7 +101,7 @@ namespace codi {
   };
 
   /**
-   * @brief Vector defintion for the SimplePrimalValueIndexTape.
+   * @brief Vector definition for the SimplePrimalValueIndexTape.
    *
    * The structure defines all vectors as single chunk vectors.
    *
@@ -189,7 +189,7 @@ namespace codi {
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
 
-    /** @brief The coresponding passive value to the real */
+    /** @brief The corresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief The type of the handle factory */
@@ -273,7 +273,7 @@ namespace codi {
       swapTapeBaseModule(other);
       swapPrimalValueModule(other);
 
-      // the index handler is not swaped because the indices of the program state need to stay valid
+      // the index handler is not swapped because the indices of the program state need to stay valid
 
       extFuncVector.swap(other.extFuncVector);
     }
@@ -304,7 +304,7 @@ namespace codi {
     }
 
     /**
-     * @brief Pushes the handle to the stament vector and assigns a new index.
+     * @brief Pushes the handle to the statement vector and assigns a new index.
      *
      * The method also updates the value in the primal value vector.
      *
@@ -379,11 +379,11 @@ namespace codi {
      *
      * It has to hold start >= end.
      *
-     * @param[in,out]       stmtPos  The current position in the statment data. It will decremented in the method.
+     * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
      * @param[in]        endStmtPos  The ending position for statement data.
      * @param[in]        lhsIndices  The indices from the lhs of each statement.
      * @param[in]     storedPrimals  The overwritten primal from the primal vector.
-     * @param[in]        statements  The vector with the handles for each statment.
+     * @param[in]        statements  The vector with the handles for each statement.
      * @param[in] passiveActiveReal  The number passive values for each statement.
      * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
      * @param[in]           indices  The indices for the arguments of the rhs.
@@ -489,7 +489,7 @@ namespace codi {
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       if(isActive()) {
-        //TODO: Test if register of already acitve value will yield errors.
+        //TODO: Test if register of already active value will yield errors.
         indexHandler.assignIndex(value.getGradientData());
 
         checkPrimalsSize();
