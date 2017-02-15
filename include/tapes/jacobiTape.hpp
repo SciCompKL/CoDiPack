@@ -167,6 +167,9 @@ namespace codi {
     /** @brief The coresponding passive value to the real */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /** @brief The index handler for the active real's. */
+    IndexHandler indexHandler;
+
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
 
@@ -174,7 +177,7 @@ namespace codi {
     #define TAPE_NAME JacobiTape
 
     #define POSITION_TYPE typename TapeTypes::Position
-    #define INDEX_HANDLER_TYPE IndexHandler
+    #define INDEX_HANDLER_NAME indexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateExtFunc
     #include "modules/tapeBaseModule.tpp"
@@ -205,7 +208,7 @@ namespace codi {
      * external functions defined in the configuration.
      */
     JacobiTape() :
-      /* defined in tapeBaseModule */indexHandler(0),
+      indexHandler(0),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
@@ -334,9 +337,9 @@ namespace codi {
      *
      * @param[in] startAdjPos The starting point in the expression evaluation.
      * @param[in]   endAdjPos The ending point in the expression evaluation.
-     * @param[inout]  stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
+     * @param[in,out] stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
      * @param[in]  statements The pointer to the statement vector.
-     * @param[inout]  dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in,out] dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
      * @param[in]    jacobies The pointer to the jacobi vector.
      * @param[in]     indices The pointer to the index vector
      */
@@ -423,7 +426,7 @@ namespace codi {
      * @brief Register a variable as an active variable.
      *
      * The index of the variable is set to a non zero number.
-     * @param[inout] value The value which will be marked as an active variable.
+     * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<JacobiTape<TapeTypes> >& value) {
       stmtVector.reserveItems(1);

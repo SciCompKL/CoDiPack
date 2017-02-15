@@ -104,7 +104,7 @@ namespace codi {
        *
        * Just zeros the index
        *
-       * @param[inout] index  The index that is freed. It is set to zero in the method.
+       * @param[in,out] index  The index that is freed. It is set to zero in the method.
        */
       CODI_INLINE void freeIndex(Index& index) const {
         index = 0;

@@ -201,13 +201,16 @@ namespace codi {
     /** @brief The termination of the vector sequence. */
     EmptyChunkVector emptyVector;
 
+    /** @brief The index handler for the active real's. */
+    static IndexHandler indexHandler;
+
     /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = false;
 
     #define TAPE_NAME PrimalValueIndexTape
 
     #define POSITION_TYPE typename TapeTypes::Position
-    #define INDEX_HANDLER_TYPE IndexHandler
+    #define INDEX_HANDLER_NAME indexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateInt
     #include "modules/tapeBaseModule.tpp"
@@ -237,7 +240,6 @@ namespace codi {
      */
     PrimalValueIndexTape() :
       emptyVector(),
-      /* defined in tapeBaseModule */indexHandler(),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
@@ -248,13 +250,7 @@ namespace codi {
       /* defined in the primalValueModule */primalsSize(0),
       /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
       /* defined in externalFunctionsModule */extFuncVector(1000, &constantValueVector),
-      primalValueCopy(NULL)
-    {
-      // create the indices for the passive data
-      for(size_t i = 0; i < MaxStatementIntSize; ++i) {
-        indexHandler.createIndex();
-      }
-    }
+      primalValueCopy(NULL) {}
 
     /** @brief Tear down the tape. Delete all values from the modules */
     ~PrimalValueIndexTape() {
@@ -489,7 +485,7 @@ namespace codi {
      * @brief Register a variable as an active variable.
      *
      * The index of the variable is set to a non zero number.
-     * @param[inout] value The value which will be marked as an active variable.
+     * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       if(isActive()) {
@@ -540,6 +536,12 @@ namespace codi {
 
     }
   };
+
+  /**
+   * @brief The instantiation of the index manager for the primal index tapes.
+   */
+  template <typename TapeTypes>
+  typename TapeTypes::IndexHandlerType PrimalValueIndexTape<TapeTypes>::indexHandler(MaxStatementIntSize - 1);
 
   #include "modules/primalValueStaticModule.tpp"
   #undef TAPE_NAME

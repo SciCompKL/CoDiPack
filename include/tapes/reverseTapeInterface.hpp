@@ -80,14 +80,14 @@ namespace codi {
     /**
      * @brief Declare a variable as an input variable.
      *
-     * @param[inout] value The input variable.
+     * @param[in,out] value The input variable.
      */
     virtual void registerInput(ActiveReal<TapeImplementation>& value) = 0;
 
     /**
      * @brief Declare a variable as an output variable.
      *
-     * @param[inout] value The output variable.
+     * @param[in,out] value The output variable.
      */
     virtual void registerOutput(ActiveReal<TapeImplementation>& value) = 0;
 
@@ -197,9 +197,9 @@ namespace codi {
      */
     template<typename Data>
     void pushExternalFunction(
-        typename ExternalFunctionDataHelper<Data>::CallFunction extFunc,
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFunc,
         Data* checkpoint,
-        typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint);
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::DeleteFunction delCheckpoint);
 
   };
 }

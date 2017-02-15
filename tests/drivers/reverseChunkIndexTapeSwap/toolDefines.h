@@ -26,29 +26,13 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-#include <toolDefines.h>
+#pragma once
 
-#include <string>
-#include <iostream>
-#include <sstream>
+#include <codi.hpp>
 
-#include <sys/types.h>
-#include <unistd.h>
+typedef codi::RealReverseIndex NUMBER;
 
-IN(1)
-OUT(1)
-POINTS(1) = {{1.0}};
+#include "../globalDefines.h"
 
-void func(NUMBER* x, NUMBER* y) {
-  y[0] = x[0];
-
-  auto& tape = NUMBER::getGlobalTape();
-  std::stringstream filename;
-  filename << "test" << getpid() << ".tape";
-
-  tape.writeToFile(filename.str());
-  tape.deleteData();
-  tape.readFromFile(filename.str());
-
-  unlink(filename.str().c_str());
-}
+#define CHUNK_TAPE
+#define REVERSE_TAPE

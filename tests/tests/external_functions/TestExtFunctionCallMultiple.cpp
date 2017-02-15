@@ -42,9 +42,10 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
 
 const int ITER = 5;
 
-static void extFunc(void* checkpoint){
+static void extFunc(void* t, void* checkpoint){
+  NUMBER::TapeType& tape = *((NUMBER::TapeType*)t);
+
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
-  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
 
   typename NUMBER::Real x_v, w0_v;
   typename NUMBER::GradientData x_i, w0_i, w1_i;
@@ -61,7 +62,9 @@ static void extFunc(void* checkpoint){
   tape.gradient(x_i)  += w0_v*w1_b;
 }
 
-static void delFunc(void* checkpoint){
+static void delFunc(void* tape, void* checkpoint){
+  (void) tape;
+
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   delete check;
   std::cout << "Delete" << std::endl;

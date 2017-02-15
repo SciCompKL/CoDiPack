@@ -102,10 +102,15 @@ namespace codi {
 
       /**
        * @brief Create a handler that has no indices in use.
+       *
+       * The argument reserveIndices will cause the index manager to reserve the first n indices, so that there are
+       * not used by the index manager and are freely available to anybody.
+       *
+       * @param[in] reserveIndices  The number of indices that are reserved and not used by the manager.
        */
-      ReuseIndexHandlerUseCount() :
-        globalMaximumIndex(0),
-        currentMaximumIndex(0),
+      ReuseIndexHandlerUseCount(const Index reserveIndices) :
+        globalMaximumIndex(reserveIndices),
+        currentMaximumIndex(reserveIndices),
         freeIndices(),
         freeIndicesPos(0),
         indexUse(DefaultSmallChunkSize),
@@ -118,7 +123,7 @@ namespace codi {
        * then the current maximum is decremented otherwise the index is added
        * to the freed list.
        *
-       * @param[inout] index  The index that is freed. It is set to zero in the method.
+       * @param[in,out] index  The index that is freed. It is set to zero in the method.
        */
       CODI_INLINE void freeIndex(Index& index) {
         if(0 != index) { // do not free the zero index
@@ -171,7 +176,7 @@ namespace codi {
       /**
        * @brief Check if the index is active and if it is only used by this instance if not a new index is generated.
        *
-       * @param[inout] index The current value of the index. If 0 then a new index is generated.
+       * @param[in,out] index The current value of the index. If 0 then a new index is generated.
        */
       CODI_INLINE void assignIndex(Index& index) {
         if(0 == index) {
@@ -189,7 +194,7 @@ namespace codi {
        * The lhs index is freed and then the use of the rhs index
        * is incremented by one.
        *
-       * @param[inout] lhs  The index of the lhs. It is overwritten with the index of the rhs.
+       * @param[in,out] lhs  The index of the lhs. It is overwritten with the index of the rhs.
        * @param[in]    rhs  The index of the rhs.
        */
       CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {

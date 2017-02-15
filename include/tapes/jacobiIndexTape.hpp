@@ -174,6 +174,9 @@ namespace codi {
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
 
+    /** @brief The index handler for the active real's. */
+    static IndexHandler indexHandler;
+
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
 
@@ -181,7 +184,7 @@ namespace codi {
     #define TAPE_NAME JacobiIndexTape
 
     #define POSITION_TYPE typename TapeTypes::Position
-    #define INDEX_HANDLER_TYPE IndexHandler
+    #define INDEX_HANDLER_NAME indexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateExtFunc
     #include "modules/tapeBaseModule.tpp"
@@ -213,7 +216,6 @@ namespace codi {
      */
     JacobiIndexTape() :
       emptyVector(),
-      /* defined in tapeBaseModule */indexHandler(),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
@@ -344,11 +346,11 @@ namespace codi {
      *
      * It has to hold startAdjPos >= endAdjPos.
      *
-     * @param[inout]           stmtPos The starting point in the expression evaluation. The index is decremented.
+     * @param[in,out]          stmtPos The starting point in the expression evaluation. The index is decremented.
      * @param[in]           endStmtPos The ending point in the expression evaluation.
      * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
      * @param[in]           lhsIndices The pointer the indices of the lhs.
-     * @param[inout]           dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in,out]          dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
      * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
      * @param[in]              indices The pointer the indices of the rhs arguments.
      */
@@ -430,7 +432,7 @@ namespace codi {
      * @brief Register a variable as an active variable.
      *
      * The index of the variable is set to a non zero number.
-     * @param[inout] value The value which will be marked as an active variable.
+     * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       indexHandler.assignIndex(value.getGradientData());
@@ -472,4 +474,11 @@ namespace codi {
     }
 
   };
+
+  /**
+   * @brief The instantiation of the index manager for the jacobi index tapes.
+   */
+  template <typename TapeTypes>
+  typename TapeTypes::IndexHandlerType JacobiIndexTape<TapeTypes>::indexHandler(0);
+
 }
