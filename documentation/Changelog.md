@@ -1,6 +1,19 @@
 Changelog      {#Changelog}
 ============
 
+### v 1.4.0 - 2017-02-16
+
+ - Generalized types: RealForwardGen, RealReverseGen, etc.
+ - Removed Float types (Use generalized types)
+ - Higher order derivative helper
+   * Select single derivatives by there order and number
+   * Set all derivatives of a specific order
+   * See tutorials 7, 7.1 and 7.2
+ - Write/read tapes to and from files
+ - Management of multiple tapes
+ - External functions interface changed
+   * User functions have now a pointer to the calling tape.
+
 ### v 1.3.0 - 2016-09-14
 
  - Primal value taping
