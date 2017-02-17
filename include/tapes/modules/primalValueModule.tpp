@@ -249,7 +249,7 @@
       // now update the regular pointers
       indexPos -= varSize;
       constantPos -= constSize;
-      ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
+      ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
         funcObj(adj, &indices[indexPos], &constants[constantPos], primalVector, adjoints);
       }
     }
