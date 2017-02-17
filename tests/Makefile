@@ -116,6 +116,12 @@ DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reversePrimal/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimal
 $(eval $(value DRIVER_INST))
 
+# Driver for RealReversePrimalVec
+DRIVER_NAME  := RWS_PrimVec
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reversePrimalVector/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalVector
+$(eval $(value DRIVER_INST))
+
 # Driver for RealReversePrimalIndex
 DRIVER_NAME  := RWS_PrimIndex
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
