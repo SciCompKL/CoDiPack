@@ -190,7 +190,7 @@
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        this->jacobiVector.setDataAndMove(1.0, index);
+        this->jacobiVector.setDataAndMove(PassiveReal(1.0), index);
       }
     }
 

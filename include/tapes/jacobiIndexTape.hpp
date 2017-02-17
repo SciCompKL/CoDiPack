@@ -267,7 +267,7 @@ namespace codi {
           if(IndexHandler::AssignNeedsStatement) {
             stmtVector.reserveItems(1);
             jacobiVector.reserveItems(1);
-            jacobiVector.setDataAndMove(1.0, rhs.getGradientData());
+            jacobiVector.setDataAndMove(PassiveReal(1.0), rhs.getGradientData());
             stmtVector.setDataAndMove((StatementInt)1, lhsIndex);
           }
         } else {
@@ -445,7 +445,7 @@ namespace codi {
      */
     CODI_INLINE void registerOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       if(!IndexHandler::AssignNeedsStatement) {
-        value = 1.0 * value;
+        value = PassiveReal(1.0) * value;
       }
     }
 

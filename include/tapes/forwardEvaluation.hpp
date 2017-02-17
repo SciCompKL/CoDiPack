@@ -249,8 +249,8 @@ namespace codi {
      * @param[in] tangent  The tangent value for the check.
      * @return False if the gradient data is zero, otherwise returns true.
      */
-    bool isActive(const GradientData& tangent) const{
-      return (tangent != 0.0);
+    bool isActive(const GradientData& tangent) const {
+      return !codi::isTotalZero(tangent);
     }
   };
 }

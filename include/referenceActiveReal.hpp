@@ -118,7 +118,7 @@ namespace codi {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data) const {
-      this->jacobi += 1.0;
+      this->jacobi += PassiveReal(1.0);
     }
 
     /**
@@ -145,9 +145,9 @@ namespace codi {
      */
     template<typename Data>
     CODI_INLINE void pushLazyJacobies(Data& data) const {
-      if(0.0 != jacobi) {
+      if(!isTotalZero(jacobi)) {
         reference.calcGradient(data, jacobi);
-        jacobi = 0.0; // reset jacobi for the next statement or the next call for this statement
+        jacobi = PassiveReal(0.0); // reset jacobi for the next statement or the next call for this statement
       }
     }
 

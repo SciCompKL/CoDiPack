@@ -444,7 +444,7 @@ namespace codi {
      * @param[in] value A new index is assigned.
      */
     CODI_INLINE void registerOutput(ActiveReal<JacobiTape<TapeTypes> >& value) {
-      value = 1.0 * value;
+      value = PassiveReal(1.0) * value;
     }
 
     /**

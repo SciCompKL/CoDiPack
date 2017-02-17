@@ -185,7 +185,7 @@ namespace codi {
       globalTape.initGradientData(primalValue, gradientData);
 
       if(OptDisableAssignOptimization) {
-        *this = 1.0 * v;
+        *this = PassiveReal(1.0) * v;
       } else {
         globalTape.store(primalValue, gradientData, v);
       }
@@ -410,7 +410,7 @@ namespace codi {
      */
     CODI_INLINE ActiveReal<Tape>& operator=(const ActiveReal<Tape>& rhs) {
       if(OptDisableAssignOptimization) {
-           *this = 1.0 * rhs;
+           *this = PassiveReal(1.0) * rhs;
       } else {
           globalTape.store(primalValue, gradientData, rhs);
       }
@@ -513,7 +513,7 @@ namespace codi {
      * @brief The expression is unfolded to *this += 1.0
      */
     CODI_INLINE ActiveReal<Tape> operator++() {
-      return *this = *this + 1.0;
+      return *this = *this + PassiveReal(1.0);
     }
 
     /**
@@ -524,14 +524,14 @@ namespace codi {
     CODI_INLINE ActiveReal<Tape> operator++(int u) {
       CODI_UNUSED(u);
       ActiveReal<Tape> r(*this);
-      *this = *this + 1.0;
+      *this = *this + PassiveReal(1.0);
       return r;
     }
     /**
      * @brief The expression is unfolded to *this -= 1.0
      */
     CODI_INLINE ActiveReal<Tape> operator--() {
-      return *this = *this - 1.0;
+      return *this = *this - PassiveReal(1.0);
     }
     /**
      * @brief The expression is unfolded to *this -= 1.0
@@ -541,7 +541,7 @@ namespace codi {
     CODI_INLINE ActiveReal<Tape> operator--(int u) {
       CODI_UNUSED(u);
       ActiveReal<Tape> r(*this);
-      *this = *this - 1.0;
+      *this = *this - PassiveReal(1.0);
       return r;
     }
 
