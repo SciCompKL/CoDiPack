@@ -17,6 +17,9 @@ DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
 FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true
 
+# The default is to run all drives
+DRIVERS?=ALL
+
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
 else
@@ -44,14 +47,25 @@ all:
 BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp) $(wildcard $(TEST_DIR)/jacobiOptimizations/Test**.cpp)
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp) $(wildcard $(TEST_DIR)/io/Test**.cpp)
 
-# The general template for each driver. It defines the cpp build rule for the driver.
-define DRIVER_INST
+# The build rules for all drivers.
+define DRIVER_RULE
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $< -o $@ $(DRIVER)
 	@$(CXX) $(CXX_FLAGS) $(DRIVER) $< -MM -MP -MT $@ -MF $@.d
 DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
 $(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
+endef
+
+# The general template for each driver. It checks if the driver should be run
+define DRIVER_INST
+  ifeq (${DRIVER_NAME}, $(filter ${DRIVER_NAME}, ${DRIVERS}))
+    $(eval $(value DRIVER_RULE))
+  else
+    ifeq (ALL, $(filter ALL, ${DRIVERS}))
+      $(eval $(value DRIVER_RULE))
+    endif
+  endif
 endef
 
 # The first 3 lines of each driver define the basic parameters for this driver.
