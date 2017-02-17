@@ -247,6 +247,17 @@ namespace codi {
   const bool OptDisableAssignOptimization = CODI_DisableAssignOptimization;
   #undef CODI_DisableAssignOptimization
 
+  #ifndef CODI_DisableCalcGradientSpecialization
+    #define CODI_DisableCalcGradientSpecialization false
+  #endif
+  /**
+   * @brief TODO
+   *
+   * It can be set with the preprocessor macro CODI_DisableCalcGradientSpecialization=<true/false>
+   */
+  const bool OptDisableCalcGradientSpecialization = CODI_DisableCalcGradientSpecialization;
+  #undef CODI_DisableCalcGradientSpecialization
+
   #ifndef CODI_AdjointHandle
     #define CODI_AdjointHandle false
   #endif

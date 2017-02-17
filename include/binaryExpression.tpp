@@ -160,7 +160,12 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data) const {
-      DERIVATIVE_FUNC_11(data, a_, b_, getValue());
+      if(OptDisableCalcGradientSpecialization) {
+        a_.calcGradient(data, GRADIENT_FUNC_A(a_.getValue(), b_.getValue(), getValue()));
+        b_.calcGradient(data, GRADIENT_FUNC_B(a_.getValue(), b_.getValue(), getValue()));
+      } else {
+        DERIVATIVE_FUNC_11(data, a_, b_, getValue());
+      }
     }
 
     /**
@@ -175,7 +180,12 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
-      DERIVATIVE_FUNC_11M(data, a_, b_, getValue(), multiplier);
+      if(OptDisableCalcGradientSpecialization) {
+        a_.calcGradient(data, GRADIENT_FUNC_A(a_.getValue(), b_.getValue(), getValue()) * multiplier);
+        b_.calcGradient(data, GRADIENT_FUNC_B(a_.getValue(), b_.getValue(), getValue()) * multiplier);
+      } else {
+        DERIVATIVE_FUNC_11M(data, a_, b_, getValue(), multiplier);
+      }
     }
 
     /**
@@ -346,7 +356,12 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data) const {
-      DERIVATIVE_FUNC_10(data, a_, b_, getValue());
+      if(OptDisableCalcGradientSpecialization) {
+        a_.calcGradient(data, GRADIENT_FUNC_A(a_.getValue(), b_, getValue()));
+      } else {
+        DERIVATIVE_FUNC_10(data, a_, b_, getValue());
+      }
+
     }
 
     /**
@@ -361,7 +376,11 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
-      DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
+      if(OptDisableCalcGradientSpecialization) {
+        a_.calcGradient(data, GRADIENT_FUNC_A(a_.getValue(), b_, getValue()) * multiplier);
+      } else {
+        DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
+      }
     }
 
     /**
@@ -519,7 +538,11 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data) const {
-      DERIVATIVE_FUNC_01(data, a_, b_, getValue());
+      if(OptDisableCalcGradientSpecialization) {
+        b_.calcGradient(data, GRADIENT_FUNC_B(a_, b_.getValue(), getValue()));
+      } else {
+        DERIVATIVE_FUNC_01(data, a_, b_, getValue());
+      }
     }
 
     /**
@@ -534,7 +557,11 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
-      DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
+      if(OptDisableCalcGradientSpecialization) {
+        b_.calcGradient(data, GRADIENT_FUNC_B(a_, b_.getValue(), getValue()) * multiplier);
+      } else {
+        DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
+      }
     }
 
     /**
