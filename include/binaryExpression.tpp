@@ -259,7 +259,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * @param[in]  adjointValues  The global adjoint value vector.
      *
      * @tparam      IndexType  The type for the indices.
-     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
@@ -451,7 +451,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @param[in]  adjointValues  The global adjoint value vector.
      *
      * @tparam      IndexType  The type for the indices.
-     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
@@ -633,7 +633,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @param[in]  adjointValues  The global adjoint value vector.
      *
      * @tparam      IndexType  The type for the indices.
-     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
