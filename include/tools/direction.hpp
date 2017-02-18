@@ -151,6 +151,17 @@ namespace codi {
       }
   };
 
+  template<typename Real, size_t dim>
+  bool isfinite(const Direction<Real, dim>& d) {
+    bool finite = true;
+
+    for(size_t i = 0; i < dim; ++i) {
+      finite &= isfinite(d[i]);
+    }
+
+    return finite;
+  }
+
   /**
    * @brief Scalar multiplication of a direction.
    *
