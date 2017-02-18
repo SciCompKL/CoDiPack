@@ -57,11 +57,12 @@ namespace codi {
      * @param[in,out]  adjointValues  The global vector with the adjoint values.
      *
      * @tparam      IndexType  The type for the indices.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+    template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
       CODI_UNUSED(seed);
       CODI_UNUSED(indices);
       CODI_UNUSED(constantValues);
@@ -93,11 +94,12 @@ namespace codi {
      * @param[in,out]  adjointValues  The global vector with the adjoint values.
      *
      * @tparam      IndexType  The type for the indices.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+    template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
       adjointValues[indices[0]] += seed;
@@ -131,11 +133,12 @@ namespace codi {
      * @param[in,out]  adjointValues  The global vector with the adjoint values.
      *
      * @tparam      IndexType  The type for the indices.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+    template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
+    static void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
       CODI_UNUSED(primalValues);
       for(int i = 0; i < size; ++i) {
         // jacobies are stored in the constant values

@@ -593,11 +593,12 @@ namespace codi {
      * @param[in]  adjointValues  The global adjoint value vector.
      *
      * @tparam      IndexType  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+    template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 

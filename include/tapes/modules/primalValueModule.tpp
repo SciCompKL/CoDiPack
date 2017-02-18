@@ -239,7 +239,7 @@
      * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
      */
     template<typename FuncObj>
-    static CODI_INLINE void evaluateHandle(FuncObj funcObj, size_t varSize, size_t constSize, const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, Real* adjoints) {
+    static CODI_INLINE void evaluateHandle(FuncObj funcObj, size_t varSize, size_t constSize, const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {
       // first restore the primal values of the passive indices
       constantPos -= passiveActives;
       for(StatementInt i = 0; i < passiveActives; ++i) {

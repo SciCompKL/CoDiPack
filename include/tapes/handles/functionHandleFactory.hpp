@@ -95,7 +95,7 @@ namespace codi {
      */
     template<typename Expr, typename Tape>
     static CODI_INLINE void curryEvaluateHandle(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {
-      Tape::evaluateHandle(Expr::template evalAdjoint<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables, adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
+      Tape::template evaluateHandle(Expr::template evalAdjoint<IndexType, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables, adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 
     /**

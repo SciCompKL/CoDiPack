@@ -40,11 +40,11 @@ namespace codi {
    *
    * The handle stores information about the expression and the function for the adjoint evaluation.
    *
-   * @tparam GradientData  The type of the gradient values that are used in the tape.
+   * @tparam GradientValue  The type of the gradient values that are used in the tape.
    * @tparam         Real  The floating point type of the values that are used in the tape.
    * @tparam    IndexType  The types for the management of the data.
    */
-  template<typename GradientData, typename Real, typename IndexType>
+  template<typename GradientValue, typename Real, typename IndexType>
   class ExpressionHandle {
     private:
       /**
@@ -98,18 +98,18 @@ namespace codi {
    * member variable. Therefore only a pointer needs to be stored on the tape and not the
    * whole expression object.
    *
-   * @tparam GradientData  The type of the gradient values that are used in the tape.
+   * @tparam GradientValue  The type of the gradient values that are used in the tape.
    * @tparam         Real  The floating point type of the values that are used in the tape.
    * @tparam    IndexType  The types for the management of the data.
    * @tparam         Expr  The type of the expression from which the handle is generated.
    */
-  template<typename GradientData, typename Real, typename IndexType, typename Expr>
+  template<typename GradientValue, typename Real, typename IndexType, typename Expr>
   class ExpressionHandleStore {
     private:
       /**
        * @brief The space for the handle.
        */
-      static const ExpressionHandle<GradientData, Real, IndexType> handle;
+      static const ExpressionHandle<GradientValue, Real, IndexType> handle;
     public:
 
       /**
@@ -117,7 +117,7 @@ namespace codi {
        *
        * @return The handle for the expression.
        */
-      static const ExpressionHandle<GradientData, Real, IndexType>* getHandle() {
+      static const ExpressionHandle<GradientValue, Real, IndexType>* getHandle() {
         return &handle;
       }
   };
@@ -125,11 +125,11 @@ namespace codi {
   /**
    * @brief Instantiation of the expression handle store object.
    *
-   * @tparam GradientData  The type of the gradient values that are used in the tape.
+   * @tparam GradientValue  The type of the gradient values that are used in the tape.
    * @tparam         Real  The floating point type of the values that are used in the tape.
    * @tparam    IndexType  The types for the management of the data.
    * @tparam         Expr  The type of the expression from which the handle is generated.
    */
-  template<typename GradientData, typename Real, typename IndexType, typename Expr>
-  const ExpressionHandle<GradientData, Real, IndexType> ExpressionHandleStore<GradientData, Real, IndexType, Expr>::handle(Expr::template evalAdjoint<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables);
+  template<typename GradientValue, typename Real, typename IndexType, typename Expr>
+  const ExpressionHandle<GradientValue, Real, IndexType> ExpressionHandleStore<GradientValue, Real, IndexType, Expr>::handle(Expr::template evalAdjoint<IndexType, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables);
 }

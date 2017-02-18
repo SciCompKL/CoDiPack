@@ -55,7 +55,7 @@ namespace codi {
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, Real> >
+  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
   struct ChunkIndexPrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;

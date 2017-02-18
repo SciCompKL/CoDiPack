@@ -259,11 +259,12 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * @param[in]  adjointValues  The global adjoint value vector.
      *
      * @tparam      IndexType  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+    template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
       const Real bPrimal = B::template getValue<IndexType,
           offset + ExpressionTraits<A>::maxActiveVariables,
@@ -271,10 +272,10 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
             (indices, constantValues, primalValues);
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
 
-      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
-      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
-      A::template evalAdjoint<IndexType, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
-      B::template evalAdjoint<IndexType,
+      const GradientValue aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      const GradientValue bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      A::template evalAdjoint<IndexType, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
+      B::template evalAdjoint<IndexType, GradientValue,
           offset + ExpressionTraits<A>::maxActiveVariables,
           constantOffset + ExpressionTraits<A>::maxConstantVariables>
             (bJac, indices, constantValues, primalValues, adjointValues);
@@ -450,17 +451,18 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @param[in]  adjointValues  The global adjoint value vector.
      *
      * @tparam      IndexType  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+    template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
       const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
       const PassiveReal& bPrimal = constantValues[constantOffset + ExpressionTraits<A>::maxConstantVariables];
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
 
-      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
-      A::template evalAdjoint<IndexType, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
+      const GradientValue aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      A::template evalAdjoint<IndexType, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
     }
 
     /**
@@ -631,17 +633,18 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @param[in]  adjointValues  The global adjoint value vector.
      *
      * @tparam      IndexType  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+    template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
       const PassiveReal& aPrimal = constantValues[constantOffset];
       const Real bPrimal = B::template getValue<IndexType, offset, constantOffset + 1>(indices, constantValues, primalValues);
       const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
 
-      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
-      B::template evalAdjoint<IndexType, offset, constantOffset + 1>(bJac, indices, constantValues, primalValues, adjointValues);
+      const GradientValue bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      B::template evalAdjoint<IndexType, GradientValue, offset, constantOffset + 1>(bJac, indices, constantValues, primalValues, adjointValues);
     }
 
     /**
