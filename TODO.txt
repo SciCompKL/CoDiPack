@@ -6,5 +6,8 @@ Performance:
   - Early out fuer passive values
   - Move static tapes out of the active real type.
   - Add support for intermixed complex and double data types.
-  - Findout why doxygen is missing the gradient method of the acitve type.
+  - Implement all comparison operators for positions.
+  - rename the reset() function to clear().
+    - reset(pos) performs then a rewind of the tape.
+    - clear() clears the tape so that it can be used anew.
 
