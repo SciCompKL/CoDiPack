@@ -46,6 +46,7 @@ all:
 # define general sets for tests
 BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp) $(wildcard $(TEST_DIR)/jacobiOptimizations/Test**.cpp)
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp) $(wildcard $(TEST_DIR)/io/Test**.cpp)
+REVERSE_VALUE_TESTS = $(wildcard $(TEST_DIR)/preaccumulation/Test**.cpp)
 
 # The build rules for all drivers.
 define DRIVER_RULE
@@ -94,25 +95,25 @@ $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseUnchecked
 DRIVER_NAME  := RWS_Unch
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reverseSimple/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimple
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndexUncheckedIndex
 DRIVER_NAME  := RWS_UnchInd
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reverseSimpleIndex/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimpleIndex
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimalUnchecked
 DRIVER_NAME  := RWS_PrimUnch
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reversePrimalSimple/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalSimple
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimal
 DRIVER_NAME  := RWS_Prim
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reversePrimal/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimal
 $(eval $(value DRIVER_INST))
 
@@ -124,13 +125,13 @@ $(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimalIndex
 DRIVER_NAME  := RWS_PrimIndex
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reversePrimalIndex/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalIndex
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverse
 DRIVER_NAME  := RWS_Chunk
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunk/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunk
 $(eval $(value DRIVER_INST))
 
@@ -142,13 +143,13 @@ $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndex
 DRIVER_NAME  := RWS_ChunkInd
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkIndex/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndex
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndex with tape swap
 DRIVER_NAME  := RWS_ChunkIndSwap
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkIndexTapeSwap/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndexTapeSwap
 $(eval $(value DRIVER_INST))
 
