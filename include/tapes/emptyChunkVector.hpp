@@ -43,7 +43,15 @@ namespace codi {
     /**
      * @brief Position without any data.
      */
-    struct Position {};
+    struct Position {
+      bool operator != (const Position& o) {
+        return false;
+      }
+
+      bool operator == (const Position& o) {
+        return true;
+      }
+    };
 
     /**
      * @brief Do nothing.

@@ -106,6 +106,14 @@ namespace codi {
         chunk(0),
         data(data),
         inner(inner) {}
+
+      bool operator != (const Position& o) {
+        return this->inner != o.inner || chunk != o.chunk || data != o.data;
+      }
+
+      bool operator == (const Position& o) {
+        return this->inner == o.inner && chunk == o.chunk && data == o.data;
+      }
     };
 
   private:
