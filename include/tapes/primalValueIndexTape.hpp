@@ -211,7 +211,7 @@ namespace codi {
 
     #define POSITION_TYPE typename TapeTypes::Position
     #define INDEX_HANDLER_NAME indexHandler
-    #define RESET_FUNCTION_NAME resetExtFunc
+    #define RESET_FUNCTION_NAME resetPrimalValues
     #define EVALUATE_FUNCTION_NAME evaluateInt
     #include "modules/tapeBaseModule.tpp"
 
@@ -477,6 +477,48 @@ namespace codi {
       evaluateExtFunc(start, end);
 
       free(primalValueCopy);
+    }
+
+
+    struct PrimalValueReseter {
+      PrimalValueIndexTape& tape;
+
+      /**
+       * @brief Create the function object.
+       *
+       * @param[in,out]     tape  The reference to the actual tape.
+       */
+      PrimalValueReseter(PrimalValueIndexTape& tape) :
+        tape(tape){}
+
+      void operator () (IndexType* index, Real* value, Handle* handle, StatementInt* stmtSize) {
+        CODI_UNUSED(handle);
+        CODI_UNUSED(stmtSize);
+
+        tape.primals[*index] = *value;
+      }
+    };
+
+
+    CODI_INLINE void resetPrimalValues(const Position& pos) {
+
+      // Do not perform a global reset on the primal value vector if the tape is cleared
+      if(getZeroPosition() != pos) {
+
+        IndexType* index;
+        Real* value;
+        Handle* handle;
+        StatementInt* stmtSize;
+
+        PrimalValueReseter reseter(*this);
+
+        StmtPosition stmtEnd = stmtVector.getPosition();
+
+        stmtVector.forEach(stmtEnd, pos.inner.inner.inner, reseter, index, value, handle, stmtSize);
+      }
+
+      // call the function from the external function module
+      resetExtFunc(pos);
     }
 
   public:
