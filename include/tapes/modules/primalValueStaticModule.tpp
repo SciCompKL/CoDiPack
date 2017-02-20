@@ -44,7 +44,7 @@
  *
  * @param[in] size  The size of the preaccumulation handle. This is the size of the index vector and the constant vector.
  */
-#define CREATE_PREACC_HANDLE(size) HandleFactory::template createHandle<PreaccExpr<typename TapeTypes::RealType, size>>()
+#define CREATE_PREACC_HANDLE(size) HandleFactory::template createHandle<PreaccExpr<typename TapeTypes::RealType, size>, TAPE_NAME<TapeTypes>>()
 
   /**
    * @brief Instantiation of the preaccumulation handles.

@@ -114,7 +114,7 @@ namespace codi {
    * @tparam Real  A calculation type that supports all mathematical operations.
    * @tparam size  The number of arguments of the preaccumulated function.
    */
-  template<typename Real, int size>
+  template<typename Real, size_t size>
   struct PreaccExpr {
 
     /** @brief The passive value of the Real type */
@@ -140,7 +140,7 @@ namespace codi {
     template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
     static void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
       CODI_UNUSED(primalValues);
-      for(int i = 0; i < size; ++i) {
+      for(int i = 0; i < (int)size; ++i) {
         // jacobies are stored in the constant values
         adjointValues[indices[i]] += constantValues[i] * seed;
       }
