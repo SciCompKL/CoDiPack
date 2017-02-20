@@ -232,7 +232,8 @@ namespace codi {
     // TAPE_NAME is undefined at the end of the file
 
     /** @brief The temporary vector for the reverse evaluation. */
-    Real* primalValueCopy;
+    Real* primalsCopy;
+    IndexType primalsCopySize;
 
   public:
     /**
@@ -250,13 +251,18 @@ namespace codi {
       /* defined in the primalValueModule */primalsSize(0),
       /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
       /* defined in externalFunctionsModule */extFuncVector(1000, &constantValueVector),
-      primalValueCopy(NULL) {}
+      primalsCopy(NULL),
+      primalsCopySize(0) {}
 
     /** @brief Tear down the tape. Delete all values from the modules */
     ~PrimalValueIndexTape() {
       cleanTapeBase();
 
-      // primalValueCopy is always directly deleted
+      if(NULL != primalsCopy) {
+        free(primalsCopy);
+        primalsCopy = NULL;
+      }
+
     }
 
     /**
@@ -427,7 +433,7 @@ namespace codi {
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
 
-        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)..., primalValueCopy);
+        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
 
         codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
 
@@ -436,7 +442,7 @@ namespace codi {
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
-      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)..., primalValueCopy);
+      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
     }
 
     /**
@@ -471,12 +477,13 @@ namespace codi {
      * @tparam Args  The types of the other arguments.
      */
     CODI_INLINE void evaluateInt(const Position& start, const Position& end) {
-      primalValueCopy = (Real*)malloc(sizeof(Real) * primalsSize);
-      memcpy(primalValueCopy, primals, sizeof(Real) * primalsSize);
+      if(primalsCopySize < primalsSize) {
+        primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * primalsSize);
+        primalsCopySize = primalsSize;
+      }
+      memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
 
       evaluateExtFunc(start, end);
-
-      free(primalValueCopy);
     }
 
 
