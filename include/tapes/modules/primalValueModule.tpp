@@ -490,10 +490,15 @@
     CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
-      CODI_UNUSED(index);
 
-      constantValueVector.setDataAndMove(jacobi);
-      indexVector.setDataAndMove(index);
+      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+          ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
+            constantValueVector.setDataAndMove(jacobi);
+            indexVector.setDataAndMove(index);
+          }
+        }
+      }
     }
 
     /**
