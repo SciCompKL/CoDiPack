@@ -546,6 +546,27 @@ namespace codi {
       }
     }
 
+    CODI_INLINE Real registerExtFunctionOutput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
+      Real oldValue = value.getValue();
+      if(isActive()) {
+        //TODO: Test if register of already active value will yield errors.
+        indexHandler.assignIndex(value.getGradientData());
+
+        checkPrimalsSize();
+        oldValue = primals[value.getGradientData()];
+        primals[value.getGradientData()] = value.getValue();
+      }
+
+      return oldValue;
+    }
+
+    CODI_INLINE void setExternalValueChange(const GradientData& index, const Real& primal) {
+
+      // TODO: only allowed during reverse evaluation. Add check.
+
+      primalsCopy[index] = primal;
+    }
+
     /*
      * @brief It is ensured that each output variable has a unique index.
      *
