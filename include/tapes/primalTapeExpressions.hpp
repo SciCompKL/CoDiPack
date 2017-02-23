@@ -45,6 +45,13 @@ namespace codi {
     /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
+      exit(-1);
+      return 0.0;
+    }
+
     /**
      * @brief Handle for the input function.
      *
@@ -81,6 +88,11 @@ namespace codi {
 
     /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      return primalValues[indices[offset]];
+    }
 
     /**
      * @brief Handle for the copy function.
@@ -119,6 +131,13 @@ namespace codi {
 
     /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
+      exit(-1);
+      return 0.0;
+    }
 
     /**
      * @brief Handle for the pre accumulation.

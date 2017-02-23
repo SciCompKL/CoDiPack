@@ -54,9 +54,19 @@ namespace codi {
     public:
 
       /**
+       * @brief The function definition for the primal evaluation of a statement
+       */
+      typedef Real (*PrimalFuncPointer)(const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues);
+
+      /**
        * @brief The function definition for the reverse evaluation of a statement
        */
       typedef void (*StatementFuncPointer)(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues);
+
+      /**
+       * @brief The function pointer to the primal evaluation function
+       */
+      const PrimalFuncPointer primalFunc;
 
       /**
        * @brief The function pointer to the reverse evaluation function
@@ -80,11 +90,14 @@ namespace codi {
       /**
        * @brief Creates the function handle object
        *
+       * @param[in]           primalFunc  The function pointer for the primal evaluation.
        * @param[in]          adjointFunc  The function pointer for the adjoint evaluation.
        * @param[in]   maxActiveVariables  The number of active variables in the statement.
        * @param[in] maxConstantVariables  The number of constant variables in the statement.
        */
-      ExpressionHandle(const StatementFuncPointer adjointFunc, const size_t maxActiveVariables, const size_t maxConstantVariables) :
+      template<typename PrimalFunc, typename AdjointFunc>
+      ExpressionHandle(const PrimalFunc primalFunc, const AdjointFunc adjointFunc, const size_t maxActiveVariables, const size_t maxConstantVariables) :
+        primalFunc(primalFunc),
         adjointFunc(adjointFunc),
         maxActiveVariables(maxActiveVariables),
         maxConstantVariables(maxConstantVariables) {}
@@ -131,5 +144,5 @@ namespace codi {
    * @tparam         Expr  The type of the expression from which the handle is generated.
    */
   template<typename GradientValue, typename Real, typename IndexType, typename Expr>
-  const ExpressionHandle<GradientValue, Real, IndexType> ExpressionHandleStore<GradientValue, Real, IndexType, Expr>::handle(Expr::template evalAdjoint<IndexType, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables);
+  const ExpressionHandle<GradientValue, Real, IndexType> ExpressionHandleStore<GradientValue, Real, IndexType, Expr>::handle(Expr::template getValue<IndexType, 0, 0>, Expr::template evalAdjoint<IndexType, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables);
 }
