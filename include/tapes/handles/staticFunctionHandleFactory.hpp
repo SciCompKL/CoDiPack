@@ -93,7 +93,7 @@ namespace codi {
       }
 
       static CODI_INLINE Real curryEvaluatePrimalHandle(const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
-        Tape::template evaluatePrimalHandle(Expr::template getValue<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables, passiveActives, indexPos, indices, constantPos, constants, primalVector);
+        return Tape::template evaluatePrimalHandle(Expr::template getValue<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables, passiveActives, indexPos, indices, constantPos, constants, primalVector);
       }
 
       static CODI_INLINE void curryEvaluateHandle(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {
