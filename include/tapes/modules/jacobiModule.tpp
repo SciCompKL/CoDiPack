@@ -261,5 +261,10 @@
       return jacobiVector.getDataSize();
     }
 
+    CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
+
+      evaluate(start, end);
+    }
+
 #undef CHILD_VECTOR_TYPE
 #undef VECTOR_TYPE

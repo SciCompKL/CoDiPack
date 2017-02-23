@@ -221,6 +221,38 @@
 
   public:
     /**
+     * @brief Evaluate one handle in the primal sweep.
+     *
+     * TODO:
+     *
+     * @param[in]          funcObj  The function object that performs the reverse AD evaluation of an expression.
+     * @param[in]          varSize  The number of variables of the expression.
+     * @param[in]        constSize  The number constant variables of the expression.
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     */
+    template<typename FuncObj>
+    static CODI_INLINE Real evaluatePrimalHandle(FuncObj funcObj, size_t varSize, size_t constSize, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
+
+      size_t tempConstantPos = constantPos + constSize;
+      // first restore the primal values of the passive indices
+      for(StatementInt i = 0; i < passiveActives; ++i) {
+        primalVector[i + 1] = constants[tempConstantPos + i];
+      }
+
+      Real result = funcObj(&indices[indexPos], &constants[constantPos], primalVector);
+
+      indexPos += varSize;
+      constantPos += constSize + passiveActives;
+
+      return result;
+    }
+
+    /**
      * @brief Evaluate one handle in the reverse sweep.
      *
      * The function sets the primal values in the primal value vector for the inactive values.
@@ -256,6 +288,28 @@
 
     private:
 
+    template<typename ... Args>
+    CODI_INLINE void evaluateIndicesPrimal(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
+      IndexType* data;
+      size_t dataPos = start.data;
+      auto curInnerPos = start.inner;
+      for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
+        indexVector.getDataAtPosition(curChunk, 0, data);
+
+        auto endInnerPos = indexVector.getInnerPosition(curChunk);
+        evalStmt(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
+
+        codiAssert(dataPos == indexVector.getChunkUsedData(curChunk + 1)); // After a full chunk is evaluated the data position needs to be at the end
+
+        curInnerPos = endInnerPos;
+        dataPos = 0;
+      }
+
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      indexVector.getDataAtPosition(end.chunk, 0, data);
+      evalStmtPrimal(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
+    }
+
     /**
      * @brief Evaluate a part of the index vector.
      *
@@ -290,6 +344,28 @@
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       indexVector.getDataAtPosition(end.chunk, 0, data);
       evalStmt(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
+    }
+
+    template<typename ... Args>
+    CODI_INLINE void evaluateConstantValuesPrimal(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
+      PassiveReal* data;
+      size_t dataPos = start.data;
+      auto curInnerPos = start.inner;
+      for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
+        constantValueVector.getDataAtPosition(curChunk, 0, data);
+
+        auto endInnerPos = constantValueVector.getInnerPosition(curChunk);
+        evaluateIndicesPrimal(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
+
+        codiAssert(dataPos == constantValueVector.getChunkUsedData(curChunk + 1)); // After a full chunk is evaluated the data position needs to be at the end
+
+        curInnerPos = endInnerPos;
+        dataPos = 0;
+      }
+
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      constantValueVector.getDataAtPosition(end.chunk, 0, data);
+      evaluateIndicesPrimal(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
     }
 
     /**

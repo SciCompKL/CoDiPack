@@ -120,9 +120,44 @@
        * @param[in]     extFunc  The external function object.
        * @param[in] endInnerPos  The position were the external function object was stored.
        */
-      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos) {
+      template<typename ... Args>
+      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, Args&&... args) {
         // always evaluate the stack to the point of the external function
-        tape.evalExtFuncCallback(curInnerPos, *endInnerPos);
+        tape.evalExtFuncCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+
+        CODI_UNUSED(extFunc);
+        std::cerr << "External functions currently can not be forward evaluated." << std::endl;
+
+        curInnerPos = *endInnerPos;
+      }
+    };
+
+    struct PrimalExtFuncEvaluator {
+      ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
+
+      /** The reference to the tape. The method evalExtFuncCallback is used to evaluate the data between the expressions.*/
+      TAPE_NAME& tape;
+
+      /**
+       * @brief Create the function object.
+       *
+       * @param[in] curInnerPos  The position were the evaluation starts.
+       * @param[in,out]    tape  The reference to the actual tape.
+       */
+      PrimalExtFuncEvaluator(ExtFuncChildPosition curInnerPos, TAPE_NAME& tape) :
+        curInnerPos(curInnerPos),
+        tape(tape){}
+
+      /**
+       * @brief The operator evaluates the tape to the position were the next external function was stored and then the function is evaluated
+       *
+       * @param[in]     extFunc  The external function object.
+       * @param[in] endInnerPos  The position were the external function object was stored.
+       */
+      template<typename ... Args>
+      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, Args&&... args) {
+        // always evaluate the stack to the point of the external function
+        tape.evalExtFuncPrimalCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
         extFunc->evaluate(&tape);
 
@@ -204,14 +239,32 @@
      * @param[in] pos  The position to which the tape is reset.
      */
     void resetExtFunc(const ExtFuncPosition& pos) {
-      ExternalFunction* extFunc;
-      ExtFuncChildPosition* endInnerPos;
       ExtFuncDeleter deleter(*this);
 
-      extFuncVector.forEach(getExtFuncPosition(), pos, deleter, extFunc, endInnerPos);
+      extFuncVector.forEach(getExtFuncPosition(), pos, deleter);
 
       // reset will be done iteratively through the vectors
       extFuncVector.reset(pos);
+    }
+
+    /**
+     * @brief Evaluate a part of the external function vector.
+     *
+     * It has to hold start <= end.
+     *
+     * It calls the primal evaluation method for the statement vector.
+     *
+     * @param[in]       start The starting point for the external function vector.
+     * @param[in]         end The ending point for the external function vector.
+     */
+    template<typename ... Args>
+    void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, Args&&... args){
+      PrimalExtFuncEvaluator evaluator(start.inner, *this);
+
+      extFuncVector.forEach(start, end, evaluator, std::forward<Args>(args)...);
+
+      // Iterate over the reminder also covers the case if there have been no external functions.
+      evalExtFuncPrimalCallback(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
     }
 
     /**
@@ -224,15 +277,14 @@
      * @param[in]       start The starting point for the external function vector.
      * @param[in]         end The ending point for the external function vector.
      */
-    void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end){
-      ExternalFunction* extFunc;
-      ExtFuncChildPosition* endInnerPos;
+    template<typename ... Args>
+    void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, Args&&... args){
       ExtFuncEvaluator evaluator(start.inner, *this);
 
-      extFuncVector.forEach(start, end, evaluator, extFunc, endInnerPos);
+      extFuncVector.forEach(start, end, evaluator, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
-      evalExtFuncCallback(evaluator.curInnerPos, end.inner);
+      evalExtFuncCallback(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
     }
 
 

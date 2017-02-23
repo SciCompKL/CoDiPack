@@ -37,6 +37,7 @@
 #include "chunkVector.hpp"
 #include "indices/reuseIndexHandler.hpp"
 #include "handles/functionHandleFactory.hpp"
+#include "handles/staticObjectHandleFactory.hpp"
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
@@ -55,7 +56,7 @@ namespace codi {
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
+  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = StaticObjectHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
   struct ChunkIndexPrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
@@ -112,7 +113,7 @@ namespace codi {
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, Real> >
+  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = StaticObjectHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
   struct SimpleIndexPrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
@@ -380,6 +381,17 @@ namespace codi {
     }
 
   private:
+
+    CODI_INLINE void evaluateStackPrimal(size_t& stmtPos, const size_t& endStmtPos, IndexType* lhsIndices, Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
+      while(stmtPos < endStmtPos) {
+        const IndexType& lhsIndex = lhsIndices[stmtPos];
+
+        storedPrimals[stmtPos] = primalVector[lhsIndex];
+        primalVector[lhsIndex] = HandleFactory::template callPrimalHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector);
+        stmtPos += 1;
+      }
+    }
+
     /**
      * @brief Evaluate the stack from the start to to the end position.
      *
@@ -409,6 +421,29 @@ namespace codi {
       }
     }
 
+    template<typename ... Args>
+    CODI_INLINE void evalStmtPrimal(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
+      IndexType* data1;
+      Real* data2;
+      Handle* data3;
+      StatementInt* data4;
+
+      size_t dataPos = start.data;
+      for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
+        stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
+
+        evaluateStackPrimal(dataPos, indexVector.getChunkUsedData(curChunk + 1), data1, data2, data3, data4, std::forward<Args>(args)...);
+
+        codiAssert(dataPos == indexVector.getChunkUsedData(curChunk + 1)); // After a full chunk is evaluated the data position needs to be at the end
+
+        dataPos = 0;
+      }
+
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
+      evaluateStackPrimal(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
+    }
+
     /**
      * @brief Evaluate a part of the statement vector.
      *
@@ -433,7 +468,7 @@ namespace codi {
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
 
-        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
+        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)...);
 
         codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
 
@@ -442,7 +477,12 @@ namespace codi {
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
-      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
+      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
+    }
+
+    template<typename ... Args>
+    CODI_INLINE void evalExtFuncPrimalCallback(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
+      evaluateConstantValuesPrimal(start, end, std::forward<Args>(args)...);
     }
 
     /**
@@ -483,9 +523,8 @@ namespace codi {
       }
       memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
 
-      evaluateExtFunc(start, end);
+      evaluateExtFunc(start, end, primalsCopy);
     }
-
 
     struct PrimalValueReseter {
       PrimalValueIndexTape& tape;
@@ -512,16 +551,11 @@ namespace codi {
       // Do not perform a global reset on the primal value vector if the tape is cleared
       if(getZeroPosition() != pos) {
 
-        IndexType* index;
-        Real* value;
-        Handle* handle;
-        StatementInt* stmtSize;
-
         PrimalValueReseter reseter(*this);
 
         StmtPosition stmtEnd = stmtVector.getPosition();
 
-        stmtVector.forEach(stmtEnd, pos.inner.inner.inner, reseter, index, value, handle, stmtSize);
+        stmtVector.forEach(stmtEnd, pos.inner.inner.inner, reseter);
       }
 
       // call the function from the external function module
@@ -529,6 +563,13 @@ namespace codi {
     }
 
   public:
+
+    CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
+
+      evaluateExtFunc(start, end, primals);
+
+      evaluateExtFuncPrimal(end, start, primals);
+    }
 
     /**
      * @brief Register a variable as an active variable.

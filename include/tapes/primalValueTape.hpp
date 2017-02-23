@@ -444,6 +444,11 @@ namespace codi {
 
   public:
 
+    CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
+
+      evaluate(start, end);
+    }
+
     /**
      * @brief Register a variable as an active variable.
      *
