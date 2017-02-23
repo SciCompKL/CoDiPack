@@ -331,12 +331,14 @@ namespace codi {
     CODI_INLINE void forEachData(const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
       codiAssert(start >= end);
 
+      PointerHandle<ChunkType> pHandle;
+
       // we do not initialize dataPos with start - 1 because the type can be unsigned
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
         --dataPos; // decrement of loop variable
 
-        getDataAtPosition(0 , dataPos, pointers...);
-        function(pointers...);
+        pHandle.setPointers(dataPos, chunk);
+        pHandle.call(function, pointers...);
       }
     }
 
