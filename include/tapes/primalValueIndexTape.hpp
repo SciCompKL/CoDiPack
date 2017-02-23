@@ -38,6 +38,7 @@
 #include "indices/reuseIndexHandler.hpp"
 #include "handles/functionHandleFactory.hpp"
 #include "handles/staticObjectHandleFactory.hpp"
+#include "handles/staticFunctionHandleFactory.hpp"
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
@@ -56,7 +57,7 @@ namespace codi {
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = StaticObjectHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
+  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = StaticFunctionHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
   struct ChunkIndexPrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
@@ -113,7 +114,7 @@ namespace codi {
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = StaticObjectHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
+  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = StaticFunctionHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
   struct SimpleIndexPrimalValueTapeTypes {
     /** @brief The type for the primal values. */
     typedef Real RealType;
