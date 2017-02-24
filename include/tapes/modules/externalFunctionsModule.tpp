@@ -125,8 +125,7 @@
         // always evaluate the stack to the point of the external function
         tape.evalExtFuncCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-        CODI_UNUSED(extFunc);
-        std::cerr << "External functions currently can not be forward evaluated." << std::endl;
+        extFunc->evaluate(&tape);
 
         curInnerPos = *endInnerPos;
       }
@@ -159,7 +158,8 @@
         // always evaluate the stack to the point of the external function
         tape.evalExtFuncPrimalCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-        extFunc->evaluate(&tape);
+        CODI_UNUSED(extFunc);
+        std::cerr << "External functions currently can not be forward evaluated." << std::endl;
 
         curInnerPos = *endInnerPos;
       }
