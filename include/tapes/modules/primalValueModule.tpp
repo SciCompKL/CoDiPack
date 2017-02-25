@@ -297,7 +297,7 @@
         indexVector.getDataAtPosition(curChunk, 0, data);
 
         auto endInnerPos = indexVector.getInnerPosition(curChunk + 1);
-        evalStmt(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
+        evalStmtPrimal(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
 
         codiAssert(dataPos == indexVector.getChunkUsedData(curChunk)); // After a full chunk is evaluated the data position needs to be at the end
 

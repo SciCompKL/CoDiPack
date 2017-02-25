@@ -433,9 +433,9 @@ namespace codi {
       for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
         stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
 
-        evaluateStackPrimal(dataPos, indexVector.getChunkUsedData(curChunk), data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
+        evaluateStackPrimal(dataPos, stmtVector.getChunkUsedData(curChunk), data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
 
-        codiAssert(dataPos == indexVector.getChunkUsedData(curChunk)); // After a full chunk is evaluated the data position needs to be at the end
+        codiAssert(dataPos == stmtVector.getChunkUsedData(curChunk)); // After a full chunk is evaluated the data position needs to be at the end
 
         dataPos = 0;
       }
