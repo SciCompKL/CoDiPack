@@ -239,9 +239,11 @@
      * @param[in] pos  The position to which the tape is reset.
      */
     void resetExtFunc(const ExtFuncPosition& pos) {
+      ExternalFunction* extFunc;
+      ExtFuncChildPosition* endInnerPos;
       ExtFuncDeleter deleter(*this);
 
-      extFuncVector.forEach(getExtFuncPosition(), pos, deleter);
+      extFuncVector.forEachOld(getExtFuncPosition(), pos, deleter, extFunc, endInnerPos);
 
       // reset will be done iteratively through the vectors
       extFuncVector.reset(pos);
@@ -259,9 +261,11 @@
      */
     template<typename ... Args>
     void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, Args&&... args){
+      ExternalFunction* extFunc;
+      ExtFuncChildPosition* endInnerPos;
       PrimalExtFuncEvaluator evaluator(start.inner, *this);
 
-      extFuncVector.forEach(start, end, evaluator, std::forward<Args>(args)...);
+      extFuncVector.forEachOld(start, end, evaluator, extFunc, endInnerPos, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
       evalExtFuncPrimalCallback(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
@@ -279,9 +283,11 @@
      */
     template<typename ... Args>
     void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, Args&&... args){
+      ExternalFunction* extFunc;
+      ExtFuncChildPosition* endInnerPos;
       ExtFuncEvaluator evaluator(start.inner, *this);
 
-      extFuncVector.forEach(start, end, evaluator, std::forward<Args>(args)...);
+      extFuncVector.forEachOld(start, end, evaluator, extFunc, endInnerPos, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
       evalExtFuncCallback(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
