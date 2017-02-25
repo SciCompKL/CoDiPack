@@ -41,7 +41,7 @@ namespace codi {
 
   template<typename ChunkData>
   struct PointerHandle {
-      void setPointers(const size_t& dataPos, ChunkData& chunk);
+      void setPointers(const size_t& dataPos, ChunkData* chunk);
 
       template<typename FuncObj, typename ... Args>
       void call(FuncObj func, Args&&... args);
@@ -52,8 +52,8 @@ namespace codi {
   struct PointerHandle<Chunk1<Data1> > {
       Data1* p1;
 
-      void setPointers(const size_t& dataPos, Chunk1<Data1>& chunk) {
-        chunk.dataPointer(dataPos, p1);
+      void setPointers(const size_t& dataPos, Chunk1<Data1>* chunk) {
+        chunk->dataPointer(dataPos, p1);
       }
 
       template<typename FuncObj, typename ... Args>
@@ -67,8 +67,8 @@ namespace codi {
       Data1* p1;
       Data2* p2;
 
-      void setPointers(const size_t& dataPos, Chunk2<Data1, Data2>& chunk) {
-        chunk.dataPointer(dataPos, p1, p2);
+      void setPointers(const size_t& dataPos, Chunk2<Data1, Data2>* chunk) {
+        chunk->dataPointer(dataPos, p1, p2);
       }
 
       template<typename FuncObj, typename ... Args>
@@ -83,8 +83,8 @@ namespace codi {
       Data2* p2;
       Data3* p3;
 
-      void setPointers(const size_t& dataPos, Chunk3<Data1, Data2, Data3>& chunk) {
-        chunk.dataPointer(dataPos, p1, p2, p3);
+      void setPointers(const size_t& dataPos, Chunk3<Data1, Data2, Data3>* chunk) {
+        chunk->dataPointer(dataPos, p1, p2, p3);
       }
 
       template<typename FuncObj, typename ... Args>
@@ -100,8 +100,8 @@ namespace codi {
       Data3* p3;
       Data4* p4;
 
-      void setPointers(const size_t& dataPos, Chunk4<Data1, Data2, Data3, Data4>& chunk) {
-        chunk.dataPointer(dataPos, p1, p2, p3, p4);
+      void setPointers(const size_t& dataPos, Chunk4<Data1, Data2, Data3, Data4>* chunk) {
+        chunk->dataPointer(dataPos, p1, p2, p3, p4);
       }
 
       template<typename FuncObj, typename ... Args>
@@ -518,7 +518,7 @@ namespace codi {
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
         --dataPos; // decrement of loop variable
 
-        pHandle.setPointers(dataPos, *chunks[chunkPos]);
+        pHandle.setPointers(dataPos, chunks[chunkPos]);
         pHandle.call(function, pointers...);
       }
     }

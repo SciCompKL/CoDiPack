@@ -337,7 +337,7 @@ namespace codi {
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
         --dataPos; // decrement of loop variable
 
-        pHandle.setPointers(dataPos, chunk);
+        pHandle.setPointers(dataPos, &chunk);
         pHandle.call(function, pointers...);
       }
     }
