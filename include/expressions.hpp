@@ -889,6 +889,24 @@ namespace codi {
   #define PRIMAL_FUNCTION sqrt
   #include "unaryExpression.tpp"
 
+  template<typename Real> CODI_INLINE Real gradCbrt(const Real& a, const Real& result) {
+    if(CheckExpressionArguments) {
+      if(0.0 == TypeTraits<Real>::getBaseValue(a)) {
+        CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
+    if(result != 0.0) {
+      return 1.0 / (3.0 * result * result);
+    } else {
+      return (Real)0.0;
+    }
+  }
+  using std::cbrt;
+  #define NAME Cbrt
+  #define FUNCTION cbrt
+  #define PRIMAL_FUNCTION cbrt
+  #include "unaryExpression.tpp"
+
   template<typename Real> CODI_INLINE Real gradTanh(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return 1 - result * result;

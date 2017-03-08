@@ -29,7 +29,7 @@
 #include <toolDefines.h>
 
 IN(1)
-OUT(15)
+OUT(16)
 POINTS(41) =
 {
   {-10.0000},
@@ -91,4 +91,5 @@ void func(NUMBER* x, NUMBER* y) {
   y[12] =   tan(x[0]);  // R \ {(1/2 + i) * PI | for all i in Z}
   y[13] =   erf(x[0]);  // R
   y[14] =  erfc(x[0]);  // R
+  y[15] =  cbrt(x[0]);  // R \ {0}
 }
