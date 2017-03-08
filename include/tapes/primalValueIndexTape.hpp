@@ -433,16 +433,16 @@ namespace codi {
       for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
         stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
 
-        evaluateStackPrimal(dataPos, indexVector.getChunkUsedData(curChunk + 1), data1, data2, data3, data4, std::forward<Args>(args)...);
+        evaluateStackPrimal(dataPos, stmtVector.getChunkUsedData(curChunk), data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
 
-        codiAssert(dataPos == indexVector.getChunkUsedData(curChunk + 1)); // After a full chunk is evaluated the data position needs to be at the end
+        codiAssert(dataPos == stmtVector.getChunkUsedData(curChunk)); // After a full chunk is evaluated the data position needs to be at the end
 
         dataPos = 0;
       }
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
-      evaluateStackPrimal(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
+      evaluateStackPrimal(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
     }
 
     /**
@@ -469,7 +469,7 @@ namespace codi {
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
 
-        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)...);
+        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
 
         codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
 
@@ -478,7 +478,7 @@ namespace codi {
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
-      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
+      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
     }
 
     template<typename ... Args>
@@ -524,7 +524,7 @@ namespace codi {
       }
       memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
 
-      evaluateExtFunc(start, end, primalsCopy);
+      evaluateExtFunc(start, end);
     }
 
     struct PrimalValueReseter {
@@ -552,11 +552,16 @@ namespace codi {
       // Do not perform a global reset on the primal value vector if the tape is cleared
       if(getZeroPosition() != pos) {
 
+        IndexType* index;
+        Real* value;
+        Handle* handle;
+        StatementInt* stmtSize;
+
         PrimalValueReseter reseter(*this);
 
         StmtPosition stmtEnd = stmtVector.getPosition();
 
-        stmtVector.forEach(stmtEnd, pos.inner.inner.inner, reseter);
+        stmtVector.forEachOld(stmtEnd, pos.inner.inner.inner, reseter, index, value, handle, stmtSize);
       }
 
       // call the function from the external function module
@@ -567,9 +572,18 @@ namespace codi {
 
     CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
 
-      evaluateExtFunc(start, end, primals);
+      //TODO: Add proper function in tape base module
+      if(adjointsSize <= indexHandler.getMaximumGlobalIndex()) {
+        resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
+      }
 
-      evaluateExtFuncPrimal(end, start, primals);
+      std::swap(primals, primalsCopy);
+
+      evaluateExtFunc(start, end);
+
+      evaluateExtFuncPrimal(end, start);
+
+      std::swap(primals, primalsCopy);
     }
 
     /**

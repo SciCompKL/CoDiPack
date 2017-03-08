@@ -41,7 +41,7 @@ namespace codi {
 
   template<typename ChunkData>
   struct PointerHandle {
-      void setPointers(const size_t& dataPos, ChunkData& chunk);
+      void setPointers(const size_t& dataPos, ChunkData* chunk);
 
       template<typename FuncObj, typename ... Args>
       void call(FuncObj func, Args&&... args);
@@ -52,8 +52,8 @@ namespace codi {
   struct PointerHandle<Chunk1<Data1> > {
       Data1* p1;
 
-      void setPointers(const size_t& dataPos, Chunk1<Data1>& chunk) {
-        chunk.dataPointer(dataPos, p1);
+      void setPointers(const size_t& dataPos, Chunk1<Data1>* chunk) {
+        chunk->dataPointer(dataPos, p1);
       }
 
       template<typename FuncObj, typename ... Args>
@@ -67,8 +67,8 @@ namespace codi {
       Data1* p1;
       Data2* p2;
 
-      void setPointers(const size_t& dataPos, Chunk2<Data1, Data2>& chunk) {
-        chunk.dataPointer(dataPos, p1, p2);
+      void setPointers(const size_t& dataPos, Chunk2<Data1, Data2>* chunk) {
+        chunk->dataPointer(dataPos, p1, p2);
       }
 
       template<typename FuncObj, typename ... Args>
@@ -83,8 +83,8 @@ namespace codi {
       Data2* p2;
       Data3* p3;
 
-      void setPointers(const size_t& dataPos, Chunk3<Data1, Data2, Data3>& chunk) {
-        chunk.dataPointer(dataPos, p1, p2, p3);
+      void setPointers(const size_t& dataPos, Chunk3<Data1, Data2, Data3>* chunk) {
+        chunk->dataPointer(dataPos, p1, p2, p3);
       }
 
       template<typename FuncObj, typename ... Args>
@@ -100,8 +100,8 @@ namespace codi {
       Data3* p3;
       Data4* p4;
 
-      void setPointers(const size_t& dataPos, Chunk4<Data1, Data2, Data3, Data4>& chunk) {
-        chunk.dataPointer(dataPos, p1, p2, p3, p4);
+      void setPointers(const size_t& dataPos, Chunk4<Data1, Data2, Data3, Data4>* chunk) {
+        chunk->dataPointer(dataPos, p1, p2, p3, p4);
       }
 
       template<typename FuncObj, typename ... Args>
@@ -518,12 +518,42 @@ namespace codi {
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
         --dataPos; // decrement of loop variable
 
-        pHandle.setPointers(dataPos, *chunks[chunkPos]);
+        pHandle.setPointers(dataPos, chunks[chunkPos]);
         pHandle.call(function, pointers...);
       }
     }
 
+    template<typename FunctionObject, typename ... Pointers>
+    CODI_INLINE void forEachDataOld(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
+      codiAssert(start >= end);
+      codiAssert(chunkPos < chunks.size());
+
+      // we do not initialize dataPos with start - 1 because the type can be unsigned
+      for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
+        --dataPos; // decrement of loop variable
+
+        getDataAtPosition(chunkPos, dataPos, pointers...);
+        function(pointers...);
+      }
+    }
+
   public:
+    template<typename FunctionObject, typename ... Pointers>
+    CODI_INLINE void forEachOld(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
+      codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
+      codiAssert(start.chunk < chunks.size());
+
+      size_t dataStart = start.data;
+      for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
+
+        forEachDataOld(chunkPos, dataStart, 0, function, pointers...);
+
+        dataStart = chunks[--chunkPos]->getUsedSize(); // decrement of loop variable
+
+      }
+
+      forEachDataOld(end.chunk, dataStart, end.data, function, pointers...);
+    }
 
     /**
      * @brief Iterates over all data entries in the given range

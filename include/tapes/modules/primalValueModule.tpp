@@ -296,10 +296,10 @@
       for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
         indexVector.getDataAtPosition(curChunk, 0, data);
 
-        auto endInnerPos = indexVector.getInnerPosition(curChunk);
-        evalStmt(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
+        auto endInnerPos = indexVector.getInnerPosition(curChunk + 1);
+        evalStmtPrimal(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
 
-        codiAssert(dataPos == indexVector.getChunkUsedData(curChunk + 1)); // After a full chunk is evaluated the data position needs to be at the end
+        codiAssert(dataPos == indexVector.getChunkUsedData(curChunk)); // After a full chunk is evaluated the data position needs to be at the end
 
         curInnerPos = endInnerPos;
         dataPos = 0;
@@ -354,10 +354,10 @@
       for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
         constantValueVector.getDataAtPosition(curChunk, 0, data);
 
-        auto endInnerPos = constantValueVector.getInnerPosition(curChunk);
+        auto endInnerPos = constantValueVector.getInnerPosition(curChunk + 1);
         evaluateIndicesPrimal(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
 
-        codiAssert(dataPos == constantValueVector.getChunkUsedData(curChunk + 1)); // After a full chunk is evaluated the data position needs to be at the end
+        codiAssert(dataPos == constantValueVector.getChunkUsedData(curChunk)); // After a full chunk is evaluated the data position needs to be at the end
 
         curInnerPos = endInnerPos;
         dataPos = 0;
