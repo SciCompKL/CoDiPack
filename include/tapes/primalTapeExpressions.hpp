@@ -1,4 +1,3 @@
-
 /*
  * CoDiPack, a Code Differentiation Package
  *
