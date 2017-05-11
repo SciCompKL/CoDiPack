@@ -222,8 +222,7 @@
      *
      * @tparam Stream The type of the stream.
      */
-    template<typename Stream>
-    void printStmtStatistics(Stream& out, const std::string hLine) const {
+    void addStmtValues(TapeValues& values) const {
       size_t nChunksStmts  = stmtVector.getNumChunks();
       size_t totalStmts    = stmtVector.getDataSize();
       size_t sizeStmtEntry = StmtChunk::EntrySize;
@@ -231,20 +230,12 @@
       double  memoryUsedStmts = (double)totalStmts*(double)sizeStmtEntry* BYTE_TO_MB;
       double  memoryAllocStmts= (double)nChunksStmts*(double)stmtVector.getChunkSize()
                                 *(double)sizeStmtEntry* BYTE_TO_MB;
-      out << hLine
-          << "Statements\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalStmts   << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedStmts << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocStmts << " MB" << "\n";
 
+      values.addSection("Statements");
+      values.addData("Total number", totalStmts);
+      values.addData("Number of chunks", nChunksStmts);
+      values.addData("Memory used", memoryUsedStmts);
+      values.addData("Memory allocated", memoryAllocStmts);
     }
 
     /**

@@ -32,6 +32,7 @@
 #include "../activeReal.hpp"
 #include "externalFunctions.hpp"
 #include "tapeInterface.hpp"
+#include "../tools/tapeValues.hpp"
 
 
 /**
@@ -169,6 +170,14 @@ namespace codi {
      */
     template<typename Stream = std::ostream>
     void printStatistics(Stream& out = std::cout) const;
+
+    template<typename Stream = std::ostream>
+    void printTableHeader(Stream& out = std::cout) const;
+
+    template<typename Stream = std::ostream>
+    void printTableRow(Stream& out = std::cout) const;
+
+    virtual TapeValues getTapeValues() const = 0;
 
     /**
      * @brief Add a external function to the tape.

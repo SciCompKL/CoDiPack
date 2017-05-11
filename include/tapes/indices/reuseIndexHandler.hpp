@@ -30,6 +30,8 @@
 
 #include <vector>
 
+#include "../../tools/tapeValues.hpp"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
@@ -208,8 +210,7 @@ namespace codi {
        *
        * @tparam Stream The type of the stream.
        */
-      template<typename Stream>
-      void printStatistics(Stream& out, const std::string hLine) const {
+      void addValues(TapeValues& values) const {
         size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
         size_t storedIndices          = (size_t)this->getNumberStoredIndices();
         size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();
@@ -217,20 +218,12 @@ namespace codi {
         double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * BYTE_TO_MB;
         double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
 
-        out << hLine
-            << "Indices\n"
-            << hLine
-            << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << "\n"
-            << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << "\n"
-            << "  Indices stored:    " << std::setw(10) << storedIndices << "\n"
-            << "  Memory used:       " << std::setiosflags(std::ios::fixed)
-                                       << std::setprecision(2)
-                                       << std::setw(10)
-                                       << memoryStoredIndices << " MB" << "\n"
-            << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
-                                       << std::setprecision(2)
-                                       << std::setw(10)
-                                       << memoryAllocatedIndices << " MB" << "\n";
+        values.addSection("Indices");
+        values.addData("Max. live indices", maximumGlobalIndex);
+        values.addData("Cur. live indices", currentLiveIndices);
+        values.addData("Indices stored", storedIndices);
+        values.addData("Memory used", memoryStoredIndices);
+        values.addData("Memory allocated", memoryAllocatedIndices);
       }
   };
 }

@@ -32,6 +32,7 @@
 
 #include "../../configure.h"
 #include "../../macros.h"
+#include "../../tools/tapeValues.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -195,9 +196,8 @@ namespace codi {
        *
        * @tparam Stream The type of the stream.
        */
-      template<typename Stream>
-      void printStatistics(Stream& out, const std::string hLine) const {
-        CODI_UNUSED(out);
+      void addValues(TapeValues& values) const {
+        CODI_UNUSED(values);
 
         // Do nothing
       }

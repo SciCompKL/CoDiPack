@@ -589,8 +589,7 @@
      *
      * @tparam Stream  The type of the stream.
      */
-    template<typename Stream>
-    void printPrimalValueStatistics(Stream& out, const std::string& hLine) const {
+    void addPrimalValueValues(TapeValues& values) const {
 
       size_t nChunksIndex  = indexVector.getNumChunks();
       size_t totalIndex    = indexVector.getDataSize();
@@ -614,53 +613,27 @@
       size_t sizePrimalEntry = sizeof(Real);
       double memoryAllocPrimal = (double)totalPrimal*(double)sizePrimalEntry* BYTE_TO_MB;
 
-      out << hLine
-          << "Primal Vector\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalPrimal << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocPrimal << " MB" << "\n";
-      out << hLine
-          << "Statements\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalStmt   << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksStmt << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedStmt << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocStmt << " MB" << "\n";
-      out << hLine
-          << "Index entries\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalIndex << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksIndex << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedIndex << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocIndex << " MB" << "\n";
-      out << hLine
-          << "Passive data entries\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedPassive << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocPassive << " MB" << "\n";
+      values.addSection("Primal vector");
+      values.addData("Total number", totalPrimal);
+      values.addData("Memory allocated", memoryAllocPrimal);
+
+      values.addSection("Statements");
+      values.addData("Total number", totalStmt);
+      values.addData("Number of chunks", nChunksStmt);
+      values.addData("Memory used", memoryUsedStmt);
+      values.addData("Memory allocated", memoryAllocStmt);
+
+      values.addSection("Index entries");
+      values.addData("Total number", totalIndex);
+      values.addData("Number of chunks", nChunksIndex);
+      values.addData("Memory used", memoryUsedIndex);
+      values.addData("Memory allocated", memoryAllocIndex);
+
+      values.addSection("Passive data entries");
+      values.addData("Total number", totalPassive);
+      values.addData("Number of chunks", nChunksPassive);
+      values.addData("Memory used", memoryUsedPassive);
+      values.addData("Memory allocated", memoryAllocPassive);
     }
 
     /**

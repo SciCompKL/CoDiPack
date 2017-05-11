@@ -228,8 +228,7 @@
      *
      * @tparam Stream The type of the stream.
      */
-    template<typename Stream>
-    void printJacobiStatistics(Stream& out, const std::string hLine) const {
+    void addJacobiValues(TapeValues& values) const {
       size_t nChunksData   = jacobiVector.getNumChunks();
       size_t totalData     = jacobiVector.getDataSize();
       size_t sizeDataEntry = JacobiChunk::EntrySize;
@@ -238,19 +237,11 @@
       double  memoryAllocData= (double)nChunksData*(double)jacobiVector.getChunkSize()
                                 *(double)(sizeDataEntry)* BYTE_TO_MB;
 
-      out << hLine
-          << "Jacobi entries\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalData   << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedData << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocData << " MB" << "\n";
+      values.addSection("Jacobi entries");
+      values.addData("Total Number", totalData);
+      values.addData("Number of Chunks", nChunksData);
+      values.addData("Memory used", memoryUsedData);
+      values.addData("Memory allocated", memoryAllocData);
     }
 
     /**

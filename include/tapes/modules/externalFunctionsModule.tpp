@@ -353,17 +353,12 @@
      *
      * @tparam Stream The type of the stream.
      */
-    template<typename Stream>
-    void printExtFuncStatistics(Stream& out, const std::string hLine) const {
+    void addExtFuncValues(TapeValues& values) const {
       size_t nExternalFunc = (extFuncVector.getNumChunks()-1)*extFuncVector.getChunkSize()
           +extFuncVector.getChunkUsedData(extFuncVector.getNumChunks()-1);
 
-
-      out << hLine
-          << "External functions\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << nExternalFunc << "\n";
-
+      values.addSection("External functions");
+      values.addData("Total Number", nExternalFunc);
     }
 
 #undef CHILD_VECTOR_TYPE

@@ -39,6 +39,7 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
+#include "../tools/tapeValues.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -449,28 +450,18 @@ namespace codi {
       }
     }
 
-    /**
-     * @brief Prints statistics about the tape on the screen or into a stream
-     *
-     * Prints information such as stored statements/adjoints and memory usage on screen or into
-     * the stream when an argument is provided.
-     *
-     * @param[in,out] out  The information is written to the stream.
-     *
-     * @tparam Stream The type of the stream.
-     */
-    template<typename Stream = std::ostream>
-    void printStatistics(Stream& out = std::cout) const {
+    TapeValues getTapeValues() const {
+      TapeValues values;
 
-      const std::string hLine = "-------------------------------------\n";
+      std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
+      values.addSection(name);
 
-      out << hLine
-          << "CoDi Tape Statistics (" << TapeTypes::tapeName << ")\n";
-      printTapeBaseStatistics(out, hLine);
-      printStmtStatistics(out, hLine);
-      printJacobiStatistics(out, hLine);
-      printExtFuncStatistics(out, hLine);
+      addTapeBaseValues(values);
+      addStmtValues(values);
+      addJacobiValues(values);
+      addExtFuncValues(values);
 
+      return values;
     }
 
   };
