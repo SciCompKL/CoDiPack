@@ -94,7 +94,7 @@ namespace codi {
       lhsTangent  = gradient;
       value = rhs.getValue();
 
-#if CODI_AdjointHandle
+#if CODI_AdjointHandle_Tangent
       handleTangentOperation(value, lhsTangent);
 #endif
 
@@ -113,7 +113,7 @@ namespace codi {
       lhsTangent = rhs.getGradient();
       value = rhs.getValue();
 
-#if CODI_AdjointHandle
+#if CODI_AdjointHandle_Tangent
       handleTangentOperation(value, lhsTangent);
 #endif
     }

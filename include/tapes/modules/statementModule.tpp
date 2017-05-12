@@ -153,7 +153,7 @@
           indexHandler.assignIndex(lhsIndex);
           STATEMENT_PUSH_FUNCTION_NAME((StatementInt)activeVariables, lhsIndex);
 
-#if CODI_AdjointHandle
+#if CODI_AdjointHandle_Jacobi
           Real* jacobies = NULL;
           IndexType* rhsIndices = NULL;
 

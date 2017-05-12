@@ -473,7 +473,7 @@
           CODI_UNUSED(constantSize);  /* needed to avoid unused variable when the assersts are not enabled. */
           CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
 
-#if CODI_AdjointHandle
+#if CODI_AdjointHandle_Primal
             IndexType* rhsIndices = NULL;
             PassiveReal* constants = NULL;
 
