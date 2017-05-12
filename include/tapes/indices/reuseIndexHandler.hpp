@@ -102,6 +102,10 @@ namespace codi {
        */
       CODI_INLINE void freeIndex(Index& index) {
         if(0 != index) { // do not free the zero index
+
+#if CODI_IndexHandle
+        handleIndexFree(index);
+#endif
           if(currentMaximumIndex == index) {
             // freed index is the maximum one so we can decrease the count
             --currentMaximumIndex;
@@ -129,6 +133,10 @@ namespace codi {
           }
           index = ++currentMaximumIndex;
         }
+
+#if CODI_IndexHandle
+        handleIndexCreate(index);
+#endif
 
         return index;
       }

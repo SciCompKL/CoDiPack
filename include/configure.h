@@ -348,6 +348,17 @@ namespace codi {
     void handleTangentOperation(const Real& value, const TangentReal& tangent);
   #endif
 
+  #ifndef CODI_IndexHandle
+    #define CODI_IndexHandle false
+  #endif
+  #if CODI_IndexHandle
+    template<typename IndexType>
+    void handleIndexCreate(const IndexType& index);
+
+    template<typename IndexType>
+    void handleIndexFree(const IndexType& index);
+  #endif
+
   #ifndef CODI_EnableAssert
     #define CODI_EnableAssert false
   #endif

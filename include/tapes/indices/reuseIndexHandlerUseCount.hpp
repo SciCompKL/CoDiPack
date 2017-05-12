@@ -131,6 +131,10 @@ namespace codi {
           indexUse[index] -= 1;
 
           if(indexUse[index] == 0) { // only free the index if it not used any longer
+
+#if CODI_IndexHandle
+            handleIndexFree(index);
+#endif
             if(currentMaximumIndex == index) {
               // freed index is the maximum one so we can decrease the count
               --currentMaximumIndex;
@@ -168,6 +172,10 @@ namespace codi {
           }
           index = ++currentMaximumIndex;
         }
+
+#if CODI_IndexHandle
+        handleIndexCreate(index);
+#endif
 
         indexUse[index] = 1;
 
