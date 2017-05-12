@@ -62,7 +62,7 @@ namespace codi {
       /**
        * @brief If it is required to write an assign statement after the index is copied.
        */
-      const static bool AssignNeedsStatement = false;
+      const static bool AssignNeedsStatement = OptDisableAssignOptimization;
 
     private:
 
@@ -199,12 +199,17 @@ namespace codi {
        * @param[in]    rhs  The index of the rhs.
        */
       CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {
-        freeIndex(lhs);
+        if(!OptDisableAssignOptimization) {
+          freeIndex(lhs);
 
-        if(0 != rhs) { // do not handle the zero index
-          indexUse[rhs] += 1;
+          if(0 != rhs) { // do not handle the zero index
+            indexUse[rhs] += 1;
 
-          lhs = rhs;
+            lhs = rhs;
+          }
+        } else {
+            // path if assign optimizations are disabled
+            assignIndex(lhs);
         }
       }
 
