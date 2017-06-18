@@ -33,84 +33,12 @@
 
 #include "chunk.hpp"
 #include "emptyChunkVector.hpp"
+#include "pointerHandle.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
-
-  template<typename ChunkData>
-  struct PointerHandle {
-      void setPointers(const size_t& dataPos, ChunkData* chunk);
-
-      template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args);
-
-  };
-
-  template<typename Data1>
-  struct PointerHandle<Chunk1<Data1> > {
-      Data1* p1;
-
-      void setPointers(const size_t& dataPos, Chunk1<Data1>* chunk) {
-        chunk->dataPointer(dataPos, p1);
-      }
-
-      template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args) {
-        func(p1, std::forward<Args>(args)...);
-      }
-  };
-
-  template<typename Data1, typename Data2>
-  struct PointerHandle<Chunk2<Data1, Data2> > {
-      Data1* p1;
-      Data2* p2;
-
-      void setPointers(const size_t& dataPos, Chunk2<Data1, Data2>* chunk) {
-        chunk->dataPointer(dataPos, p1, p2);
-      }
-
-      template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args) {
-        func(p1, p2, std::forward<Args>(args)...);
-      }
-  };
-
-  template<typename Data1, typename Data2, typename Data3>
-  struct PointerHandle<Chunk3<Data1, Data2, Data3> > {
-      Data1* p1;
-      Data2* p2;
-      Data3* p3;
-
-      void setPointers(const size_t& dataPos, Chunk3<Data1, Data2, Data3>* chunk) {
-        chunk->dataPointer(dataPos, p1, p2, p3);
-      }
-
-      template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args) {
-        func(p1, p2, p3, std::forward<Args>(args)...);
-      }
-  };
-
-  template<typename Data1, typename Data2, typename Data3, typename Data4>
-  struct PointerHandle<Chunk4<Data1, Data2, Data3, Data4> > {
-      Data1* p1;
-      Data2* p2;
-      Data3* p3;
-      Data4* p4;
-
-      void setPointers(const size_t& dataPos, Chunk4<Data1, Data2, Data3, Data4>* chunk) {
-        chunk->dataPointer(dataPos, p1, p2, p3, p4);
-      }
-
-      template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args) {
-        func(p1, p2, p3, p4, std::forward<Args>(args)...);
-      }
-  };
-
-
 
   /**
    * @brief A vector which manages chunks of data for the taping process.
