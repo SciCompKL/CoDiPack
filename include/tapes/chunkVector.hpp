@@ -451,37 +451,7 @@ namespace codi {
       }
     }
 
-    template<typename FunctionObject, typename ... Pointers>
-    CODI_INLINE void forEachDataOld(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
-      codiAssert(start >= end);
-      codiAssert(chunkPos < chunks.size());
-
-      // we do not initialize dataPos with start - 1 because the type can be unsigned
-      for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
-        --dataPos; // decrement of loop variable
-
-        getDataAtPosition(chunkPos, dataPos, pointers...);
-        function(pointers...);
-      }
-    }
-
   public:
-    template<typename FunctionObject, typename ... Pointers>
-    CODI_INLINE void forEachOld(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
-      codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
-      codiAssert(start.chunk < chunks.size());
-
-      size_t dataStart = start.data;
-      for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
-
-        forEachDataOld(chunkPos, dataStart, 0, function, pointers...);
-
-        dataStart = chunks[--chunkPos]->getUsedSize(); // decrement of loop variable
-
-      }
-
-      forEachDataOld(end.chunk, dataStart, end.data, function, pointers...);
-    }
 
     /**
      * @brief Iterates over all data entries in the given range

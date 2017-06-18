@@ -553,16 +553,11 @@ namespace codi {
       // Do not perform a global reset on the primal value vector if the tape is cleared
       if(getZeroPosition() != pos) {
 
-        IndexType* index;
-        Real* value;
-        Handle* handle;
-        StatementInt* stmtSize;
-
         PrimalValueReseter reseter(*this);
 
         StmtPosition stmtEnd = stmtVector.getPosition();
 
-        stmtVector.forEachOld(stmtEnd, pos.inner.inner.inner, reseter, index, value, handle, stmtSize);
+        stmtVector.forEach(stmtEnd, pos.inner.inner.inner, reseter);
       }
 
       // call the function from the external function module
