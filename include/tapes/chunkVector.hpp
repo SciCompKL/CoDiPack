@@ -431,12 +431,12 @@ namespace codi {
      * @param    start  The starting point inside the data of the chunk.
      * @param      end  The end point inside the data of the chunk.
      * @param function  The function called for each data entry.
-     * @param pointers  The pointers are used as the arguments for the function. They will be populated with the data in the chunks.
+     * @param     args  Additional arguments for the function.
      *
-     * @tparam  Pointers  The data types for the pointers.
+     * @tparam  Args  The data types for the arguments.
      */
-    template<typename FunctionObject, typename ... Pointers>
-    CODI_INLINE void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
       codiAssert(start >= end);
       codiAssert(chunkPos < chunks.size());
 
@@ -447,7 +447,7 @@ namespace codi {
         --dataPos; // decrement of loop variable
 
         pHandle.setPointers(dataPos, chunks[chunkPos]);
-        pHandle.call(function, pointers...);
+        pHandle.call(function, std::forward<Args>(args)...);
       }
     }
 
@@ -463,25 +463,25 @@ namespace codi {
      * @param    start  The starting point of the range.
      * @param      end  The end point of the range.
      * @param function  The function called for each data entry.
-     * @param pointers  The pointers are used as the arguments for the function. They will be populated with the data in the chunks.
+     * @param     args  Additional arguments for the function.
      *
-     * @tparam  Pointers  The data types for the pointers.
+     * @tparam  Args  The data types for the arguments.
      */
-    template<typename FunctionObject, typename ... Pointers>
-    CODI_INLINE void forEach(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEach(const Position& start, const Position& end, FunctionObject& function, Args&&... args) {
       codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
       codiAssert(start.chunk < chunks.size());
 
       size_t dataStart = start.data;
       for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
 
-        forEachData(chunkPos, dataStart, 0, function, pointers...);
+        forEachData(chunkPos, dataStart, 0, function, std::forward<Args>(args)...);
 
         dataStart = chunks[--chunkPos]->getUsedSize(); // decrement of loop variable
 
       }
 
-      forEachData(end.chunk, dataStart, end.data, function, pointers...);
+      forEachData(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
     }
 
     /**
@@ -499,15 +499,15 @@ namespace codi {
      * @tparam  Args  The data types for the arguments of the function.
      */
     template<typename FunctionObject, typename ... Args>
-    CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
+    CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
 
       for(size_t chunkPos = 0; chunkPos < chunks.size(); ++chunkPos) {
 
-        function(chunks[chunkPos], args...);
+        function(chunks[chunkPos], std::forward<Args>(args)...);
       }
 
       if(recursive) {
-        nested->forEachChunk(function, recursive, args...);
+        nested->forEachChunk(function, recursive, std::forward<Args>(args)...);
       }
     }
   };
