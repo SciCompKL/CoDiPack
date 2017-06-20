@@ -72,4 +72,24 @@ namespace codi {
   template <typename T>
   CODI_INLINE bool isTotalZero(const T& t) {
     return IsTotalZeroImpl<T, std::is_arithmetic<T>::value>::isTotalZero(t);}
+
+#ifndef DOXYGEN_DISABLE
+  // Take address of a T instance
+  template <typename T, typename Enable = void>
+  struct addressof_impl {
+      typedef typename std::add_pointer<T>::type pointer_type;
+
+      static CODI_INLINE pointer_type get(T &t) {
+          return &t;
+      }
+  };
+#endif
+
+  /**
+   * @brief Return address of a variable
+   */
+  template <typename T>
+  CODI_INLINE
+  typename addressof_impl<T>::pointer_type addressof(T& t) {
+    return addressof_impl<T>::get(t); }
 }
