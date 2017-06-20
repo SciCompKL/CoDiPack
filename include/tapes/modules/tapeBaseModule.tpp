@@ -120,7 +120,7 @@
       }
 
       for(IndexType i = oldSize; i < adjointsSize; ++i) {
-        adjoints[i] = GradientValue();
+        new (adjoints + i) GradientValue();
       }
     }
 
