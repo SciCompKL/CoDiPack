@@ -92,4 +92,22 @@ namespace codi {
   CODI_INLINE
   typename addressof_impl<T>::pointer_type addressof(T& t) {
     return addressof_impl<T>::get(t); }
+
+
+#ifndef DOXYGEN_DISABLE
+  // check is variable is finite
+  template <typename T, typename Enable = void>
+  struct isfinite_impl {
+      static CODI_INLINE bool get(const T &t) {
+          return isfinite(t);
+      }
+  };
+#endif
+
+  /**
+   * @brief Check if variable is finite
+   */
+  template <typename T>
+  CODI_INLINE bool isfinite(const T& t) {
+    return isfinite_impl<T>::get(t); }
 }
