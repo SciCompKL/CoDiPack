@@ -36,25 +36,25 @@
 namespace codi {
 
 #ifndef DOXYGEN_DISABLE
-  // default definition
-  template <typename T, const bool isArithmetic>
-  struct IsTotalZeroImpl {};
+  // default definition. call t.isTotalZero()
+  template <typename T, typename Enable = void>
+  struct IsTotalZeroImpl {
+      static CODI_INLINE bool isTotalZero(const T &t) {
+        return t.isTotalZero();
+      }
+  };
 
   //call t == 0 for all arithmetic types e.g. double, int @internal */
   template <typename T>
-  struct IsTotalZeroImpl<T, true> {
+  struct IsTotalZeroImpl<T,
+      typename std::enable_if<std::is_arithmetic<T>::value>::type
+      >
+  {
       static CODI_INLINE bool isTotalZero(const T &t) {
         return t == T();
       }
   };
 
-  //call t.isTotalZero for all other types */
-  template <typename T>
-  struct IsTotalZeroImpl<T, false> {
-      static CODI_INLINE bool isTotalZero(const T &t) {
-        return t.isTotalZero();
-      }
-  };
 #endif
 
   /**
@@ -71,7 +71,7 @@ namespace codi {
    */
   template <typename T>
   CODI_INLINE bool isTotalZero(const T& t) {
-    return IsTotalZeroImpl<T, std::is_arithmetic<T>::value>::isTotalZero(t);}
+    return IsTotalZeroImpl<T>::isTotalZero(t);}
 
 #ifndef DOXYGEN_DISABLE
   // Take address of a T instance
