@@ -1105,6 +1105,45 @@ namespace codi {
   #define PRIMAL_FUNCTION erfc
   #include "unaryExpression.tpp"
 
+  template<typename Real> CODI_INLINE Real gradTgamma(const Real& a, const Real& result) {
+    CODI_UNUSED(result);
+
+    if(a <= 0.0) {
+      std::cout << "Derivative for gamma function only for positive arguments at the moment" << std::endl;
+      std::exit(1);
+    }
+
+    // Implementation of the digamma function is taken from John Burkardt,
+    // http://people.sc.fsu.edu/~jburkardt/cpp_src/asa103/asa103.cpp
+    const Real c = 8.5;
+    const Real euler_mascheroni = 0.57721566490153286060;
+
+    Real DiGamma = 0.0;
+    if(a <= 0.000001) DiGamma = -euler_mascheroni - 1.0/a + 1.6449340668482264365*a;
+    else {
+      Real aa = a;
+      while( aa < c ) {
+        DiGamma -= 1.0/aa;
+        aa      += 1.0;
+      }
+
+      Real r = 1.0/aa;
+      DiGamma += log(aa) - 0.5*r;
+
+      r = r*r;
+      DiGamma -= r*(1.0/12.0 - r*(1.0/120.0 - r*(1.0/252.0 - r*(1.0/240.0 - r*(1.0/132.0)))));
+    }
+
+    // Return the derivative of the gamma function, which is the gamma function
+    // times the digamma function.
+    return DiGamma*tgamma(a);
+  }
+  using std::tgamma;
+  #define NAME Tgamma
+  #define FUNCTION tgamma
+  #define PRIMAL_FUNCTION tgamma
+  #include "unaryExpression.tpp"
+
   #undef CODI_OPERATOR_HELPER
 
   /**
