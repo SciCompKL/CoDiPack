@@ -29,6 +29,7 @@
 #pragma once
 
 #include <iomanip>
+#include <sstream>
 #include <string>
 #include <sstream>
 #include <tuple>

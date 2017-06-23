@@ -113,6 +113,10 @@
       IndexType oldSize = adjointsSize;
       adjointsSize = size;
 
+      for(IndexType i = adjointsSize; i < oldSize; ++i) {
+        adjoints[i].~GradientValue();
+      }
+
       adjoints = (GradientValue*)realloc(adjoints, sizeof(GradientValue) * (size_t)adjointsSize);
 
       if(NULL == adjoints) {
@@ -120,7 +124,7 @@
       }
 
       for(IndexType i = oldSize; i < adjointsSize; ++i) {
-        adjoints[i] = GradientValue();
+        new (adjoints + i) GradientValue();
       }
     }
 

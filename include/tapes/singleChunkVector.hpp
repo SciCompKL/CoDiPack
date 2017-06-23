@@ -33,6 +33,7 @@
 
 #include "chunk.hpp"
 #include "emptyChunkVector.hpp"
+#include "pointerHandle.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -323,12 +324,12 @@ namespace codi {
      * @param    start  The starting point inside the data of the chunk.
      * @param      end  The end point inside the data of the chunk.
      * @param function  The function called for each data entry.
-     * @param pointers  The pointers to the data of the chunk at the given position.
+     * @param     args  Additional arguments for the function.
      *
-     * @tparam  Pointers  The data types for the pointers.
+     * @tparam  Args  The data types for the arguments.
      */
-    template<typename FunctionObject, typename ... Pointers>
-    CODI_INLINE void forEachData(const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachData(const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
       codiAssert(start >= end);
 
       PointerHandle<ChunkType> pHandle;
@@ -338,34 +339,11 @@ namespace codi {
         --dataPos; // decrement of loop variable
 
         pHandle.setPointers(dataPos, &chunk);
-        pHandle.call(function, pointers...);
-      }
-    }
-
-    template<typename FunctionObject, typename ... Pointers>
-    CODI_INLINE void forEachDataOld(const size_t& start, const size_t& end, FunctionObject& function, Pointers* &... pointers) {
-      codiAssert(start >= end);
-
-      // we do not initialize dataPos with start - 1 because the type can be unsigned
-      for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
-        --dataPos; // decrement of loop variable
-
-        getDataAtPosition(0, dataPos, pointers...);
-        function(pointers...);
+        pHandle.call(function, std::forward<Args>(args)...);
       }
     }
 
   public:
-
-    template<typename FunctionObject, typename ... Pointers>
-    CODI_INLINE void forEachOld(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
-      codiAssert(start.chunk == 0);
-      codiAssert(end.chunk == 0);
-      codiAssert(start.data >= end.data);
-      codiAssert(start.data <= chunk.getSize());
-
-      forEachDataOld(start.data, end.data, function, pointers...);
-    }
 
     /**
      * @brief Iterates over all data entries in the given range
@@ -377,18 +355,18 @@ namespace codi {
      * @param    start  The starting point of the range.
      * @param      end  The end point of the range.
      * @param function  The function called for each data entry.
-     * @param pointers  The pointers to the data of the chunk at the given position.
+     * @param     args  Additional arguments for the function
      *
-     * @tparam  Pointers  The data types for the pointers.
+     * @tparam  Args  The data types for the arguments.
      */
-    template<typename FunctionObject, typename ... Pointers>
-    CODI_INLINE void forEach(const Position& start, const Position& end, FunctionObject& function, Pointers* &... pointers) {
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEach(const Position& start, const Position& end, FunctionObject& function, Args &&... args) {
       codiAssert(start.chunk == 0);
       codiAssert(end.chunk == 0);
       codiAssert(start.data >= end.data);
       codiAssert(start.data <= chunk.getSize());
 
-      forEachData(start.data, end.data, function, pointers...);
+      forEachData(start.data, end.data, function, std::forward<Args>(args)...);
     }
 
     /**
@@ -405,12 +383,12 @@ namespace codi {
      * @tparam  Args  The data types for the arguments of the function.
      */
     template<typename FunctionObject, typename ... Args>
-    CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
+    CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &&... args) {
 
       function(&chunk, args...);
 
       if(recursive) {
-        nested->forEachChunk(function, recursive, args...);
+        nested->forEachChunk(function, recursive, std::forward<Args>(args)...);
       }
     }
   };
