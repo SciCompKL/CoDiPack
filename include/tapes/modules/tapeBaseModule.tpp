@@ -304,7 +304,7 @@
      * @param[in] start  The starting position for the adjoint evaluation.
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
-    void evaluate(const Position& start, const Position& end) {
+    CODI_NO_INLINE void evaluate(const Position& start, const Position& end) {
       if(adjointsSize <= INDEX_HANDLER_NAME.getMaximumGlobalIndex()) {
         resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
       }
