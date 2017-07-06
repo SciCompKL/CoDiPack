@@ -162,22 +162,35 @@
 
     struct InsertData {
 
-        std::map<GradientData, Real> storageData;
+        std::array<GradientData, 256> indices;
+        std::array<Real, 256> jacobies;
+        uint8_t size;
+
+        InsertData() = default;
 
         CODI_INLINE void addData(const GradientData& index, const Real& jacobi) {
-          // pos = <<index, jacobi>, bool>
-          auto pos = storageData.insert(std::make_pair(index, jacobi));
-
-          if(!std::get<1>(pos)) { // false means index already existed, so it was not inserted and we need to update the Jacobi
-            std::get<1>(*std::get<0>(pos)) += jacobi;
+          bool found = false;
+          uint8_t pos;
+          for(pos = 0; pos < size; ++pos) {
+            if(indices[pos] == index) {
+              found = true;
+              break;
+            }
           }
+
+          if(!found) {
+            size += 1;
+            indices[pos] = index;
+          }
+
+          jacobies[pos] += jacobi;
         }
     };
 
     CODI_INLINE void storeData(const InsertData& data) {
       // entry = <index, jacobi>
-      for(const auto& entry : data.storageData) {
-        this->jacobiVector.setDataAndMove(std::get<1>(entry), std::get<0>(entry));
+      for(uint8_t pos = 0; pos < data.size; ++pos) {
+        this->jacobiVector.setDataAndMove(data.jacobies[pos], data.indices[pos]);
       }
     }
 

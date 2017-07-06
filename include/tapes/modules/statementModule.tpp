@@ -144,7 +144,7 @@
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
         size_t startSize = JACOBI_VECTOR_NAME.getChunkPosition();
-        InsertData insertData;
+        InsertData insertData = {};
         rhs.template calcGradient(insertData);
         rhs.template pushLazyJacobies(insertData);
         storeData(insertData);
