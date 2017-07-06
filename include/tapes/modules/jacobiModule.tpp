@@ -160,6 +160,27 @@
       jacobiVector.resize(dataSize);
     }
 
+    struct InsertData {
+
+        std::map<GradientData, Real> storageData;
+
+        CODI_INLINE void addData(const GradientData& index, const Real& jacobi) {
+          // pos = <<index, jacobi>, bool>
+          auto pos = storageData.insert(std::make_pair(index, jacobi));
+
+          if(!std::get<1>(pos)) { // false means index already existed, so it was not inserted and we need to update the Jacobi
+            std::get<1>(*std::get<0>(pos)) += jacobi;
+          }
+        }
+    };
+
+    CODI_INLINE void storeData(const InsertData& data) {
+      // entry = <index, jacobi>
+      for(const auto& entry : data.storageData) {
+        this->jacobiVector.setDataAndMove(std::get<1>(entry), std::get<0>(entry));
+      }
+    }
+
   public:
 
   // ----------------------------------------------------------------------
@@ -187,10 +208,9 @@
      */
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
-      CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        this->jacobiVector.setDataAndMove(PassiveReal(1.0), index);
+        data.addData(index, PassiveReal(1.0));
       }
     }
 
@@ -206,12 +226,11 @@
      */
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
-            this->jacobiVector.setDataAndMove(jacobi, index);
+            data.addData(index, jacobi);
           }
         }
       }

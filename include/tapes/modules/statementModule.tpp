@@ -137,7 +137,6 @@
      */
     template<typename Rhs>
     CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
-      void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
@@ -145,8 +144,10 @@
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
         size_t startSize = JACOBI_VECTOR_NAME.getChunkPosition();
-        rhs.template calcGradient<void*>(null);
-        rhs.template pushLazyJacobies<void*>(null);
+        InsertData insertData;
+        rhs.template calcGradient(insertData);
+        rhs.template pushLazyJacobies(insertData);
+        storeData(insertData);
         size_t activeVariables = JACOBI_VECTOR_NAME.getChunkPosition() - startSize;
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
 
