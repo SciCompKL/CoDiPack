@@ -162,8 +162,8 @@
 
     struct InsertData {
 
-        std::array<GradientData, 256> indices;
-        std::array<Real, 256> jacobies;
+        std::array<GradientData, MaxStatementIntSize> indices;
+        std::array<Real, MaxStatementIntSize> jacobies;
         uint8_t size;
 
         InsertData() = default;
@@ -190,7 +190,6 @@
     InsertData insertData;
 
     CODI_INLINE void storeData() {
-      // entry = <index, jacobi>
       for(uint8_t pos = 0; pos < insertData.size; ++pos) {
         this->jacobiVector.setDataAndMove(insertData.jacobies[pos], insertData.indices[pos]);
         insertData.jacobies[pos] = 0.0;
