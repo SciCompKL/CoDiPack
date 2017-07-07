@@ -216,6 +216,7 @@ namespace codi {
       /* defined in tapeBaseModule */active(false),
       /* defined in statementModule */stmtVector(DefaultChunkSize, &indexHandler),
       /* defined in jacobiModule */jacobiVector(DefaultChunkSize, &stmtVector),
+      /* defined in jacobiModule */insertData(),
       /* defined in externalFunctionsModule */extFuncVector(1000, &jacobiVector) {
     }
 

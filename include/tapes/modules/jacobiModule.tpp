@@ -187,11 +187,16 @@
         }
     };
 
-    CODI_INLINE void storeData(const InsertData& data) {
+    InsertData insertData;
+
+    CODI_INLINE void storeData() {
       // entry = <index, jacobi>
-      for(uint8_t pos = 0; pos < data.size; ++pos) {
-        this->jacobiVector.setDataAndMove(data.jacobies[pos], data.indices[pos]);
+      for(uint8_t pos = 0; pos < insertData.size; ++pos) {
+        this->jacobiVector.setDataAndMove(insertData.jacobies[pos], insertData.indices[pos]);
+        insertData.jacobies[pos] = 0.0;
       }
+
+      insertData.size = 0;
     }
 
   public:
