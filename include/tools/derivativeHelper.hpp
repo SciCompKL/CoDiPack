@@ -30,10 +30,10 @@
 #pragma once
 
 #include <type_traits>
-#include <typeTraits.hpp>
 
 #include "../configure.h"
 #include "binomial.hpp"
+#include "../typeTraits.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
