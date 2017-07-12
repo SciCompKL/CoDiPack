@@ -65,7 +65,7 @@ namespace codi {
        * @param[in,out] args  The additional arguments for the function call.
        */
       template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args);
+      void call(FuncObj& func, Args&&... args);
 
   };
 
@@ -99,7 +99,7 @@ namespace codi {
        * @param[in,out] args  The additional arguments for the function call.
        */
       template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args) {
+      void call(FuncObj& func, Args&&... args) {
         func(p1, std::forward<Args>(args)...);
       }
   };
@@ -136,7 +136,7 @@ namespace codi {
        * @param[in,out] args  The additional arguments for the function call.
        */
       template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args) {
+      void call(FuncObj& func, Args&&... args) {
         func(p1, p2, std::forward<Args>(args)...);
       }
   };
@@ -175,7 +175,7 @@ namespace codi {
        * @param[in,out] args  The additional arguments for the function call.
        */
       template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args) {
+      void call(FuncObj& func, Args&&... args) {
         func(p1, p2, p3, std::forward<Args>(args)...);
       }
   };
@@ -216,7 +216,7 @@ namespace codi {
        * @param[in,out] args  The additional arguments for the function call.
        */
       template<typename FuncObj, typename ... Args>
-      void call(FuncObj func, Args&&... args) {
+      void call(FuncObj& func, Args&&... args) {
         func(p1, p2, p3, p4, std::forward<Args>(args)...);
       }
   };
