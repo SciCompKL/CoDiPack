@@ -457,7 +457,7 @@ namespace codi {
      * @param[inout] value  Unused
      * @param[out]   index  Is assigned a non zero value.
      */
-    CODI_INLINE void registerOutputInternal(Real& value, IndexType& index) {
+    CODI_INLINE void registerOutputInternal(const Real& value, IndexType& index) {
       CODI_UNUSED(value);
 
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
