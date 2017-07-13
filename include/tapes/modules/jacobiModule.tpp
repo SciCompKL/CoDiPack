@@ -187,6 +187,8 @@
         }
     };
 
+  public:
+
     InsertData insertData;
 
     CODI_INLINE void storeData() {
@@ -197,8 +199,6 @@
 
       insertData.size = 0;
     }
-
-  public:
 
   // ----------------------------------------------------------------------
   // Public function from the TapeInterface and ReverseTapeInterface
