@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -256,17 +256,17 @@ namespace codi {
     #define CODI_DisableCalcGradientSpecialization false
   #endif
 
-  #ifndef CODI_AdjointHandle
-    #define CODI_AdjointHandle false
+  #ifndef CODI_AdjointHandle_Jacobi
+    #define CODI_AdjointHandle_Jacobi false
   #endif
-  #if CODI_AdjointHandle
+  #if CODI_AdjointHandle_Jacobi
     /**
      * @brief A function that is called for every statement that is written on the
      *        Jacobie tapes.
      *
      * The function can be used to extract information from the taping process.
      *
-     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     * It can be set with the preprocessor macro CODI_AdjointHandle_Jacobi=<true/false>
      *
      * @param[in]      value  The primal value of the statement.
      * @param[in]   lhsIndex  The index on the left hand side of the statement, that
@@ -284,7 +284,12 @@ namespace codi {
      */
     template<typename Real, typename IndexType>
     void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
+  #endif
 
+  #ifndef CODI_AdjointHandle_Primal
+    #define CODI_AdjointHandle_Primal false
+  #endif
+  #if CODI_AdjointHandle_Primal
     /**
      * @brief Pre definition of the the expression handles.
      *
@@ -300,7 +305,7 @@ namespace codi {
      *
      * The function can be used to extract information from the taping process.
      *
-     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     * It can be set with the preprocessor macro CODI_AdjointHandle_Primal=<true/false>
      *
      * @param[in]          value  The primal value of the statement.
      * @param[in]       lhsIndex  The index on the left hand side of the statement, that
@@ -320,13 +325,18 @@ namespace codi {
      */
     template<typename Real, typename PassiveReal, typename IndexType>
     void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const ExpressionHandle<Real*, Real, IndexType>* handle, const StatementInt& passiveActives, const PassiveReal* constants, const IndexType* rhsIndices, const Real* primalVec);
+  #endif
 
+  #ifndef CODI_AdjointHandle_Tangent
+    #define CODI_AdjointHandle_Tangent false
+  #endif
+  #if CODI_AdjointHandle_Tangent
     /**
      * @brief A function that is called for every statement that is evaluated in the forward tape.
      *
      * The function can be used to extract information from the taping process.
      *
-     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     * It can be set with the preprocessor macro CODI_AdjointHandle_Tangent=<true/false>
      *
      * @param[in]   value  The primal value of the statement.
      * @param[in] tangent  The tangent value of the statement.
@@ -336,6 +346,17 @@ namespace codi {
      */
     template<typename Real, typename TangentReal>
     void handleTangentOperation(const Real& value, const TangentReal& tangent);
+  #endif
+
+  #ifndef CODI_IndexHandle
+    #define CODI_IndexHandle false
+  #endif
+  #if CODI_IndexHandle
+    template<typename IndexType>
+    void handleIndexCreate(const IndexType& index);
+
+    template<typename IndexType>
+    void handleIndexFree(const IndexType& index);
   #endif
 
   #ifndef CODI_EnableAssert

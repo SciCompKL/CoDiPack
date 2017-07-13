@@ -1,7 +1,7 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -42,6 +42,7 @@
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
+#include "../tools/tapeValues.hpp"
 
 namespace codi {
 
@@ -552,16 +553,11 @@ namespace codi {
       // Do not perform a global reset on the primal value vector if the tape is cleared
       if(getZeroPosition() != pos) {
 
-        IndexType* index;
-        Real* value;
-        Handle* handle;
-        StatementInt* stmtSize;
-
         PrimalValueReseter reseter(*this);
 
         StmtPosition stmtEnd = stmtVector.getPosition();
 
-        stmtVector.forEachOld(stmtEnd, pos.inner.inner.inner, reseter, index, value, handle, stmtSize);
+        stmtVector.forEach(stmtEnd, pos.inner.inner.inner, reseter);
       }
 
       // call the function from the external function module
@@ -639,27 +635,17 @@ namespace codi {
       }
     }
 
-    /**
-     * @brief Prints statistics about the tape on the screen or into a stream
-     *
-     * Prints information such as stored statements/adjoints and memory usage on screen or into
-     * the stream when an argument is provided.
-     *
-     * @param[in,out] out  The information is written to the stream.
-     *
-     * @tparam Stream The type of the stream.
-     */
-    template<typename Stream = std::ostream>
-    void printStatistics(Stream& out = std::cout) const {
+    TapeValues getTapeValues() const {
+      TapeValues values;
 
-      const std::string hLine = "-------------------------------------\n";
+      std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
+      values.addSection(name);
 
-      out << hLine
-          << "CoDi Tape Statistics (" << TapeTypes::tapeName << ")\n";
-      printTapeBaseStatistics(out, hLine);
-      printPrimalValueStatistics(out, hLine);
-      printExtFuncStatistics(out, hLine);
+      addTapeBaseValues(values);
+      addPrimalValueValues(values);
+      addExtFuncValues(values);
 
+      return values;
     }
   };
 

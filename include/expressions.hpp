@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -887,6 +887,24 @@ namespace codi {
   #define NAME Sqrt
   #define FUNCTION sqrt
   #define PRIMAL_FUNCTION sqrt
+  #include "unaryExpression.tpp"
+
+  template<typename Real> CODI_INLINE Real gradCbrt(const Real& a, const Real& result) {
+    if(CheckExpressionArguments) {
+      if(0.0 == TypeTraits<Real>::getBaseValue(a)) {
+        CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+      }
+    }
+    if(result != 0.0) {
+      return 1.0 / (3.0 * result * result);
+    } else {
+      return (Real)0.0;
+    }
+  }
+  using std::cbrt;
+  #define NAME Cbrt
+  #define FUNCTION cbrt
+  #define PRIMAL_FUNCTION cbrt
   #include "unaryExpression.tpp"
 
   template<typename Real> CODI_INLINE Real gradTanh(const Real& a, const Real& result) {

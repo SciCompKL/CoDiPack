@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -44,7 +44,7 @@
  * The module defines the types Position.
  *
  * It defines the methods initGradientData, destroyGradientData, setGradient, getGradient, gradient, clearAdjoints,
- * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), setActive, setPassive, isActive, printTapeBaseStatistics
+ * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), setActive, setPassive, isActive, print Statistics
  * from the TapeInterface and ReverseTapeInterface.
  *
  * It defines the methods resizeAdjoints, cleanTapeBase, swapTapeBaseModule as interface functions for the
@@ -113,6 +113,10 @@
       IndexType oldSize = adjointsSize;
       adjointsSize = size;
 
+      for(IndexType i = adjointsSize; i < oldSize; ++i) {
+        adjoints[i].~GradientValue();
+      }
+
       adjoints = (GradientValue*)realloc(adjoints, sizeof(GradientValue) * (size_t)adjointsSize);
 
       if(NULL == adjoints) {
@@ -120,7 +124,7 @@
       }
 
       for(IndexType i = oldSize; i < adjointsSize; ++i) {
-        adjoints[i] = GradientValue();
+        new (adjoints + i) GradientValue();
       }
     }
 
@@ -304,7 +308,7 @@
      * @param[in] start  The starting position for the adjoint evaluation.
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
-    void evaluate(const Position& start, const Position& end) {
+    CODI_NO_INLINE void evaluate(const Position& start, const Position& end) {
       if(adjointsSize <= INDEX_HANDLER_NAME.getMaximumGlobalIndex()) {
         resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
       }
@@ -342,6 +346,40 @@
     }
 
     /**
+     * @brief Prints statistics about the tape on the screen or into a stream
+     *
+     * Prints information such as stored statements/adjoints and memory usage on screen or into
+     * the stream when an argument is provided.
+     *
+     * @param[in,out] out  The information is written to the stream.
+     *
+     * @tparam Stream The type of the stream.
+     */
+    template<typename Stream = std::ostream>
+    void printStatistics(Stream& out = std::cout) const {
+
+      TapeValues values = getTapeValues();
+
+      values.formatDefault(out);
+    }
+
+    template<typename Stream = std::ostream>
+    void printTableHeader(Stream& out = std::cout) const {
+
+      TapeValues values = getTapeValues();
+
+      values.formatHeader(out);
+    }
+
+    template<typename Stream = std::ostream>
+    void printTableRow(Stream& out = std::cout) const {
+
+      TapeValues values = getTapeValues();
+
+      values.formatRow(out);
+    }
+
+    /**
      * @brief Prints statistics about the adjoint vector.
      *
      * Displays the number of adjoints and the allocated memory. Also
@@ -352,21 +390,16 @@
      *
      * @tparam Stream The type of the stream.
      */
-    template<typename Stream>
-    void printTapeBaseStatistics(Stream& out, const std::string hLine) const {
+    void addTapeBaseValues(TapeValues& values) const {
 
       size_t nAdjoints      = INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1;
       double memoryAdjoints = (double)nAdjoints * (double)sizeof(GradientValue) * BYTE_TO_MB;
 
-      out << hLine
-          << "Adjoint vector\n"
-          << hLine
-          << "  Number of Adjoints: " << std::setw(10) << nAdjoints << "\n"
-          << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
-                                      << std::setprecision(2)
-                                      << std::setw(10)
-                                      << memoryAdjoints << " MB" << "\n";
-      INDEX_HANDLER_NAME.printStatistics(out, hLine);
+      values.addSection("Adjoint vector");
+      values.addData("Number of adjoints", nAdjoints);
+      values.addData("Memory allocated", memoryAdjoints);
+
+      INDEX_HANDLER_NAME.addValues(values);
     }
 
     /**
