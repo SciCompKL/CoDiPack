@@ -272,7 +272,7 @@ namespace codi {
     CODI_INLINE void dataPointer(const size_t& index, Data* &pointer) {
       codiAssert(index <= ChunkInterface::size);
 
-      pointer = &data[index];
+      pointer = codi::addressof(data[index]);
     }
   };
 
@@ -564,9 +564,9 @@ namespace codi {
      */
     CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3) {
       codiAssert(index <= ChunkInterface::size);
-      pointer1 = &data1[index];
-      pointer2 = &data2[index];
-      pointer3 = &data3[index];
+      pointer1 = codi::addressof(data1[index]);
+      pointer2 = codi::addressof(data2[index]);
+      pointer3 = codi::addressof(data3[index]);
     }
   };
 
@@ -740,10 +740,10 @@ namespace codi {
      */
     CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3, Data4* &pointer4) {
       codiAssert(index <= ChunkInterface::size);
-      pointer1 = &data1[index];
-      pointer2 = &data2[index];
-      pointer3 = &data3[index];
-      pointer4 = &data4[index];
+      pointer1 = codi::addressof(data1[index]);
+      pointer2 = codi::addressof(data2[index]);
+      pointer3 = codi::addressof(data3[index]);
+      pointer4 = codi::addressof(data4[index]);
     }
   };
 
