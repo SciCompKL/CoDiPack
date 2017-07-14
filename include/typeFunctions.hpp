@@ -46,7 +46,8 @@ namespace codi {
 
   //call t == 0 for all arithmetic types e.g. double, int @internal */
   template <typename T>
-  struct IsTotalZeroImpl<T,
+  struct IsTotalZeroImpl<
+      T,
       typename std::enable_if<std::is_arithmetic<T>::value>::type
       >
   {
@@ -76,10 +77,10 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
   // Take address of a T instance
   template <typename T, typename Enable = void>
-  struct addressof_impl {
-      typedef typename std::add_pointer<T>::type pointer_type;
+  struct AddressOfImpl {
+      typedef typename std::add_pointer<T>::type PointerType;
 
-      static CODI_INLINE pointer_type get(T &t) {
+      static CODI_INLINE PointerType get(T &t) {
           return &t;
       }
   };
@@ -87,17 +88,22 @@ namespace codi {
 
   /**
    * @brief Return address of a variable
+   *
+   * The default implementation returns &t.
+   *
+   * @param[in] t The value from which the adress is taken.
+   * @tparam T Type of the variable.
    */
   template <typename T>
   CODI_INLINE
-  typename addressof_impl<T>::pointer_type addressof(T& t) {
-    return addressof_impl<T>::get(t); }
-
+  typename AddressOfImpl<T>::PointerType addressof(T& t) {
+    return AddressOfImpl<T>::get(t);
+  }
 
 #ifndef DOXYGEN_DISABLE
   // check is variable is finite
   template <typename T, typename Enable = void>
-  struct isfinite_impl {
+  struct IsFiniteImpl {
       static CODI_INLINE bool get(const T &t) {
           return isfinite(t);
       }
@@ -106,8 +112,14 @@ namespace codi {
 
   /**
    * @brief Check if variable is finite
+   *
+   * The default implementation calls isfinite(t) without a namespace specifier.
+   *
+   * @param[in] t The for which the is finite attribute is checked.
+   * @tparam T Type of the variable
    */
   template <typename T>
   CODI_INLINE bool isfinite(const T& t) {
-    return isfinite_impl<T>::get(t); }
+    return IsFiniteImpl<T>::get(t);
+  }
 }
