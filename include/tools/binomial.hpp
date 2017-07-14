@@ -181,7 +181,7 @@ namespace codi {
    * @tparam k  The selection size k.
    */
   template<size_t n, size_t k>
-  const size_t binomial() {
+  size_t binomial() {
     return BinomialTemplate::Binomial<n,k>::value;
   }
 }

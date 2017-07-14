@@ -29,7 +29,7 @@
 #include <toolDefines.h>
 
 IN(1)
-OUT(3)
+OUT(4)
 POINTS(20) =
 {
   {  0.5000},
@@ -55,7 +55,8 @@ POINTS(20) =
 };
 
 void func(NUMBER* x, NUMBER* y) {
-  y[0] =   log(x[0]);  // (0, inf)
-  y[1] = log10(x[0]);  // (0, inf)
-  y[2] =  sqrt(x[0]);  // [0 , inf)
+  y[0] =    log(x[0]);  // (0, inf)
+  y[1] =  log10(x[0]);  // (0, inf)
+  y[2] =   sqrt(x[0]);  // [0 , inf)
+  y[3] = tgamma(x[0]);  // R currently only defined for positive arguments
 }
