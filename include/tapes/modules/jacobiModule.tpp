@@ -209,7 +209,7 @@
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
             this->jacobiVector.setDataAndMove(jacobi, index);
           }

@@ -1228,7 +1228,7 @@ namespace codi {
    */
   template<typename Real, class A>
   CODI_INLINE bool isfinite(const codi::Expression<Real, A>& a) {
-    return isfinite(a.getValue());
+    return codi::isfinite(a.getValue());
   }
 
   using std::floor;

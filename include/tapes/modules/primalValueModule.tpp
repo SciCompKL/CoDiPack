@@ -244,7 +244,7 @@
         primalVector[i + 1] = constants[tempConstantPos + i];
       }
 
-      Real result = funcObj(&indices[indexPos], &constants[constantPos], primalVector);
+      Real result = funcObj(codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector);
 
       indexPos += varSize;
       constantPos += constSize + passiveActives;
@@ -282,7 +282,7 @@
       indexPos -= varSize;
       constantPos -= constSize;
       ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
-        funcObj(adj, &indices[indexPos], &constants[constantPos], primalVector, adjoints);
+        funcObj(adj, codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector, adjoints);
       }
     }
 
@@ -568,7 +568,7 @@
       CODI_UNUSED(value);
 
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
             constantValueVector.setDataAndMove(jacobi);
             indexVector.setDataAndMove(index);
