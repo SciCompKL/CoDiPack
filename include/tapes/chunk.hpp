@@ -407,8 +407,8 @@ namespace codi {
      */
     CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2) {
       codiAssert(index <= ChunkInterface::size);
-      pointer1 = &data1[index];
-      pointer2 = &data2[index];
+      pointer1 = codi::addressof(data1[index]);
+      pointer2 = codi::addressof(data2[index]);
     }
   };
 
