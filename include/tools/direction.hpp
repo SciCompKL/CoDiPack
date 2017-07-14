@@ -156,7 +156,7 @@ namespace codi {
     bool finite = true;
 
     for(size_t i = 0; i < dim; ++i) {
-      finite &= isfinite(d[i]);
+      finite &= codi::isfinite(d[i]);
     }
 
     return finite;

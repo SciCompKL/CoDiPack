@@ -602,7 +602,7 @@ namespace codi {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
-      ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(seed)) {
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
         adjointValues[indices[offset]] += seed;
       }
     }

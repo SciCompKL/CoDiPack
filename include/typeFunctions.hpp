@@ -44,7 +44,7 @@ namespace codi {
       }
   };
 
-  //call t == 0 for all arithmetic types e.g. double, int @internal */
+  //call t == 0 for all arithmetic types e.g. double, int @internal
   template <typename T>
   struct IsTotalZeroImpl<
       T,
@@ -108,6 +108,24 @@ namespace codi {
           return isfinite(t);
       }
   };
+
+  //call the specialized isfinite implementation for codi::Expression
+  template <typename T>
+  struct IsFiniteImpl<
+    T,
+    typename std::enable_if<
+      std::is_base_of<
+        codi::Expression<typename codi::TypeTraits<T>::Real, T>,
+        T
+      >::value
+    >::type
+  >
+  {
+      static CODI_INLINE bool get(const T &t) {
+        return codi::isfinite(dynamic_cast<const codi::Expression<typename codi::TypeTraits<T>::Real, T>&>(t));
+      }
+  };
+
 #endif
 
   /**
