@@ -156,6 +156,13 @@ namespace codi {
           out << "\n";
         }
 
+        void addData() {
+#ifdef MPI_VERSION
+          MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+          MPI_Allreduce(MPI_IN_PLACE, intData.data(), intData.size(), MPI_UNSIGNED_LONG, MPI_SUM, MPI_COMM_WORLD);
+#endif
+        }
+
       private:
 
         template<typename Stream>
