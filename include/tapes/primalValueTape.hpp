@@ -476,10 +476,8 @@ namespace codi {
     }
 
     TapeValues getTapeValues() const {
-      TapeValues values;
-
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
-      values.addSection(name);
+      TapeValues values(name);
 
       addTapeBaseValues(values);
       addPrimalValueValues(values);

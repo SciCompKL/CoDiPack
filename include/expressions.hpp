@@ -1105,6 +1105,50 @@ namespace codi {
   #define PRIMAL_FUNCTION erfc
   #include "unaryExpression.tpp"
 
+  template<typename Real> CODI_INLINE Real gradTgamma(const Real& a, const Real& result) {
+    if(a <= 0.0) {
+      std::cout << "Derivative for gamma function only for positive arguments at the moment" << std::endl;
+      std::exit(1);
+    }
+
+    // Implementation of the digamma function is taken from John Burkardt,
+    // http://people.sc.fsu.edu/~jburkardt/cpp_src/asa103/asa103.cpp
+    //
+    // Definition of Gamma(a): https://en.wikipedia.org/wiki/Gamma_function
+    // Definition of DiGamma(a): https://en.wikipedia.org/wiki/Digamma_function
+    // Differentation is Gamma'(a) = Gamma(a) * DiGamma(a)
+
+    Real diGamma = 0.0;
+    if(a <= 0.000001) { // special case for small numbers
+      const Real eulerMascheroni = 0.57721566490153286060;
+      diGamma = -eulerMascheroni - 1.0/a + 1.6449340668482264365*a;
+    } else {
+      // shift DiGamma(a) = DiGamma(a + 1) - 1/a
+      // we require a large such that the approximation below is more accurate
+      Real shiftBound = 8.5;
+
+      Real shiftedValue = a;
+      while( shiftedValue < shiftBound ) {
+        diGamma      -= 1.0/shiftedValue;
+        shiftedValue += 1.0;
+      }
+
+      // Now compute the approximation via an asymptotic series
+      Real r = 1.0/shiftedValue;
+      diGamma += log(shiftedValue) - 0.5*r;
+
+      Real rSqr = r*r;
+      diGamma -= rSqr*(1.0/12.0 - rSqr*(1.0/120.0 - rSqr*(1.0/252.0 - rSqr*(1.0/240.0 - rSqr*(1.0/132.0)))));
+    }
+
+    return diGamma*result;
+  }
+  using std::tgamma;
+  #define NAME Tgamma
+  #define FUNCTION tgamma
+  #define PRIMAL_FUNCTION tgamma
+  #include "unaryExpression.tpp"
+
   #undef CODI_OPERATOR_HELPER
 
   /**
@@ -1184,7 +1228,7 @@ namespace codi {
    */
   template<typename Real, class A>
   CODI_INLINE bool isfinite(const codi::Expression<Real, A>& a) {
-    return isfinite(a.getValue());
+    return codi::isfinite(a.getValue());
   }
 
   using std::floor;

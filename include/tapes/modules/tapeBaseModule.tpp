@@ -397,7 +397,7 @@
 
       values.addSection("Adjoint vector");
       values.addData("Number of adjoints", nAdjoints);
-      values.addData("Memory allocated", memoryAdjoints);
+      values.addData("Memory allocated", memoryAdjoints, true, true);
 
       INDEX_HANDLER_NAME.addValues(values);
     }

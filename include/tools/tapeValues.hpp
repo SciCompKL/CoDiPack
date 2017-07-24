@@ -47,12 +47,7 @@ namespace codi {
       Int
     };
 
-    union EntryData {
-      double d;
-      size_t i;
-    };
-
-    typedef std::tuple<std::string, EntryType, EntryData> Entry;
+    typedef std::tuple<std::string, EntryType, size_t> Entry;
 
     struct ValueSection {
       std::string name;
@@ -63,7 +58,28 @@ namespace codi {
       private:
         std::vector<ValueSection> sections;
 
+        std::vector<double> doubleData;
+        std::vector<size_t> intData;
+
+        size_t usedMemoryIndex;
+        size_t allocatedMemoryIndex;
+
       public:
+
+        TapeValues(const std::string& tapeName) :
+          sections(),
+          doubleData(),
+          intData(),
+          usedMemoryIndex(0),
+          allocatedMemoryIndex(1) {
+          doubleData.push_back(0.0); // usedMemory
+          doubleData.push_back(0.0); // allocated Memory
+
+          addSection(tapeName);
+          addDataInternal(std::make_tuple("Total memory used", EntryType::Double, usedMemoryIndex));
+          addDataInternal(std::make_tuple("Total memory allocated", EntryType::Double, allocatedMemoryIndex));
+        }
+
         void addSection(const std::string& name) {
           sections.resize(sections.size() + 1);
 
@@ -71,15 +87,26 @@ namespace codi {
         }
 
         void addData(const std::string& name, size_t value) {
-          EntryData data;
-          data.i = value;
-          addDataInternal(std::make_tuple(name, EntryType::Int, data));
+          size_t pos = intData.size();
+          intData.push_back(value);
+
+          addDataInternal(std::make_tuple(name, EntryType::Int, pos));
         }
 
-        void addData(const std::string& name, double value) {
-          EntryData data;
-          data.d = value;
-          addDataInternal(std::make_tuple(name, EntryType::Double, data));
+        void addData(const std::string& name, double value, bool usedMem = false, bool allocatedMem = false) {
+          size_t pos = doubleData.size();
+          doubleData.push_back(value);
+
+          addDataInternal(std::make_tuple(name, EntryType::Double, pos));
+
+          if(usedMem) {
+            doubleData[usedMemoryIndex] += value;
+          }
+
+          if(allocatedMem) {
+            doubleData[allocatedMemoryIndex] += value;
+          }
+
         }
 
         template<typename Stream = std::ostream>
@@ -156,16 +183,23 @@ namespace codi {
           out << "\n";
         }
 
+        void addData() {
+#ifdef MPI_VERSION
+          MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+          MPI_Allreduce(MPI_IN_PLACE, intData.data(), intData.size(), MPI_UNSIGNED_LONG, MPI_SUM, MPI_COMM_WORLD);
+#endif
+        }
+
       private:
 
         template<typename Stream>
         void formatValue(Stream& out, const Entry& data, bool outputType, int fieldSize) const {
           switch (std::get<1>(data)) {
           case EntryType::Int:
-            out << std::right << std::setw(fieldSize) << std::get<2>(data).i;
+            out << std::right << std::setw(fieldSize) << intData[std::get<2>(data)];
             break;
           case EntryType::Double:
-            out << std::right << std::setiosflags(std::ios::fixed) << std::setprecision(2) << std::setw(fieldSize) << std::get<2>(data).d;
+            out << std::right << std::setiosflags(std::ios::fixed) << std::setprecision(2) << std::setw(fieldSize) << doubleData[std::get<2>(data)];
             if(outputType) {
               out << " MB";
             }

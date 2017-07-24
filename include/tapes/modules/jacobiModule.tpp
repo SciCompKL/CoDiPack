@@ -209,7 +209,7 @@
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
             this->jacobiVector.setDataAndMove(jacobi, index);
           }
@@ -240,8 +240,8 @@
       values.addSection("Jacobi entries");
       values.addData("Total Number", totalData);
       values.addData("Number of Chunks", nChunksData);
-      values.addData("Memory used", memoryUsedData);
-      values.addData("Memory allocated", memoryAllocData);
+      values.addData("Memory used", memoryUsedData, true, false);
+      values.addData("Memory allocated", memoryAllocData, false, true);
     }
 
     /**
