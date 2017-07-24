@@ -47,12 +47,7 @@ namespace codi {
       Int
     };
 
-    union EntryData {
-      double d;
-      size_t i;
-    };
-
-    typedef std::tuple<std::string, EntryType, EntryData> Entry;
+    typedef std::tuple<std::string, EntryType, size_t> Entry;
 
     struct ValueSection {
       std::string name;
@@ -63,6 +58,9 @@ namespace codi {
       private:
         std::vector<ValueSection> sections;
 
+        std::vector<double> doubleData;
+        std::vector<size_t> intData;
+
       public:
         void addSection(const std::string& name) {
           sections.resize(sections.size() + 1);
@@ -71,15 +69,17 @@ namespace codi {
         }
 
         void addData(const std::string& name, size_t value) {
-          EntryData data;
-          data.i = value;
-          addDataInternal(std::make_tuple(name, EntryType::Int, data));
+          size_t pos = intData.size();
+          intData.push_back(value);
+
+          addDataInternal(std::make_tuple(name, EntryType::Int, pos));
         }
 
         void addData(const std::string& name, double value) {
-          EntryData data;
-          data.d = value;
-          addDataInternal(std::make_tuple(name, EntryType::Double, data));
+          size_t pos = doubleData.size();
+          doubleData.push_back(value);
+
+          addDataInternal(std::make_tuple(name, EntryType::Double, pos));
         }
 
         template<typename Stream = std::ostream>
@@ -162,10 +162,10 @@ namespace codi {
         void formatValue(Stream& out, const Entry& data, bool outputType, int fieldSize) const {
           switch (std::get<1>(data)) {
           case EntryType::Int:
-            out << std::right << std::setw(fieldSize) << std::get<2>(data).i;
+            out << std::right << std::setw(fieldSize) << intData[std::get<2>(data)];
             break;
           case EntryType::Double:
-            out << std::right << std::setiosflags(std::ios::fixed) << std::setprecision(2) << std::setw(fieldSize) << std::get<2>(data).d;
+            out << std::right << std::setiosflags(std::ios::fixed) << std::setprecision(2) << std::setw(fieldSize) << doubleData[std::get<2>(data)];
             if(outputType) {
               out << " MB";
             }
