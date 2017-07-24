@@ -240,8 +240,8 @@
       values.addSection("Jacobi entries");
       values.addData("Total Number", totalData);
       values.addData("Number of Chunks", nChunksData);
-      values.addData("Memory used", memoryUsedData);
-      values.addData("Memory allocated", memoryAllocData);
+      values.addData("Memory used", memoryUsedData, true, false);
+      values.addData("Memory allocated", memoryAllocData, false, true);
     }
 
     /**

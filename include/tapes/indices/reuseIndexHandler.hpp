@@ -230,8 +230,8 @@ namespace codi {
         values.addData("Max. live indices", maximumGlobalIndex);
         values.addData("Cur. live indices", currentLiveIndices);
         values.addData("Indices stored", storedIndices);
-        values.addData("Memory used", memoryStoredIndices);
-        values.addData("Memory allocated", memoryAllocatedIndices);
+        values.addData("Memory used", memoryStoredIndices, true, false);
+        values.addData("Memory allocated", memoryAllocatedIndices, false, true);
       }
   };
 }

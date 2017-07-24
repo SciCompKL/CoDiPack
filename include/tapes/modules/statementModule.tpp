@@ -234,8 +234,8 @@
       values.addSection("Statements");
       values.addData("Total number", totalStmts);
       values.addData("Number of chunks", nChunksStmts);
-      values.addData("Memory used", memoryUsedStmts);
-      values.addData("Memory allocated", memoryAllocStmts);
+      values.addData("Memory used", memoryUsedStmts, true, false);
+      values.addData("Memory allocated", memoryAllocStmts, false, true);
     }
 
     /**

@@ -615,25 +615,25 @@
 
       values.addSection("Primal vector");
       values.addData("Total number", totalPrimal);
-      values.addData("Memory allocated", memoryAllocPrimal);
+      values.addData("Memory allocated", memoryAllocPrimal, true, true);
 
       values.addSection("Statements");
       values.addData("Total number", totalStmt);
       values.addData("Number of chunks", nChunksStmt);
-      values.addData("Memory used", memoryUsedStmt);
-      values.addData("Memory allocated", memoryAllocStmt);
+      values.addData("Memory used", memoryUsedStmt, true, false);
+      values.addData("Memory allocated", memoryAllocStmt, false, true);
 
       values.addSection("Index entries");
       values.addData("Total number", totalIndex);
       values.addData("Number of chunks", nChunksIndex);
-      values.addData("Memory used", memoryUsedIndex);
-      values.addData("Memory allocated", memoryAllocIndex);
+      values.addData("Memory used", memoryUsedIndex, true, false);
+      values.addData("Memory allocated", memoryAllocIndex, false, true);
 
       values.addSection("Passive data entries");
       values.addData("Total number", totalPassive);
       values.addData("Number of chunks", nChunksPassive);
-      values.addData("Memory used", memoryUsedPassive);
-      values.addData("Memory allocated", memoryAllocPassive);
+      values.addData("Memory used", memoryUsedPassive, true, false);
+      values.addData("Memory allocated", memoryAllocPassive, false, true);
     }
 
     /**

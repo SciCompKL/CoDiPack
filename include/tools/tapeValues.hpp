@@ -61,7 +61,25 @@ namespace codi {
         std::vector<double> doubleData;
         std::vector<size_t> intData;
 
+        size_t usedMemoryIndex;
+        size_t allocatedMemoryIndex;
+
       public:
+
+        TapeValues(const std::string& tapeName) :
+          sections(),
+          doubleData(),
+          intData(),
+          usedMemoryIndex(0),
+          allocatedMemoryIndex(1) {
+          doubleData.push_back(0.0); // usedMemory
+          doubleData.push_back(0.0); // allocated Memory
+
+          addSection(tapeName);
+          addDataInternal(std::make_tuple("Total memory used", EntryType::Double, usedMemoryIndex));
+          addDataInternal(std::make_tuple("Total memory allocated", EntryType::Double, allocatedMemoryIndex));
+        }
+
         void addSection(const std::string& name) {
           sections.resize(sections.size() + 1);
 
@@ -75,11 +93,20 @@ namespace codi {
           addDataInternal(std::make_tuple(name, EntryType::Int, pos));
         }
 
-        void addData(const std::string& name, double value) {
+        void addData(const std::string& name, double value, bool usedMem = false, bool allocatedMem = false) {
           size_t pos = doubleData.size();
           doubleData.push_back(value);
 
           addDataInternal(std::make_tuple(name, EntryType::Double, pos));
+
+          if(usedMem) {
+            doubleData[usedMemoryIndex] += value;
+          }
+
+          if(allocatedMem) {
+            doubleData[allocatedMemoryIndex] += value;
+          }
+
         }
 
         template<typename Stream = std::ostream>
