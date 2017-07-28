@@ -42,6 +42,7 @@
 #include "tools/dataStore.hpp"
 #include "tools/derivativeHelper.hpp"
 #include "tools/direction.hpp"
+#include "tools/statementPushHelper.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
