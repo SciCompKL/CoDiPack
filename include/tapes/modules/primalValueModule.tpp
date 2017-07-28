@@ -520,13 +520,15 @@
      *
      * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
      *
-     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobiManual.
+     *
+     * See also the documentation in TapeInterfaceReverse::storeManual.
      *
      * @param[out]   lhsValue  The primal value of the lhs.
      * @param[out]   lhsIndex  The gradient data of the lhs.
      * @param[in]        size  The number of Jacobi entries.
      */
-    CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void storeManual(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         constantValueVector.reserveItems(size);
         indexVector.reserveItems(size);
@@ -552,29 +554,40 @@
     }
 
     /**
-     * @brief Only used in combination with the manual store.
+     * @brief Not used in this implementation.
      *
-     * The indices are stored in the index vector. The jacobies
-     * are stored in the constant vector.
-     *
-     * @param[in]     data  Not used in this implementation.
-     * @param[in]   jacobi  Stored in the constant vector.
-     * @param[in]    value  Not used in this implementation.
-     * @param[in]    index  Stored in the index vector.
+     * @param[in]   data  Not used in this implementation.
+     * @param[in] jacobi  Not used in this implementation.
+     * @param[in]  value  Not used in this implementation.
+     * @param[in]  index  Not used in this implementation.
      */
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(data);
+      CODI_UNUSED(jacobi);
+      CODI_UNUSED(value);
+      CODI_UNUSED(index);
+
+      codiAssert(false || "Should not be called.");
+    }
+
+    /**
+     * @brief Manual jacobi push routine.
+     *
+     * The indices are stored in the index vector. The jacobies
+     * are stored in the constant vector.
+     *
+     * See also the documentation in TapeReverseInterface::pushJacobiManual.
+     *
+     * @param[in]   jacobi  Stored in the constant vector.
+     * @param[in]    value  Not used in this implementation.
+     * @param[in]    index  Stored in the index vector.
+     */
+    CODI_INLINE void pushJacobiManual(const Real& jacobi, const Real& value, const IndexType& index) {
       CODI_UNUSED(value);
 
-      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
-          ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
-            constantValueVector.setDataAndMove(jacobi);
-            indexVector.setDataAndMove(index);
-          }
-        }
-      }
+      constantValueVector.setDataAndMove(jacobi);
+      indexVector.setDataAndMove(index);
     }
 
     /**

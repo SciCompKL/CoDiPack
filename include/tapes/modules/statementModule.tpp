@@ -194,21 +194,21 @@
      *
      * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
      *
-     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobiManual.
+     *
+     * See also the documentation in TapeInterfaceReverse::storeManual.
      *
      * @param[in]    lhsValue  The primal value of the lhs.
      * @param[out]   lhsIndex  The gradient data of the lhs.
      * @param[in]        size  The number of Jacobi entries.
      */
-    CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void storeManual(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
       CODI_UNUSED(lhsValue);
 
-      ENABLE_CHECK (OptTapeActivity, active){
-        stmtVector.reserveItems(1);
-        JACOBI_VECTOR_NAME.reserveItems(size);
-        indexHandler.assignIndex(lhsIndex);
-        STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
-      }
+      stmtVector.reserveItems(1);
+      JACOBI_VECTOR_NAME.reserveItems(size);
+      indexHandler.assignIndex(lhsIndex);
+      STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
     }
 
     /**

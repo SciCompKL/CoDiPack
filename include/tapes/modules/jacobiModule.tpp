@@ -218,6 +218,21 @@
     }
 
     /**
+     * @brief Manual jacobi push routine.
+     *
+     * See also the documentation in TapeReverseInterface::pushJacobiManual.
+     *
+     * @param[in]   jacobi  Stored in the constant vector.
+     * @param[in]    value  Not used in this implementation.
+     * @param[in]    index  Stored in the index vector.
+     */
+    CODI_INLINE void pushJacobiManual(const Real& jacobi, const Real& value, const IndexType& index) {
+      CODI_UNUSED(value);
+
+      this->jacobiVector.setDataAndMove(jacobi, index);
+    }
+
+    /**
      * @brief Prints statistics about the stored Jacobie entries.
      *
      * Displays the number of chunks, the total number of jacobies, the
