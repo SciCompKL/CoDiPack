@@ -33,3 +33,6 @@
 typedef codi::RealReverseGen<codi::RealForward> NUMBER;
 
 #include "../globalDefines.h"
+
+#define CHUNK_TAPE
+#define REVERSE_TAPE

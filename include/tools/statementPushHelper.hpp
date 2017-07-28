@@ -120,4 +120,57 @@ namespace codi {
         endPushStatement(lhs, primal);
       }
   };
+
+  template<typename CoDiType>
+  struct ForwardStatementPushHelper {
+
+      typedef typename CoDiType::Real Real;
+      typedef typename CoDiType::GradientValue GradientValue;
+
+      GradientValue lhsTangent;
+
+      void startPushStatement() {
+        lhsTangent = GradientValue();
+      }
+
+      void pushArgument(const CoDiType& arg, const Real& jacobi) {
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
+          lhsTangent += jacobi * arg.getGradient();
+        }
+      }
+
+      void endPushStatement(CoDiType& lhs, const Real& primal) {
+        lhs.gradient() = lhsTangent;
+        lhs.value() = primal;
+      }
+
+      template<typename ArgIter, typename JacobiIter>
+      void pushStatement(CoDiType& lhs, const Real& primal, const ArgIter startArg, const ArgIter endArg, const JacobiIter startJac) {
+
+        startPushStatement();
+
+        JacobiIter jacPos = startJac;
+        ArgIter argPos = startArg;
+        while(argPos != endArg) {
+          pushArgument(*argPos, *jacPos);
+
+          ++jacPos;
+          ++argPos;
+        }
+
+        endPushStatement(lhs, primal);
+      }
+
+      template<typename ArgVector, typename JacobiVector>
+      void pushStatement(CoDiType& lhs, const Real& primal, const ArgVector& arguments, const JacobiVector& jacobies, const size_t size) {
+
+        startPushStatement();
+
+        for(size_t i = 0; i < size; ++i) {
+          pushArgument(arguments[i], jacobies[i]);
+        }
+
+        endPushStatement(lhs, primal);
+      }
+  };
 }

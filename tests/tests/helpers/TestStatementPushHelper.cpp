@@ -53,7 +53,12 @@ void evalFunc(NUMBER* x, NUMBER* y) {
 void func(NUMBER* x, NUMBER* y) {
 
   NUMBER passiveValue = codi::TypeTraits<NUMBER>::getBaseValue(x[0]);
+
+#ifdef REVERSE_TAPE
   codi::StatementPushHelper<NUMBER> ph;
+#else
+  codi::ForwardStatementPushHelper<NUMBER> ph;
+#endif
 
   // two valid dependencies
   ph.startPushStatement();
