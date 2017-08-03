@@ -39,7 +39,7 @@ int main(int nargs, char** args) {
   NUMBER* y = new NUMBER[outputs];
 
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
-  tape.resize(1000, 1000);
+  tape.resize(10000, 10000);
   tape.setExternalFunctionChunkSize(1000);
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {

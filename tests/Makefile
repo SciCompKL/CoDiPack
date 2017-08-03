@@ -71,9 +71,12 @@ all:
 # disable the deletion of secondary targets
 .SECONDARY:
 
-# define general sets for tests
+### define general sets for tests
+# Tests for all tapes
 BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp) $(wildcard $(TEST_DIR)/jacobiOptimizations/Test**.cpp) $(wildcard $(TEST_DIR)/helpers/Test**.cpp)
+# Tests that run only for reverse mode tapes
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp) $(wildcard $(TEST_DIR)/io/Test**.cpp)
+# Tests that run for non vector mode tapes
 REVERSE_VALUE_TESTS = $(wildcard $(TEST_DIR)/preaccumulation/Test**.cpp)
 
 # The build rules for all drivers.
