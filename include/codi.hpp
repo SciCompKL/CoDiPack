@@ -43,6 +43,7 @@
 #include "tools/derivativeHelper.hpp"
 #include "tools/direction.hpp"
 #include "tools/statementPushHelper.hpp"
+#include "tools/preaccumulationHelper.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
