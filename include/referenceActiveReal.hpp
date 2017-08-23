@@ -178,6 +178,79 @@ namespace codi {
       return reference.getValue();
     }
 
+    /**
+     * @brief Get the value from a static evaluation context.
+     *
+     * The call is forwarded to the referenced ActiveReal type.
+     *
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     *
+     * @return The corresponding primal value for the active real.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE const Real& getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      return ActiveType::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+    }
+
+
+    /**
+     * @brief Calculate the gradient of the expression and update the seed. The updated seed is then
+     *        given to the argument expressions.
+     *
+     * The call is forwarded to the referenced ActiveReal type.
+     *
+     * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+     *                            for the operators and used as the update in the terminal points.
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     * @param[in]  adjointValues  The global adjoint value vector.
+     *
+     * @tparam      IndexType  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename IndexType, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+      ActiveType::template evalAdjoint<IndexType, offset, constantOffset>(seed, indices, constantValues, primalValues, adjointValues);
+    }
+
+    /**
+     * @brief The action is forwarded to the referenced ActiveReal.
+     *
+     * @param[in,out] data  The data that can be used by the action.
+     * @param[in]     func  The function that is called for every active real in the expression.
+     *
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename Data, typename Func>
+    CODI_INLINE void valueAction(Data data, Func func) const {
+      reference.valueAction(data, func);
+    }
+
+    /**
+     * @brief The action is forwarded to the referenced ActiveReal.
+     *
+     * @param[in,out] tape  The tape that calls the action.
+     * @param[in,out] data  The data that can be used by the action.
+     * @param[in]     func  The function that is called for every constant item.
+     *
+     * @tparam CallTape  The type of the tape that calls the action.
+     * @tparam     Data  The type of the data for the action.
+     * @tparam     Func  The type of the function that is called.
+     */
+    template<typename CallTape, typename Data, typename Func>
+    CODI_INLINE void constantValueAction(CallTape& tape, Data data, Func func) const {
+      reference.constantValueAction(tape, data, func);
+    }
+
   private:
     /**
      * @brief Forbid assignment onn this type.
@@ -230,5 +303,7 @@ namespace codi {
      * @brief The maximum number of active values for an ReferenceActiveReal is one.
      */
     static const size_t maxActiveVariables = 1;
+
+    static const size_t maxConstantVariables = 0;
   };
 }
