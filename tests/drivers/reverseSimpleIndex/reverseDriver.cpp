@@ -32,6 +32,9 @@
 #include <vector>
 
 int main(int nargs, char** args) {
+  (void)nargs;
+  (void)args;
+
   int evalPoints = getEvalPointsCount();
   int inputs = getInputCount();
   int outputs = getOutputCount();

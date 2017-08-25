@@ -45,10 +45,12 @@ namespace codi {
      */
     struct Position {
       bool operator != (const Position& o) {
+        CODI_UNUSED(o);
         return false;
       }
 
       bool operator == (const Position& o) {
+        CODI_UNUSED(o);
         return true;
       }
     };
@@ -59,6 +61,7 @@ namespace codi {
      * @param[in,out] other  The other empty chunk vector.
      */
     void swap(EmptyChunkVector& other) {
+      CODI_UNUSED(other);
       //Do nothing
     }
 
@@ -105,6 +108,7 @@ namespace codi {
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
         CODI_UNUSED(function);
         CODI_UNUSED(recursive);
+        CODI_UNUSED_VAR{args...};
 
         // Do nothing
       }
