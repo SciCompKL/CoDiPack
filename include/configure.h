@@ -60,7 +60,7 @@ namespace codi {
     #define CODI_UseForcedInlines 0
   #endif
   #if CODI_UseForcedInlines
-    #if defined(__INTEL_COMPILER)
+    #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
       #define CODI_INLINE __forceinline
     #elif defined(__GNUC__)
       #define CODI_INLINE inline __attribute__((always_inline))
@@ -84,7 +84,11 @@ namespace codi {
     #define CODI_UseAvoidedInlines 1
   #endif
   #if CODI_UseAvoidedInlines
-    #define CODI_NO_INLINE __attribute__((noinline))
+    #if defined(_MSC_VER)
+      #define CODI_NO_INLINE __declspec(noinline)
+    #else
+      #define CODI_NO_INLINE __attribute__((noinline))
+    #endif
   #else
     #define CODI_NO_INLINE /* no avoiding of inline defined */
   #endif
