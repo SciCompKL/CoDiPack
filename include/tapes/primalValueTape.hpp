@@ -40,6 +40,7 @@
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
+#include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
 
 namespace codi {
@@ -56,34 +57,28 @@ namespace codi {
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, GradientValue> >
+  template <typename RTT, template<typename> class HandleFactoryType>
   struct ChunkPrimalValueTapeTypes {
-    /** @brief The type for the primal values. */
-    typedef Real RealType;
-    /** @brief The handler for the indices. */
-    typedef IndexHandler IndexHandlerType;
-    /** @brief The type for the adjoint values. */
-    typedef GradientValue GradientValueType;
-    /** @brief The type for indices. */
-    typedef typename IndexHandler::IndexType IndexType;
 
-    /** @brief The type for the handle factory. */
-    typedef HandleFactory HandleFactoryType;
-    /** @brief The type for expression handles in the reverse evaluation. */
-    typedef typename HandleFactory::Handle HandleType;
+    CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
+
+    typedef RTT BaseTypes;
+
+    typedef HandleFactoryType<RTT> HandleFactory;
+    typedef typename HandleFactory::Handle Handle;
 
     /** @brief The data for each statement. */
-    typedef Chunk2<HandleType, StatementInt> StatementChunk;
+    typedef Chunk2<Handle, StatementInt> StatementChunk;
     /** @brief The chunk vector for the statement data. */
     typedef ChunkVector<StatementChunk, IndexHandler> StatementVector;
 
     /** @brief The data for the indices of each statement */
-    typedef Chunk1< typename IndexHandler::IndexType> IndexChunk;
+    typedef Chunk1< IndexType> IndexChunk;
     /** @brief The chunk vector for the index data. */
     typedef ChunkVector<IndexChunk, StatementVector> IndexVector;
 
     /** @brief The data for the constant values of each statement */
-    typedef Chunk1< typename TypeTraits<Real>::PassiveReal> ConstantValueChunk;
+    typedef Chunk1< PassiveReal> ConstantValueChunk;
     /** @brief The chunk vector for the constant data. */
     typedef ChunkVector<ConstantValueChunk, IndexVector> ConstantValueVector;
 
@@ -112,34 +107,28 @@ namespace codi {
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real, typename HandleFactory = FunctionHandleFactory<Real, typename IndexHandler::IndexType, Real> >
+  template <typename RTT, template<typename> class HandleFactoryType>
   struct SimplePrimalValueTapeTypes {
-    /** @brief The type for the primal values. */
-    typedef Real RealType;
-    /** @brief The handler for the indices. */
-    typedef IndexHandler IndexHandlerType;
-    /** @brief The type for the adjoint values. */
-    typedef GradientValue GradientValueType;
-    /** @brief The type for indices. */
-    typedef typename IndexHandler::IndexType IndexType;
 
-    /** @brief The type for the handle factory. */
-    typedef HandleFactory HandleFactoryType;
-    /** @brief The type for expression handles in the reverse evaluation. */
-    typedef typename HandleFactory::Handle HandleType;
+    CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
+
+    typedef RTT BaseTypes;
+
+    typedef HandleFactoryType<RTT> HandleFactory;
+    typedef typename HandleFactory::Handle Handle;
 
     /** @brief The data for each statement. */
-    typedef Chunk2<HandleType, StatementInt> StatementChunk;
+    typedef Chunk2<Handle, StatementInt> StatementChunk;
     /** @brief The chunk vector for the statement data. */
     typedef SingleChunkVector<StatementChunk, IndexHandler> StatementVector;
 
     /** @brief The data for the indices of each statement */
-    typedef Chunk1< typename IndexHandler::IndexType> IndexChunk;
+    typedef Chunk1< IndexType> IndexChunk;
     /** @brief The chunk vector for the index data. */
     typedef SingleChunkVector<IndexChunk, StatementVector> IndexVector;
 
     /** @brief The data for the constant values of each statement */
-    typedef Chunk1< typename TypeTraits<Real>::PassiveReal> ConstantValueChunk;
+    typedef Chunk1< PassiveReal> ConstantValueChunk;
     /** @brief The chunk vector for the constant data. */
     typedef SingleChunkVector<ConstantValueChunk, IndexVector> ConstantValueVector;
 
@@ -155,6 +144,7 @@ namespace codi {
     constexpr static const char* tapeName = "SimplePrimalValueTape";
 
   };
+
 
   /**
    * @brief A reverse AD tape that stores primal values for the reverse evaluation.
@@ -173,29 +163,18 @@ namespace codi {
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
-  class PrimalValueTape : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, PrimalValueTape<TapeTypes>, typename TapeTypes::Position > {
+  class PrimalValueTape : public ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::IndexType, typename TapeTypes::GradientValue, PrimalValueTape<TapeTypes>, typename TapeTypes::Position >  {
   public:
 
-    /** @brief The type for the primal values. */
-    typedef typename TapeTypes::RealType Real;
-    /** @brief The type for the adjoint values. */
-    typedef typename TapeTypes::GradientValueType GradientValue;
-    /** @brief The type for the index handler. */
-    typedef typename TapeTypes::IndexHandlerType IndexHandler;
+    CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
-    /** @brief The type for the indices that are used for the identification of the adjoint variables. */
-    typedef typename TapeTypes::IndexType IndexType;
+    typedef TapeTypes BaseTypes;
+
+    typedef typename TapeTypes::HandleFactory HandleFactory;
+    typedef typename HandleFactory::Handle Handle;
+
     /** @brief The gradient data is just the index type. */
     typedef IndexType GradientData;
-
-    /** @brief The corresponding passive value to the real */
-    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-
-    /** @brief The type of the handle factory */
-    typedef typename TapeTypes::HandleFactoryType HandleFactory;
-
-    /** @brief The type for expression handles in the reverse evaluation. */
-    typedef typename TapeTypes::HandleType Handle;
 
     /** @brief The index handler for the active real's. */
     IndexHandler indexHandler;

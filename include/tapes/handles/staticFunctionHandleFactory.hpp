@@ -29,7 +29,9 @@
 #pragma once
 
 #include "../../configure.h"
+#include "../../evaluateDefinitions.hpp"
 #include "../../expressionHandle.hpp"
+#include "../../tapeTypes.hpp"
 #include "../../typeTraits.hpp"
 
 #include "handleFactoryInterface.hpp"
@@ -39,48 +41,32 @@
  */
 namespace codi {
 
-  template<typename GradientValue, typename Real, typename IndexType>
-  class FunctionStore {
-    private:
-      /**
-       * @brief The passive type that corresponds to the real type.
-       */
-      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+  template<typename ReverseTapeTypes>
+  class FunctionHandle {
     public:
-
-      typedef Real (*PrimalFunc)(const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, typename TypeTraits<Real>::PassiveReal* &constants, Real* primalVector);
-      typedef void (*AdjointFunc)(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, typename TypeTraits<Real>::PassiveReal* &constants, Real* primalVector, GradientValue* adjoints);
 
       /**
        * @brief The function pointer to the primal evaluation function
        */
-      const PrimalFunc primalFunc;
+      const typename EvaluateDefinitions<ReverseTapeTypes>::PrimalFunc primalFunc;
 
       /**
        * @brief The function pointer to the reverse evaluation function
        */
-      const AdjointFunc adjointFunc;
+      const typename EvaluateDefinitions<ReverseTapeTypes>::AdjointFunc adjointFunc;
 
       template<typename P, typename A>
-      FunctionStore(const P primalFunc, const A adjointFunc) :
+      FunctionHandle(const P primalFunc, const A adjointFunc) :
         primalFunc(primalFunc),
         adjointFunc(adjointFunc) {}
   };
 
 
 
-  template<typename GradientValue, typename Real, typename IndexType, typename Tape, typename Expr>
-  class FunctionStoreGlobalStore {
+  template<typename Tape, typename Expr>
+  class FunctionStore {
     private:
-      /**
-       * @brief The passive type that corresponds to the real type.
-       */
-      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-
-      /**
-       * @brief The space for the handle.
-       */
-      static const FunctionStore<GradientValue, Real, IndexType> handle;
+      static const FunctionHandle<typename Tape::TapeTypes> handle;
     public:
 
       /**
@@ -88,25 +74,16 @@ namespace codi {
        *
        * @return The handle for the expression.
        */
-      static const FunctionStore<GradientValue, Real, IndexType>* getHandle() {
+      static const FunctionHandle<typename Tape::BaseTypes>* const getHandle() {
         return &handle;
       }
-
-      static CODI_INLINE Real curryEvaluatePrimalHandle(const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
-        return Tape::template evaluatePrimalHandle(Expr::template getValue<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables, passiveActives, indexPos, indices, constantPos, constants, primalVector);
-      }
-
-      static CODI_INLINE void curryEvaluateHandle(const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {
-        Tape::template evaluateHandle(Expr::template evalAdjoint<IndexType, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables, adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
-      }
-
   };
 
-  template<typename GradientValue, typename Real, typename IndexType, typename Tape, typename Expr>
-  const FunctionStore<GradientValue, Real, IndexType>
-    FunctionStoreGlobalStore<GradientValue, Real, IndexType, Tape, Expr>::handle(
-      FunctionStoreGlobalStore<GradientValue, Real, IndexType, Tape, Expr>::curryEvaluatePrimalHandle,
-      FunctionStoreGlobalStore<GradientValue, Real, IndexType, Tape, Expr>::curryEvaluateHandle);
+  template<typename Tape, typename Expr>
+  const FunctionHandle<typename Tape::TapeTypes>
+    FunctionStore<Tape, Expr>::handle(
+      &Tape::template curryEvaluatePrimalHandle<Expr>,
+      &Tape::template curryEvaluateHandle<Expr>);
 
   /**
    * @brief A factory for function handles, that use static objects to store the data for the function call.
@@ -118,20 +95,12 @@ namespace codi {
    * @tparam     IndexType  An integer type that is used to identify the AD objects.
    * @tparam GradientValue  A value type that supports add and scaling operations.
    */
-  template<typename Real, typename IndexType, typename GradientValue=Real>
+  template<typename ReverseTapeTypes>
   struct StaticFunctionHandleFactory
     // final : public HandleFactoryInterface</* handle type */, Real, IndexType, GradientValue>
   {
 
-    /** @brief The passive value of the Real type */
-    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-
-    /**
-     * @brief The type for handle that is used by this factory
-     *
-     * The handle is just a pointer to a static object.
-     */
-    typedef const FunctionStore<GradientValue, Real, IndexType>* Handle;
+    typedef const FunctionHandle<ReverseTapeTypes>* const Handle;
 
     /**
      * @brief Create the handle for the given tape and the given expression.
@@ -144,26 +113,22 @@ namespace codi {
     template<typename Expr, typename Tape>
     static CODI_INLINE Handle createHandle() {
 
-      return FunctionStoreGlobalStore<GradientValue, Real, IndexType, Tape, Expr>::getHandle();
+      return FunctionStore<Tape, Expr>::getHandle();
     }
 
     /**
      * @brief The evaluation of the primal handle, that was created by this factory.
      *
      * @param[in]           handle  The handle the was generated by this factory and is called with the arguments.
-     * @param[in]   passiveActives  The number of passive values in the expression call.
-     * @param[in,out]     indexPos  The position in the index buffer.
-     * @param[in]          indices  The index buffer.
-     * @param[in,out]  constantPos  The position in the constant value buffer.
-     * @param[in]        constants  The constant value buffer.
-     * @param[in,out] primalVector  The vector with the values of the primal variables.
+     * @param[in,out]         args  The other arguments for the function.
      *
      * @tparam Tape  The tape that is performing the reverse AD evaluation.
+     * @tparam Args  The arguments for the function.
      */
-    template<typename Tape>
-    static CODI_INLINE Real callPrimalHandle(Handle handle, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
+    template<typename Tape, typename ... Args>
+    static CODI_INLINE typename Tape::Real callPrimalHandle(Handle handle, Args&& ... args) {
 
-      return handle->primalFunc(passiveActives, indexPos, indices, constantPos, constants, primalVector);
+      return handle->primalFunc(std::forward<Args>(args)...);
     }
 
 
@@ -173,21 +138,15 @@ namespace codi {
      * The data from the static object is read and used to call the function.
      *
      * @param[in]           handle  The handle the was generated by this factory and is called with the arguments.
-     * @param[in]              adj  The seeding for the expression
-     * @param[in]   passiveActives  The number of passive values in the expression call.
-     * @param[in,out]     indexPos  The position in the index buffer.
-     * @param[in]          indices  The index buffer.
-     * @param[in,out]  constantPos  The position in the constant value buffer.
-     * @param[in]        constants  The constant value buffer.
-     * @param[in,out] primalVector  The vector with the values of the primal variables.
-     * @param[in,out]     adjoints  THe vector with the values of the adjoint variables.
+     * @param[in,out]         args  The other arguments for the function.
      *
      * @tparam Tape  The tape that is performing the reverse AD evaluation.
+     * @tparam Args  The arguments for the function.
      */
-    template<typename Tape>
-    static CODI_INLINE void callHandle(Handle handle, const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {
+    template<typename Tape, typename ... Args>
+    static CODI_INLINE void callHandle(Handle handle, Args&& ... args) {
 
-      handle->adjointFunc(adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
+      handle->adjointFunc(std::forward<Args>(args)...);
     }
   };
 }

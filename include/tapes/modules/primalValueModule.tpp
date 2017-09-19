@@ -109,7 +109,7 @@
 
 
     /** @brief The static array of handles for the preaccumulation. */
-    const static typename TapeTypes::HandleType preaccHandles[MaxStatementIntSize];
+    const static typename TapeTypes::Handle preaccHandles[MaxStatementIntSize];
 
     /** @brief The vector with the primal value for each statement. */
     Real* primals;
@@ -220,6 +220,7 @@
     }
 
   public:
+
     /**
      * @brief Evaluate one handle in the primal sweep.
      *
@@ -236,7 +237,15 @@
      * @param[in,out] primalVector  The global vector with the primal variables.
      */
     template<typename FuncObj>
-    static CODI_INLINE Real evaluatePrimalHandle(FuncObj funcObj, size_t varSize, size_t constSize, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
+    static CODI_INLINE Real evaluatePrimalHandle(FuncObj funcObj,
+                                                 size_t varSize,
+                                                 size_t constSize,
+                                                 const StatementInt& passiveActives,
+                                                 size_t& indexPos,
+                                                 IndexType* &indices,
+                                                 size_t& constantPos,
+                                                 PassiveReal* &constants,
+                                                 Real* primalVector) {
 
       size_t tempConstantPos = constantPos + constSize;
       // first restore the primal values of the passive indices
@@ -250,6 +259,17 @@
       constantPos += constSize + passiveActives;
 
       return result;
+    }
+
+    template<typename Expr>
+    static CODI_INLINE Real curryEvaluatePrimalHandle(const StatementInt& passiveActives,
+                                                      size_t& indexPos,
+                                                      IndexType* &indices,
+                                                      size_t& constantPos,
+                                                      PassiveReal* &constants,
+                                                      Real* primalVector) {
+      return evaluatePrimalHandle(Expr::template getValue<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+                                  passiveActives, indexPos, indices, constantPos, constants, primalVector);
     }
 
     /**
@@ -271,7 +291,17 @@
      * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
      */
     template<typename FuncObj>
-    static CODI_INLINE void evaluateHandle(FuncObj funcObj, size_t varSize, size_t constSize, const GradientValue& adj, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, GradientValue* adjoints) {
+    static CODI_INLINE void evaluateHandle(FuncObj funcObj,
+                                           size_t varSize,
+                                           size_t constSize,
+                                           const GradientValue& adj,
+                                           const StatementInt& passiveActives,
+                                           size_t& indexPos,
+                                           IndexType* &indices,
+                                           size_t& constantPos,
+                                           PassiveReal* &constants,
+                                           Real* primalVector,
+                                           GradientValue* adjoints) {
       // first restore the primal values of the passive indices
       constantPos -= passiveActives;
       for(StatementInt i = 0; i < passiveActives; ++i) {
@@ -284,6 +314,19 @@
       ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
         funcObj(adj, codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector, adjoints);
       }
+    }
+
+    template<typename Expr>
+    static CODI_INLINE void curryEvaluateHandle(const GradientValue& adj,
+                                                const StatementInt& passiveActives,
+                                                size_t& indexPos,
+                                                IndexType* &indices,
+                                                size_t& constantPos,
+                                                PassiveReal* &constants,
+                                                Real* primalVector,
+                                                GradientValue* adjoints) {
+      evaluateHandle(Expr::template evalAdjoint<IndexType, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+                     adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 
     private:
