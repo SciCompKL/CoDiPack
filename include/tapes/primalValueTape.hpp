@@ -56,9 +56,10 @@ namespace codi {
    * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
    * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
+   * @tparam    DataVector  The data manager for the chunks. Needs to implement a ChunkVector interface.
    */
-  template <typename RTT, template<typename> class HandleFactoryType>
-  struct ChunkPrimalValueTapeTypes {
+  template <typename RTT, template<typename> class HandleFactoryType, template<typename, typename> class DataVecto>
+  struct PrimalValueTapeTypes {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
 
@@ -91,60 +92,9 @@ namespace codi {
     typedef typename ExternalFunctionVector::Position Position;
 
     /** @brief The name of the tape as a string. */
-    constexpr static const char* tapeName = "ChunkPrimalValueTape";
+    constexpr static const char* tapeName = "PrimalValueTape";
 
   };
-
-  /**
-   * @brief Vector definition for the SimplePrimalValueTape.
-   *
-   * The structure defines all vectors as single chunk vectors.
-   *
-   * See PrimalValueTape for details.
-   *
-   * @tparam          Real  The type for the primal values.
-   * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
-   * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
-   */
-  template <typename RTT, template<typename> class HandleFactoryType>
-  struct SimplePrimalValueTapeTypes {
-
-    CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
-
-    typedef RTT BaseTypes;
-
-    typedef HandleFactoryType<RTT> HandleFactory;
-    typedef typename HandleFactory::Handle Handle;
-
-    /** @brief The data for each statement. */
-    typedef Chunk2<Handle, StatementInt> StatementChunk;
-    /** @brief The chunk vector for the statement data. */
-    typedef SingleChunkVector<StatementChunk, IndexHandler> StatementVector;
-
-    /** @brief The data for the indices of each statement */
-    typedef Chunk1< Index> IndexChunk;
-    /** @brief The chunk vector for the index data. */
-    typedef SingleChunkVector<IndexChunk, StatementVector> IndexVector;
-
-    /** @brief The data for the constant values of each statement */
-    typedef Chunk1< PassiveReal> ConstantValueChunk;
-    /** @brief The chunk vector for the constant data. */
-    typedef SingleChunkVector<ConstantValueChunk, IndexVector> ConstantValueVector;
-
-    /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename ConstantValueVector::Position> ExternalFunctionChunk;
-    /** @brief The chunk vector for the external  function data. */
-    typedef SingleChunkVector<ExternalFunctionChunk, ConstantValueVector> ExternalFunctionVector;
-
-    /** @brief The position for all the different data vectors. */
-    typedef typename ExternalFunctionVector::Position Position;
-
-    /** @brief The name of the tape as a string. */
-    constexpr static const char* tapeName = "SimplePrimalValueTape";
-
-  };
-
 
   /**
    * @brief A reverse AD tape that stores primal values for the reverse evaluation.
