@@ -631,7 +631,7 @@ namespace codi {
        * @param[in] t The value from which the primal is extracted.
        * @return The primal value of the origin of this type..
        */
-      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ActiveReal<Tape>& t) {
+      static const PassiveReal getBaseValue(const ActiveReal<Tape>& t) {
         return TypeTraits<Real>::getBaseValue(t.getValue());
       }
   };
