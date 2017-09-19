@@ -40,6 +40,7 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
+#include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
 
 /**
@@ -54,82 +55,36 @@ namespace codi {
    *
    * See JacobiTape for details.
    *
-   * @tparam Real  The type for the primal values.
-   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
+   * @tparam        RTT  The basic type defintions for the tape. Need to define everything from ReverseTapeTypes.
+   * @tparam DataVector  The data manager for the chunks. Needs to implement a ChunkVector interface.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct ChunkTapeTypes {
-    /** @brief The type for the primal values. */
-    typedef Real RealType;
-    /** @brief The handler for the indices. */
-    typedef IndexHandler IndexHandlerType;
-    /** @brief The type for the adjoint values. */
-    typedef GradientValue GradientValueType;
+  template <typename RTT, template<typename, typename> class DataVector>
+  struct JacobiTapeTypes {
+
+    CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
+
+    typedef RTT BaseTypes;
 
     /** @brief The data for each statement. */
     typedef Chunk1<StatementInt> StatementChunk;
     /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StatementChunk, IndexHandler> StatementVector;
+    typedef DataVector<StatementChunk, IndexHandler> StatementVector;
 
     /** @brief The data for the jacobies of each statement */
     typedef Chunk2< Real, typename IndexHandler::Index> JacobiChunk;
     /** @brief The chunk vector for the jacobi data. */
-    typedef ChunkVector<JacobiChunk, StatementVector> JacobiVector;
+    typedef DataVector<JacobiChunk, StatementVector> JacobiVector;
 
     /** @brief The data for the external functions. */
     typedef Chunk2<ExternalFunction,typename JacobiVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
+    typedef DataVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
     /** @brief The name of the tape as a string. */
-    constexpr static const char* tapeName = "ChunkTape";
-
-  };
-
-  /**
-   * @brief Vector definition for the SimpleTape.
-   *
-   * The structure defines all vectors as single chunk vectors.
-   *
-   * See JacobiTape for details.
-   *
-   * @tparam Real  The type for the primal values.
-   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
-   */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct SimpleTapeTypes {
-    /** @brief The type for the primal values. */
-    typedef Real RealType;
-    /** @brief The handler for the indices. */
-    typedef IndexHandler IndexHandlerType;
-    /** @brief The type for the adjoint values. */
-    typedef GradientValue GradientValueType;
-
-    /** @brief The data for each statement. */
-    typedef Chunk1<StatementInt> StatementChunk;
-    /** @brief The chunk vector for the statement data. */
-    typedef SingleChunkVector<StatementChunk, IndexHandler> StatementVector;
-
-    /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, typename IndexHandler::Index> JacobiChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef SingleChunkVector<JacobiChunk, StatementVector> JacobiVector;
-
-    /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename JacobiVector::Position> ExternalFunctionChunk;
-    /** @brief The chunk vector for the external  function data. */
-    typedef SingleChunkVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
-
-    /** @brief The position for all the different data vectors. */
-    typedef typename ExternalFunctionVector::Position Position;
-
-    /** @brief The name of the tape as a string. */
-    constexpr static const char* tapeName = "SimpleTape";
+    constexpr static const char* tapeName = "JacobiTape";
 
   };
 
@@ -150,23 +105,15 @@ namespace codi {
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
-  class JacobiTape final : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::Index, typename TapeTypes::GradientValueType, JacobiTape<TapeTypes>, typename TapeTypes::Position > {
+  class JacobiTape final : public ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, JacobiTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
-    /** @brief The type for the primal values. */
-    typedef typename TapeTypes::RealType Real;
-    /** @brief The type for the adjoint values. */
-    typedef typename TapeTypes::GradientValueType GradientValue;
-    /** @brief The type for the index handler. */
-    typedef typename TapeTypes::IndexHandlerType IndexHandler;
+    CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
-    /** @brief The type for the indices that are used for the identification of the adjoint variables. */
-    typedef typename IndexHandler::Index Index;
+    typedef typename TapeTypes::BaseTypes BaseTypes;
+
     /** @brief The gradient data is just the index type. */
     typedef Index GradientData;
-
-    /** @brief The corresponding passive value to the real */
-    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief The index handler for the active real's. */
     IndexHandler indexHandler;

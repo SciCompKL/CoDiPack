@@ -106,7 +106,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReverseGen = ActiveReal<JacobiTape<ChunkTapeTypes<Real , LinearIndexHandler<int>, Gradient > > >;
+  using RealReverseGen = ActiveReal<JacobiTape<JacobiTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, ChunkVector > > >;
 
   /**
    * @brief The default reverse type in CoDiPack.
@@ -161,7 +161,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReverseUncheckedGen = ActiveReal<JacobiTape<SimpleTapeTypes<Real, LinearIndexHandler<int>, Gradient > > >;
+  using RealReverseUncheckedGen = ActiveReal<JacobiTape<JacobiTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, SingleChunkVector > > >;
 
   /**
    * @brief The reverse type in CoDiPack with an unchecked tape.
@@ -210,7 +210,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReverseIndexGen = ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
+  using RealReverseIndexGen = ActiveReal<JacobiIndexTape<JacobiIndexTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandlerUseCount<int> >, ChunkVector> > >;
 
   /**
    * @brief A reverse type like the default reverse type in CoDiPack but with index reuse.
@@ -244,7 +244,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReverseIndexUncheckedGen = ActiveReal<JacobiIndexTape<SimpleIndexTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
+  using RealReverseIndexUncheckedGen = ActiveReal<JacobiIndexTape<JacobiIndexTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandlerUseCount<int> >, SingleChunkVector> > >;
 
   /**
    * @brief A reverse type like the unchecked reverse type in CoDiPack but with index reuse.
@@ -262,7 +262,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReversePrimalGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, FunctionHandleFactory, SingleChunkVector> > >;
+  using RealReversePrimalGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, FunctionHandleFactory, ChunkVector> > >;
 
   /**
    * @brief A reverse type like the default reverse type in CoDiPack but with primal value taping instead of Jacobian taping.

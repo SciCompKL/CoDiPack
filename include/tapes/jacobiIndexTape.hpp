@@ -39,6 +39,7 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
+#include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
 
 /**
@@ -53,18 +54,15 @@ namespace codi {
    *
    * See JacobiIndexTape for details.
    *
-   * @tparam Real  The type for the primal values.
-   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
+   * @tparam        RTT  The basic type defintions for the tape. Need to define everything from ReverseTapeTypes.
+   * @tparam DataVector  The data manager for the chunks. Needs to implement a ChunkVector interface.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct ChunkIndexTapeTypes {
-    /** @brief The type for the primal values. */
-    typedef Real RealType;
-    /** @brief The handler for the indices. */
-    typedef IndexHandler IndexHandlerType;
-    /** @brief The type for the adjoint values. */
-    typedef GradientValue GradientValueType;
+  template <typename RTT, template<typename, typename> class DataVector>
+  struct JacobiIndexTapeTypes {
+
+    CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
+
+    typedef RTT BaseTypes;
 
     /** @brief The data for each statement. */
     typedef Chunk2<StatementInt, typename IndexHandler::Index> StatementChunk;
@@ -85,50 +83,7 @@ namespace codi {
     typedef typename ExternalFunctionVector::Position Position;
 
     /** @brief The name of the tape as a string. */
-    constexpr static const char* tapeName = "ChunkIndexTape";
-
-  };
-
-  /**
-   * @brief Vector definition for the SimpleIndexTape.
-   *
-   * The structure defines all vectors as single chunk vectors.
-   *
-   * See JacobiIndexTape for details.
-   *
-   * @tparam Real  The type for the primal values.
-   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
-   */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct SimpleIndexTapeTypes {
-    /** @brief The type for the primal values. */
-    typedef Real RealType;
-    /** @brief The handler for the indices. */
-    typedef IndexHandler IndexHandlerType;
-    /** @brief The type for the adjoint values. */
-    typedef GradientValue GradientValueType;
-
-    /** @brief The data for each statement. */
-    typedef Chunk2<StatementInt, typename IndexHandler::Index> StatementChunk;
-    /** @brief The chunk vector for the statement data. */
-    typedef SingleChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
-
-    /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, typename IndexHandler::Index> JacobiChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef SingleChunkVector<JacobiChunk, StatementVector> JacobiVector;
-
-    /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename JacobiVector::Position> ExternalFunctionChunk;
-    /** @brief The chunk vector for the external  function data. */
-    typedef SingleChunkVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
-
-    /** @brief The position for all the different data vectors. */
-    typedef typename ExternalFunctionVector::Position Position;
-
-    /** @brief The name of the tape as a string. */
-    constexpr static const char* tapeName = "SimpleIndexTape";
+    constexpr static const char* tapeName = "JacobiIndexTape";
 
   };
 
@@ -154,29 +109,20 @@ namespace codi {
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
-  class JacobiIndexTape final : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::Index, typename TapeTypes::GradientValueType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
+  class JacobiIndexTape final : public ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
-    /** @brief The type for the primal values. */
-    typedef typename TapeTypes::RealType Real;
-    /** @brief The type for the adjoint values. */
-    typedef typename TapeTypes::GradientValueType GradientValue;
-    /** @brief The type for the index handler. */
-    typedef typename TapeTypes::IndexHandlerType IndexHandler;
+    CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
-    /** @brief The type for the indices that are used for the identification of the adjoint variables. */
-    typedef typename IndexHandler::Index Index;
-    /** @brief The gradient data is just the index type. */
+    typedef typename TapeTypes::BaseTypes BaseTypes;
+
     typedef Index GradientData;
-
-    /** @brief The corresponding passive value to the real type of this tape. */
-    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
 
     /** @brief The index handler for the active real's. */
-    static IndexHandler indexHandler;
+    static typename TapeTypes::IndexHandler indexHandler;
 
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
@@ -467,6 +413,6 @@ namespace codi {
    * @brief The instantiation of the index manager for the jacobi index tapes.
    */
   template <typename TapeTypes>
-  typename TapeTypes::IndexHandlerType JacobiIndexTape<TapeTypes>::indexHandler(0);
+  typename TapeTypes::IndexHandler JacobiIndexTape<TapeTypes>::indexHandler(0);
 
 }

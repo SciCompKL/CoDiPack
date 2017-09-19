@@ -52,13 +52,11 @@ namespace codi {
    *
    * See PrimalValueTape for details.
    *
-   * @tparam          Real  The type for the primal values.
-   * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
+   * @tparam           RTT  The basic type defintions for the tape. Need to define everything from ReverseTapeTypes.
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    * @tparam    DataVector  The data manager for the chunks. Needs to implement a ChunkVector interface.
    */
-  template <typename RTT, template<typename> class HandleFactoryType, template<typename, typename> class DataVecto>
+  template <typename RTT, template<typename> class HandleFactoryType, template<typename, typename> class DataVector>
   struct PrimalValueTapeTypes {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
@@ -118,7 +116,7 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
-    typedef TapeTypes BaseTypes;
+    typedef typename TapeTypes::BaseTypes BaseTypes;
 
     typedef typename TapeTypes::HandleFactory HandleFactory;
     typedef typename HandleFactory::Handle Handle;
