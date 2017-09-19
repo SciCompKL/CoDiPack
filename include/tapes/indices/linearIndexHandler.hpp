@@ -46,16 +46,16 @@ namespace codi {
    *
    * The handler will be reset together with the tape.
    *
-   * @tparam Index  The type for the handled indices.
+   * @tparam IndexType  The type for the handled indices.
    */
-  template<typename Index>
+  template<typename IndexType>
   class LinearIndexHandler {
     public:
 
       /**
        * @brief The type definition for other tapes who want to access the type.
        */
-      typedef Index IndexType;
+      typedef IndexType Index;
 
       /**
        * @brief The required position definition for a ChunkVector sequence terminator.

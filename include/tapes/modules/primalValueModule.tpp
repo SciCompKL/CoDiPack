@@ -115,14 +115,14 @@
     Real* primals;
 
     /** @brief The current size of the primal vector. */
-    IndexType primalsSize;
+    Index primalsSize;
 
     /**
      * @brief The increment of the size of the primal vector.
      *
      * The primals are incremented, when the indices are bigger than the current size.
      */
-    IndexType primalsIncr;
+    Index primalsIncr;
 
   private:
 
@@ -146,13 +146,13 @@
      *
      * @param[in] size The new size for the primal vector.
      */
-    void resizePrimals(const IndexType& size) {
-      IndexType oldSize = primalsSize;
+    void resizePrimals(const Index& size) {
+      Index oldSize = primalsSize;
       primalsSize = size;
 
       primals = (Real*)realloc(primals, sizeof(Real) * (size_t)primalsSize);
 
-      for(IndexType i = oldSize; i < primalsSize; ++i) {
+      for(Index i = oldSize; i < primalsSize; ++i) {
         primals[i] = Real();
       }
     }
@@ -164,7 +164,7 @@
      */
     CODI_INLINE void checkPrimalsSize() {
       if(primalsSize <= indexHandler.getMaximumGlobalIndex()) {
-        IndexType newSize = 1 + (indexHandler.getMaximumGlobalIndex() + 1) / primalsIncr;
+        Index newSize = 1 + (indexHandler.getMaximumGlobalIndex() + 1) / primalsIncr;
         newSize = newSize * primalsIncr;
         resizePrimals(newSize);
       }
@@ -190,7 +190,7 @@
      * @param[in]     value  Not used in the action.
      * @param[in]     index  The index of the active real.
      */
-    CODI_INLINE void countActiveValues(int* count, const Real& value, const IndexType& index) {
+    CODI_INLINE void countActiveValues(int* count, const Real& value, const Index& index) {
       CODI_UNUSED(value);
       if(0 != index) {
         *count += 1;
@@ -208,8 +208,8 @@
      * @param[in]     value  The primal value of the active real.
      * @param[in]     index  The index of the active real.
      */
-    CODI_INLINE void pushIndices(int* passiveVariableCount, const Real& value, const IndexType& index) {
-      IndexType pushIndex = index;
+    CODI_INLINE void pushIndices(int* passiveVariableCount, const Real& value, const Index& index) {
+      Index pushIndex = index;
       if(0 == pushIndex) {
         *passiveVariableCount += 1;
         pushIndex = *passiveVariableCount;
@@ -242,7 +242,7 @@
                                                  size_t constSize,
                                                  const StatementInt& passiveActives,
                                                  size_t& indexPos,
-                                                 IndexType* &indices,
+                                                 Index* &indices,
                                                  size_t& constantPos,
                                                  PassiveReal* &constants,
                                                  Real* primalVector) {
@@ -264,11 +264,11 @@
     template<typename Expr>
     static CODI_INLINE Real curryEvaluatePrimalHandle(const StatementInt& passiveActives,
                                                       size_t& indexPos,
-                                                      IndexType* &indices,
+                                                      Index* &indices,
                                                       size_t& constantPos,
                                                       PassiveReal* &constants,
                                                       Real* primalVector) {
-      return evaluatePrimalHandle(Expr::template getValue<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+      return evaluatePrimalHandle(Expr::template getValue<Index, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
                                   passiveActives, indexPos, indices, constantPos, constants, primalVector);
     }
 
@@ -297,7 +297,7 @@
                                            const GradientValue& adj,
                                            const StatementInt& passiveActives,
                                            size_t& indexPos,
-                                           IndexType* &indices,
+                                           Index* &indices,
                                            size_t& constantPos,
                                            PassiveReal* &constants,
                                            Real* primalVector,
@@ -320,12 +320,12 @@
     static CODI_INLINE void curryEvaluateHandle(const GradientValue& adj,
                                                 const StatementInt& passiveActives,
                                                 size_t& indexPos,
-                                                IndexType* &indices,
+                                                Index* &indices,
                                                 size_t& constantPos,
                                                 PassiveReal* &constants,
                                                 Real* primalVector,
                                                 GradientValue* adjoints) {
-      evaluateHandle(Expr::template evalAdjoint<IndexType, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+      evaluateHandle(Expr::template evalAdjoint<Index, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
                      adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 
@@ -333,7 +333,7 @@
 
     template<typename ... Args>
     CODI_INLINE void evaluateIndicesPrimal(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
-      IndexType* data;
+      Index* data;
       size_t dataPos = start.data;
       auto curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
@@ -368,7 +368,7 @@
      */
     template<typename ... Args>
     CODI_INLINE void evaluateIndices(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
-      IndexType* data;
+      Index* data;
       size_t dataPos = start.data;
       auto curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
@@ -456,7 +456,7 @@
      * @param[in,out] lhsIndex  The index of the active real. The index is renewed in this method.
      * @param[in]     rhsIndex  The index of the rhs value.
      */
-    CODI_INLINE void pushCopyHandle(const Real& lhsValue, IndexType& lhsIndex, const IndexType& rhsIndex) {
+    CODI_INLINE void pushCopyHandle(const Real& lhsValue, Index& lhsIndex, const Index& rhsIndex) {
       indexVector.reserveItems(1);
       indexVector.setDataAndMove(rhsIndex);
 
@@ -489,7 +489,7 @@
      * @tparam Rhs The expression on the rhs of the statement.
      */
     template<typename Rhs>
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
 
       ENABLE_CHECK(OptTapeActivity, active){
 
@@ -517,7 +517,7 @@
           CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
 
 #if CODI_AdjointHandle_Primal
-            IndexType* rhsIndices = NULL;
+            Index* rhsIndices = NULL;
             PassiveReal* constants = NULL;
 
             auto posIndex = indexVector.getPosition();
@@ -527,7 +527,7 @@
             constantValueVector.getDataAtPosition(posPassive.chunk, constantSize, constants);
 
             resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
-            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveVariableNumber, constants, rhsIndices, primals, adjoints);
+            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, Index, Rhs>::getHandle(), passiveVariableNumber, constants, rhsIndices, primals, adjoints);
 #endif
         } else {
           indexHandler.freeIndex(lhsIndex);
@@ -552,7 +552,7 @@
      * @param[out]   lhsIndex  The gradient data of the lhs. The index will be set to zero.
      * @param[in]         rhs  The right hand side expression of the assignment.
      */
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
 
       lhsValue = rhs;
@@ -571,7 +571,7 @@
      * @param[out]   lhsIndex  The gradient data of the lhs.
      * @param[in]        size  The number of Jacobi entries.
      */
-    CODI_INLINE void storeManual(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void storeManual(const Real& lhsValue, Index& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         constantValueVector.reserveItems(size);
         indexVector.reserveItems(size);
@@ -588,7 +588,7 @@
      * @param[in] index  Not used in this implementation.
      */
     template<typename Data>
-    CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& value, const Index& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       CODI_UNUSED(index);
@@ -605,7 +605,7 @@
      * @param[in]  index  Not used in this implementation.
      */
     template<typename Data>
-    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const Index& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(jacobi);
       CODI_UNUSED(value);
@@ -626,7 +626,7 @@
      * @param[in]    value  Not used in this implementation.
      * @param[in]    index  Stored in the index vector.
      */
-    CODI_INLINE void pushJacobiManual(const Real& jacobi, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobiManual(const Real& jacobi, const Real& value, const Index& index) {
       CODI_UNUSED(value);
 
       constantValueVector.setDataAndMove(jacobi);

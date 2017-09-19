@@ -284,10 +284,10 @@ namespace codi {
      * @param[in]       size  The number of arguments that are stored for the statement.
      *
      * @tparam      Real  The type of the floating point values that are used in the tape.
-     * @tparam IndexType  The type of the indices that are used in the tape.
+     * @tparam     Index  The type of the indices that are used in the tape.
      */
-    template<typename Real, typename IndexType>
-    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
+    template<typename Real, typename Index>
+    void handleAdjointOperation(const Real& value, const Index lhsIndex, const Real* jacobies, const Index* rhsIndices, const int size);
   #endif
 
   #ifndef CODI_AdjointHandle_Primal
@@ -299,9 +299,9 @@ namespace codi {
      *
      * @tparam AdjointData  The type of the adjoint data.
      * @tparam        Real  The type for the real values.
-     * @tparam   IndexType  The index types for the management.
+     * @tparam       Index  The index types for the management.
      */
-    template<typename AdjointData, typename Real, typename IndexType> class ExpressionHandle;
+    template<typename AdjointData, typename Real, typename Index> class ExpressionHandle;
 
     /**
      * @brief A function that is called for every statement that is written on the
@@ -325,10 +325,10 @@ namespace codi {
      *
      * @tparam        Real  The type of the floating point values that are used in the tape.
      * @tparam PassiveReal  The type of the passive floating point values that are used in the tape.
-     * @tparam   IndexType  The type of the indices that are used in the tape.
+     * @tparam       Index  The type of the indices that are used in the tape.
      */
-    template<typename Real, typename PassiveReal, typename IndexType>
-    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const ExpressionHandle<Real*, Real, IndexType>* handle, const StatementInt& passiveActives, const PassiveReal* constants, const IndexType* rhsIndices, const Real* primalVec);
+    template<typename Real, typename PassiveReal, typename Index>
+    void handleAdjointOperation(const Real& value, const Index lhsIndex, const ExpressionHandle<Real*, Real, Index>* handle, const StatementInt& passiveActives, const PassiveReal* constants, const Index* rhsIndices, const Real* primalVec);
   #endif
 
   #ifndef CODI_AdjointHandle_Tangent
@@ -356,11 +356,11 @@ namespace codi {
     #define CODI_IndexHandle false
   #endif
   #if CODI_IndexHandle
-    template<typename IndexType>
-    void handleIndexCreate(const IndexType& index);
+    template<typename Index>
+    void handleIndexCreate(const Index& index);
 
-    template<typename IndexType>
-    void handleIndexFree(const IndexType& index);
+    template<typename Index>
+    void handleIndexFree(const Index& index);
   #endif
 
   #ifndef CODI_EnableAssert

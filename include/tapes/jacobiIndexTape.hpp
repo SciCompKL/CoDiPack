@@ -67,12 +67,12 @@ namespace codi {
     typedef GradientValue GradientValueType;
 
     /** @brief The data for each statement. */
-    typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
+    typedef Chunk2<StatementInt, typename IndexHandler::Index> StatementChunk;
     /** @brief The chunk vector for the statement data. */
     typedef ChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
 
     /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
+    typedef Chunk2< Real, typename IndexHandler::Index> JacobiChunk;
     /** @brief The chunk vector for the jacobi data. */
     typedef ChunkVector<JacobiChunk, StatementVector> JacobiVector;
 
@@ -110,12 +110,12 @@ namespace codi {
     typedef GradientValue GradientValueType;
 
     /** @brief The data for each statement. */
-    typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
+    typedef Chunk2<StatementInt, typename IndexHandler::Index> StatementChunk;
     /** @brief The chunk vector for the statement data. */
     typedef SingleChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
 
     /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
+    typedef Chunk2< Real, typename IndexHandler::Index> JacobiChunk;
     /** @brief The chunk vector for the jacobi data. */
     typedef SingleChunkVector<JacobiChunk, StatementVector> JacobiVector;
 
@@ -154,7 +154,7 @@ namespace codi {
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
-  class JacobiIndexTape final : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
+  class JacobiIndexTape final : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::Index, typename TapeTypes::GradientValueType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
     /** @brief The type for the primal values. */
@@ -165,9 +165,9 @@ namespace codi {
     typedef typename TapeTypes::IndexHandlerType IndexHandler;
 
     /** @brief The type for the indices that are used for the identification of the adjoint variables. */
-    typedef typename IndexHandler::IndexType IndexType;
+    typedef typename IndexHandler::Index Index;
     /** @brief The gradient data is just the index type. */
-    typedef IndexType GradientData;
+    typedef Index GradientData;
 
     /** @brief The corresponding passive value to the real type of this tape. */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
@@ -260,7 +260,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
           indexHandler.copyIndex(lhsIndex, rhs.getGradientData());
@@ -338,7 +338,7 @@ namespace codi {
      * @param[in] numberOfArguments  The number of arguments in the statements that have been pushed as jacobies.
      * @param[in]          lhsIndex  The index of the lhs value of the operation.
      */
-    CODI_INLINE void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
+    CODI_INLINE void pushStmtData(const StatementInt& numberOfArguments, const Index& lhsIndex) {
       stmtVector.setDataAndMove(numberOfArguments, lhsIndex);
     }
 
@@ -355,11 +355,11 @@ namespace codi {
      * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
      * @param[in]              indices The pointer the indices of the rhs arguments.
      */
-    CODI_INLINE void evalStmtCallback(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, IndexType* lhsIndices, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    CODI_INLINE void evalStmtCallback(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, Index* lhsIndices, size_t& dataPos, Real* &jacobies, Index* &indices) {
 
       while(stmtPos > endStmtPos) {
         --stmtPos;
-        const IndexType& lhsIndex = lhsIndices[stmtPos];
+        const Index& lhsIndex = lhsIndices[stmtPos];
         const GradientValue adj = adjoints[lhsIndex];
         adjoints[lhsIndex] = GradientValue();
 
@@ -380,7 +380,7 @@ namespace codi {
     template<typename ... Args>
     CODI_INLINE void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
       StatementInt* numberOfArgumentsData;
-      IndexType* lhsIndexData;
+      Index* lhsIndexData;
 
       size_t dataPos = start.data;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
@@ -409,7 +409,7 @@ namespace codi {
      * @param[in] start The starting point for the statement vector.
      * @param[in]   end The ending point for the statement vector.
      */
-    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, Index* &indices) {
       evaluateStmt(start, end, dataPos, jacobies, indices);
     }
 

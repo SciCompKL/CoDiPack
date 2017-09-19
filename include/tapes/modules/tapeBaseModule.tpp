@@ -91,7 +91,7 @@
     GradientValue* adjoints;
 
     /** @brief The current size of the adjoint vector. */
-    IndexType adjointsSize;
+    Index adjointsSize;
 
     /**
      * @brief Determines if statements are recorded or ignored.
@@ -109,11 +109,11 @@
      *
      * @param[in] size The new size for the adjoint vector.
      */
-    void resizeAdjoints(const IndexType& size) {
-      IndexType oldSize = adjointsSize;
+    void resizeAdjoints(const Index& size) {
+      Index oldSize = adjointsSize;
       adjointsSize = size;
 
-      for(IndexType i = adjointsSize; i < oldSize; ++i) {
+      for(Index i = adjointsSize; i < oldSize; ++i) {
         adjoints[i].~GradientValue();
       }
 
@@ -123,7 +123,7 @@
         throw std::bad_alloc();
       }
 
-      for(IndexType i = oldSize; i < adjointsSize; ++i) {
+      for(Index i = oldSize; i < adjointsSize; ++i) {
         new (adjoints + i) GradientValue();
       }
     }
@@ -165,9 +165,9 @@
      * @param[in] value Not used in this implementation.
      * @param[out] index The index of the active type.
      */
-    CODI_INLINE void initGradientData(Real& value, IndexType& index) {
+    CODI_INLINE void initGradientData(Real& value, Index& index) {
       CODI_UNUSED(value);
-      index = IndexType();
+      index = Index();
     }
 
     /**
@@ -175,7 +175,7 @@
      * @param[in] value Not used in this implementation.
      * @param[in] index The index of the active type.
      */
-    CODI_INLINE void destroyGradientData(Real& value, IndexType& index) {
+    CODI_INLINE void destroyGradientData(Real& value, Index& index) {
       CODI_UNUSED(value);
 
       INDEX_HANDLER_NAME.freeIndex(index);
@@ -202,7 +202,7 @@
      * @param[in]    index  The index of the active type.
      * @param[in] gradient  The new value for the gradient.
      */
-    void setGradient(IndexType& index, const GradientValue& gradient) {
+    void setGradient(Index& index, const GradientValue& gradient) {
       if(0 != index) {
         this->gradient(index) = gradient;
       }
@@ -214,7 +214,7 @@
      * @param[in] index The index of the active type.
      * @return False if the gradient data is zero, otherwise returns true.
      */
-    bool isActive(const IndexType& index) const{
+    bool isActive(const Index& index) const{
       return (index != 0);
     }
 
@@ -224,7 +224,7 @@
      * @param[in] index The index of the active type.
      * @return The gradient value corresponding to the given index.
      */
-    CODI_INLINE GradientValue getGradient(const IndexType& index) const {
+    CODI_INLINE GradientValue getGradient(const Index& index) const {
       if(0 == index || adjointsSize <= index) {
         return GradientValue();
       } else {
@@ -240,7 +240,7 @@
      * @param[in] index The index of the active type.
      * @return The reference to the gradient data.
      */
-    CODI_INLINE GradientValue& gradient(IndexType& index) {
+    CODI_INLINE GradientValue& gradient(Index& index) {
       codiAssert(0 != index);
       codiAssert(index <= INDEX_HANDLER_NAME.getMaximumGlobalIndex());
 
@@ -258,7 +258,7 @@
      * @param[in] index The index of the active type.
      * @return The constant reference to the gradient data.
      */
-    CODI_INLINE const GradientValue& gradient(const IndexType& index) const {
+    CODI_INLINE const GradientValue& gradient(const Index& index) const {
       if(adjointsSize <= index) {
         return adjoints[0];
       } else {
@@ -271,7 +271,7 @@
      */
     CODI_INLINE void clearAdjoints(){
       if(NULL != adjoints) {
-        for(IndexType i = 0; i < adjointsSize; ++i) {
+        for(Index i = 0; i < adjointsSize; ++i) {
           adjoints[i] = GradientValue();
         }
       }

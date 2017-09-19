@@ -43,7 +43,7 @@ namespace codi {
 
       typedef Real (*PrimalFunc)(const StatementInt& passiveActives,
                                  size_t& indexPos,
-                                 IndexType* &indices,
+                                 Index* &indices,
                                  size_t& constantPos,
                                  PassiveReal* &constants,
                                  Real* primalVector);
@@ -51,18 +51,18 @@ namespace codi {
       typedef void (*AdjointFunc)(const GradientValue& adj,
                                   const StatementInt& passiveActives,
                                   size_t& indexPos,
-                                  IndexType* &indices,
+                                  Index* &indices,
                                   size_t& constantPos,
                                   PassiveReal* &constants,
                                   Real* primalVector,
                                   GradientValue* adjoints);
 
-      typedef Real (*PrimalExprFunc)(const IndexType* indices,
+      typedef Real (*PrimalExprFunc)(const Index* indices,
                                      const PassiveReal* constants,
                                      const Real* primalVector);
 
       typedef void (*AdjointExprFunc)(const GradientValue& adj,
-                                      const IndexType* indices,
+                                      const Index* indices,
                                       const PassiveReal* constants,
                                       const Real* primalVector,
                                       GradientValue* adjoints);

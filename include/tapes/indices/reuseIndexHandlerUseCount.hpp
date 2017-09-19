@@ -50,13 +50,13 @@ namespace codi {
    *
    * @tparam Index  The type for the handled indices.
    */
-  template<typename Index>
+  template<typename IndexType>
   class ReuseIndexHandlerUseCount {
     public:
       /**
        * @brief The type definition for other tapes who want to access the type.
        */
-      typedef Index IndexType;
+      typedef IndexType Index;
 
 
       /**

@@ -57,7 +57,7 @@ namespace codi {
   typedef typename name::GradientValue GradientValue; \
   typedef typename name::PassiveReal PassiveReal; \
   typedef typename name::IndexHandler IndexHandler; \
-  typedef typename name::IndexType IndexType;
+  typedef typename name::Index Index;
 
 
   /**
@@ -69,7 +69,7 @@ namespace codi {
       typedef RealType Real;
       typedef GradientValueType GradientValue;
       typedef IndexHandlerType IndexHandler;
-      typedef typename IndexHandlerType::IndexType IndexType;
+      typedef typename IndexHandlerType::Index Index;
 
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
   };

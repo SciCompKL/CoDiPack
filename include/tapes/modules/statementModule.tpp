@@ -136,7 +136,7 @@
      * @tparam Rhs The expression on the rhs of the statement.
      */
     template<typename Rhs>
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
@@ -155,7 +155,7 @@
 
 #if CODI_AdjointHandle_Jacobi
           Real* jacobies = NULL;
-          IndexType* rhsIndices = NULL;
+          Index* rhsIndices = NULL;
 
           auto pos = JACOBI_VECTOR_NAME.getPosition();
           JACOBI_VECTOR_NAME.getDataAtPosition(pos.chunk, startSize, jacobies, rhsIndices);
@@ -184,7 +184,7 @@
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
       lhsValue = rhs;
     }
@@ -202,7 +202,7 @@
      * @param[out]   lhsIndex  The gradient data of the lhs.
      * @param[in]        size  The number of Jacobi entries.
      */
-    CODI_INLINE void storeManual(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void storeManual(const Real& lhsValue, Index& lhsIndex, StatementInt size) {
       CODI_UNUSED(lhsValue);
 
       stmtVector.reserveItems(1);

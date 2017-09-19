@@ -91,13 +91,12 @@ namespace codi {
    * The static data of the expression is stored in a static object and a pointer to that
    * static object is returned as the handle.
    *
-   * @tparam          Real  A calculation type that supports all mathematical operations.
-   * @tparam     IndexType  An integer type that is used to identify the AD objects.
-   * @tparam GradientValue  A value type that supports add and scaling operations.
+   * @tparam ReverseTapeTypes  The basic type definitions for a reverse type. Needs to define the
+   *                           same types as ReverseTapeTypes
    */
   template<typename ReverseTapeTypes>
   struct StaticFunctionHandleFactory
-    // final : public HandleFactoryInterface</* handle type */, Real, IndexType, GradientValue>
+    // final : public HandleFactoryInterface</* handle type */>
   {
 
     typedef const FunctionHandle<ReverseTapeTypes>* const Handle;

@@ -43,15 +43,15 @@ namespace codi {
    * New indices are generated if required. All the freed indices are stored in a list
    * and are reused when indices are needed.
    *
-   * @tparam Index  The type for the handled indices.
+   * @tparam IndexType  The type for the handled indices.
    */
-  template<typename Index>
+  template<typename IndexType>
   class ReuseIndexHandler {
     public:
       /**
        * @brief The type definition for other tapes who want to access the type.
        */
-      typedef Index IndexType;
+      typedef IndexType Index;
 
 
       /**
