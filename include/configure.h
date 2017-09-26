@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -60,7 +60,7 @@ namespace codi {
     #define CODI_UseForcedInlines 0
   #endif
   #if CODI_UseForcedInlines
-    #if defined(__INTEL_COMPILER)
+    #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
       #define CODI_INLINE __forceinline
     #elif defined(__GNUC__)
       #define CODI_INLINE inline __attribute__((always_inline))
@@ -84,7 +84,11 @@ namespace codi {
     #define CODI_UseAvoidedInlines 1
   #endif
   #if CODI_UseAvoidedInlines
-    #define CODI_NO_INLINE __attribute__((noinline))
+    #if defined(_MSC_VER)
+      #define CODI_NO_INLINE __declspec(noinline)
+    #else
+      #define CODI_NO_INLINE __attribute__((noinline))
+    #endif
   #else
     #define CODI_NO_INLINE /* no avoiding of inline defined */
   #endif
