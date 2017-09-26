@@ -198,12 +198,16 @@ namespace codi {
        * @param[in]    rhs  The index of the rhs.
        */
       CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {
-        freeIndex(lhs);
+        // skip the logic if the indices are the same.
+        // This also prevents the bug, that if &lhs == &rhs the left hand side will always be deactivated.
+        if(lhs != rhs) {
+          freeIndex(lhs);
 
-        if(0 != rhs) { // do not handle the zero index
-          indexUse[rhs] += 1;
+          if(0 != rhs) { // do not handle the zero index
+            indexUse[rhs] += 1;
 
-          lhs = rhs;
+            lhs = rhs;
+          }
         }
       }
 
