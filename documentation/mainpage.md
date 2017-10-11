@@ -107,3 +107,16 @@ for the gcc compiler or with
 for the intel compiler.
 
 Please visit the \ref tutorialPage "tutorial page" for further information.
+
+## Citation
+
+If you use CoDiPack in one of your applications and write a paper it would be nice if you could cite the paper
+[High-Performance Derivative Computations using CoDiPack](https://arxiv.org/abs/1709.07229) (submitted to ACM TOMS).
+~~~~{.txt}
+@article{sagebaum2017high,
+  title={{High-Performance Derivative Computations using CoDiPack}},
+  author={Sagebaum, Max and Albring, Tim and Gauger, Nicolas R.},
+  journal={arXiv preprint arXiv:1709.07229},
+  year={2017}
+}
+~~~~
