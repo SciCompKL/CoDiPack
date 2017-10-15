@@ -369,6 +369,22 @@ namespace codi {
     }
 
   public:
+    /**
+     * @brief Internal function for input variable registration.
+     *
+     * The index of the variable is set to a non zero number.
+     *
+     * @param[inout] value  Unused
+     * @param[out]   index  Is assigned a non zero value.
+     */
+    CODI_INLINE void registerInputInternal(Real& value, IndexType& index) {
+      CODI_UNUSED(value);
+
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove((StatementInt)0);
+
+      index = indexHandler.createIndex();
+    }
 
     /**
      * @brief Register a variable as an active variable.
@@ -377,10 +393,29 @@ namespace codi {
      * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<JacobiTape<TapeTypes> >& value) {
-      stmtVector.reserveItems(1);
-      stmtVector.setDataAndMove((StatementInt)0);
+      registerInputInternal(value.value(), value.getGradientData());
+    }
 
-      value.getGradientData() = indexHandler.createIndex();
+    /**
+     * @brief Internal function for output variable registration.
+     *
+     * The index of the variable is set to a non zero number.
+     *
+     * @param[inout] value  Unused
+     * @param[out]   index  Is assigned a non zero value.
+     */
+    CODI_INLINE void registerOutputInternal(const Real& value, IndexType& index) {
+      CODI_UNUSED(value);
+
+      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
+        stmtVector.reserveItems(1);
+        jacobiVector.reserveItems(1);
+
+        stmtVector.setDataAndMove((StatementInt)1);
+        jacobiVector.setDataAndMove(1.0, index);
+
+        index = indexHandler.createIndex();
+      }
     }
 
     /**
@@ -392,7 +427,7 @@ namespace codi {
      * @param[in] value A new index is assigned.
      */
     CODI_INLINE void registerOutput(ActiveReal<JacobiTape<TapeTypes> >& value) {
-      value = PassiveReal(1.0) * value;
+      registerOutputInternal(value.getValue(), value.getGradientData());
     }
 
     TapeValues getTapeValues() const {

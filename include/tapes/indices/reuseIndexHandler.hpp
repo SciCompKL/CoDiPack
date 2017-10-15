@@ -158,6 +158,7 @@ namespace codi {
        * The manager ensures only that the lhs index is valid.
        */
       CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {
+        CODI_UNUSED(rhs);
         assignIndex(lhs);
       }
 

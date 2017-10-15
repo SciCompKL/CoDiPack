@@ -46,6 +46,10 @@ namespace codi {
 
     template<typename Index, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      CODI_UNUSED(indices);
+      CODI_UNUSED(constantValues);
+      CODI_UNUSED(primalValues);
+
       std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
       exit(-1);
       return 0.0;
@@ -90,6 +94,8 @@ namespace codi {
 
     template<typename Index, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      CODI_UNUSED(constantValues);
+
       return primalValues[indices[offset]];
     }
 
@@ -133,6 +139,10 @@ namespace codi {
 
     template<typename Index, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      CODI_UNUSED(indices);
+      CODI_UNUSED(constantValues);
+      CODI_UNUSED(primalValues);
+
       std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
       exit(-1);
       return 0.0;

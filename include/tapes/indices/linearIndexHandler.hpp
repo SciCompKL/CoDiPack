@@ -215,6 +215,7 @@ namespace codi {
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
         CODI_UNUSED(function);
         CODI_UNUSED(recursive);
+        CODI_UNUSED_VAR{args...};
 
         // Do nothing
       }

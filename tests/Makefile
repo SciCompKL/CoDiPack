@@ -43,7 +43,7 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
-FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true
+FLAGS = -Wall -Wextra -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true
 
 # The default is to run all drives
 DRIVERS?=ALL
