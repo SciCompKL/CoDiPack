@@ -377,7 +377,7 @@ namespace codi {
      * @param[inout] value  Unused
      * @param[out]   index  Is assigned a non zero value.
      */
-    CODI_INLINE void registerInputInternal(Real& value, IndexType& index) {
+    CODI_INLINE void registerInputInternal(Real& value, Index& index) {
       CODI_UNUSED(value);
 
       stmtVector.reserveItems(1);
@@ -404,7 +404,7 @@ namespace codi {
      * @param[inout] value  Unused
      * @param[out]   index  Is assigned a non zero value.
      */
-    CODI_INLINE void registerOutputInternal(const Real& value, IndexType& index) {
+    CODI_INLINE void registerOutputInternal(const Real& value, Index& index) {
       CODI_UNUSED(value);
 
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {

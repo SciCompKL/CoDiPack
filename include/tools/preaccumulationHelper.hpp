@@ -216,7 +216,7 @@ namespace codi {
         // store the Jacobi matrix
         tape.reset(startPos);
 
-        for (int curOut = 0; curOut < outputData.size(); ++curOut) {
+        for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
 
           CoDiType& value = *outputData[curOut];
           if(0 != nonZeros[curOut]) {
@@ -234,7 +234,7 @@ namespace codi {
 
               // calucluate the number of Jacobies for this statement
               int jacobiesForStatement = nonZerosLeft;
-              if(jacobiesForStatement >= MaxStatementIntValue) {
+              if(jacobiesForStatement >= (int)MaxStatementIntValue) {
 
                 jacobiesForStatement = MaxStatementIntValue;
                 if(staggeringActive) { /* Space is used up but we need one Jacobi for the staggering */

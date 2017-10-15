@@ -74,7 +74,7 @@ namespace codi {
        *
        * @return The handle for the expression.
        */
-      static const FunctionHandle<typename Tape::BaseTypes>* const getHandle() {
+      static const FunctionHandle<typename Tape::BaseTypes>* getHandle() {
         return &handle;
       }
   };
@@ -99,7 +99,7 @@ namespace codi {
     // final : public HandleFactoryInterface</* handle type */>
   {
 
-    typedef const FunctionHandle<ReverseTapeTypes>* const Handle;
+    typedef const FunctionHandle<ReverseTapeTypes>* Handle;
 
     /**
      * @brief Create the handle for the given tape and the given expression.

@@ -117,7 +117,7 @@ namespace codi {
        *
        * @return The handle for the expression.
        */
-      static const ExpressionHandle<typename Tape::BaseTypes>* const getHandle() {
+      static const ExpressionHandle<typename Tape::BaseTypes>* getHandle() {
         return &handle;
       }
   };
