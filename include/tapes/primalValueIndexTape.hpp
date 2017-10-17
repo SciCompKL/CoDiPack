@@ -335,17 +335,28 @@ namespace codi {
      * @param[in]           indices  The indices for the arguments of the rhs.
      * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
      * @param[in]         constants  The constant values in the rhs expressions.
+     * @param[in,out] adjointData  The vector of the adjoint varaibles.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
-    CODI_INLINE void evaluateStack(size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
+    template<typename AdjointData>
+    CODI_INLINE void evaluateStack(size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, AdjointData* adjointData) {
       while(stmtPos > endStmtPos) {
         --stmtPos;
         const Index& lhsIndex = lhsIndices[stmtPos];
 
         primalVector[lhsIndex] = storedPrimals[stmtPos];
-        const GradientValue adj = adjoints[lhsIndex];
-        adjoints[lhsIndex] = GradientValue();
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+          adjointData->setLhsAdjoint(lhsIndex);
+          adjointData->resetAdjoint(lhsIndex);
 
-        HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjoints);
+          HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjointData);
+#else
+          const GradientValue adj = adjointData[lhsIndex];
+          adjointData[lhsIndex] = GradientValue();
+
+          HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjointData);
+#endif
       }
     }
 
@@ -360,7 +371,7 @@ namespace codi {
       for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
         stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
 
-        evaluateStackPrimal(dataPos, stmtVector.getChunkUsedData(curChunk), data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
+        evaluateStackPrimal(dataPos, stmtVector.getChunkUsedData(curChunk), data1, data2, data3, data4, std::forward<Args>(args)...);
 
         codiAssert(dataPos == stmtVector.getChunkUsedData(curChunk)); // After a full chunk is evaluated the data position needs to be at the end
 
@@ -369,7 +380,7 @@ namespace codi {
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
-      evaluateStackPrimal(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
+      evaluateStackPrimal(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
     }
 
     /**
@@ -396,7 +407,7 @@ namespace codi {
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
         stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
 
-        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
+        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)...);
 
         codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
 
@@ -405,7 +416,7 @@ namespace codi {
 
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
-      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)..., primalsCopy);
+      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
     }
 
     template<typename ... Args>
@@ -444,14 +455,24 @@ namespace codi {
      *
      * @tparam Args  The types of the other arguments.
      */
-    CODI_INLINE void evaluateInt(const Position& start, const Position& end) {
+    template<typename AdjointData>
+    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
       if(primalsCopySize < primalsSize) {
         primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * primalsSize);
         primalsCopySize = primalsSize;
       }
       memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
 
-      evaluateExtFunc(start, end);
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+      AdjointHandler<AdjointData> handler(adjointData);
+
+      evaluateExtFunc(start, end, primalsCopy, &handler);
+#else
+      static_assert(std::is_same<AdjointData, GradientValue>::value,
+        "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"
+        " to use custom adjoint vectors in the primal value tapes.");
+      evaluateExtFunc(start, end, primalsCopy, adjointData);
+#endif
     }
 
     struct PrimalValueReseter {
@@ -501,9 +522,15 @@ namespace codi {
 
       std::swap(primals, primalsCopy);
 
-      evaluateExtFunc(start, end);
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        AdjointHandler<GradientValue> handler(adjoints);
 
-      evaluateExtFuncPrimal(end, start);
+        evaluateExtFunc(start, end, primalsCopy, &handler);
+#else
+        evaluateExtFunc(start, end, primalsCopy, adjoints);
+#endif
+
+      evaluateExtFuncPrimal(end, start, primalsCopy);
 
       std::swap(primals, primalsCopy);
     }

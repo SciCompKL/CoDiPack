@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "configure.h"
 #include "typeTraits.hpp"
 #include "tapeTypes.hpp"
 
@@ -48,23 +49,23 @@ namespace codi {
                                  PassiveReal* &constants,
                                  Real* primalVector);
 
-      typedef void (*AdjointFunc)(const GradientValue& adj,
+      typedef void (*AdjointFunc)(const PRIMAL_SEED_TYPE& adj,
                                   const StatementInt& passiveActives,
                                   size_t& indexPos,
                                   Index* &indices,
                                   size_t& constantPos,
                                   PassiveReal* &constants,
                                   Real* primalVector,
-                                  GradientValue* adjoints);
+                                  PRIMAL_ADJOINT_TYPE* adjoints);
 
       typedef Real (*PrimalExprFunc)(const Index* indices,
                                      const PassiveReal* constants,
                                      const Real* primalVector);
 
-      typedef void (*AdjointExprFunc)(const GradientValue& adj,
+      typedef void (*AdjointExprFunc)(const PRIMAL_SEED_TYPE& adj,
                                       const Index* indices,
                                       const PassiveReal* constants,
                                       const Real* primalVector,
-                                      GradientValue* adjoints);
+                                      PRIMAL_ADJOINT_TYPE* adjoints);
   };
 }

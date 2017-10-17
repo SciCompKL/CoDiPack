@@ -294,14 +294,14 @@
     static CODI_INLINE void evaluateHandle(FuncObj funcObj,
                                            size_t varSize,
                                            size_t constSize,
-                                           const GradientValue& adj,
+                                           const PRIMAL_SEED_TYPE& adj,
                                            const StatementInt& passiveActives,
                                            size_t& indexPos,
                                            Index* &indices,
                                            size_t& constantPos,
                                            PassiveReal* &constants,
                                            Real* primalVector,
-                                           GradientValue* adjoints) {
+                                           PRIMAL_ADJOINT_TYPE* adjoints) {
       // first restore the primal values of the passive indices
       constantPos -= passiveActives;
       for(StatementInt i = 0; i < passiveActives; ++i) {
@@ -317,14 +317,14 @@
     }
 
     template<typename Expr>
-    static CODI_INLINE void curryEvaluateHandle(const GradientValue& adj,
+    static CODI_INLINE void curryEvaluateHandle(const PRIMAL_SEED_TYPE& adj,
                                                 const StatementInt& passiveActives,
                                                 size_t& indexPos,
                                                 Index* &indices,
                                                 size_t& constantPos,
                                                 PassiveReal* &constants,
                                                 Real* primalVector,
-                                                GradientValue* adjoints) {
+                                                PRIMAL_ADJOINT_TYPE* adjoints) {
       evaluateHandle(Expr::template evalAdjoint<Index, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
                      adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }

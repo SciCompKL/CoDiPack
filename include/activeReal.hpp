@@ -28,10 +28,12 @@
 
 #pragma once
 
+#include "configure.h"
 #include "expressions.hpp"
 #include "typeTraits.hpp"
 #include "typeFunctions.hpp"
 #include "expressionTraits.hpp"
+
 #include <iostream>
 
 /**
@@ -598,12 +600,16 @@ namespace codi {
      * @tparam constantOffset  The offset for the constant values array
      */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
+    static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
       ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        adjointValues->updateAdjoint(indices[offset], seed);
+#else
         adjointValues[indices[offset]] += seed;
+#endif
       }
     }
   };

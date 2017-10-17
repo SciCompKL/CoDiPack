@@ -30,6 +30,7 @@
 
 #include <stdint.h>
 
+#include "adjointInterface.hpp"
 #include "exceptions.hpp"
 #include "macros.h"
 
@@ -250,6 +251,17 @@ namespace codi {
    */
   const bool OptDisableAssignOptimization = CODI_DisableAssignOptimization;
   #undef CODI_DisableAssignOptimization
+
+  #ifndef CODI_EnableVariableAdjointInterfaceInPrimalTapes
+    #define CODI_EnableVariableAdjointInterfaceInPrimalTapes 0
+  #endif
+  #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+    #define PRIMAL_SEED_TYPE Real
+    #define PRIMAL_ADJOINT_TYPE AdjointInterface
+  #else
+    #define PRIMAL_SEED_TYPE GradientValue
+    #define PRIMAL_ADJOINT_TYPE GradientValue
+  #endif
 
   /*
    * @brief TODO

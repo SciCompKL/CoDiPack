@@ -154,6 +154,12 @@ DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reversePrimalVector/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalVector
 $(eval $(value DRIVER_INST))
 
+# Driver for RealReversePrimalVectorAdapter
+DRIVER_NAME  := RWS_PrimVecA
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER := $(DRIVER_DIR)/reversePrimalVectorAdapter/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalVectorAdapter -DCODI_EnableVariableAdjointInterfaceInPrimalTapes
+$(eval $(value DRIVER_INST))
+
 # Driver for RealReversePrimalIndex
 DRIVER_NAME  := RWS_PrimIndex
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
@@ -170,6 +176,12 @@ $(eval $(value DRIVER_INST))
 DRIVER_NAME  := RWS_ChunkVec
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkVector/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkVector
+$(eval $(value DRIVER_INST))
+
+# Driver for RealReverseVectorAdapter
+DRIVER_NAME  := RWS_ChunkVecA
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER = $(DRIVER_DIR)/reverseChunkVectorAdapter/reverseDriver.cpp -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkVectorAdapter
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndex

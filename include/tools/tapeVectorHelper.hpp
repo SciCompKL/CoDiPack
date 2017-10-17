@@ -84,7 +84,7 @@ namespace codi {
       }
 
       const GradientValue& gradient(const GradientData& value) const {
-        if(0 != value && value < adjointVector.size()) {
+        if(0 != value && value < (GradientData)adjointVector.size()) {
           return adjointVector[value];
         } else {
           return constZeroValue;

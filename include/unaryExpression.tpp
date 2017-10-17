@@ -201,11 +201,11 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * @tparam constantOffset  The offset for the constant values array
    */
   template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
-  static CODI_INLINE void evalAdjoint(const GradientValue& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
+  static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
     const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
     const Real resPrimal = PRIMAL_CALL(aPrimal);
 
-    const GradientValue aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
+    const PRIMAL_SEED_TYPE aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
     A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
   }
 

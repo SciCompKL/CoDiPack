@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "../configure.h"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
@@ -72,7 +74,7 @@ namespace codi {
      * @tparam constantOffset  The offset for the constant values array
      */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
+    static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(seed);
       CODI_UNUSED(indices);
       CODI_UNUSED(constantValues);
@@ -116,10 +118,14 @@ namespace codi {
      * @tparam constantOffset  The offset for the constant values array
      */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
+    static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
-      adjointValues[indices[0]] += seed;
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        adjointValues->updateAdjoint(indices[0], seed);
+#else
+        adjointValues[indices[0]] += seed;
+#endif
     }
   };
 
@@ -166,11 +172,15 @@ namespace codi {
      * @tparam constantOffset  The offset for the constant values array
      */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
-    static void evalAdjoint(const GradientValue& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
+    static void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(primalValues);
       for(int i = 0; i < (int)size; ++i) {
         // jacobies are stored in the constant values
-        adjointValues[indices[i]] += constantValues[i] * seed;
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+          adjointValues->updateAdjoint(indices[i], constantValues[i] * seed);
+#else
+          adjointValues[indices[i]] += constantValues[i] * seed;
+#endif
       }
     }
   };
