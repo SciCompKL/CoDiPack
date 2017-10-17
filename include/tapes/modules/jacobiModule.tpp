@@ -136,7 +136,8 @@
      * @param[in]             jacobies  The jacobies from the arguments of the statement.
      * @param[in]              indices  The indices from the arguments of the statements.
      */
-     CODI_INLINE void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, Index* &indices) {
+     template<typename AdjointData>
+     CODI_INLINE void incrementAdjoints(const AdjointData& adj, AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, Index* &indices) {
       ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
         for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
           --dataPos;

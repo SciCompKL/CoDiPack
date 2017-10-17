@@ -301,6 +301,22 @@
     }
 
     /**
+     * @brief Perform the adjoint evaluation from start to end with a custom adjoint vector.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in]           start  The starting position for the adjoint evaluation.
+     * @param[in]             end  The ending position for the adjoint evaluation.
+     * @param[in,out] adjointData  The vector for the adjoint evaluation. It has to have the size of getAdjointSize() + 1.
+     *
+     * @tparam AdjointData  The type needs to provide an add, multiply and comparison operation.
+     */
+    template<typename AdjointData>
+    CODI_NO_INLINE void evaluate(const Position& start, const Position& end, AdjointData* adjointData) {
+      EVALUATE_FUNCTION_NAME(start, end, adjointData);
+    }
+
+    /**
      * @brief Perform the adjoint evaluation from start to end.
      *
      * It has to hold start >= end.
@@ -313,7 +329,7 @@
         resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
       }
 
-      EVALUATE_FUNCTION_NAME(start, end);
+      evaluate(start, end, adjoints);
     }
 
     /**

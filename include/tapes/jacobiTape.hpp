@@ -283,23 +283,27 @@ namespace codi {
      *
      * It has to hold startAdjPos >= endAdjPos.
      *
-     * @param[in] startAdjPos The starting point in the expression evaluation.
-     * @param[in]   endAdjPos The ending point in the expression evaluation.
-     * @param[in,out] stmtPos The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]  statements The pointer to the statement vector.
-     * @param[in,out] dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
-     * @param[in]    jacobies The pointer to the jacobi vector.
-     * @param[in]     indices The pointer to the index vector
+     * @param[in]     startAdjPos  The starting point in the expression evaluation.
+     * @param[in]       endAdjPos  The ending point in the expression evaluation.
+     * @param[in,out]     stmtPos  The current position in the statement vector. This value is used in the next invocation of this method.
+     * @param[in]      statements  The pointer to the statement vector.
+     * @param[in,out]     dataPos  The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in]        jacobies  The pointer to the jacobi vector.
+     * @param[in]         indices  The pointer to the index vector
+     * @param[in,out] adjointData  The vector of the adjoint varaibles.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
-    CODI_INLINE void evalStmtCallback(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, Index* &indices) {
+    template<typename AdjointData>
+    CODI_INLINE void evalStmtCallback(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, StatementInt* &statements, size_t& dataPos, Real* &jacobies, Index* &indices, AdjointData* adjointData) {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
-        const GradientValue& adj = adjoints[adjPos];
+        const AdjointData& adj = adjointData[adjPos];
         --adjPos;
         --stmtPos;
 
-        incrementAdjoints(adj, adjoints, statements[stmtPos], dataPos, jacobies, indices);
+        incrementAdjoints(adj, adjointData, statements[stmtPos], dataPos, jacobies, indices);
       }
     }
 
@@ -347,11 +351,15 @@ namespace codi {
      *
      * The function calls the evaluation method for the jacobi vector.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @param[in]   start  The starting point for the statement vector.
+     * @param[in]     end  The ending point for the statement vector.
+     * @param[in,out] args  Additional arguments for the evaluation function.
+     *
+     * @tparam Args  The types of the other arguments.
      */
-    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, Index* &indices) {
-      evaluateStmt(start, end, dataPos, jacobies, indices);
+    template<typename ... Args>
+    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, Index* &indices, Args&&... args) {
+      evaluateStmt(start, end, dataPos, jacobies, indices, std::forward<Args>(args)...);
     }
 
     /**
@@ -361,11 +369,15 @@ namespace codi {
      *
      * The function calls the evaluation method for the jacobi vector.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @param[in]    start  The starting point for the statement vector.
+     * @param[in]      end  The ending point for the statement vector.
+     * @param[in,out] args  Additional arguments for the evaluation function.
+     *
+     * @tparam Args  The types of the other arguments.
      */
-    CODI_INLINE void evalExtFuncCallback(const JacobiPosition& start, const JacobiPosition& end) {
-      evaluateJacobies(start, end);
+    template<typename ... Args>
+    CODI_INLINE void evalExtFuncCallback(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
+      evaluateJacobies(start, end, std::forward<Args>(args)...);
     }
 
   public:
