@@ -42,6 +42,7 @@
 #include "singleChunkVector.hpp"
 #include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
+#include "../tools/convertInterface.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package

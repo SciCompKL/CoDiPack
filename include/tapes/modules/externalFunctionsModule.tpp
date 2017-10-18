@@ -120,12 +120,14 @@
        * @param[in]     extFunc  The external function object.
        * @param[in] endInnerPos  The position were the external function object was stored.
        */
-      template<typename ... Args>
-      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, Args&&... args) {
+      template<typename AdjointData, typename ... Args>
+      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, AdjointData* adjointData, Args&&... args) {
         // always evaluate the stack to the point of the external function
-        tape.evalExtFuncCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+        tape.evalExtFuncCallback(curInnerPos, *endInnerPos, adjointData, std::forward<Args>(args)...);
 
-        extFunc->evaluate(&tape);
+        InterfaceInst<AdjointInterface<Real>, AdjointInterfaceImpl<Real, AdjointData>, AdjointData> handleInst(adjointData);
+
+        extFunc->evaluate(&tape, handleInst.getInterface());
 
         curInnerPos = *endInnerPos;
       }

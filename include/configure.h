@@ -257,7 +257,7 @@ namespace codi {
   #endif
   #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
     #define PRIMAL_SEED_TYPE Real
-    #define PRIMAL_ADJOINT_TYPE AdjointInterface
+    #define PRIMAL_ADJOINT_TYPE AdjointInterface<Real>
   #else
     #define PRIMAL_SEED_TYPE GradientValue
     #define PRIMAL_ADJOINT_TYPE GradientValue

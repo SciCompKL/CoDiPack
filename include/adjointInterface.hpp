@@ -28,36 +28,125 @@
 
 #pragma once
 
+#include <cstddef>
+
 namespace codi {
 
+  /**
+   *
+   * @tparam Real  The floating point type that is used in the tape for the computation.
+   */
+  template<typename Real>
   struct AdjointInterface {
       virtual ~AdjointInterface() {}
 
+      /**
+       * @brief Get the vector size of an adjoint value.
+       * @return The vector size of an adjoint value.
+       */
+      virtual size_t getVectorSize() const = 0;
+
+      /**
+       * @brief Set the adjoint value at the position and dimension to zero.
+       *
+       * @param[in] index  The position for the adjoint.
+       * @param[in]   dim  The dimension in the vector.
+       */
+      virtual void resetAdjoint(const int index, const size_t dim) = 0;
+
+      /**
+       * @brief Set the adjoint vector at the position to zero.
+       * @param[in] index  The position for the adjoint.
+       */
+      virtual void resetAdjointVec(const int index) = 0;
+
+      /**
+       * @brief Get the adjoint value at the specified position and dimension.
+       *
+       * If the adjoint vector is a vector of vectors the result is:
+       *
+       *  adjoint[index][dim]
+       *
+       * @param[in] index  The position for the adjoint
+       * @param[in]   dim  The dimension in the vector.
+       * @return The adjoint value at the position with the dimension.
+       */
+      virtual Real getAdjoint(const int index, const size_t dim) = 0;
+
+      /**
+       * @brief Get the adjoint vector at the specified position.
+       *
+       * If the adjoint vector is a vector of vectors the result is:
+       *
+       * for(size_t i = 0; i < dim; ++i) {
+       *   vec[i] = adjoint[index][i];
+       * }
+       *
+       * where dim is the result from getVectorSize()
+       *
+       * @param[in] index  The position for the adjoint
+       * @param[out]  vec  The vector for the storage of the data.
+       */
+      virtual void getAdjointVec(const int index, Real* vec) = 0;
+
+      /**
+       * @brief Update the adjoint value at the specified position and dimension.
+       *
+       * If the adjoint vector is a vector of vectors the update is:
+       *
+       *  adjoint[index][dim] += adjoint;
+       *
+       * @param[in]   index  The position for the adjoint
+       * @param[in]     dim  The dimension in the vector.
+       * @param[in] adjoint  The update for the adjoint value.
+       */
+      virtual void updateAdjoint(const int index, const size_t dim, const Real adjoint) = 0;
+
+      /**
+       * @brief Update the adjoint vector at the specified position.
+       *
+       * If the adjoint vector is a vector of vectors the update is:
+       *
+       * for(size_t i = 0; i < dim; ++i) {
+       *   adjoint[index][i] += vec[i];
+       * }
+       *
+       * where dim is the result from getVectorSize()
+       *
+       * @param[in]   index  The position for the adjoint
+       * @param[in]     vec  The update for the adjoint vector.
+       */
+      virtual void updateAdjointVec(const int index, const Real* vec) = 0;
+
+      /**
+       * @brief The adjoint target for the adjoint of the left hand side of an equation.
+       *
+       * The function needs to be used togheter with updateJacobiAdjoint. For the statement
+       *
+       *  w = h(x)
+       *
+       * the adjoint update
+       *
+       * x_b += jac * w_b
+       * w_b = 0.0
+       *
+       * needs to be performed where jac = dh/dx. This function call identifies w_b by the index and stores it internally.
+       * A call to resetAdjointVec with the same index can then be used to reset w_b to zero. With the function call to
+       * updateJacobiAdjoint the multiplication jac * w_b is performed and the adjoint identified with the index is
+       * updated.
+       *
+       * @param[in] index  The index of the adjoint value that is stored and reset to zero.
+       */
       virtual void setLhsAdjoint(const int index) = 0;
-      virtual void resetAdjoint(const int index) = 0;
-      virtual void updateAdjoint(const int index, double jacobi) = 0;
-  };
 
-  template<typename GradientValue>
-  struct AdjointHandler final : public AdjointInterface {
-      GradientValue* adjointVector;
-
-      GradientValue lhsSeed;
-
-      AdjointHandler(GradientValue* adjointVector) :
-        adjointVector(adjointVector),
-        lhsSeed() {}
-
-      void setLhsAdjoint(const int index) {
-        lhsSeed = adjointVector[index];
-      }
-
-      void resetAdjoint(const int index) {
-        adjointVector[index] = GradientValue();
-      }
-
-      void updateAdjoint(const int index, const double jacobi) {
-        adjointVector[index] += jacobi * lhsSeed;
-      }
+      /**
+       * @brief Updates the target adjoint with the prior specified lhs multiplied with the jacobi.
+       *
+       * See also the documentation of setLhsAdjoint
+       *
+       * @param[in]  index  The index of the adjoint value that receives the update.
+       * @param[in] jacobi  The jacobi value that is multiplied with the lhs adjoint.
+       */
+      virtual void updateJacobiAdjoint(const int index, Real jacobi) = 0;
   };
 }

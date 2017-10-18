@@ -216,9 +216,9 @@ namespace codi {
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      AdjointHandler<AdjointData> handler(adjointData);
+      InterfaceInst<AdjointInterface<Real>, AdjointInterfaceImpl<Real, AdjointData>, AdjointData> handleInst(adjointData);
 
-      evaluateExtFunc(start, end, &handler);
+      evaluateExtFunc(start, end, handleInst.getInterface());
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
         "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"

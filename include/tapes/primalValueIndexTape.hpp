@@ -340,7 +340,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStack(size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector, AdjointData* adjointData) {
+    CODI_INLINE void evaluateStack(size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants, AdjointData* adjointData, Real* primalVector) {
       while(stmtPos > endStmtPos) {
         --stmtPos;
         const Index& lhsIndex = lhsIndices[stmtPos];
@@ -348,7 +348,7 @@ namespace codi {
         primalVector[lhsIndex] = storedPrimals[stmtPos];
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
           adjointData->setLhsAdjoint(lhsIndex);
-          adjointData->resetAdjoint(lhsIndex);
+          adjointData->resetAdjointVec(lhsIndex);
 
           HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjointData);
 #else
@@ -464,14 +464,14 @@ namespace codi {
       memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      AdjointHandler<AdjointData> handler(adjointData);
+      InterfaceInst<AdjointInterface<Real>, AdjointInterfaceImpl<Real, AdjointData>, AdjointData> handleInst(adjointData);
 
-      evaluateExtFunc(start, end, primalsCopy, &handler);
+      evaluateExtFunc(start, end, handleInst.getInterface(), primalsCopy);
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
         "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"
         " to use custom adjoint vectors in the primal value tapes.");
-      evaluateExtFunc(start, end, primalsCopy, adjointData);
+      evaluateExtFunc(start, end, adjointData, primalsCopy);
 #endif
     }
 
@@ -523,11 +523,11 @@ namespace codi {
       std::swap(primals, primalsCopy);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        AdjointHandler<GradientValue> handler(adjoints);
+        InterfaceInst<AdjointInterface<Real>, AdjointInterfaceImpl<Real, GradientValue>, GradientValue> handleInst(adjoints);
 
-        evaluateExtFunc(start, end, primalsCopy, &handler);
+        evaluateExtFunc(start, end, handleInst.getInterface(), primalsCopy);
 #else
-        evaluateExtFunc(start, end, primalsCopy, adjoints);
+        evaluateExtFunc(start, end, adjoints, primalsCopy);
 #endif
 
       evaluateExtFuncPrimal(end, start, primalsCopy);

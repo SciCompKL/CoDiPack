@@ -28,6 +28,9 @@
 
 #pragma once
 
+#include "../adjointInterface.hpp"
+#include "../adjointInterfaceImpl.hpp"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
@@ -53,8 +56,14 @@ namespace codi {
      * It can either be cast to the correct type or to the ReverseTapeInterface.
      *
      * The second parameter gives a pointer to the data from the user.
+     *
+     * The third paramter provides a universal adapter for the adjoint and/or primal values.
+     * It can be used instead of the tape to get the adjoint values in an abstract fashion.
+     * If a custiom adjoint vector is used in the tape evaluation, then this
+     * interface needs to be used. The value needs to be cast to the AdjointInterface class
+     * that uses the correct floating point replacement from the tape.
      */
-    typedef void (*CallFunction)(void* tape, void* data);
+    typedef void (*CallFunction)(void* tape, void* data, void* ra);
     /**
      * @brief Definition for the delete function of the user data.
      *
@@ -109,10 +118,11 @@ namespace codi {
      * @brief Call the user function with the user data as an argument.
      *
      * @param[in,out] tape  The tape that calls the function.
+     * @param[in,out]   ra  The interface to the used adjoint vector.
      */
-    void evaluate(void* tape) {
+    void evaluate(void* tape, void* ra) {
       if(NULL != func) {
-        func(tape, data);
+        func(tape, data, ra);
       }
     }
   };
@@ -141,8 +151,13 @@ namespace codi {
      * The first parameter gives a pointer to the tape that calls the external function.
      *
      * The second parameter gives a pointer to the data from the user.
+     *
+     * The third paramter provides a universal adapter for the adjoint and/or primal values.
+     * It can be used instead of the tape to get the adjoint values in an abstract fashion.
+     * If a custiom adjoint vector is used in the tape evaluation, then this
+     * interface needs to be used.
      */
-    typedef void (*CallFunction)(Tape*, Data*);
+    typedef void (*CallFunction)(Tape*, Data*, AdjointInterface<typename Tape::Real>*);
     /**
      * @brief Definition for the delete function of the user data.
      *
@@ -182,9 +197,9 @@ namespace codi {
      * @param[in,out] tape  The tape which calls the function
      * @param[in,out] data  The void handle from the #ExternalFunction is a handle to a #ExternalFunctionDataHelper object.
      */
-    static void callFunction(void* tape, void* data) {
+    static void callFunction(void* tape, void* data, void* ra) {
       ExternalFunctionDataHelper<Tape, Data>* castData = cast(data);
-      castData->func((Tape*)tape, castData->data);
+      castData->func((Tape*)tape, castData->data, (AdjointInterface<typename Tape::Real>*)ra);
     }
 
     /**

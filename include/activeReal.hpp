@@ -606,7 +606,7 @@ namespace codi {
 
       ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        adjointValues->updateAdjoint(indices[offset], seed);
+        adjointValues->updateJacobiAdjoint(indices[offset], seed);
 #else
         adjointValues[indices[offset]] += seed;
 #endif

@@ -122,7 +122,7 @@ namespace codi {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        adjointValues->updateAdjoint(indices[0], seed);
+        adjointValues->updateJacobiAdjoint(indices[0], seed);
 #else
         adjointValues[indices[0]] += seed;
 #endif
@@ -177,7 +177,7 @@ namespace codi {
       for(int i = 0; i < (int)size; ++i) {
         // jacobies are stored in the constant values
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-          adjointValues->updateAdjoint(indices[i], constantValues[i] * seed);
+          adjointValues->updateJacobiAdjoint(indices[i], constantValues[i] * seed);
 #else
           adjointValues[indices[i]] += constantValues[i] * seed;
 #endif
