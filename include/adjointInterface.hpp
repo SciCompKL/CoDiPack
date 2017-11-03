@@ -148,5 +148,17 @@ namespace codi {
        * @param[in] jacobi  The jacobi value that is multiplied with the lhs adjoint.
        */
       virtual void updateJacobiAdjoint(const int index, Real jacobi) = 0;
+
+      /**
+       * @brief Some tapes need to revert the primal values in the primal value vector to the old value
+       * for output variables.
+       *
+       * If the tape needs this behaviour can be checked with Tape::RequiresPrimalReset. The value required
+       * here is returned on a registerExtFunctionOutput call.
+       *
+       * @param[in]  index  The index of the primal value that needs to be reverted.
+       * @param[in] primal  The primal value that is set.
+       */
+      virtual void resetPrimal(const int index, Real primal) = 0;
   };
 }
