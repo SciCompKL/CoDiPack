@@ -34,12 +34,12 @@
 namespace codi {
 
   template<typename Real, typename GradientValue>
-  struct AdjointInterfaceImpl final : public AdjointInterface<Real> {
+  struct AdjointInterfaceImplBase : public AdjointInterface<Real> {
       GradientValue* adjointVector;
 
       GradientValue lhs;
 
-      AdjointInterfaceImpl(GradientValue* adjointVector) :
+      AdjointInterfaceImplBase(GradientValue* adjointVector) :
         adjointVector(adjointVector),
         lhs() {}
 
@@ -178,12 +178,12 @@ namespace codi {
   };
 
   template<typename Real, typename RealDir, size_t vecDim>
-  struct AdjointInterfaceImpl <Real, Direction<RealDir, vecDim> > : public AdjointInterface<Real> {
+  struct AdjointInterfaceImplBase <Real, Direction<RealDir, vecDim> > : public AdjointInterface<Real> {
       Direction<RealDir, vecDim>* adjointVector;
 
       Direction<RealDir, vecDim> lhs;
 
-      AdjointInterfaceImpl(Direction<RealDir, vecDim>* adjointVector) :
+      AdjointInterfaceImplBase(Direction<RealDir, vecDim>* adjointVector) :
         adjointVector(adjointVector) {}
 
       /**
@@ -315,6 +315,54 @@ namespace codi {
        */
       void updateJacobiAdjoint(const int index, Real jacobi) {
         adjointVector[index] += jacobi * lhs;
+      }
+  };
+
+  template<typename Real, typename GradientValue>
+  struct AdjointInterfaceImpl final : public AdjointInterfaceImplBase<Real, GradientValue> {
+
+      AdjointInterfaceImpl(GradientValue* adjointVector) :
+        AdjointInterfaceImplBase<Real, GradientValue>(adjointVector) {}
+
+      /**
+       * @brief Some tapes need to revert the primal values in the primal value vector to the old value
+       * for output variables.
+       *
+       * If the tape needs this behaviour can be checked with Tape::RequiresPrimalReset. The value required
+       * here is returned on a registerExtFunctionOutput call.
+       *
+       * @param[in]  index  The index of the primal value that needs to be reverted.
+       * @param[in] primal  The primal value that is set.
+       */
+      virtual void resetPrimal(const int index, Real primal) {
+        CODI_UNUSED(index);
+        CODI_UNUSED(primal);
+
+        // no primal handling required for the tape
+      }
+  };
+
+  template<typename Real, typename GradientValue>
+  struct AdjointInterfacePrimalImpl final : public AdjointInterfaceImplBase<Real, GradientValue> {
+
+      Real* primalVector;
+
+      AdjointInterfacePrimalImpl(GradientValue* adjointVector, Real* primalVector) :
+        AdjointInterfaceImplBase<Real, GradientValue>(adjointVector),
+        primalVector(primalVector) {}
+
+      /**
+       * @brief Some tapes need to revert the primal values in the primal value vector to the old value
+       * for output variables.
+       *
+       * If the tape needs this behaviour can be checked with Tape::RequiresPrimalReset. The value required
+       * here is returned on a registerExtFunctionOutput call.
+       *
+       * @param[in]  index  The index of the primal value that needs to be reverted.
+       * @param[in] primal  The primal value that is set.
+       */
+      virtual void resetPrimal(const int index, Real primal) {
+        primalVector[index] = primal;
       }
   };
 }

@@ -43,7 +43,7 @@
  *
  * It defines the methods store(Expr), store(const), store(User), printStmtStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods setStatementChunkSize, getUsedStatementSize, resizeStmt as interface functions for the
+ * It defines the methods setStatementChunkSize, getUsedStatementSize, evaluateInt, resizeStmt as interface functions for the
  * including class.
  */
 
@@ -100,6 +100,14 @@
      */
     void resizeStmt(const size_t& statementSize) {
       stmtVector.resize(statementSize);
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
+
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+
+      evaluateExtFunc(start, end, &interface, adjointData);
     }
 
   public:
@@ -245,7 +253,6 @@
     size_t getUsedStatementsSize() const {
       return stmtVector.getDataSize();
     }
-
 
 #undef CHILD_VECTOR_TYPE
 #undef JACOBI_VECTOR_NAME

@@ -215,15 +215,15 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
-#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      InterfaceInst<AdjointInterface<Real>, AdjointInterfaceImpl<Real, AdjointData>, AdjointData> handleInst(adjointData);
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
 
-      evaluateExtFunc(start, end, handleInst.getInterface());
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+      evaluateExtFunc(start, end, &interface, &interface);
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
         "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"
         " to use custom adjoint vectors in the primal value tapes.");
-      evaluateExtFunc(start, end, adjointData);
+      evaluateExtFunc(start, end, &interface, adjointData);
 #endif
     }
 

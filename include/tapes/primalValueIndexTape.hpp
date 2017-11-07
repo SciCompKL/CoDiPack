@@ -463,15 +463,15 @@ namespace codi {
       }
       memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
 
-#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      InterfaceInst<AdjointInterface<Real>, AdjointInterfaceImpl<Real, AdjointData>, AdjointData> handleInst(adjointData);
+      AdjointInterfacePrimalImpl<Real, AdjointData> interface(adjointData, primalsCopy);
 
-      evaluateExtFunc(start, end, handleInst.getInterface(), primalsCopy);
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+      evaluateExtFunc(start, end, &interface, interface, primalsCopy);
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
         "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"
         " to use custom adjoint vectors in the primal value tapes.");
-      evaluateExtFunc(start, end, adjointData, primalsCopy);
+      evaluateExtFunc(start, end, &interface, adjointData, primalsCopy);
 #endif
     }
 
@@ -522,12 +522,12 @@ namespace codi {
 
       std::swap(primals, primalsCopy);
 
-#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        InterfaceInst<AdjointInterface<Real>, AdjointInterfaceImpl<Real, GradientValue>, GradientValue> handleInst(adjoints);
+      AdjointInterfacePrimalImpl<Real, GradientValue> interface(adjoints, primalsCopy);
 
-        evaluateExtFunc(start, end, handleInst.getInterface(), primalsCopy);
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        evaluateExtFunc(start, end, &interface, &interface, primalsCopy);
 #else
-        evaluateExtFunc(start, end, adjoints, primalsCopy);
+        evaluateExtFunc(start, end, &interface, adjoints, primalsCopy);
 #endif
 
       evaluateExtFuncPrimal(end, start, primalsCopy);
