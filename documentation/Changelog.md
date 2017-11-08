@@ -1,6 +1,11 @@
 Changelog      {#Changelog}
 ============
 
+### v 1.4.1 - 2017-09-26
+
+ - Bugfix for index managers
+   * The statement 'a = a;' would deactivate a as a variable
+
 ### v 1.4.0 - 2017-02-16
 
  - Generalized types: RealForwardGen, RealReverseGen, etc.

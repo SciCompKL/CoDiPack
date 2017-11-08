@@ -208,13 +208,16 @@ namespace codi {
        */
       CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {
         if(!OptDisableAssignOptimization) {
-          freeIndex(lhs);
+          // skip the logic if the indices are the same.
+          // This also prevents the bug, that if &lhs == &rhs the left hand side will always be deactivated.
+          if(lhs != rhs) {
+            freeIndex(lhs);
 
-          if(0 != rhs) { // do not handle the zero index
-            indexUse[rhs] += 1;
+            if(0 != rhs) { // do not handle the zero index
+              indexUse[rhs] += 1;
 
-            lhs = rhs;
-          }
+              lhs = rhs;
+            }
         } else {
             // path if assign optimizations are disabled
             assignIndex(lhs);
