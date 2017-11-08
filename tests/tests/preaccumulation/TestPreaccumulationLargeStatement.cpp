@@ -1,7 +1,7 @@
-/*
+/**
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 3 of the
+ * as published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -26,13 +26,49 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-#pragma once
+#include <toolDefines.h>
 
-#include <codi.hpp>
+#include <vector>
 
-typedef codi::RealReverseGen<codi::RealForward> NUMBER;
+IN(2)
+OUT(2)
+POINTS(1) = {
+  {  1.0,     0.5}
+};
 
-#include "../globalDefines.h"
 
-#define CHUNK_TAPE
-#define REVERSE_TAPE
+void evalFunc(NUMBER* x, NUMBER* y, size_t size) {
+  y[0] = x[0];
+  y[1] = x[0];
+  for(size_t i = 1; i < size; ++i) {
+    y[0] += x[i];
+    y[1] = max(y[1], x[i]);
+  }
+}
+
+void func(NUMBER* x, NUMBER* y) {
+
+#ifdef REVERSE_TAPE
+  codi::PreaccumulationHelper<NUMBER> ph;
+#else
+  codi::ForwardPreaccumulationHelper<NUMBER> ph;
+#endif
+
+  const size_t size = codi::MaxStatementIntSize * 3;
+  NUMBER intermediate[size];
+
+  for(size_t i = 0; i < size; ++i) {
+    intermediate[i] = x[0] * (double)i + x[1];
+  }
+
+  ph.start();
+  for(size_t i = 0; i < size; ++i) {
+    ph.addInput(intermediate[i]);
+  }
+
+  evalFunc(intermediate, y, size);
+
+  ph.addOutput(y[0]);
+  ph.addOutput(y[1]);
+  ph.finish(false);
+}

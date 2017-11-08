@@ -121,11 +121,11 @@
        * @param[in] endInnerPos  The position were the external function object was stored.
        */
       template<typename ... Args>
-      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, Args&&... args) {
+      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, AdjointInterface<Real>* adjointInterface, Args&&... args) {
         // always evaluate the stack to the point of the external function
         tape.evalExtFuncCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-        extFunc->evaluate(&tape);
+        extFunc->evaluate(&tape, adjointInterface);
 
         curInnerPos = *endInnerPos;
       }
@@ -278,10 +278,10 @@
      * @param[in]         end The ending point for the external function vector.
      */
     template<typename ... Args>
-    void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, Args&&... args){
+    void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, AdjointInterface<Real>* adjointInterface, Args&&... args){
       ExtFuncEvaluator evaluator(start.inner, *this);
 
-      extFuncVector.forEach(start, end, evaluator, std::forward<Args>(args)...);
+      extFuncVector.forEach(start, end, evaluator, adjointInterface, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
       evalExtFuncCallback(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);

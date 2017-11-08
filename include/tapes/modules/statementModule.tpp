@@ -43,7 +43,7 @@
  *
  * It defines the methods store(Expr), store(const), store(User), printStmtStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods setStatementChunkSize, getUsedStatementSize, resizeStmt as interface functions for the
+ * It defines the methods setStatementChunkSize, getUsedStatementSize, evaluateInt, resizeStmt as interface functions for the
  * including class.
  */
 
@@ -102,6 +102,14 @@
       stmtVector.resize(statementSize);
     }
 
+    template<typename AdjointData>
+    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
+
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+
+      evaluateExtFunc(start, end, &interface, adjointData);
+    }
+
   public:
 
   // ----------------------------------------------------------------------
@@ -136,7 +144,7 @@
      * @tparam Rhs The expression on the rhs of the statement.
      */
     template<typename Rhs>
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
@@ -155,7 +163,7 @@
 
 #if CODI_AdjointHandle_Jacobi
           Real* jacobies = NULL;
-          IndexType* rhsIndices = NULL;
+          Index* rhsIndices = NULL;
 
           auto pos = JACOBI_VECTOR_NAME.getPosition();
           JACOBI_VECTOR_NAME.getDataAtPosition(pos.chunk, startSize, jacobies, rhsIndices);
@@ -184,7 +192,7 @@
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
       lhsValue = rhs;
     }
@@ -194,21 +202,21 @@
      *
      * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
      *
-     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobiManual.
+     *
+     * See also the documentation in TapeInterfaceReverse::storeManual.
      *
      * @param[in]    lhsValue  The primal value of the lhs.
      * @param[out]   lhsIndex  The gradient data of the lhs.
      * @param[in]        size  The number of Jacobi entries.
      */
-    CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void storeManual(const Real& lhsValue, Index& lhsIndex, StatementInt size) {
       CODI_UNUSED(lhsValue);
 
-      ENABLE_CHECK (OptTapeActivity, active){
-        stmtVector.reserveItems(1);
-        JACOBI_VECTOR_NAME.reserveItems(size);
-        indexHandler.assignIndex(lhsIndex);
-        STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
-      }
+      stmtVector.reserveItems(1);
+      JACOBI_VECTOR_NAME.reserveItems(size);
+      indexHandler.assignIndex(lhsIndex);
+      STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
     }
 
     /**
@@ -245,7 +253,6 @@
     size_t getUsedStatementsSize() const {
       return stmtVector.getDataSize();
     }
-
 
 #undef CHILD_VECTOR_TYPE
 #undef JACOBI_VECTOR_NAME

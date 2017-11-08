@@ -211,5 +211,34 @@ namespace codi {
         Data* checkpoint,
         typename ExternalFunctionDataHelper<TapeImplementation, Data>::DeleteFunction delCheckpoint);
 
+    /**
+     * @brief Add a statement to the tape manually.
+     *
+     * This function can be called by the user to push a statement manually.
+     * The tape performs no checks for the pushes of the data.
+     * The user has to check the following before calling this function:
+     *  - If the tape is active
+     *
+     * Afterwards the pushJacobiManual method needs to be called size times otherwise the tape will be corrupted.
+     *
+     * @param[in]           lhsValue    The new primal value of the lhs
+     * @param[out]   lhsGradientData    The gradient data of the lhs. The tape will update the gradient data
+     *                                  according its implemenation.
+     * @param[in]           size  The number of arguments of the statement. No more than MaxStatementIntSize - 1
+     */
+    void storeManual(const Real& lhsValue, GradientDataType& lhsGradientData, const StatementInt size);
+
+    /**
+     * @brief Add a jacobi to the tape.
+     *
+     * Add a Jacobi for a manual statement push. The tape performs no checks if the Jacobi or the index is valid.
+     * Before this method is called the user needs to call storeManual and this method needs to be called exactly
+     * as often as the size argument provided there.
+     *
+     * @param[in]        jacobi  The value of the jacobi.
+     * @param[in]         value  The value of the active type which pushes the jacobi.
+     * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
+     */
+    void pushJacobiManual(const Real& jacobi, const Real& value, const GradientDataType& gradientData);
   };
 }

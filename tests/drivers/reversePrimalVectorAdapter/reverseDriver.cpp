@@ -1,7 +1,7 @@
-/*
+/**
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 3 of the
+ * as published by the Free Software Foundation, either version 2 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -31,6 +31,9 @@
 #include <iostream>
 #include <vector>
 
+const size_t DIM = 5;
+typedef codi::Direction<NUMBER::Real, DIM> Gradient;
+
 int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
@@ -42,8 +45,8 @@ int main(int nargs, char** args) {
   NUMBER* y = new NUMBER[outputs];
 
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
-  tape.resize(10000, 10000);
-  tape.setExternalFunctionChunkSize(1000);
+  codi::TapeVectorHelper<NUMBER, Gradient> vh;
+  tape.setActive();
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
@@ -63,9 +66,17 @@ int main(int nargs, char** args) {
       y[i] = 0.0;
     }
 
+    int runs = outputs / DIM;
+    if(outputs % DIM != 0) {
+      runs += 1;
+    }
     std::vector<std::vector<double> > jac(outputs);
-    for(int curOut = 0; curOut < outputs; ++curOut) {
-      tape.setActive();
+    for(int curOut = 0; curOut < runs; ++curOut) {
+      size_t curSize = DIM;
+      if((curOut + 1) * DIM  > (size_t)outputs) {
+        curSize = outputs % DIM;
+      }
+
       for(int i = 0; i < inputs; ++i) {
         tape.registerInput(x[i]);
       }
@@ -76,18 +87,22 @@ int main(int nargs, char** args) {
         tape.registerOutput(y[i]);
       }
 
-      tape.setPassive();
-
-      for(int i = 0; i < outputs; ++i) {
-        y[i].setGradient(i == curOut ? 1.0:0.0);
+      Gradient grad;
+      for(size_t curDim = 0; curDim < curSize; ++curDim) {
+        grad[curDim] = 1.0;
+        vh.setGradient(y[curOut * DIM + curDim].getGradientData(), grad);
+        grad[curDim] = 0.0;
       }
 
-      tape.evaluate();
+      vh.evaluate();
 
-      for(int curIn = 0; curIn < inputs; ++curIn) {
-        jac[curOut].push_back(x[curIn].getGradient());
+      for(size_t curDim = 0; curDim < curSize; ++curDim) {
+        for(int curIn = 0; curIn < inputs; ++curIn) {
+          jac[curOut * DIM + curDim].push_back(vh.getGradient(x[curIn].getGradientData())[curDim]);
+        }
       }
 
+      vh.clearAdjoints();
       tape.reset();
     }
 

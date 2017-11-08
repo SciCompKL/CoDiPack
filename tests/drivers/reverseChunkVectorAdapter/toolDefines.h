@@ -30,7 +30,7 @@
 
 #include <codi.hpp>
 
-typedef codi::RealReverseGen<codi::RealForward> NUMBER;
+typedef codi::RealReverse NUMBER;
 
 #include "../globalDefines.h"
 

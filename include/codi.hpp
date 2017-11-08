@@ -31,6 +31,7 @@
 #include "activeReal.hpp"
 #include "numericLimits.hpp"
 #include "referenceActiveReal.hpp"
+#include "tapeTypes.hpp"
 #include "tapes/forwardEvaluation.hpp"
 #include "tapes/jacobiTape.hpp"
 #include "tapes/jacobiIndexTape.hpp"
@@ -42,11 +43,27 @@
 #include "tools/dataStore.hpp"
 #include "tools/derivativeHelper.hpp"
 #include "tools/direction.hpp"
+#include "tools/externalFunctionHelper.hpp"
+#include "tools/preaccumulationHelper.hpp"
+#include "tools/statementPushHelper.hpp"
+#include "tools/tapeVectorHelper.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
+
+  /**
+   * @brief The default forward type in CoDiPack with a generalized calculation type.
+   *
+   * See the documentation of #RealForward.
+   *
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
+   */
+  template<typename Real, typename Gradient = Real>
+  using RealForwardGen = ActiveReal<ForwardEvaluation<Real, Gradient> >;
+
   /**
    * @brief The default forward type in CoDiPack.
    *
@@ -69,7 +86,7 @@ namespace codi {
    *  assert(b.getGradient() == 6.0);
    * \endcode
    */
-  typedef ActiveReal<ForwardEvaluation<double> > RealForward;
+  typedef RealForwardGen<double, double> RealForward;
 
   /**
    * @brief Vector mode of the #RealForward type.
@@ -81,18 +98,18 @@ namespace codi {
    * @tparam dim  The fixed dimension of the vector.
    */
   template<size_t dim>
-  using RealForwardVec = ActiveReal<ForwardEvaluation<double, Direction<double, dim> > >;
+  using RealForwardVec = RealForwardGen<double, Direction<double, dim> >;
 
   /**
-   * @brief The default forward type in CoDiPack with a generalized calculation type.
+   * @brief The default reverse type in CoDiPack with a generalized calculation type.
    *
-   * See the documentation of #RealForward.
+   * See the documentation of #RealReverse.
    *
    * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealForwardGen = ActiveReal<ForwardEvaluation<Real, Gradient> >;
+  using RealReverseGen = ActiveReal<JacobiTape<JacobiTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, ChunkVector > > >;
 
   /**
    * @brief The default reverse type in CoDiPack.
@@ -124,7 +141,7 @@ namespace codi {
    *  assert(a.getGradient() == 6.0);
    * \endcode
    */
-  typedef ActiveReal<JacobiTape<ChunkTapeTypes<double, LinearIndexHandler<int> > > > RealReverse;
+  typedef RealReverseGen<double, double > RealReverse;
 
   /**
    * @brief Vector mode of the #RealReverse type.
@@ -136,19 +153,18 @@ namespace codi {
    * @tparam dim  The fixed dimension of the vector.
    */
   template<size_t dim>
-  using RealReverseVec = ActiveReal<JacobiTape<ChunkTapeTypes<double, LinearIndexHandler<int>, Direction<double, dim> > > >;
-
+  using RealReverseVec = RealReverseGen<double, Direction<double, dim> >;
 
   /**
-   * @brief The default reverse type in CoDiPack with a generalized calculation type.
+   * @brief The reverse type in CoDiPack with a generalized calculation type and an unchecked tape.
    *
-   * See the documentation of #RealReverse.
+   * See the documentation of #RealReverseUnchecked.
    *
    * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReverseGen = ActiveReal<JacobiTape<ChunkTapeTypes<Real , LinearIndexHandler<int>, Gradient > > >;
+  using RealReverseUncheckedGen = ActiveReal<JacobiTape<JacobiTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, SingleChunkVector > > >;
 
   /**
    * @brief The reverse type in CoDiPack with an unchecked tape.
@@ -186,18 +202,18 @@ namespace codi {
    *  assert(a.getGradient() == 6.0);
    * \endcode
    */
-  typedef ActiveReal<JacobiTape<SimpleTapeTypes<double, LinearIndexHandler<int> > > > RealReverseUnchecked;
+  typedef RealReverseUncheckedGen<double, double> RealReverseUnchecked;
 
   /**
-   * @brief The reverse type in CoDiPack with a generalized calculation type and an unchecked tape.
+   * @brief The reverse type in CoDiPack with a generalized calculation type and an index reuse tape.
    *
-   * See the documentation of #RealReverseUnchecked.
+   * See the documentation of #RealReverseIndex.
    *
    * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReverseUncheckedGen = ActiveReal<JacobiTape<SimpleTapeTypes<Real, LinearIndexHandler<int>, Gradient > > >;
+  using RealReverseIndexGen = ActiveReal<JacobiIndexTape<JacobiIndexTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandlerUseCount<int> >, ChunkVector> > >;
 
   /**
    * @brief A reverse type like the default reverse type in CoDiPack but with index reuse.
@@ -208,7 +224,7 @@ namespace codi {
    * like memset and memcpy.
    *
    */
-  typedef ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReverseIndex;
+  typedef RealReverseIndexGen<double, double> RealReverseIndex;
 
   /**
    * @brief Vector mode of the #RealReverseIndex type.
@@ -220,25 +236,7 @@ namespace codi {
    * @tparam dim  The fixed dimension of the vector.
    */
   template<size_t dim>
-  using RealReverseIndexVec = ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<double, ReuseIndexHandlerUseCount<int>, Direction<double, dim> > > >;
-
-  /**
-   * @brief The reverse type in CoDiPack with a generalized calculation type and an index reuse tape.
-   *
-   * See the documentation of #RealReverseIndex.
-   *
-   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
-   */
-  template<typename Real, typename Gradient = Real>
-  using RealReverseIndexGen = ActiveReal<JacobiIndexTape<ChunkIndexTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
-
-  /**
-   * @brief A reverse type like the unchecked reverse type in CoDiPack but with index reuse.
-   *
-   * See the documentation of #RealReverseIndex and #RealReverseUnchecked.
-   */
-  typedef ActiveReal<JacobiIndexTape<SimpleIndexTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReverseIndexUnchecked;
+  using RealReverseIndexVec = RealReverseIndexGen<double, Direction<double, dim> >;
 
   /**
    * @brief The reverse type in CoDiPack  with a generalized calculation type and an unchecked index reuse tape.
@@ -249,7 +247,25 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReverseIndexUncheckedGen = ActiveReal<JacobiIndexTape<SimpleIndexTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
+  using RealReverseIndexUncheckedGen = ActiveReal<JacobiIndexTape<JacobiIndexTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandlerUseCount<int> >, SingleChunkVector> > >;
+
+  /**
+   * @brief A reverse type like the unchecked reverse type in CoDiPack but with index reuse.
+   *
+   * See the documentation of #RealReverseIndex and #RealReverseUnchecked.
+   */
+  typedef RealReverseIndexUncheckedGen<double, double> RealReverseIndexUnchecked;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with a generalized calculation type.
+   *
+   * See the documentation of #RealReversePrimal.
+   *
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
+   */
+  template<typename Real, typename Gradient = Real>
+  using RealReversePrimalGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, FunctionHandleFactory, ChunkVector> > >;
 
   /**
    * @brief A reverse type like the default reverse type in CoDiPack but with primal value taping instead of Jacobian taping.
@@ -259,7 +275,7 @@ namespace codi {
    * stores the primal values of the expression. With these primal values it computes the derivatives in the
    * reverse mode.
    */
-  typedef ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<double, LinearIndexHandler<int> > > > RealReversePrimal;
+  typedef RealReversePrimalGen<double, double> RealReversePrimal;
 
   /**
    * @brief Vector mode of the #RealReversePrimal type.
@@ -271,25 +287,7 @@ namespace codi {
    * @tparam dim  The fixed dimension of the vector.
    */
   template<size_t dim>
-  using RealReversePrimalVec = ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<double, LinearIndexHandler<int>, Direction<double, dim> > > >;
-
-  /**
-   * @brief The primal value reverse type in CoDiPack with a generalized calculation type.
-   *
-   * See the documentation of #RealReversePrimal.
-   *
-   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
-   */
-  template<typename Real, typename Gradient = Real>
-  using RealReversePrimalGen = ActiveReal<PrimalValueTape<ChunkPrimalValueTapeTypes<Real, LinearIndexHandler<int>, Gradient > > >;
-
-  /**
-   * @brief The primal value reverse type in CoDiPack with an unchecked tape.
-   *
-   * See the documentation of #RealReversePrimal and #RealReverseUnchecked.
-   */
-  typedef ActiveReal<PrimalValueTape<SimplePrimalValueTapeTypes<double, LinearIndexHandler<int> > > > RealReversePrimalUnchecked;
+  using RealReversePrimalVec = RealReversePrimalGen<double, Direction<double, dim> >;
 
   /**
    * @brief The primal value reverse type in CoDiPack with a generalized calculation type and an unchecked version.
@@ -300,14 +298,33 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReversePrimalUncheckedGen = ActiveReal<PrimalValueTape<SimplePrimalValueTapeTypes<Real, LinearIndexHandler<int>, Gradient > > >;
+  using RealReversePrimalUncheckedGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, FunctionHandleFactory, SingleChunkVector> > >;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with an unchecked tape.
+   *
+   * See the documentation of #RealReversePrimal and #RealReverseUnchecked.
+   */
+  typedef RealReversePrimalUncheckedGen<double, double> RealReversePrimalUnchecked;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with an index management and with a generalized calculation type.
+   *
+   * See the documentation of #RealReversePrimal and #RealReverseIndex.
+   *
+   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
+   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
+   */
+  template<typename Real, typename Gradient = Real>
+  using RealReversePrimalIndexGen = ActiveReal<PrimalValueIndexTape<IndexPrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandlerUseCount<int> >, StaticObjectHandleFactory, ChunkVector > > >;
+
 
   /**
    * @brief The primal value reverse type in CoDiPack with an index management.
    *
    * See the documentation of #RealReversePrimal and #RealReverseIndex.
    */
-  typedef ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReversePrimalIndex;
+  typedef RealReversePrimalIndexGen<double, double> RealReversePrimalIndex;
 
   /**
    * @brief Vector mode of the #RealReversePrimalIndex type.
@@ -319,25 +336,7 @@ namespace codi {
    * @tparam dim  The fixed dimension of the vector.
    */
   template<size_t dim>
-  using RealReversePrimalIndexVec = ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<double, ReuseIndexHandlerUseCount<int>, Direction<double, dim> > > > ;
-
-  /**
-   * @brief The primal value reverse type in CoDiPack with an index management and with a generalized calculation type.
-   *
-   * See the documentation of #RealReversePrimal and #RealReverseIndex.
-   *
-   * @tparam     Real  The underlying calculation type for the AD evaluation. Needs to implement all mathematical functions.
-   * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
-   */
-  template<typename Real, typename Gradient = Real>
-  using RealReversePrimalIndexGen = ActiveReal<PrimalValueIndexTape<ChunkIndexPrimalValueTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
-
-  /**
-   * @brief The primal value reverse type in CoDiPack with an index management in an unchecked version.
-   *
-   * See the documentation of #RealReversePrimal, #RealReverseIndex and #RealReverseUnchecked
-   */
-  typedef ActiveReal<PrimalValueIndexTape<SimpleIndexPrimalValueTapeTypes<double, ReuseIndexHandlerUseCount<int> > > > RealReversePrimalIndexUnchecked;
+  using RealReversePrimalIndexVec = RealReversePrimalIndexGen<double, Direction<double, dim> >;
 
   /**
    * @brief The primal value reverse type in CoDiPack with an index management in an unchecked version and with a generalized calculation type.
@@ -348,5 +347,12 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReversePrimalIndexUncheckedGen = ActiveReal<PrimalValueIndexTape<SimpleIndexPrimalValueTapeTypes<Real, ReuseIndexHandlerUseCount<int>, Gradient > > >;
+  using RealReversePrimalIndexUncheckedGen = ActiveReal<PrimalValueIndexTape<IndexPrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandlerUseCount<int> >, StaticObjectHandleFactory, SingleChunkVector > > >;
+
+  /**
+   * @brief The primal value reverse type in CoDiPack with an index management in an unchecked version.
+   *
+   * See the documentation of #RealReversePrimal, #RealReverseIndex and #RealReverseUnchecked
+   */
+  typedef RealReversePrimalIndexUncheckedGen<double, double> RealReversePrimalIndexUnchecked;
 }
