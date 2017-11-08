@@ -42,7 +42,6 @@
 #include "singleChunkVector.hpp"
 #include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
-#include "../tools/convertInterface.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -121,6 +120,8 @@ namespace codi {
 
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
+
+    static const bool RequiresPrimalReset = false;
 
     // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiTape
@@ -429,6 +430,12 @@ namespace codi {
 
         index = indexHandler.createIndex();
       }
+    }
+
+    CODI_INLINE Real registerExtFunctionOutput(ActiveReal<JacobiTape<TapeTypes> >& value) {
+      registerInput(value);
+
+      return Real();
     }
 
     /**

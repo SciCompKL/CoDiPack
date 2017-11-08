@@ -127,6 +127,8 @@ namespace codi {
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
 
+    static const bool RequiresPrimalReset = false;
+
     // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiIndexTape
 
@@ -393,6 +395,12 @@ namespace codi {
      */
     CODI_INLINE void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       indexHandler.assignIndex(value.getGradientData());
+    }
+
+    CODI_INLINE Real registerExtFunctionOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
+      registerInput(value);
+
+      return Real();
     }
 
     /**

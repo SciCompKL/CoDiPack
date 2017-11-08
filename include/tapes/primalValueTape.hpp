@@ -130,6 +130,8 @@ namespace codi {
     /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = false;
 
+    static const bool RequiresPrimalReset = false;
+
     #define TAPE_NAME PrimalValueTape
 
     #define POSITION_TYPE typename TapeTypes::Position
@@ -417,7 +419,13 @@ namespace codi {
       }
     }
 
-    /*
+    CODI_INLINE Real registerExtFunctionOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
+      registerInput(value);
+
+      return Real();
+    }
+
+    /**
      * @brief It is ensured that each output variable has a unique index.
      *
      * @param[in] value  The value will have an unique index that is used by no other variable.

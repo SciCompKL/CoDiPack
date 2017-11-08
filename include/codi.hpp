@@ -43,6 +43,7 @@
 #include "tools/dataStore.hpp"
 #include "tools/derivativeHelper.hpp"
 #include "tools/direction.hpp"
+#include "tools/externalFunctionHelper.hpp"
 #include "tools/preaccumulationHelper.hpp"
 #include "tools/statementPushHelper.hpp"
 #include "tools/tapeVectorHelper.hpp"

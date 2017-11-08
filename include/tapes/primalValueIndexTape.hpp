@@ -136,6 +136,8 @@ namespace codi {
     /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = false;
 
+    static const bool RequiresPrimalReset = true;
+
     #define TAPE_NAME PrimalValueIndexTape
 
     #define POSITION_TYPE typename TapeTypes::Position
