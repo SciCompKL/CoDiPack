@@ -28,10 +28,12 @@
 
 #pragma once
 
+#include "configure.h"
 #include "expressions.hpp"
 #include "typeTraits.hpp"
 #include "typeFunctions.hpp"
 #include "expressionTraits.hpp"
+
 #include <iostream>
 
 /**
@@ -568,12 +570,12 @@ namespace codi {
      *
      * @return The corresponding primal value for the active real.
      *
-     * @tparam      IndexType  The type for the indices.
+     * @tparam          Index  The type for the indices.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE const Real& getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+    template<typename Index, size_t offset, size_t constantOffset>
+    static CODI_INLINE const Real& getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
       CODI_UNUSED(constantValues);
       return primalValues[indices[offset]];
     }
@@ -592,18 +594,22 @@ namespace codi {
      * @param[in]   primalValues  The global primal value vector.
      * @param[in]  adjointValues  The global adjoint value vector.
      *
-     * @tparam      IndexType  The type for the indices.
+     * @tparam          Index  The type for the indices.
      * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
       ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        adjointValues->updateJacobiAdjoint(indices[offset], seed);
+#else
         adjointValues[indices[offset]] += seed;
+#endif
       }
     }
   };
@@ -631,7 +637,7 @@ namespace codi {
        * @param[in] t The value from which the primal is extracted.
        * @return The primal value of the origin of this type..
        */
-      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ActiveReal<Tape>& t) {
+      static const PassiveReal getBaseValue(const ActiveReal<Tape>& t) {
         return TypeTraits<Real>::getBaseValue(t.getValue());
       }
   };

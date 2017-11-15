@@ -30,7 +30,8 @@
 
 #include <cstdio>
 #include <cstdarg>
-
+#include <cstdlib>
+#include <iostream>
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package

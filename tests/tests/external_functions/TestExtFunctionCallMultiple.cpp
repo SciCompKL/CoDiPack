@@ -42,8 +42,10 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
 
 const int ITER = 5;
 
-static void extFunc(void* t, void* checkpoint){
-  NUMBER::TapeType& tape = *((NUMBER::TapeType*)t);
+static void extFunc(void* t, void* checkpoint, void* i){
+  CODI_UNUSED(t);
+
+  codi::AdjointInterface<typename NUMBER::Real>* ra = (codi::AdjointInterface<typename NUMBER::Real>*)i;
 
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
 
@@ -55,11 +57,16 @@ static void extFunc(void* t, void* checkpoint){
   check->getData(w0_i);
   check->getData(w1_i);
 
-  typename NUMBER::GradientValue w1_b = tape.gradient(w1_i);
-  tape.gradient(w1_i) = typename NUMBER::GradientValue();
+  size_t dim = ra->getVectorSize();
 
-  tape.gradient(w0_i) += x_v*w1_b;
-  tape.gradient(x_i)  += w0_v*w1_b;
+  for(size_t i = 0; i < dim; ++i) {
+
+    typename NUMBER::Real w1_b = ra->getAdjoint(w1_i, i);
+    ra->resetAdjoint(w1_i, i);
+
+    ra->updateAdjoint(w0_i, i, x_v*w1_b);
+    ra->updateAdjoint(x_i, i, w0_v*w1_b);
+  }
 }
 
 static void delFunc(void* tape, void* checkpoint){

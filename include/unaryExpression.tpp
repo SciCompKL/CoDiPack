@@ -167,13 +167,13 @@ struct OP : public Expression<Real, OP<Real, A> > {
    *
    * @return The corresponding primal value for the active real.
    *
-   * @tparam      IndexType  The type for the indices.
+   * @tparam          Index  The type for the indices.
    * @tparam         offset  The offset in the index array for the corresponding value.
    * @tparam constantOffset  The offset for the constant values array
    */
-  template<typename IndexType, size_t offset, size_t constantOffset>
-  static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
-    const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+  template<typename Index, size_t offset, size_t constantOffset>
+  static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
+    const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
 
     return PRIMAL_CALL(aPrimal);
   }
@@ -195,18 +195,18 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * @param[in]   primalValues  The global primal value vector.
    * @param[in]  adjointValues  The global adjoint value vector.
    *
-   * @tparam      IndexType  The type for the indices.
+   * @tparam          Index  The type for the indices.
    * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
    * @tparam         offset  The offset in the index array for the corresponding value.
    * @tparam constantOffset  The offset for the constant values array
    */
-  template<typename IndexType, typename GradientValue, size_t offset, size_t constantOffset>
-  static CODI_INLINE void evalAdjoint(const GradientValue& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, GradientValue* adjointValues) {
-    const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+  template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
+  static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+    const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
     const Real resPrimal = PRIMAL_CALL(aPrimal);
 
-    const GradientValue aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
-    A::template evalAdjoint<IndexType, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
+    const PRIMAL_SEED_TYPE aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
+    A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
   }
 
   /**

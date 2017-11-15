@@ -98,7 +98,7 @@
     template<typename ... Args>
     CODI_INLINE void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
       Real* jacobiData;
-      IndexType* indexData;
+      Index* indexData;
       size_t dataPos = start.data;
       JacobiChildPosition curInnerPos = start.inner;
       for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
@@ -136,7 +136,8 @@
      * @param[in]             jacobies  The jacobies from the arguments of the statement.
      * @param[in]              indices  The indices from the arguments of the statements.
      */
-     CODI_INLINE void incrementAdjoints(const GradientValue& adj, GradientValue* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+     template<typename AdjointData>
+     CODI_INLINE void incrementAdjoints(const AdjointData& adj, AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, Index* &indices) {
       ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
         for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
           --dataPos;
@@ -186,7 +187,7 @@
      * @tparam Data  The type of the data for the tape.
      */
     template<typename Data>
-    CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& value, const Index& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
@@ -205,7 +206,7 @@
      * @tparam Data  The type of the data for the tape.
      */
     template<typename Data>
-    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const Index& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
@@ -215,6 +216,21 @@
           }
         }
       }
+    }
+
+    /**
+     * @brief Manual jacobi push routine.
+     *
+     * See also the documentation in TapeReverseInterface::pushJacobiManual.
+     *
+     * @param[in]   jacobi  Stored in the constant vector.
+     * @param[in]    value  Not used in this implementation.
+     * @param[in]    index  Stored in the index vector.
+     */
+    CODI_INLINE void pushJacobiManual(const Real& jacobi, const Real& value, const Index& index) {
+      CODI_UNUSED(value);
+
+      this->jacobiVector.setDataAndMove(jacobi, index);
     }
 
     /**
