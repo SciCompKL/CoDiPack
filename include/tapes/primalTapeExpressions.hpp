@@ -1,8 +1,7 @@
-
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -12,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -47,6 +46,10 @@ namespace codi {
 
     template<typename IndexType, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      CODI_UNUSED(indices);
+      CODI_UNUSED(constantValues);
+      CODI_UNUSED(primalValues);
+
       std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
       exit(-1);
       return 0.0;
@@ -91,6 +94,8 @@ namespace codi {
 
     template<typename IndexType, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      CODI_UNUSED(constantValues);
+
       return primalValues[indices[offset]];
     }
 
@@ -134,6 +139,9 @@ namespace codi {
 
     template<typename IndexType, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+      CODI_UNUSED(indices);
+      CODI_UNUSED(constantValues);
+      CODI_UNUSED(primalValues);
       std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
       exit(-1);
       return 0.0;

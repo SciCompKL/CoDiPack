@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -244,7 +244,7 @@
         primalVector[i + 1] = constants[tempConstantPos + i];
       }
 
-      Real result = funcObj(&indices[indexPos], &constants[constantPos], primalVector);
+      Real result = funcObj(codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector);
 
       indexPos += varSize;
       constantPos += constSize + passiveActives;
@@ -282,7 +282,7 @@
       indexPos -= varSize;
       constantPos -= constSize;
       ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
-        funcObj(adj, &indices[indexPos], &constants[constantPos], primalVector, adjoints);
+        funcObj(adj, codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector, adjoints);
       }
     }
 
@@ -473,7 +473,7 @@
           CODI_UNUSED(constantSize);  /* needed to avoid unused variable when the assersts are not enabled. */
           CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
 
-#if CODI_AdjointHandle
+#if CODI_AdjointHandle_Primal
             IndexType* rhsIndices = NULL;
             PassiveReal* constants = NULL;
 
@@ -568,7 +568,7 @@
       CODI_UNUSED(value);
 
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
             constantValueVector.setDataAndMove(jacobi);
             indexVector.setDataAndMove(index);
@@ -589,8 +589,7 @@
      *
      * @tparam Stream  The type of the stream.
      */
-    template<typename Stream>
-    void printPrimalValueStatistics(Stream& out, const std::string& hLine) const {
+    void addPrimalValueValues(TapeValues& values) const {
 
       size_t nChunksIndex  = indexVector.getNumChunks();
       size_t totalIndex    = indexVector.getDataSize();
@@ -614,53 +613,27 @@
       size_t sizePrimalEntry = sizeof(Real);
       double memoryAllocPrimal = (double)totalPrimal*(double)sizePrimalEntry* BYTE_TO_MB;
 
-      out << hLine
-          << "Primal Vector\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalPrimal << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocPrimal << " MB" << "\n";
-      out << hLine
-          << "Statements\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalStmt   << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksStmt << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedStmt << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocStmt << " MB" << "\n";
-      out << hLine
-          << "Index entries\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalIndex << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksIndex << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedIndex << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocIndex << " MB" << "\n";
-      out << hLine
-          << "Passive data entries\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedPassive << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocPassive << " MB" << "\n";
+      values.addSection("Primal vector");
+      values.addData("Total number", totalPrimal);
+      values.addData("Memory allocated", memoryAllocPrimal, true, true);
+
+      values.addSection("Statements");
+      values.addData("Total number", totalStmt);
+      values.addData("Number of chunks", nChunksStmt);
+      values.addData("Memory used", memoryUsedStmt, true, false);
+      values.addData("Memory allocated", memoryAllocStmt, false, true);
+
+      values.addSection("Index entries");
+      values.addData("Total number", totalIndex);
+      values.addData("Number of chunks", nChunksIndex);
+      values.addData("Memory used", memoryUsedIndex, true, false);
+      values.addData("Memory allocated", memoryAllocIndex, false, true);
+
+      values.addSection("Passive data entries");
+      values.addData("Total number", totalPassive);
+      values.addData("Number of chunks", nChunksPassive);
+      values.addData("Memory used", memoryUsedPassive, true, false);
+      values.addData("Memory allocated", memoryAllocPassive, false, true);
     }
 
     /**

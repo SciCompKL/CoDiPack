@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -40,6 +40,7 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
+#include "../tools/tapeValues.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -421,6 +422,22 @@ namespace codi {
     }
 
   public:
+    /**
+     * @brief Internal function for input variable registration.
+     *
+     * The index of the variable is set to a non zero number.
+     *
+     * @param[inout] value  Unused
+     * @param[out]   index  Is assigned a non zero value.
+     */
+    CODI_INLINE void registerInputInternal(Real& value, IndexType& index) {
+      CODI_UNUSED(value);
+
+      stmtVector.reserveItems(1);
+      stmtVector.setDataAndMove((StatementInt)0);
+
+      index = indexHandler.createIndex();
+    }
 
     /**
      * @brief Register a variable as an active variable.
@@ -429,10 +446,29 @@ namespace codi {
      * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<JacobiTape<TapeTypes> >& value) {
-      stmtVector.reserveItems(1);
-      stmtVector.setDataAndMove((StatementInt)0);
+      registerInputInternal(value.value(), value.getGradientData());
+    }
 
-      value.getGradientData() = indexHandler.createIndex();
+    /**
+     * @brief Internal function for output variable registration.
+     *
+     * The index of the variable is set to a non zero number.
+     *
+     * @param[inout] value  Unused
+     * @param[out]   index  Is assigned a non zero value.
+     */
+    CODI_INLINE void registerOutputInternal(const Real& value, IndexType& index) {
+      CODI_UNUSED(value);
+
+      ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
+        stmtVector.reserveItems(1);
+        jacobiVector.reserveItems(1);
+
+        stmtVector.setDataAndMove((StatementInt)1);
+        jacobiVector.setDataAndMove(1.0, index);
+
+        index = indexHandler.createIndex();
+      }
     }
 
     /**
@@ -444,32 +480,20 @@ namespace codi {
      * @param[in] value A new index is assigned.
      */
     CODI_INLINE void registerOutput(ActiveReal<JacobiTape<TapeTypes> >& value) {
-      value = PassiveReal(1.0) * value;
+      registerOutputInternal(value.getValue(), value.getGradientData());
     }
 
-    /**
-     * @brief Prints statistics about the tape on the screen or into a stream
-     *
-     * Prints information such as stored statements/adjoints and memory usage on screen or into
-     * the stream when an argument is provided.
-     *
-     * @param[in,out] out  The information is written to the stream.
-     *
-     * @tparam Stream The type of the stream.
-     */
-    template<typename Stream = std::ostream>
-    void printStatistics(Stream& out = std::cout) const {
+    TapeValues getTapeValues() const {
+      std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
+      TapeValues values(name);
 
-      const std::string hLine = "-------------------------------------\n";
+      addTapeBaseValues(values);
+      addStmtValues(values);
+      addJacobiValues(values);
+      addExtFuncValues(values);
+      indexHandler.addValues(values);
 
-      out << hLine
-          << "CoDi Tape Statistics (" << TapeTypes::tapeName << ")\n";
-      printTapeBaseStatistics(out, hLine);
-      printStmtStatistics(out, hLine);
-      printJacobiStatistics(out, hLine);
-      printExtFuncStatistics(out, hLine);
-      indexHandler.printStatistics(out, hLine);
-
+      return values;
     }
   };
 }

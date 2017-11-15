@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -209,7 +209,7 @@
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
             this->jacobiVector.setDataAndMove(jacobi, index);
           }
@@ -228,8 +228,7 @@
      *
      * @tparam Stream The type of the stream.
      */
-    template<typename Stream>
-    void printJacobiStatistics(Stream& out, const std::string hLine) const {
+    void addJacobiValues(TapeValues& values) const {
       size_t nChunksData   = jacobiVector.getNumChunks();
       size_t totalData     = jacobiVector.getDataSize();
       size_t sizeDataEntry = JacobiChunk::EntrySize;
@@ -238,19 +237,11 @@
       double  memoryAllocData= (double)nChunksData*(double)jacobiVector.getChunkSize()
                                 *(double)(sizeDataEntry)* BYTE_TO_MB;
 
-      out << hLine
-          << "Jacobi entries\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalData   << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksData << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedData << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocData << " MB" << "\n";
+      values.addSection("Jacobi entries");
+      values.addData("Total Number", totalData);
+      values.addData("Number of Chunks", nChunksData);
+      values.addData("Memory used", memoryUsedData, true, false);
+      values.addData("Memory allocated", memoryAllocData, false, true);
     }
 
     /**

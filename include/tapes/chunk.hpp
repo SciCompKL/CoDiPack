@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -272,7 +272,7 @@ namespace codi {
     CODI_INLINE void dataPointer(const size_t& index, Data* &pointer) {
       codiAssert(index <= ChunkInterface::size);
 
-      pointer = &data[index];
+      pointer = codi::addressof(data[index]);
     }
   };
 
@@ -407,8 +407,8 @@ namespace codi {
      */
     CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2) {
       codiAssert(index <= ChunkInterface::size);
-      pointer1 = &data1[index];
-      pointer2 = &data2[index];
+      pointer1 = codi::addressof(data1[index]);
+      pointer2 = codi::addressof(data2[index]);
     }
   };
 
@@ -564,9 +564,9 @@ namespace codi {
      */
     CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3) {
       codiAssert(index <= ChunkInterface::size);
-      pointer1 = &data1[index];
-      pointer2 = &data2[index];
-      pointer3 = &data3[index];
+      pointer1 = codi::addressof(data1[index]);
+      pointer2 = codi::addressof(data2[index]);
+      pointer3 = codi::addressof(data3[index]);
     }
   };
 
@@ -740,10 +740,10 @@ namespace codi {
      */
     CODI_INLINE void dataPointer(const size_t& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3, Data4* &pointer4) {
       codiAssert(index <= ChunkInterface::size);
-      pointer1 = &data1[index];
-      pointer2 = &data2[index];
-      pointer3 = &data3[index];
-      pointer4 = &data4[index];
+      pointer1 = codi::addressof(data1[index]);
+      pointer2 = codi::addressof(data2[index]);
+      pointer3 = codi::addressof(data3[index]);
+      pointer4 = codi::addressof(data4[index]);
     }
   };
 

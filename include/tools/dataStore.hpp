@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -206,8 +206,9 @@ namespace codi {
      * @tparam Type The type of the stored data.
      */
     template<typename Type>
-    void addData(const Type& value) {
+    size_t addData(const Type& value) {
       store.push_back(new DataHandle<Type>(value));
+      return store.size() - 1;
     }
 
     /**
@@ -219,8 +220,9 @@ namespace codi {
      * @tparam Type The type of the stored array data.
      */
     template<typename Type>
-    void addData(const Type* value, const int size) {
+    size_t addData(const Type* value, const int size) {
       store.push_back(new DataHandleArray<Type>(value, size));
+      return store.size() - 1;
     }
 
     /**
@@ -288,6 +290,18 @@ namespace codi {
       return *data;
     }
 
+    template<typename Type>
+    void getDataByIndex(Type& value, size_t pos) {
+      getDataArrayByIndex<Type>(&value, 1, pos);
+    }
+
+    template<typename Type>
+    void getDataArrayByIndex(Type* value, const int size, size_t pos) {
+      Type* convPointer = getStore<Type>(pos);
+
+      std::copy(convPointer, &convPointer[size], value);
+    }
+
     /**
      * @brief Restart the reading process.
      */
@@ -296,6 +310,12 @@ namespace codi {
     }
 
   private:
+
+    template<typename Type>
+    Type* getStore(size_t pos) {
+      return (Type*) store[pos]->data;
+    }
+
     /**
      * @brief Gets the next data item out of the data vector.
      *
@@ -308,7 +328,8 @@ namespace codi {
      */
     template<typename Type>
     Type* nextStore() {
-      Type* pointer = (Type*) store[storePos++]->data;
+      Type* pointer = getStore<Type>(storePos);
+      storePos += 1;
       if(storePos >= store.size()) {
         storePos = 0;
       }

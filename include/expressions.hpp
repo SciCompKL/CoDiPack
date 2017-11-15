@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -225,22 +225,27 @@ namespace codi {
     b.calcGradient(data);
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11M_Add(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
     a.calcGradient(data, multiplier);
     b.calcGradient(data, multiplier);
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10_Add(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+    CODI_UNUSED(b);
     CODI_UNUSED(result);
     a.calcGradient(data);
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10M_Add(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(b);
     CODI_UNUSED(result);
     a.calcGradient(data, multiplier);
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01_Add(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
     CODI_UNUSED(result);
     b.calcGradient(data);
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01M_Add(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(a);
     CODI_UNUSED(result);
     b.calcGradient(data, multiplier);
   }
@@ -278,18 +283,22 @@ namespace codi {
     b.calcGradient(data, -multiplier);
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10_Subtract(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+    CODI_UNUSED(b);
     CODI_UNUSED(result);
     a.calcGradient(data);
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10M_Subtract(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(b);
     CODI_UNUSED(result);
     a.calcGradient(data, multiplier);
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01_Subtract(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
     CODI_UNUSED(result);
     b.calcGradient(data, -1.0);
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01M_Subtract(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(a);
     CODI_UNUSED(result);
     b.calcGradient(data, -multiplier);
   }
@@ -386,21 +395,25 @@ namespace codi {
     b.calcGradient(data, -result * one_over_b);
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10_Divide(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+    CODI_UNUSED(result);
     checkArgumentsDivide(b);
     Real one_over_b = 1.0 / b;
     a.calcGradient(data, one_over_b);
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10M_Divide(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
     checkArgumentsDivide(b);
     Real one_over_b = multiplier / b;
     a.calcGradient(data, one_over_b);
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01_Divide(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
     checkArgumentsDivide(b.getValue());
     Real one_over_b = 1.0 / b.getValue();
     b.calcGradient(data, -result * one_over_b);
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01M_Divide(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(a);
     checkArgumentsDivide(b.getValue());
     Real one_over_b = multiplier / b.getValue();
     b.calcGradient(data, -result * one_over_b);
@@ -521,6 +534,7 @@ namespace codi {
     return b * pow(a, b - 1.0);
   }
   template<typename Real, typename A, typename B> CODI_INLINE Real gradientB_Pow(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(b);
     checkArgumentsPow(a);
     if (a > 0.0) {
       return log(a) * result;
@@ -588,6 +602,7 @@ namespace codi {
     }
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Min(Data& data, const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
     if(a.getValue() < b.getValue()) {
       a.calcGradient(data);
     } else {
@@ -595,6 +610,7 @@ namespace codi {
     }
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11M_Min(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
     if(a.getValue() < b.getValue()) {
       a.calcGradient(data, multiplier);
     } else {
@@ -602,21 +618,25 @@ namespace codi {
     }
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10_Min(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+    CODI_UNUSED(result);
     if(a.getValue() < b) {
       a.calcGradient(data);
     }
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10M_Min(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
     if(a.getValue() < b) {
       a.calcGradient(data, multiplier);
     }
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01_Min(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
     if(a >= b.getValue()) {
       b.calcGradient(data);
     }
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01M_Min(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
     if(a >= b.getValue()) {
       b.calcGradient(data, multiplier);
     }
@@ -697,6 +717,7 @@ namespace codi {
     }
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Max(Data& data, const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
     if(a.getValue() > b.getValue()) {
       a.calcGradient(data);
     } else {
@@ -704,6 +725,7 @@ namespace codi {
     }
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11M_Max(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
     if(a.getValue() > b.getValue()) {
       a.calcGradient(data, multiplier);
     } else {
@@ -711,21 +733,25 @@ namespace codi {
     }
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10_Max(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+    CODI_UNUSED(result);
     if(a.getValue() > b) {
       a.calcGradient(data);
     }
   }
   template<typename Data, typename Real, typename A> CODI_INLINE void derv10M_Max(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
     if(a.getValue() > b) {
       a.calcGradient(data, multiplier);
     }
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01_Max(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
     if(a <= b.getValue()) {
       b.calcGradient(data);
     }
   }
   template<typename Data, typename Real, typename B> CODI_INLINE void derv01M_Max(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
     if(a <= b.getValue()) {
       b.calcGradient(data, multiplier);
     }
@@ -908,7 +934,7 @@ namespace codi {
   #include "unaryExpression.tpp"
 
   template<typename Real> CODI_INLINE Real gradTanh(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
+    CODI_UNUSED(a);
     return 1 - result * result;
   }
   using std::tanh;
@@ -1105,6 +1131,50 @@ namespace codi {
   #define PRIMAL_FUNCTION erfc
   #include "unaryExpression.tpp"
 
+  template<typename Real> CODI_INLINE Real gradTgamma(const Real& a, const Real& result) {
+    if(a <= 0.0) {
+      std::cout << "Derivative for gamma function only for positive arguments at the moment" << std::endl;
+      std::exit(1);
+    }
+
+    // Implementation of the digamma function is taken from John Burkardt,
+    // http://people.sc.fsu.edu/~jburkardt/cpp_src/asa103/asa103.cpp
+    //
+    // Definition of Gamma(a): https://en.wikipedia.org/wiki/Gamma_function
+    // Definition of DiGamma(a): https://en.wikipedia.org/wiki/Digamma_function
+    // Differentation is Gamma'(a) = Gamma(a) * DiGamma(a)
+
+    Real diGamma = 0.0;
+    if(a <= 0.000001) { // special case for small numbers
+      const Real eulerMascheroni = 0.57721566490153286060;
+      diGamma = -eulerMascheroni - 1.0/a + 1.6449340668482264365*a;
+    } else {
+      // shift DiGamma(a) = DiGamma(a + 1) - 1/a
+      // we require a large such that the approximation below is more accurate
+      Real shiftBound = 8.5;
+
+      Real shiftedValue = a;
+      while( shiftedValue < shiftBound ) {
+        diGamma      -= 1.0/shiftedValue;
+        shiftedValue += 1.0;
+      }
+
+      // Now compute the approximation via an asymptotic series
+      Real r = 1.0/shiftedValue;
+      diGamma += log(shiftedValue) - 0.5*r;
+
+      Real rSqr = r*r;
+      diGamma -= rSqr*(1.0/12.0 - rSqr*(1.0/120.0 - rSqr*(1.0/252.0 - rSqr*(1.0/240.0 - rSqr*(1.0/132.0)))));
+    }
+
+    return diGamma*result;
+  }
+  using std::tgamma;
+  #define NAME Tgamma
+  #define FUNCTION tgamma
+  #define PRIMAL_FUNCTION tgamma
+  #include "unaryExpression.tpp"
+
   #undef CODI_OPERATOR_HELPER
 
   /**
@@ -1184,7 +1254,7 @@ namespace codi {
    */
   template<typename Real, class A>
   CODI_INLINE bool isfinite(const codi::Expression<Real, A>& a) {
-    return isfinite(a.getValue());
+    return codi::isfinite(a.getValue());
   }
 
   using std::floor;

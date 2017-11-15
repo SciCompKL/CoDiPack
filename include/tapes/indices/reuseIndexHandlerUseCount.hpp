@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "../../configure.h"
+#include "../../tools/tapeValues.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -61,7 +62,7 @@ namespace codi {
       /**
        * @brief If it is required to write an assign statement after the index is copied.
        */
-      const static bool AssignNeedsStatement = false;
+      const static bool AssignNeedsStatement = OptDisableAssignOptimization;
 
     private:
 
@@ -130,6 +131,10 @@ namespace codi {
           indexUse[index] -= 1;
 
           if(indexUse[index] == 0) { // only free the index if it not used any longer
+
+#if CODI_IndexHandle
+            handleIndexFree(index);
+#endif
             if(currentMaximumIndex == index) {
               // freed index is the maximum one so we can decrease the count
               --currentMaximumIndex;
@@ -168,6 +173,10 @@ namespace codi {
           index = ++currentMaximumIndex;
         }
 
+#if CODI_IndexHandle
+        handleIndexCreate(index);
+#endif
+
         indexUse[index] = 1;
 
         return index;
@@ -198,16 +207,21 @@ namespace codi {
        * @param[in]    rhs  The index of the rhs.
        */
       CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {
-        // skip the logic if the indices are the same.
-        // This also prevents the bug, that if &lhs == &rhs the left hand side will always be deactivated.
-        if(lhs != rhs) {
-          freeIndex(lhs);
+        if(!OptDisableAssignOptimization) {
+          // skip the logic if the indices are the same.
+          // This also prevents the bug, that if &lhs == &rhs the left hand side will always be deactivated.
+          if(lhs != rhs) {
+            freeIndex(lhs);
 
-          if(0 != rhs) { // do not handle the zero index
-            indexUse[rhs] += 1;
+            if(0 != rhs) { // do not handle the zero index
+              indexUse[rhs] += 1;
 
-            lhs = rhs;
+              lhs = rhs;
+            }
           }
+        } else {
+            // path if assign optimizations are disabled
+            assignIndex(lhs);
         }
       }
 
@@ -269,8 +283,7 @@ namespace codi {
        *
        * @tparam Stream The type of the stream.
        */
-      template<typename Stream>
-      void printStatistics(Stream& out, const std::string hLine) const {
+      void addValues(TapeValues& values) const {
         size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
         size_t storedIndices          = (size_t)this->getNumberStoredIndices();
         size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();
@@ -279,24 +292,13 @@ namespace codi {
         double memoryIndexUse         = (double)this->indexUse.size()*(double)(sizeof(Index)) * BYTE_TO_MB;
         double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
 
-        out << hLine
-            << "Indices\n"
-            << hLine
-            << "  Max. live indices:    " << std::setw(10) << maximumGlobalIndex << "\n"
-            << "  Cur. live indices:    " << std::setw(10) << currentLiveIndices << "\n"
-            << "  Indices stored:       " << std::setw(10) << storedIndices << "\n"
-            << "  Memory used:          " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryStoredIndices << " MB" << "\n"
-            << "  Memory allocated:     " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryAllocatedIndices << " MB" << "\n"
-            << "  Memory index use vec: " << std::setiosflags(std::ios::fixed)
-                                          << std::setprecision(2)
-                                          << std::setw(10)
-                                          << memoryIndexUse << " MB" << "\n";
+        values.addSection("Indices");
+        values.addData("Max. live indices", maximumGlobalIndex);
+        values.addData("Cur. live indices", currentLiveIndices);
+        values.addData("Indices stored", storedIndices);
+        values.addData("Memory used", memoryStoredIndices, true, false);
+        values.addData("Memory allocated", memoryAllocatedIndices, false, true);
+        values.addData("Memory index use vec", memoryIndexUse, true, true);
       }
 
     private:

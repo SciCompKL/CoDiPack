@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -36,25 +36,26 @@
 namespace codi {
 
 #ifndef DOXYGEN_DISABLE
-  // default definition
-  template <typename T, const bool isArithmetic>
-  struct IsTotalZeroImpl {};
+  // default definition. call t.isTotalZero()
+  template <typename T, typename Enable = void>
+  struct IsTotalZeroImpl {
+      static CODI_INLINE bool isTotalZero(const T &t) {
+        return t.isTotalZero();
+      }
+  };
 
-  //call t == 0 for all arithmetic types e.g. double, int @internal */
+  //call t == 0 for all arithmetic types e.g. double, int @internal
   template <typename T>
-  struct IsTotalZeroImpl<T, true> {
+  struct IsTotalZeroImpl<
+      T,
+      typename std::enable_if<std::is_arithmetic<T>::value>::type
+      >
+  {
       static CODI_INLINE bool isTotalZero(const T &t) {
         return t == T();
       }
   };
 
-  //call t.isTotalZero for all other types */
-  template <typename T>
-  struct IsTotalZeroImpl<T, false> {
-      static CODI_INLINE bool isTotalZero(const T &t) {
-        return t.isTotalZero();
-      }
-  };
 #endif
 
   /**
@@ -71,5 +72,72 @@ namespace codi {
    */
   template <typename T>
   CODI_INLINE bool isTotalZero(const T& t) {
-    return IsTotalZeroImpl<T, std::is_arithmetic<T>::value>::isTotalZero(t);}
+    return IsTotalZeroImpl<T>::isTotalZero(t);}
+
+#ifndef DOXYGEN_DISABLE
+  // Take address of a T instance
+  template <typename T, typename Enable = void>
+  struct AddressOfImpl {
+      typedef typename std::add_pointer<T>::type PointerType;
+
+      static CODI_INLINE PointerType get(T &t) {
+          return &t;
+      }
+  };
+#endif
+
+  /**
+   * @brief Return address of a variable
+   *
+   * The default implementation returns &t.
+   *
+   * @param[in] t The value from which the adress is taken.
+   * @tparam T Type of the variable.
+   */
+  template <typename T>
+  CODI_INLINE
+  typename AddressOfImpl<T>::PointerType addressof(T& t) {
+    return AddressOfImpl<T>::get(t);
+  }
+
+#ifndef DOXYGEN_DISABLE
+  // check is variable is finite
+  template <typename T, typename Enable = void>
+  struct IsFiniteImpl {
+      static CODI_INLINE bool get(const T &t) {
+          return isfinite(t);
+      }
+  };
+
+  //call the specialized isfinite implementation for codi::Expression
+  template <typename T>
+  struct IsFiniteImpl<
+    T,
+    typename std::enable_if<
+      std::is_base_of<
+        codi::Expression<typename codi::TypeTraits<T>::Real, T>,
+        T
+      >::value
+    >::type
+  >
+  {
+      static CODI_INLINE bool get(const T &t) {
+        return codi::isfinite(dynamic_cast<const codi::Expression<typename codi::TypeTraits<T>::Real, T>&>(t));
+      }
+  };
+
+#endif
+
+  /**
+   * @brief Check if variable is finite
+   *
+   * The default implementation calls isfinite(t) without a namespace specifier.
+   *
+   * @param[in] t The for which the is finite attribute is checked.
+   * @tparam T Type of the variable
+   */
+  template <typename T>
+  CODI_INLINE bool isfinite(const T& t) {
+    return IsFiniteImpl<T>::get(t);
+  }
 }

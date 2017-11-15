@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -45,10 +45,12 @@ namespace codi {
      */
     struct Position {
       bool operator != (const Position& o) {
+        CODI_UNUSED(o);
         return false;
       }
 
       bool operator == (const Position& o) {
+        CODI_UNUSED(o);
         return true;
       }
     };
@@ -59,6 +61,7 @@ namespace codi {
      * @param[in,out] other  The other empty chunk vector.
      */
     void swap(EmptyChunkVector& other) {
+      CODI_UNUSED(other);
       //Do nothing
     }
 
@@ -105,6 +108,7 @@ namespace codi {
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
         CODI_UNUSED(function);
         CODI_UNUSED(recursive);
+        CODI_UNUSED_VAR{args...};
 
         // Do nothing
       }
