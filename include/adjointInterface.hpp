@@ -30,6 +30,9 @@
 
 #include <cstddef>
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
   /**
@@ -38,6 +41,10 @@ namespace codi {
    */
   template<typename Real>
   struct AdjointInterface {
+
+      /**
+       * Destructor for the interface.
+       */
       virtual ~AdjointInterface() {}
 
       /**
@@ -121,7 +128,7 @@ namespace codi {
       /**
        * @brief The adjoint target for the adjoint of the left hand side of an equation.
        *
-       * The function needs to be used togheter with updateJacobiAdjoint. For the statement
+       * The function needs to be used together with updateJacobiAdjoint. For the statement
        *
        *  w = h(x)
        *

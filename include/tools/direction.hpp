@@ -151,6 +151,16 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Tests if all elements of the given direction are finite.
+   *
+   * Calls on all elements codi::isfinite.
+   *
+   * @param[in] d  The direction vector that is tested.
+   * @return true if all elements are finite.
+   * @tparam Real  The computation type of the direction vector.
+   * @tparam  dim  The dimension of the direction vector.
+   */
   template<typename Real, size_t dim>
   bool isfinite(const Direction<Real, dim>& d) {
     bool finite = true;

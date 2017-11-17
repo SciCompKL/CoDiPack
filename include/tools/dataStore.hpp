@@ -72,7 +72,7 @@ namespace codi {
      * @brief The constructor will copy the given data.
      * @param[in] value The data for this object.
      */
-    DataHandle(const Type& value) {
+    explicit DataHandle(const Type& value) {
       data = (void*) new Type(value);
     }
 
@@ -202,6 +202,7 @@ namespace codi {
      * @brief Add data to the data store.
      *
      * @param[in] value  The data which is stored.
+     * @return The position of the added data.
      *
      * @tparam Type The type of the stored data.
      */
@@ -216,6 +217,7 @@ namespace codi {
      *
      * @param[in] value  The data pointer to the array.
      * @param[in]  size  The size of the stored data.
+     * @return The position of the added data.
      *
      * @tparam Type The type of the stored array data.
      */
@@ -290,11 +292,28 @@ namespace codi {
       return *data;
     }
 
+    /**
+     * @brief Get data from the data store with the index from the add function.
+     *
+     * @param[out] value  The data will be set to this value.
+     * @param[in]    pos  The position for the data. This needs to be the index returned by the add function.
+     *
+     * @tparam Type The type of the extracted data.
+     */
     template<typename Type>
     void getDataByIndex(Type& value, size_t pos) {
       getDataArrayByIndex<Type>(&value, 1, pos);
     }
 
+    /**
+     * @brief Get data from the data store with the index from the add function.
+     *
+     * @param[out] value  The data will be copied to the value.
+     * @param[in]   size  The size of the data array.
+     * @param[in]    pos  The position for the data. This needs to be the index returned by the add function.
+     *
+     * @tparam Type The type of the extracted data.
+     */
     template<typename Type>
     void getDataArrayByIndex(Type* value, const int size, size_t pos) {
       Type* convPointer = getStore<Type>(pos);
@@ -311,6 +330,14 @@ namespace codi {
 
   private:
 
+    /**
+     * Gets a specific data item from the data vector.
+     *
+     * @param[in] pos  The position of the item.
+     * @return The data item for the specified position.
+     *
+     * @tparam Type The type of the extracted data.
+     */
     template<typename Type>
     Type* getStore(size_t pos) {
       return (Type*) store[pos]->data;

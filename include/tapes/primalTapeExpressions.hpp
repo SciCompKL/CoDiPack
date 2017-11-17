@@ -46,13 +46,25 @@ namespace codi {
     /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /**
+     * @brief Not implemented for this expression.
+     *
+     * @param[in]        indices  Not used.
+     * @param[in] constantValues  Not used.
+     * @param[in]   primalValues  Not used.
+     * @return 0.0
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
     template<typename Index, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
       CODI_UNUSED(indices);
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
-      std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
+      std::cerr << "Error: Primal handles are not supported by this expression." << std::endl;
       exit(-1);
       return 0.0;
     }
@@ -68,7 +80,7 @@ namespace codi {
      * @param[in]       primalValues  The global vector with the primal values.
      * @param[in,out]  adjointValues  The global vector with the adjoint values.
      *
-     * @tparam      Index  The type for the indices.
+     * @tparam          Index  The type for the indices.
      * @tparam  GradientValue  A type that supports add and scalar multiplication.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
@@ -94,6 +106,18 @@ namespace codi {
     /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /**
+     * @brief Returns the value from the primal value vector
+     *
+     * @param[in]        indices  The index of the rhs
+     * @param[in] constantValues  Not used.
+     * @param[in]   primalValues  The vector with the primal values.
+     * @return 0.0
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
     template<typename Index, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
       CODI_UNUSED(constantValues);
@@ -143,13 +167,25 @@ namespace codi {
     /** @brief The passive value of the Real type */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
+    /**
+     * @brief Not implemented for this expression.
+     *
+     * @param[in]        indices  Not used.
+     * @param[in] constantValues  Not used.
+     * @param[in]   primalValues  Not used.
+     * @return 0.0
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
     template<typename Index, size_t offset, size_t constantOffset>
     static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
       CODI_UNUSED(indices);
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
-      std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
+      std::cerr << "Error: Primal handles are not supported by this expression." << std::endl;
       exit(-1);
       return 0.0;
     }

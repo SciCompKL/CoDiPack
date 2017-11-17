@@ -47,6 +47,8 @@ namespace codi {
    *
    * The static data of the expression is curried into the function call and this function
    * pointer is returned as the handle.
+   *
+   * @tparam ReverseTapeTypes  The basic type definitions for the tape. Need to define everything from ReverseTapeTypes.
    */
   template<typename ReverseTapeTypes>
   struct FunctionHandleFactory

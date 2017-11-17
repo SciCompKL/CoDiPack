@@ -52,7 +52,7 @@ namespace codi {
    *
    * See PrimalValueTape for details.
    *
-   * @tparam           RTT  The basic type defintions for the tape. Need to define everything from ReverseTapeTypes.
+   * @tparam           RTT  The basic type definitions for the tape. Need to define everything from ReverseTapeTypes.
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    * @tparam    DataVector  The data manager for the chunks. Needs to implement a ChunkVector interface.
    */
@@ -61,14 +61,18 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
 
-    typedef RTT BaseTypes;
-
+    /** @brief The factory for the expression handles. */
     typedef HandleFactoryType<RTT> HandleFactory;
+
+    /** @brief The data type for the created handles. */
     typedef typename HandleFactory::Handle Handle;
+
+    /** @brief The tape type structure, that defines the basic types. */
+    typedef RTT BaseTypes;
 
     /** @brief The data for each statement. */
     typedef Chunk2<Handle, StatementInt> StatementChunk;
-    /** @brief The chunk vector for the statement data. */
+      /** @brief The chunk vector for the statement data. */
     typedef ChunkVector<StatementChunk, IndexHandler> StatementVector;
 
     /** @brief The data for the indices of each statement */
@@ -116,9 +120,13 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
+    /** @brief The tape type structure, that defines the basic types. */
     typedef typename TapeTypes::BaseTypes BaseTypes;
 
+    /** @brief The generator for all handles to expression templates. */
     typedef typename TapeTypes::HandleFactory HandleFactory;
+
+    /** @brief The actual type of the stored handles. */
     typedef typename HandleFactory::Handle Handle;
 
     /** @brief The gradient data is just the index type. */
@@ -130,6 +138,7 @@ namespace codi {
     /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = false;
 
+    /** @brief This tape requires no special primal value handling since the primal value vector is not overwritten. */
     static const bool RequiresPrimalReset = false;
 
     #define TAPE_NAME PrimalValueTape
@@ -214,6 +223,19 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Allocates a copy of the primal vector that is used in the evaluation.
+     *
+     * It has to hold start >= end.
+     *
+     * The function calls the evaluation method for the external function vector.
+     *
+     * @param[in]            start  The starting point for the statement vector.
+     * @param[in]              end  The ending point for the statement vector.
+     * @param[in,out]  adjointData  The adjoint vector for the evaluation.
+     *
+     * @tparam AdjointData  The data type for the adjoint vector.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
@@ -318,13 +340,14 @@ namespace codi {
      * @param[in]           indices  The indices for the arguments of the rhs.
      * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
      * @param[in]         constants  The constant values in the rhs expressions.
-     * @param[in,out] adjointData  The vector of the adjoint varaibles.
-     * @param[in,out] adjointData  The vector of the adjoint varaibles.
+     * @param[in,out] adjointData  The vector of the adjoint variables.
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants, AdjointData* adjointData) {
+    CODI_INLINE void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos,
+                                   Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos,
+                                   Index* &indices, size_t& constantPos, PassiveReal* &constants, AdjointData* adjointData) {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
@@ -402,6 +425,18 @@ namespace codi {
 
   public:
 
+    /**
+     * @brief Special evaluation function for the preaccumulation of a tape part.
+     *
+     * The function just evaluates the tape and does not store the data for the preaccumulation.
+     * This function can be used by the tape implementation to reset its state in a more efficient way
+     * then it could be programmed from the outside.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in] start The starting position for the reverse evaluation.
+     * @param[in]   end The ending position for the reverse evaluation.
+     */
     CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
 
       evaluate(start, end);
@@ -419,6 +454,12 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Modify the output of an external function such that the tape sees it as an active variable.
+     *
+     * @param[in,out] value  The output value of the external function.
+     * @return Zero
+     */
     CODI_INLINE Real registerExtFunctionOutput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       registerInput(value);
 
@@ -438,6 +479,13 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Gather the general performance values of the tape.
+     *
+     * Computes values like the total amount of statements stored or the currently consumed memory.
+     *
+     * @return The values for the tape.
+     */
     TapeValues getTapeValues() const {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);

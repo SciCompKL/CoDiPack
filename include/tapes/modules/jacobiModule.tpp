@@ -234,15 +234,11 @@
     }
 
     /**
-     * @brief Prints statistics about the stored Jacobie entries.
+     * @brief Adds information about the Jacobi entries.
      *
-     * Displays the number of chunks, the total number of jacobies, the
-     * allocated memory and the used memory.
+     * Adds the number of all Jacobies, the number of chunks, the memory used and the allocated memory.
      *
-     * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that separates the sections of the output.
-     *
-     * @tparam Stream The type of the stream.
+     * @param[in,out] values  The information is added to the values
      */
     void addJacobiValues(TapeValues& values) const {
       size_t nChunksData   = jacobiVector.getNumChunks();
@@ -268,6 +264,16 @@
       return jacobiVector.getDataSize();
     }
 
+    /**
+     * @brief Special evaluation function for the preaccumulation of a tape part.
+     *
+     * No special implementation required for Jacobi tapes.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in] start The starting position for the reverse evaluation.
+     * @param[in]   end The ending position for the reverse evaluation.
+     */
     CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
 
       evaluate(start, end);

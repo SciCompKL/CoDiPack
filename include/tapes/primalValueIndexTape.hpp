@@ -64,9 +64,13 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
 
+    /** @brief The factory for the expression handles. */
     typedef HandleFactoryType<RTT> HandleFactory;
+
+    /** @brief The data type for the created handles. */
     typedef typename HandleFactory::Handle Handle;
 
+    /** @brief The tape type structure, that defines the basic types. */
     typedef RTT BaseTypes;
 
     /** @brief The data for each statement. */
@@ -119,9 +123,13 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
+    /** @brief The factory for the expression handles. */
     typedef typename TapeTypes::HandleFactory HandleFactory;
+
+    /** @brief The data type for the created handles. */
     typedef typename HandleFactory::Handle Handle;
 
+    /** @brief The tape type structure, that defines the basic types. */
     typedef typename TapeTypes::BaseTypes BaseTypes;
 
     /** @brief The gradient data is just the index type. */
@@ -136,6 +144,7 @@ namespace codi {
     /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = false;
 
+    /** @brief This tape requires no special primal value handling since the primal value vector is not overwritten. */
     static const bool RequiresPrimalReset = true;
 
     #define TAPE_NAME PrimalValueIndexTape
@@ -164,6 +173,8 @@ namespace codi {
 
     /** @brief The temporary vector for the reverse evaluation. */
     Real* primalsCopy;
+
+    /** @brief The size of the copied primal vector */
     Index primalsCopySize;
 
   public:
@@ -312,7 +323,29 @@ namespace codi {
 
   private:
 
-    CODI_INLINE void evaluateStackPrimal(size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
+    /**
+     * @brief Evaluate the stack from the start to to the end position for the primal evaluation.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
+     * @param[in]        endStmtPos  The ending position for statement data.
+     * @param[in]        lhsIndices  The indices from the lhs of each statement.
+     * @param[in]     storedPrimals  The overwritten primal from the primal vector.
+     * @param[in]        statements  The vector with the handles for each statement.
+     * @param[in] passiveActiveReal  The number passive values for each statement.
+     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
+     * @param[in]           indices  The indices for the arguments of the rhs.
+     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
+     * @param[in]         constants  The constant values in the rhs expressions.
+     * @param[in,out]  primalVector  The vector of the primal variables.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
+    CODI_INLINE void evaluateStackPrimal(size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices,
+                                         Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal,
+                                         size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants,
+                                         Real* primalVector) {
       while(stmtPos < endStmtPos) {
         const Index& lhsIndex = lhsIndices[stmtPos];
 
@@ -362,6 +395,19 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Evaluate a part of the statement vector for the primal.
+     *
+     * It has to hold start <= end.
+     *
+     * The function calls the primal  evaluation method for the stack.
+     *
+     * @param[in] start  The starting point for the statement vector.
+     * @param[in]   end  The ending point for the statement vector.
+     * @param[in]  args  The arguments from the other vectors.
+     *
+     * @tparam Args  The types of the other arguments.
+     */
     template<typename ... Args>
     CODI_INLINE void evalStmtPrimal(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
       Index* data1;
@@ -421,6 +467,19 @@ namespace codi {
       evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
     }
 
+    /**
+     * @brief Evaluate a part of the statement vector for the primal.
+     *
+     * It has to hold start <= end.
+     *
+     * The function calls the primal evaluation method for the constant value vector.
+     *
+     * @param[in] start  The starting point for the statement vector.
+     * @param[in]   end  The ending point for the statement vector.
+     * @param[in]  args  The arguments from the other vectors.
+     *
+     * @tparam Args  The types of the other arguments.
+     */
     template<typename ... Args>
     CODI_INLINE void evalExtFuncPrimalCallback(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
       evaluateConstantValuesPrimal(start, end, std::forward<Args>(args)...);
@@ -449,13 +508,13 @@ namespace codi {
      *
      * It has to hold start >= end.
      *
-     * The function calls the evaluation method for the jacobi vector.
+     * The function calls the evaluation method for the external function vector.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
-     * @param[in]  args  The arguments from the other vectors.
+     * @param[in]            start  The starting point for the statement vector.
+     * @param[in]              end  The ending point for the statement vector.
+     * @param[in,out]  adjointData  The adjoint vector for the evaluation.
      *
-     * @tparam Args  The types of the other arguments.
+     * @tparam AdjointData  The data type for the adjoint vector.
      */
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
@@ -477,6 +536,9 @@ namespace codi {
 #endif
     }
 
+    /**
+     * Function object that is used to revert the primal values in the primal value vector.
+     */
     struct PrimalValueReseter {
       PrimalValueIndexTape& tape;
 
@@ -488,6 +550,14 @@ namespace codi {
       PrimalValueReseter(PrimalValueIndexTape& tape) :
         tape(tape){}
 
+      /**
+       * @brief The operator reverts the value in the primal value vector to the old value stored during the recording.
+       *
+       * @param[in]    index  The lhs index for the statement.
+       * @param[in]    value  The old value that has been overwritten in the primal value vector.
+       * @param[in]   handle  The handle for the evaluation of the statement.
+       * @param[in] stmtSize  The number of non zero entries in the statement.
+       */
       void operator () (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
         CODI_UNUSED(handle);
         CODI_UNUSED(stmtSize);
@@ -497,6 +567,14 @@ namespace codi {
     };
 
 
+    /**
+     * @brief Resets the primal values up to the specified position.
+     *
+     * The stack is reversed such that the primal value changes are reversed until the specified position is reached.
+     * The primal value vector of the tape has the same status when the position was recorded.
+     *
+     * @param[in] pos  The position for the tape reset.
+     */
     CODI_INLINE void resetPrimalValues(const Position& pos) {
 
       // Do not perform a global reset on the primal value vector if the tape is cleared
@@ -515,12 +593,21 @@ namespace codi {
 
   public:
 
+
+    /**
+     * @brief Specialized evaluate function for the preaccumulation.
+     *
+     * The function does a normal reverse evaluation and afterwards the primal value vector es reset to the
+     * current state.
+     *
+     * It has to hold start >= end
+     *
+     * @param[in] start  The starting position for the evaluation.
+     * @param[in]   end  The stopping position for the evaluation.
+     */
     CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
 
-      //TODO: Add proper function in tape base module
-      if(adjointsSize <= indexHandler.getMaximumGlobalIndex()) {
-        resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
-      }
+      resizeAdjointsToIndexSize();
 
       std::swap(primals, primalsCopy);
 
@@ -553,6 +640,13 @@ namespace codi {
       }
     }
 
+
+    /**
+     * @brief Modify the output of an external function such that the tape sees it as an active variable.
+     *
+     * @param[in,out] value  The output value of the external function.
+     * @return The old internally stored value for the newly generated index.
+     */
     CODI_INLINE Real registerExtFunctionOutput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       Real oldValue = value.getValue();
       if(isActive()) {
@@ -567,6 +661,15 @@ namespace codi {
       return oldValue;
     }
 
+    /**
+     * @brief Helper function for external functions.
+     *
+     * The function sets a primal value in current primal value vector. The value that needs to be provided here is the
+     * one that is returned from registerExtFunctionOutput.
+     *
+     * @param[in]  index  The index on which the primal value is changed.
+     * @param[in] primal  The new primal value for the index.
+     */
     CODI_INLINE void setExternalValueChange(const GradientData& index, const Real& primal) {
 
       // TODO: only allowed during reverse evaluation. Add check.
@@ -574,7 +677,7 @@ namespace codi {
       primalsCopy[index] = primal;
     }
 
-    /*
+    /**
      * @brief It is ensured that each output variable has a unique index.
      *
      * @param[in] value  The value will have an unique index that is used by no other variable.
@@ -590,6 +693,13 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Gather the general performance values of the tape.
+     *
+     * Computes values like the total amount of statements stored or the currently consumed memory.
+     *
+     * @return The values for the tape.
+     */
     TapeValues getTapeValues() const {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);

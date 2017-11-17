@@ -44,15 +44,25 @@ namespace codi {
      * @brief Position without any data.
      */
     struct Position {
-      bool operator != (const Position& o) {
-        CODI_UNUSED(o);
-        return false;
-      }
+        /**
+         * @brief Returns always false since the position has not data.
+         * @param[in] o  The other position.
+         * @return Always false.
+         */
+        bool operator != (const Position& o) {
+          CODI_UNUSED(o);
+          return false;
+        }
 
-      bool operator == (const Position& o) {
-        CODI_UNUSED(o);
-        return true;
-      }
+        /**
+         * @brief Returns always true since the position has not data.
+         * @param[in] o  The other position.
+         * @return Always true.
+         */
+        bool operator == (const Position& o) {
+          CODI_UNUSED(o);
+          return true;
+        }
     };
 
     /**

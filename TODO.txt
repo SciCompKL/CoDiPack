@@ -10,4 +10,5 @@ Performance:
   - rename the reset() function to clear().
     - reset(pos) performs then a rewind of the tape.
     - clear() clears the tape so that it can be used anew.
+  - Create an interface for the primal evlauation.
 

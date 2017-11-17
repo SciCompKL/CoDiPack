@@ -48,7 +48,7 @@ namespace codi {
    * Therefor a tape that uses this handler does not need to write a statement if an assign operation
    * is evaluated.
    *
-   * @tparam Index  The type for the handled indices.
+   * @tparam IndexType  The type for the handled indices.
    */
   template<typename IndexType>
   class ReuseIndexHandlerUseCount {
@@ -218,6 +218,7 @@ namespace codi {
 
               lhs = rhs;
             }
+          }
         } else {
             // path if assign optimizations are disabled
             assignIndex(lhs);

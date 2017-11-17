@@ -101,7 +101,7 @@ namespace codi {
   }
 
 #ifndef DOXYGEN_DISABLE
-  // check is variable is finite
+  // check if variable is finite
   template <typename T, typename Enable = void>
   struct IsFiniteImpl {
       static CODI_INLINE bool get(const T &t) {

@@ -76,7 +76,7 @@ namespace codi {
    */
   template<typename Data1>
   struct PointerHandle<Chunk1<Data1> > {
-      Data1* p1;
+      Data1* p1; /**< Pointer for the first data item. */
 
       /**
        * @brief Set the internal pointers to the the data of the chunk at the
@@ -112,8 +112,8 @@ namespace codi {
    */
   template<typename Data1, typename Data2>
   struct PointerHandle<Chunk2<Data1, Data2> > {
-      Data1* p1;
-      Data2* p2;
+      Data1* p1; /**< Pointer for the first data item. */
+      Data2* p2; /**< Pointer for the second data item. */
 
       /**
        * @brief Set the internal pointers to the the data of the chunk at the
@@ -150,9 +150,9 @@ namespace codi {
    */
   template<typename Data1, typename Data2, typename Data3>
   struct PointerHandle<Chunk3<Data1, Data2, Data3> > {
-      Data1* p1;
-      Data2* p2;
-      Data3* p3;
+      Data1* p1; /**< Pointer for the first data item. */
+      Data2* p2; /**< Pointer for the second data item. */
+      Data3* p3; /**< Pointer for the third data item. */
 
       /**
        * @brief Set the internal pointers to the the data of the chunk at the
@@ -190,10 +190,10 @@ namespace codi {
    */
   template<typename Data1, typename Data2, typename Data3, typename Data4>
   struct PointerHandle<Chunk4<Data1, Data2, Data3, Data4> > {
-      Data1* p1;
-      Data2* p2;
-      Data3* p3;
-      Data4* p4;
+      Data1* p1; /**< Pointer for the first data item. */
+      Data2* p2; /**< Pointer for the second data item. */
+      Data3* p3; /**< Pointer for the third data item. */
+      Data4* p4; /**< Pointer for the fourth data item. */
 
       /**
        * @brief Set the internal pointers to the the data of the chunk at the

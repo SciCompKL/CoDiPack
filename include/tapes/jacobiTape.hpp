@@ -63,6 +63,7 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
 
+    /** @brief The tape type structure, that defines the basic types. */
     typedef RTT BaseTypes;
 
     /** @brief The data for each statement. */
@@ -110,6 +111,7 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
+    /** @brief The tape type structure, that defines all types for the tape. */
     typedef typename TapeTypes::BaseTypes BaseTypes;
 
     /** @brief The gradient data is just the index type. */
@@ -121,6 +123,7 @@ namespace codi {
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
 
+    /** @brief This tape requires no primal value handling. */
     static const bool RequiresPrimalReset = false;
 
     // The class name of the tape. Required by the modules.
@@ -353,15 +356,15 @@ namespace codi {
      *
      * The function calls the evaluation method for the jacobi vector.
      *
-     * @param[in]   start  The starting point for the statement vector.
-     * @param[in]     end  The ending point for the statement vector.
+     * @param[in]    start  The starting point for the statement vector.
+     * @param[in]      end  The ending point for the statement vector.
      * @param[in,out] args  Additional arguments for the evaluation function.
      *
      * @tparam Args  The types of the other arguments.
      */
     template<typename ... Args>
-    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, Index* &indices, Args&&... args) {
-      evaluateStmt(start, end, dataPos, jacobies, indices, std::forward<Args>(args)...);
+    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
+      evaluateStmt(start, end, std::forward<Args>(args)...);
     }
 
     /**
@@ -432,6 +435,12 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Modify the output of an external function such that the tape sees it as an active variable.
+     *
+     * @param[in,out] value  The output value of the external function.
+     * @return Zero
+     */
     CODI_INLINE Real registerExtFunctionOutput(ActiveReal<JacobiTape<TapeTypes> >& value) {
       registerInput(value);
 
@@ -450,6 +459,13 @@ namespace codi {
       registerOutputInternal(value.getValue(), value.getGradientData());
     }
 
+    /**
+     * @brief Gather the general performance values of the tape.
+     *
+     * Computes values like the total amount of statements stored or the currently consumed memory.
+     *
+     * @return The values for the tape.
+     */
     TapeValues getTapeValues() const {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);

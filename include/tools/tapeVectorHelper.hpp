@@ -39,20 +39,134 @@
  */
 namespace codi {
 
+  /**
+   * @brief Allows for an arbitrary adjoint evaluation of a recorded tape.
+   *
+   * The evaluation of a reverse AD tape is independent of the recording of the tape.
+   * That is, the reverse evaluation can be performed simultaneously multiple times or with a different vector mode.
+   * Lets assumed that the recorded tape is represented by the function
+   * \f[ y = F(x) \eqdot \f]
+   * The reverse AD mode evaluates then the directional adjoint derivative in the form
+   * \f[ \bar{x} = \frac{d F}{d x}^T(x)\cdot \bar{y}. \f]
+   * \f$ \bar{x} \f$ and \f$ \bar{y} \f$ are real valued vectors. It is now possible to extend the AD theory such that
+   * multiple directions are evaluated simultaneously which yields
+   * \f[ \bar{X} = \frac{d F}{d x}^T(x)\cdot \bar{Y}. \f]
+   * \f$ \bar{X} \f$ and \f$ \bar{Y} \f$ are now real valued matrices. E.g. \f$ \bar{Y} \in \R^{n\times d} \f$ where
+   * \f$ d \in \N \f$ represents the number of adjoint directions. Since the tape representation is independent of
+   * the number of directions, the compile time selection of the appropriate vector with e.g. RealReverseVec is not
+   * necessary.
+   *
+   * The vector helper class allows the user to evaluate a tape with an arbitrary vector mode. In order to record and
+   * evaluate the function \f$ f(x) = {a * b, a + b, a - b, a / b} \f$ the following steps are necessary:
+   * \code{.cpp}
+   *  void func(RealReverse& a, RealReverse& b, RealReverse* y) {
+   *    y[0] = a * b;
+   *    y[1] = a + b;
+   *    y[2] = a - b;
+   *    y[3] = a / b;
+   *  }
+   *
+   *  ...
+   *  RealReverse::TapeType& tape = RealReverse::globalTape;
+   *  tape.setActive();
+   *  RealReverse a = 3.0;
+   *  RealReverse b = 2.0;
+   *  tape.registerInput(a);
+   *  tape.registerInput(b);
+   *
+   *  RealReverse y[4];
+   *  func(a, b, y);
+   *
+   *  for(int i = 0; i < 4; ++i) {
+   *    tape.registerOutput(y[i]);
+   *  }
+   *  tape.setPassive();
+   *
+   *  // First evaluation
+   *  y[0].setGradient(1.0);
+   *  tape.evaluate();
+   *  assert(a.getGradient() == 2.0);
+   *
+   *  // Second evaluation
+   *  tape.clearAdjoints();
+   *  y[1].setGradient(1.0);
+   *  tape.evaluate();
+   *  assert(a.getGradient() == 1.0);
+   *
+   *  ...
+   *  \endcode
+   *
+   *  The same evaluation can be achieved with the helper structure:
+   *  \code{.cpp}
+   *  void func(RealReverse& a, RealReverse& b, RealReverse* y) {
+   *    y[0] = a * b;
+   *    y[1] = a + b;
+   *    y[2] = a - b;
+   *    y[3] = a / b;
+   *  }
+   *
+   *  ...
+   *  RealReverse::TapeType& tape = RealReverse::globalTape;
+   *  tape.setActive();
+   *  RealReverse a = 3.0;
+   *  RealReverse b = 2.0;
+   *  tape.registerInput(a);
+   *  tape.registerInput(b);
+   *
+   *  RealReverse y[4];
+   *  func(a, b, y);
+   *
+   *  for(int i = 0; i < 4; ++i) {
+   *    tape.registerOutput(y[i]);
+   *  }
+   *  tape.setPassive();
+   *
+   *  TapeVectorHelper<RealReverse, Direction<double, 4>> vh;
+   *  for(int i = 0; i < 4; ++i) {
+   *    vh.gradient(y[i].getGradientData())[i] = 1.0;
+   *  }
+   *  vh.evaluate();
+   *  assert(vh.gradient(a.getGradientData())[0] == 2.0);
+   *  assert(vh.gradient(a.getGradientData())[1] == 1.0);
+   *  assert(vh.gradient(a.getGradientData())[2] == 1.0);
+   *  assert(vh.gradient(a.getGradientData())[3] == 0.5);
+   *  \endcode
+   *
+   *  The major difference in using the vector helper is that the adjoints need to be set on the heper instead of the
+   *  tape. Therefore, the #ActiveReal::getGradientData() functions need to be used. It returns the identifier for the
+   *  tape and this identifier can be used to set the adjoint values in the vector helper.
+   *
+   *  In the default configuration of CoDiPack the TapeVectorHelper works only with Jacobi tapes. For primal value tapes
+   *  the preprocessor option CODI_EnableVariableAdjointInterfaceInPrimalTapes needs to be set.
+   *
+   * @tparam      CoDiType  A CoDiPack type that which is defined via an ActiveReal.
+   * @tparam GradientValue  The gradient data for each value.
+   */
   template<typename CoDiType, typename GradientValue>
   struct TapeVectorHelper {
 
-      typedef typename CoDiType::Real Real;
-      typedef typename CoDiType::GradientData GradientData;
-      typedef typename CoDiType::TapeType Tape;
-      typedef typename Tape::Position Position;
+      typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
+      typedef typename CoDiType::GradientData GradientData; /**< The type for the identification of gradients. */
+      typedef typename CoDiType::TapeType Tape; /**< The type of the tape implementation. */
+      typedef typename Tape::Position Position; /**< The position for the tape. */
 
+      /**
+       * @brief Storage for the adjoint values.
+       */
       std::vector<GradientValue> adjointVector;
+
+      /**
+       * @brief The reference to the tape that is used in the evaluation.
+       */
       Tape& tape;
 
-      GradientValue zeroValue;
-      const GradientValue constZeroValue;
 
+      GradientValue zeroValue; /**< Helper value for out of bounds access */
+      const GradientValue constZeroValue; /**< Helper value for out of bounds access */
+
+      /**
+       * @brief Create a new instance which uses the global tape as the default tape in the background.
+       */
       TapeVectorHelper() :
         adjointVector(0),
         tape(CoDiType::getGlobalTape()),
@@ -60,22 +174,47 @@ namespace codi {
         constZeroValue() {
       }
 
+      /**
+       * @brief Set the tape which should be used in the evaluation.
+       *
+       * @param[in] tape  The tape which is used in the evaluation.
+       */
       void setTape(Tape& tape) {
         this->tape = tape;
       }
 
+      /**
+       * @brief Set the gradient value in the internal adjoint vector.
+       *
+       * @param[in]         value  The identifier for the corresponding primal value.
+       * @param[in] gradientValue  The gradient value which is set in the internal adjoint vector.
+       */
       void setGradient(GradientData& value, const GradientValue& gradientValue) {
         gradient(value) = gradientValue;
       }
 
+      /**
+       * @brief Get the gradient value from the internal adjoint vector.
+       *
+       * @param[in] value  The identifier for the corresponding primal value.
+       *
+       * @return The gradient value from the internal adjoint vector.
+       */
       GradientValue getGradient(const GradientData& value) {
         return gradient(value);
       }
 
+      /**
+       * @brief Get the reference to the gradient value from the internal adjoint vector.
+       *
+       * @param[in] value  The identifier for the corresponding primal value.
+       *
+       * @return The reference to the gradient value from the internal adjoint vector.
+       */
       GradientValue& gradient(GradientData& value) {
         checkAdjointVectorSize();
 
-        if(0 != value) {
+        if(0 != value && value < (GradientData)adjointVector.size()) {
           return adjointVector[value];
         } else {
           zeroValue = GradientValue();
@@ -83,6 +222,13 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Get the reference to the gradient value from the internal adjoint vector.
+       *
+       * @param[in] value  The identifier for the corresponding primal value.
+       *
+       * @return The reference to the gradient value from the internal adjoint vector.
+       */
       const GradientValue& gradient(const GradientData& value) const {
         if(0 != value && value < (GradientData)adjointVector.size()) {
           return adjointVector[value];
@@ -91,16 +237,30 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Evaluate the tape from start to end with the adjoint vector of this helper.
+       *
+       * It has to hold start >= end.
+       *
+       * @param[in] start  The starting position for the adjoint evaluation.
+       * @param[in]   end  The ending position for the adjoint evaluation.
+       */
       void evaluate(const Position& start, const Position& end) {
         checkAdjointVectorSize();
 
         tape.evaluate(start, end, adjointVector.data());
       }
 
+      /**
+       * @brief Evaluate the full tape with the adjoint vector of this helper.
+       */
       void evaluate() {
         evaluate(tape.getPosition(), tape.getZeroPosition());
       }
 
+      /**
+       * @brief Reset all adjoint to there default value.
+       */
       void clearAdjoints() {
         for(size_t i = 0; i < adjointVector.size(); i += 1) {
           adjointVector[i] = GradientValue();
@@ -109,6 +269,10 @@ namespace codi {
 
     private:
 
+      /**
+       * @brief Update the vector size of the internal adjoint vector such that it can hold the adjoint values of the
+       * tape evaluation.
+       */
       void checkAdjointVectorSize() {
         if(adjointVector.size() <= tape.getAdjointSize()) {
           adjointVector.resize(tape.getAdjointSize() + 1);

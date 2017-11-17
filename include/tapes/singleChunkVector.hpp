@@ -108,10 +108,20 @@ namespace codi {
         data(data),
         inner(inner) {}
 
+      /**
+       * @brief Compares first the inner position and then the own data.
+       * @param[in] o  The other position.
+       * @return False if the inner position and the own data are not equal.
+       */
       bool operator != (const Position& o) {
         return this->inner != o.inner || chunk != o.chunk || data != o.data;
       }
 
+      /**
+       * @brief Compares first the inner position and then the own data.
+       * @param[in] o  The other position.
+       * @return True if the inner position and the own data are not equal.
+       */
       bool operator == (const Position& o) {
         return this->inner == o.inner && chunk == o.chunk && data == o.data;
       }

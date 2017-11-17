@@ -117,11 +117,16 @@
       /**
        * @brief The operator evaluates the tape to the position were the next external function was stored and then the function is evaluated
        *
-       * @param[in]     extFunc  The external function object.
-       * @param[in] endInnerPos  The position were the external function object was stored.
+       * @param[in]              extFunc  The external function object.
+       * @param[in]          endInnerPos  The position were the external function object was stored.
+       * @param[in,out] adjointInterface  Interface for accessing the adjoint vector for this evaluation.
+       * @param[in,out]             args  The arguments for the evaluation.
+       *
+       * @tparam Args  The types of the other arguments.
        */
       template<typename ... Args>
-      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, AdjointInterface<Real>* adjointInterface, Args&&... args) {
+      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
+                        AdjointInterface<Real>* adjointInterface, Args&&... args) {
         // always evaluate the stack to the point of the external function
         tape.evalExtFuncCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
@@ -131,6 +136,14 @@
       }
     };
 
+    /**
+     * @brief Function object for the primal evaluation of the external functions.
+     *
+     * It stores the last position for the statement vector. With this
+     * position it evaluates the statement vector to the position
+     * where the external function was added and then calls the
+     * external function.
+     */
     struct PrimalExtFuncEvaluator {
       ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
 
@@ -152,6 +165,9 @@
        *
        * @param[in]     extFunc  The external function object.
        * @param[in] endInnerPos  The position were the external function object was stored.
+       * @param[in,out]    args  The arguments for the evaluation.
+       *
+       * @tparam Args  The types of the other arguments.
        */
       template<typename ... Args>
       void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, Args&&... args) {
@@ -254,8 +270,11 @@
      *
      * It calls the primal evaluation method for the statement vector.
      *
-     * @param[in]       start The starting point for the external function vector.
-     * @param[in]         end The ending point for the external function vector.
+     * @param[in]       start  The starting point for the external function vector.
+     * @param[in]         end  The ending point for the external function vector.
+     * @param[in,out]    args  The arguments for the evaluation.
+     *
+     * @tparam Args  The types of the other arguments.
      */
     template<typename ... Args>
     void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, Args&&... args){
@@ -274,8 +293,12 @@
      *
      * It calls the evaluation method for the statement vector.
      *
-     * @param[in]       start The starting point for the external function vector.
-     * @param[in]         end The ending point for the external function vector.
+     * @param[in]                start  The starting point for the external function vector.
+     * @param[in]                  end  The ending point for the external function vector.
+     * @param[in,out] adjointInterface  Interface for accessing the adjoint vector for this evaluation.
+     * @param[in,out]             args  The arguments for the evaluation.
+     *
+     * @tparam Args  The types of the other arguments.
      */
     template<typename ... Args>
     void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, AdjointInterface<Real>* adjointInterface, Args&&... args){
@@ -338,14 +361,11 @@
     }
 
     /**
-     * @brief Prints statistics about the external functions stored in the tape.
+     * @brief Adds information about the external functions.
      *
-     * Displays the number of registered external function.
+     * Adds the number of external functions.
      *
-     * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that separates the sections of the output.
-     *
-     * @tparam Stream The type of the stream.
+     * @param[in,out] values  The information is added to the values
      */
     void addExtFuncValues(TapeValues& values) const {
       size_t nExternalFunc = (extFuncVector.getNumChunks()-1)*extFuncVector.getChunkSize()

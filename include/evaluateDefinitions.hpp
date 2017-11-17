@@ -37,11 +37,24 @@
  */
 namespace codi {
 
+  /**
+   * @brief Function definitions for primal value tapes.
+   *
+   * This are the functions that need to be implemented by primal value tapes, handle generators and expressions.
+   *
+   * @tparam ReverseTapeTypes  The basic type definitions for the tape. Need to define everything from ReverseTapeTypes.
+   */
   template<typename ReverseTapeTypes>
   struct EvaluateDefinitions {
 
       CODI_INLINE_REVERSE_TAPE_TYPES(ReverseTapeTypes)
 
+      /**
+       * @brief Function definition for the primal evaluation of a statement in a tape.
+       *
+       * The function is called in the tapes for the primal evaluation of a statement. The arrays are still in the
+       * global address space and need to be accessed with corresponding position.
+       */
       typedef Real (*PrimalFunc)(const StatementInt& passiveActives,
                                  size_t& indexPos,
                                  Index* &indices,
@@ -49,6 +62,12 @@ namespace codi {
                                  PassiveReal* &constants,
                                  Real* primalVector);
 
+      /**
+       * @brief Function definition for the reverse evaluation of a statement in a tape.
+       *
+       * The function is called in the tapes for the reverse evaluation of a statement. The arrays are still in the
+       * global address space and need to be accessed with corresponding position.
+       */
       typedef void (*AdjointFunc)(const PRIMAL_SEED_TYPE& adj,
                                   const StatementInt& passiveActives,
                                   size_t& indexPos,
@@ -58,10 +77,22 @@ namespace codi {
                                   Real* primalVector,
                                   PRIMAL_ADJOINT_TYPE* adjoints);
 
+      /**
+       * @brief Function definition for the primal evaluation of a statement in an expression.
+       *
+       * The function is called in the expressions for the primal evaluation of a statement. The arrays are
+       * defined in the local address space of the expression. They need to indexed starting with zero.
+       */
       typedef Real (*PrimalExprFunc)(const Index* indices,
                                      const PassiveReal* constants,
                                      const Real* primalVector);
 
+      /**
+       * @brief Function definition for the reverse evaluation of a statement in an expression.
+       *
+       * The function is called in the expressions for the reverse evaluation of a statement. The arrays are
+       * defined in the local address space of the expression. They need to indexed starting with zero.
+       */
       typedef void (*AdjointExprFunc)(const PRIMAL_SEED_TYPE& adj,
                                       const Index* indices,
                                       const PassiveReal* constants,

@@ -31,15 +31,34 @@
 #include "macros.h"
 #include "tools/direction.hpp"
 
+/**
+ * @brief Global namespace for CoDiPack - Code Differentiation Package
+ */
 namespace codi {
 
+  /**
+   * @brief The implementation assumes that each element in the adjoint vector consists only of one entry.
+   *
+   * Nearly everything of the base interface is implemented only the method resetPrimal is left out.
+   *
+   * @tparam          Real  The primal value of the CoDiPack type.
+   * @tparam GradientValue  The adjoint value for the current evaluation. This type needs to support additions and
+   *                        multiplications.
+   */
   template<typename Real, typename GradientValue>
   struct AdjointInterfaceImplBase : public AdjointInterface<Real> {
-      GradientValue* adjointVector;
+      GradientValue* adjointVector; /**< The vector for the adjoint data.*/
 
-      GradientValue lhs;
+      GradientValue lhs; /**< The stored value for the inplace updates. */
 
-      AdjointInterfaceImplBase(GradientValue* adjointVector) :
+      /**
+       * @brief Create a new instance.
+       *
+       * The vector is used for all operations.
+       *
+       * @param[in] adjointVector  The adjoint vector on which all the operations are evaluated.
+       */
+      explicit AdjointInterfaceImplBase(GradientValue* adjointVector) :
         adjointVector(adjointVector),
         lhs() {}
 
@@ -144,7 +163,7 @@ namespace codi {
       /**
        * @brief The adjoint target for the adjoint of the left hand side of an equation.
        *
-       * The function needs to be used togheter with updateJacobiAdjoint. For the statement
+       * The function needs to be used together with updateJacobiAdjoint. For the statement
        *
        *  w = h(x)
        *
@@ -177,13 +196,27 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Specialization for the the codi::Direction structure.
+   *
+   * @tparam    Real  The primal value of the CoDiPack type.
+   * @tparam RealDir  The type for the entries of the vectors. This type needs to support addition and multiplication
+   *                  operations.
+   * @tparam  vecDim  The dimension of the vector
+   */
   template<typename Real, typename RealDir, size_t vecDim>
   struct AdjointInterfaceImplBase <Real, Direction<RealDir, vecDim> > : public AdjointInterface<Real> {
-      Direction<RealDir, vecDim>* adjointVector;
+      Direction<RealDir, vecDim>* adjointVector; /**< The vector for the adjoint data.*/
 
-      Direction<RealDir, vecDim> lhs;
+      Direction<RealDir, vecDim> lhs; /**< The stored value for the inplace updates. */
 
-      AdjointInterfaceImplBase(Direction<RealDir, vecDim>* adjointVector) :
+      /**
+       * @brief Create a new instance.
+       *
+       * The vector is used for all operations.
+       * @param[in] adjointVector  The adjoint vector on which all the operations are evaluated.
+       */
+      explicit AdjointInterfaceImplBase(Direction<RealDir, vecDim>* adjointVector) :
         adjointVector(adjointVector) {}
 
       /**
@@ -285,7 +318,7 @@ namespace codi {
       /**
        * @brief The adjoint target for the adjoint of the left hand side of an equation.
        *
-       * The function needs to be used togheter with updateJacobiAdjoint. For the statement
+       * The function needs to be used together with updateJacobiAdjoint. For the statement
        *
        *  w = h(x)
        *
@@ -318,10 +351,24 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief The implementation for tapes that do not require a primal value reset.
+   *
+   * @tparam          Real  The primal value of the CoDiPack type.
+   * @tparam GradientValue  The adjoint value for the current evaluation. This type needs to support additions and
+   *                        multiplications.
+   */
   template<typename Real, typename GradientValue>
   struct AdjointInterfaceImpl final : public AdjointInterfaceImplBase<Real, GradientValue> {
 
-      AdjointInterfaceImpl(GradientValue* adjointVector) :
+      /**
+       * @brief Create a new instance.
+       *
+       * The vector is used for all operations.
+       *
+       * @param[in] adjointVector  The adjoint vector on which all the operations are evaluated.
+       */
+      explicit AdjointInterfaceImpl(GradientValue* adjointVector) :
         AdjointInterfaceImplBase<Real, GradientValue>(adjointVector) {}
 
       /**
@@ -342,12 +389,28 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief The implementation for tapes that require a primal value reset.
+   *
+   * @tparam          Real  The primal value of the CoDiPack type.
+   * @tparam GradientValue  The adjoint value for the current evaluation. This type needs to support additions and
+   *                        multiplications.
+   */
   template<typename Real, typename GradientValue>
   struct AdjointInterfacePrimalImpl final : public AdjointInterfaceImplBase<Real, GradientValue> {
 
-      Real* primalVector;
+      Real* primalVector; /**< The vector for the primal values */
 
-      AdjointInterfacePrimalImpl(GradientValue* adjointVector, Real* primalVector) :
+      /**
+       * @brief Create a new instance.
+       *
+       * The adjoint vector is used for all adjoint operations.
+       * The primal vector is used for all primal operations.
+       *
+       * @param[in] adjointVector  The adjoint vector on which all the operations are evaluated.
+       * @param[in]  primalVector  The primal vector on which the primal reset is done.
+       */
+      explicit AdjointInterfacePrimalImpl(GradientValue* adjointVector, Real* primalVector) :
         AdjointInterfaceImplBase<Real, GradientValue>(adjointVector),
         primalVector(primalVector) {}
 

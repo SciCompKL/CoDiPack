@@ -35,23 +35,37 @@
  */
 namespace codi {
 
+  /*
+   * Helper macro that creates definition of all types that are defined in the ForwardTapeTypes structure.
+   */
 #define CODI_INLINE_FORWARD_TAPE_TYPES(name) \
   typedef typename name::Real Real; \
   typedef typename name::GradientValue GradientValue; \
   typedef typename name::PassiveReal PassiveReal;
 
   /**
-   * @brief Defines all the basic types that all tapes use.
+   * @brief Defines all the basic types that forward tapes use.
+   *
+   * @tparam          RealType  The floating point computation type for the CoDiPack type. This type needs to implement all
+   *                            mathematical functions and operators (e.g. sin, cos, +, *)
+   * @tparam GradientValueType  The type for the computation of the gradient value. This type needs to implement the
+   *                            addition operator and a left hand side scalar multiplication.
    */
   template<typename RealType, typename GradientValueType>
   struct ForwardTapeTypes {
 
-      typedef RealType Real;
-      typedef GradientValueType GradientValue;
+      typedef RealType Real; /**< The floating point calculation type in the CoDiPack types. */
+      typedef GradientValueType GradientValue; /**< The type for the gradient computation */
 
+      /**
+       * The most inner floating point type if CoDiPack types are nested.
+       */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
   };
 
+  /*
+   * Helper macro that creates definition of all types that are defined in the ReverseTapeTypes structure.
+   */
 #define CODI_INLINE_REVERSE_TAPE_TYPES(name) \
   typedef typename name::Real Real; \
   typedef typename name::GradientValue GradientValue; \
@@ -61,16 +75,26 @@ namespace codi {
 
 
   /**
-   * @brief Defines all the basic types that all reverse tapes use.
+   * @brief Defines all the basic types that reverse tapes use.
+   *
+   * @tparam          RealType  The floating point computation type for the CoDiPack type. This type needs to implement all
+   *                            mathematical functions and operators (e.g. sin, cos, +, *)
+   * @tparam GradientValueType  The type for the computation of the gradient value. This type needs to implement the
+   *                            addition operator and a left hand side scalar multiplication.
+   * @tparam  IndexHandlerType  The index handler for the identification of the adjoint values. It needs to implement the
+   *                            common interface from the index handlers in include/tapes/indices
    */
   template<typename RealType, typename GradientValueType, typename IndexHandlerType>
   struct ReverseTapeTypes {
 
-      typedef RealType Real;
-      typedef GradientValueType GradientValue;
-      typedef IndexHandlerType IndexHandler;
-      typedef typename IndexHandlerType::Index Index;
+      typedef RealType Real; /**< The floating point calculation type in the CoDiPack types. */
+      typedef GradientValueType GradientValue; /**< The type for the gradient computation */
+      typedef IndexHandlerType IndexHandler; /**< The type of the index handler */
+      typedef typename IndexHandlerType::Index Index; /**< The actual type for the adjoint identification. */
 
+      /**
+       * The most inner floating point type if CoDiPack types are nested.
+       */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
   };
 }

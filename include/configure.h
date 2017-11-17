@@ -256,6 +256,15 @@ namespace codi {
   const bool OptDisableAssignOptimization = CODI_DisableAssignOptimization;
   #undef CODI_DisableAssignOptimization
 
+  /*
+   * This switch is required such that the primal value tape of CoDiPack can also use a variable vector mode for the
+   * reverse interpretation. The variable reverse interpretation enables the user to compile the software with one
+   * of the CoDiPack scalar types and use an arbitrary vector size in the reverse evaluation.
+   *
+   * Jacobi tapes support this behaviour out of the box.
+   *
+   * It can be set with the preprocessor macro CODI_EnableVariableAdjointInterfaceInPrimalTapes=<1/0>
+   */
   #ifndef CODI_EnableVariableAdjointInterfaceInPrimalTapes
     #define CODI_EnableVariableAdjointInterfaceInPrimalTapes 0
   #endif
@@ -268,7 +277,7 @@ namespace codi {
   #endif
 
   /*
-   * @brief TODO
+   * This disable the special implementations for the gradients in the binary operators.
    *
    * It can be set with the preprocessor macro CODI_DisableCalcGradientSpecialization=<true/false>
    */
@@ -372,14 +381,32 @@ namespace codi {
     #define CODI_IndexHandle false
   #endif
   #if CODI_IndexHandle
-    template<typename Index>
-    void handleIndexCreate(const Index& index);
+  /**
+   * @brief A function that is called for every index creation.
+   *
+   * All index managers of CoDiPack will call this function when they create a new index.
+   *
+   * @param[in] index  The created index.
+   *
+   * @tparam Index  The type for the identificaton of an adjoint value.
+   */
+  template<typename Index>
+  void handleIndexCreate(const Index& index);
 
-    template<typename Index>
-    void handleIndexFree(const Index& index);
-  #endif
+  /**
+   * @brief A function that is called for every index deletion.
+   *
+   * All index managers of CoDiPack will call this function when they delete a new index.
+   *
+   * @param[in] index  The deleted index.
+   *
+   * @tparam Index  The type for the identificaton of an adjoint value.
+   */
+  template<typename Index>
+  void handleIndexFree(const Index& index);
+#endif
 
-  #ifndef CODI_EnableAssert
+#ifndef CODI_EnableAssert
     #define CODI_EnableAssert false
   #endif
   #ifndef codiAssert
@@ -412,7 +439,7 @@ namespace codi {
   struct CODI_UNUSED_VAR {
 
     /**
-     * @brief The arguments of the constructor are not nambed and therefore the unused input warning is disabled.
+     * @brief The arguments of the constructor are not named and therefore the unused input warning is disabled.
      *
      * @tparam Args  No restriction
      */
