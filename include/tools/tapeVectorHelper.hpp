@@ -200,7 +200,7 @@ namespace codi {
        *
        * @return The gradient value from the internal adjoint vector.
        */
-      GradientValue getGradient(const GradientData& value) {
+      const GradientValue& getGradient(const GradientData& value) const {
         return gradient(value);
       }
 
@@ -211,7 +211,7 @@ namespace codi {
        *
        * @return The reference to the gradient value from the internal adjoint vector.
        */
-      GradientValue& gradient(GradientData& value) {
+      GradientValue& gradient(const GradientData& value) {
         checkAdjointVectorSize();
 
         if(0 != value && value < (GradientData)adjointVector.size()) {
