@@ -31,6 +31,8 @@
 
 #include <vector>
 
+#include "../adjointInterface.hpp"
+#include "../adjointInterfaceImpl.hpp"
 #include "../configure.h"
 #include "../exceptions.hpp"
 
@@ -38,6 +40,84 @@
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
+
+  /**
+   * @brief Allows for an arbitrary adjoint evaluation of a recorded tape.
+   *
+   * For the full documentation see TapeVectorHelper.
+   *
+   * This class can be used in a generalized context. All modifications of the adjoint vector need
+   * to be performed via the AdjointInterface obtained via the getAdjointInterface method.
+   *
+   * This interface needs to be renewed everytime the tape changes or is changed.
+   *
+   * @tparam CoDiType  A CoDiPack type that which is defined via an ActiveReal.
+   */
+  template<typename CoDiType>
+  struct TapeVectorHelperInterface {
+
+      typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
+      typedef typename CoDiType::GradientData GradientData; /**< The type for the identification of gradients. */
+      typedef typename CoDiType::TapeType Tape; /**< The type of the tape implementation. */
+      typedef typename Tape::Position Position; /**< The position for the tape. */
+
+      /**
+       * @brief The reference to the tape that is used in the evaluation.
+       */
+      Tape& tape;
+
+      /**
+       * @brief Create a new instance which uses the global tape as the default tape in the background.
+       */
+      TapeVectorHelperInterface() :
+        tape(CoDiType::getGlobalTape()) {
+      }
+
+      /**
+       * @brief Virtual destructor.
+       */
+      virtual ~TapeVectorHelperInterface() {}
+
+      /**
+       * @brief Set the tape which should be used in the evaluation.
+       *
+       * @param[in] tape  The tape which is used in the evaluation.
+       */
+      void setTape(Tape& tape) {
+        this->tape = tape;
+      }
+
+      /**
+       * @brief Evaluate the tape from start to end with the adjoint vector of this helper.
+       *
+       * It has to hold start >= end.
+       *
+       * @param[in] start  The starting position for the adjoint evaluation.
+       * @param[in]   end  The ending position for the adjoint evaluation.
+       */
+      virtual void evaluate(const Position& start, const Position& end) = 0;
+
+      /**
+       * @brief Evaluate the full tape with the adjoint vector of this helper.
+       */
+      void evaluate() {
+        evaluate(tape.getPosition(), tape.getZeroPosition());
+      }
+
+      /**
+       * @brief Reset all adjoint to there default value.
+       */
+      virtual void clearAdjoints() = 0;
+
+      /**
+       * @brief Obtain a general interface to the adjoint vector in order to modify it.
+       *
+       * Everytime the tape is modified, the interface needs to be renewed.
+       *
+       * @return A general interface to the adjoint vector.
+       */
+      virtual AdjointInterface<Real>* getAdjointInterface() = 0;
+  };
 
   /**
    * @brief Allows for an arbitrary adjoint evaluation of a recorded tape.
@@ -143,7 +223,7 @@ namespace codi {
    * @tparam GradientValue  The gradient data for each value.
    */
   template<typename CoDiType, typename GradientValue>
-  struct TapeVectorHelper {
+  struct TapeVectorHelper : public TapeVectorHelperInterface<CoDiType> {
 
       typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
       typedef typename CoDiType::GradientData GradientData; /**< The type for the identification of gradients. */
@@ -155,32 +235,29 @@ namespace codi {
        */
       std::vector<GradientValue> adjointVector;
 
-      /**
-       * @brief The reference to the tape that is used in the evaluation.
-       */
-      Tape& tape;
-
-
       GradientValue zeroValue; /**< Helper value for out of bounds access */
       const GradientValue constZeroValue; /**< Helper value for out of bounds access */
+
+      AdjointInterfaceImpl<Real, GradientValue>* adjointInterface;
 
       /**
        * @brief Create a new instance which uses the global tape as the default tape in the background.
        */
       TapeVectorHelper() :
+        TapeVectorHelperInterface<CoDiType>(),
         adjointVector(0),
-        tape(CoDiType::getGlobalTape()),
         zeroValue(),
-        constZeroValue() {
+        constZeroValue(),
+        adjointInterface(nullptr) {
       }
 
       /**
-       * @brief Set the tape which should be used in the evaluation.
-       *
-       * @param[in] tape  The tape which is used in the evaluation.
+       * @brief Destructor
        */
-      void setTape(Tape& tape) {
-        this->tape = tape;
+      ~TapeVectorHelper() {
+        if(nullptr != adjointInterface) {
+          delete adjointInterface;
+        }
       }
 
       /**
@@ -248,14 +325,7 @@ namespace codi {
       void evaluate(const Position& start, const Position& end) {
         checkAdjointVectorSize();
 
-        tape.evaluate(start, end, adjointVector.data());
-      }
-
-      /**
-       * @brief Evaluate the full tape with the adjoint vector of this helper.
-       */
-      void evaluate() {
-        evaluate(tape.getPosition(), tape.getZeroPosition());
+        this->tape.evaluate(start, end, adjointVector.data());
       }
 
       /**
@@ -267,6 +337,23 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Obtain a general interface to the adjoint vector in order to modify it.
+       *
+       * Everytime the tape is modified, the interface needs to be renewed.
+       *
+       * @return A general interface to the adjoint vector.
+       */
+      AdjointInterface<Real>* getAdjointInterface() {
+        if(nullptr != adjointInterface) {
+          delete adjointInterface;
+        }
+
+        checkAdjointVectorSize();
+        adjointInterface = new AdjointInterfaceImpl<Real, GradientValue> (adjointVector.data());
+        return adjointInterface;
+      }
+
     private:
 
       /**
@@ -274,8 +361,8 @@ namespace codi {
        * tape evaluation.
        */
       void checkAdjointVectorSize() {
-        if(adjointVector.size() <= tape.getAdjointSize()) {
-          adjointVector.resize(tape.getAdjointSize() + 1);
+        if(adjointVector.size() <= this->tape.getAdjointSize()) {
+          adjointVector.resize(this->tape.getAdjointSize() + 1);
         }
       }
   };
