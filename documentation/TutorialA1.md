@@ -1,13 +1,14 @@
 Tutorial A1: External functions {#TutorialA1}
 ============
 
-If AD is applied on a large code most often this code base uses other
+If AD is applied on a large code, most often this code uses other
 libraries for the computation. The most common example is the use of a
 linear algebra library like [Eigen](eigen.tuxfamily.org/index.php) or [LAPACK](http://www.netlib.org/lapack/).
+This tutorial explains, how CoDiPack can be applied in that case.
 
 Lets say we want to solve the system
 \f[
-  x = A^{-1}b \eqdot
+  x = A^{-1}b
 \f]
 for \f$x\f$. The forward AD mode for this operation is
 \f[
@@ -24,7 +25,7 @@ and the reverse AD mode for this operation is
   \end{aligned}
 \f]
 Usually the call of a library routine to LAPACK is encapsulated in a function
-call. For our example we assume that the function is defined as
+call. For our example we assume that this function is defined as
 ~~~~{.cpp}
     template<typename Real>
     void solve2(const Real* A, const Real* b, const Real* x) {
@@ -88,34 +89,32 @@ The derivative for this simple example can be computed with CoDiPack by recordin
 Now we assume that `solve2` is implemented with an external library and
 we can not differentiate it with CoDiPack. Therefore we need to use the
 external function helper (codi::ExternalFunctionHelper) from CoDiPack. It
-provides a standardized interface for defining which are the inputs to
-an external function, the outputs and to provide additional data. The user
-then needs to implement evaluation functions such that the reverse mode
-can be evaluated.
+provides a standardized interface for defining which are the inputs and the outputs of
+the external function, as well as providing additional data.
+The user then needs to implement functions that provide the derivative of the external function such that it can be evaluated in the reverse mode.
 
-The external function helper assumes that the function computes
+CoDiPack's ExternalFunctionHelper assumes that the external function computes
 \f[
     y = f(x) \eqdot
 \f]
-The reverse AD mode for this function is
+The reverse mode derivative of this function is
 \f[
     \begin{aligned}
         \bar x \aeq & \frac{\d f}{\d x}(x) \bar y \\
         \bar y = & 0
     \end{aligned}
 \f]
-The user needs to provide functions that compute \f$f\f$ and the reverse
-mode of \f$f\f$.
+which has to be provided by the user. 
 
 The most common use case for the codi::ExternalFunctionHelper involves
 the following steps:
  - Register the inputs
  - Register the outputs
- - Add the user data
- - Call the primal evaluation
- - Register the external function helper
+ - Add potential user data
+ - Call the primal evaluation of the external function
+ - Add the derivative function to the tape
 
- The first two steps are quite simple and since we do not need any user
+ In the above example, the first two steps are quite simple and since we do not need any user
  data we skip the third step.
 ~~~~{.cpp}
     codi::ExternalFunctionHelper<codi::RealReverse> eh;
@@ -132,10 +131,16 @@ the following steps:
     }
 ~~~~
 
- Now the helper know about the input and output values for the code section
- that requires the special treatment. In the next step a function needs
- to be specified that can evaluate the primal computation without the
- CoDiPack types.
+Now the helper knows about the input and output values of the external function. 
+ 
+In order to call the primal evaluation of the external function in the fourth step, an additional wrapper function needs
+to be specified that evaluates the external function without using the CoDiPack datatypes.
+The general definition of the primal wrapper function is found in codi::ExternalFunctionHelper::PrimalFunc and looks like:
+~~~~{.cpp}
+typedef void(* codi::ExternalFunctionHelper< CoDiType >::PrimalFunc) (const Real *x, size_t m, Real *y, size_t n, DataStore *d)
+~~~~
+where `x` holds the input to the external function flattened into one large array and `y` represents its output. `m`, `n` represents the size of the arrays `x` and `y` respectively. `d` is the helper structure for the user data.
+The implementation of the wrapper function then only calls solve2:
 ~~~~{.cpp}
   void solve2_primal(const codi::RealReverse::Real* x, size_t m, codi::RealReverse::Real* y, size_t n, codi::DataStore* d) {
     CODI_UNUSED(m);
@@ -145,34 +150,33 @@ the following steps:
     solve2(&x[0], &x[4], y);
   }
 ~~~~
-The function `solve2_primal` will be called by the external function
-helper. The helper extracts the primal values from all the input values
-into one large array and provides it to the call.
-This implementation calls just `solve2`. Since
-all inputs are stored in one big array, we need to access the correct
-array pointers in the call. Also the variable naming can be a little
-bit confusing since the external function helper assumes the naming
-\f$ y = f(x) \f$ and the linear system solve is defined as \f$ x = A^{-1} \f$.
-In the first case \f$x\f$ describes the input values and in the second case
-\f$x\f$ describes the output values.
+Since all inputs are stored in one big array x, the correct
+array pointers need to be set in the call to the external function sovle2.
 
-The primal function is then called via the external function helper:
+The primal function evaluation can now be called via the external function helper:
 ~~~~{.cpp}
   eh.callPrimalFunc(solve2_primal);
 ~~~~
 
-The final step adds the external function helper to the tape:
+The final step adds the derivative of the external function helper to the tape:
 ~~~~{.cpp}
   eh.addToTape(solve2_rev);
 ~~~~
-The function `solve2_rev` contains the logic for the reverse evaluation and
-still needs to be implemented. The algorithm for this was already shown in
-equation (TA1.1). The implementation is:
+where the function `solve2_rev` contains the logic for the reverse derivative evaluation that still needs to be implemented.
+The definition of the function header is found in codi::ExternalFunctionHelper::ReverseFunc and looks like:
+~~~~{.cpp}
+typedef void(* 	ReverseFunc) (const Real *x, Real *x_b, size_t m, const Real *y, const Real *y_b, size_t n, DataStore *d)
+~~~~
+The arguments `x`, `m`, `y`, `n` and `d` have the same meaning as for the primal wrapper function. `y_b` represents the
+adjoint values of the output values. `x_b` represents the adjoint values of the input values. This function needs to 
+implement the reverse AD mode for \f$f\f$.
+
+In the current example, the algorithm for the reverse mode of the linear solve was already shown in
+equation (TA1.1) and can be implementated as:
 ~~~~{.cpp}
 void solve2_rev(const codi::RealReverse::Real* x, codi::RealReverse::Real* x_b, size_t m, const codi::RealReverse::Real* y, const codi::RealReverse::Real* y_b, size_t n, codi::DataStore* d) {
   CODI_UNUSED(m);
   CODI_UNUSED(n);
-  CODI_UNUSED(y);
   CODI_UNUSED(d);
 
   codi::RealReverse::Real ATrans[4] = {x[0], x[2], x[1], x[3]};
@@ -319,7 +323,6 @@ void solve2_primal(const codi::RealReverse::Real* x, size_t m, codi::RealReverse
 void solve2_rev(const codi::RealReverse::Real* x, codi::RealReverse::Real* x_b, size_t m, const codi::RealReverse::Real* y, const codi::RealReverse::Real* y_b, size_t n, codi::DataStore* d) {
   CODI_UNUSED(m);
   CODI_UNUSED(n);
-  CODI_UNUSED(y);
   CODI_UNUSED(d);
 
   codi::RealReverse::Real ATrans[4] = {x[0], x[2], x[1], x[3]};

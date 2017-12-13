@@ -24,7 +24,6 @@ void solve2_primal(const codi::RealReverse::Real* x, size_t m, codi::RealReverse
 void solve2_rev(const codi::RealReverse::Real* x, codi::RealReverse::Real* x_b, size_t m, const codi::RealReverse::Real* y, const codi::RealReverse::Real* y_b, size_t n, codi::DataStore* d) {
   CODI_UNUSED(m);
   CODI_UNUSED(n);
-  CODI_UNUSED(y);
   CODI_UNUSED(d);
 
   codi::RealReverse::Real ATrans[4] = {x[0], x[2], x[1], x[3]};
