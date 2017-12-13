@@ -280,6 +280,17 @@ The major differences are that the outputs are registered after the
 passive function call and there is no need to provide the primal
 evaluation function `solve2_primal`.
 
+The codi::ExternalFunctionHelper has a few properties that need to be taken
+into account when used:
+ - It can not be reused.
+ - If the primal output values are not required for the computation they can
+   be disabled by calling disableOutputPrimalStore before any input or output
+   is registered.
+ - If the primal input values are not required for the computation they can
+   be disabled by calling InputPrimalStore before any input or output
+   is registered.
+ - The pointer for arrays are then null.
+
 The full code for the tutorial is:
 ~~~~{.cpp}
 #include <codi.hpp>
