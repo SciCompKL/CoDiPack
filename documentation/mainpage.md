@@ -44,18 +44,18 @@ The full type list of the file 'codi.hpp' is:
    - codi::RealReverseIndex
    - codi::RealReverseUnchecked
    - codi::RealReverseIndexUnchecked
-   - codi::RealReverseFloat
-   - codi::RealReverseIndexFloat
-   - codi::RealReverseUncheckedFloat
-   - codi::RealReverseIndexUncheckedFloat
+   - codi::RealReverseGen
+   - codi::RealReverseIndexGen
+   - codi::RealReverseUncheckedGen
+   - codi::RealReverseIndexUncheckedGen
    - codi::RealReversePrimal
    - codi::RealReversePrimalIndex
    - codi::RealReversePrimalUnchecked
    - codi::RealReversePrimalIndexUnchecked
-   - codi::RealReversePrimalFloat
-   - codi::RealReversePrimalIndexFloat
-   - codi::RealReversePrimalUncheckedFloat
-   - codi::RealReversePrimalIndexUncheckedFloat
+   - codi::RealReversePrimalGen
+   - codi::RealReversePrimalIndexGen
+   - codi::RealReversePrimalUncheckedGen
+   - codi::RealReversePrimalIndexUncheckedGen
  - Vector versions of the above AD types:
    - codi::RealForwardVec<dim>
    - codi::RealReverseVec<dim>
@@ -64,14 +64,15 @@ The full type list of the file 'codi.hpp' is:
    - codi::RealReversePrimalIndexVec<dim>
 
 The reverse types support various use cases. The regular type codi::RealReverse is the most used type and provides
-the most common use case. This type can be used in c-like memory operation like memset and memcpy.
+the most common use case. This type can be used in c-like memory operations like memset and memcpy.
 The 'Index' variant of the reverse type uses an indexing scheme that reuses freed indices and therefore
 reduces the amount of memory that is needed. This type is no longer compatible with c-like memory operations.
 The 'Primal' variants implement a different strategy for storing the data.
 Instead of storing the partial derivatives for each statement, they store the primal values.
 This change reduces the required memory of the 'Primal' types.
 The 'Unchecked' variant is also an implementation of the reverse mode of AD but it should only be used by experienced users. This type performs no bounds checking for the memory access.
-For each type there is also a type with single precession e.g. codi::RealForwardFloat.
+For each type there is also a type with generalized calculation types e.g. codi::RealReverseGen.
+These types can be used to use arbitrary types for the primal compuation as well as the gradient computation.
 The 'Vec' variant implements the vector mode of the corresponding AD type.
 The dimension is fixed and can be defined via the template argument.
 
