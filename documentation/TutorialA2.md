@@ -12,7 +12,7 @@ with \f$x \in \R^n\f$ and \f$y \in \R^m\f$.The reverse AD mode for this
 function is
 \f[
     \begin{aligned}
-        \bar x \aeq & \frac{\d f}{\d x}(x) \bar y \\
+        \bar x \aeq & \frac{\d f}{\d x}(x)^T \bar y \\
         \bar y = & 0
     \end{aligned}
 \f]

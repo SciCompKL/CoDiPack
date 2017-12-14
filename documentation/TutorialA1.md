@@ -100,7 +100,7 @@ CoDiPack's ExternalFunctionHelper assumes that the external function computes
 The reverse mode derivative of this function is
 \f[
     \begin{aligned}
-        \bar x \aeq & \frac{\d f}{\d x}(x) \bar y \\
+        \bar x \aeq & \frac{\d f}{\d x}(x)^T \bar y \\
         \bar y = & 0
     \end{aligned}
 \f]

@@ -15,7 +15,7 @@ with \f$x \in \R^n\f$ and \f$y \in \R\f$, the reverse AD mode is
 \f[
     \tag{TA3.2}
     \begin{aligned}
-        \bar x \aeq & \frac{\d f}{\d x}(x) \bar y \\
+        \bar x \aeq & \frac{\d f}{\d x}(x)^T \bar y \\
         \bar y = & 0
     \end{aligned}
 \f]
