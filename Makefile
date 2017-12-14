@@ -38,7 +38,7 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/*.d)
 
 CODI_DIR := .
 
-FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include
+FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
 
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)

@@ -1,21 +1,28 @@
-Tutorial A4.1: OpenMP reverse mode evaluation {#TutorialA4_1}
-=============================================================
+#include <codi.hpp>
+#include <iostream>
 
-[Tutorial A4](@ref TutorialA4) introduces the new vector mode helper.
-This helper can also be used to parallelize multiple reverse mode interpretations
-with OpenMP.
+template<typename Real>
+void func(const Real* x, size_t l, Real* y) {
+  y[0] = 0.0;
+  y[1] = 1.0;
+  for(size_t i = 0; i < l; ++i) {
+    y[0] += x[i];
+    y[1] *= x[i];
+  }
+}
 
-The example from tutorial A4 with the vector helper is:
-~~~~{.cpp}
-  codi::RealReverse xR[5];
-  codi::RealReverse yR[2];
+void vectorType() {
+  std::cout << "codi::RealReverse( vector type ):" << std::endl;
+  // Reverse vector mode
+  codi::RealReverseVec<2> xR[5];
+  codi::RealReverseVec<2> yR[2];
   xR[0] = 1.0;
   xR[1] = 2.0;
   xR[2] = 3.0;
   xR[3] = 4.0;
   xR[4] = 5.0;
 
-  codi::RealReverse::TapeType& tape = codi::RealReverse::getGlobalTape();
+  codi::RealReverseVec<2>::TapeType& tape = codi::RealReverseVec<2>::getGlobalTape();
   tape.setActive();
 
   for(size_t i = 0; i < 5; ++i) {
@@ -27,52 +34,20 @@ The example from tutorial A4 with the vector helper is:
 
   tape.setPassive();
 
-  codi::TapeVectorHelper<codi::RealReverse, codi::Direction<double, 2> > vh;
-  vh.gradient(yR[0].getGradientData())[0] = 1.0;
-  vh.gradient(yR[1].getGradientData())[1] = 1.0;
-  vh.evaluate();
+  yR[0].gradient()[0] = 1.0;
+  yR[1].gradient()[1] = 1.0;
+  tape.evaluate();
 
   double jacobiR[5][2];
   for(size_t i = 0; i < 5; ++i) {
-    jacobiR[i][0] = vh.getGradient(xR[i].getGradientData())[0];
-    jacobiR[i][1] = vh.getGradient(xR[i].getGradientData())[1];
+    jacobiR[i][0] = xR[i].getGradient()[0];
+    jacobiR[i][1] = xR[i].getGradient()[1];
   }
-~~~~
-The reverse evaluation section will now be parallelized with OpenMP. For
-this the vector helper will be no longer templated with a direction. Instead
-it just uses a regular double for the adjoint vector.
-Otherwise we will use two OpenMP threads for the evaluation:
-~~~~{.cpp}
-  double jacobiR[5][2];
-  #pragma omp parallel num_threads(2)
-  {
-    int tid = omp_get_thread_num();
-    codi::TapeVectorHelper<codi::RealReverse, double> vh;
-    vh.gradient(yR[tid].getGradientData()) = 1.0;
-    vh.evaluate();
 
-    for(size_t i = 0; i < 5; ++i) {
-      jacobiR[i][tid] = vh.getGradient(xR[i].getGradientData());
-    }
-  }
-~~~~
-It also possible to use OpenMP parallelization and multiple directions
-together.
-
-The full code for the tutorial is:
-~~~~{.cpp}
-#include <codi.hpp>
-
-#include <omp.h>
-#include <iostream>
-
-template<typename Real>
-void func(const Real* x, size_t l, Real* y) {
-  y[0] = 0.0;
-  y[1] = 1.0;
-  for(size_t i = 0; i < l; ++i) {
-    y[0] += x[i];
-    y[1] *= x[i];
+  std::cout << "Reverse vector mode:" << std::endl;
+  std::cout << "f(1 .. 5) = (" << yR[0] << ", " << yR[1] << ")" << std::endl;
+  for(size_t i = 0; i < 5; ++i) {
+    std::cout << "df/dx_" << (i + 1) << " (1 .. 5) = (" << jacobiR[i][0] << ", " << jacobiR[i][1] << ")" << std::endl;
   }
 }
 
@@ -118,8 +93,8 @@ void vectorHelper() {
   }
 }
 
-void openMp() {
-  std::cout << "codi::RealReverse( OpenMP):" << std::endl;
+void vectorHelperInterface() {
+  std::cout << "codi::RealReverse( vector helper interface):" << std::endl;
   // Reverse vector mode
 
   codi::RealReverse xR[5];
@@ -142,18 +117,22 @@ void openMp() {
 
   tape.setPassive();
 
-  double jacobiR[5][2];
-  #pragma omp parallel num_threads(2)
-  {
-    int tid = omp_get_thread_num();
-    codi::TapeVectorHelper<codi::RealReverse, double> vh;
-    vh.gradient(yR[tid].getGradientData()) = 1.0;
-    vh.evaluate();
+  codi::TapeVectorHelperInterface<codi::RealReverse>* vh = new codi::TapeVectorHelper<codi::RealReverse, codi::Direction<double, 2> >();
+  codi::AdjointInterface<codi::RealReverse::Real>* ai = vh->getAdjointInterface();
 
-    for(size_t i = 0; i < 5; ++i) {
-      jacobiR[i][tid] = vh.getGradient(xR[i].getGradientData());
+  for(size_t dim = 0; dim < ai->getVectorSize(); ++dim) {
+    ai->updateAdjoint(yR[dim].getGradientData(), dim, 1.0);
+  }
+  vh->evaluate();
+
+  double jacobiR[5][2];
+  for(size_t i = 0; i < 5; ++i) {
+    for(size_t dim = 0; dim < ai->getVectorSize(); ++dim) {
+      jacobiR[i][dim] = ai->getAdjoint(xR[i].getGradientData(), dim);
     }
   }
+
+  delete vh;
 
   std::cout << "Reverse vector mode:" << std::endl;
   std::cout << "f(1 .. 5) = (" << yR[0] << ", " << yR[1] << ")" << std::endl;
@@ -164,11 +143,13 @@ void openMp() {
 
 int main(int nargs, char** args) {
 
+  vectorType();
+
+  codi::RealReverse::getGlobalTape().reset();
   vectorHelper();
 
   codi::RealReverse::getGlobalTape().reset();
-  openMp();
+  vectorHelperInterface();
 
   return 0;
 }
-~~~~

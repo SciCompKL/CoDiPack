@@ -157,7 +157,7 @@ The full code for the preaccumulation is now:
 
     ph.start(start[0], start[1]);
     for(size_t i = 0; i < 4; ++i) {
-      ph.addInput(a[i]);
+      ph.addInput(A[i]);
     }
 
     ode(start, end, 1000, A, 1.0 / 1000.0, 2);

@@ -328,6 +328,8 @@ namespace codi {
         this->tape.evaluate(start, end, adjointVector.data());
       }
 
+      using TapeVectorHelperInterface<CoDiType>::evaluate;
+
       /**
        * @brief Reset all adjoint to there default value.
        */
