@@ -74,6 +74,9 @@ namespace codi {
   #endif
   #undef CODI_UseForcedInlines
 
+  #ifdef DOXYGEN_DISABLE
+    #define CODI_UseAvoidedInlines 0
+  #endif
    /**
    * @brief Macro for avoiding the inlining of function.
    *

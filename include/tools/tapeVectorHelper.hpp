@@ -212,8 +212,8 @@ namespace codi {
    *  assert(vh.gradient(a.getGradientData())[3] == 0.5);
    *  \endcode
    *
-   *  The major difference in using the vector helper is that the adjoints need to be set on the heper instead of the
-   *  tape. Therefore, the #ActiveReal::getGradientData() functions need to be used. It returns the identifier for the
+   *  The major difference in using the vector helper is that the adjoints need to be set on the helper instead of the
+   *  tape. Therefore, the #codi::ActiveReal::getGradientData() functions need to be used. It returns the identifier for the
    *  tape and this identifier can be used to set the adjoint values in the vector helper.
    *
    *  In the default configuration of CoDiPack the TapeVectorHelper works only with Jacobi tapes. For primal value tapes
@@ -238,7 +238,7 @@ namespace codi {
       GradientValue zeroValue; /**< Helper value for out of bounds access */
       const GradientValue constZeroValue; /**< Helper value for out of bounds access */
 
-      AdjointInterfaceImpl<Real, GradientValue>* adjointInterface;
+      AdjointInterfaceImpl<Real, GradientValue>* adjointInterface; /**< General access to the adjoint vector for the generalized interface. */
 
       /**
        * @brief Create a new instance which uses the global tape as the default tape in the background.

@@ -82,21 +82,21 @@ namespace codi {
   template<typename CoDiType>
   struct PreaccumulationHelper {
 
-      typedef typename CoDiType::Real Real;
-      typedef typename CoDiType::GradientData GradientData;
-      typedef typename CoDiType::GradientValue GradientValue;
+      typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
+      typedef typename CoDiType::GradientData GradientData;  /**< The type for the gradient identification */
+      typedef typename CoDiType::GradientValue GradientValue;  /**< The type for the gradient computation */
 
-      typedef typename CoDiType::TapeType Tape;
-      typedef typename Tape::Position Position;
+      typedef typename CoDiType::TapeType Tape; /**< The type for the tape */
+      typedef typename Tape::Position Position; /**< The type for the position in the tape */
 
-      std::vector<GradientData> inputData;
-      std::vector<CoDiType*> outputData;
-      Position startPos;
+      std::vector<GradientData> inputData; /**< The identifiers for the input data of the preaccumulation section. */
+      std::vector<CoDiType*> outputData; /**< The pointers to the output values of the preaccumulation section. */
+      Position startPos; /**< The starting point for the preaccumulation. */
 
-      std::vector<GradientValue> storedAdjoints;
+      std::vector<GradientValue> storedAdjoints; /**< The old values of the adjoints for the values of the preaccumulation */
 
-      std::vector<Real> jacobie;
-      std::vector<int> nonZeros;
+      std::vector<Real> jacobie; /**< The Jacobi matrix used to hold the result of the preaccumulation. */
+      std::vector<int> nonZeros; /**< The number of nonzero values for each output value in the Jacobi matrix. */
 
       /**
        * @brief Add extra inputs to the preaccumulated section.

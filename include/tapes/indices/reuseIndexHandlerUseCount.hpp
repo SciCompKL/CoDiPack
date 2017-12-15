@@ -269,19 +269,16 @@ namespace codi {
       }
 
       /**
-       * @brief Output statistics about the used indices.
+       * @brief Add statistics about the used indices.
        *
-       * Writes the
+       * Adds the
        *   maximum number of live indices,
        *   the current number of lives indices,
        *   the indices that are stored,
        *   the memory for the allocated indices and
        *   the memory for the index use vector.
        *
-       * @param[in,out] out  The information is written to the stream.
-       * @param[in]     hLine  The horizontal line that separates the sections of the output.
-       *
-       * @tparam Stream The type of the stream.
+       * @param[in,out] values  The values where the information is added to.
        */
       void addValues(TapeValues& values) const {
         size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();

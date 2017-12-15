@@ -127,7 +127,7 @@ namespace codi {
   struct StaticFunctionHandleFactory
     // final : public HandleFactoryInterface</* handle type */>
   {
-      typedef const FunctionHandle<ReverseTapeTypes>* Handle;
+      typedef const FunctionHandle<ReverseTapeTypes>* Handle; /**< Handle type definition */
 
       /**
        * @brief Create the handle for the given tape and the given expression.

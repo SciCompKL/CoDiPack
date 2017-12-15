@@ -39,9 +39,9 @@ namespace codi {
    * Helper macro that creates definition of all types that are defined in the ForwardTapeTypes structure.
    */
 #define CODI_INLINE_FORWARD_TAPE_TYPES(name) \
-  typedef typename name::Real Real; \
-  typedef typename name::GradientValue GradientValue; \
-  typedef typename name::PassiveReal PassiveReal;
+  typedef typename name::Real Real; /**< The floating point calculation type in the CoDiPack types. */ \
+  typedef typename name::GradientValue GradientValue; /**< The type for the gradient computation */ \
+  typedef typename name::PassiveReal PassiveReal; /**< The most inner floating point type if CoDiPack types are nested. */
 
   /**
    * @brief Defines all the basic types that forward tapes use.
@@ -67,11 +67,11 @@ namespace codi {
    * Helper macro that creates definition of all types that are defined in the ReverseTapeTypes structure.
    */
 #define CODI_INLINE_REVERSE_TAPE_TYPES(name) \
-  typedef typename name::Real Real; \
-  typedef typename name::GradientValue GradientValue; \
-  typedef typename name::PassiveReal PassiveReal; \
-  typedef typename name::IndexHandler IndexHandler; \
-  typedef typename name::Index Index;
+  typedef typename name::Real Real; /**< The floating point calculation type in the CoDiPack types. */ \
+  typedef typename name::GradientValue GradientValue; /**< The type for the gradient computation */ \
+  typedef typename name::PassiveReal PassiveReal; /**< The most inner floating point type if CoDiPack types are nested. */ \
+  typedef typename name::IndexHandler IndexHandler; /**< The type of the index handler */ \
+  typedef typename name::Index Index; /**< The actual type for the adjoint identification. */
 
 
   /**

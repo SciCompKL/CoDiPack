@@ -68,6 +68,18 @@ namespace codi {
     std::vector<Entry> data; /**< The data for the section */
   };
 
+  /**
+   * @brief Storage class for tape specific performance values.
+   *
+   * The class is used to gather information about the recorded tape and to output it.
+   * Each tape can provide these values and every module of the tape will add its own values. The usual values are
+   * the number of stored entries, the number of chunks and the allocated memory.
+   *
+   * In general class will also gather the total memory used and allocated.
+   *
+   * The function #formatDefault can be use to provide a pretty print of the values. #formatHeader and #formatRow output
+   * the values in a csv table.
+   */
   class TapeValues {
     private:
       std::vector<ValueSection> sections;  /**< All sections for this tape */
@@ -208,7 +220,7 @@ namespace codi {
        *
        * The output format is a semicolon separated csv table.
        *
-       * The header are generated like: <section name>-<value name>
+       * The header are generated like: &lt;section name&gt;-&lt;value name&gt;
        *
        * @param[in,out] out  The stream for the output.
        *

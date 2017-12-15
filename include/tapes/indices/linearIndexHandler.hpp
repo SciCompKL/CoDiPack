@@ -191,10 +191,8 @@ namespace codi {
 
       /**
        * @ brief There are no statistics for this handler.
-       * @param[in,out] out  The information is written to the stream.
-       * @param[in]   hLine  The horizontal line that separates the sections of the output.
        *
-       * @tparam Stream The type of the stream.
+       * @param[in,out] values  The values where the information is added to.
        */
       void addValues(TapeValues& values) const {
         CODI_UNUSED(values);

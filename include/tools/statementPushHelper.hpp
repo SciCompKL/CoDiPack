@@ -95,7 +95,7 @@ namespace codi {
       /** The type of the tape implementation. */
       typedef typename CoDiType::TapeType Tape;
 
-      GradientData indexVector[MaxStatementIntSize]; /** Store the identification data for the inputs */
+      GradientData indexVector[MaxStatementIntSize]; /**< Store the identification data for the inputs */
       Real jacobiVector[MaxStatementIntSize]; /**< Store the Jacobi for each input */
       size_t vectorPos; /**< Current position in the storage vectors */
 
