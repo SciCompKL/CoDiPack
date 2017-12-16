@@ -1,10 +1,13 @@
 Tutorial A3: Manual statement storing {#TutorialA3}
 ============
 
-CoDiPack stores for every statement in the in the code some data such that
+CoDiPack stores for every statement in the code some data such that
 it can perform the reverse evaluation. Sometimes a simple function evaluation
 consists of multiple statements but has only few input values and one
-output value.
+output value. If the Jacobian can be computed manually for these statements
+the codi::StatementPushHelper provides the means to add the Jacobian directly
+to the tape. This can be used to reduce the recorded memory for such
+statements or code sections.
 
 For the function
 \f[
@@ -21,6 +24,7 @@ with \f$x \in \R^n\f$ and \f$y \in \R\f$, the reverse AD mode is
 \f]
 A simple function could be the evaluation of a polynomial:
 ~~~~{.cpp}
+// Evaluates w = (1 y y^2 ... y^(n-1)) A (1 x x^2 ... x^(n-1))^T
 template<typename Real>
 Real poly2D( const Real x, const Real y, const double* A, size_t n) {
     Real w = Real();
@@ -81,7 +85,7 @@ The context for the evaluation of the polynomial is:
 ~~~~
 The complete recording of this section uses 704 bytes.
 
-In order to compute the the derivatives of the Jacobi, the derivative computation
+In order to compute the the derivatives of the Jacobian, the derivative computation
 needs to be available:
 ~~~~{.cpp}
 template<typename Real>
@@ -129,7 +133,7 @@ The steps for storing the Jacobian in (TA3.2) for the equation (TA3.1)
 with the codi::StatementPushHelper are the following:
  - Compute y in a passive context
  - Compute \f$\frac{\d f}{\d x}\f$ in a passive context
- - Add the Jacobi to the tape.
+ - Add the Jacobian to the tape.
 
 The passive context is important at this point. Otherwise CoDiPack would
 still record the operations if the CoDiPack type is used.

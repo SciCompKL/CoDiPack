@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 
+// Evaluates w = (1 y y^2 ... y^(n-1)) A (1 x x^2 ... x^(n-1))^T
 template<typename Real>
 Real poly2D( const Real x, const Real y, const double* A, size_t n) {
     Real w = Real();
