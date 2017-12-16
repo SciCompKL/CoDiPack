@@ -5,7 +5,12 @@ Tutorial A4: Advanced vector mode usage {#TutorialA4}
 The approach there is to change the derivative type such that the adjoint
 data consists of vectors with the size \f$d\f$. The disadvantage of this
 approach is that each time a new vector size is required, the whole
-application needs to be recompiled.
+application needs to be recompiled. The codi::TapeVectorHelper structure
+can be used to overcome this disadvantage. The vector helper creates its
+own adjoint vector and performs the evaluation with this adjoint vector.
+If a new vector size \f$d\f$ is required only the vector helper definition
+needs to be changed. Then only a few translation units need to be recompiled.
+It is even possible to have the vector size determined at runtime.
 
 The reverse evaluation from tutorial 6 is the following:
 ~~~~{.cpp}
