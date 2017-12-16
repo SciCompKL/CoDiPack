@@ -87,6 +87,8 @@ namespace codi {
        * @param[in] d  An instance of this class.
        */
       static void delFunc(void* t, void* d) {
+        CODI_UNUSED(t);
+
         ExternalFunctionData<CoDiType>* data = (ExternalFunctionData<CoDiType>*)d;
 
         delete data;
@@ -119,6 +121,8 @@ namespace codi {
        * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
        */
       void evalRevFunc(Tape* t, AdjointInterface<Real>* ra) {
+        CODI_UNUSED(t);
+
         Real* x_b = new Real[inputIndices.size()];
         Real* y_b = new Real[outputIndices.size()];
 
