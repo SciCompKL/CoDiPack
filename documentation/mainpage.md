@@ -54,7 +54,7 @@ Most of them are introduced in the tutorial section:
 The full type list of the file 'codi.hpp' is:
  - Implementations of the forward mode of AD:
    - codi::RealForward
-   - codi::RealForwardFloat
+   - codi::RealForwardGen
  - Implementation of the reverse mode of AD:
    - codi::RealReverse
    - codi::RealReverseIndex
