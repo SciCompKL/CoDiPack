@@ -35,6 +35,22 @@ The file `codi.hpp` defines several datatypes. The most important ones are:
 We recommend to use the codi::RealReverse type when AD is first introduced to an application.
 After that there should be no difficulties in replacing the codi::RealReverse type with other types.
 
+For the handling of libraries and the memory optimization of the tape exist several helper structures.
+Most of them are introduced in the tutorial section:
+ - codi::ExternalFunctionHelper
+   - Handle external libraries which can not be handled with AD
+   - Optimize large code regions
+ - codi::PreaccumulationHelper
+   - Reduce memory for code section that have few input and output values but
+     are expensive to compute
+ - codi::StatementPushHelper
+   - Reduce the memory for small code fragments where the derivatives are available from an external source
+ - codi::TapeVectorHelper
+   - Evaluate reverse tapes with different vector settings
+   - No recompilation of the whole application on a vector dimension change
+ - codi::DerivativeHelper
+   - More intuitive handling of higher order derivatives
+
 The full type list of the file 'codi.hpp' is:
  - Implementations of the forward mode of AD:
    - codi::RealForward
