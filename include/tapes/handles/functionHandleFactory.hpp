@@ -86,6 +86,7 @@ namespace codi {
     template<typename Tape, typename ... Args>
     static CODI_INLINE typename Tape::Real callPrimalHandle(Handle handle, Args&& ... args) {
       CODI_UNUSED(handle);
+      CODI_UNUSED_VAR(args...);
 
       std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
       exit(-1);

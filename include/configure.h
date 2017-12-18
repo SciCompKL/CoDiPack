@@ -433,20 +433,4 @@ namespace codi {
       #define codiAssert(x) /* disabled by CODI_EnableAssert */
     #endif
   #endif
-
-  /**
-   * @brief helper structure that avoids unused variable warnings for variadic args.
-   *
-   * See https://stackoverflow.com/questions/19532475/casting-a-variadic-parameter-pack-to-void for the idea.
-   */
-  struct CODI_UNUSED_VAR {
-
-    /**
-     * @brief The arguments of the constructor are not named and therefore the unused input warning is disabled.
-     *
-     * @tparam Args  No restriction
-     */
-    template<typename ...Args>
-    CODI_UNUSED_VAR(Args const & ... ) {}
-  };
 }
