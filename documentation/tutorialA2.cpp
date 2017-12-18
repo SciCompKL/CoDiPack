@@ -47,7 +47,7 @@ void ode(const codi::RealReverse* start, codi::RealReverse* end, int steps, codi
     for(size_t i = 0; i < n; ++i) {
       end[i] = 0.0;
       for(size_t j = 0; j < n; ++j) {
-        end[i] += A[i + j * n] * cur[j];
+        end[i] += A[j + i * n] * cur[j];
       }
 
       end[i] = cur[i] + dt * end[i];
@@ -75,7 +75,8 @@ void derivative() {
   tape.setActive();
   tape.registerInput(u);
 
-  codi::RealReverse A[4] = {u * 1.0, 0.5,  0.0, u * -1.0};
+  codi::RealReverse A[4] = {u * 1.0, 0.5,
+                                0.0, u * -1.0};
   codi::RealReverse start[2] = {u * 10.0, u * 20.0};
 
   codi::RealReverse end[2];
@@ -106,7 +107,8 @@ void preaccumulation() {
   tape.setActive();
   tape.registerInput(u);
 
-  codi::RealReverse A[4] = {u * 1.0, 0.5,  0.0, u * -1.0};
+  codi::RealReverse A[4] = {u * 1.0, 0.5,
+                                0.0, u * -1.0};
   codi::RealReverse start[2] = {u * 10.0, u * 20.0};
 
   codi::RealReverse end[2];
