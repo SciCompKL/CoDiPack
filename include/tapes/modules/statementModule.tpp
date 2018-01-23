@@ -146,6 +146,9 @@
     template<typename Rhs>
     CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
+
+      static_assert(ExpressionTraits<Rhs>::maxActiveVariables < MaxStatementIntSize, "Expression with to many arguments.");
+
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
