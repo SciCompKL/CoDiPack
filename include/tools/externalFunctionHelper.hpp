@@ -145,6 +145,9 @@ namespace codi {
             ra->resetPrimal(outputIndices[i], oldPrimals[i]);
           }
         }
+        
+        delete [] x_b;
+        delete [] y_b;
       }
   };
 
