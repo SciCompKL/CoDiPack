@@ -58,7 +58,7 @@ void func(NUMBER* x, NUMBER* y) {
   w[0] = x[0];
   for(int i = 1; i < ITER; ++i) {
 
-    codi::ExternalFunctionHelper<NUMBER> eh;
+    codi::ExternalFunctionHelper<NUMBER> eh(true);
 
     eh.addInput(x[1]);
     eh.addInput(w[i-1]);
