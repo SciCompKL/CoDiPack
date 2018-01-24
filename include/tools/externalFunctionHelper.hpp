@@ -318,7 +318,7 @@ namespace codi {
 
         // ignore the setting at this place and the active check
         // We might need the values for the evaluation.
-        if (!isPassiveExtFunc){
+        if (!isPassiveExtFunc || storeInputPrimals){
           data->inputValues.push_back(input.getValue());
         }
       }
