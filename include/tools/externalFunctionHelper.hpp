@@ -269,7 +269,7 @@ namespace codi {
        * @brief Initializes the structure also determines if the tape is currently recording. The recording state
        * may not be changed by the user until the external function is finished.
        */
-      ExternalFunctionHelper(bool PassiveExtFunc) :
+      ExternalFunctionHelper(bool PassiveExtFunc = false) :
         outputValues(),
         storeInputPrimals(true),
         storeOutputPrimals(true),
