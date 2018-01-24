@@ -99,6 +99,8 @@ namespace codi {
        */
       size_t indexUseSizeIncrement;
 
+      bool valid;
+
     public:
 
       /**
@@ -115,7 +117,12 @@ namespace codi {
         freeIndices(),
         freeIndicesPos(0),
         indexUse(DefaultSmallChunkSize),
-        indexUseSizeIncrement(DefaultSmallChunkSize) {}
+        indexUseSizeIncrement(DefaultSmallChunkSize),
+        valid(true) {}
+
+      ~ReuseIndexHandlerUseCount() {
+        valid = false;
+      }
 
       /**
        * @brief Free the index that is given to the method.
@@ -127,7 +134,7 @@ namespace codi {
        * @param[in,out] index  The index that is freed. It is set to zero in the method.
        */
       CODI_INLINE void freeIndex(Index& index) {
-        if(0 != index) { // do not free the zero index
+        if(valid && 0 != index) { // do not free the zero index
           indexUse[index] -= 1;
 
           if(indexUse[index] == 0) { // only free the index if it not used any longer

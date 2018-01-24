@@ -76,6 +76,8 @@ namespace codi {
        */
       std::vector<Index> freeIndices;
 
+      bool valid;
+
     public:
 
       /**
@@ -89,7 +91,12 @@ namespace codi {
       ReuseIndexHandler(const Index reserveIndices) :
         globalMaximumIndex(reserveIndices),
         currentMaximumIndex(reserveIndices),
-        freeIndices() {}
+        freeIndices(),
+        valid(true) {}
+
+      ~ReuseIndexHandler() {
+        valid = false;
+      }
 
       /**
        * @brief Free the index that is given to the method.
@@ -101,7 +108,7 @@ namespace codi {
        * @param[in,out] index  The index that is freed. It is set to zero in the method.
        */
       CODI_INLINE void freeIndex(Index& index) {
-        if(0 != index) { // do not free the zero index
+        if(valid && 0 != index) { // do not free the zero index
 
 #if CODI_IndexHandle
         handleIndexFree(index);
