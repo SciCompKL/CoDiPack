@@ -107,12 +107,14 @@ namespace codi {
   /**
    * @brief The maximum size of a statement int.
    */
-  const size_t MaxStatementIntSize = 256;
+  const size_t MaxStatementIntSize = 255;
 
   /**
    * @brief The maximum value of a statement int.
    */
-  const size_t MaxStatementIntValue = 255;
+  const size_t MaxStatementIntValue = 254;
+
+  const size_t StatementIntInputTag = 255;
 
   #ifndef CODI_SmallChunkSize
     #define CODI_SmallChunkSize 32768

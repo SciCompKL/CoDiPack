@@ -311,11 +311,17 @@ namespace codi {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
-        const AdjointData& adj = adjointData[adjPos];
-        --adjPos;
         --stmtPos;
 
-        incrementAdjoints(adj, adjointData, statements[stmtPos], dataPos, jacobies, indices);
+        const AdjointData adj = adjointData[adjPos];
+        if(StatementIntInputTag != statements[stmtPos]) {
+          adjointData[adjPos] = AdjointData();
+        }
+        --adjPos;
+
+        if(StatementIntInputTag != statements[stmtPos]) {
+          incrementAdjoints(adj, adjointData, statements[stmtPos], dataPos, jacobies, indices);
+        }
       }
     }
 
@@ -385,7 +391,7 @@ namespace codi {
       CODI_UNUSED(value);
 
       stmtVector.reserveItems(1);
-      stmtVector.setDataAndMove((StatementInt)0);
+      stmtVector.setDataAndMove((StatementInt)StatementIntInputTag);
 
       index = indexHandler.createIndex();
     }

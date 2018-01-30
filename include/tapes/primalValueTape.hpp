@@ -417,19 +417,27 @@ namespace codi {
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
+        --stmtPos;
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
           adjointData->setLhsAdjoint(adjPos);
+          if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
+            adjointData->resetAdjointVec(adjPos);
+          }
 #else
-          const AdjointData& adj = adjointData[adjPos];
+          const AdjointData adj = adjointData[adjPos];
+          if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
+            adjointData[adjPos] = GradientValue();
+          }
 #endif
         --adjPos;
-        --stmtPos;
 
+        if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
           HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjointData);
 #else
           HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjointData);
 #endif
+        }
       }
     }
 
@@ -495,7 +503,7 @@ namespace codi {
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueTape<TapeTypes> >& value) {
       if(isActive()) {
-        pushStmtData(value.getGradientData(), value.getValue(), HandleFactory::template createHandle<InputExpr<Real>, PrimalValueTape<TapeTypes> >(), StatementInt(0));
+        pushStmtData(value.getGradientData(), value.getValue(), HandleFactory::template createHandle<InputExpr<Real>, PrimalValueTape<TapeTypes> >(), StatementInt(StatementIntInputTag));
       }
     }
 
