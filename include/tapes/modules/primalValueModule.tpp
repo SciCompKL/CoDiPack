@@ -556,6 +556,8 @@
     template<typename Rhs>
     CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
 
+      static_assert(ExpressionTraits<Rhs>::maxActiveVariables < MaxStatementIntSize, "Expression with to many arguments.");
+
       ENABLE_CHECK(OptTapeActivity, active){
 
         int activeCount = 0;

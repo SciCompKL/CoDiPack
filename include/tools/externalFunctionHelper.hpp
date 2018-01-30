@@ -145,6 +145,9 @@ namespace codi {
             ra->resetPrimal(outputIndices[i], oldPrimals[i]);
           }
         }
+        
+        delete [] x_b;
+        delete [] y_b;
       }
   };
 
@@ -266,11 +269,11 @@ namespace codi {
        * @brief Initializes the structure also determines if the tape is currently recording. The recording state
        * may not be changed by the user until the external function is finished.
        */
-      ExternalFunctionHelper() :
+      ExternalFunctionHelper(bool PassiveExtFunc = false) :
         outputValues(),
         storeInputPrimals(true),
         storeOutputPrimals(true),
-        isPassiveExtFunc(false),
+        isPassiveExtFunc(PassiveExtFunc),
         isTapeActive(CoDiType::getGlobalTape().isActive()),
         data(nullptr) {
         data = new ExternalFunctionData<CoDiType>();
@@ -315,7 +318,9 @@ namespace codi {
 
         // ignore the setting at this place and the active check
         // We might need the values for the evaluation.
-        data->inputValues.push_back(input.getValue());
+        if (!isPassiveExtFunc || storeInputPrimals){
+          data->inputValues.push_back(input.getValue());
+        }
       }
 
     private:
@@ -403,7 +408,6 @@ namespace codi {
        */
       template<typename FuncObj, typename ... Args>
       void callPassiveFunc(FuncObj& func, Args&& ... args) {
-        isPassiveExtFunc = true;
 
         if(isTapeActive) {
           CoDiType::getGlobalTape().setPassive();
@@ -425,18 +429,23 @@ namespace codi {
        * @param[in] func  The implementation for the primal evaluation.
        */
       void callPrimalFunc(PrimalFunc func) {
-        Real* y = new Real[outputValues.size()];
-
-        func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
-
-        // ok now set the primal values on the output values and add them to the data for the reverse evaluation
-        for(size_t i = 0; i < outputValues.size(); ++i) {
-          outputValues[i]->setValue(y[i]);
-
-          addOutputToData(*outputValues[i]);
+        if (!isPassiveExtFunc){
+          Real* y = new Real[outputValues.size()];
+          
+          func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
+          
+          // ok now set the primal values on the output values and add them to the data for the reverse evaluation
+          for(size_t i = 0; i < outputValues.size(); ++i) {
+            outputValues[i]->setValue(y[i]);
+            
+            addOutputToData(*outputValues[i]);
+          }
+          
+          delete [] y;
+        } else {
+          std::cerr << "callPrimalFunc() not available if external function helper is initialized with passive function mode enabled. Use callPassiveFunc() instead." << std::endl;
+          exit(-1);
         }
-
-        delete [] y;
       }
 
       /**
