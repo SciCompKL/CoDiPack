@@ -70,34 +70,38 @@ namespace codi {
       Index globalMaximumIndex;
 
       /**
-       * @brief The maximum index that is currently used.
+       * @brief The list with the indices that are available for reuse.
        *
-       * The maximum is decremented every time an index is released that corresponds to the
-       * current maximum.
+       * These indices have already been used.
        */
-      Index currentMaximumIndex;
+      std::vector<Index> usedIndices;
+
+      /**
+       * @brief The position for the used indices.
+       */
+      size_t usedIndicesPos;
 
       /**
        * @brief The list with the indices that are available for reuse.
+       *
+       * These indices have not been used in the current tape.
        */
-      std::vector<Index> freeIndices;
+      std::vector<Index> unusedIndices;
 
       /**
-       * @brief Position that indicates were the latest free index is in the freeIndices vector.
+       * @brief The position for the unused indices.
        */
-      size_t freeIndicesPos;
+      size_t unusedIndicesPos;
 
       /**
-       * @brief The vector that count for the indices how often they are used.
+       * @brief The vector that counts for the indices how often they are used.
        */
       std::vector<Index> indexUse;
 
       /**
-       * @brief The size increment for the index use vector.
-       *
-       * The size of the vector is incremented every time when the maximum global index does no longer fit in the vector.
+       * @brief The size increment for all index vectors and how many indices are generated.
        */
-      size_t indexUseSizeIncrement;
+      size_t indexSizeIncrement;
 
     public:
 
@@ -111,11 +115,15 @@ namespace codi {
        */
       ReuseIndexHandlerUseCount(const Index reserveIndices) :
         globalMaximumIndex(reserveIndices),
-        currentMaximumIndex(reserveIndices),
-        freeIndices(),
-        freeIndicesPos(0),
+        usedIndices(),
+        usedIndicesPos(0),
+        unusedIndices(),
+        unusedIndicesPos(0),
         indexUse(DefaultSmallChunkSize),
-        indexUseSizeIncrement(DefaultSmallChunkSize) {}
+        indexSizeIncrement(DefaultSmallChunkSize) {
+        increaseIndicesSize(unusedIndices);
+        generateNewIndices();
+      }
 
       /**
        * @brief Free the index that is given to the method.
@@ -135,17 +143,13 @@ namespace codi {
 #if CODI_IndexHandle
             handleIndexFree(index);
 #endif
-            if(currentMaximumIndex == index) {
-              // freed index is the maximum one so we can decrease the count
-              --currentMaximumIndex;
-            } else {
-              if(freeIndicesPos == freeIndices.size()) {
-                increaseFreeIndicesSize();
-              }
 
-              freeIndices[freeIndicesPos] = index;
-              freeIndicesPos += 1;
+            if(usedIndicesPos == usedIndices.size()) {
+              increaseIndicesSize(usedIndices);
             }
+
+            usedIndices[usedIndicesPos] = index;
+            usedIndicesPos += 1;
           }
 
           index = 0;
@@ -159,24 +163,46 @@ namespace codi {
        */
       CODI_INLINE Index createIndex() {
         Index index;
-        if(0 != freeIndicesPos) {
-          freeIndicesPos -= 1;
-          index = freeIndices[freeIndicesPos];
-        } else {
-          if(globalMaximumIndex == currentMaximumIndex) {
-            ++globalMaximumIndex;
 
-            if(indexUse.size() <= (size_t)globalMaximumIndex) {
-              increaseIndexUseSize();
-            }
+        if(0 == usedIndicesPos) {
+          if(0 == unusedIndicesPos) {
+            generateNewIndices();
           }
-          index = ++currentMaximumIndex;
+
+          unusedIndicesPos -= 1;
+          index = unusedIndices[unusedIndicesPos];
+        } else {
+          usedIndicesPos -= 1;
+          index = usedIndices[usedIndicesPos];
         }
 
 #if CODI_IndexHandle
         handleIndexCreate(index);
 #endif
 
+        indexUse[index] = 1;
+
+        return index;
+      }
+
+      /**
+       * @brief Generate a new index that has not been used in the tape.
+       *
+       * @return The new index that can be used.
+       */
+      CODI_INLINE Index createUnusedIndex() {
+        Index index;
+
+        if(0 == unusedIndicesPos) {
+          generateNewIndices();
+        }
+
+        unusedIndicesPos -= 1;
+        index = unusedIndices[unusedIndicesPos];
+
+#if CODI_IndexHandle
+        handleIndexCreate(index);
+#endif
         indexUse[index] = 1;
 
         return index;
@@ -195,6 +221,17 @@ namespace codi {
 
           index = this->createIndex();
         }
+      }
+
+      /**
+       * @brief Check if the index is active if yes it is deleted and an unused index is generated.
+       *
+       * @param[in,out] index The current value of the index.
+       */
+      CODI_INLINE void assignUnusedIndex(Index& index) {
+        freeIndex(index); // zero check is performed inside
+
+        index = this->createUnusedIndex();
       }
 
       /**
@@ -226,10 +263,19 @@ namespace codi {
       }
 
       /**
-       * @brief Not needed by this manager.
+       * @brief Adds all used indices to the unused indices vector.
        */
-      CODI_INLINE void reset() const {
-        /* do nothing */
+      CODI_INLINE void reset() {
+        size_t totalSize = usedIndicesPos + unusedIndicesPos;
+        if(totalSize > unusedIndices.size()) {
+          increaseIndicesSizeTo(unusedIndices, totalSize);
+        }
+
+        for(size_t pos = 0; pos < usedIndicesPos; ++pos) {
+          unusedIndices[unusedIndicesPos + pos] = usedIndices[pos];
+        }
+        unusedIndicesPos = totalSize;
+        usedIndicesPos = 0;
       }
 
       /**
@@ -247,7 +293,7 @@ namespace codi {
        * @return The current maximum index that is in use.
        */
       CODI_INLINE Index getCurrentIndex() const {
-        return currentMaximumIndex;
+        return globalMaximumIndex;
       }
 
       /**
@@ -256,7 +302,7 @@ namespace codi {
        * @return The number of stored indices.
        */
       size_t getNumberStoredIndices() const {
-        return freeIndicesPos;
+        return unusedIndicesPos + usedIndicesPos;
       }
 
       /**
@@ -265,7 +311,7 @@ namespace codi {
        * @return The number of the allocated indices.
        */
       size_t getNumberAllocatedIndices() const {
-        return freeIndices.capacity();
+        return unusedIndices.capacity() + usedIndices.capacity();
       }
 
       /**
@@ -300,24 +346,32 @@ namespace codi {
 
     private:
 
-      /**
-       * @brief Increase the size of the index use vector.
-       *
-       * The method increases the size of the index use vector by the chunk
-       * increment defined in the constructor.
-       */
-      CODI_NO_INLINE void increaseIndexUseSize() {
-        this->indexUse.resize(indexUse.size() + indexUseSizeIncrement);
+      CODI_NO_INLINE void generateNewIndices() {
+        // method is only called when unused indices are empty
+        // initialy it holds a number of unused indices which is
+        // the same amount as we now generate, therefore we do not
+        // check for size
+
+        codiAssert(unusedIndices.size() >= indexSizeIncrement);
+
+        for(size_t pos = 0; pos < indexSizeIncrement; ++pos) {
+          unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + (Index)pos;
+        }
+
+        unusedIndicesPos = indexSizeIncrement;
+        globalMaximumIndex += indexSizeIncrement;
+        indexUse.resize(globalMaximumIndex);
       }
 
-      /**
-       * @brief Increase the size of the free indices vector.
-       *
-       * The method increases the size of the index use vector by the chunk
-       * increment defined in the constructor.
-       */
-      CODI_NO_INLINE void increaseFreeIndicesSize() {
-        freeIndices.resize(freeIndices.size() + indexUseSizeIncrement);
+      CODI_NO_INLINE void increaseIndicesSize(std::vector<Index>& v) {
+        v.resize(v.size() + indexSizeIncrement);
+      }
+
+      CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
+        codiAssert(v.size() < minimalSize);
+
+        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1; // +1 rounds always up
+        v.resize(v.size() + increaseMul * indexSizeIncrement);
       }
   };
 }

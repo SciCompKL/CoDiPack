@@ -304,6 +304,7 @@
      */
     CODI_INLINE void reset() {
       clearAdjoints();
+      INDEX_HANDLER_NAME.reset();
 
       // reset will be done iteratively through the vectors
       RESET_FUNCTION_NAME(getZeroPosition());
