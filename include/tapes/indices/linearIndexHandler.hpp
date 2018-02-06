@@ -64,6 +64,8 @@ namespace codi {
        */
       typedef Index Position;
 
+      static const bool IsLinear = true;
+
     private:
 
       /**

@@ -80,6 +80,8 @@
     /** @brief The position for all the different data vectors. */
     typedef POSITION_TYPE Position;
 
+    static const bool LinearIndexHandler = TapeTypes::IndexHandler::IsLinear;
+
   private:
 
     /**

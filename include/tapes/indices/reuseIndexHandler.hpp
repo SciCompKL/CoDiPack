@@ -59,6 +59,8 @@ namespace codi {
        */
       const static bool AssignNeedsStatement = true;
 
+      static const bool IsLinear = false;
+
     private:
 
       /** @brief The maximum index that was used over the whole process */
