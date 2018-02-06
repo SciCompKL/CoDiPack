@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -54,7 +54,7 @@ namespace codi {
    *
    * See JacobiIndexTape for details.
    *
-   * @tparam        RTT  The basic type defintions for the tape. Need to define everything from ReverseTapeTypes.
+   * @tparam        RTT  The basic type definitions for the tape. Need to define everything from ReverseTapeTypes.
    * @tparam DataVector  The data manager for the chunks. Needs to implement a ChunkVector interface.
    */
   template <typename RTT, template<typename, typename> class DataVector>
@@ -62,6 +62,7 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
 
+    /** @brief The tape type structure, that defines the basic types. */
     typedef RTT BaseTypes;
 
     /** @brief The data for each statement. */
@@ -114,8 +115,10 @@ namespace codi {
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
+    /** @brief The tape type structure, that defines the basic types. */
     typedef typename TapeTypes::BaseTypes BaseTypes;
 
+    /** @brief The gradient data for this tape is the type of the indices. */
     typedef Index GradientData;
 
     /** @brief The counter for the current expression. */
@@ -127,6 +130,7 @@ namespace codi {
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
 
+    /** @brief This tape requires no primal value handling. */
     static const bool RequiresPrimalReset = false;
 
     // The class name of the tape. Required by the modules.
@@ -302,7 +306,7 @@ namespace codi {
      * @param[in,out]          dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
      * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
      * @param[in]              indices The pointer the indices of the rhs arguments.
-     * @param[in,out] adjointData  The vector of the adjoint varaibles.
+     * @param[in,out]      adjointData  The vector of the adjoint variables.
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
@@ -358,15 +362,15 @@ namespace codi {
      *
      * The function calls the evaluation method for the jacobi vector.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @param[in]    start  The starting point for the statement vector.
+     * @param[in]      end  The ending point for the statement vector.
      * @param[in,out] args  Additional arguments for the evaluation function.
      *
      * @tparam Args  The types of the other arguments.
      */
     template<typename ... Args>
-    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, Index* &indices, Args&&... args) {
-      evaluateStmt(start, end, dataPos, jacobies, indices, std::forward<Args>(args)...);
+    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
+      evaluateStmt(start, end, std::forward<Args>(args)...);
     }
 
     /**
@@ -376,6 +380,8 @@ namespace codi {
      *
      * The function calls the evaluation method for the jacobi vector.
      *
+     * @param[in]    start  The starting point for the statement vector.
+     * @param[in]      end  The ending point for the statement vector.
      * @param[in,out] args  Additional arguments for the evaluation function.
      *
      * @tparam Args  The types of the other arguments.
@@ -397,6 +403,12 @@ namespace codi {
       indexHandler.assignIndex(value.getGradientData());
     }
 
+    /**
+     * @brief Modify the output of an external function such that the tape sees it as an active variable.
+     *
+     * @param[in,out] value  The output value of the external function.
+     * @return Zero
+     */
     CODI_INLINE Real registerExtFunctionOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       registerInput(value);
 
@@ -414,6 +426,13 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Gather the general performance values of the tape.
+     *
+     * Computes values like the total amount of statements stored or the currently consumed memory.
+     *
+     * @return The values for the tape.
+     */
     TapeValues getTapeValues() const {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);

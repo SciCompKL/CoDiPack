@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -101,7 +101,7 @@ namespace codi {
   }
 
 #ifndef DOXYGEN_DISABLE
-  // check is variable is finite
+  // check if variable is finite
   template <typename T, typename Enable = void>
   struct IsFiniteImpl {
       static CODI_INLINE bool get(const T &t) {

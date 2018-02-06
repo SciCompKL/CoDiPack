@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -67,57 +67,67 @@ namespace codi {
    */
   template<typename ChunkData, typename NestedVector = EmptyChunkVector>
   class ChunkVector {
-  public:
-
-    /**
-     * @brief Position of the nested vector
-     */
-    typedef typename NestedVector::Position NestedPosition;
-
-    /**
-     * @brief Typedef of the ChunkData for other classes
-     */
-    typedef ChunkData ChunkType;
-
-    /**
-     * @brief Position of this chunk vector.
-     *
-     * The position also includes the position of the nested vector,
-     * such that the full position of all the chunk vectors
-     * is available to the user.
-     */
-    struct Position {
-      size_t chunk; /**< Index of the chunk */
-      size_t data;  /**< Data position in the chunk */
-
-      NestedPosition inner; /**< Position of the nested chunk vector */
+    public:
 
       /**
-       * @brief Default constructor is needed if this position is used as an inner position.
+       * @brief Position of the nested vector
        */
-      Position() :
-        chunk(0),
-        data(0),
-        inner() {}
+      typedef typename NestedVector::Position NestedPosition;
 
       /**
-       * @brief Create the full position for all the nested vectors.
-       * @param chunk   Index of the current chunk.
-       * @param  data   Index of the data in the current chunk.
-       * @param inner   Position of the nested vector.
+       * @brief Typedef of the ChunkData for other classes
        */
-      Position(const size_t& chunk, const size_t& data, const NestedPosition& inner) :
-        chunk(chunk),
-        data(data),
-        inner(inner) {}
+      typedef ChunkData ChunkType;
 
-      bool operator != (const Position& o) {
-        return this->inner != o.inner || chunk != o.chunk || data != o.data;
-      }
+      /**
+       * @brief Position of this chunk vector.
+       *
+       * The position also includes the position of the nested vector,
+       * such that the full position of all the chunk vectors
+       * is available to the user.
+       */
+      struct Position {
+        size_t chunk; /**< Index of the chunk */
+        size_t data;  /**< Data position in the chunk */
 
-      bool operator == (const Position& o) {
-        return this->inner == o.inner && chunk == o.chunk && data == o.data;
-      }
+        NestedPosition inner; /**< Position of the nested chunk vector */
+
+        /**
+         * @brief Default constructor is needed if this position is used as an inner position.
+         */
+        Position() :
+          chunk(0),
+          data(0),
+          inner() {}
+
+        /**
+         * @brief Create the full position for all the nested vectors.
+         * @param chunk   Index of the current chunk.
+         * @param  data   Index of the data in the current chunk.
+         * @param inner   Position of the nested vector.
+         */
+        Position(const size_t& chunk, const size_t& data, const NestedPosition& inner) :
+          chunk(chunk),
+          data(data),
+          inner(inner) {}
+
+        /**
+         * @brief Compares first the inner position and then the own data.
+         * @param[in] o  The other position.
+         * @return False if the inner position and the own data are not equal.
+         */
+        bool operator != (const Position& o) {
+          return this->inner != o.inner || chunk != o.chunk || data != o.data;
+        }
+
+        /**
+         * @brief Compares first the inner position and then the own data.
+         * @param[in] o  The other position.
+         * @return True if the inner position and the own data are not equal.
+         */
+        bool operator == (const Position& o) {
+          return this->inner == o.inner && chunk == o.chunk && data == o.data;
+        }
     };
 
   private:

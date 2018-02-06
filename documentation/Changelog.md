@@ -1,5 +1,31 @@
 Changelog      {#Changelog}
-============
+===========================
+
+### v 1.5.0 - 2017-12-18
+
+ - Support for custom adjoint vectors
+   * User provided adjoint vectors can now be used in the reverse evaluation
+   * Support added for external functions
+ - External function interface addition
+   * Extra parameter which provides a general access to the adjoint vector
+ - Several helper structures:
+   * TapeVectorHelper
+     + Easy API for the new custom adjoint vector features
+     + See Tutorial A4
+   * ExternalFunctionHelper:
+     + Helper structure for handling libraries which can not be differentiated or
+       to optimize the reverse evaluation for larger code parts
+     + See Tutorial A1
+   * PreaccumulationHelper:
+     + Helper structure for the memory optimization of small code parts
+     + If the code part has only few input and output values but is computational
+       expensive, the Jacobian is stored instead of the evaluation trace
+     + See Tutorial A2
+   * StatementPushHelper:
+     + Helper structure for the memory optimization of single statements
+     + If the Jacobian of the statement can be computed efficiently manually
+       this information can be directly provided to CoDiPack
+     + See Tutorial A3
 
 ### v 1.4.1 - 2017-09-26
 

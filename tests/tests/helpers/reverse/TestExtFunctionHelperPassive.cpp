@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -58,7 +58,7 @@ void func(NUMBER* x, NUMBER* y) {
   w[0] = x[0];
   for(int i = 1; i < ITER; ++i) {
 
-    codi::ExternalFunctionHelper<NUMBER> eh;
+    codi::ExternalFunctionHelper<NUMBER> eh(true);
 
     eh.addInput(x[1]);
     eh.addInput(w[i-1]);

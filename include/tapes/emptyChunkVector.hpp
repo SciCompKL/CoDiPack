@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -44,15 +44,25 @@ namespace codi {
      * @brief Position without any data.
      */
     struct Position {
-      bool operator != (const Position& o) {
-        CODI_UNUSED(o);
-        return false;
-      }
+        /**
+         * @brief Returns always false since the position has not data.
+         * @param[in] o  The other position.
+         * @return Always false.
+         */
+        bool operator != (const Position& o) {
+          CODI_UNUSED(o);
+          return false;
+        }
 
-      bool operator == (const Position& o) {
-        CODI_UNUSED(o);
-        return true;
-      }
+        /**
+         * @brief Returns always true since the position has not data.
+         * @param[in] o  The other position.
+         * @return Always true.
+         */
+        bool operator == (const Position& o) {
+          CODI_UNUSED(o);
+          return true;
+        }
     };
 
     /**
@@ -108,7 +118,7 @@ namespace codi {
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
         CODI_UNUSED(function);
         CODI_UNUSED(recursive);
-        CODI_UNUSED_VAR{args...};
+        CODI_UNUSED_VAR(args...);
 
         // Do nothing
       }

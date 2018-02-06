@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -146,6 +146,9 @@
     template<typename Rhs>
     CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
+
+      static_assert(ExpressionTraits<Rhs>::maxActiveVariables < MaxStatementIntSize, "Expression with to many arguments.");
+
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
@@ -220,15 +223,12 @@
     }
 
     /**
-     * @brief Prints statistics about the statements.
+     * @brief Adds statistics about the statements.
      *
-     * Displays the number of chunks, the total number of statements, the
+     * Adds the number of chunks, the total number of statements, the
      * allocated memory and the used memory.
      *
-     * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that separates the sections of the output.
-     *
-     * @tparam Stream The type of the stream.
+     * @param[in,out] values  The values where the information is added to.
      */
     void addStmtValues(TapeValues& values) const {
       size_t nChunksStmts  = stmtVector.getNumChunks();

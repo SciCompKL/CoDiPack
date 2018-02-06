@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -106,3 +106,13 @@
  * Is also necessary because of doxygen parameter handling.
  */
 #define CODI_UNUSED(name) (void)name
+
+/**
+ * @brief helper function that avoids unused variable warnings for variadic args.
+ *
+ * See https://stackoverflow.com/questions/19532475/casting-a-variadic-parameter-pack-to-void for the idea.
+ *
+ * @tparam Args  No restriction
+ */
+template<typename ...Args>
+void CODI_UNUSED_VAR(Args const & ... ) {}

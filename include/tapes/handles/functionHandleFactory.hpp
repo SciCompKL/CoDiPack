@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -47,6 +47,8 @@ namespace codi {
    *
    * The static data of the expression is curried into the function call and this function
    * pointer is returned as the handle.
+   *
+   * @tparam ReverseTapeTypes  The basic type definitions for the tape. Need to define everything from ReverseTapeTypes.
    */
   template<typename ReverseTapeTypes>
   struct FunctionHandleFactory
@@ -84,6 +86,7 @@ namespace codi {
     template<typename Tape, typename ... Args>
     static CODI_INLINE typename Tape::Real callPrimalHandle(Handle handle, Args&& ... args) {
       CODI_UNUSED(handle);
+      CODI_UNUSED_VAR(args...);
 
       std::cerr << "Error: Primal handles are not supported by this handle factory." << std::endl;
       exit(-1);

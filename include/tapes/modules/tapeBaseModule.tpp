@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -47,7 +47,7 @@
  * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), setActive, setPassive, isActive, print Statistics
  * from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods resizeAdjoints, cleanTapeBase, swapTapeBaseModule as interface functions for the
+ * It defines the methods resizeAdjoints, resizeAdjointsToIndexSize, cleanTapeBase, swapTapeBaseModule as interface functions for the
  * including class.
  */
 
@@ -125,6 +125,15 @@
 
       for(Index i = oldSize; i < adjointsSize; ++i) {
         new (adjoints + i) GradientValue();
+      }
+    }
+
+    /**
+     * @brief Resize the adjoint vector such that it fits the number of indices.
+     */
+    void resizeAdjointsToIndexSize() {
+      if(adjointsSize <= INDEX_HANDLER_NAME.getMaximumGlobalIndex()) {
+        resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
       }
     }
 
@@ -325,9 +334,7 @@
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
     CODI_NO_INLINE void evaluate(const Position& start, const Position& end) {
-      if(adjointsSize <= INDEX_HANDLER_NAME.getMaximumGlobalIndex()) {
-        resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
-      }
+      resizeAdjointsToIndexSize();
 
       evaluate(start, end, adjoints);
     }
@@ -379,6 +386,14 @@
       values.formatDefault(out);
     }
 
+    /**
+     * @brief Print the table header for the tape information to the stream.
+     *
+     * The data is written in a csv format with semicolons as an seperator.
+     *
+     * @param[in,out] out  The stream which is used for the printing of the table header.
+     * @tparam Stream  The type of the stream.
+     */
     template<typename Stream = std::ostream>
     void printTableHeader(Stream& out = std::cout) const {
 
@@ -387,6 +402,14 @@
       values.formatHeader(out);
     }
 
+    /**
+     * @brief Print the table data of the current tape state to the stream.
+     *
+     * The data is written in a csv format with semicolons as an seperator.
+     *
+     * @param[in,out] out  The stream which is used for the printing of the table data.
+     * @tparam Stream  The type of the stream.
+     */
     template<typename Stream = std::ostream>
     void printTableRow(Stream& out = std::cout) const {
 
@@ -396,16 +419,12 @@
     }
 
     /**
-     * @brief Prints statistics about the adjoint vector.
-     *
-     * Displays the number of adjoints and the allocated memory. Also
-     * displays the information about the index handler.
-     *
-     * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
-     *
-     * @tparam Stream The type of the stream.
-     */
+    * @brief Adds information about adjoint vector.
+    *
+    * Adds the number of adjoint vector entries and the size of the adjoint vector.
+    *
+    * @param[in,out] values  The information is added to the values
+    */
     void addTapeBaseValues(TapeValues& values) const {
 
       size_t nAdjoints      = INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1;

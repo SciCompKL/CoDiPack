@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -191,10 +191,8 @@ namespace codi {
 
       /**
        * @ brief There are no statistics for this handler.
-       * @param[in,out] out  The information is written to the stream.
-       * @param[in]   hLine  The horizontal line that separates the sections of the output.
        *
-       * @tparam Stream The type of the stream.
+       * @param[in,out] values  The values where the information is added to.
        */
       void addValues(TapeValues& values) const {
         CODI_UNUSED(values);
@@ -215,7 +213,7 @@ namespace codi {
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
         CODI_UNUSED(function);
         CODI_UNUSED(recursive);
-        CODI_UNUSED_VAR{args...};
+        CODI_UNUSED_VAR(args...);
 
         // Do nothing
       }

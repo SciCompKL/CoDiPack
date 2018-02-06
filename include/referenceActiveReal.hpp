@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -308,6 +308,9 @@ namespace codi {
      */
     static const size_t maxActiveVariables = 1;
 
+    /**
+     * @brief The maximum number of constant values for an ReferenceActiveReal is one.
+     */
     static const size_t maxConstantVariables = 0;
   };
 }

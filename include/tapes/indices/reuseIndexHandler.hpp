@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -76,6 +76,8 @@ namespace codi {
        */
       std::vector<Index> freeIndices;
 
+      bool valid;
+
     public:
 
       /**
@@ -89,7 +91,12 @@ namespace codi {
       ReuseIndexHandler(const Index reserveIndices) :
         globalMaximumIndex(reserveIndices),
         currentMaximumIndex(reserveIndices),
-        freeIndices() {}
+        freeIndices(),
+        valid(true) {}
+
+      ~ReuseIndexHandler() {
+        valid = false;
+      }
 
       /**
        * @brief Free the index that is given to the method.
@@ -101,7 +108,7 @@ namespace codi {
        * @param[in,out] index  The index that is freed. It is set to zero in the method.
        */
       CODI_INLINE void freeIndex(Index& index) {
-        if(0 != index) { // do not free the zero index
+        if(valid && 0 != index) { // do not free the zero index
 
 #if CODI_IndexHandle
         handleIndexFree(index);
@@ -206,18 +213,15 @@ namespace codi {
       }
 
       /**
-       * @brief Output statistics about the used indices.
+       * @brief Add statistics about the used indices.
        *
-       * Writes the
+       * Adds the
        *   maximum number of live indices,
        *   the current number of lives indices,
        *   the indices that are stored and
        *   the memory for the allocated indices.
        *
-       * @param[in,out] out  The information is written to the stream.
-       * @param[in]     hLine  The horizontal line that separates the sections of the output.
-       *
-       * @tparam Stream The type of the stream.
+       * @param[in,out] values  The values where the information is added to.
        */
       void addValues(TapeValues& values) const {
         size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
