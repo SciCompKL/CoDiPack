@@ -375,7 +375,14 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStack(size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants, AdjointData* adjointData, Real* primalVector) {
+    CODI_INLINE void evaluateStack(AdjointData* adjointData, Real* primalVector,
+                                   size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                   size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                   size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                      Handle* &statements, StatementInt* &passiveActiveReal) {
+      CODI_UNUSED(endConstantPos);
+      CODI_UNUSED(endIndexPos);
+
       while(stmtPos > endStmtPos) {
         --stmtPos;
         const Index& lhsIndex = lhsIndices[stmtPos];
@@ -526,14 +533,23 @@ namespace codi {
 
       AdjointInterfacePrimalImpl<Real, AdjointData> interface(adjointData, primalsCopy);
 
+
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      evaluateExtFunc(start, end, &interface, interface, primalsCopy);
+      typedef AdjointInterfaceImpl<Real, AdjointData> AdjVecType;
+      AdjVecType* adjVec = &interface;
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
         "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"
         " to use custom adjoint vectors in the primal value tapes.");
-      evaluateExtFunc(start, end, &interface, adjointData, primalsCopy);
+
+      typedef AdjointData AdjVecType;
+      AdjVecType* adjVec = adjointData;
 #endif
+
+      auto evalFunc = &PrimalValueIndexTape::evaluateStack<AdjVecType>;
+      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueIndexTape,
+          AdjVecType*&, Real*&>;
+      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec, primalsCopy);
     }
 
     /**
@@ -614,10 +630,16 @@ namespace codi {
       AdjointInterfacePrimalImpl<Real, GradientValue> interface(adjoints, primalsCopy);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        evaluateExtFunc(start, end, &interface, &interface, primalsCopy);
+        typedef AdjointInterfaceImpl<Real, GradientValue> AdjVecType;
+        AdjVecType* adjVec = &interface;
 #else
-        evaluateExtFunc(start, end, &interface, adjoints, primalsCopy);
+        typedef GradientValue AdjVecType;
+        AdjVecType* adjVec = adjoints;
 #endif
+      auto evalFunc = &PrimalValueIndexTape::evaluateStack<AdjVecType>;
+      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueIndexTape,
+          AdjVecType*&, Real*&>;
+      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec, primalsCopy);
 
       evaluateExtFuncPrimal(end, start, primalsCopy);
 

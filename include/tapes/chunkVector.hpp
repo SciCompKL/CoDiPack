@@ -520,5 +520,32 @@ namespace codi {
         nested->forEachChunk(function, recursive, std::forward<Args>(args)...);
       }
     }
+
+    template<typename Function, typename Obj, typename ... Args>
+    CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function, Obj& obj,
+                                     Args&&... args) {
+      PointerHandle<ChunkType> pHandle;
+
+      size_t dataPos = start.data;
+      NestedPosition curInnerPos = start.inner;
+      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
+
+        pHandle.setPointers(0, chunks[curChunk]);
+
+        NestedPosition endInnerPos = positions[curChunk];
+        pHandle.callNestedReverse(nested, curInnerPos, endInnerPos, function, obj, std::forward<Args>(args)..., dataPos, 0);
+
+        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
+
+        curInnerPos = endInnerPos;
+
+        dataPos = chunks[curChunk - 1]->getUsedSize();
+      }
+
+      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      pHandle.setPointers(0, chunks[end.chunk]);
+      pHandle.callNestedReverse(nested, curInnerPos, end.inner, function, obj, std::forward<Args>(args)..., dataPos, end.data);
+    }
+
   };
 }

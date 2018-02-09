@@ -122,5 +122,15 @@ namespace codi {
 
         // Do nothing
       }
+
+      template<typename Function, typename Obj, typename ... Args>
+      CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function, Obj& obj,
+                                       Args&&... args) {
+
+        CODI_UNUSED(start);
+        CODI_UNUSED(end);
+
+        (obj.*function)(std::forward<Args>(args)...);
+      }
   };
 }

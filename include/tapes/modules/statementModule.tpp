@@ -102,14 +102,6 @@
       stmtVector.resize(statementSize);
     }
 
-    template<typename AdjointData>
-    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
-
-      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
-
-      evaluateExtFunc(start, end, &interface, adjointData);
-    }
-
   public:
 
   // ----------------------------------------------------------------------

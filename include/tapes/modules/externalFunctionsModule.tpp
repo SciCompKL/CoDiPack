@@ -98,21 +98,22 @@
      * where the external function was added and then calls the
      * external function.
      */
+    template<typename Function, typename Obj>
     struct ExtFuncEvaluator {
       ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
 
-      /** The reference to the tape. The method evalExtFuncCallback is used to evaluate the data between the expressions.*/
-      TAPE_NAME& tape;
-
+      const Function& func;
+      Obj& obj;
       /**
        * @brief Create the function object.
        *
        * @param[in] curInnerPos  The position were the evaluation starts.
        * @param[in,out]    tape  The reference to the actual tape.
        */
-      ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, TAPE_NAME& tape) :
+      ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, const Function& func, Obj& obj) :
         curInnerPos(curInnerPos),
-        tape(tape){}
+        func(func),
+        obj(obj){}
 
       /**
        * @brief The operator evaluates the tape to the position were the next external function was stored and then the function is evaluated
@@ -125,12 +126,13 @@
        * @tparam Args  The types of the other arguments.
        */
       template<typename ... Args>
-      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
+      CODI_INLINE void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
                         AdjointInterface<Real>* adjointInterface, Args&&... args) {
         // always evaluate the stack to the point of the external function
-        tape.evalExtFuncCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-        extFunc->evaluate(&tape, adjointInterface);
+        (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+
+        extFunc->evaluate(&obj, adjointInterface);
 
         curInnerPos = *endInnerPos;
       }
@@ -300,14 +302,14 @@
      *
      * @tparam Args  The types of the other arguments.
      */
-    template<typename ... Args>
-    void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, AdjointInterface<Real>* adjointInterface, Args&&... args){
-      ExtFuncEvaluator evaluator(start.inner, *this);
+    template<typename Function, typename Obj, typename ... Args>
+    CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj , AdjointInterface<Real>* adjointInterface, Args&&... args){
+      ExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
 
       extFuncVector.forEach(start, end, evaluator, adjointInterface, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
-      evalExtFuncCallback(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
+      (obj.*func)(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
     }
 
 

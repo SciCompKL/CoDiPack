@@ -311,7 +311,12 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evalStmtCallback(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, Index* lhsIndices, size_t& dataPos, Real* &jacobies, Index* &indices, AdjointData* adjointData) {
+    CODI_INLINE void evalStmtCallback(AdjointData* adjointData,
+                                      size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+                                      size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
+                                          Index* lhsIndices) {
+
+      CODI_UNUSED(endDataPos);
 
       while(stmtPos > endStmtPos) {
         --stmtPos;
@@ -389,6 +394,17 @@ namespace codi {
     template<typename ... Args>
     CODI_INLINE void evalExtFuncCallback(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
       evaluateJacobies(start, end, std::forward<Args>(args)...);
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
+
+      auto evalFunc = &JacobiIndexTape::evalStmtCallback<AdjointData>;
+      auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), JacobiIndexTape, AdjointData*&>;
+
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+
+      evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, *this , adjointData);
     }
 
   public:

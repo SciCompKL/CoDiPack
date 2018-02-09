@@ -102,6 +102,12 @@ namespace codi {
       void call(FuncObj& func, Args&&... args) {
         func(p1, std::forward<Args>(args)...);
       }
+
+      template<typename Nested, typename ... Args>
+      CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
+                             Args&&... args) {
+        nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1);
+      }
   };
 
   /**
@@ -138,6 +144,12 @@ namespace codi {
       template<typename FuncObj, typename ... Args>
       void call(FuncObj& func, Args&&... args) {
         func(p1, p2, std::forward<Args>(args)...);
+      }
+
+      template<typename Nested, typename ... Args>
+      CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
+                             Args&&... args) {
+        nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2);
       }
   };
 
@@ -177,6 +189,12 @@ namespace codi {
       template<typename FuncObj, typename ... Args>
       void call(FuncObj& func, Args&&... args) {
         func(p1, p2, p3, std::forward<Args>(args)...);
+      }
+
+      template<typename Nested, typename ... Args>
+      CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
+                             Args&&... args) {
+        nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2, p3);
       }
   };
 
@@ -218,6 +236,12 @@ namespace codi {
       template<typename FuncObj, typename ... Args>
       void call(FuncObj& func, Args&&... args) {
         func(p1, p2, p3, p4, std::forward<Args>(args)...);
+      }
+
+      template<typename Nested, typename ... Args>
+      CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
+                             Args&&... args) {
+        nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2, p3, p4);
       }
   };
 }

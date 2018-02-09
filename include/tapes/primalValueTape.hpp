@@ -242,13 +242,21 @@ namespace codi {
       AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      evaluateExtFunc(start, end, &interface, &interface);
+        typedef AdjointInterfaceImpl<Real, AdjointData> AdjVecType;
+        AdjVecType* adjVec = &interface;
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
         "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"
         " to use custom adjoint vectors in the primal value tapes.");
-      evaluateExtFunc(start, end, &interface, adjointData);
+
+      typedef AdjointData AdjVecType;
+      AdjVecType* adjVec = adjointData;
 #endif
+
+      auto evalFunc = &PrimalValueTape::evaluateStack<AdjVecType>;
+      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueTape,
+          AdjVecType*&>;
+      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec);
     }
 
     /**
@@ -345,9 +353,16 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos, size_t& stmtPos,
-                                   Handle* &statements, StatementInt* &passiveActiveReal, size_t& indexPos,
-                                   Index* &indices, size_t& constantPos, PassiveReal* &constants, AdjointData* adjointData) {
+    CODI_INLINE void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos,
+                                   AdjointData* adjointData,
+                                   size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
+                                   size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                   size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
+                                      StatementInt* &passiveActiveReal) {
+      CODI_UNUSED(endConstPos);
+      CODI_UNUSED(endIndexPos);
+      CODI_UNUSED(endStmtPos);
+
       size_t adjPos = startAdjPos;
 
       while(adjPos > endAdjPos) {
