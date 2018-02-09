@@ -546,7 +546,15 @@ namespace codi {
       AdjVecType* adjVec = adjointData;
 #endif
 
-      auto evalFunc = &PrimalValueIndexTape::evaluateStack<AdjVecType>;
+      auto evalFunc = [this] (AdjVecType* adjointData, Real* primalVector,
+                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                              size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                Handle* &statements, StatementInt* &passiveActiveReal) {
+        evaluateStack<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
+                                     indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
+                                     statements, passiveActiveReal);
+      };
       auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueIndexTape,
           AdjVecType*&, Real*&>;
       evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec, primalsCopy);
@@ -636,7 +644,15 @@ namespace codi {
         typedef GradientValue AdjVecType;
         AdjVecType* adjVec = adjoints;
 #endif
-      auto evalFunc = &PrimalValueIndexTape::evaluateStack<AdjVecType>;
+      auto evalFunc = [this] (AdjVecType* adjointData, Real* primalVector,
+                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                              size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                Handle* &statements, StatementInt* &passiveActiveReal) {
+        evaluateStack<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
+                                     indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
+                                     statements, passiveActiveReal);
+      };
       auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueIndexTape,
           AdjVecType*&, Real*&>;
       evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec, primalsCopy);

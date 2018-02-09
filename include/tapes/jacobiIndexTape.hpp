@@ -399,7 +399,12 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
-      auto evalFunc = &JacobiIndexTape::evalStmtCallback<AdjointData>;
+      auto evalFunc = [this] (AdjointData* adjointData,
+          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements, Index* lhsIndices) {
+        evalStmtCallback<AdjointData>(adjointData, dataPos, endDataPos, jacobies, indices,
+                                      stmtPos, endStmtPos, statements, lhsIndices);
+      };
       auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), JacobiIndexTape, AdjointData*&>;
 
       AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);

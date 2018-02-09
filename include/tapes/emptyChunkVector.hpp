@@ -130,7 +130,7 @@ namespace codi {
         CODI_UNUSED(start);
         CODI_UNUSED(end);
 
-        (obj.*function)(std::forward<Args>(args)...);
+        function(std::forward<Args>(args)...);
       }
   };
 }

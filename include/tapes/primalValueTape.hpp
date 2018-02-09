@@ -253,7 +253,15 @@ namespace codi {
       AdjVecType* adjVec = adjointData;
 #endif
 
-      auto evalFunc = &PrimalValueTape::evaluateStack<AdjVecType>;
+      auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos,
+                              AdjVecType* adjointData,
+                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                              size_t& stmtPos, const size_t& endStmtPos,
+                                Handle* &statements, StatementInt* &passiveActiveReal) {
+        evaluateStack<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants,
+                                     indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
+      };
       auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueTape,
           AdjVecType*&>;
       evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec);

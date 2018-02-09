@@ -224,7 +224,7 @@ namespace codi {
       CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function, Obj& obj,
                                        Args&&... args) {
 
-        (obj.*function)(start, end, std::forward<Args>(args)...);
+        function(start, end, std::forward<Args>(args)...);
       }
   };
 }
