@@ -409,7 +409,7 @@ namespace codi {
 
       size_t dataPos = start.data;
       pHandle.setPointers(0, &chunk);
-      pHandle.callNestedReverse(nested, start.inner, end.inner, function, obj, std::forward<Args>(args)..., dataPos);
+      pHandle.callNestedReverse(nested, start.inner, end.inner, function, obj, std::forward<Args>(args)..., dataPos, end.data);
     }
 
   };
