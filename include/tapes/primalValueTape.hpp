@@ -262,9 +262,8 @@ namespace codi {
         evaluateStack<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
       };
-      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueTape,
-          AdjVecType*&>;
-      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec);
+      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType*&>;
+      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, adjVec);
     }
 
     /**

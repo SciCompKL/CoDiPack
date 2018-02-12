@@ -555,9 +555,8 @@ namespace codi {
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
                                      statements, passiveActiveReal);
       };
-      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueIndexTape,
-          AdjVecType*&, Real*&>;
-      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec, primalsCopy);
+      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType*&, Real*&>;
+      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
     }
 
     /**
@@ -653,9 +652,8 @@ namespace codi {
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
                                      statements, passiveActiveReal);
       };
-      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), PrimalValueIndexTape,
-          AdjVecType*&, Real*&>;
-      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, *this, adjVec, primalsCopy);
+      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType*&, Real*&>;
+      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
 
       evaluateExtFuncPrimal(end, start, primalsCopy);
 

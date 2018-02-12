@@ -123,8 +123,8 @@ namespace codi {
         // Do nothing
       }
 
-      template<typename Function, typename Obj, typename ... Args>
-      CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function, Obj& obj,
+      template<typename Function, typename ... Args>
+      CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function,
                                        Args&&... args) {
 
         CODI_UNUSED(start);

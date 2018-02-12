@@ -399,11 +399,11 @@ namespace codi {
           size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements) {
         evalStmtCallback<AdjointData>(startAdjPos, endAdjPos, adjointData, dataPos, endDataPos, jacobies, indices, stmtPos, endStmtPos, statements);
       };
-      auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), JacobiTape, AdjointData*&>;
+      auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 
       AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
 
-      evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, *this , adjointData);
+      evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, adjointData);
     }
 
   public:

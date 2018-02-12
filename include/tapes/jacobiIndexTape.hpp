@@ -405,11 +405,11 @@ namespace codi {
         evalStmtCallback<AdjointData>(adjointData, dataPos, endDataPos, jacobies, indices,
                                       stmtPos, endStmtPos, statements, lhsIndices);
       };
-      auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), JacobiIndexTape, AdjointData*&>;
+      auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 
       AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
 
-      evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, *this , adjointData);
+      evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, adjointData);
     }
 
   public:

@@ -402,14 +402,14 @@ namespace codi {
       }
     }
 
-    template<typename Function, typename Obj, typename ... Args>
-    CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function, Obj& obj,
+    template<typename Function, typename ... Args>
+    CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function,
                                      Args&&... args) {
       PointerHandle<ChunkType> pHandle;
 
       size_t dataPos = start.data;
       pHandle.setPointers(0, &chunk);
-      pHandle.callNestedReverse(nested, start.inner, end.inner, function, obj, std::forward<Args>(args)..., dataPos, end.data);
+      pHandle.callNestedReverse(nested, start.inner, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
     }
 
   };
