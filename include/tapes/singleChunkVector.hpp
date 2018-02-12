@@ -262,43 +262,6 @@ namespace codi {
     }
 
     /**
-     * @brief Get the position of the nested chunk vector when the chunk was loaded.
-     *
-     * @param chunkIndex  The index of the chunk for which the position is required.
-     * @return The position of the nested chunk vector when the chunk was loaded.
-     */
-    CODI_INLINE NestedPosition getInnerPosition(const size_t& chunkIndex) const {
-      codiAssert(0 == chunkIndex);
-      return NestedPosition();
-    }
-
-    /**
-     * @brief Get a pointer to the data at the given position.
-     * @param chunkIndex  The index of the chunk.
-     * @param    dataPos  The index for the data in the chunk.
-     * @param   pointers  The pointers to the data of the chunk at the given position.
-     *
-     * @tparam  Pointers  The data types for the pointers.
-     */
-    template<typename ... Pointers>
-    CODI_INLINE void getDataAtPosition(const size_t& chunkIndex, const size_t& dataPos, Pointers* &... pointers) {
-      codiAssert(0 == chunkIndex);
-
-      chunk.dataPointer(dataPos, pointers...);
-    }
-
-    /**
-     * @brief Get the number of data items used in the chunk.
-     * @param chunkIndex  The chunk from which the information is extracted.
-     * @return The number of data items used in the chunk.
-     */
-    CODI_INLINE size_t getChunkUsedData(const size_t& chunkIndex) const {
-      codiAssert(0 == chunkIndex);
-
-      return chunk.getUsedSize();
-    }
-
-    /**
      * @brief Get the number of currently allocated chunks.
      * @return The number of currently allocated chunks.
      */

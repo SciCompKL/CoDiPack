@@ -373,8 +373,7 @@
      * @param[in,out] values  The information is added to the values
      */
     void addExtFuncValues(TapeValues& values) const {
-      size_t nExternalFunc = (extFuncVector.getNumChunks()-1)*extFuncVector.getChunkSize()
-          +extFuncVector.getChunkUsedData(extFuncVector.getNumChunks()-1);
+      size_t nExternalFunc = extFuncVector.getDataSize();
 
       values.addSection("External functions");
       values.addData("Total Number", nExternalFunc);

@@ -83,43 +83,6 @@
   // ----------------------------------------------------------------------
 
     /**
-     * @brief Evaluate a part of the jacobi vector.
-     *
-     * It has to hold start >= end.
-     *
-     * It calls the evaluation method for the expression counter.
-     *
-     * @param[in]    start  The starting point for the jacobi vector.
-     * @param[in]      end  The ending point for the jacobi vector.
-     * @param[in,out] args  The data from the other vectors.
-     *
-     * @tparam Args The types for the arguments from the other vectors.
-     */
-    template<typename ... Args>
-    CODI_INLINE void evaluateJacobies(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
-      Real* jacobiData;
-      Index* indexData;
-      size_t dataPos = start.data;
-      JacobiChildPosition curInnerPos = start.inner;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        jacobiVector.getDataAtPosition(curChunk, 0, jacobiData, indexData);
-
-        JacobiChildPosition endInnerPos = jacobiVector.getInnerPosition(curChunk);
-        evalJacobiesCallback(curInnerPos, endInnerPos, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
-
-        curInnerPos = endInnerPos;
-
-        dataPos = jacobiVector.getChunkUsedData(curChunk - 1);
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      jacobiVector.getDataAtPosition(end.chunk, 0, jacobiData, indexData);
-      evalJacobiesCallback(curInnerPos, end.inner, dataPos, jacobiData, indexData, std::forward<Args>(args)...);
-    }
-
-    /**
      * @brief Perform the adjoint update of the reverse AD sweep
      *
      * Evaluates the equation

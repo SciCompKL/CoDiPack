@@ -407,42 +407,6 @@ namespace codi {
     }
 
     /**
-     * @brief Evaluate a part of the statement vector for the primal.
-     *
-     * It has to hold start <= end.
-     *
-     * The function calls the primal  evaluation method for the stack.
-     *
-     * @param[in] start  The starting point for the statement vector.
-     * @param[in]   end  The ending point for the statement vector.
-     * @param[in]  args  The arguments from the other vectors.
-     *
-     * @tparam Args  The types of the other arguments.
-     */
-    template<typename ... Args>
-    CODI_INLINE void evalStmtPrimal(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
-      Index* data1;
-      Real* data2;
-      Handle* data3;
-      StatementInt* data4;
-
-      size_t dataPos = start.data;
-      for(size_t curChunk = start.chunk; curChunk < end.chunk; ++curChunk) {
-        stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
-
-        evaluateStackPrimal(dataPos, stmtVector.getChunkUsedData(curChunk), data1, data2, data3, data4, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == stmtVector.getChunkUsedData(curChunk)); // After a full chunk is evaluated the data position needs to be at the end
-
-        dataPos = 0;
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
-      evaluateStackPrimal(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
-    }
-
-    /**
      * @brief Evaluate a part of the statement vector.
      *
      * It has to hold start >= end.
@@ -476,42 +440,6 @@ namespace codi {
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
       evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
-    }
-
-    /**
-     * @brief Evaluate a part of the statement vector for the primal.
-     *
-     * It has to hold start <= end.
-     *
-     * The function calls the primal evaluation method for the constant value vector.
-     *
-     * @param[in] start  The starting point for the statement vector.
-     * @param[in]   end  The ending point for the statement vector.
-     * @param[in]  args  The arguments from the other vectors.
-     *
-     * @tparam Args  The types of the other arguments.
-     */
-    template<typename ... Args>
-    CODI_INLINE void evalExtFuncPrimalCallback(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
-      evaluateConstantValuesPrimal(start, end, std::forward<Args>(args)...);
-    }
-
-    /**
-     * @brief Evaluate a part of the statement vector.
-     *
-     * It has to hold start >= end.
-     *
-     * The function calls the evaluation method for the constant value vector.
-     *
-     * @param[in] start  The starting point for the constant value vector.
-     * @param[in]   end  The ending point for the constant value vector.
-     * @param[in]  args  The arguments from the other vectors.
-     *
-     * @tparam Args  The types of the other arguments.
-     */
-    template<typename ... Args>
-    CODI_INLINE void evalExtFuncCallback(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
-      evaluateConstantValues(start, end, std::forward<Args>(args)...);
     }
 
     /**
