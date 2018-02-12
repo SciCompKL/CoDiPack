@@ -146,11 +146,12 @@
      * where the external function was added and then calls the
      * external function.
      */
+    template<typename Function, typename Obj>
     struct PrimalExtFuncEvaluator {
       ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
 
-      /** The reference to the tape. The method evalExtFuncCallback is used to evaluate the data between the expressions.*/
-      TAPE_NAME& tape;
+      const Function& func;
+      Obj& obj;
 
       /**
        * @brief Create the function object.
@@ -158,9 +159,10 @@
        * @param[in] curInnerPos  The position were the evaluation starts.
        * @param[in,out]    tape  The reference to the actual tape.
        */
-      PrimalExtFuncEvaluator(ExtFuncChildPosition curInnerPos, TAPE_NAME& tape) :
+      PrimalExtFuncEvaluator(ExtFuncChildPosition curInnerPos, const Function &func, Obj &obj) :
         curInnerPos(curInnerPos),
-        tape(tape){}
+        func(func),
+        obj(obj){}
 
       /**
        * @brief The operator evaluates the tape to the position were the next external function was stored and then the function is evaluated
@@ -174,7 +176,8 @@
       template<typename ... Args>
       void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, Args&&... args) {
         // always evaluate the stack to the point of the external function
-        tape.evalExtFuncPrimalCallback(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+
+        (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
         CODI_UNUSED(extFunc);
         std::cerr << "External functions currently can not be forward evaluated." << std::endl;
@@ -278,14 +281,14 @@
      *
      * @tparam Args  The types of the other arguments.
      */
-    template<typename ... Args>
-    void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, Args&&... args){
-      PrimalExtFuncEvaluator evaluator(start.inner, *this);
+    template<typename Function, typename Obj, typename ... Args>
+    void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj, Args&&... args){
+      PrimalExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
 
       extFuncVector.forEach(start, end, evaluator, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
-      evalExtFuncPrimalCallback(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
+      (obj.*func)(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
     }
 
     /**
@@ -303,7 +306,7 @@
      * @tparam Args  The types of the other arguments.
      */
     template<typename Function, typename Obj, typename ... Args>
-    CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj , AdjointInterface<Real>* adjointInterface, Args&&... args){
+    CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj, AdjointInterface<Real>* adjointInterface, Args&&... args){
       ExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
 
       extFuncVector.forEach(start, end, evaluator, adjointInterface, std::forward<Args>(args)...);

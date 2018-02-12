@@ -342,10 +342,14 @@ namespace codi {
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
-    CODI_INLINE void evaluateStackPrimal(size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices,
-                                         Real* storedPrimals, Handle* &statements, StatementInt* &passiveActiveReal,
-                                         size_t& indexPos, Index* &indices, size_t& constantPos, PassiveReal* &constants,
-                                         Real* primalVector) {
+    CODI_INLINE void evaluateStackPrimal(Real* primalVector,
+                                         size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                         size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                         size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                         Handle* &statements, StatementInt* &passiveActiveReal) {
+      CODI_UNUSED(endConstantPos);
+      CODI_UNUSED(endIndexPos);
+
       while(stmtPos < endStmtPos) {
         const Index& lhsIndex = lhsIndices[stmtPos];
 
@@ -643,19 +647,29 @@ namespace codi {
         typedef GradientValue AdjVecType;
         AdjVecType* adjVec = adjoints;
 #endif
-      auto evalFunc = [this] (AdjVecType* adjointData, Real* primalVector,
-                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                              size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                Handle* &statements, StatementInt* &passiveActiveReal) {
+      auto reverseFunc = [this] (AdjVecType* adjointData, Real* primalVector,
+                                 size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                 size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                 size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                   Handle* &statements, StatementInt* &passiveActiveReal) {
         evaluateStack<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
                                      statements, passiveActiveReal);
       };
-      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType*&, Real*&>;
-      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
+      auto reverseIter = &ConstantValueVector::template evaluateReverse<decltype(reverseFunc), AdjVecType*&, Real*&>;
+      evaluateExtFunc(start, end, reverseIter, constantValueVector, &interface, reverseFunc, adjVec, primalsCopy);
 
-      evaluateExtFuncPrimal(end, start, primalsCopy);
+      auto primalFunc = [this] (Real* primalVector,
+                                size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                  Handle* &statements, StatementInt* &passiveActiveReal) {
+        evaluateStackPrimal(primalVector, constantPos, endConstantPos, constants,
+                            indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
+                            statements, passiveActiveReal);
+      };
+      auto primalIter = &ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
+      evaluateExtFuncPrimal(end, start, primalIter, constantValueVector, primalFunc, primalsCopy);
 
       std::swap(primals, primalsCopy);
     }

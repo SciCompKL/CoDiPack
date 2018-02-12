@@ -132,5 +132,15 @@ namespace codi {
 
         function(std::forward<Args>(args)...);
       }
+
+      template<typename Function, typename ... Args>
+      CODI_INLINE void evaluateForward(const Position& start, const Position& end,const Function& function,
+                                       Args&&... args) {
+
+        CODI_UNUSED(start);
+        CODI_UNUSED(end);
+
+        function(std::forward<Args>(args)...);
+      }
   };
 }

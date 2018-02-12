@@ -412,5 +412,14 @@ namespace codi {
       pHandle.callNestedReverse(nested, start.inner, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
     }
 
+    template<typename Function, typename ... Args>
+    CODI_INLINE void evaluateForward(const Position& start, const Position& end,const Function& function,
+                                     Args&&... args) {
+      PointerHandle<ChunkType> pHandle;
+
+      size_t dataPos = start.data;
+      pHandle.setPointers(0, &chunk);
+      pHandle.callNestedForward(nested, start.inner, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
+    }
   };
 }

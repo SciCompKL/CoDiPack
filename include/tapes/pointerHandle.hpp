@@ -108,6 +108,12 @@ namespace codi {
                              Args&&... args) {
         nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1);
       }
+
+      template<typename Nested, typename ... Args>
+      CODI_INLINE void callNestedForward(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
+                             Args&&... args) {
+        nested->evaluateForward(start, end, std::forward<Args>(args)..., p1);
+      }
   };
 
   /**
@@ -150,6 +156,12 @@ namespace codi {
       CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
                              Args&&... args) {
         nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2);
+      }
+
+      template<typename Nested, typename ... Args>
+      CODI_INLINE void callNestedForward(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
+                             Args&&... args) {
+        nested->evaluateForward(start, end, std::forward<Args>(args)..., p1, p2);
       }
   };
 
@@ -195,6 +207,12 @@ namespace codi {
       CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
                              Args&&... args) {
         nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2, p3);
+      }
+
+      template<typename Nested, typename ... Args>
+      CODI_INLINE void callNestedForward(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
+                             Args&&... args) {
+        nested->evaluateForward(start, end, std::forward<Args>(args)..., p1, p2, p3);
       }
   };
 
@@ -242,6 +260,12 @@ namespace codi {
       CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
                              Args&&... args) {
         nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2, p3, p4);
+      }
+
+      template<typename Nested, typename ... Args>
+      CODI_INLINE void callNestedForward(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
+                             Args&&... args) {
+        nested->evaluateForward(start, end, std::forward<Args>(args)..., p1, p2, p3, p4);
       }
   };
 }
