@@ -49,8 +49,7 @@ namespace codi {
    * are only performed in codiAssert statements.
    *
    * The read access to the data is provided by the function forEachReverse, which will
-   * call the provided function handle on every data item. A second option is to
-   * get direct pointers to the data with the getDataAtPosition function.
+   * call the provided function handle on every data item.
    *
    * As some tapes need multiple chunk vectors, the design of the chunk vector reflects
    * this need. The user never knows when a chunk vector pushes a new chunk on the stack

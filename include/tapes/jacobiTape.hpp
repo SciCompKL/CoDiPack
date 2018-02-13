@@ -300,7 +300,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evalStmtCallback(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
+    CODI_INLINE void evaluateStackReverse(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
                                       size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
                                       size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements) {
 
@@ -318,86 +318,13 @@ namespace codi {
       }
     }
 
-    /**
-     * @brief Evaluate a part of the statement vector.
-     *
-     * It has to hold start >= end.
-     *
-     * The function calls the evaluation method for the jacobi vector.
-     *
-     * @param[in] start  The starting point for the statement vector.
-     * @param[in]   end  The ending point for the statement vector.
-     * @param[in]  args  The arguments from the other vectors.
-     *
-     * @tparam Args  The types of the other arguments.
-     */
-    template<typename ... Args>
-    CODI_INLINE void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
-      StatementInt* statementData;
-      size_t dataPos = start.data;
-      StmtChildPosition curInnerPos = start.inner;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        stmtVector.getDataAtPosition(curChunk, 0, statementData);
-
-        StmtChildPosition endInnerPos = stmtVector.getInnerPosition(curChunk);
-        evalStmtCallback(curInnerPos, endInnerPos, dataPos, statementData, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
-
-        curInnerPos = endInnerPos;
-
-        dataPos = stmtVector.getChunkUsedData(curChunk - 1);
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      stmtVector.getDataAtPosition(end.chunk, 0, statementData);
-      evalStmtCallback(curInnerPos, end.inner, dataPos, statementData, std::forward<Args>(args)...);
-    }
-
-
-    /**
-     * @brief Evaluate a part of the statement vector.
-     *
-     * It has to hold start >= end.
-     *
-     * The function calls the evaluation method for the jacobi vector.
-     *
-     * @param[in]    start  The starting point for the statement vector.
-     * @param[in]      end  The ending point for the statement vector.
-     * @param[in,out] args  Additional arguments for the evaluation function.
-     *
-     * @tparam Args  The types of the other arguments.
-     */
-    template<typename ... Args>
-    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
-      evaluateStmt(start, end, std::forward<Args>(args)...);
-    }
-
-    /**
-     * @brief Evaluate a part of the statement vector.
-     *
-     * It has to hold start >= end.
-     *
-     * The function calls the evaluation method for the jacobi vector.
-     *
-     * @param[in]    start  The starting point for the statement vector.
-     * @param[in]      end  The ending point for the statement vector.
-     * @param[in,out] args  Additional arguments for the evaluation function.
-     *
-     * @tparam Args  The types of the other arguments.
-     */
-    template<typename ... Args>
-    CODI_INLINE void evalExtFuncCallback(const JacobiPosition& start, const JacobiPosition& end, Args&&... args) {
-      evaluateJacobies(start, end, std::forward<Args>(args)...);
-    }
-
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
       auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
           size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
           size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements) {
-        evalStmtCallback<AdjointData>(startAdjPos, endAdjPos, adjointData, dataPos, endDataPos, jacobies, indices, stmtPos, endStmtPos, statements);
+        evaluateStackReverse<AdjointData>(startAdjPos, endAdjPos, adjointData, dataPos, endDataPos, jacobies, indices, stmtPos, endStmtPos, statements);
       };
       auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 

@@ -259,7 +259,7 @@ namespace codi {
                               size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                               size_t& stmtPos, const size_t& endStmtPos,
                                 Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStack<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants,
+        evaluateStackReverse<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
       };
       auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType*&>;
@@ -360,7 +360,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStack(const size_t& startAdjPos, const size_t& endAdjPos,
+    CODI_INLINE void evaluateStackReverse(const size_t& startAdjPos, const size_t& endAdjPos,
                                    AdjointData* adjointData,
                                    size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
                                    size_t& indexPos, const size_t& endIndexPos, Index* &indices,

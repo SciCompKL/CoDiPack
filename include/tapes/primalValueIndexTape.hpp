@@ -379,7 +379,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStack(AdjointData* adjointData, Real* primalVector,
+    CODI_INLINE void evaluateStackReverse(AdjointData* adjointData, Real* primalVector,
                                    size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
                                    size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                                    size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
@@ -404,42 +404,6 @@ namespace codi {
           HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjointData);
 #endif
       }
-    }
-
-    /**
-     * @brief Evaluate a part of the statement vector.
-     *
-     * It has to hold start >= end.
-     *
-     * The function calls the evaluation method for the stack.
-     *
-     * @param[in] start  The starting point for the statement vector.
-     * @param[in]   end  The ending point for the statement vector.
-     * @param[in]  args  The arguments from the other vectors.
-     *
-     * @tparam Args  The types of the other arguments.
-     */
-    template<typename ... Args>
-    CODI_INLINE void evalStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
-      Index* data1;
-      Real* data2;
-      Handle* data3;
-      StatementInt* data4;
-
-      size_t dataPos = start.data;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        stmtVector.getDataAtPosition(curChunk, 0, data1, data2, data3, data4);
-
-        evaluateStack(dataPos, 0, data1, data2, data3, data4, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
-
-        dataPos = stmtVector.getChunkUsedData(curChunk - 1);
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      stmtVector.getDataAtPosition(end.chunk, 0, data1, data2, data3, data4);
-      evaluateStack(dataPos, end.data, data1, data2, data3, data4, std::forward<Args>(args)...);
     }
 
     /**
@@ -483,7 +447,7 @@ namespace codi {
                               size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                               size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
                                 Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStack<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
+        evaluateStackReverse<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
                                      statements, passiveActiveReal);
       };
@@ -580,7 +544,7 @@ namespace codi {
                                  size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                                  size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
                                    Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStack<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
+        evaluateStackReverse<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
                                      statements, passiveActiveReal);
       };
