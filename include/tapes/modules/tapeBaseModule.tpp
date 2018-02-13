@@ -44,8 +44,8 @@
  * The module defines the types Position.
  *
  * It defines the methods initGradientData, destroyGradientData, setGradient, getGradient, gradient, clearAdjoints,
- * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), setActive, setPassive, isActive, print Statistics
- * from the TapeInterface and ReverseTapeInterface.
+ * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), evaluateForward(), evaluateForward(Pos, Pos), setActive,
+ * setPassive, isActive, print Statistics from the TapeInterface and ReverseTapeInterface.
  *
  * It defines the methods resizeAdjoints, resizeAdjointsToIndexSize, cleanTapeBase, swapTapeBaseModule as interface functions for the
  * including class.
@@ -69,6 +69,10 @@
 
 #ifndef EVALUATE_FUNCTION_NAME
 #error Please define the name of the evaluation function for the tape.
+#endif
+
+#ifndef EVALUATE_FORWARD_FUNCTION_NAME
+#error Please define the name of the forward evaluation function for the tape.
 #endif
 
   // ----------------------------------------------------------------------
@@ -349,6 +353,43 @@
     }
 
     /**
+     * @brief Perform the forward evaluation from start to end with a custom adjoint vector.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in]           start  The starting position for the forward evaluation.
+     * @param[in]             end  The ending position for the forward evaluation.
+     * @param[in,out] adjointData  The vector for the adjoint evaluation. It has to have the size of getAdjointSize() + 1.
+     *
+     * @tparam AdjointData  The type needs to provide an add, multiply and comparison operation.
+     */
+    template<typename AdjointData>
+    CODI_NO_INLINE void evaluateForward(const Position& start, const Position& end, AdjointData* adjointData) {
+      EVALUATE_FORWARD_FUNCTION_NAME(start, end, adjointData);
+    }
+
+    /**
+     * @brief Perform the forward evaluation from start to end.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start  The starting position for the forward evaluation.
+     * @param[in]   end  The ending position for the forward evaluation.
+     */
+    CODI_NO_INLINE void evaluateForward(const Position& start, const Position& end) {
+      resizeAdjointsToIndexSize();
+
+      evaluateForward(start, end, adjoints);
+    }
+
+    /**
+     * @brief Perform the foward evaluation from the initial position to the current position.
+     */
+    void evaluateForward() {
+      evaluateForward(getZeroPosition(), getPosition());
+    }
+
+    /**
      * @brief Start recording.
      */
     CODI_INLINE void setActive(){
@@ -452,3 +493,4 @@
 #undef INDEX_HANDLER_NAME
 #undef RESET_FUNCTION_NAME
 #undef EVALUATE_FUNCTION_NAME
+#undef EVALUATE_FORWARD_FUNCTION_NAME

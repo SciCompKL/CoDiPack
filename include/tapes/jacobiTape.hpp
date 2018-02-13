@@ -133,6 +133,7 @@ namespace codi {
     #define INDEX_HANDLER_NAME indexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateInt
+    #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
     #include "modules/tapeBaseModule.tpp"
 
     #define CHILD_VECTOR_TYPE IndexHandler
@@ -324,7 +325,8 @@ namespace codi {
       auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
           size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
           size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements) {
-        evaluateStackReverse<AdjointData>(startAdjPos, endAdjPos, adjointData, dataPos, endDataPos, jacobies, indices, stmtPos, endStmtPos, statements);
+        evaluateStackReverse<AdjointData>(startAdjPos, endAdjPos, adjointData, dataPos, endDataPos, jacobies, indices,
+                                          stmtPos, endStmtPos, statements);
       };
       auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 
@@ -332,6 +334,44 @@ namespace codi {
 
       evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, adjointData);
     }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateStackForward(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
+                                          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements) {
+      CODI_UNUSED(endDataPos);
+      CODI_UNUSED(endStmtPos);
+
+      size_t adjPos = startAdjPos;
+
+      while(adjPos < endAdjPos) {
+        ++adjPos;
+
+        AdjointData& adj = adjointData[adjPos];
+        adj = AdjointData();
+
+        incrementTangents(adj, adjointData, statements[stmtPos], dataPos, jacobies, indices);
+
+        ++stmtPos;
+      }
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
+
+      auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
+          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements) {
+        evaluateStackForward<AdjointData>(startAdjPos, endAdjPos, adjointData, dataPos, endDataPos, jacobies, indices,
+                                      stmtPos, endStmtPos, statements);
+      };
+      auto forwardFunc = &JacobiVector::template evaluateForward<decltype(evalFunc), AdjointData*&>;
+
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+
+      evaluateExtFuncForward(start, end, forwardFunc, jacobiVector, &interface, evalFunc, adjointData);
+    }
+
 
   public:
     /**

@@ -41,7 +41,7 @@
  *
  * It defines the methods pushJacobi(1.0), pushJacobi(Mul) printJacobiStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods evaluateJacobies, incrementAdjoints, setDataChunkSize, getUsedJacobiesSize, resizeJacobi as interface functions for the
+ * It defines the methods evaluateJacobies, incrementAdjoints, incrementTangents, setDataChunkSize, getUsedJacobiesSize, resizeJacobi as interface functions for the
  * including class.
  */
 
@@ -109,6 +109,14 @@
         }
       } else {
         dataPos -= activeVariables;
+      }
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void incrementTangents(AdjointData& adj, const AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, const Real* jacobies, const Index* indices) {
+      for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
+        adj += adjoints[indices[dataPos]] * jacobies[dataPos];
+        dataPos += 1;
       }
     }
 
@@ -240,6 +248,21 @@
     CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
 
       evaluate(start, end);
+    }
+
+    /**
+     * @brief Special evaluation function for the forward preaccumulation of a tape part.
+     *
+     * No special implementation required for Jacobi tapes.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start The starting position for the forward evaluation.
+     * @param[in]   end The ending position for the forward evaluation.
+     */
+    CODI_INLINE void evaluateForwardPreacc(const Position& start, const Position& end) {
+
+      evaluateForward(start, end);
     }
 
 #undef CHILD_VECTOR_TYPE

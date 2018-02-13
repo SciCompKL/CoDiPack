@@ -312,29 +312,62 @@ namespace codi {
           nonZeros.resize(outputData.size());
         }
 
-        for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
 
-          nonZeros[curOut] = 0;
-          size_t jacobiOffset = curOut * inputData.size();
+        if(inputData.size() < outputData.size()) {
+          // forward accumulation of Jacobi
 
-          GradientData indexOut = outputData[curOut]->getGradientData();
-          tape.setGradient(indexOut, 1.0);
-          tape.evaluatePreacc(endPos, startPos);
+          for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
+            nonZeros[curOut] = 0;
+          }
 
           for (size_t curIn = 0; curIn < inputData.size(); ++curIn) {
 
             GradientData indexIn = inputData[curIn];
-            GradientValue& adj = tape.gradient(indexIn);
-            jacobie[curIn + jacobiOffset] = adj;
+            tape.setGradient(indexIn, 1.0);
+            tape.evaluateForwardPreacc(startPos, endPos);
 
-            if(0.0 != adj) {
-              nonZeros[curOut] += 1;
+            for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
+
+              GradientData indexOut = outputData[curOut]->getGradientData();
+              GradientValue& adj = tape.gradient(indexOut);
+              jacobie[curIn + curOut * inputData.size()] = adj;
+
+              if(0.0 != adj) {
+                nonZeros[curOut] += 1;
+              }
             }
 
-            adj = 0.0;
-          }
+            tape.setGradient(indexIn, 0.0);
 
-          tape.clearAdjoints(endPos, startPos);
+            tape.clearAdjoints(endPos, startPos);
+          }
+        } else {
+          // reverse accumulation of Jacobi
+
+          for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
+
+            nonZeros[curOut] = 0;
+            size_t jacobiOffset = curOut * inputData.size();
+
+            GradientData indexOut = outputData[curOut]->getGradientData();
+            tape.setGradient(indexOut, 1.0);
+            tape.evaluatePreacc(endPos, startPos);
+
+            for (size_t curIn = 0; curIn < inputData.size(); ++curIn) {
+
+              GradientData indexIn = inputData[curIn];
+              GradientValue& adj = tape.gradient(indexIn);
+              jacobie[curIn + jacobiOffset] = adj;
+
+              if(0.0 != adj) {
+                nonZeros[curOut] += 1;
+              }
+
+              adj = 0.0;
+            }
+
+            tape.clearAdjoints(endPos, startPos);
+          }
         }
 
         // store the Jacobi matrix

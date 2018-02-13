@@ -79,6 +79,24 @@ namespace codi {
     virtual void evaluate() = 0;
 
     /**
+     * @brief Evaluate the tape from start to end.
+     *
+     * The function performs the forward evaluation of the recorded tape from
+     * the start position to the end position.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start The starting position for the forward evaluation.
+     * @param[in]   end The ending position for the forward evaluation.
+     */
+    virtual void evaluateForward(const Position& start, const Position& end) = 0;
+
+    /**
+     * @brief Evaluate the tape from the beginning to the current position.
+     */
+    virtual void evaluateForward() = 0;
+
+    /**
      * @brief Special evaluation function for the preaccumulation of a tape part.
      *
      * The function just evaluates the tape and does not store the data for the preaccumulation.

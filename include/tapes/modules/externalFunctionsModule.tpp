@@ -45,7 +45,7 @@
  * It defines the methods setExternalFunctionChunkSize, pushExternalFunctionHandle, pushExternalFunction,
  * printExtFuncStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods getExtFuncPosition, getExtFuncZeroPosition, resetExtFunc, evaluateExtFunc as interface functions for the
+ * It defines the methods getExtFuncPosition, getExtFuncZeroPosition, resetExtFunc, evaluateExtFunc, evaluateExtFuncForward as interface functions for the
  * including class.
  */
 
@@ -306,7 +306,8 @@
      * @tparam Args  The types of the other arguments.
      */
     template<typename Function, typename Obj, typename ... Args>
-    CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj, AdjointInterface<Real>* adjointInterface, Args&&... args){
+    CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,
+                                     Obj& obj, AdjointInterface<Real>* adjointInterface, Args&&... args){
       ExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
 
       extFuncVector.forEachReverse(start, end, evaluator, adjointInterface, std::forward<Args>(args)...);
@@ -315,6 +316,30 @@
       (obj.*func)(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
     }
 
+    /**
+     * @brief Evaluate a part of the external function vector.
+     *
+     * It has to hold start <= end.
+     *
+     * It calls the forward evaluation method for the statement vector.
+     *
+     * @param[in]       start  The starting point for the external function vector.
+     * @param[in]         end  The ending point for the external function vector.
+     * @param[in,out]    args  The arguments for the evaluation.
+     *
+     * @tparam Args  The types of the other arguments.
+     */
+    template<typename Function, typename Obj, typename ... Args>
+    void evaluateExtFuncForward(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,
+                                Obj& obj, AdjointInterface<Real>* adjointInterface, Args&&... args){
+      CODI_UNUSED(adjointInterface);
+
+      if(start.chunk != end.chunk || start.data != end.data) {
+        CODI_EXCEPTION("Currently no support for forward evaluated external functions.");
+      }
+
+      (obj.*func)(start.inner, end.inner, std::forward<Args>(args)...);
+    }
 
   public:
 

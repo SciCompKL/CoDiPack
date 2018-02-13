@@ -414,10 +414,23 @@ namespace codi {
 
       PointerHandle<ChunkType> pHandle;
 
-      // we do not initialize dataPos with start - 1 because the type can be unsigned
+      // we do not initialize dataPos with start - 1 since the type can be unsigned
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
         --dataPos; // decrement of loop variable
 
+        pHandle.setPointers(dataPos, chunks[chunkPos]);
+        pHandle.call(function, std::forward<Args>(args)...);
+      }
+    }
+
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachDataForward(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
+      codiAssert(start <= end);
+      codiAssert(chunkPos < chunks.size());
+
+      PointerHandle<ChunkType> pHandle;
+
+      for(size_t dataPos = start; dataPos < end; dataPos += 1) {
         pHandle.setPointers(dataPos, chunks[chunkPos]);
         pHandle.call(function, std::forward<Args>(args)...);
       }
@@ -454,6 +467,37 @@ namespace codi {
       }
 
       forEachDataReverse(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
+    }
+
+    /**
+     * @brief Iterates over all data entries in the given range in a forward loop.
+     *
+     * Iterates of the data entries and calls the function object with each data item.
+     *
+     * It has to hold start <= end.
+     *
+     * @param    start  The starting point of the range.
+     * @param      end  The end point of the range.
+     * @param function  The function called for each data entry.
+     * @param     args  Additional arguments for the function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachForward(const Position& start, const Position& end, FunctionObject& function, Args&&... args) {
+      codiAssert(start.chunk < end.chunk || (start.chunk == end.chunk && start.data <= end.data));
+      codiAssert(end.chunk < chunks.size());
+
+      size_t dataStart = start.data;
+      for(size_t chunkPos = start.chunk; chunkPos < end.chunk; chunkPos += 1) {
+
+        forEachDataForward(chunkPos, dataStart, chunks[chunkPos]->getUsedSize(), function, std::forward<Args>(args)...);
+
+        dataStart = 0;
+
+      }
+
+      forEachDataForward(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
     }
 
     /**

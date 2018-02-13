@@ -147,6 +147,7 @@ namespace codi {
     #define INDEX_HANDLER_NAME indexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateInt
+    #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
     #include "modules/tapeBaseModule.tpp"
 
     #define CHILD_VECTOR_TYPE EmptyChunkVector

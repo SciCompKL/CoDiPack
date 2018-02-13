@@ -140,6 +140,7 @@ namespace codi {
     #define INDEX_HANDLER_NAME indexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateInt
+    #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
     #include "modules/tapeBaseModule.tpp"
 
     #define CHILD_VECTOR_TYPE EmptyChunkVector
@@ -342,6 +343,40 @@ namespace codi {
       AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
 
       evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, adjointData);
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateStackForward(AdjointData* adjointData,
+                                          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
+                                              Index* lhsIndices) {
+      CODI_UNUSED(endDataPos);
+
+      while(stmtPos < endStmtPos) {
+        const Index& lhsIndex = lhsIndices[stmtPos];
+        AdjointData& adj = adjointData[lhsIndex];
+        adj = AdjointData();
+
+        incrementTangents(adj, adjointData, numberOfArguments[stmtPos], dataPos, jacobies, indices);
+
+        ++stmtPos;
+      }
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
+
+      auto evalFunc = [this] (AdjointData* adjointData,
+          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements, Index* lhsIndices) {
+        evaluateStackForward<AdjointData>(adjointData, dataPos, endDataPos, jacobies, indices,
+                                      stmtPos, endStmtPos, statements, lhsIndices);
+      };
+      auto forwardFunc = &JacobiVector::template evaluateForward<decltype(evalFunc), AdjointData*&>;
+
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+
+      evaluateExtFuncForward(start, end, forwardFunc, jacobiVector, &interface, evalFunc, adjointData);
     }
 
   public:
