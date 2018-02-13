@@ -115,7 +115,7 @@ namespace codi {
      * @tparam  Args  The data types for the arguments of the function.
      */
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
+      CODI_INLINE void forEachChunkForward(FunctionObject& function, bool recursive, Args &... args) {
         CODI_UNUSED(function);
         CODI_UNUSED(recursive);
         CODI_UNUSED_VAR(args...);

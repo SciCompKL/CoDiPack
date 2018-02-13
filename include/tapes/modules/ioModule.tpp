@@ -94,7 +94,7 @@
       CoDiIoHandle ioHandle(filename, true);
 
       // we ignore the external function vector here because the data there should not be written
-      ROOT_VECTOR.forEachChunk(writeFunction, true, ioHandle);
+      ROOT_VECTOR.forEachChunkForward(writeFunction, true, ioHandle);
     }
 
     /**
@@ -110,7 +110,7 @@
     void readFromFile(const std::string& filename) {
       CoDiIoHandle ioHandle(filename, false);
 
-      ROOT_VECTOR.forEachChunk(readFunction, true, ioHandle);
+      ROOT_VECTOR.forEachChunkForward(readFunction, true, ioHandle);
     }
 
     /**
@@ -121,7 +121,7 @@
      *
      */
     void deleteData() {
-      ROOT_VECTOR.forEachChunk(deleteFunction, true);
+      ROOT_VECTOR.forEachChunkForward(deleteFunction, true);
     }
 
     /**

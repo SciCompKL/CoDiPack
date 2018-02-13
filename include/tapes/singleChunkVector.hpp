@@ -48,7 +48,7 @@ namespace codi {
    * has to ensure that enough data is present. All the usual checks with reserveItems
    * are only performed in codiAssert statements.
    *
-   * The read access to the data is provided by the function forEach, which will
+   * The read access to the data is provided by the function forEachReverse, which will
    * call the provided function handle on every data item. A second option is to
    * get direct pointers to the data with the getDataAtPosition function.
    *
@@ -302,7 +302,7 @@ namespace codi {
      * @tparam  Args  The data types for the arguments.
      */
     template<typename FunctionObject, typename ... Args>
-    CODI_INLINE void forEachData(const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
+    CODI_INLINE void forEachDataReverse(const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
       codiAssert(start >= end);
 
       PointerHandle<ChunkType> pHandle;
@@ -333,13 +333,13 @@ namespace codi {
      * @tparam  Args  The data types for the arguments.
      */
     template<typename FunctionObject, typename ... Args>
-    CODI_INLINE void forEach(const Position& start, const Position& end, FunctionObject& function, Args &&... args) {
+    CODI_INLINE void forEachReverse(const Position& start, const Position& end, FunctionObject& function, Args &&... args) {
       codiAssert(start.chunk == 0);
       codiAssert(end.chunk == 0);
       codiAssert(start.data >= end.data);
       codiAssert(start.data <= chunk.getSize());
 
-      forEachData(start.data, end.data, function, std::forward<Args>(args)...);
+      forEachDataReverse(start.data, end.data, function, std::forward<Args>(args)...);
     }
 
     /**
@@ -356,12 +356,12 @@ namespace codi {
      * @tparam  Args  The data types for the arguments of the function.
      */
     template<typename FunctionObject, typename ... Args>
-    CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &&... args) {
+    CODI_INLINE void forEachChunkForward(FunctionObject& function, bool recursive, Args &&... args) {
 
       function(&chunk, args...);
 
       if(recursive) {
-        nested->forEachChunk(function, recursive, std::forward<Args>(args)...);
+        nested->forEachChunkForward(function, recursive, std::forward<Args>(args)...);
       }
     }
 

@@ -539,7 +539,7 @@ namespace codi {
 
         StmtPosition stmtEnd = stmtVector.getPosition();
 
-        stmtVector.forEach(stmtEnd, pos.inner.inner.inner, reseter);
+        stmtVector.forEachReverse(stmtEnd, pos.inner.inner.inner, reseter);
       }
 
       // call the function from the external function module

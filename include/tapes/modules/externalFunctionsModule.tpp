@@ -262,7 +262,7 @@
     void resetExtFunc(const ExtFuncPosition& pos) {
       ExtFuncDeleter deleter(*this);
 
-      extFuncVector.forEach(getExtFuncPosition(), pos, deleter);
+      extFuncVector.forEachReverse(getExtFuncPosition(), pos, deleter);
 
       // reset will be done iteratively through the vectors
       extFuncVector.reset(pos);
@@ -285,7 +285,7 @@
     void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj, Args&&... args){
       PrimalExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
 
-      extFuncVector.forEach(start, end, evaluator, std::forward<Args>(args)...);
+      extFuncVector.forEachReverse(start, end, evaluator, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
       (obj.*func)(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
@@ -309,7 +309,7 @@
     CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj, AdjointInterface<Real>* adjointInterface, Args&&... args){
       ExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
 
-      extFuncVector.forEach(start, end, evaluator, adjointInterface, std::forward<Args>(args)...);
+      extFuncVector.forEachReverse(start, end, evaluator, adjointInterface, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
       (obj.*func)(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);

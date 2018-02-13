@@ -49,7 +49,7 @@ namespace codi {
    * make sure that the current loaded chunk has enough data. The user can then
    * push as many data items as he has reserved on the chunk vector.
    *
-   * The read access to the data is provided by the function forEach, which will
+   * The read access to the data is provided by the function forEachReverse, which will
    * call the provided function handle on every data item. A second option is to
    * get direct pointers to the data with the getDataAtPosition function.
    *
@@ -409,7 +409,7 @@ namespace codi {
      * @tparam  Args  The data types for the arguments.
      */
     template<typename FunctionObject, typename ... Args>
-    CODI_INLINE void forEachData(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
+    CODI_INLINE void forEachDataReverse(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
       codiAssert(start >= end);
       codiAssert(chunkPos < chunks.size());
 
@@ -441,20 +441,20 @@ namespace codi {
      * @tparam  Args  The data types for the arguments.
      */
     template<typename FunctionObject, typename ... Args>
-    CODI_INLINE void forEach(const Position& start, const Position& end, FunctionObject& function, Args&&... args) {
+    CODI_INLINE void forEachReverse(const Position& start, const Position& end, FunctionObject& function, Args&&... args) {
       codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
       codiAssert(start.chunk < chunks.size());
 
       size_t dataStart = start.data;
       for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
 
-        forEachData(chunkPos, dataStart, 0, function, std::forward<Args>(args)...);
+        forEachDataReverse(chunkPos, dataStart, 0, function, std::forward<Args>(args)...);
 
         dataStart = chunks[--chunkPos]->getUsedSize(); // decrement of loop variable
 
       }
 
-      forEachData(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
+      forEachDataReverse(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
     }
 
     /**
@@ -472,7 +472,7 @@ namespace codi {
      * @tparam  Args  The data types for the arguments of the function.
      */
     template<typename FunctionObject, typename ... Args>
-    CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
+    CODI_INLINE void forEachChunkForward(FunctionObject& function, bool recursive, Args&&... args) {
 
       for(size_t chunkPos = 0; chunkPos < chunks.size(); ++chunkPos) {
 
@@ -480,7 +480,7 @@ namespace codi {
       }
 
       if(recursive) {
-        nested->forEachChunk(function, recursive, std::forward<Args>(args)...);
+        nested->forEachChunkForward(function, recursive, std::forward<Args>(args)...);
       }
     }
 
