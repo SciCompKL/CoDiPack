@@ -87,6 +87,8 @@ namespace codi {
         this->tape = tape;
       }
 
+      virtual void deleteAdjointVector() = 0;
+
       /**
        * @brief Evaluate the tape from start to end with the adjoint vector of this helper.
        *
@@ -258,6 +260,11 @@ namespace codi {
         if(nullptr != adjointInterface) {
           delete adjointInterface;
         }
+      }
+
+      void deleteAdjointVector() {
+        adjointVector.resize(0);
+        adjointVector.shrink_to_fit();
       }
 
       /**

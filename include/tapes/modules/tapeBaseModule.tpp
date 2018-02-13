@@ -489,6 +489,10 @@
       return INDEX_HANDLER_NAME.getMaximumGlobalIndex();
     }
 
+    void deleteAdjointVector() {
+      cleanTapeBase();
+    }
+
 #undef POSITION_TYPE
 #undef INDEX_HANDLER_NAME
 #undef RESET_FUNCTION_NAME
