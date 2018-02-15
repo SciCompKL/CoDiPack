@@ -38,21 +38,18 @@ POINTS(1) = {
 
 
 void evalFunc(NUMBER* x, NUMBER* y) {
-  y[0] = x[0];
-  y[1] = x[1];
-  for(int i = 0; i < 1000; ++i) {
-    NUMBER xTemp = y[0];
-    NUMBER yTemp = y[1];
+  NUMBER temp1 = x[0] * x[1];
+  NUMBER temp2 = x[0] / x[1];
+  NUMBER temp3 = x[0] + x[1];
+  NUMBER temp4 = x[0] - x[1];
+  NUMBER temp5 = temp1 * temp3;
+  NUMBER temp6 = temp2 * temp4;
 
-    NUMBER xSqr = xTemp * xTemp;
-    NUMBER ySqr = yTemp * yTemp;
 
-    y[0] = xSqr - ySqr - 0.65;
-    y[1] = 2.0 * yTemp * xTemp;
-  }
-
-  y[2] = x[0] * x[0];
-  y[3] = x[1] * x[1];
+  y[0] = temp5 * temp5;
+  y[1] = temp6 * temp6;
+  y[2] = temp5 * temp5;
+  y[3] = temp6 * temp6;
 }
 
 void func(NUMBER* x, NUMBER* y) {
@@ -68,4 +65,12 @@ void func(NUMBER* x, NUMBER* y) {
   evalFunc(x, y);
 
   ph.finish(false, y[0], y[1], y[2], y[3]);
+
+  NUMBER temp1 = y[0] + y[1];
+  NUMBER temp2 = y[2] + y[3];
+
+  y[0] = temp1 + temp2;
+  y[1] = temp1 - temp2;
+  y[2] = temp1 * temp2;
+  y[3] = temp1 / temp2;
 }
