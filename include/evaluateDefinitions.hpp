@@ -78,6 +78,22 @@ namespace codi {
                                   PRIMAL_ADJOINT_TYPE* adjoints);
 
       /**
+       * @brief Function definition for the forward evaluation of a statement in a tape.
+       *
+       * The function is called in the tapes for the forward evaluation of a statement. The arrays are still in the
+       * global address space and need to be accessed with corresponding position.
+       */
+      typedef Real (*TangentFunc)(const Real& adj,
+                                  GradientValue& lhsAdj,
+                                  const StatementInt& passiveActives,
+                                  size_t& indexPos,
+                                  Index* &indices,
+                                  size_t& constantPos,
+                                  PassiveReal* &constants,
+                                  Real* primalVector,
+                                  PRIMAL_ADJOINT_TYPE* adjoints);
+
+      /**
        * @brief Function definition for the primal evaluation of a statement in an expression.
        *
        * The function is called in the expressions for the primal evaluation of a statement. The arrays are
@@ -93,7 +109,20 @@ namespace codi {
        * The function is called in the expressions for the reverse evaluation of a statement. The arrays are
        * defined in the local address space of the expression. They need to indexed starting with zero.
        */
-      typedef void (*AdjointExprFunc)(const PRIMAL_SEED_TYPE& adj,
+      typedef void (*AdjointExprFunc)(const Real& adj,
+                                      const Index* indices,
+                                      const PassiveReal* constants,
+                                      const Real* primalVector,
+                                      PRIMAL_ADJOINT_TYPE* adjoints);
+
+      /**
+       * @brief Function definition for the forward evaluation of a statement in an expression.
+       *
+       * The function is called in the expressions for the forward evaluation of a statement. The arrays are
+       * defined in the local address space of the expression. They need to indexed starting with zero.
+       */
+      typedef Real (*TangentExprFunc)(const Real& adj,
+                                      GradientValue& lhsAdj,
                                       const Index* indices,
                                       const PassiveReal* constants,
                                       const Real* primalVector,

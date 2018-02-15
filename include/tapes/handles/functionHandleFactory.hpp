@@ -108,5 +108,15 @@ namespace codi {
       handle(std::forward<Args>(args)...);
     }
 
+    template<typename Tape, typename ... Args>
+    static CODI_INLINE typename Tape::Real callForwardHandle(Handle handle, Args&& ... args) {
+      CODI_UNUSED(handle);
+      CODI_UNUSED_VAR(args...);
+
+      std::cerr << "Error: Forward handles are not supported by this handle factory." << std::endl;
+      exit(-1);
+      return typename Tape::Real();
+    }
+
   };
 }

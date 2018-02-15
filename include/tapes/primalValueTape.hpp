@@ -268,6 +268,49 @@ namespace codi {
     }
 
     /**
+     * @brief Allocates a copy of the primal vector that is used in the evaluation.
+     *
+     * It has to hold start <= end.
+     *
+     * The function calls the evaluation method for the external function vector.
+     *
+     * @param[in]            start  The starting point for the statement vector.
+     * @param[in]              end  The ending point for the statement vector.
+     * @param[in,out]  adjointData  The adjoint vector for the evaluation.
+     *
+     * @tparam AdjointData  The data type for the adjoint vector.
+     */
+    template<typename AdjointData>
+    CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
+
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        typedef AdjointInterfaceImpl<Real, AdjointData> AdjVecType;
+        AdjVecType* adjVec = &interface;
+#else
+      static_assert(std::is_same<AdjointData, GradientValue>::value,
+        "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"
+        " to use custom adjoint vectors in the primal value tapes.");
+
+      typedef AdjointData AdjVecType;
+      AdjVecType* adjVec = adjointData;
+#endif
+
+      auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos,
+                              AdjVecType* adjointData,
+                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                              size_t& stmtPos, const size_t& endStmtPos,
+                                Handle* &statements, StatementInt* &passiveActiveReal) {
+        evaluateStackForward<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants,
+                                     indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
+      };
+      auto forwardFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc), AdjVecType*&>;
+      evaluateExtFuncForward(start, end, forwardFunc, constantValueVector, &interface, evalFunc, adjVec);
+    }
+
+    /**
      * @brief Set the size of the index and statement data and the primal vector.
      * @param[in] dataSize  The new size of the index vector.
      * @param[in] stmtSize  The new size of the statement vector.
@@ -377,7 +420,7 @@ namespace codi {
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
           adjointData->setLhsAdjoint(adjPos);
 #else
-          const GradientValue& adj = adjointData[adjPos];
+          const AdjointData& adj = adjointData[adjPos];
 #endif
         --adjPos;
         --stmtPos;
@@ -387,6 +430,36 @@ namespace codi {
 #else
           HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjointData);
 #endif
+      }
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateStackForward(const size_t& startAdjPos, const size_t& endAdjPos,
+                                   AdjointData* adjointData,
+                                   size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
+                                   size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                   size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
+                                      StatementInt* &passiveActiveReal) {
+      CODI_UNUSED(endConstPos);
+      CODI_UNUSED(endIndexPos);
+      CODI_UNUSED(endStmtPos);
+
+      size_t adjPos = startAdjPos;
+
+      while(adjPos < endAdjPos) {
+        adjPos += 1;
+
+        GradientValue lhsAdj = GradientValue();
+
+        // primal return value is currently not updated here (would be the same)
+        HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjointData);
+
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        adjointData->setLhsTangent(adjPos); /* Resets the lhs tangent, too */
+#else
+        adjointData[adjPos] = lhsAdj;
+#endif
+        stmtPos += 1;
       }
     }
 
@@ -407,6 +480,11 @@ namespace codi {
     CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
 
       evaluate(start, end);
+    }
+
+    CODI_INLINE void evaluateForwardPreacc(const Position& start, const Position& end) {
+
+      evaluateForward(start, end);
     }
 
     /**

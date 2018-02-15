@@ -368,6 +368,49 @@
                      adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 
+
+    template<typename FuncObj>
+    static CODI_INLINE Real evaluateForwardHandle(FuncObj funcObj,
+                                                  size_t varSize,
+                                                  size_t constSize,
+                                                  const Real& adj,
+                                                  GradientValue& lhsAdjoint,
+                                                  const StatementInt& passiveActives,
+                                                  size_t& indexPos,
+                                                  Index* &indices,
+                                                  size_t& constantPos,
+                                                  PassiveReal* &constants,
+                                                  Real* primalVector,
+                                                  PRIMAL_ADJOINT_TYPE* adjoints) {
+
+      size_t tempConstantPos = constantPos + constSize;
+      // first restore the primal values of the passive indices
+      for(StatementInt i = 0; i < passiveActives; ++i) {
+        primalVector[i + 1] = constants[tempConstantPos + i];
+      }
+
+      Real result = funcObj(adj, lhsAdjoint, codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector, adjoints);
+
+      indexPos += varSize;
+      constantPos += constSize + passiveActives;
+
+      return result;
+    }
+
+    template<typename Expr>
+    static CODI_INLINE Real curryEvaluateForwardHandle(const Real& adj,
+                                                       GradientValue& lhsAdjoint,
+                                                       const StatementInt& passiveActives,
+                                                       size_t& indexPos,
+                                                       Index* &indices,
+                                                       size_t& constantPos,
+                                                       PassiveReal* &constants,
+                                                       Real* primalVector,
+                                                       PRIMAL_ADJOINT_TYPE* adjoints) {
+      return evaluateForwardHandle(Expr::template evalTangent<Index, GradientValue, 0, 0, false>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+                                  adj, lhsAdjoint, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
+    }
+
     private:
 
     /**

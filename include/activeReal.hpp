@@ -612,6 +612,30 @@ namespace codi {
 #endif
       }
     }
+
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+      CODI_UNUSED(constantValues);
+      CODI_UNUSED(primalValues);
+
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
+        if(reverse) {
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+          adjointValues->updateJacobiAdjoint(indices[offset], seed);
+#else
+          adjointValues[indices[offset]] += seed * lhsAdjoint;
+#endif
+        } else { // forward
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+          adjointValues->updateJacobiTangent(indices[offset], seed);
+#else
+          lhsAdjoint += adjointValues[indices[offset]] * seed;
+#endif
+        }
+      }
+
+      return primalValues[indices[offset]];
+    }
   };
 
   /**

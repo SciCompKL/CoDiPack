@@ -281,6 +281,26 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
             (bJac, indices, constantValues, primalValues, adjointValues);
     }
 
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+      const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
+      const Real bPrimal = B::template getValue<Index,
+          offset + ExpressionTraits<A>::maxActiveVariables,
+          constantOffset + ExpressionTraits<A>::maxConstantVariables>
+            (indices, constantValues, primalValues);
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      A::template evalTangent<Index, GradientValue, offset, constantOffset, reverse>(aJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
+      B::template evalTangent<Index, GradientValue,
+          offset + ExpressionTraits<A>::maxActiveVariables,
+          constantOffset + ExpressionTraits<A>::maxConstantVariables, reverse>
+            (bJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
+
+      return resPrimal;
+    }
+
     /**
      * @brief constantValueActions are called for every constant real in the expression.
      *
@@ -464,6 +484,18 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
     }
 
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+      const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
+      const PassiveReal& bPrimal = constantValues[constantOffset + ExpressionTraits<A>::maxConstantVariables];
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      A::template evalTangent<Index, GradientValue, offset, constantOffset, reverse>(aJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
+
+      return resPrimal;
+    }
+
     /**
      * @brief constantValueActions are called for every constant real in the expression.
      *
@@ -644,6 +676,18 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
 
       const PRIMAL_SEED_TYPE bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
       B::template evalAdjoint<Index, GradientValue, offset, constantOffset + 1>(bJac, indices, constantValues, primalValues, adjointValues);
+    }
+
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+      const PassiveReal& aPrimal = constantValues[constantOffset];
+      const Real bPrimal = B::template getValue<Index, offset, constantOffset + 1>(indices, constantValues, primalValues);
+      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+
+      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      B::template evalTangent<Index, GradientValue, offset, constantOffset + 1, reverse>(bJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
+
+      return resPrimal;
     }
 
     /**

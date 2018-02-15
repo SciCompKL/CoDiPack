@@ -194,6 +194,16 @@ namespace codi {
       void updateJacobiAdjoint(const int index, Real jacobi) {
         adjointVector[index] += jacobi * lhs;
       }
+
+
+      void setLhsTangent(const int index) {
+        adjointVector[index] = lhs;
+        lhs = GradientValue();
+      }
+
+      void updateJacobiTangent(const int index, Real jacobi) {
+        lhs +=  jacobi * adjointVector[index];
+      }
   };
 
   /**
@@ -348,6 +358,15 @@ namespace codi {
        */
       void updateJacobiAdjoint(const int index, Real jacobi) {
         adjointVector[index] += jacobi * lhs;
+      }
+
+      void setLhsTangent(const int index) {
+        adjointVector[index] = lhs;
+        lhs = Direction<RealDir, vecDim>();
+      }
+
+      void updateJacobiTangent(const int index, Real jacobi) {
+        lhs +=  jacobi * adjointVector[index];
       }
   };
 

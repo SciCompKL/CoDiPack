@@ -156,6 +156,10 @@ namespace codi {
        */
       virtual void updateJacobiAdjoint(const int index, Real jacobi) = 0;
 
+      virtual void setLhsTangent(const int index) = 0;
+
+      virtual void updateJacobiTangent(const int index, Real jacobi) = 0;
+
       /**
        * @brief Some tapes need to revert the primal values in the primal value vector to the old value
        * for output variables.

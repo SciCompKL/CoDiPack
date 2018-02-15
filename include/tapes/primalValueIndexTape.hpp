@@ -236,8 +236,20 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end) {
-      CODI_UNUSED(start);
-      CODI_UNUSED(end);
+      if(NULL != adjoints) {
+        auto clearFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
+          CODI_UNUSED(value);
+          CODI_UNUSED(handle);
+          CODI_UNUSED(stmtSize);
+
+          if(*index < adjointsSize) {
+            this->adjoints[*index] = GradientValue();
+          }
+        };
+
+
+        stmtVector.forEachReverse(start.inner.inner.inner, end.inner.inner.inner, clearFunc);
+      }
     }
 
     /**
@@ -407,6 +419,32 @@ namespace codi {
       }
     }
 
+    template<typename AdjointData>
+    CODI_INLINE void evaluateStackForward(AdjointData* adjointData, Real* primalVector,
+                                   size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                   size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                   size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                      Handle* &statements, StatementInt* &passiveActiveReal) {
+      CODI_UNUSED(storedPrimals); // Stored primal are only used in the reverse evaluation
+      CODI_UNUSED(endConstantPos);
+      CODI_UNUSED(endIndexPos);
+
+      while(stmtPos < endStmtPos) {
+        const Index& lhsIndex = lhsIndices[stmtPos];
+
+        GradientValue lhsAdj = GradientValue();
+
+        primalVector[lhsIndex] = HandleFactory::template callForwardHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjointData);
+
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        adjointData->setLhsTangent(stmtPos); /* Resets the lhs tangent, too */
+#else
+        adjointData[lhsIndex] = lhsAdj;
+#endif
+          stmtPos += 1;
+      }
+    }
+
     /**
      * @brief Allocates a copy of the primal vector that is used in the evaluation.
      *
@@ -421,12 +459,17 @@ namespace codi {
      * @tparam AdjointData  The data type for the adjoint vector.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
-      if(primalsCopySize < primalsSize) {
-        primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * primalsSize);
-        primalsCopySize = primalsSize;
+    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData, bool useCopy) {
+
+      if(useCopy) {
+        if(primalsCopySize < primalsSize) {
+          primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * primalsSize);
+          primalsCopySize = primalsSize;
+        }
+        memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
+      } else {
+        std::swap(primals, primalsCopy);
       }
-      memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
 
       AdjointInterfacePrimalImpl<Real, AdjointData> interface(adjointData, primalsCopy);
 
@@ -454,6 +497,78 @@ namespace codi {
       };
       auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType*&, Real*&>;
       evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
+
+      if(!useCopy) {
+        std::swap(primals, primalsCopy);
+      }
+    }
+
+    /**
+     * @brief Allocates a copy of the primal vector that is used in the evaluation.
+     *
+     * It has to hold start >= end.
+     *
+     * The function calls the evaluation method for the external function vector.
+     *
+     * @param[in]            start  The starting point for the statement vector.
+     * @param[in]              end  The ending point for the statement vector.
+     * @param[in,out]  adjointData  The adjoint vector for the evaluation.
+     *
+     * @tparam AdjointData  The data type for the adjoint vector.
+     */
+    template<typename AdjointData>
+    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
+      evaluateInt(start, end, adjointData, true);
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData, bool useCopy) {
+
+      if(useCopy) {
+        if(primalsCopySize < primalsSize) {
+          primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * primalsSize);
+          primalsCopySize = primalsSize;
+        }
+        memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
+      } else {
+        std::swap(primals, primalsCopy);
+      }
+
+      AdjointInterfacePrimalImpl<Real, AdjointData> interface(adjointData, primalsCopy);
+
+
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+      typedef AdjointInterfaceImpl<Real, AdjointData> AdjVecType;
+      AdjVecType* adjVec = &interface;
+#else
+      static_assert(std::is_same<AdjointData, GradientValue>::value,
+        "Please enable 'CODI_EnableVariableAdjointInterfaceInPrimalTapes' in order"
+        " to use custom adjoint vectors in the primal value tapes.");
+
+      typedef AdjointData AdjVecType;
+      AdjVecType* adjVec = adjointData;
+#endif
+
+      auto evalFunc = [this] (AdjVecType* adjointData, Real* primalVector,
+                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                              size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                Handle* &statements, StatementInt* &passiveActiveReal) {
+        evaluateStackForward<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
+                                     indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
+                                     statements, passiveActiveReal);
+      };
+      auto forwardFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc), AdjVecType*&, Real*&>;
+      evaluateExtFuncForward(start, end, forwardFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
+
+      if(!useCopy) {
+        std::swap(primals, primalsCopy);
+      }
+    }
+
+    template<typename AdjointData>
+    CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
+      evaluateForwardInt(start, end, adjointData, true);
     }
 
     /**
@@ -529,28 +644,10 @@ namespace codi {
 
       resizeAdjointsToIndexSize();
 
+      evaluateInt(start, end, adjoints, false);
+
+      // evaluate int swaps back so we need to swap here again
       std::swap(primals, primalsCopy);
-
-      AdjointInterfacePrimalImpl<Real, GradientValue> interface(adjoints, primalsCopy);
-
-#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        typedef AdjointInterfaceImpl<Real, GradientValue> AdjVecType;
-        AdjVecType* adjVec = &interface;
-#else
-        typedef GradientValue AdjVecType;
-        AdjVecType* adjVec = adjoints;
-#endif
-      auto reverseFunc = [this] (AdjVecType* adjointData, Real* primalVector,
-                                 size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                                 size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                                 size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                   Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackReverse<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
-                                     indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
-                                     statements, passiveActiveReal);
-      };
-      auto reverseIter = &ConstantValueVector::template evaluateReverse<decltype(reverseFunc), AdjVecType*&, Real*&>;
-      evaluateExtFunc(start, end, reverseIter, constantValueVector, &interface, reverseFunc, adjVec, primalsCopy);
 
       auto primalFunc = [this] (Real* primalVector,
                                 size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
@@ -565,6 +662,19 @@ namespace codi {
       evaluateExtFuncPrimal(end, start, primalIter, constantValueVector, primalFunc, primalsCopy);
 
       std::swap(primals, primalsCopy);
+    }
+
+    CODI_INLINE void evaluateForwardPreacc(const Position& start, const Position& end) {
+
+      resizeAdjointsToIndexSize();
+
+      PrimalValueReseter reseter(*this);
+
+      StmtPosition stmtEnd = stmtVector.getPosition();
+
+      stmtVector.forEachReverse(stmtEnd, start.inner.inner.inner, reseter);
+
+      evaluateForwardInt(start, end, adjoints, false);
     }
 
     /**

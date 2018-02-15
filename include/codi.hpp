@@ -265,7 +265,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReversePrimalGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, FunctionHandleFactory, ChunkVector> > >;
+  using RealReversePrimalGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, StaticFunctionHandleFactory, ChunkVector> > >;
 
   /**
    * @brief A reverse type like the default reverse type in CoDiPack but with primal value taping instead of Jacobian taping.
@@ -298,7 +298,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReversePrimalUncheckedGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, FunctionHandleFactory, SingleChunkVector> > >;
+  using RealReversePrimalUncheckedGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, StaticFunctionHandleFactory, SingleChunkVector> > >;
 
   /**
    * @brief The primal value reverse type in CoDiPack with an unchecked tape.

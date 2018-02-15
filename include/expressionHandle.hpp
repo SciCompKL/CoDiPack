@@ -60,6 +60,11 @@ namespace codi {
       const typename EvaluateDefinitions<ReverseTapeTypes>::AdjointExprFunc adjointFunc;
 
       /**
+       * @brief The function pointer to the reverse evaluation function
+       */
+      const typename EvaluateDefinitions<ReverseTapeTypes>::TangentExprFunc tangentFunc;
+
+      /**
        * @brief The maximum number of active variables in the statement.
        *
        * The number is equal to all the active reals in the statement.
@@ -81,13 +86,15 @@ namespace codi {
        * @param[in]   maxActiveVariables  The number of active variables in the statement.
        * @param[in] maxConstantVariables  The number of constant variables in the statement.
        */
-      template<typename PrimalFunc, typename AdjointFunc>
+      template<typename PrimalFunc, typename AdjointFunc, typename TangentFunc>
       ExpressionHandle(const PrimalFunc primalFunc,
                        const AdjointFunc adjointFunc,
+                       const TangentFunc tangentFunc,
                        const size_t maxActiveVariables,
                        const size_t maxConstantVariables) :
         primalFunc(primalFunc),
         adjointFunc(adjointFunc),
+        tangentFunc(tangentFunc),
         maxActiveVariables(maxActiveVariables),
         maxConstantVariables(maxConstantVariables) {}
   };
@@ -132,6 +139,7 @@ namespace codi {
   const ExpressionHandle<typename Tape::BaseTypes> ExpressionStore<Tape, Expr>::handle(
       Expr::template getValue<typename Tape::Index, 0, 0>,
       Expr::template evalAdjoint<typename Tape::Index, typename Tape::GradientValue, 0, 0>,
+      Expr::template evalTangent<typename Tape::Index, typename Tape::GradientValue, 0, 0, false>,
       ExpressionTraits<Expr>::maxActiveVariables,
       ExpressionTraits<Expr>::maxConstantVariables);
 }

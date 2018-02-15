@@ -93,6 +93,16 @@ namespace codi {
       CODI_UNUSED(primalValues);
       CODI_UNUSED(adjointValues);
     }
+
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+      CODI_UNUSED(seed);
+      CODI_UNUSED(lhsAdjoint);
+      CODI_UNUSED(constantValues);
+      CODI_UNUSED(adjointValues);
+
+      return primalValues[indices[offset]];
+    }
   };
 
   /**
@@ -150,6 +160,28 @@ namespace codi {
 #else
         adjointValues[indices[0]] += seed;
 #endif
+    }
+
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+      CODI_UNUSED(constantValues);
+      CODI_UNUSED(primalValues);
+
+      if(reverse) {
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+          adjointValues->updateJacobiAdjoint(indices[offset], seed);
+#else
+          adjointValues[indices[offset]] += seed * lhsAdjoint;
+#endif
+      } else { // forward
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+          adjointValues->updateJacobiTangent(indices[offset], seed);
+#else
+          lhsAdjoint += adjointValues[indices[offset]] * seed;
+#endif
+      }
+
+      return primalValues[indices[offset]];
     }
   };
 
@@ -218,6 +250,28 @@ namespace codi {
           adjointValues[indices[i]] += constantValues[i] * seed;
 #endif
       }
+    }
+
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
+    static Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+      CODI_UNUSED(lhsAdjoint);
+      CODI_UNUSED(primalValues);
+
+      if(reverse) {
+        for(int i = 0; i < (int)size; ++i) {
+          // jacobies are stored in the constant values
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+            adjointValues->updateJacobiAdjoint(indices[i], constantValues[i] * seed);
+#else
+            adjointValues[indices[i]] += constantValues[i] * seed * lhsAdjoint;
+#endif
+        }
+      } else {
+        std::cerr << "Error: Froward handles are not supported by this expression." << std::endl;
+        exit(-1);
+      }
+
+      return 0.0;
     }
   };
 
