@@ -248,14 +248,21 @@ namespace codi {
     }
 
     /**
-     * @brief Does nothing because the indices are not connected to the positions.
+     * @brief Sets all adjoint/gradients to zero.
      *
-     * @param[in] start Not used
-     * @param[in] end Not used
+     * It has to hold start >= end.
+     *
+     * @param[in] start  The starting position for the reset of the vector.
+     * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
-      CODI_UNUSED(start);
-      CODI_UNUSED(end);
+      auto clearFunc = [this] (StatementInt* stmtSize, Index* index) {
+        CODI_UNUSED(stmtSize);
+
+        this->adjoints[*index] = GradientValue();
+      };
+
+      stmtVector.forEachReverse(start.inner.inner, end.inner.inner, clearFunc);
     }
 
     /**
@@ -354,10 +361,10 @@ namespace codi {
 
       while(stmtPos < endStmtPos) {
         const Index& lhsIndex = lhsIndices[stmtPos];
-        AdjointData& adj = adjointData[lhsIndex];
-        adj = AdjointData();
+        AdjointData adj = AdjointData();
 
         incrementTangents(adj, adjointData, numberOfArguments[stmtPos], dataPos, jacobies, indices);
+        adjointData[lhsIndex] = adj;
 
         ++stmtPos;
       }

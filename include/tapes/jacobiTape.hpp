@@ -346,11 +346,10 @@ namespace codi {
 
       while(adjPos < endAdjPos) {
         ++adjPos;
-
-        AdjointData& adj = adjointData[adjPos];
-        adj = AdjointData();
+        AdjointData adj = AdjointData();
 
         incrementTangents(adj, adjointData, statements[stmtPos], dataPos, jacobies, indices);
+        adjointData[adjPos] = adj;
 
         ++stmtPos;
       }
