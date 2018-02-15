@@ -256,13 +256,17 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
-      auto clearFunc = [this] (StatementInt* stmtSize, Index* index) {
-        CODI_UNUSED(stmtSize);
+      if(NULL != adjoints) {
+        auto clearFunc = [this] (StatementInt* stmtSize, Index* index) {
+          CODI_UNUSED(stmtSize);
 
-        this->adjoints[*index] = GradientValue();
-      };
+          if(*index < adjointsSize) {
+            this->adjoints[*index] = GradientValue();
+          }
+        };
 
-      stmtVector.forEachReverse(start.inner.inner, end.inner.inner, clearFunc);
+        stmtVector.forEachReverse(start.inner.inner, end.inner.inner, clearFunc);
+      }
     }
 
     /**

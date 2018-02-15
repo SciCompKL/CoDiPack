@@ -615,6 +615,7 @@ namespace codi {
 
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
     static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+      CODI_UNUSED(lhsAdjoint);
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
