@@ -61,6 +61,14 @@ namespace codi {
       CODI_INLINE Direction() :
         vector() {}
 
+      CODI_INLINE Direction(const Real& s) :
+        vector()
+      {
+        for(size_t i = 0; i < dim; ++i) {
+          vector[i] = s;
+        }
+      }
+
       /**
        * @brief The direction is initialized with the values from the initializer list.
        *
@@ -211,6 +219,46 @@ namespace codi {
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const Real& s) {
     return s * v;
+  }
+
+  template<typename Real, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator / (const Direction<Real, dim>& v, const Real& s) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = v[i] / s;
+    }
+
+    return r;
+  }
+
+  template<typename Real, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator + (const Direction<Real, dim>& v1, const Direction<Real, dim>& v2) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = v1[i] + v2[i];
+    }
+
+    return r;
+  }
+
+  template<typename Real, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator - (const Direction<Real, dim>& v1, const Direction<Real, dim>& v2) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = v1[i] - v2[i];
+    }
+
+    return r;
+  }
+
+  template<typename Real, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator - (const Direction<Real, dim>& v) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = -v[i];
+    }
+
+    return r;
   }
 
   /**
