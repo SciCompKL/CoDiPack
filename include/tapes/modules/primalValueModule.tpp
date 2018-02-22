@@ -407,7 +407,7 @@
                                                        PassiveReal* &constants,
                                                        Real* primalVector,
                                                        PRIMAL_ADJOINT_TYPE* adjoints) {
-      return evaluateForwardHandle(Expr::template evalTangent<Index, GradientValue, 0, 0, false>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+      return evaluateForwardHandle(Expr::template evalTangent<Index, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
                                   adj, lhsAdjoint, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 

@@ -139,7 +139,7 @@ namespace codi {
   const ExpressionHandle<typename Tape::BaseTypes> ExpressionStore<Tape, Expr>::handle(
       Expr::template getValue<typename Tape::Index, 0, 0>,
       Expr::template evalAdjoint<typename Tape::Index, typename Tape::GradientValue, 0, 0>,
-      Expr::template evalTangent<typename Tape::Index, typename Tape::GradientValue, 0, 0, false>,
+      Expr::template evalTangent<typename Tape::Index, typename Tape::GradientValue, 0, 0>,
       ExpressionTraits<Expr>::maxActiveVariables,
       ExpressionTraits<Expr>::maxConstantVariables);
 }

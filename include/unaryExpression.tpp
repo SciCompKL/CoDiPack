@@ -209,13 +209,13 @@ struct OP : public Expression<Real, OP<Real, A> > {
     A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
   }
 
-  template<typename Index, typename GradientValue, size_t offset, size_t constantOffset, bool reverse>
+  template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
   static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
     const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
     const Real resPrimal = PRIMAL_CALL(aPrimal);
 
     const Real aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
-    A::template evalTangent<Index, GradientValue, offset, constantOffset, reverse>(aJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
+    A::template evalTangent<Index, GradientValue, offset, constantOffset>(aJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
 
     return resPrimal;
   }
