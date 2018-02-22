@@ -319,6 +319,10 @@ namespace codi {
         }
         --adjPos;
 
+#if CODI_AdjointHandle_Jacobi_Reverse
+        handleReverseEval(adj, adjPos + 1);
+#endif
+
         if(StatementIntInputTag != statements[stmtPos]) {
           incrementAdjoints(adj, adjointData, statements[stmtPos], dataPos, jacobies, indices);
         }

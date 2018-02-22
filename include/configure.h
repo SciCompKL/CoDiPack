@@ -320,6 +320,14 @@ namespace codi {
     void handleAdjointOperation(const Real& value, const Index lhsIndex, const Real* jacobies, const Index* rhsIndices, const int size);
   #endif
 
+  #ifndef CODI_AdjointHandle_Jacobi_Reverse
+    #define CODI_AdjointHandle_Jacobi_Reverse false
+  #endif
+  #if CODI_AdjointHandle_Jacobi_Reverse
+    template<typename Real, typename IndexType>
+    void handleReverseEval(const Real& adj, const IndexType lhsIndex);
+  #endif
+
   #ifndef CODI_AdjointHandle_Primal
     #define CODI_AdjointHandle_Primal false
   #endif

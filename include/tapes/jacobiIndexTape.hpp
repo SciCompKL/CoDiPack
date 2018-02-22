@@ -336,6 +336,10 @@ namespace codi {
         const AdjointData adj = adjointData[lhsIndex];
         adjointData[lhsIndex] = GradientValue();
 
+#if CODI_AdjointHandle_Jacobi_Reverse
+        handleReverseEval(adj, lhsIndex);
+#endif
+
         incrementAdjoints(adj, adjointData, numberOfArguments[stmtPos], dataPos, jacobies, indices);
       }
     }
