@@ -54,7 +54,7 @@ void func(NUMBER* x, NUMBER* y) {
   codi::ForwardPreaccumulationHelper<NUMBER> ph;
 #endif
 
-  const size_t size = codi::MaxStatementIntSize * 3;
+  const size_t size = 256 * 3;
   NUMBER intermediate[size];
 
   for(size_t i = 0; i < size; ++i) {
