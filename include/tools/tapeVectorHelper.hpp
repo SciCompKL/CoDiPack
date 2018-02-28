@@ -288,6 +288,14 @@ namespace codi {
         return gradient(value);
       }
 
+      GradientValue& gradientAt(const GradientData& value) {
+        return adjointVector[value];
+      }
+
+      const GradientValue& gradientAt(const GradientData& value) const {
+        return adjointVector[value];
+      }
+
       /**
        * @brief Get the reference to the gradient value from the internal adjoint vector.
        *
