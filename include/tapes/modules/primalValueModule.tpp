@@ -368,7 +368,6 @@
                      adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 
-
     template<typename FuncObj>
     static CODI_INLINE Real evaluateForwardHandle(FuncObj funcObj,
                                                   size_t varSize,
@@ -409,6 +408,10 @@
                                                        PRIMAL_ADJOINT_TYPE* adjoints) {
       return evaluateForwardHandle(Expr::template evalTangent<Index, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
                                   adj, lhsAdjoint, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
+    }
+
+    void setPrimalValue(const Index& index, const Real& primal) {
+      primals[index] = primal;
     }
 
     private:

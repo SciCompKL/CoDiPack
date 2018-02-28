@@ -214,6 +214,12 @@
       STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
     }
 
+    void setPrimalValue(const Index& index, const Real& primal) {
+      CODI_UNUSED(index);
+      CODI_UNUSED(primal);
+    }
+
+
     /**
      * @brief Adds statistics about the statements.
      *
