@@ -145,7 +145,7 @@ namespace codi {
             ra->resetPrimal(outputIndices[i], oldPrimals[i]);
           }
         }
-        
+
         delete [] x_b;
         delete [] y_b;
       }
@@ -433,16 +433,16 @@ namespace codi {
       void callPrimalFunc(PrimalFunc func) {
         if (!isPassiveExtFunc){
           Real* y = new Real[outputValues.size()];
-          
+
           func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
-          
+
           // ok now set the primal values on the output values and add them to the data for the reverse evaluation
           for(size_t i = 0; i < outputValues.size(); ++i) {
             outputValues[i]->setValue(y[i]);
-            
+
             addOutputToData(*outputValues[i]);
           }
-          
+
           delete [] y;
         } else {
           std::cerr << "callPrimalFunc() not available if external function helper is initialized with passive function mode enabled. Use callPassiveFunc() instead." << std::endl;

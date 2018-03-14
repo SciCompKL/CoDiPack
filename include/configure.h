@@ -233,6 +233,22 @@ namespace codi {
   const bool OptTapeActivity = CODI_OptTapeActivity;
   #undef CODI_OptTapeActivity
 
+  #ifndef CODI_ZeroAdjointReverse
+    #define CODI_ZeroAdjointReverse true
+  #endif
+  /**
+   * @brief Zeros the adjoints during a reverse evaluation run.
+   *
+   * This option is only used in tapes with a linear index manager e.g. RealReverse, RealReversePrimal.
+   *
+   * If disabled all intermediate adjoints are still available after an reverse evaluation. They
+   * need to be cleared with clearAdjoitns() manually.
+   *
+   * It can be set with the preprocessor macro CODI_ZeroAdjointReverse=<true/false>
+   */
+  const bool ZeroAdjointReverse = CODI_ZeroAdjointReverse;
+  #undef CODI_ZeroAdjointReverse
+
   #ifndef CODI_OptZeroAdjoint
     #define CODI_OptZeroAdjoint true
   #endif

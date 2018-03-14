@@ -421,12 +421,12 @@ namespace codi {
         --stmtPos;
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
           adjointData->setLhsAdjoint(adjPos);
-          if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
+          if(ZeroAdjointReverse && StatementIntInputTag != passiveActiveReal[stmtPos]) {
             adjointData->resetAdjointVec(adjPos);
           }
 #else
           const AdjointData adj = adjointData[adjPos];
-          if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
+          if(ZeroAdjointReverse && StatementIntInputTag != passiveActiveReal[stmtPos]) {
             adjointData[adjPos] = GradientValue();
           }
 #endif

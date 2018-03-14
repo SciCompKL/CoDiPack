@@ -316,7 +316,7 @@ namespace codi {
         --stmtPos;
 
         const AdjointData adj = adjointData[adjPos];
-        if(StatementIntInputTag != statements[stmtPos]) {
+        if(ZeroAdjointReverse && StatementIntInputTag != statements[stmtPos]) {
           adjointData[adjPos] = AdjointData();
         }
         --adjPos;
