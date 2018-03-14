@@ -219,8 +219,8 @@
      *
      * Unused in this tape implementation.
      *
-     * @param[in] index  Unused
-     * @param[in] value  Unused
+     * @param[in]  index  Unused
+     * @param[in] primal  Unused
      */
     void setPrimalValue(const Index& index, const Real& primal) {
       CODI_UNUSED(index);

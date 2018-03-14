@@ -624,6 +624,7 @@ namespace codi {
      *
      * @param[in]           seed  The seeding for the expression. It is updated in the expressions
      *                            for the operators and used as the update in the terminal points.
+     * @param[in,out] lhsAdjoint  The tangent value for the lhs.
      * @param[in]        indices  The indices for the values in the expressions.
      * @param[in] constantValues  The array of constant values in the expression.
      * @param[in]   primalValues  The global primal value vector.

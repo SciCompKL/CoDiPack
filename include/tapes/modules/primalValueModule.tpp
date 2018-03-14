@@ -452,8 +452,8 @@
     /**
      * @brief Set the primal value in the primal value vector.
      *
-     * @param[in] index  The index of the primal value which is set.
-     * @param[in] value  The value which is set into the vector.
+     * @param[in]  index  The index of the primal value which is set.
+     * @param[in] primal  The value which is set into the vector.
      */
     void setPrimalValue(const Index& index, const Real& primal) {
       primals[index] = primal;

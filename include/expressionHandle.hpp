@@ -87,9 +87,9 @@ namespace codi {
        * @param[in]   maxActiveVariables  The number of active variables in the statement.
        * @param[in] maxConstantVariables  The number of constant variables in the statement.
        *
-       * @tapram  PrimalFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::PrimalExprFunc
-       * @tapram AdjointFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::AdjointExprFunc
-       * @tapram TangentFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::TangentExprFunc
+       * @tparam  PrimalFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::PrimalExprFunc
+       * @tparam AdjointFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::AdjointExprFunc
+       * @tparam TangentFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::TangentExprFunc
        */
       template<typename PrimalFunc, typename AdjointFunc, typename TangentFunc>
       ExpressionHandle(const PrimalFunc primalFunc,
