@@ -600,7 +600,9 @@ namespace codi {
      * @tparam constantOffset  The offset for the constant values array
      */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+    static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices,
+                                        const PassiveReal* constantValues, const Real* primalValues,
+                                        PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
@@ -613,8 +615,29 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Add the tangent influence of this value in the expression.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It updates the tangent value of the expression with the calculated
+     * adjoint value from the reversal of this expression.
+     *
+     * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+     *                            for the operators and used as the update in the terminal points.
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     * @param[in]  adjointValues  The global adjoint value vector.
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
-    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices,
+                                        const PassiveReal* constantValues, const Real* primalValues,
+                                        PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(lhsAdjoint);
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);

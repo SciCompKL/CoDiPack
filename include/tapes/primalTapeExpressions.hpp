@@ -94,6 +94,25 @@ namespace codi {
       CODI_UNUSED(adjointValues);
     }
 
+    /**
+     * @brief Handle for the input function.
+     *
+     * Returns the primal value from the input.
+     *
+     * @param[in]               seed  The seed for the adjoint of the expression.
+     * @param[in,out]     lhsAdjoint  The tangent value for the lhs value.
+     * @param[in]            indices  The indices for the arguments of the rhs.
+     * @param[in]     constantValues  The array of the constant values in the rhs.
+     * @param[in]       primalValues  The global vector with the primal values.
+     * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     *
+     * @return The primal value from the input.
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
     static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(seed);
@@ -162,6 +181,25 @@ namespace codi {
 #endif
     }
 
+    /**
+     * @brief Handle for the copy function.
+     *
+     * Returns the primal value from the input and copies the tangent value.
+     *
+     * @param[in]               seed  The seed for the adjoint of the expression.
+     * @param[in,out]     lhsAdjoint  The tangent value for the lhs value.
+     * @param[in]            indices  The indices for the arguments of the rhs.
+     * @param[in]     constantValues  The array of the constant values in the rhs.
+     * @param[in]       primalValues  The global vector with the primal values.
+     * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     *
+     * @return The primal value from the input.
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
     static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(lhsAdjoint);
@@ -245,6 +283,23 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Currently not supported.
+     *
+     * @param[in]               seed  The seed for the adjoint of the expression.
+     * @param[in,out]     lhsAdjoint  The tangent value for the lhs value.
+     * @param[in]            indices  The indices for the arguments of the rhs.
+     * @param[in]     constantValues  The array of the constant values in the rhs.
+     * @param[in]       primalValues  The global vector with the primal values.
+     * @param[in,out]  adjointValues  The global vector with the adjoint values.
+     *
+     * @return The primal value from the input.
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam  GradientValue  A type that supports add and scalar multiplication.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
     static Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(seed);

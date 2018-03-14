@@ -364,6 +364,34 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Reverse stack evaluation of the tape.
+     *
+     * All pointers to the data items are created and given with the start and end position for
+     * the interpretation range to the next vector. The last vector will call the provided function.
+     *
+     * The function is called several times for each valid range described by the chunks of the nested
+     * vectors. The function has to modify the dataPos given for each chunk vector such that it is reduced
+     * to end position for the interpretation.
+     *
+     * The function call is
+     * \code{.cpp}
+     * func(start.nested, end.nested, <other arguments>,
+     *      startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+     * \endcode
+     *
+     * Debug checks will ensure this behaviour.
+     *
+     * It has to hold start >= end.
+     *
+     * @param    start  The start point for the stack interpretation.
+     * @param      end  The end point for the stack interpretation.
+     * @param function  The function called for each valid range.
+     * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+     *                  function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
     template<typename Function, typename ... Args>
     CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function,
                                      Args&&... args) {
@@ -374,6 +402,34 @@ namespace codi {
       pHandle.callNestedReverse(nested, start.inner, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
     }
 
+    /**
+     * @brief Forward stack evaluation of the tape.
+     *
+     * All pointers to the data items are created and given with the start and end position for
+     * the interpretation range to the next vector. The last vector will call the provided function.
+     *
+     * The function is called several times for each valid range described by the chunks of the nested
+     * vectors. The function has to modify the dataPos given for each chunk vector such that it is increased
+     * to end position for the interpretation.
+     *
+     * The function call is
+     * \code{.cpp}
+     * func(start.nested, end.nested, <other arguments>,
+     *      startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+     * \endcode
+     *
+     * Debug checks will ensure this behaviour.
+     *
+     * It has to hold start >= end.
+     *
+     * @param    start  The start point for the stack interpretation.
+     * @param      end  The end point for the stack interpretation.
+     * @param function  The function called for each valid range.
+     * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+     *                  function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
     template<typename Function, typename ... Args>
     CODI_INLINE void evaluateForward(const Position& start, const Position& end,const Function& function,
                                      Args&&... args) {

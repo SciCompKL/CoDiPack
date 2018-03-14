@@ -114,33 +114,75 @@ namespace codi {
      *
      * @tparam  Args  The data types for the arguments of the function.
      */
-      template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachChunkForward(FunctionObject& function, bool recursive, Args &... args) {
-        CODI_UNUSED(function);
-        CODI_UNUSED(recursive);
-        CODI_UNUSED_VAR(args...);
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachChunkForward(FunctionObject& function, bool recursive, Args &... args) {
+      CODI_UNUSED(function);
+      CODI_UNUSED(recursive);
+      CODI_UNUSED_VAR(args...);
 
-        // Do nothing
-      }
+      // Do nothing
+    }
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function,
-                                       Args&&... args) {
+    /**
+     * @brief Reverse stack evaluation of the tape.
+     *
+     * The function is called on the accumulated pointers and ranges from all previous vectors.
+     * The position arguments are omitted from the function call.
+     *
+     * The function call is
+     * \code{.cpp}
+     * func(<other arguments>, startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+     * \endcode
+     *
+     * It has to hold start >= end.
+     *
+     * @param    start  The start point for the stack interpretation.
+     * @param      end  The end point for the stack interpretation.
+     * @param function  The function called for each valid range.
+     * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+     *                  function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
+    template<typename Function, typename ... Args>
+    CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function,
+                                     Args&&... args) {
 
-        CODI_UNUSED(start);
-        CODI_UNUSED(end);
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
 
-        function(std::forward<Args>(args)...);
-      }
+      function(std::forward<Args>(args)...);
+    }
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateForward(const Position& start, const Position& end,const Function& function,
-                                       Args&&... args) {
+    /**
+     * @brief Forward stack evaluation of the tape.
+     *
+     * The function is called on the accumulated pointers and ranges from all previous vectors.
+     * The position arguments are omitted from the function call.
+     *
+     * The function call is
+     * \code{.cpp}
+     * func(<other arguments>, startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+     * \endcode
+     *
+     * It has to hold start <= end.
+     *
+     * @param    start  The start point for the stack interpretation.
+     * @param      end  The end point for the stack interpretation.
+     * @param function  The function called for each valid range.
+     * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+     *                  function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
+    template<typename Function, typename ... Args>
+    CODI_INLINE void evaluateForward(const Position& start, const Position& end,const Function& function,
+                                     Args&&... args) {
 
-        CODI_UNUSED(start);
-        CODI_UNUSED(end);
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
 
-        function(std::forward<Args>(args)...);
-      }
+      function(std::forward<Args>(args)...);
+    }
   };
 }

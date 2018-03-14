@@ -262,9 +262,11 @@ The steps for this mode are:
  - Register the external function helper
 
 Since the changes in the implementation are only minor, the full code for
-the external function helper is provided directly:
+the external function helper is provided directly. One important change
+is the initialization of the external function helper. It needs to be specified
+there that a passive function will be called:
 ~~~~{.cpp}
-   codi::ExternalFunctionHelper<codi::RealReverse> eh;
+   codi::ExternalFunctionHelper<codi::RealReverse> eh(true);
    for(int i = 0; i < 4; ++i) {
      eh.addInput(A[i]);
    }
@@ -446,7 +448,7 @@ void externalFunctionPassive() {
   codi::RealReverse x[2];
 
   // external function helper start
-  codi::ExternalFunctionHelper<codi::RealReverse> eh;
+  codi::ExternalFunctionHelper<codi::RealReverse> eh(true);
   for(int i = 0; i < 4; ++i) {
     eh.addInput(A[i]);
   }

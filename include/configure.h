@@ -114,6 +114,9 @@ namespace codi {
    */
   const size_t MaxStatementIntValue = 254;
 
+  /**
+   * @brief The tag for statements that are created by register input.
+   */
   const size_t StatementIntInputTag = 255;
 
   #ifndef CODI_SmallChunkSize
@@ -324,6 +327,20 @@ namespace codi {
     #define CODI_AdjointHandle_Jacobi_Reverse false
   #endif
   #if CODI_AdjointHandle_Jacobi_Reverse
+    /**
+     * @brief A function that is called for every adjoint update in the reverse evaluation.
+     *
+     * The function can be used to extract information from the taping evaluation process.
+     *
+     * It can be set with the preprocessor macro CODI_AdjointHandle_Jacobi_Reverse=<true/false>
+     *
+     * @param[in]      adj  The evaluated adjoint for the left hand side.
+     * @param[in] lhsIndex  The index on the left hand side of the statement, that
+     *                      is evaluated.
+     *
+     * @tparam      Real  The type of the floating point values that are used in the tape.
+     * @tparam     Index  The type of the indices that are used in the tape.
+     */
     template<typename Real, typename IndexType>
     void handleReverseEval(const Real& adj, const IndexType lhsIndex);
   #endif

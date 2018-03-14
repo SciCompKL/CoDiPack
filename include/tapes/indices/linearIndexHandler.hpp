@@ -64,6 +64,11 @@ namespace codi {
        */
       typedef Index Position;
 
+      /**
+       * @brief Indicates if the index handler privides linear increasing indices.
+       *
+       * true for this index manager.
+       */
       static const bool IsLinear = true;
 
     private:
@@ -220,6 +225,26 @@ namespace codi {
         // Do nothing
       }
 
+      /**
+       * @brief Reverse stack evaluation of the tape.
+       *
+       * The function is called on the accumulated pointers and ranges from all previous vectors.
+       *
+       * The function call is
+       * \code{.cpp}
+       * func(start, end, <other arguments>, startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+       * \endcode
+       *
+       * It has to hold start >= end.
+       *
+       * @param    start  The start point for the stack interpretation.
+       * @param      end  The end point for the stack interpretation.
+       * @param function  The function called for each valid range.
+       * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+       *                  function.
+       *
+       * @tparam  Args  The data types for the arguments.
+       */
       template<typename Function, typename ... Args>
       CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function,
                                        Args&&... args) {
@@ -227,6 +252,26 @@ namespace codi {
         function(start, end, std::forward<Args>(args)...);
       }
 
+      /**
+       * @brief Forward stack evaluation of the tape.
+       *
+       * The function is called on the accumulated pointers and ranges from all previous vectors.
+       *
+       * The function call is
+       * \code{.cpp}
+       * func(start, end, <other arguments>, startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+       * \endcode
+       *
+       * It has to hold start <= end.
+       *
+       * @param    start  The start point for the stack interpretation.
+       * @param      end  The end point for the stack interpretation.
+       * @param function  The function called for each valid range.
+       * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+       *                  function.
+       *
+       * @tparam  Args  The data types for the arguments.
+       */
       template<typename Function, typename ... Args>
       CODI_INLINE void evaluateForward(const Position& start, const Position& end,const Function& function,
                                        Args&&... args) {

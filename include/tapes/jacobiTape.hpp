@@ -291,12 +291,14 @@ namespace codi {
      *
      * @param[in]     startAdjPos  The starting point in the expression evaluation.
      * @param[in]       endAdjPos  The ending point in the expression evaluation.
-     * @param[in,out]     stmtPos  The current position in the statement vector. This value is used in the next invocation of this method.
-     * @param[in]      statements  The pointer to the statement vector.
-     * @param[in,out]     dataPos  The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in,out] adjointData  The vector of the adjoint variables.
+     * @param[in,out]     dataPos  The current position in the jacobi and index vector. This value is used in the next invocation of this method.
+     * @param[in]      endDataPos  The end position in the jacobi and index vector.
      * @param[in]        jacobies  The pointer to the jacobi vector.
      * @param[in]         indices  The pointer to the index vector
-     * @param[in,out] adjointData  The vector of the adjoint varaibles.
+     * @param[in,out]     stmtPos  The current position in the statement vector. This value is used in the next invocation of this method.
+     * @param[in]      endStmtPos  The end position in the statement vector.
+     * @param[in]      statements  The pointer to the statement vector.
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
@@ -329,6 +331,17 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Evaluate the stack in reverse order.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in]           start  The start point for the evaluation.
+     * @param[in]             end  The end point for the evaluation.
+     * @param[in,out] adjointData  The vector of the adjoint variables.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
@@ -345,6 +358,24 @@ namespace codi {
       evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, adjointData);
     }
 
+    /**
+     * @brief Implementation of the AD stack evaluation.
+     *
+     * It has to hold startAdjPos <= endAdjPos.
+     *
+     * @param[in]     startAdjPos  The starting point in the expression evaluation.
+     * @param[in]       endAdjPos  The ending point in the expression evaluation.
+     * @param[in,out] adjointData  The vector of the adjoint variables.
+     * @param[in,out]     dataPos  The current position in the jacobi and index vector. This value is used in the next invocation of this method.
+     * @param[in]      endDataPos  The end position in the jacobi and index vector.
+     * @param[in]        jacobies  The pointer to the jacobi vector.
+     * @param[in]         indices  The pointer to the index vector
+     * @param[in,out]     stmtPos  The current position in the statement vector. This value is used in the next invocation of this method.
+     * @param[in]      endStmtPos  The end position in the statement vector.
+     * @param[in]      statements  The pointer to the statement vector.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateStackForward(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
                                           size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
@@ -365,6 +396,17 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Evaluate the stack in forward order.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in]           start  The start point for the evaluation.
+     * @param[in]             end  The end point for the evaluation.
+     * @param[in,out] adjointData  The vector of the adjoint variables.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
 

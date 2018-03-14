@@ -368,6 +368,27 @@
                      adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 
+    /**
+     * @brief Evaluate one handle in the forward sweep.
+     *
+     * The function sets the primal values in the primal value vector for the inactive values.
+     * Then it updates the genaral positions and calls the tangent function of the handle.
+     *
+     * @param[in]          funcObj  The function object that performs the tangent AD evaluation of an expression.
+     * @param[in]          varSize  The number of variables of the expression.
+     * @param[in]        constSize  The number constant variables of the expression.
+     * @param[in]              adj  The seed from the lhs of the statement.
+     * @param[in,out]   lhsAdjoint  The tangent value of the lhs of the expression.
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
+     *
+     * @tparam FuncObj  The function object that performs the actual evaluation of the expression.
+     */
     template<typename FuncObj>
     static CODI_INLINE Real evaluateForwardHandle(FuncObj funcObj,
                                                   size_t varSize,
@@ -396,6 +417,24 @@
       return result;
     }
 
+    /**
+     * @brief Curry the evaluation of a handle such that the sizes do not need to be stored.
+     *
+     * This is a helper function that can be stored as a function pointer in order to be able to evaluate a
+     * handle without knowing the constant sizes for the expression. The function calls evluateForwardHandle
+     *
+     * @param[in]              adj  The seed from the lhs of the statement.
+     * @param[in,out]   lhsAdjoint  The tangent value of the lhs of the expression.
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
+     *
+     * @tparam Expr  The expression for which this helper is instantiated.
+     */
     template<typename Expr>
     static CODI_INLINE Real curryEvaluateForwardHandle(const Real& adj,
                                                        GradientValue& lhsAdjoint,
@@ -410,6 +449,12 @@
                                   adj, lhsAdjoint, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 
+    /**
+     * @brief Set the primal value in the primal value vector.
+     *
+     * @param[in] index  The index of the primal value which is set.
+     * @param[in] value  The value which is set into the vector.
+     */
     void setPrimalValue(const Index& index, const Real& primal) {
       primals[index] = primal;
     }

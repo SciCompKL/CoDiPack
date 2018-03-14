@@ -202,7 +202,7 @@ namespace codi {
    * The evaluation schedule for the second use case is:
    *
    * \code{.cpp}
-   * ExternalFunctionHelper<CoDiType> eh;
+   * ExternalFunctionHelper<CoDiType> eh(true);
    *
    * for each xVar in x
    *   eh.addInput(xVar)
@@ -268,12 +268,14 @@ namespace codi {
       /**
        * @brief Initializes the structure also determines if the tape is currently recording. The recording state
        * may not be changed by the user until the external function is finished.
+       *
+       * @param[in] passiveExtFunc Parameter if the passive evaluation mode is used.
        */
-      ExternalFunctionHelper(bool PassiveExtFunc = false) :
+      ExternalFunctionHelper(bool passiveExtFunc = false) :
         outputValues(),
         storeInputPrimals(true),
         storeOutputPrimals(true),
-        isPassiveExtFunc(PassiveExtFunc),
+        isPassiveExtFunc(passiveExtFunc),
         isTapeActive(CoDiType::getGlobalTape().isActive()),
         data(nullptr) {
         data = new ExternalFunctionData<CoDiType>();

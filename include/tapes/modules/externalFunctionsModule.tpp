@@ -97,18 +97,23 @@
      * position it evaluates the statement vector to the position
      * where the external function was added and then calls the
      * external function.
+     *
+     * @tparam Function  A function object which is called with the nested start and end positions.
+     * @tparam      Obj  The object on which the function is called.
      */
     template<typename Function, typename Obj>
     struct ExtFuncEvaluator {
       ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
 
-      const Function& func;
-      Obj& obj;
+      const Function& func; /**< The function evaluated before and after each external function call. */
+      Obj& obj; /**< The object on which the function is evaluated. */
+
       /**
        * @brief Create the function object.
        *
        * @param[in] curInnerPos  The position were the evaluation starts.
-       * @param[in,out]    tape  The reference to the actual tape.
+       * @param[in]        func  The function that is evaluated before and after each external function call.
+       * @param[in,out]     obj  The object on which the function is evaluated.
        */
       ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, const Function& func, Obj& obj) :
         curInnerPos(curInnerPos),
@@ -145,19 +150,23 @@
      * position it evaluates the statement vector to the position
      * where the external function was added and then calls the
      * external function.
+     *
+     * @tparam Function  A function object which is called with the nested start and end positions.
+     * @tparam      Obj  The object on which the function is called.
      */
     template<typename Function, typename Obj>
     struct PrimalExtFuncEvaluator {
       ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
 
-      const Function& func;
-      Obj& obj;
+      const Function& func; /**< The function evaluated before and after each external function call. */
+      Obj& obj; /**< The object on which the function is evaluated. */
 
       /**
        * @brief Create the function object.
        *
        * @param[in] curInnerPos  The position were the evaluation starts.
-       * @param[in,out]    tape  The reference to the actual tape.
+       * @param[in]        func  The function that is evaluated before and after each external function call.
+       * @param[in,out]     obj  The object on which the function is evaluated.
        */
       PrimalExtFuncEvaluator(ExtFuncChildPosition curInnerPos, const Function &func, Obj &obj) :
         curInnerPos(curInnerPos),
@@ -277,9 +286,13 @@
      *
      * @param[in]       start  The starting point for the external function vector.
      * @param[in]         end  The ending point for the external function vector.
+     * @param[in]        func  The function that is evaluated before and after each external function call.
+     * @param[in,out]     obj  The object on which the function is evaluated.
      * @param[in,out]    args  The arguments for the evaluation.
      *
-     * @tparam Args  The types of the other arguments.
+     * @tparam     Args  The types of the other arguments.
+     * @tparam Function  A function object which is called with the nested start and end positions.
+     * @tparam      Obj  The object on which the function is called.
      */
     template<typename Function, typename Obj, typename ... Args>
     void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj, Args&&... args){
@@ -300,10 +313,14 @@
      *
      * @param[in]                start  The starting point for the external function vector.
      * @param[in]                  end  The ending point for the external function vector.
+     * @param[in]                 func  The function that is evaluated before and after each external function call.
+     * @param[in,out]              obj  The object on which the function is evaluated.
      * @param[in,out] adjointInterface  Interface for accessing the adjoint vector for this evaluation.
      * @param[in,out]             args  The arguments for the evaluation.
      *
-     * @tparam Args  The types of the other arguments.
+     * @tparam     Args  The types of the other arguments.
+     * @tparam Function  A function object which is called with the nested start and end positions.
+     * @tparam      Obj  The object on which the function is called.
      */
     template<typename Function, typename Obj, typename ... Args>
     CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,
@@ -323,11 +340,16 @@
      *
      * It calls the forward evaluation method for the statement vector.
      *
-     * @param[in]       start  The starting point for the external function vector.
-     * @param[in]         end  The ending point for the external function vector.
-     * @param[in,out]    args  The arguments for the evaluation.
+     * @param[in]                start  The starting point for the external function vector.
+     * @param[in]                  end  The ending point for the external function vector.
+     * @param[in]                 func  The function that is evaluated before and after each external function call.
+     * @param[in,out]              obj  The object on which the function is evaluated.
+     * @param[in,out] adjointInterface  Interface for accessing the adjoint vector for this evaluation.
+     * @param[in,out]             args  The arguments for the evaluation.
      *
-     * @tparam Args  The types of the other arguments.
+     * @tparam     Args  The types of the other arguments.
+     * @tparam Function  A function object which is called with the nested start and end positions.
+     * @tparam      Obj  The object on which the function is called.
      */
     template<typename Function, typename Obj, typename ... Args>
     void evaluateExtFuncForward(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,

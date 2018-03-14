@@ -209,6 +209,29 @@ struct OP : public Expression<Real, OP<Real, A> > {
     A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
   }
 
+  /**
+   * @brief Calculate the gradient of the expression and update the seed. The updated seed is then
+   *        given to the argument expressions.
+   *
+   * The method is called in the static evaluation of e.g. a primal value tape.
+   * It computes the tangent direction of the expression with a local reversal of the expression.
+   * It calls the same method on the arguments with updated offsets for the second argument.
+   * The adjustment of the offsets is take from the first argument.
+   *
+   * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+   *                            for the operators and used as the update in the terminal points.
+   * @param[in,out] lhsAdjoint  The tangnet value of the lhs side. This value is updated in the
+   *                            arguments of the expression.
+   * @param[in]        indices  The indices for the values in the expressions.
+   * @param[in] constantValues  The array of constant values in the expression.
+   * @param[in]   primalValues  The global primal value vector.
+   * @param[in]  adjointValues  The global adjoint value vector.
+   *
+   * @tparam          Index  The type for the indices.
+   * @tparam  GradientValue  A type that supports add and scalar multiplication.
+   * @tparam         offset  The offset in the index array for the corresponding value.
+   * @tparam constantOffset  The offset for the constant values array
+   */
   template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
   static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
     const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);

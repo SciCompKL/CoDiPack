@@ -61,6 +61,11 @@ namespace codi {
       CODI_INLINE Direction() :
         vector() {}
 
+      /**
+       * @brief Creates a direction with the same value in every component.
+       *
+       * @param[in] s  The value that is set to all components.
+       */
       CODI_INLINE Direction(const Real& s) :
         vector()
       {
@@ -221,6 +226,19 @@ namespace codi {
     return s * v;
   }
 
+  /**
+   * @brief Scalar division of a direction.
+   *
+   * Performs the operation w = v / s
+   *
+   * @param[in] v  The direction that is divided.
+   * @param[in] s  The scalar value for the division.
+   *
+   * @return The direction with the result.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator / (const Direction<Real, dim>& v, const Real& s) {
     Direction<Real, dim> r;
@@ -231,6 +249,19 @@ namespace codi {
     return r;
   }
 
+  /**
+   * @brief Addition of two directions.
+   *
+   * Performs the operation w = v1 + v2
+   *
+   * @param[in] v1  The first direction that is added.
+   * @param[in] v2  The second direction that is added.
+   *
+   * @return The direction with the result.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator + (const Direction<Real, dim>& v1, const Direction<Real, dim>& v2) {
     Direction<Real, dim> r;
@@ -241,6 +272,19 @@ namespace codi {
     return r;
   }
 
+  /**
+   * @brief Subtraction of two directions.
+   *
+   * Performs the operation w = v1 - v2
+   *
+   * @param[in] v1  The first direction that is added.
+   * @param[in] v2  The second direction that is subtracted.
+   *
+   * @return The direction with the result.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator - (const Direction<Real, dim>& v1, const Direction<Real, dim>& v2) {
     Direction<Real, dim> r;
@@ -251,6 +295,18 @@ namespace codi {
     return r;
   }
 
+  /**
+   * @brief Negation of a direction.
+   *
+   * Performs the negation on all elements.
+   *
+   * @param[in] v  The first direction that is added.
+   *
+   * @return The direction with the result.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator - (const Direction<Real, dim>& v) {
     Direction<Real, dim> r;

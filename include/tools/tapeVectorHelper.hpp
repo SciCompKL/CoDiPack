@@ -87,6 +87,9 @@ namespace codi {
         this->tape = tape;
       }
 
+      /**
+       * @brief Delete the adjoint vector.
+       */
       virtual void deleteAdjointVector() = 0;
 
       /**
@@ -262,6 +265,9 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Delete the adjoint vector.
+       */
       void deleteAdjointVector() {
         adjointVector.resize(0);
         adjointVector.shrink_to_fit();
@@ -288,10 +294,28 @@ namespace codi {
         return gradient(value);
       }
 
+      /**
+       * @brief Get the gradient value from the internal adjoint vector.
+       *
+       * This is the unchecked version of the gradient function.
+       *
+       * @param[in] value  The identifier for the corresponding primal value.
+       *
+       * @return The gradient value from the internal adjoint vector.
+       */
       GradientValue& gradientAt(const GradientData& value) {
         return adjointVector[value];
       }
 
+      /**
+       * @brief Get the gradient value from the internal adjoint vector.
+       *
+       * This is the unchecked version of the gradient function.
+       *
+       * @param[in] value  The identifier for the corresponding primal value.
+       *
+       * @return The gradient value from the internal adjoint vector.
+       */
       const GradientValue& gradientAt(const GradientData& value) const {
         return adjointVector[value];
       }

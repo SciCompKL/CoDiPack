@@ -214,6 +214,14 @@
       STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
     }
 
+    /**
+     * @brief Set the primal value in the primal value vector.
+     *
+     * Unused in this tape implementation.
+     *
+     * @param[in] index  Unused
+     * @param[in] value  Unused
+     */
     void setPrimalValue(const Index& index, const Real& primal) {
       CODI_UNUSED(index);
       CODI_UNUSED(primal);

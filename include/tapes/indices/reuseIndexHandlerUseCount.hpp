@@ -64,6 +64,11 @@ namespace codi {
        */
       const static bool AssignNeedsStatement = OptDisableAssignOptimization;
 
+      /**
+       * @brief Indicates if the index handler privides linear increasing indices.
+       *
+       * false for this index manager.
+       */
       static const bool IsLinear = false;
 
     private:
@@ -101,6 +106,11 @@ namespace codi {
        */
       size_t indexUseSizeIncrement;
 
+      /**
+       * @brief Indicates the destruction of the index handler.
+       *
+       * Required to prevent segmentation faults if varaibles are deleted after the index handler.
+       */
       bool valid;
 
     public:

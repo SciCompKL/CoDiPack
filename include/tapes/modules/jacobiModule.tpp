@@ -112,6 +112,23 @@
       }
     }
 
+    /**
+     * @brief Perform the adjoint update of the reverse AD sweep
+     *
+     * Evaluates the equation
+     *
+     * \f[ \dot w += \sum_i \frac{\d \phi}{\d v_i} \dot v_i \f]
+     *
+     * The \f[ v_i \f] are the arguments of the statement and are taken from the input jacobi and indices.
+     * The value \f[ \dot w \f] is taken from the input adj.
+     *
+     * @param[in]                  adj  The tangent of the lhs of the statement.
+     * @param[in,out]         adjoints  The adjoint vector containing the tangent of all variables.
+     * @param[in]      activeVariables  The number of active arguments on the rhs.
+     * @param[int,out]         dataPos  The position inside the jacobi and indices vectors. It is decremented by the number of active variables.
+     * @param[in]             jacobies  The jacobies from the arguments of the statement.
+     * @param[in]              indices  The indices from the arguments of the statements.
+     */
     template<typename AdjointData>
     CODI_INLINE void incrementTangents(AdjointData& adj, const AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, const Real* jacobies, const Index* indices) {
       for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {

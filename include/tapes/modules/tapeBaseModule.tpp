@@ -84,6 +84,7 @@
     /** @brief The position for all the different data vectors. */
     typedef POSITION_TYPE Position;
 
+    /** @brief True if the index handler of the tape provied linear indices. */
     static const bool LinearIndexHandler = TapeTypes::IndexHandler::IsLinear;
 
   private:
@@ -489,6 +490,9 @@
       return INDEX_HANDLER_NAME.getMaximumGlobalIndex();
     }
 
+    /**
+     * @brief Clear the adjoint vector and delete it.
+     */
     void deleteAdjointVector() {
       cleanTapeBase();
     }

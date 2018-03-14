@@ -311,21 +311,22 @@ namespace codi {
      *
      * It has to hold startAdjPos >= endAdjPos.
      *
+     * @param[in,out]      adjointData  The vector of the adjoint variables.
+     * @param[in,out]          dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in]           endDataPos The end position in the jacobi and index vector.
+     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
+     * @param[in]              indices The pointer the indices of the rhs arguments.
      * @param[in,out]          stmtPos The starting point in the expression evaluation. The index is decremented.
      * @param[in]           endStmtPos The ending point in the expression evaluation.
      * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
      * @param[in]           lhsIndices The pointer the indices of the lhs.
-     * @param[in,out]          dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
-     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
-     * @param[in]              indices The pointer the indices of the rhs arguments.
-     * @param[in,out]      adjointData  The vector of the adjoint variables.
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
     CODI_INLINE void evaluateStackReverse(AdjointData* adjointData,
-                                      size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
-                                      size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
+                                          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
                                           Index* lhsIndices) {
 
       CODI_UNUSED(endDataPos);
@@ -344,6 +345,17 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Evaluate the stack in reverse order.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in]           start  The start point for the evaluation.
+     * @param[in]             end  The end point for the evaluation.
+     * @param[in,out] adjointData  The vector of the adjoint variables.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
@@ -360,11 +372,28 @@ namespace codi {
       evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, adjointData);
     }
 
+    /**
+     * @brief Implementation of the AD stack evaluation.
+     *
+     * It has to hold startAdjPos <= endAdjPos.
+     *
+     * @param[in,out]      adjointData  The vector of the adjoint variables.
+     * @param[in,out]          dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in]           endDataPos The end position in the jacobi and index vector.
+     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
+     * @param[in]              indices The pointer the indices of the rhs arguments.
+     * @param[in,out]          stmtPos The starting point in the expression evaluation. The index is decremented.
+     * @param[in]           endStmtPos The ending point in the expression evaluation.
+     * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
+     * @param[in]           lhsIndices The pointer the indices of the lhs.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateStackForward(AdjointData* adjointData,
                                           size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
                                           size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
-                                              Index* lhsIndices) {
+                                          Index* lhsIndices) {
       CODI_UNUSED(endDataPos);
 
       while(stmtPos < endStmtPos) {
@@ -378,6 +407,17 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Evaluate the stack in forward order.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in]           start  The start point for the evaluation.
+     * @param[in]             end  The end point for the evaluation.
+     * @param[in,out] adjointData  The vector of the adjoint variables.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
 

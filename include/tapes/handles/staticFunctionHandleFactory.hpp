@@ -70,6 +70,7 @@ namespace codi {
        *
        * @param[in]  primalFunc  The function for the primal evaluation.
        * @param[in] adjointFunc  The function for the reverse evaluation.
+       * @param[in] tangentFunc  The function for the tangent evaluation.
        *
        * @tparam P  The type for the primal function object.
        * @tparam A  The type for the reverse function object.

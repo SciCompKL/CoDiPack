@@ -103,16 +103,26 @@ namespace codi {
         func(p1, std::forward<Args>(args)...);
       }
 
+      /**
+       * @brief Call reverse evaluation on the nested vector with the pointers from this handle.
+       *
+       * @param[in,out] nested  The nested vector on which the reverse evaluation is called.
+       * @param[in,out]   args  The additional arguments for the reverse evaluation.
+       */
       template<typename Nested, typename ... Args>
-      CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
-                             Args&&... args) {
-        nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1);
+      CODI_INLINE void callNestedReverse(Nested* nested, Args&&... args) {
+        nested->evaluateReverse(std::forward<Args>(args)..., p1);
       }
 
+      /**
+       * @brief Call forward evaluation on the nested vector with the pointers from this handle.
+       *
+       * @param[in,out] nested  The nested vector on which the forward evaluation is called.
+       * @param[in,out]   args  The additional arguments for the reverse evaluation.
+       */
       template<typename Nested, typename ... Args>
-      CODI_INLINE void callNestedForward(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
-                             Args&&... args) {
-        nested->evaluateForward(start, end, std::forward<Args>(args)..., p1);
+      CODI_INLINE void callNestedForward(Nested* nested, Args&&... args) {
+        nested->evaluateForward(std::forward<Args>(args)..., p1);
       }
   };
 
@@ -152,16 +162,26 @@ namespace codi {
         func(p1, p2, std::forward<Args>(args)...);
       }
 
+      /**
+       * @brief Call reverse evaluation on the nested vector with the pointers from this handle.
+       *
+       * @param[in,out] nested  The nested vector on which the reverse evaluation is called.
+       * @param[in,out]   args  The additional arguments for the reverse evaluation.
+       */
       template<typename Nested, typename ... Args>
-      CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
-                             Args&&... args) {
-        nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2);
+      CODI_INLINE void callNestedReverse(Nested* nested, Args&&... args) {
+        nested->evaluateReverse(std::forward<Args>(args)..., p1, p2);
       }
 
+      /**
+       * @brief Call forward evaluation on the nested vector with the pointers from this handle.
+       *
+       * @param[in,out] nested  The nested vector on which the forward evaluation is called.
+       * @param[in,out]   args  The additional arguments for the reverse evaluation.
+       */
       template<typename Nested, typename ... Args>
-      CODI_INLINE void callNestedForward(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
-                             Args&&... args) {
-        nested->evaluateForward(start, end, std::forward<Args>(args)..., p1, p2);
+      CODI_INLINE void callNestedForward(Nested* nested, Args&&... args) {
+        nested->evaluateForward(std::forward<Args>(args)..., p1, p2);
       }
   };
 
@@ -203,16 +223,26 @@ namespace codi {
         func(p1, p2, p3, std::forward<Args>(args)...);
       }
 
+      /**
+       * @brief Call reverse evaluation on the nested vector with the pointers from this handle.
+       *
+       * @param[in,out] nested  The nested vector on which the reverse evaluation is called.
+       * @param[in,out]   args  The additional arguments for the reverse evaluation.
+       */
       template<typename Nested, typename ... Args>
-      CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
-                             Args&&... args) {
-        nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2, p3);
+      CODI_INLINE void callNestedReverse(Nested* nested, Args&&... args) {
+        nested->evaluateReverse(std::forward<Args>(args)..., p1, p2, p3);
       }
 
+      /**
+       * @brief Call forward evaluation on the nested vector with the pointers from this handle.
+       *
+       * @param[in,out] nested  The nested vector on which the forward evaluation is called.
+       * @param[in,out]   args  The additional arguments for the reverse evaluation.
+       */
       template<typename Nested, typename ... Args>
-      CODI_INLINE void callNestedForward(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
-                             Args&&... args) {
-        nested->evaluateForward(start, end, std::forward<Args>(args)..., p1, p2, p3);
+      CODI_INLINE void callNestedForward(Nested* nested, Args&&... args) {
+        nested->evaluateForward(std::forward<Args>(args)..., p1, p2, p3);
       }
   };
 
@@ -256,16 +286,26 @@ namespace codi {
         func(p1, p2, p3, p4, std::forward<Args>(args)...);
       }
 
+      /**
+       * @brief Call reverse evaluation on the nested vector with the pointers from this handle.
+       *
+       * @param[in,out] nested  The nested vector on which the reverse evaluation is called.
+       * @param[in,out]   args  The additional arguments for the reverse evaluation.
+       */
       template<typename Nested, typename ... Args>
-      CODI_INLINE void callNestedReverse(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
-                             Args&&... args) {
-        nested->evaluateReverse(start, end, std::forward<Args>(args)..., p1, p2, p3, p4);
+      CODI_INLINE void callNestedReverse(Nested* nested, Args&&... args) {
+        nested->evaluateReverse(std::forward<Args>(args)..., p1, p2, p3, p4);
       }
 
+      /**
+       * @brief Call forward evaluation on the nested vector with the pointers from this handle.
+       *
+       * @param[in,out] nested  The nested vector on which the forward evaluation is called.
+       * @param[in,out]   args  The additional arguments for the reverse evaluation.
+       */
       template<typename Nested, typename ... Args>
-      CODI_INLINE void callNestedForward(Nested* nested, const typename Nested::Position& start, const typename Nested::Position& end,
-                             Args&&... args) {
-        nested->evaluateForward(start, end, std::forward<Args>(args)..., p1, p2, p3, p4);
+      CODI_INLINE void callNestedForward(Nested* nested, Args&&... args) {
+        nested->evaluateForward(std::forward<Args>(args)..., p1, p2, p3, p4);
       }
   };
 }

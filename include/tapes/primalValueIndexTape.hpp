@@ -151,7 +151,7 @@ namespace codi {
 
     #define POSITION_TYPE typename TapeTypes::Position
     #define INDEX_HANDLER_NAME indexHandler
-    #define RESET_FUNCTION_NAME resetPrimalValues
+    #define RESET_FUNCTION_NAME resetAll
     #define EVALUATE_FUNCTION_NAME evaluateInt
     #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
     #include "modules/tapeBaseModule.tpp"
@@ -341,17 +341,19 @@ namespace codi {
      *
      * It has to hold start <= end.
      *
+     * @param[in,out]  primalVector  The vector of the primal variables.
+     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
+     * @param[in]    endConstantPos  The ending position in the constant data vector.
+     * @param[in]         constants  The constant values in the rhs expressions.
+     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
+     * @param[in]       endIndexPos  The ending position for the index data.
+     * @param[in]           indices  The indices for the arguments of the rhs.
      * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
      * @param[in]        endStmtPos  The ending position for statement data.
      * @param[in]        lhsIndices  The indices from the lhs of each statement.
      * @param[in]     storedPrimals  The overwritten primal from the primal vector.
      * @param[in]        statements  The vector with the handles for each statement.
      * @param[in] passiveActiveReal  The number passive values for each statement.
-     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
-     * @param[in]           indices  The indices for the arguments of the rhs.
-     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
-     * @param[in]         constants  The constant values in the rhs expressions.
-     * @param[in,out]  primalVector  The vector of the primal variables.
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
@@ -377,26 +379,29 @@ namespace codi {
      *
      * It has to hold start >= end.
      *
+     * @param[in,out]   adjointData  The vector of the adjoint variables.
+     * @param[in,out]  primalVector  The vector of the primal variables.
+     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
+     * @param[in]    endConstantPos  The ending position in the constant data vector.
+     * @param[in]         constants  The constant values in the rhs expressions.
+     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
+     * @param[in]       endIndexPos  The ending position for the index data.
+     * @param[in]           indices  The indices for the arguments of the rhs.
      * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
      * @param[in]        endStmtPos  The ending position for statement data.
      * @param[in]        lhsIndices  The indices from the lhs of each statement.
      * @param[in]     storedPrimals  The overwritten primal from the primal vector.
      * @param[in]        statements  The vector with the handles for each statement.
      * @param[in] passiveActiveReal  The number passive values for each statement.
-     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
-     * @param[in]           indices  The indices for the arguments of the rhs.
-     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
-     * @param[in]         constants  The constant values in the rhs expressions.
-     * @param[in,out] adjointData  The vector of the adjoint varaibles.
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
     CODI_INLINE void evaluateStackReverse(AdjointData* adjointData, Real* primalVector,
-                                   size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                                   size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                                   size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                      Handle* &statements, StatementInt* &passiveActiveReal) {
+                                          size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                          size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                          Handle* &statements, StatementInt* &passiveActiveReal) {
       CODI_UNUSED(endConstantPos);
       CODI_UNUSED(endIndexPos);
 
@@ -419,12 +424,34 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Evaluate the stack in the forward mode from the start to to the end position.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in,out]   adjointData  The vector of the adjoint variables.
+     * @param[in,out]  primalVector  The vector of the primal variables.
+     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
+     * @param[in]    endConstantPos  The ending position in the constant data vector.
+     * @param[in]         constants  The constant values in the rhs expressions.
+     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
+     * @param[in]       endIndexPos  The ending position for the index data.
+     * @param[in]           indices  The indices for the arguments of the rhs.
+     * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
+     * @param[in]        endStmtPos  The ending position for statement data.
+     * @param[in]        lhsIndices  The indices from the lhs of each statement.
+     * @param[in]     storedPrimals  The overwritten primal from the primal vector.
+     * @param[in]        statements  The vector with the handles for each statement.
+     * @param[in] passiveActiveReal  The number passive values for each statement.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateStackForward(AdjointData* adjointData, Real* primalVector,
-                                   size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                                   size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                                   size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                      Handle* &statements, StatementInt* &passiveActiveReal) {
+                                          size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                          size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                          Handle* &statements, StatementInt* &passiveActiveReal) {
       CODI_UNUSED(storedPrimals); // Stored primal are only used in the reverse evaluation
       CODI_UNUSED(endConstantPos);
       CODI_UNUSED(endIndexPos);
@@ -521,6 +548,20 @@ namespace codi {
       evaluateInt(start, end, adjointData, true);
     }
 
+
+    /**
+     * @brief The forward evaluation that may create a copy of the primal value vector.
+     *
+     * It has to hold start <= end.
+     *
+     * The function calls the evaluation method for the external function vector.
+     *
+     * @param[in]            start  The starting point for the statement vector.
+     * @param[in]              end  The ending point for the statement vector.
+     * @param[in,out]  adjointData  The adjoint vector for the evaluation.
+     *
+     * @tparam AdjointData  The data type for the adjoint vector.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData, bool useCopy) {
 
@@ -566,41 +607,23 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief The forward evaluation creates a copy of the primal value vector.
+     *
+     * It has to hold start <= end.
+     *
+     * The function calls the evaluation method for the external function vector.
+     *
+     * @param[in]            start  The starting point for the statement vector.
+     * @param[in]              end  The ending point for the statement vector.
+     * @param[in,out]  adjointData  The adjoint vector for the evaluation.
+     *
+     * @tparam AdjointData  The data type for the adjoint vector.
+     */
     template<typename AdjointData>
     CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
       evaluateForwardInt(start, end, adjointData, true);
     }
-
-    /**
-     * Function object that is used to revert the primal values in the primal value vector.
-     */
-    struct PrimalValueReseter {
-      PrimalValueIndexTape& tape;
-
-      /**
-       * @brief Create the function object.
-       *
-       * @param[in,out]     tape  The reference to the actual tape.
-       */
-      PrimalValueReseter(PrimalValueIndexTape& tape) :
-        tape(tape){}
-
-      /**
-       * @brief The operator reverts the value in the primal value vector to the old value stored during the recording.
-       *
-       * @param[in]    index  The lhs index for the statement.
-       * @param[in]    value  The old value that has been overwritten in the primal value vector.
-       * @param[in]   handle  The handle for the evaluation of the statement.
-       * @param[in] stmtSize  The number of non zero entries in the statement.
-       */
-      void operator () (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
-        CODI_UNUSED(handle);
-        CODI_UNUSED(stmtSize);
-
-        tape.primals[*index] = *value;
-      }
-    };
-
 
     /**
      * @brief Resets the primal values up to the specified position.
@@ -615,14 +638,27 @@ namespace codi {
       // Do not perform a global reset on the primal value vector if the tape is cleared
       if(getZeroPosition() != pos) {
 
-        PrimalValueReseter reseter(*this);
+        auto resetFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
+          CODI_UNUSED(handle);
+          CODI_UNUSED(stmtSize);
+
+          primals[*index] = *value;
+        };
 
         StmtPosition stmtEnd = stmtVector.getPosition();
 
-        stmtVector.forEachReverse(stmtEnd, pos.inner.inner.inner, reseter);
+        stmtVector.forEachReverse(stmtEnd, pos.inner.inner.inner, resetFunc);
       }
+    }
 
-      // call the function from the external function module
+    /**
+     * @brief Resets the primal values and the vectors up to the specified position.
+     *
+     * @param[in] pos  The position for the tape reset.
+     */
+    CODI_INLINE void resetAll(const Position& pos) {
+      resetPrimalValues(pos);
+
       resetExtFunc(pos);
     }
 
@@ -632,7 +668,7 @@ namespace codi {
     /**
      * @brief Specialized evaluate function for the preaccumulation.
      *
-     * The function does a normal reverse evaluation and afterwards the primal value vector es reset to the
+     * The function does a normal reverse evaluation and afterwards the primal value vector is reset to the
      * current state.
      *
      * It has to hold start >= end
@@ -664,15 +700,21 @@ namespace codi {
       std::swap(primals, primalsCopy);
     }
 
+    /**
+     * @brief Specialized forward evaluate function for the preaccumulation.
+     *
+     * The function performs a reset of the primal values and then a forward evaluation of the tape.
+     *
+     * It has to hold start <= end
+     *
+     * @param[in] start  The starting position for the evaluation.
+     * @param[in]   end  The stopping position for the evaluation.
+     */
     CODI_INLINE void evaluateForwardPreacc(const Position& start, const Position& end) {
 
       resizeAdjointsToIndexSize();
 
-      PrimalValueReseter reseter(*this);
-
-      StmtPosition stmtEnd = stmtVector.getPosition();
-
-      stmtVector.forEachReverse(stmtEnd, start.inner.inner.inner, reseter);
+      resetPrimalValues(start);
 
       evaluateForwardInt(start, end, adjoints, false);
     }

@@ -174,7 +174,7 @@ void externalFunctionPassive() {
   codi::RealReverse x[2];
 
   // external function helper start
-  codi::ExternalFunctionHelper<codi::RealReverse> eh;
+  codi::ExternalFunctionHelper<codi::RealReverse> eh(true);
   for(int i = 0; i < 4; ++i) {
     eh.addInput(A[i]);
   }

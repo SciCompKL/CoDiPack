@@ -30,7 +30,7 @@
 BUILD_DIR = build
 DOC_DIR   = documentation
 
-#list all source files in TEST_DIR
+#list all source files in DOC_DIR
 DOC_FILES   = $(wildcard $(DOC_DIR)/*.cpp)
 
 #list all dependency files in BUILD_DIR

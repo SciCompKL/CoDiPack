@@ -83,8 +83,13 @@ namespace codi {
        *
        * @param[in]           primalFunc  The function pointer for the primal evaluation.
        * @param[in]          adjointFunc  The function pointer for the adjoint evaluation.
+       * @param[in]          tangentFunc  The function pointer for the tangent evaluation.
        * @param[in]   maxActiveVariables  The number of active variables in the statement.
        * @param[in] maxConstantVariables  The number of constant variables in the statement.
+       *
+       * @tapram  PrimalFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::PrimalExprFunc
+       * @tapram AdjointFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::AdjointExprFunc
+       * @tapram TangentFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::TangentExprFunc
        */
       template<typename PrimalFunc, typename AdjointFunc, typename TangentFunc>
       ExpressionHandle(const PrimalFunc primalFunc,

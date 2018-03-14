@@ -392,24 +392,25 @@ namespace codi {
      *
      * @param[in]       startAdjPos  The starting position for the adjoint evaluation.
      * @param[in]         endAdjPos  The ending position for the adjoint evaluation.
+     * @param[in,out]   adjointData  The vector of the adjoint variables.
+     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
+     * @param[in]    endConstantPos  The ending position in the constant data vector.
+     * @param[in]         constants  The constant values in the rhs expressions.
+     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
+     * @param[in]       endIndexPos  The ending position in the index data.
+     * @param[in]           indices  The indices for the arguments of the rhs.
      * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
      * @param[in]        statements  The vector with the handles for each statement.
      * @param[in] passiveActiveReal  The number passive values for each statement.
-     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
-     * @param[in]           indices  The indices for the arguments of the rhs.
-     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
-     * @param[in]         constants  The constant values in the rhs expressions.
-     * @param[in,out] adjointData  The vector of the adjoint variables.
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStackReverse(const size_t& startAdjPos, const size_t& endAdjPos,
-                                   AdjointData* adjointData,
-                                   size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
-                                   size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                                   size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
-                                      StatementInt* &passiveActiveReal) {
+    CODI_INLINE void evaluateStackReverse(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
+                                          size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
+                                          size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
+                                          StatementInt* &passiveActiveReal) {
       CODI_UNUSED(endConstPos);
       CODI_UNUSED(endIndexPos);
       CODI_UNUSED(endStmtPos);
@@ -441,13 +442,32 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Evaluate the stack from the start to to the end position.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in]       startAdjPos  The starting position for the adjoint evaluation.
+     * @param[in]         endAdjPos  The ending position for the adjoint evaluation.
+     * @param[in,out]   adjointData  The vector of the adjoint variables.
+     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
+     * @param[in]    endConstantPos  The ending position in the constant data vector.
+     * @param[in]         constants  The constant values in the rhs expressions.
+     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
+     * @param[in]       endIndexPos  The ending position in the index data.
+     * @param[in]           indices  The indices for the arguments of the rhs.
+     * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
+     * @param[in]        statements  The vector with the handles for each statement.
+     * @param[in] passiveActiveReal  The number passive values for each statement.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStackForward(const size_t& startAdjPos, const size_t& endAdjPos,
-                                   AdjointData* adjointData,
-                                   size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
-                                   size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                                   size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
-                                      StatementInt* &passiveActiveReal) {
+    CODI_INLINE void evaluateStackForward(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
+                                          size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
+                                          size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
+                                          StatementInt* &passiveActiveReal) {
       CODI_UNUSED(endConstPos);
       CODI_UNUSED(endIndexPos);
       CODI_UNUSED(endStmtPos);
@@ -490,6 +510,19 @@ namespace codi {
       evaluate(start, end);
     }
 
+
+    /**
+     * @brief Special forward evaluation function for the preaccumulation of a tape part.
+     *
+     * The function just evaluates the tape and does not store the data for the preaccumulation.
+     * This function can be used by the tape implementation to reset its state in a more efficient way
+     * then it could be programmed from the outside.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start The starting position for the reverse evaluation.
+     * @param[in]   end The ending position for the reverse evaluation.
+     */
     CODI_INLINE void evaluateForwardPreacc(const Position& start, const Position& end) {
 
       evaluateForward(start, end);

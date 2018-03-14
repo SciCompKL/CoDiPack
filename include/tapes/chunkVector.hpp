@@ -423,6 +423,21 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Iterates over the data entries in the chunk.
+     *
+     * Iterates of the data entries and calls the function object with each data item.
+     *
+     * It has to hold start <= end.
+     *
+     * @param chunkPos  The position of the chunk.
+     * @param    start  The starting point inside the data of the chunk.
+     * @param      end  The end point inside the data of the chunk.
+     * @param function  The function called for each data entry.
+     * @param     args  Additional arguments for the function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
     template<typename FunctionObject, typename ... Args>
     CODI_INLINE void forEachDataForward(const size_t& chunkPos, const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
       codiAssert(start <= end);
@@ -527,6 +542,34 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Reverse stack evaluation of the tape.
+     *
+     * All pointers to the data items are created and given with the start and end position for
+     * the interpretation range to the next vector. The last vector will call the provided function.
+     *
+     * The function is called several times for each valid range described by the chunks of the nested
+     * vectors. The function has to modify the dataPos given for each chunk vector such that it is reduced
+     * to end position for the interpretation.
+     *
+     * The function call is
+     * \code{.cpp}
+     * func(start.nested, end.nested, <other arguments>,
+     *      startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+     * \endcode
+     *
+     * Debug checks will ensure this behaviour.
+     *
+     * It has to hold start >= end.
+     *
+     * @param    start  The start point for the stack interpretation.
+     * @param      end  The end point for the stack interpretation.
+     * @param function  The function called for each valid range.
+     * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+     *                  function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
     template<typename Function, typename ... Args>
     CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function,
                                      Args&&... args) {
@@ -551,8 +594,38 @@ namespace codi {
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       pHandle.setPointers(0, chunks[end.chunk]);
       pHandle.callNestedReverse(nested, curInnerPos, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
+
+      codiAssert(dataPos == end.data); // after the last chunk is evaluated, the data position needs to be at the end position
     }
 
+    /**
+     * @brief Forward stack evaluation of the tape.
+     *
+     * All pointers to the data items are created and given with the start and end position for
+     * the interpretation range to the next vector. The last vector will call the provided function.
+     *
+     * The function is called several times for each valid range described by the chunks of the nested
+     * vectors. The function has to modify the dataPos given for each chunk vector such that it is increased
+     * to end position for the interpretation.
+     *
+     * The function call is
+     * \code{.cpp}
+     * func(start.nested, end.nested, <other arguments>,
+     *      startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+     * \endcode
+     *
+     * Debug checks will ensure this behaviour.
+     *
+     * It has to hold start >= end.
+     *
+     * @param    start  The start point for the stack interpretation.
+     * @param      end  The end point for the stack interpretation.
+     * @param function  The function called for each valid range.
+     * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+     *                  function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
     template<typename Function, typename ... Args>
     CODI_INLINE void evaluateForward(const Position& start, const Position& end,const Function& function,
                                      Args&&... args) {
@@ -578,6 +651,8 @@ namespace codi {
       // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
       pHandle.setPointers(0, chunks[end.chunk]);
       pHandle.callNestedForward(nested, curInnerPos, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
+
+      codiAssert(dataPos == end.data); // after the last chunk is evaluated, the data position needs to be at the end position
     }
   };
 }

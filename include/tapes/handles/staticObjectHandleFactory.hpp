@@ -112,7 +112,7 @@ namespace codi {
       }
 
       /**
-       * @brief The evaluation of the handle, that was created by this factory.
+       * @brief The evaluation of the forward handle, that was created by this factory.
        *
        * The data from the static object is read and used to call the function.
        *

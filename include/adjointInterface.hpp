@@ -156,8 +156,33 @@ namespace codi {
        */
       virtual void updateJacobiAdjoint(const int index, Real jacobi) = 0;
 
+      /**
+       * @brief The tangent target for the tangent of the left hand side of an equation.
+       *
+       * The function needs to be used together with updateJacobiTangent. For the statement
+       *
+       *  w = h(x)
+       *
+       * the tangent update
+       *
+       * w_d += jac * x_d
+       *
+       * needs to be performed where jac = dh/dx. This function call identifies w_d by the index and sets it to the currently
+       * accumulated value. With the function call to updateJacobiAdjoint the multiplication jac * x_d is performed and needs
+       * to be called before the call to this function.
+       *
+       * @param[in] index  The index of the tangent value that is set to the current accumulated value.
+       */
       virtual void setLhsTangent(const int index) = 0;
 
+      /**
+       * @brief Updates the lhs tangent with the jacobian multiplied with target tangent value.
+       *
+       * See also the documentation of setLhsTangent
+       *
+       * @param[in]  index  The index of the tangent value that is used for the update.
+       * @param[in] jacobi  The jacobi value that is multiplied with the tangnet value defined by index.
+       */
       virtual void updateJacobiTangent(const int index, Real jacobi) = 0;
 
       /**
