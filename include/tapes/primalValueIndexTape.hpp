@@ -727,8 +727,7 @@ namespace codi {
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       if(isActive()) {
-        //TODO: Test if register of already active value will yield errors.
-        indexHandler.assignIndex(value.getGradientData());
+        indexHandler.assignUnusedIndex(value.getGradientData());
 
         checkPrimalsSize();
         primals[value.getGradientData()] = value.getValue();
@@ -745,8 +744,7 @@ namespace codi {
     CODI_INLINE Real registerExtFunctionOutput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       Real oldValue = value.getValue();
       if(isActive()) {
-        //TODO: Test if register of already active value will yield errors.
-        indexHandler.assignIndex(value.getGradientData());
+        indexHandler.assignUnusedIndex(value.getGradientData());
 
         checkPrimalsSize();
         oldValue = primals[value.getGradientData()];

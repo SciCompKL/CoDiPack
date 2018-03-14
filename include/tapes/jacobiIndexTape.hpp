@@ -443,7 +443,7 @@ namespace codi {
      * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
-      indexHandler.assignIndex(value.getGradientData());
+      indexHandler.assignUnusedIndex(value.getGradientData());
     }
 
     /**
