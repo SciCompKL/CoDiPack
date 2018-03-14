@@ -190,6 +190,13 @@ namespace codi {
       }
 
       /**
+       * @brief Reset the position to the zero state.
+       */
+      CODI_INLINE void reset() {
+        count = zeroState;
+      }
+
+      /**
        * @brief Resets the linear index handler to the initial state.
        */
       CODI_INLINE void resetHard() {
