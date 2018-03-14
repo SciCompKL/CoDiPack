@@ -1,6 +1,24 @@
 Changelog      {#Changelog}
 ===========================
 
+### v 1.6.0 - 2018-03-15
+ - First support for forward evaluation of tapes
+   * Used in the preaccumulation helper for code sections
+     that have more output values than input values.
+ - Default Change: Adjoint values are reset by default
+   * 10% to 20% performance improvement possible
+   * Adjoint values in the RealReverse types are now automatically reset
+     during the reverse interpretation. A call to clearAdjoints is no longer
+     necessary, only the input values need to be set manually to zero.
+ - Bugfix: Input values after a computation for RealReverseIndex tapes
+   * If an index for an input value was used before the input value is
+     registered, then the result for the input was zero and other
+     input values received wrong updates.
+ - Bugfix: Memory leak in external function helper.
+ - Generalized function for stack evaluation
+    * Intermediate function are no longer required for the stack
+      evaluation.
+
 ### v 1.5.0 - 2017-12-18
 
  - Support for custom adjoint vectors
