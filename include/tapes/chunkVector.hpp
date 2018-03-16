@@ -338,6 +338,15 @@ namespace codi {
       curChunk->setDataAndMove(data...);
     }
 
+    template< typename ... Pointers>
+    CODI_INLINE void getDataPointer(Pointers* &... pointers) {
+      curChunk->dataPointer(curChunk->usedSize, pointers...);
+    }
+
+    CODI_INLINE void addDataSize(size_t count) {
+      curChunk->usedSize += count;
+    }
+
     /**
      * @brief The position inside the data of the current chunk.
      * @return The current position in the current chunk.

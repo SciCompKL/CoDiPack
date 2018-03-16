@@ -29,6 +29,7 @@
 #pragma once
 
 #include <type_traits>
+#include "expressions.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package

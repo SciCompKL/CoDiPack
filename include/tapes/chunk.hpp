@@ -33,6 +33,7 @@
 
 #include "../configure.h"
 #include "../tools/io.hpp"
+#include "../typeFunctions.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
