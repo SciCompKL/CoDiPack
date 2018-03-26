@@ -1241,22 +1241,6 @@ namespace codi {
     return isnan(a.getValue());
   }
 
-  using std::isfinite;
-  /**
-   * @brief Overload for the isfinite function with expressions.
-   *
-   * @param[in] a The argument of the function.
-   *
-   * @return The result of isfinite on the primal value.
-   *
-   * @tparam Real The real type used in the active types.
-   * @tparam A The expression for the argument of the function
-   */
-  template<typename Real, class A>
-  CODI_INLINE bool isfinite(const codi::Expression<Real, A>& a) {
-    return codi::isfinite(a.getValue());
-  }
-
   using std::floor;
   /**
    * @brief Overload for the floor function with expressions.
