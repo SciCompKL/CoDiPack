@@ -105,6 +105,7 @@ namespace codi {
   template <typename T, typename Enable = void>
   struct IsFiniteImpl {
       static CODI_INLINE bool get(const T &t) {
+          using std::isfinite;
           return isfinite(t);
       }
   };
@@ -122,7 +123,8 @@ namespace codi {
   >
   {
       static CODI_INLINE bool get(const T &t) {
-        return codi::isfinite(dynamic_cast<const codi::Expression<typename codi::TypeTraits<T>::Real, T>&>(t));
+        using std::isfinite;
+        return isfinite(t.getValue());
       }
   };
 
