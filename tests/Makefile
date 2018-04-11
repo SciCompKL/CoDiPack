@@ -235,6 +235,13 @@ DRIVER_SRC = $(DRIVER_DIR)/reverseOverForward/reverseOverForwardDriver.cpp
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseOverForward
 $(eval $(value DRIVER_INST))
 
+# Driver for reversePrimal over forward
+DRIVER_NAME  := RWS2nd_Prim
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/reversePrimalOverForward/reverseOverForwardDriver.cpp
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalOverForward
+$(eval $(value DRIVER_INST))
+
 # rules for generating the test files
 $(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
 	@mkdir -p $(@D)
