@@ -191,19 +191,17 @@ namespace codi {
      *
      * @return The corresponding primal value for the active real.
      *
-     * @tparam      IndexType  The type for the indices.
+     * @tparam          Index  The type for the indices.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE const Real& getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
-      return ActiveType::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+    template<typename Index, size_t offset, size_t constantOffset>
+    static CODI_INLINE const Real& getValue(const Index* indices, const Real* constantValues, const Real* primalValues) {
+      return ActiveType::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
     }
 
-
     /**
-     * @brief Calculate the gradient of the expression and update the seed. The updated seed is then
-     *        given to the argument expressions.
+     * @brief Update the adjoint of the corresponding value in the expression.
      *
      * The call is forwarded to the referenced ActiveReal type.
      *
@@ -214,13 +212,41 @@ namespace codi {
      * @param[in]   primalValues  The global primal value vector.
      * @param[in]  adjointValues  The global adjoint value vector.
      *
-     * @tparam      IndexType  The type for the indices.
+     * @tparam          Index  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
-      ActiveType::template evalAdjoint<IndexType, offset, constantOffset>(seed, indices, constantValues, primalValues, adjointValues);
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices,
+                                        const Real* constantValues, const Real* primalValues,
+                                        PRIMAL_ADJOINT_TYPE* adjointValues) {
+      ActiveType::template evalAdjoint<Index, GradientValue, offset, constantOffset>(seed, indices, constantValues, primalValues, adjointValues);
+    }
+
+    /**
+     * @brief Add the tangent influence of this value in the expression.
+     *
+     * The call is forwarded to the referenced ActiveReal type.
+     *
+     * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+     *                            for the operators and used as the update in the terminal points.
+     * @param[in,out] lhsAdjoint  The tangent value for the lhs.
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     * @param[in]  adjointValues  The global adjoint value vector.
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices,
+                                        const Real* constantValues, const Real* primalValues,
+                                        PRIMAL_ADJOINT_TYPE* adjointValues) {
+      return ActiveType::template evalTangent<Index, GradientValue, offset, constantOffset>(seed, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
     }
 
     /**
