@@ -91,6 +91,7 @@ namespace codi {
     CODI_INLINE void store(Real& value, GradientData& lhsTangent, const Rhs& rhs) {
       GradientValue gradient = GradientValue();
       rhs.template calcGradient<GradientValue>(gradient);
+      rhs.template pushLazyJacobies<GradientValue>(gradient);
       lhsTangent  = gradient;
       value = rhs.getValue();
 
