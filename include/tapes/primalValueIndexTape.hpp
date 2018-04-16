@@ -502,7 +502,7 @@ namespace codi {
 
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      typedef AdjointInterfaceImpl<Real, AdjointData> AdjVecType;
+      typedef AdjointInterfacePrimalImpl<Real, AdjointData> AdjVecType;
       AdjVecType* adjVec = &interface;
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
@@ -579,7 +579,7 @@ namespace codi {
 
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      typedef AdjointInterfaceImpl<Real, AdjointData> AdjVecType;
+      typedef AdjointInterfacePrimalImpl<Real, AdjointData> AdjVecType;
       AdjVecType* adjVec = &interface;
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
