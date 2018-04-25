@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -36,7 +36,7 @@
 namespace std {
 
   /**
-   * @brief The numeric limts for the ActiveReal's are based on the numeric limits for the
+   * @brief The numeric limits for the ActiveReal's are based on the numeric limits for the
    *        passive type (aka the start of the ActiveReal chain).
    *
    * @tparam Tape  The tape that defines the properties of the ActiveReal.
@@ -44,7 +44,7 @@ namespace std {
   template <typename Tape>
   class numeric_limits<codi::ActiveReal<Tape> > {
     private:
-      /** @brief The active type for which the numeric limts are specialized */
+      /** @brief The active type for which the numeric limits are specialized */
       typedef codi::ActiveReal<Tape> Real;
 
       /** @brief The passive type from which the values are taken */

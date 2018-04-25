@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -46,9 +46,9 @@
  * It defines the methods store(Expr), store(const), store(User), pushJacobi, printPrimalValueStatistics from the TapeInterface and ReverseTapeInterface.
  *
  * It defines the methods resizePrimals, checkPrimalsSize, evaluateHandle, evaluateConstantValues, getUsedStatementsSize,
- * getUsedDataEntiresSize, getUsedConstantDataSize, setConstantDataSize as interface functions for the including class.
+ * getUsedDataEntiresSize, getUsedConstantDataSize, setConstantDataSize, swapPrimalValueModule as interface functions for the including class.
  *
- * It defines the static methods inputHandleFunc, copyHandleFunc, preaccHandleFunc as interface functions for the
+ * It defines the static methods inputHandleFunc, copyHandleFunc, preaccHandleFunc as interface functions for the tape.
  */
 
 #ifndef CHILD_VECTOR_TYPE
@@ -66,7 +66,6 @@
 #ifndef TAPE_NAME
   #error Please define the name of the tape.
 #endif
-
 
 		private:
 
@@ -108,80 +107,22 @@
     ConstantValueVector constantValueVector;
 
 
-    /**
-     * @brief Handle for the input function.
-     *
-     * It does not need to do anything.
-     *
-     * @param[in]               seed  The seed for the adjoint of the lhs value.
-     * @param[in]            indices  The indices for the arguments of the rhs.
-     * @param[in]     constantValues  The array of the constant values in the rhs.
-     * @param[in]       primalValues  The global vector with the primal values.
-     * @param[in,out]  adjointValues  The global vector with the adjoint values.
-     */
-    static void inputHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {}
-
-    /** @brief The static handle for the input function. */
-    const static ExpressionHandle<Real*, Real, IndexType> InputHandle;
-
-    /**
-     * @brief Handle for the copy function.
-     *
-     * It updates the adjoint of the rhs with the seed.
-     *
-     * @param[in]               seed  The seed for the adjoint of the lhs value.
-     * @param[in]            indices  The indices for the arguments of the rhs.
-     * @param[in]     constantValues  The array of the constant values in the rhs.
-     * @param[in]       primalValues  The global vector with the primal values.
-     * @param[in,out]  adjointValues  The global vector with the adjoint values.
-     */
-    static void copyHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
-      CODI_UNUSED(constantValues);
-      CODI_UNUSED(primalValues);
-      adjointValues[indices[0]] += seed;
-    }
-
-    /** @brief The static handle for the copy function. */
-    const static ExpressionHandle<Real*, Real, IndexType> CopyHandle;
-
-    /**
-     * @brief Handle for the pre accumulation.
-     *
-     * It assumes that there are size constant values, that represent the Jacobian.
-     * Each Jacobian is multiplied with the seed and used to update the rhs value.
-     *
-     * @param[in]               seed  The seed for the adjoint of the lhs value.
-     * @param[in]            indices  The indices for the arguments of the rhs.
-     * @param[in]     constantValues  The array of the constant values in the rhs.
-     * @param[in]       primalValues  The global vector with the primal values.
-     * @param[in,out]  adjointValues  The global vector with the adjoint values.
-     *
-     * @tparam size  The number of arguments of the preaccumulated function.
-     */
-    template<int size>
-    static void preaccHandleFunc(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
-      CODI_UNUSED(primalValues);
-      for(int i = 0; i < size; ++i) {
-        // jacobies are stored in the constant values
-        adjointValues[indices[i]] += constantValues[i] * seed;
-      }
-    }
 
     /** @brief The static array of handles for the preaccumulation. */
-    const static ExpressionHandle<Real*, Real, IndexType> PreaccHandles[MaxStatementIntSize];
+    const static typename TapeTypes::Handle preaccHandles[MaxStatementIntSize];
 
     /** @brief The vector with the primal value for each statement. */
     Real* primals;
 
     /** @brief The current size of the primal vector. */
-    IndexType primalsSize;
+    Index primalsSize;
 
     /**
      * @brief The increment of the size of the primal vector.
      *
      * The primals are incremented, when the indices are bigger than the current size.
      */
-    IndexType primalsIncr;
+    Index primalsIncr;
 
   private:
 
@@ -190,17 +131,28 @@
   // ----------------------------------------------------------------------
 
     /**
+     * @brief Swap the data of the primal value module with the data of the other primal tape module.
+     *
+     * @param[in] other  The object with the other primal value module.
+     */
+    void swapPrimalValueModule(TAPE_NAME<TapeTypes>& other) {
+      std::swap(primals, other.primals);
+      std::swap(primalsSize, other.primalsSize);
+      std::swap(primalsIncr, other.primalsIncr);
+    }
+
+    /**
      * @brief Helper function: Sets the primal vector to a new size.
      *
      * @param[in] size The new size for the primal vector.
      */
-    void resizePrimals(const IndexType& size) {
-      IndexType oldSize = primalsSize;
+    void resizePrimals(const Index& size) {
+      Index oldSize = primalsSize;
       primalsSize = size;
 
       primals = (Real*)realloc(primals, sizeof(Real) * (size_t)primalsSize);
 
-      for(IndexType i = oldSize; i < primalsSize; ++i) {
+      for(Index i = oldSize; i < primalsSize; ++i) {
         primals[i] = Real();
       }
     }
@@ -212,7 +164,7 @@
      */
     CODI_INLINE void checkPrimalsSize() {
       if(primalsSize <= indexHandler.getMaximumGlobalIndex()) {
-        IndexType newSize = 1 + (indexHandler.getMaximumGlobalIndex() + 1) / primalsIncr;
+        Index newSize = 1 + (indexHandler.getMaximumGlobalIndex() + 1) / primalsIncr;
         newSize = newSize * primalsIncr;
         resizePrimals(newSize);
       }
@@ -238,7 +190,7 @@
      * @param[in]     value  Not used in the action.
      * @param[in]     index  The index of the active real.
      */
-    CODI_INLINE void countActiveValues(int* count, const Real& value, const IndexType& index) {
+    CODI_INLINE void countActiveValues(int* count, const Real& value, const Index& index) {
       CODI_UNUSED(value);
       if(0 != index) {
         *count += 1;
@@ -256,8 +208,8 @@
      * @param[in]     value  The primal value of the active real.
      * @param[in]     index  The index of the active real.
      */
-    CODI_INLINE void pushIndices(int* passiveVariableCount, const Real& value, const IndexType& index) {
-      IndexType pushIndex = index;
+    CODI_INLINE void pushIndices(int* passiveVariableCount, const Real& value, const Index& index) {
+      Index pushIndex = index;
       if(0 == pushIndex) {
         *passiveVariableCount += 1;
         pushIndex = *passiveVariableCount;
@@ -267,6 +219,78 @@
       indexVector.setDataAndMove(pushIndex);
     }
 
+  public:
+
+    /**
+     * @brief Evaluate one handle in the primal sweep.
+     *
+     * The function sets the passive values for the evaluation of the expression. Afterwards the primal evaluation is
+     * called.
+     *
+     * The positions are increased such that the next primal handle can be evaluated.
+     *
+     * @param[in]          funcObj  The function object that performs the reverse AD evaluation of an expression.
+     * @param[in]          varSize  The number of variables of the expression.
+     * @param[in]        constSize  The number constant variables of the expression.
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     *
+     * @tparam FuncObj  The function object that performs the actual evaluation of the expression.
+     */
+    template<typename FuncObj>
+    static CODI_INLINE Real evaluatePrimalHandle(FuncObj funcObj,
+                                                 size_t varSize,
+                                                 size_t constSize,
+                                                 const StatementInt& passiveActives,
+                                                 size_t& indexPos,
+                                                 Index* &indices,
+                                                 size_t& constantPos,
+                                                 PassiveReal* &constants,
+                                                 Real* primalVector) {
+
+      size_t tempConstantPos = constantPos + constSize;
+      // first restore the primal values of the passive indices
+      for(StatementInt i = 0; i < passiveActives; ++i) {
+        primalVector[i + 1] = constants[tempConstantPos + i];
+      }
+
+      Real result = funcObj(codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector);
+
+      indexPos += varSize;
+      constantPos += constSize + passiveActives;
+
+      return result;
+    }
+
+    /**
+     * @brief Curry the evaluation of a handle such that the sizes do not need to be stored.
+     *
+     * This is a helper function that can be stored as a function pointer in order to be able to evaluate a primal
+     * handle without knowing the constant sizes for the expression. The function calls evluatePrimalHandle
+     *
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     *
+     * @tparam Expr  The expression for which the function is created.
+     */
+    template<typename Expr>
+    static CODI_INLINE Real curryEvaluatePrimalHandle(const StatementInt& passiveActives,
+                                                      size_t& indexPos,
+                                                      Index* &indices,
+                                                      size_t& constantPos,
+                                                      PassiveReal* &constants,
+                                                      Real* primalVector) {
+      return evaluatePrimalHandle(Expr::template getValue<Index, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+                                  passiveActives, indexPos, indices, constantPos, constants, primalVector);
+    }
 
     /**
      * @brief Evaluate one handle in the reverse sweep.
@@ -274,16 +298,32 @@
      * The function sets the primal values in the primal value vector for the inactive values.
      * Then it updates the genaral positions and calls the adjoint function of the handle.
      *
+     * @param[in]          funcObj  The function object that performs the reverse AD evaluation of an expression.
+     * @param[in]          varSize  The number of variables of the expression.
+     * @param[in]        constSize  The number constant variables of the expression.
      * @param[in]              adj  The seed from the lhs of the statement.
-     * @param[in]       exprHandle  The handle for the statement.
      * @param[in]   passiveActives  The number of inactive values in the statement.
      * @param[in,out]     indexPos  The position in the index array.
      * @param[in]          indices  The index array.
      * @param[in,out]  constantPos  The position in the constant value array.
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
+     * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
+     *
+     * @tparam FuncObj  The function object that performs the actual evaluation of the expression.
      */
-    CODI_INLINE void evaluateHandle(const GradientValue& adj, const Handle& exprHandle, const StatementInt& passiveActives, size_t& indexPos, IndexType* &indices, size_t& constantPos, PassiveReal* &constants, Real* primalVector) {
+    template<typename FuncObj>
+    static CODI_INLINE void evaluateHandle(FuncObj funcObj,
+                                           size_t varSize,
+                                           size_t constSize,
+                                           const PRIMAL_SEED_TYPE& adj,
+                                           const StatementInt& passiveActives,
+                                           size_t& indexPos,
+                                           Index* &indices,
+                                           size_t& constantPos,
+                                           PassiveReal* &constants,
+                                           Real* primalVector,
+                                           PRIMAL_ADJOINT_TYPE* adjoints) {
       // first restore the primal values of the passive indices
       constantPos -= passiveActives;
       for(StatementInt i = 0; i < passiveActives; ++i) {
@@ -291,84 +331,135 @@
       }
 
       // now update the regular pointers
-      indexPos -= exprHandle->maxActiveVariables;
-      constantPos -= exprHandle->maxConstantVariables;
-      ENABLE_CHECK(OptZeroAdjoint, adj != 0.0){
-        exprHandle->adjointFunc(adj, &indices[indexPos], &constants[constantPos], primalVector, adjoints);
+      indexPos -= varSize;
+      constantPos -= constSize;
+      ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
+        funcObj(adj, codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector, adjoints);
       }
     }
 
     /**
-     * @brief Evaluate a part of the index vector.
+     * @brief Curry the evaluation of a handle such that the sizes do not need to be stored.
      *
-     * It has to hold start >= end.
+     * This is a helper function that can be stored as a function pointer in order to be able to evaluate a
+     * handle without knowing the constant sizes for the expression. The function calls evluateHandle
      *
-     * The function calls the evaluation method for the statement vector.
+     * @param[in]              adj  The seed from the lhs of the statement.
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
      *
-     * @param[in]    start  The starting point for the index vector.
-     * @param[in]      end  The ending point for the index vector.
-     * @param[in,out] args  Other arguments for the following functions.
-     *
-     * @tparam Args  The types of the other arguments.
+     * @tparam Expr  The expression for which this helper is instantiated.
      */
-    template<typename ... Args>
-    CODI_INLINE void evaluateIndices(const IndexPosition& start, const IndexPosition& end, Args&&... args) {
-      IndexType* data;
-      size_t dataPos = start.data;
-      auto curInnerPos = start.inner;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        indexVector.getDataAtPosition(curChunk, 0, data);
-
-        auto endInnerPos = indexVector.getInnerPosition(curChunk);
-        evalStmt(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
-
-        curInnerPos = endInnerPos;
-
-        dataPos = indexVector.getChunkUsedData(curChunk - 1);
-      }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      indexVector.getDataAtPosition(end.chunk, 0, data);
-      evalStmt(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
+    template<typename Expr>
+    static CODI_INLINE void curryEvaluateHandle(const PRIMAL_SEED_TYPE& adj,
+                                                const StatementInt& passiveActives,
+                                                size_t& indexPos,
+                                                Index* &indices,
+                                                size_t& constantPos,
+                                                PassiveReal* &constants,
+                                                Real* primalVector,
+                                                PRIMAL_ADJOINT_TYPE* adjoints) {
+      evaluateHandle(Expr::template evalAdjoint<Index, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+                     adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
     }
 
     /**
-     * @brief Evaluate a part of the constant value vector.
+     * @brief Evaluate one handle in the forward sweep.
      *
-     * It has to hold start >= end.
+     * The function sets the primal values in the primal value vector for the inactive values.
+     * Then it updates the genaral positions and calls the tangent function of the handle.
      *
-     * The function calls the evaluation method for the index vector.
+     * @param[in]          funcObj  The function object that performs the tangent AD evaluation of an expression.
+     * @param[in]          varSize  The number of variables of the expression.
+     * @param[in]        constSize  The number constant variables of the expression.
+     * @param[in]              adj  The seed from the lhs of the statement.
+     * @param[in,out]   lhsAdjoint  The tangent value of the lhs of the expression.
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
      *
-     * @param[in]    start  The starting point for the constant value vector.
-     * @param[in]      end  The ending point for the constant value vector.
-     * @param[in,out] args  Other arguments for the following functions.
-     *
-     * @tparam Args  The types of the other arguments.
+     * @tparam FuncObj  The function object that performs the actual evaluation of the expression.
      */
-    template<typename ... Args>
-    CODI_INLINE void evaluateConstantValues(const ConstantValuePosition& start, const ConstantValuePosition& end, Args&&... args) {
-      PassiveReal* data;
-      size_t dataPos = start.data;
-      auto curInnerPos = start.inner;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        constantValueVector.getDataAtPosition(curChunk, 0, data);
+    template<typename FuncObj>
+    static CODI_INLINE Real evaluateForwardHandle(FuncObj funcObj,
+                                                  size_t varSize,
+                                                  size_t constSize,
+                                                  const Real& adj,
+                                                  GradientValue& lhsAdjoint,
+                                                  const StatementInt& passiveActives,
+                                                  size_t& indexPos,
+                                                  Index* &indices,
+                                                  size_t& constantPos,
+                                                  PassiveReal* &constants,
+                                                  Real* primalVector,
+                                                  PRIMAL_ADJOINT_TYPE* adjoints) {
 
-        auto endInnerPos = constantValueVector.getInnerPosition(curChunk);
-        evaluateIndices(curInnerPos, endInnerPos, dataPos, data, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
-
-        curInnerPos = endInnerPos;
-
-        dataPos = constantValueVector.getChunkUsedData(curChunk - 1);
+      size_t tempConstantPos = constantPos + constSize;
+      // first restore the primal values of the passive indices
+      for(StatementInt i = 0; i < passiveActives; ++i) {
+        primalVector[i + 1] = constants[tempConstantPos + i];
       }
 
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      constantValueVector.getDataAtPosition(end.chunk, 0, data);
-      evaluateIndices(curInnerPos, end.inner, dataPos, data, std::forward<Args>(args)...);
+      Real result = funcObj(adj, lhsAdjoint, codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector, adjoints);
+
+      indexPos += varSize;
+      constantPos += constSize + passiveActives;
+
+      return result;
     }
+
+    /**
+     * @brief Curry the evaluation of a handle such that the sizes do not need to be stored.
+     *
+     * This is a helper function that can be stored as a function pointer in order to be able to evaluate a
+     * handle without knowing the constant sizes for the expression. The function calls evluateForwardHandle
+     *
+     * @param[in]              adj  The seed from the lhs of the statement.
+     * @param[in,out]   lhsAdjoint  The tangent value of the lhs of the expression.
+     * @param[in]   passiveActives  The number of inactive values in the statement.
+     * @param[in,out]     indexPos  The position in the index array.
+     * @param[in]          indices  The index array.
+     * @param[in,out]  constantPos  The position in the constant value array.
+     * @param[in]        constants  The constant value array.
+     * @param[in,out] primalVector  The global vector with the primal variables.
+     * @param[in,out]     adjoints  The adjoint vector for the reverse AD evaluation.
+     *
+     * @tparam Expr  The expression for which this helper is instantiated.
+     */
+    template<typename Expr>
+    static CODI_INLINE Real curryEvaluateForwardHandle(const Real& adj,
+                                                       GradientValue& lhsAdjoint,
+                                                       const StatementInt& passiveActives,
+                                                       size_t& indexPos,
+                                                       Index* &indices,
+                                                       size_t& constantPos,
+                                                       PassiveReal* &constants,
+                                                       Real* primalVector,
+                                                       PRIMAL_ADJOINT_TYPE* adjoints) {
+      return evaluateForwardHandle(Expr::template evalTangent<Index, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
+                                  adj, lhsAdjoint, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
+    }
+
+    /**
+     * @brief Set the primal value in the primal value vector.
+     *
+     * @param[in]  index  The index of the primal value which is set.
+     * @param[in] primal  The value which is set into the vector.
+     */
+    void setPrimalValue(const Index& index, const Real& primal) {
+      primals[index] = primal;
+    }
+
+    private:
 
     /**
      * @brief Push a copy handle to the tape and all data that is rquired by the handle.
@@ -379,11 +470,11 @@
      * @param[in,out] lhsIndex  The index of the active real. The index is renewed in this method.
      * @param[in]     rhsIndex  The index of the rhs value.
      */
-    CODI_INLINE void pushCopyHandle(const Real& lhsValue, IndexType& lhsIndex, const IndexType& rhsIndex) {
+    CODI_INLINE void pushCopyHandle(const Real& lhsValue, Index& lhsIndex, const Index& rhsIndex) {
       indexVector.reserveItems(1);
       indexVector.setDataAndMove(rhsIndex);
 
-      pushStmtData(lhsIndex, lhsValue, &CopyHandle, StatementInt(0));
+      pushStmtData(lhsIndex, lhsValue, HandleFactory::template createHandle<CopyExpr<Real>, TAPE_NAME<TapeTypes> >(), StatementInt(0));
     }
 
   public:
@@ -412,7 +503,9 @@
      * @tparam Rhs The expression on the rhs of the statement.
      */
     template<typename Rhs>
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
+
+      static_assert(ExpressionTraits<Rhs>::maxActiveVariables < MaxStatementIntSize, "Expression with to many arguments.");
 
       ENABLE_CHECK(OptTapeActivity, active){
 
@@ -434,13 +527,13 @@
           codiAssert(ExpressionTraits<Rhs>::maxActiveVariables == indexVector.getChunkPosition() - indexSize);
           codiAssert(passieveVariableCount == passiveVariableNumber);
 
-          pushStmtData(lhsIndex, rhs.getValue(), ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveVariableNumber);
+          pushStmtData(lhsIndex, rhs.getValue(), HandleFactory::template createHandle<Rhs, TAPE_NAME<TapeTypes> >(), passiveVariableNumber);
 
           CODI_UNUSED(constantSize);  /* needed to avoid unused variable when the assersts are not enabled. */
           CODI_UNUSED(indexSize);  /* needed to avoid unused variable when the assersts are not enabled. */
 
-#if CODI_AdjointHandle
-            IndexType* rhsIndices = NULL;
+#if CODI_AdjointHandle_Primal
+            Index* rhsIndices = NULL;
             PassiveReal* constants = NULL;
 
             auto posIndex = indexVector.getPosition();
@@ -449,8 +542,8 @@
             auto posPassive = constantValueVector.getPosition();
             constantValueVector.getDataAtPosition(posPassive.chunk, constantSize, constants);
 
-            resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
-            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, IndexType, Rhs>::getHandle(), passiveVariableNumber, constants, rhsIndices, primals, adjoints);
+            resizeAdjointsToIndexSize();
+            handleAdjointOperation(rhs.getValue(), lhsIndex, ExpressionHandleStore<Real*, Real, Index, Rhs>::getHandle(), passiveVariableNumber, constants, rhsIndices, primals, adjoints);
 #endif
         } else {
           indexHandler.freeIndex(lhsIndex);
@@ -475,7 +568,7 @@
      * @param[out]   lhsIndex  The gradient data of the lhs. The index will be set to zero.
      * @param[in]         rhs  The right hand side expression of the assignment.
      */
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
 
       lhsValue = rhs;
@@ -486,18 +579,20 @@
      *
      * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
      *
-     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobiManual.
+     *
+     * See also the documentation in TapeInterfaceReverse::storeManual.
      *
      * @param[out]   lhsValue  The primal value of the lhs.
      * @param[out]   lhsIndex  The gradient data of the lhs.
      * @param[in]        size  The number of Jacobi entries.
      */
-    CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void storeManual(const Real& lhsValue, Index& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
         constantValueVector.reserveItems(size);
         indexVector.reserveItems(size);
 
-        pushStmtData(lhsIndex, lhsValue, &PreaccHandles[size], 0);
+        pushStmtData(lhsIndex, lhsValue, preaccHandles[size], 0);
       }
     }
 
@@ -509,7 +604,7 @@
      * @param[in] index  Not used in this implementation.
      */
     template<typename Data>
-    CODI_INLINE void pushJacobi(Data& data, const Real& value, const IndexType& index) {
+    CODI_INLINE void pushJacobi(Data& data, const Real& value, const Index& index) {
       CODI_UNUSED(data);
       CODI_UNUSED(value);
       CODI_UNUSED(index);
@@ -518,40 +613,52 @@
     }
 
     /**
-     * @brief Only used in combination with the manual store.
+     * @brief Not used in this implementation.
+     *
+     * @param[in]   data  Not used in this implementation.
+     * @param[in] jacobi  Not used in this implementation.
+     * @param[in]  value  Not used in this implementation.
+     * @param[in]  index  Not used in this implementation.
+     */
+    template<typename Data>
+    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const Index& index) {
+      CODI_UNUSED(data);
+      CODI_UNUSED(jacobi);
+      CODI_UNUSED(value);
+      CODI_UNUSED(index);
+
+      codiAssert(false || "Should not be called.");
+    }
+
+    /**
+     * @brief Manual jacobi push routine.
      *
      * The indices are stored in the index vector. The jacobies
      * are stored in the constant vector.
      *
-     * @param[in]     data  Not used in this implementation.
+     * See also the documentation in TapeReverseInterface::pushJacobiManual.
+     *
      * @param[in]   jacobi  Stored in the constant vector.
      * @param[in]    value  Not used in this implementation.
      * @param[in]    index  Stored in the index vector.
      */
-    template<typename Data>
-    CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const IndexType& index) {
-      CODI_UNUSED(data);
+    CODI_INLINE void pushJacobiManual(const Real& jacobi, const Real& value, const Index& index) {
       CODI_UNUSED(value);
-      CODI_UNUSED(index);
 
       constantValueVector.setDataAndMove(jacobi);
       indexVector.setDataAndMove(index);
     }
 
     /**
-     * @brief Prints statistics about the stored data for the primal value tape.
+     * @brief Adds information about primal value tape.
      *
-     * Displays the number of chunks, the total number of entries, the
+     * Adds the number of chunks, the total number of entries, the
      * allocated memory and the used memory for the constant vector, the statement
      * vector and the index vector.
      *
-     * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that separates the sections of the output.
-     *
-     * @tparam Stream  The type of the stream.
+     * @param[in,out] values  The information is added to the values
      */
-    template<typename Stream>
-    void printPrimalValueStatistics(Stream& out, const std::string& hLine) const {
+    void addPrimalValueValues(TapeValues& values) const {
 
       size_t nChunksIndex  = indexVector.getNumChunks();
       size_t totalIndex    = indexVector.getDataSize();
@@ -575,53 +682,27 @@
       size_t sizePrimalEntry = sizeof(Real);
       double memoryAllocPrimal = (double)totalPrimal*(double)sizePrimalEntry* BYTE_TO_MB;
 
-      out << hLine
-          << "Primal Vector\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalPrimal << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocPrimal << " MB" << "\n";
-      out << hLine
-          << "Statements\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalStmt   << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksStmt << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedStmt << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocStmt << " MB" << "\n";
-      out << hLine
-          << "Index entries\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalIndex << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksIndex << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedIndex << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocIndex << " MB" << "\n";
-      out << hLine
-          << "Passive data entries\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalPassive << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksPassive << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedPassive << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocPassive << " MB" << "\n";
+      values.addSection("Primal vector");
+      values.addData("Total number", totalPrimal);
+      values.addData("Memory allocated", memoryAllocPrimal, true, true);
+
+      values.addSection("Statements");
+      values.addData("Total number", totalStmt);
+      values.addData("Number of chunks", nChunksStmt);
+      values.addData("Memory used", memoryUsedStmt, true, false);
+      values.addData("Memory allocated", memoryAllocStmt, false, true);
+
+      values.addSection("Index entries");
+      values.addData("Total number", totalIndex);
+      values.addData("Number of chunks", nChunksIndex);
+      values.addData("Memory used", memoryUsedIndex, true, false);
+      values.addData("Memory allocated", memoryAllocIndex, false, true);
+
+      values.addSection("Passive data entries");
+      values.addData("Total number", totalPassive);
+      values.addData("Number of chunks", nChunksPassive);
+      values.addData("Memory used", memoryUsedPassive, true, false);
+      values.addData("Memory allocated", memoryAllocPassive, false, true);
     }
 
     /**

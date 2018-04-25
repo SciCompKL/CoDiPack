@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "evaluateDefinitions.hpp"
+#include "tapeTypes.hpp"
 #include "typeTraits.hpp"
 
 /**
@@ -40,28 +42,27 @@ namespace codi {
    *
    * The handle stores information about the expression and the function for the adjoint evaluation.
    *
-   * @tparam GradientData  The type of the gradient values that are used in the tape.
-   * @tparam         Real  The floating point type of the values that are used in the tape.
-   * @tparam    IndexType  The types for the management of the data.
+   * @tparam ReverseTapeTypes  The basic type definitions for a reverse type. Needs to define the
+   *                           same types as ReverseTapeTypes
    */
-  template<typename GradientData, typename Real, typename IndexType>
+  template<typename ReverseTapeTypes>
   class ExpressionHandle {
-    private:
-      /**
-       * @brief The passive type that corresponds to the real type.
-       */
-      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
     public:
 
       /**
-       * @brief The function definition for the reverse evaluation of a statement
+       * @brief The function pointer to the primal evaluation function
        */
-      typedef void (*StatementFuncPointer)(const Real& seed, const IndexType* indices, const PassiveReal* passiveValues, const Real* primalValues, Real* adjointValues);
+      const typename EvaluateDefinitions<ReverseTapeTypes>::PrimalExprFunc primalFunc;
 
       /**
        * @brief The function pointer to the reverse evaluation function
        */
-      const StatementFuncPointer adjointFunc;
+      const typename EvaluateDefinitions<ReverseTapeTypes>::AdjointExprFunc adjointFunc;
+
+      /**
+       * @brief The function pointer to the reverse evaluation function
+       */
+      const typename EvaluateDefinitions<ReverseTapeTypes>::TangentExprFunc tangentFunc;
 
       /**
        * @brief The maximum number of active variables in the statement.
@@ -80,12 +81,25 @@ namespace codi {
       /**
        * @brief Creates the function handle object
        *
+       * @param[in]           primalFunc  The function pointer for the primal evaluation.
        * @param[in]          adjointFunc  The function pointer for the adjoint evaluation.
+       * @param[in]          tangentFunc  The function pointer for the tangent evaluation.
        * @param[in]   maxActiveVariables  The number of active variables in the statement.
        * @param[in] maxConstantVariables  The number of constant variables in the statement.
+       *
+       * @tparam  PrimalFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::PrimalExprFunc
+       * @tparam AdjointFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::AdjointExprFunc
+       * @tparam TangentFunc  Function with the interface defined in EvaluateDefinitions<ReverseTapeTypes>::TangentExprFunc
        */
-      ExpressionHandle(const StatementFuncPointer adjointFunc, const size_t maxActiveVariables, const size_t maxConstantVariables) :
+      template<typename PrimalFunc, typename AdjointFunc, typename TangentFunc>
+      ExpressionHandle(const PrimalFunc primalFunc,
+                       const AdjointFunc adjointFunc,
+                       const TangentFunc tangentFunc,
+                       const size_t maxActiveVariables,
+                       const size_t maxConstantVariables) :
+        primalFunc(primalFunc),
         adjointFunc(adjointFunc),
+        tangentFunc(tangentFunc),
         maxActiveVariables(maxActiveVariables),
         maxConstantVariables(maxConstantVariables) {}
   };
@@ -98,18 +112,16 @@ namespace codi {
    * member variable. Therefore only a pointer needs to be stored on the tape and not the
    * whole expression object.
    *
-   * @tparam GradientData  The type of the gradient values that are used in the tape.
-   * @tparam         Real  The floating point type of the values that are used in the tape.
-   * @tparam    IndexType  The types for the management of the data.
-   * @tparam         Expr  The type of the expression from which the handle is generated.
+   * @tparam Tape  The tape that uses the store. Needs to be a tape type.
+   * @tparam Expr  The type of the expression from which the handle is generated.
    */
-  template<typename GradientData, typename Real, typename IndexType, typename Expr>
-  class ExpressionHandleStore {
+  template<typename Tape, typename Expr>
+  class ExpressionStore {
     private:
       /**
        * @brief The space for the handle.
        */
-      static const ExpressionHandle<GradientData, Real, IndexType> handle;
+      static const ExpressionHandle<typename Tape::BaseTypes> handle;
     public:
 
       /**
@@ -117,19 +129,22 @@ namespace codi {
        *
        * @return The handle for the expression.
        */
-      static const ExpressionHandle<GradientData, Real, IndexType>* getHandle() {
+      static const ExpressionHandle<typename Tape::BaseTypes>* getHandle() {
         return &handle;
       }
   };
 
   /**
-   * @brief Instanciation of the expression handle store object.
+   * @brief Instantiation of the expression handle store object.
    *
-   * @tparam GradientData  The type of the gradient values that are used in the tape.
-   * @tparam         Real  The floating point type of the values that are used in the tape.
-   * @tparam    IndexType  The types for the management of the data.
-   * @tparam         Expr  The type of the expression from which the handle is generated.
+   * @tparam Tape  The tape that uses the store. Needs to be a tape type.
+   * @tparam Expr  The type of the expression from which the handle is generated.
    */
-  template<typename GradientData, typename Real, typename IndexType, typename Expr>
-  const ExpressionHandle<GradientData, Real, IndexType> ExpressionHandleStore<GradientData, Real, IndexType, Expr>::handle(Expr::template evalAdjoint<IndexType, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables);
+  template<typename Tape, typename Expr>
+  const ExpressionHandle<typename Tape::BaseTypes> ExpressionStore<Tape, Expr>::handle(
+      Expr::template getValue<typename Tape::Index, 0, 0>,
+      Expr::template evalAdjoint<typename Tape::Index, typename Tape::GradientValue, 0, 0>,
+      Expr::template evalTangent<typename Tape::Index, typename Tape::GradientValue, 0, 0>,
+      ExpressionTraits<Expr>::maxActiveVariables,
+      ExpressionTraits<Expr>::maxConstantVariables);
 }

@@ -11,6 +11,16 @@
       <tab type="user" title="Tutorial 4" url="@ref Tutorial4"/>
       <tab type="user" title="Tutorial 5" url="@ref Tutorial5"/>
       <tab type="user" title="Tutorial 6" url="@ref Tutorial6"/>
+      <tab type="usergroup" title="Tutorial 7" url="@ref Tutorial7">
+        <tab type="user" title="Tutorial 7.1" url="@ref Tutorial7_1"/>
+        <tab type="user" title="Tutorial 7.2" url="@ref Tutorial7_2"/>
+      </tab>
+      <tab type="user" title="Tutorial A1" url="@ref TutorialA1"/>
+      <tab type="user" title="Tutorial A2" url="@ref TutorialA2"/>
+      <tab type="user" title="Tutorial A3" url="@ref TutorialA3"/>
+      <tab type="usergroup" title="Tutorial A4" url="@ref TutorialA4">
+        <tab type="user" title="Tutorial A4.1" url="@ref TutorialA4_1"/>
+      </tab>
     </tab>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">

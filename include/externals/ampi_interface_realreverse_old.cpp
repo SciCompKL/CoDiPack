@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -70,28 +70,21 @@ extern "C" {
     }
   }
 
-  void ampi_tape_wrapper(void* cp) {
-   codi::DataStore *handler = static_cast<codi::DataStore*>(cp);
-   ampi_tape_entry* ampi_entry;
-   handler->getData(ampi_entry);
-    ampi_interpret_tape(ampi_entry);
+  void delFunc(void* tape, void* cp) {
+    CODI_UNUSED(tape);
+    ampi_reset_entry(cp);
   }
 
-  void delete_handler(void* cp){
-    codi::DataStore *handler = static_cast<codi::DataStore*>(cp);
-    ampi_tape_entry* ampi_entry;
-    handler->getData(ampi_entry);
-    ampi_reset_entry((void*)ampi_entry);
-    delete handler;
+
+  void execFunc(void*tape, void* handle) {
+    CODI_UNUSED(tape);
+    ampi_interpret_tape(handle);
   }
 
   void ampi_create_tape_entry(void* handle) {
      if (type::getGlobalTape().isActive()){
-      ampi_tape_entry* ampi_entry = static_cast<ampi_tape_entry*>(handle);
-      codi::DataStore *handler = new codi::DataStore;
-      handler->addData(ampi_entry);
-         type::getGlobalTape().pushExternalFunctionHandle(&ampi_tape_wrapper,handler,&delete_handler);
-     }
+         type::getGlobalTape().pushExternalFunctionHandle(execFunc, handle, delFunc);
+      }
   }
 
   void ampi_create_dummies(void *buf, int *size) {

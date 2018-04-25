@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -30,6 +30,7 @@
 
 #include <stdint.h>
 
+#include "adjointInterface.hpp"
 #include "exceptions.hpp"
 #include "macros.h"
 
@@ -39,9 +40,9 @@
 namespace codi {
 
   #define CODI_MAJOR_VERSION 1
-  #define CODI_MINOR_VERSION 3
+  #define CODI_MINOR_VERSION 6
   #define CODI_BUILD_VERSION 0
-  #define CODI_VERSION "1.3.0"
+  #define CODI_VERSION "1.6.0"
 
   /**
    * @brief Constant for the conversion from byte to megabyte.
@@ -52,7 +53,7 @@ namespace codi {
    * @brief Macro for forcing the inlining of the expression templates.
    *
    * The macro defines the attribute of the function such that it is directly inlined
-   * and not just an recomendation for the compiler.
+   * and not just an recommendation for the compiler.
    *
    * Currently it is defined for intel and gcc.
    */
@@ -60,7 +61,7 @@ namespace codi {
     #define CODI_UseForcedInlines 0
   #endif
   #if CODI_UseForcedInlines
-    #if defined(__INTEL_COMPILER)
+    #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
       #define CODI_INLINE __forceinline
     #elif defined(__GNUC__)
       #define CODI_INLINE inline __attribute__((always_inline))
@@ -73,8 +74,11 @@ namespace codi {
   #endif
   #undef CODI_UseForcedInlines
 
+  #ifdef DOXYGEN_DISABLE
+    #define CODI_UseAvoidedInlines 0
+  #endif
    /**
-   * @brief Macro for avoiding the inlinging of function.
+   * @brief Macro for avoiding the inlining of function.
    *
    * The macro defines the attribute of the function such that it is no longer considered for inlining.
    *
@@ -84,7 +88,11 @@ namespace codi {
     #define CODI_UseAvoidedInlines 1
   #endif
   #if CODI_UseAvoidedInlines
-    #define CODI_NO_INLINE __attribute__((noinline))
+    #if defined(_MSC_VER)
+      #define CODI_NO_INLINE __declspec(noinline)
+    #else
+      #define CODI_NO_INLINE __attribute__((noinline))
+    #endif
   #else
     #define CODI_NO_INLINE /* no avoiding of inline defined */
   #endif
@@ -97,10 +105,19 @@ namespace codi {
   typedef uint8_t StatementInt;
 
   /**
+   * @brief The maximum size of a statement int.
+   */
+  const size_t MaxStatementIntSize = 255;
+
+  /**
    * @brief The maximum value of a statement int.
    */
-  const size_t MaxStatementIntSize = 256;
+  const size_t MaxStatementIntValue = 254;
 
+  /**
+   * @brief The tag for statements that are created by register input.
+   */
+  const size_t StatementIntInputTag = 255;
 
   #ifndef CODI_SmallChunkSize
     #define CODI_SmallChunkSize 32768
@@ -216,6 +233,22 @@ namespace codi {
   const bool OptTapeActivity = CODI_OptTapeActivity;
   #undef CODI_OptTapeActivity
 
+  #ifndef CODI_ZeroAdjointReverse
+    #define CODI_ZeroAdjointReverse true
+  #endif
+  /**
+   * @brief Zeros the adjoints during a reverse evaluation run.
+   *
+   * This option is only used in tapes with a linear index manager e.g. RealReverse, RealReversePrimal.
+   *
+   * If disabled all intermediate adjoints are still available after an reverse evaluation. They
+   * need to be cleared with clearAdjoitns() manually.
+   *
+   * It can be set with the preprocessor macro CODI_ZeroAdjointReverse=<true/false>
+   */
+  const bool ZeroAdjointReverse = CODI_ZeroAdjointReverse;
+  #undef CODI_ZeroAdjointReverse
+
   #ifndef CODI_OptZeroAdjoint
     #define CODI_OptZeroAdjoint true
   #endif
@@ -237,9 +270,9 @@ namespace codi {
    * @brief Disables the assign optimization for linear index tapes.
    *
    * An assign statement usually does not need to be written for tapes
-   * that use a linear increasing index scheme. The correspoinding
+   * that use a linear increasing index scheme. The corresponding
    * entry on the tape would just add the accumulated values for
-   * the lhs to the rhs. This optimization can be dissabled with
+   * the lhs to the rhs. This optimization can be disabled with
    * this switch.
    *
    * It can be set with the preprocessor macro CODI_DisableAssignOptimization=<true/false>
@@ -247,17 +280,46 @@ namespace codi {
   const bool OptDisableAssignOptimization = CODI_DisableAssignOptimization;
   #undef CODI_DisableAssignOptimization
 
-  #ifndef CODI_AdjointHandle
-    #define CODI_AdjointHandle false
+  /*
+   * This switch is required such that the primal value tape of CoDiPack can also use a variable vector mode for the
+   * reverse interpretation. The variable reverse interpretation enables the user to compile the software with one
+   * of the CoDiPack scalar types and use an arbitrary vector size in the reverse evaluation.
+   *
+   * Jacobi tapes support this behaviour out of the box.
+   *
+   * It can be set with the preprocessor macro CODI_EnableVariableAdjointInterfaceInPrimalTapes=<1/0>
+   */
+  #ifndef CODI_EnableVariableAdjointInterfaceInPrimalTapes
+    #define CODI_EnableVariableAdjointInterfaceInPrimalTapes 0
   #endif
-  #if CODI_AdjointHandle
+  #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+    #define PRIMAL_SEED_TYPE Real
+    #define PRIMAL_ADJOINT_TYPE AdjointInterface<Real>
+  #else
+    #define PRIMAL_SEED_TYPE GradientValue
+    #define PRIMAL_ADJOINT_TYPE GradientValue
+  #endif
+
+  /*
+   * This disable the special implementations for the gradients in the binary operators.
+   *
+   * It can be set with the preprocessor macro CODI_DisableCalcGradientSpecialization=<true/false>
+   */
+  #ifndef CODI_DisableCalcGradientSpecialization
+    #define CODI_DisableCalcGradientSpecialization false
+  #endif
+
+  #ifndef CODI_AdjointHandle_Jacobi
+    #define CODI_AdjointHandle_Jacobi false
+  #endif
+  #if CODI_AdjointHandle_Jacobi
     /**
      * @brief A function that is called for every statement that is written on the
      *        Jacobie tapes.
      *
      * The function can be used to extract information from the taping process.
      *
-     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     * It can be set with the preprocessor macro CODI_AdjointHandle_Jacobi=<true/false>
      *
      * @param[in]      value  The primal value of the statement.
      * @param[in]   lhsIndex  The index on the left hand side of the statement, that
@@ -271,19 +333,46 @@ namespace codi {
      * @param[in]       size  The number of arguments that are stored for the statement.
      *
      * @tparam      Real  The type of the floating point values that are used in the tape.
-     * @tparam IndexType  The type of the indices that are used in the tape.
+     * @tparam     Index  The type of the indices that are used in the tape.
+     */
+    template<typename Real, typename Index>
+    void handleAdjointOperation(const Real& value, const Index lhsIndex, const Real* jacobies, const Index* rhsIndices, const int size);
+  #endif
+
+  #ifndef CODI_AdjointHandle_Jacobi_Reverse
+    #define CODI_AdjointHandle_Jacobi_Reverse false
+  #endif
+  #if CODI_AdjointHandle_Jacobi_Reverse
+    /**
+     * @brief A function that is called for every adjoint update in the reverse evaluation.
+     *
+     * The function can be used to extract information from the taping evaluation process.
+     *
+     * It can be set with the preprocessor macro CODI_AdjointHandle_Jacobi_Reverse=<true/false>
+     *
+     * @param[in]      adj  The evaluated adjoint for the left hand side.
+     * @param[in] lhsIndex  The index on the left hand side of the statement, that
+     *                      is evaluated.
+     *
+     * @tparam      Real  The type of the floating point values that are used in the tape.
+     * @tparam     Index  The type of the indices that are used in the tape.
      */
     template<typename Real, typename IndexType>
-    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const Real* jacobies, const IndexType* rhsIndices, const int size);
+    void handleReverseEval(const Real& adj, const IndexType lhsIndex);
+  #endif
 
+  #ifndef CODI_AdjointHandle_Primal
+    #define CODI_AdjointHandle_Primal false
+  #endif
+  #if CODI_AdjointHandle_Primal
     /**
      * @brief Pre definition of the the expression handles.
      *
      * @tparam AdjointData  The type of the adjoint data.
      * @tparam        Real  The type for the real values.
-     * @tparam   IndexType  The index types for the management.
+     * @tparam       Index  The index types for the management.
      */
-    template<typename AdjointData, typename Real, typename IndexType> class ExpressionHandle;
+    template<typename AdjointData, typename Real, typename Index> class ExpressionHandle;
 
     /**
      * @brief A function that is called for every statement that is written on the
@@ -291,7 +380,7 @@ namespace codi {
      *
      * The function can be used to extract information from the taping process.
      *
-     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     * It can be set with the preprocessor macro CODI_AdjointHandle_Primal=<true/false>
      *
      * @param[in]          value  The primal value of the statement.
      * @param[in]       lhsIndex  The index on the left hand side of the statement, that
@@ -307,17 +396,22 @@ namespace codi {
      *
      * @tparam        Real  The type of the floating point values that are used in the tape.
      * @tparam PassiveReal  The type of the passive floating point values that are used in the tape.
-     * @tparam   IndexType  The type of the indices that are used in the tape.
+     * @tparam       Index  The type of the indices that are used in the tape.
      */
-    template<typename Real, typename PassiveReal, typename IndexType>
-    void handleAdjointOperation(const Real& value, const IndexType lhsIndex, const ExpressionHandle<Real*, Real, IndexType>* handle, const StatementInt& passiveActives, const PassiveReal* constants, const IndexType* rhsIndices, const Real* primalVec);
+    template<typename Real, typename PassiveReal, typename Index>
+    void handleAdjointOperation(const Real& value, const Index lhsIndex, const ExpressionHandle<Real*, Real, Index>* handle, const StatementInt& passiveActives, const PassiveReal* constants, const Index* rhsIndices, const Real* primalVec);
+  #endif
 
+  #ifndef CODI_AdjointHandle_Tangent
+    #define CODI_AdjointHandle_Tangent false
+  #endif
+  #if CODI_AdjointHandle_Tangent
     /**
      * @brief A function that is called for every statement that is evaluated in the forward tape.
      *
      * The function can be used to extract information from the taping process.
      *
-     * It can be set with the preprocessor macro CODI_AdjointHandle=<true/false>
+     * It can be set with the preprocessor macro CODI_AdjointHandle_Tangent=<true/false>
      *
      * @param[in]   value  The primal value of the statement.
      * @param[in] tangent  The tangent value of the statement.
@@ -329,7 +423,36 @@ namespace codi {
     void handleTangentOperation(const Real& value, const TangentReal& tangent);
   #endif
 
-  #ifndef CODI_EnableAssert
+  #ifndef CODI_IndexHandle
+    #define CODI_IndexHandle false
+  #endif
+  #if CODI_IndexHandle
+  /**
+   * @brief A function that is called for every index creation.
+   *
+   * All index managers of CoDiPack will call this function when they create a new index.
+   *
+   * @param[in] index  The created index.
+   *
+   * @tparam Index  The type for the identificaton of an adjoint value.
+   */
+  template<typename Index>
+  void handleIndexCreate(const Index& index);
+
+  /**
+   * @brief A function that is called for every index deletion.
+   *
+   * All index managers of CoDiPack will call this function when they delete a new index.
+   *
+   * @param[in] index  The deleted index.
+   *
+   * @tparam Index  The type for the identificaton of an adjoint value.
+   */
+  template<typename Index>
+  void handleIndexFree(const Index& index);
+#endif
+
+#ifndef CODI_EnableAssert
     #define CODI_EnableAssert false
   #endif
   #ifndef codiAssert

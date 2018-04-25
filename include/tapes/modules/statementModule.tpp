@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -43,7 +43,7 @@
  *
  * It defines the methods store(Expr), store(const), store(User), printStmtStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods setStatementChunkSize, getUsedStatementSize, resizeStmt as interface functions for the
+ * It defines the methods setStatementChunkSize, getUsedStatementSize, evaluateInt, resizeStmt as interface functions for the
  * including class.
  */
 
@@ -91,15 +91,6 @@
   // ----------------------------------------------------------------------
 
     /**
-     * @brief Set the size of the statement data chunks.
-     *
-     * @param[in] statementChunkSize The new size for the statement data chunks.
-     */
-    void setStatementChunkSize(const size_t& statementChunkSize) {
-      stmtVector.setChunkSize(statementChunkSize);
-    }
-
-    /**
      * @brief Resize the statement data.
      *
      * Ensure that enough size is allocated such that dataSize number of items
@@ -116,6 +107,16 @@
   // ----------------------------------------------------------------------
   // Public function from the TapeInterface and ReverseTapeInterface
   // ----------------------------------------------------------------------
+
+    /**
+     * @brief Set the size of the statement data chunks.
+     *
+     * @param[in] statementChunkSize The new size for the statement data chunks.
+     */
+    void setStatementChunkSize(const size_t& statementChunkSize) {
+      stmtVector.setChunkSize(statementChunkSize);
+    }
+
 
     /**
      * @brief Store the jacobies of the statement on the tape.
@@ -135,8 +136,11 @@
      * @tparam Rhs The expression on the rhs of the statement.
      */
     template<typename Rhs>
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const Rhs& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
       void* null = NULL;
+
+      static_assert(ExpressionTraits<Rhs>::maxActiveVariables < MaxStatementIntSize, "Expression with to many arguments.");
+
       ENABLE_CHECK (OptTapeActivity, active){
         stmtVector.reserveItems(1);
         JACOBI_VECTOR_NAME.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
@@ -152,9 +156,9 @@
           indexHandler.assignIndex(lhsIndex);
           STATEMENT_PUSH_FUNCTION_NAME((StatementInt)activeVariables, lhsIndex);
 
-#if CODI_AdjointHandle
+#if CODI_AdjointHandle_Jacobi
           Real* jacobies = NULL;
-          IndexType* rhsIndices = NULL;
+          Index* rhsIndices = NULL;
 
           auto pos = JACOBI_VECTOR_NAME.getPosition();
           JACOBI_VECTOR_NAME.getDataAtPosition(pos.chunk, startSize, jacobies, rhsIndices);
@@ -183,7 +187,7 @@
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to zero.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const typename TypeTraits<Real>::PassiveReal& rhs) {
       indexHandler.freeIndex(lhsIndex);
       lhsValue = rhs;
     }
@@ -193,56 +197,59 @@
      *
      * Use this routine to add a statement if the corresponding jacobi entries will be manually pushed onto the tape.
      *
-     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobi.
+     * The Jacobi entries must be pushed immediately after calling this routine using pushJacobiManual.
+     *
+     * See also the documentation in TapeInterfaceReverse::storeManual.
      *
      * @param[in]    lhsValue  The primal value of the lhs.
      * @param[out]   lhsIndex  The gradient data of the lhs.
      * @param[in]        size  The number of Jacobi entries.
      */
-    CODI_INLINE void store(const Real& lhsValue, IndexType& lhsIndex, StatementInt size) {
+    CODI_INLINE void storeManual(const Real& lhsValue, Index& lhsIndex, StatementInt size) {
       CODI_UNUSED(lhsValue);
 
-      ENABLE_CHECK (OptTapeActivity, active){
-        stmtVector.reserveItems(1);
-        JACOBI_VECTOR_NAME.reserveItems(size);
-        indexHandler.assignIndex(lhsIndex);
-        STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
-      }
+      stmtVector.reserveItems(1);
+      JACOBI_VECTOR_NAME.reserveItems(size);
+      indexHandler.assignIndex(lhsIndex);
+      STATEMENT_PUSH_FUNCTION_NAME(size, lhsIndex);
     }
 
     /**
-     * @brief Prints statistics about the statements.
+     * @brief Set the primal value in the primal value vector.
      *
-     * Displays the number of chunks, the total number of statements, the
+     * Unused in this tape implementation.
+     *
+     * @param[in]  index  Unused
+     * @param[in] primal  Unused
+     */
+    void setPrimalValue(const Index& index, const Real& primal) {
+      CODI_UNUSED(index);
+      CODI_UNUSED(primal);
+    }
+
+
+    /**
+     * @brief Adds statistics about the statements.
+     *
+     * Adds the number of chunks, the total number of statements, the
      * allocated memory and the used memory.
      *
-     * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that separates the sections of the output.
-     *
-     * @tparam Stream The type of the stream.
+     * @param[in,out] values  The values where the information is added to.
      */
-    template<typename Stream>
-    void printStmtStatistics(Stream& out, const std::string hLine) const {
+    void addStmtValues(TapeValues& values) const {
       size_t nChunksStmts  = stmtVector.getNumChunks();
       size_t totalStmts    = stmtVector.getDataSize();
+      size_t sizeStmtEntry = StmtChunk::EntrySize;
 
-      double  memoryUsedStmts = (double)totalStmts*(double)sizeof(StatementInt)* BYTE_TO_MB;
+      double  memoryUsedStmts = (double)totalStmts*(double)sizeStmtEntry* BYTE_TO_MB;
       double  memoryAllocStmts= (double)nChunksStmts*(double)stmtVector.getChunkSize()
-                                *(double)sizeof(StatementInt)* BYTE_TO_MB;
-      out << hLine
-          << "Statements\n"
-          << hLine
-          << "  Total Number:     " << std::setw(10) << totalStmts   << "\n"
-          << "  Number of Chunks: " << std::setw(10) << nChunksStmts << "\n"
-          << "  Memory used:      " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryUsedStmts << " MB" << "\n"
-          << "  Memory allocated: " << std::setiosflags(std::ios::fixed)
-                                    << std::setprecision(2)
-                                    << std::setw(10)
-                                    << memoryAllocStmts << " MB" << "\n";
+                                *(double)sizeStmtEntry* BYTE_TO_MB;
 
+      values.addSection("Statements");
+      values.addData("Total number", totalStmts);
+      values.addData("Number of chunks", nChunksStmts);
+      values.addData("Memory used", memoryUsedStmts, true, false);
+      values.addData("Memory allocated", memoryAllocStmts, false, true);
     }
 
     /**
@@ -252,7 +259,6 @@
     size_t getUsedStatementsSize() const {
       return stmtVector.getDataSize();
     }
-
 
 #undef CHILD_VECTOR_TYPE
 #undef JACOBI_VECTOR_NAME

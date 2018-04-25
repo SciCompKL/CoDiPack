@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -39,6 +39,8 @@
 #include "externalFunctions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
+#include "../tapeTypes.hpp"
+#include "../tools/tapeValues.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -52,26 +54,24 @@ namespace codi {
    *
    * See JacobiIndexTape for details.
    *
-   * @tparam Real  The type for the primal values.
-   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
+   * @tparam        RTT  The basic type definitions for the tape. Need to define everything from ReverseTapeTypes.
+   * @tparam DataVector  The data manager for the chunks. Needs to implement a ChunkVector interface.
    */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct ChunkIndexTapeTypes {
-    /** @brief The type for the primal values. */
-    typedef Real RealType;
-    /** @brief The handler for the indices. */
-    typedef IndexHandler IndexHandlerType;
-    /** @brief The type for the adjoint values. */
-    typedef GradientValue GradientValueType;
+  template <typename RTT, template<typename, typename> class DataVector>
+  struct JacobiIndexTapeTypes {
+
+    CODI_INLINE_REVERSE_TAPE_TYPES(RTT)
+
+    /** @brief The tape type structure, that defines the basic types. */
+    typedef RTT BaseTypes;
 
     /** @brief The data for each statement. */
-    typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
+    typedef Chunk2<StatementInt, typename IndexHandler::Index> StatementChunk;
     /** @brief The chunk vector for the statement data. */
     typedef ChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
 
     /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
+    typedef Chunk2< Real, typename IndexHandler::Index> JacobiChunk;
     /** @brief The chunk vector for the jacobi data. */
     typedef ChunkVector<JacobiChunk, StatementVector> JacobiVector;
 
@@ -84,50 +84,7 @@ namespace codi {
     typedef typename ExternalFunctionVector::Position Position;
 
     /** @brief The name of the tape as a string. */
-    constexpr static const char* tapeName = "ChunkIndexTape";
-
-  };
-
-  /**
-   * @brief Vector definition for the SimpleIndexTape.
-   *
-   * The structure defines all vectors as single chunk vectors.
-   *
-   * See JacobiIndexTape for details.
-   *
-   * @tparam Real  The type for the primal values.
-   * @tparam IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
-   */
-  template <typename Real, typename IndexHandler, typename GradientValue = Real>
-  struct SimpleIndexTapeTypes {
-    /** @brief The type for the primal values. */
-    typedef Real RealType;
-    /** @brief The handler for the indices. */
-    typedef IndexHandler IndexHandlerType;
-    /** @brief The type for the adjoint values. */
-    typedef GradientValue GradientValueType;
-
-    /** @brief The data for each statement. */
-    typedef Chunk2<StatementInt, typename IndexHandler::IndexType> StatementChunk;
-    /** @brief The chunk vector for the statement data. */
-    typedef SingleChunkVector<StatementChunk, EmptyChunkVector> StatementVector;
-
-    /** @brief The data for the jacobies of each statement */
-    typedef Chunk2< Real, typename IndexHandler::IndexType> JacobiChunk;
-    /** @brief The chunk vector for the jacobi data. */
-    typedef SingleChunkVector<JacobiChunk, StatementVector> JacobiVector;
-
-    /** @brief The data for the external functions. */
-    typedef Chunk2<ExternalFunction,typename JacobiVector::Position> ExternalFunctionChunk;
-    /** @brief The chunk vector for the external  function data. */
-    typedef SingleChunkVector<ExternalFunctionChunk, JacobiVector> ExternalFunctionVector;
-
-    /** @brief The position for all the different data vectors. */
-    typedef typename ExternalFunctionVector::Position Position;
-
-    /** @brief The name of the tape as a string. */
-    constexpr static const char* tapeName = "SimpleIndexTape";
+    constexpr static const char* tapeName = "JacobiIndexTape";
 
   };
 
@@ -153,34 +110,37 @@ namespace codi {
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
-  class JacobiIndexTape final : public ReverseTapeInterface<typename TapeTypes::RealType, typename TapeTypes::IndexHandlerType::IndexType, typename TapeTypes::GradientValueType, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
+  class JacobiIndexTape final : public ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position > {
   public:
 
-    /** @brief The type for the primal values. */
-    typedef typename TapeTypes::RealType Real;
-    /** @brief The type for the adjoint values. */
-    typedef typename TapeTypes::GradientValueType GradientValue;
-    /** @brief The type for the index handler. */
-    typedef typename TapeTypes::IndexHandlerType IndexHandler;
+    CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
-    /** @brief The type for the indices that are used for the identification of the adjoint variables. */
-    typedef typename IndexHandler::IndexType IndexType;
-    /** @brief The gradient data is just the index type. */
-    typedef IndexType GradientData;
+    /** @brief The tape type structure, that defines the basic types. */
+    typedef typename TapeTypes::BaseTypes BaseTypes;
 
-    /** @brief The corresponding pasive value to the real type of this tape. */
-    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+    /** @brief The gradient data for this tape is the type of the indices. */
+    typedef Index GradientData;
 
     /** @brief The counter for the current expression. */
     EmptyChunkVector emptyVector;
+
+    /** @brief The index handler for the active real's. */
+    static typename TapeTypes::IndexHandler indexHandler;
+
+    /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
+    static const bool AllowJacobiOptimization = true;
+
+    /** @brief This tape requires no primal value handling. */
+    static const bool RequiresPrimalReset = false;
 
     // The class name of the tape. Required by the modules.
     #define TAPE_NAME JacobiIndexTape
 
     #define POSITION_TYPE typename TapeTypes::Position
-    #define INDEX_HANDLER_TYPE IndexHandler
+    #define INDEX_HANDLER_NAME indexHandler
     #define RESET_FUNCTION_NAME resetExtFunc
-    #define EVALUATE_FUNCTION_NAME evaluateExtFunc
+    #define EVALUATE_FUNCTION_NAME evaluateInt
+    #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
     #include "modules/tapeBaseModule.tpp"
 
     #define CHILD_VECTOR_TYPE EmptyChunkVector
@@ -198,6 +158,9 @@ namespace codi {
     #define VECTOR_TYPE typename TapeTypes::ExternalFunctionVector
     #include "modules/externalFunctionsModule.tpp"
 
+    #define ROOT_VECTOR extFuncVector
+    #include "modules/ioModule.tpp"
+
     #undef TAPE_NAME
 
   public:
@@ -207,19 +170,37 @@ namespace codi {
      */
     JacobiIndexTape() :
       emptyVector(),
-      /* defined in tapeBaseModule */indexHandler(),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
-      /* defined in statementModule */stmtVector(DefaultChunkSize, emptyVector),
-      /* defined in jacobiModule */jacobiVector(DefaultChunkSize, stmtVector),
-      /* defined in externalFunctionsModule */extFuncVector(1000, jacobiVector) {
+      /* defined in statementModule */stmtVector(DefaultChunkSize, &emptyVector),
+      /* defined in jacobiModule */jacobiVector(DefaultChunkSize, &stmtVector),
+      /* defined in externalFunctionsModule */extFuncVector(1000, &jacobiVector) {
     }
 
     /** @brief Tear down the tape. Delete all values from the modules */
     ~JacobiIndexTape() {
       cleanTapeBase();
     }
+
+    /**
+     * @brief Swap the tape with an other tape.
+     *
+     * All data is exchanged between the tapes. The method performs the operation:
+     *
+     * T t = *this;
+     * *this = other;
+     * other = t;
+     *
+     */
+    void swap(JacobiIndexTape& other) {
+      swapTapeBaseModule(other);
+
+      // the index handler is not swapped because the indices of the program state need to stay valid
+
+      extFuncVector.swap(other.extFuncVector);
+    }
+
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.
      *
@@ -232,7 +213,7 @@ namespace codi {
      * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
-    CODI_INLINE void store(Real& lhsValue, IndexType& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const ActiveReal<JacobiIndexTape<TapeTypes> >& rhs) {
       ENABLE_CHECK (OptTapeActivity, active){
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
           indexHandler.copyIndex(lhsIndex, rhs.getGradientData());
@@ -240,7 +221,7 @@ namespace codi {
           if(IndexHandler::AssignNeedsStatement) {
             stmtVector.reserveItems(1);
             jacobiVector.reserveItems(1);
-            jacobiVector.setDataAndMove(1.0, rhs.getGradientData());
+            jacobiVector.setDataAndMove(PassiveReal(1.0), rhs.getGradientData());
             stmtVector.setDataAndMove((StatementInt)1, lhsIndex);
           }
         } else {
@@ -267,14 +248,25 @@ namespace codi {
     }
 
     /**
-     * @brief Does nothing because the indices are not connected to the positions.
+     * @brief Sets all adjoint/gradients to zero.
      *
-     * @param[in] start Not used
-     * @param[in] end Not used
+     * It has to hold start >= end.
+     *
+     * @param[in] start  The starting position for the reset of the vector.
+     * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
-      CODI_UNUSED(start);
-      CODI_UNUSED(end);
+      if(NULL != adjoints) {
+        auto clearFunc = [this] (StatementInt* stmtSize, Index* index) {
+          CODI_UNUSED(stmtSize);
+
+          if(*index < adjointsSize) {
+            this->adjoints[*index] = GradientValue();
+          }
+        };
+
+        stmtVector.forEachReverse(start.inner.inner, end.inner.inner, clearFunc);
+      }
     }
 
     /**
@@ -310,7 +302,7 @@ namespace codi {
      * @param[in] numberOfArguments  The number of arguments in the statements that have been pushed as jacobies.
      * @param[in]          lhsIndex  The index of the lhs value of the operation.
      */
-    CODI_INLINE void pushStmtData(const StatementInt& numberOfArguments, const IndexType& lhsIndex) {
+    CODI_INLINE void pushStmtData(const StatementInt& numberOfArguments, const Index& lhsIndex) {
       stmtVector.setDataAndMove(numberOfArguments, lhsIndex);
     }
 
@@ -319,82 +311,127 @@ namespace codi {
      *
      * It has to hold startAdjPos >= endAdjPos.
      *
-     * @param[inout]           stmtPos The starting point in the expression evaluation. The index is decremented.
+     * @param[in,out]      adjointData  The vector of the adjoint variables.
+     * @param[in,out]          dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in]           endDataPos The end position in the jacobi and index vector.
+     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
+     * @param[in]              indices The pointer the indices of the rhs arguments.
+     * @param[in,out]          stmtPos The starting point in the expression evaluation. The index is decremented.
      * @param[in]           endStmtPos The ending point in the expression evaluation.
      * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
      * @param[in]           lhsIndices The pointer the indices of the lhs.
-     * @param[inout]           dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
-     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
-     * @param[in]              indices The pointer the indices of the rhs arguments.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
-    CODI_INLINE void evalStmtCallback(size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments, IndexType* lhsIndices, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
+    template<typename AdjointData>
+    CODI_INLINE void evaluateStackReverse(AdjointData* adjointData,
+                                          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
+                                          Index* lhsIndices) {
+
+      CODI_UNUSED(endDataPos);
 
       while(stmtPos > endStmtPos) {
         --stmtPos;
-        const IndexType& lhsIndex = lhsIndices[stmtPos];
-        const GradientValue adj = adjoints[lhsIndex];
-        adjoints[lhsIndex] = GradientValue();
+        const Index& lhsIndex = lhsIndices[stmtPos];
+        const AdjointData adj = adjointData[lhsIndex];
+        adjointData[lhsIndex] = GradientValue();
 
-        incrementAdjoints(adj, adjoints, numberOfArguments[stmtPos], dataPos, jacobies, indices);
+#if CODI_AdjointHandle_Jacobi_Reverse
+        handleReverseEval(adj, lhsIndex);
+#endif
+
+        incrementAdjoints(adj, adjointData, numberOfArguments[stmtPos], dataPos, jacobies, indices);
       }
     }
 
     /**
-     * @brief Evaluate a part of the statement vector.
+     * @brief Evaluate the stack in reverse order.
      *
      * It has to hold start >= end.
      *
-     * The function calls the evaluation method for the jacobi vector.
+     * @param[in]           start  The start point for the evaluation.
+     * @param[in]             end  The end point for the evaluation.
+     * @param[in,out] adjointData  The vector of the adjoint variables.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
-    template<typename ... Args>
-    CODI_INLINE void evaluateStmt(const StmtPosition& start, const StmtPosition& end, Args&&... args) {
-      StatementInt* numberOfArgumentsData;
-      IndexType* lhsIndexData;
+    template<typename AdjointData>
+    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
-      size_t dataPos = start.data;
-      for(size_t curChunk = start.chunk; curChunk > end.chunk; --curChunk) {
-        stmtVector.getDataAtPosition(curChunk, 0, numberOfArgumentsData, lhsIndexData);
+      auto evalFunc = [this] (AdjointData* adjointData,
+          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements, Index* lhsIndices) {
+        evaluateStackReverse<AdjointData>(adjointData, dataPos, endDataPos, jacobies, indices,
+                                      stmtPos, endStmtPos, statements, lhsIndices);
+      };
+      auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 
-        evalStmtCallback(dataPos, 0, numberOfArgumentsData, lhsIndexData, std::forward<Args>(args)...);
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
 
-        dataPos = stmtVector.getChunkUsedData(curChunk - 1);
+      evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, adjointData);
+    }
+
+    /**
+     * @brief Implementation of the AD stack evaluation.
+     *
+     * It has to hold startAdjPos <= endAdjPos.
+     *
+     * @param[in,out]      adjointData  The vector of the adjoint variables.
+     * @param[in,out]          dataPos The current position in the jacobi and index vector. This value is used in the next invocation of this method..
+     * @param[in]           endDataPos The end position in the jacobi and index vector.
+     * @param[in]             jacobies The pointer to the jacobies of the rhs arguments.
+     * @param[in]              indices The pointer the indices of the rhs arguments.
+     * @param[in,out]          stmtPos The starting point in the expression evaluation. The index is decremented.
+     * @param[in]           endStmtPos The ending point in the expression evaluation.
+     * @param[in]    numberOfArguments The pointer to the number of arguments of the statement.
+     * @param[in]           lhsIndices The pointer the indices of the lhs.
+     *
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     */
+    template<typename AdjointData>
+    CODI_INLINE void evaluateStackForward(AdjointData* adjointData,
+                                          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
+                                          Index* lhsIndices) {
+      CODI_UNUSED(endDataPos);
+
+      while(stmtPos < endStmtPos) {
+        const Index& lhsIndex = lhsIndices[stmtPos];
+        AdjointData adj = AdjointData();
+
+        incrementTangents(adj, adjointData, numberOfArguments[stmtPos], dataPos, jacobies, indices);
+        adjointData[lhsIndex] = adj;
+
+        ++stmtPos;
       }
-
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
-      stmtVector.getDataAtPosition(end.chunk, 0, numberOfArgumentsData, lhsIndexData);
-      evalStmtCallback(dataPos, end.data, numberOfArgumentsData, lhsIndexData , std::forward<Args>(args)...);
-    }
-
-
-    /**
-     * @brief Evaluate a part of the statement vector.
-     *
-     * It has to hold start >= end.
-     *
-     * The function calls the evaluation method for the jacobi vector.
-     *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
-     */
-    CODI_INLINE void evalJacobiesCallback(const StmtPosition& start, const StmtPosition& end, size_t& dataPos, Real* &jacobies, IndexType* &indices) {
-      evaluateStmt(start, end, dataPos, jacobies, indices);
     }
 
     /**
-     * @brief Evaluate a part of the statement vector.
+     * @brief Evaluate the stack in forward order.
      *
-     * It has to hold start >= end.
+     * It has to hold start <= end.
      *
-     * The function calls the evaluation method for the jacobi vector.
+     * @param[in]           start  The start point for the evaluation.
+     * @param[in]             end  The end point for the evaluation.
+     * @param[in,out] adjointData  The vector of the adjoint variables.
      *
-     * @param[in] start The starting point for the statement vector.
-     * @param[in]   end The ending point for the statement vector.
+     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
-    CODI_INLINE void evalExtFuncCallback(const JacobiPosition& start, const JacobiPosition& end) {
-      evaluateJacobies(start, end);
+    template<typename AdjointData>
+    CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
+
+      auto evalFunc = [this] (AdjointData* adjointData,
+          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements, Index* lhsIndices) {
+        evaluateStackForward<AdjointData>(adjointData, dataPos, endDataPos, jacobies, indices,
+                                      stmtPos, endStmtPos, statements, lhsIndices);
+      };
+      auto forwardFunc = &JacobiVector::template evaluateForward<decltype(evalFunc), AdjointData*&>;
+
+      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+
+      evaluateExtFuncForward(start, end, forwardFunc, jacobiVector, &interface, evalFunc, adjointData);
     }
 
   public:
@@ -403,10 +440,22 @@ namespace codi {
      * @brief Register a variable as an active variable.
      *
      * The index of the variable is set to a non zero number.
-     * @param[inout] value The value which will be marked as an active variable.
+     * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
-      indexHandler.assignIndex(value.getGradientData());
+      indexHandler.assignUnusedIndex(value.getGradientData());
+    }
+
+    /**
+     * @brief Modify the output of an external function such that the tape sees it as an active variable.
+     *
+     * @param[in,out] value  The output value of the external function.
+     * @return Zero
+     */
+    CODI_INLINE Real registerExtFunctionOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
+      registerInput(value);
+
+      return Real();
     }
 
     /**
@@ -416,33 +465,34 @@ namespace codi {
      */
     CODI_INLINE void registerOutput(ActiveReal<JacobiIndexTape<TapeTypes> >& value) {
       if(!IndexHandler::AssignNeedsStatement) {
-        value = 1.0 * value;
+        value = PassiveReal(1.0) * value;
       }
     }
 
     /**
-     * @brief Prints statistics about the tape on the screen or into a stream
+     * @brief Gather the general performance values of the tape.
      *
-     * Prints information such as stored statements/adjoints and memory usage on screen or into
-     * the stream when an argument is provided.
+     * Computes values like the total amount of statements stored or the currently consumed memory.
      *
-     * @param[in,out] out  The information is written to the stream.
-     *
-     * @tparam Stream The type of the stream.
+     * @return The values for the tape.
      */
-    template<typename Stream = std::ostream>
-    void printStatistics(Stream& out = std::cout) const {
+    TapeValues getTapeValues() const {
+      std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
+      TapeValues values(name);
 
-      const std::string hLine = "-------------------------------------\n";
+      addTapeBaseValues(values);
+      addStmtValues(values);
+      addJacobiValues(values);
+      addExtFuncValues(values);
 
-      out << hLine
-          << "CoDi Tape Statistics (" << TapeTypes::tapeName << ")\n";
-      printTapeBaseStatistics(out, hLine);
-      printStmtStatistics(out, hLine);
-      printJacobiStatistics(out, hLine);
-      printExtFuncStatistics(out, hLine);
-
+      return values;
     }
-
   };
+
+  /**
+   * @brief The instantiation of the index manager for the jacobi index tapes.
+   */
+  template <typename TapeTypes>
+  typename TapeTypes::IndexHandler JacobiIndexTape<TapeTypes>::indexHandler(0);
+
 }

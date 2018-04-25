@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -32,6 +32,7 @@
 
 #include "../../configure.h"
 #include "../../macros.h"
+#include "../../tools/tapeValues.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -45,16 +46,16 @@ namespace codi {
    *
    * The handler will be reset together with the tape.
    *
-   * @tparam Index  The type for the handled indices.
+   * @tparam IndexType  The type for the handled indices.
    */
-  template<typename Index>
+  template<typename IndexType>
   class LinearIndexHandler {
     public:
 
       /**
        * @brief The type definition for other tapes who want to access the type.
        */
-      typedef Index IndexType;
+      typedef IndexType Index;
 
       /**
        * @brief The required position definition for a ChunkVector sequence terminator.
@@ -62,6 +63,13 @@ namespace codi {
        * Just the integer for the current statement.
        */
       typedef Index Position;
+
+      /**
+       * @brief Indicates if the index handler privides linear increasing indices.
+       *
+       * true for this index manager.
+       */
+      static const bool IsLinear = true;
 
     private:
 
@@ -87,11 +95,24 @@ namespace codi {
         count(zeroState) {}
 
       /**
+       * @brief Swap the contents of this linear index handler with the contents of the other
+       *        linear index handler.
+       *
+       * On standard containers the default std::swap method is used.
+       *
+       * @param[in,out] other  The other linear index handler.
+       */
+      void swap(LinearIndexHandler<Index>& other) {
+        std::swap(zeroState, other.zeroState);
+        std::swap(count, other.count);
+      }
+
+      /**
        * @brief Free the index that is given to the method.
        *
        * Just zeros the index
        *
-       * @param[inout] index  The index that is freed. It is set to zero in the method.
+       * @param[in,out] index  The index that is freed. It is set to zero in the method.
        */
       CODI_INLINE void freeIndex(Index& index) const {
         index = 0;
@@ -169,16 +190,100 @@ namespace codi {
       }
 
       /**
-       * @ brief There are no statistics for this handler.
-       * @param[in,out] out  The information is written to the stream.
-       * @param[in]   hLine  The horizontal line that seperates the sections of the output.
-       *
-       * @tparam Stream The type of the stream.
+       * @brief Reset the position to the zero state.
        */
-      template<typename Stream>
-      void printStatistics(Stream& out, const std::string hLine) const {
-        CODI_UNUSED(out);
+      CODI_INLINE void reset() {
+        count = zeroState;
+      }
+
+      /**
+       * @brief Resets the linear index handler to the initial state.
+       */
+      CODI_INLINE void resetHard() {
+        count = zeroState;
+      }
+
+      /**
+       * @ brief There are no statistics for this handler.
+       *
+       * @param[in,out] values  The values where the information is added to.
+       */
+      void addValues(TapeValues& values) const {
+        CODI_UNUSED(values);
+
         // Do nothing
+      }
+
+    /**
+     * @brief There are no chunks, that need to be iterated.
+     *
+     * @param  function  The function called for each chunk.
+     * @param recursive  If also the chunks of the nested vectors should be iterated.
+     * @param      args  The pointers are used as the arguments for the function.
+     *
+     * @tparam  Args  The data types for the arguments of the function.
+     */
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void forEachChunkForward(FunctionObject& function, bool recursive, Args &... args) {
+        CODI_UNUSED(function);
+        CODI_UNUSED(recursive);
+        CODI_UNUSED_VAR(args...);
+
+        // Do nothing
+      }
+
+      /**
+       * @brief Reverse stack evaluation of the tape.
+       *
+       * The function is called on the accumulated pointers and ranges from all previous vectors.
+       *
+       * The function call is
+       * \code{.cpp}
+       * func(start, end, <other arguments>, startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+       * \endcode
+       *
+       * It has to hold start >= end.
+       *
+       * @param    start  The start point for the stack interpretation.
+       * @param      end  The end point for the stack interpretation.
+       * @param function  The function called for each valid range.
+       * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+       *                  function.
+       *
+       * @tparam  Args  The data types for the arguments.
+       */
+      template<typename Function, typename ... Args>
+      CODI_INLINE void evaluateReverse(const Position& start, const Position& end,const Function& function,
+                                       Args&&... args) {
+
+        function(start, end, std::forward<Args>(args)...);
+      }
+
+      /**
+       * @brief Forward stack evaluation of the tape.
+       *
+       * The function is called on the accumulated pointers and ranges from all previous vectors.
+       *
+       * The function call is
+       * \code{.cpp}
+       * func(start, end, <other arguments>, startDataPos, endDataPos, pointerChunkItem1, pointerChunkItem2, etc.);
+       * \endcode
+       *
+       * It has to hold start <= end.
+       *
+       * @param    start  The start point for the stack interpretation.
+       * @param      end  The end point for the stack interpretation.
+       * @param function  The function called for each valid range.
+       * @param     args  Pointers and ranges from other chunks vectors and additional arguments for the
+       *                  function.
+       *
+       * @tparam  Args  The data types for the arguments.
+       */
+      template<typename Function, typename ... Args>
+      CODI_INLINE void evaluateForward(const Position& start, const Position& end,const Function& function,
+                                       Args&&... args) {
+
+        function(start, end, std::forward<Args>(args)...);
       }
   };
 }

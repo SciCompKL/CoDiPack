@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -28,10 +28,12 @@
 
 #pragma once
 
+#include "configure.h"
 #include "expressions.hpp"
 #include "typeTraits.hpp"
 #include "typeFunctions.hpp"
 #include "expressionTraits.hpp"
+
 #include <iostream>
 
 /**
@@ -185,7 +187,7 @@ namespace codi {
       globalTape.initGradientData(primalValue, gradientData);
 
       if(OptDisableAssignOptimization) {
-        *this = 1.0 * v;
+        *this = PassiveReal(1.0) * v;
       } else {
         globalTape.store(primalValue, gradientData, v);
       }
@@ -201,7 +203,7 @@ namespace codi {
     /**
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value 1.0.
      *
-     * @param[inout] data A helper value which the tape can define and use for the evaluation.
+     * @param[in,out] data A helper value which the tape can define and use for the evaluation.
      *
      * @tparam Data The type for the tape data.
      */
@@ -213,7 +215,7 @@ namespace codi {
     /**
      * @brief Called in the expression evaluation to inform the tape about a partial derivative with the value jacobi.
      *
-     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in,out]    data A helper value which the tape can define and use for the evaluation.
      * @param[in]      jacobi The Jacobi from the expression where this expression was used as an argument.
      *
      * @tparam Data The type for the tape data.
@@ -229,7 +231,7 @@ namespace codi {
      * The method is called for types that accumulate the jacobies before
      * they are pushed to the tape.
      *
-     * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+     * @param[in,out]     data A helper value which the tape can define and use for the evaluation.
      *
      * @tparam Data The type for the tape data.
      */
@@ -244,9 +246,9 @@ namespace codi {
      * The action is only called for constant values in the expression.
      * E.g. values that have the type PassiveReal.
      *
-     * @param[inout] tape  The tape that calls the action.
-     * @param[inout] data  The data that can be used by the action.
-     * @param[in]    func  The function that is called for every constant item.
+     * @param[in,out] tape  The tape that calls the action.
+     * @param[in,out] data  The data that can be used by the action.
+     * @param[in]     func  The function that is called for every constant item.
      *
      * @tparam CallTape  The type of the tape that calls the action.
      * @tparam     Data  The type of the data for the action.
@@ -262,8 +264,8 @@ namespace codi {
     /**
      * @brief The action is called on the tape for every active real.
      *
-     * @param[inout] data  The data that can be used by the action.
-     * @param[in]    func  The function that is called for every active real in the expression.
+     * @param[in,out] data  The data that can be used by the action.
+     * @param[in]     func  The function that is called for every active real in the expression.
      *
      * @tparam     Data  The type of the data for the action.
      * @tparam     Func  The type of the function that is called.
@@ -297,6 +299,14 @@ namespace codi {
       return globalTape.gradient(gradientData);
     }
 
+    /**
+     * @brief Get a constant reference to the actual gradient value of this instance.
+     * @return Constant reference to the gradient value.
+     */
+    CODI_INLINE const GradientValue& gradient() const {
+      return globalTape.gradient(gradientData);
+    }
+
 
     /**
      * @brief Get the value of the gradient of this instance.
@@ -327,6 +337,14 @@ namespace codi {
      * @return  Reference to the primal value.
      */
     CODI_INLINE Real& value() {
+      return primalValue;
+    }
+
+    /**
+     * @brief Get a constant reference to the primal value of this instance.
+     * @return  Constant reference to the primal value.
+     */
+    CODI_INLINE const Real& value() const {
       return primalValue;
     }
 
@@ -394,7 +412,7 @@ namespace codi {
      */
     CODI_INLINE ActiveReal<Tape>& operator=(const ActiveReal<Tape>& rhs) {
       if(OptDisableAssignOptimization) {
-           *this = 1.0 * rhs;
+           *this = PassiveReal(1.0) * rhs;
       } else {
           globalTape.store(primalValue, gradientData, rhs);
       }
@@ -452,8 +470,11 @@ namespace codi {
      * @param[in] rhs The passive value on the rhs.
      */
     CODI_INLINE ActiveReal<Tape>& operator+=(const PassiveReal& rhs) {
-      // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
-      primalValue += rhs;
+      if(Tape::AllowJacobiOptimization) {
+        primalValue += rhs;
+      } else {
+        *this = (*this + rhs);
+      }
       return *this;
     }
     /**
@@ -466,8 +487,11 @@ namespace codi {
      * @param[in] rhs The passive value on the rhs.
      */
     CODI_INLINE ActiveReal<Tape>& operator-=(const PassiveReal& rhs) {
-      // Optimization of code: If jacobies would be stored an identity operation is produced on the tape
-      primalValue -= rhs;
+      if(Tape::AllowJacobiOptimization) {
+        primalValue -= rhs;
+      } else {
+        *this = (*this - rhs);
+      }
       return *this;
     }
     /**
@@ -491,7 +515,7 @@ namespace codi {
      * @brief The expression is unfolded to *this += 1.0
      */
     CODI_INLINE ActiveReal<Tape> operator++() {
-      return *this = *this + 1.0;
+      return *this = *this + PassiveReal(1.0);
     }
 
     /**
@@ -502,14 +526,14 @@ namespace codi {
     CODI_INLINE ActiveReal<Tape> operator++(int u) {
       CODI_UNUSED(u);
       ActiveReal<Tape> r(*this);
-      *this = *this + 1.0;
+      *this = *this + PassiveReal(1.0);
       return r;
     }
     /**
      * @brief The expression is unfolded to *this -= 1.0
      */
     CODI_INLINE ActiveReal<Tape> operator--() {
-      return *this = *this - 1.0;
+      return *this = *this - PassiveReal(1.0);
     }
     /**
      * @brief The expression is unfolded to *this -= 1.0
@@ -519,7 +543,7 @@ namespace codi {
     CODI_INLINE ActiveReal<Tape> operator--(int u) {
       CODI_UNUSED(u);
       ActiveReal<Tape> r(*this);
-      *this = *this - 1.0;
+      *this = *this - PassiveReal(1.0);
       return r;
     }
 
@@ -554,12 +578,12 @@ namespace codi {
      *
      * @return The corresponding primal value for the active real.
      *
-     * @tparam      IndexType  The type for the indices.
+     * @tparam          Index  The type for the indices.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE const Real& getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
+    template<typename Index, size_t offset, size_t constantOffset>
+    static CODI_INLINE const Real& getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
       CODI_UNUSED(constantValues);
       return primalValues[indices[offset]];
     }
@@ -572,24 +596,70 @@ namespace codi {
      * adjoint values.
      *
      * @param[in]           seed  The seeding for the expression. It is updated in the expressions
-     *                            for the operators and used as the upadte in the terminal points.
+     *                            for the operators and used as the update in the terminal points.
      * @param[in]        indices  The indices for the values in the expressions.
      * @param[in] constantValues  The array of constant values in the expression.
      * @param[in]   primalValues  The global primal value vector.
      * @param[in]  adjointValues  The global adjoint value vector.
      *
-     * @tparam      IndexType  The type for the indices.
+     * @tparam          Index  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
      * @tparam         offset  The offset in the index array for the corresponding value.
      * @tparam constantOffset  The offset for the constant values array
      */
-    template<typename IndexType, size_t offset, size_t constantOffset>
-    static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices,
+                                        const PassiveReal* constantValues, const Real* primalValues,
+                                        PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
-      ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(seed)) {
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        adjointValues->updateJacobiAdjoint(indices[offset], seed);
+#else
         adjointValues[indices[offset]] += seed;
+#endif
       }
+    }
+
+    /**
+     * @brief Add the tangent influence of this value in the expression.
+     *
+     * The method is called in the static evaluation of e.g. a primal value tape.
+     * It updates the tangent value of the expression with the calculated
+     * adjoint value from the reversal of this expression.
+     *
+     * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+     *                            for the operators and used as the update in the terminal points.
+     * @param[in,out] lhsAdjoint  The tangent value for the lhs.
+     * @param[in]        indices  The indices for the values in the expressions.
+     * @param[in] constantValues  The array of constant values in the expression.
+     * @param[in]   primalValues  The global primal value vector.
+     * @param[in]  adjointValues  The global adjoint value vector.
+     *
+     * @tparam          Index  The type for the indices.
+     * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
+     * @tparam         offset  The offset in the index array for the corresponding value.
+     * @tparam constantOffset  The offset for the constant values array
+     */
+    template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
+    static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices,
+                                        const PassiveReal* constantValues, const Real* primalValues,
+                                        PRIMAL_ADJOINT_TYPE* adjointValues) {
+      CODI_UNUSED(lhsAdjoint);
+      CODI_UNUSED(constantValues);
+      CODI_UNUSED(primalValues);
+
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+        adjointValues->updateJacobiTangent(indices[offset], seed);
+#else
+        lhsAdjoint += adjointValues[indices[offset]] * seed;
+#endif
+      }
+
+      return primalValues[indices[offset]];
     }
   };
 
@@ -602,22 +672,21 @@ namespace codi {
   class TypeTraits<ActiveReal<Tape> > {
     public:
 
-      /**
-       * @brief The the calculation type.
-       */
+      /** @brief The the calculation type. */
       typedef typename Tape::Real Real;
 
-      /**
-       * @brief The passive type is the passive type of Real.
-       */
+      /** @brief The passive type is the passive type of Real. */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      /** @brief The maximum derivative order that the active type contains. */
+      static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;
 
       /**
        * @brief Get the primal value of the origin of this type.
        * @param[in] t The value from which the primal is extracted.
        * @return The primal value of the origin of this type..
        */
-      static const typename TypeTraits<Real>::PassiveReal getBaseValue(const ActiveReal<Tape>& t) {
+      static const PassiveReal getBaseValue(const ActiveReal<Tape>& t) {
         return TypeTraits<Real>::getBaseValue(t.getValue());
       }
   };
@@ -649,8 +718,8 @@ namespace codi {
   /**
    * @brief The primal value of the origin is written to the stream.
    *
-   * @param[inout] os The stream for the operation.
-   * @param[in]   rhs The expression on the rhs of the stream operation.
+   * @param[in,out] os The stream for the operation.
+   * @param[in]    rhs The expression on the rhs of the stream operation.
    *
    * @return The modified stream.
    *
@@ -666,7 +735,7 @@ namespace codi {
   /**
    * @brief A passive value is read from the stream and set to the primal value of the origin.
    *
-   * @param[inout] os The stream for the operation.
+   * @param[in,out] os The stream for the operation.
    * @param[out]   rhs The activeValue on the rhs of the stream operation.
    *
    * @return The modified stream.

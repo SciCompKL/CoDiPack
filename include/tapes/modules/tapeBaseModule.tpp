@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -27,34 +27,40 @@
  */
 
 /*
- * In order to include this file the user has to define the preprocessor macro POSITION_TYPE, INDEX_HANDLER_TYPE
- * RESET_FUNCTION_NAME and EVALUATE_FUNCTION_NAME.
+ * In order to include this file the user has to define the preprocessor macro POSITION_TYPE, INDEX_HANDLER_NAME
+ * RESET_FUNCTION_NAME, EVALUATE_FUNCTION_NAME and TAPE_NAME.
  *
  * POSITION_TYPE defines the type of the position structure that is used in the tape.
- * INDEX_HANDLER_TYPE defines the type of the index handler class that is used in the tape.
+ * INDEX_HANDLER_NAME defines the name of the index handler.
  * RESET_FUNCTION_NAME is the name of the reset function that is implemented in the including class.
  * EVALUATE_FUNCTION_NAME is the name of the tape evaluation function that is implemented in the including class.
  *
  * All these macros are undefined at the end of the file.
  *
- * The module defines the structures indexHandler, adjoints, adjointSize and active that have to initialized
+ * TAPE_NAME defines the type name of the tape and is not undefined at the end of the file.
+ *
+ * The module defines the structures adjoints, adjointSize and active that have to initialized
  * in the including class.
  * The module defines the types Position.
  *
  * It defines the methods initGradientData, destroyGradientData, setGradient, getGradient, gradient, clearAdjoints,
- * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), setActive, setPassive, isActive, printTapeBaseStatistics
- * from the TapeInterface and ReverseTapeInterface.
+ * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), evaluateForward(), evaluateForward(Pos, Pos), setActive,
+ * setPassive, isActive, print Statistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods resizeAdjoints, cleanTapeBase as interface functions for the
+ * It defines the methods resizeAdjoints, resizeAdjointsToIndexSize, cleanTapeBase, swapTapeBaseModule as interface functions for the
  * including class.
  */
+
+#ifndef TAPE_NAME
+  #error Please define the name of the tape.
+#endif
 
 #ifndef POSITION_TYPE
 #error Please define the position type.
 #endif
 
-#ifndef INDEX_HANDLER_TYPE
-#error Please define the type for the index handler.
+#ifndef INDEX_HANDLER_NAME
+#error Please define the name of the index handler.
 #endif
 
 #ifndef RESET_FUNCTION_NAME
@@ -63,6 +69,10 @@
 
 #ifndef EVALUATE_FUNCTION_NAME
 #error Please define the name of the evaluation function for the tape.
+#endif
+
+#ifndef EVALUATE_FORWARD_FUNCTION_NAME
+#error Please define the name of the forward evaluation function for the tape.
 #endif
 
   // ----------------------------------------------------------------------
@@ -74,10 +84,10 @@
     /** @brief The position for all the different data vectors. */
     typedef POSITION_TYPE Position;
 
-  private:
+    /** @brief True if the index handler of the tape provied linear indices. */
+    static const bool LinearIndexHandler = TapeTypes::IndexHandler::IsLinear;
 
-    /** @brief The index handler for the active real's. */
-    INDEX_HANDLER_TYPE indexHandler;
+  private:
 
     /**
      * @brief The adjoint vector.
@@ -88,7 +98,7 @@
     GradientValue* adjoints;
 
     /** @brief The current size of the adjoint vector. */
-    IndexType adjointsSize;
+    Index adjointsSize;
 
     /**
      * @brief Determines if statements are recorded or ignored.
@@ -106,9 +116,13 @@
      *
      * @param[in] size The new size for the adjoint vector.
      */
-    void resizeAdjoints(const IndexType& size) {
-      IndexType oldSize = adjointsSize;
+    void resizeAdjoints(const Index& size) {
+      Index oldSize = adjointsSize;
       adjointsSize = size;
+
+      for(Index i = adjointsSize; i < oldSize; ++i) {
+        adjoints[i].~GradientValue();
+      }
 
       adjoints = (GradientValue*)realloc(adjoints, sizeof(GradientValue) * (size_t)adjointsSize);
 
@@ -116,8 +130,17 @@
         throw std::bad_alloc();
       }
 
-      for(IndexType i = oldSize; i < adjointsSize; ++i) {
-        adjoints[i] = GradientValue();
+      for(Index i = oldSize; i < adjointsSize; ++i) {
+        new (adjoints + i) GradientValue();
+      }
+    }
+
+    /**
+     * @brief Resize the adjoint vector such that it fits the number of indices.
+     */
+    void resizeAdjointsToIndexSize() {
+      if(adjointsSize <= INDEX_HANDLER_NAME.getMaximumGlobalIndex()) {
+        resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
       }
     }
 
@@ -132,6 +155,20 @@
       }
     }
 
+    /**
+     * @brief Swap the data of the tape base module with the data of the other tape base module.
+     *
+     * @param[in] other  The object with the other tape base module.
+     */
+    void swapTapeBaseModule(TAPE_NAME<TapeTypes>& other) {
+      std::swap(adjoints, other.adjoints);
+      std::swap(adjointsSize, other.adjointsSize);
+      std::swap(active, other.active);
+
+      // the index handler is not swaped because it is either swaped in the recursive call to of the data vectors
+      // or it is handled by the including class
+    }
+
   public:
 
   // ----------------------------------------------------------------------
@@ -144,9 +181,9 @@
      * @param[in] value Not used in this implementation.
      * @param[out] index The index of the active type.
      */
-    CODI_INLINE void initGradientData(Real& value, IndexType& index) {
+    CODI_INLINE void initGradientData(Real& value, Index& index) {
       CODI_UNUSED(value);
-      index = IndexType();
+      index = Index();
     }
 
     /**
@@ -154,10 +191,10 @@
      * @param[in] value Not used in this implementation.
      * @param[in] index The index of the active type.
      */
-    CODI_INLINE void destroyGradientData(Real& value, IndexType& index) {
+    CODI_INLINE void destroyGradientData(Real& value, Index& index) {
       CODI_UNUSED(value);
 
-      indexHandler.freeIndex(index);
+      INDEX_HANDLER_NAME.freeIndex(index);
     }
 
     /**
@@ -181,7 +218,7 @@
      * @param[in]    index  The index of the active type.
      * @param[in] gradient  The new value for the gradient.
      */
-    void setGradient(IndexType& index, const GradientValue& gradient) {
+    void setGradient(Index& index, const GradientValue& gradient) {
       if(0 != index) {
         this->gradient(index) = gradient;
       }
@@ -193,7 +230,7 @@
      * @param[in] index The index of the active type.
      * @return False if the gradient data is zero, otherwise returns true.
      */
-    bool isActive(const IndexType& index) const{
+    bool isActive(const Index& index) const{
       return (index != 0);
     }
 
@@ -203,7 +240,7 @@
      * @param[in] index The index of the active type.
      * @return The gradient value corresponding to the given index.
      */
-    CODI_INLINE GradientValue getGradient(const IndexType& index) const {
+    CODI_INLINE GradientValue getGradient(const Index& index) const {
       if(0 == index || adjointsSize <= index) {
         return GradientValue();
       } else {
@@ -219,16 +256,30 @@
      * @param[in] index The index of the active type.
      * @return The reference to the gradient data.
      */
-    CODI_INLINE GradientValue& gradient(IndexType& index) {
+    CODI_INLINE GradientValue& gradient(Index& index) {
       codiAssert(0 != index);
-      codiAssert(index <= indexHandler.getMaximumGlobalIndex());
+      codiAssert(index <= INDEX_HANDLER_NAME.getMaximumGlobalIndex());
 
       //TODO: Add error when index is bigger than expression count
       if(adjointsSize <= index) {
-        resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
+        resizeAdjoints(INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1);
       }
 
       return adjoints[index];
+    }
+
+    /**
+     * @brief Get a constant reference to the gradient value of the corresponding index.
+     *
+     * @param[in] index The index of the active type.
+     * @return The constant reference to the gradient data.
+     */
+    CODI_INLINE const GradientValue& gradient(const Index& index) const {
+      if(adjointsSize <= index) {
+        return adjoints[0];
+      } else {
+        return adjoints[index];
+      }
     }
 
     /**
@@ -236,7 +287,7 @@
      */
     CODI_INLINE void clearAdjoints(){
       if(NULL != adjoints) {
-        for(IndexType i = 0; i <= indexHandler.getMaximumGlobalIndex(); ++i) {
+        for(Index i = 0; i < adjointsSize; ++i) {
           adjoints[i] = GradientValue();
         }
       }
@@ -260,9 +311,26 @@
      */
     CODI_INLINE void reset() {
       clearAdjoints();
+      INDEX_HANDLER_NAME.reset();
 
       // reset will be done iteratively through the vectors
       RESET_FUNCTION_NAME(getZeroPosition());
+    }
+
+    /**
+     * @brief Perform the adjoint evaluation from start to end with a custom adjoint vector.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in]           start  The starting position for the adjoint evaluation.
+     * @param[in]             end  The ending position for the adjoint evaluation.
+     * @param[in,out] adjointData  The vector for the adjoint evaluation. It has to have the size of getAdjointSize() + 1.
+     *
+     * @tparam AdjointData  The type needs to provide an add, multiply and comparison operation.
+     */
+    template<typename AdjointData>
+    CODI_NO_INLINE void evaluate(const Position& start, const Position& end, AdjointData* adjointData) {
+      EVALUATE_FUNCTION_NAME(start, end, adjointData);
     }
 
     /**
@@ -273,12 +341,10 @@
      * @param[in] start  The starting position for the adjoint evaluation.
      * @param[in]   end  The ending position for the adjoint evaluation.
      */
-    void evaluate(const Position& start, const Position& end) {
-      if(adjointsSize <= indexHandler.getMaximumGlobalIndex()) {
-        resizeAdjoints(indexHandler.getMaximumGlobalIndex() + 1);
-      }
+    CODI_NO_INLINE void evaluate(const Position& start, const Position& end) {
+      resizeAdjointsToIndexSize();
 
-      EVALUATE_FUNCTION_NAME(start, end);
+      evaluate(start, end, adjoints);
     }
 
     /**
@@ -286,6 +352,43 @@
      */
     void evaluate() {
       evaluate(getPosition(), getZeroPosition());
+    }
+
+    /**
+     * @brief Perform the forward evaluation from start to end with a custom adjoint vector.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in]           start  The starting position for the forward evaluation.
+     * @param[in]             end  The ending position for the forward evaluation.
+     * @param[in,out] adjointData  The vector for the adjoint evaluation. It has to have the size of getAdjointSize() + 1.
+     *
+     * @tparam AdjointData  The type needs to provide an add, multiply and comparison operation.
+     */
+    template<typename AdjointData>
+    CODI_NO_INLINE void evaluateForward(const Position& start, const Position& end, AdjointData* adjointData) {
+      EVALUATE_FORWARD_FUNCTION_NAME(start, end, adjointData);
+    }
+
+    /**
+     * @brief Perform the forward evaluation from start to end.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start  The starting position for the forward evaluation.
+     * @param[in]   end  The ending position for the forward evaluation.
+     */
+    CODI_NO_INLINE void evaluateForward(const Position& start, const Position& end) {
+      resizeAdjointsToIndexSize();
+
+      evaluateForward(start, end, adjoints);
+    }
+
+    /**
+     * @brief Perform the foward evaluation from the initial position to the current position.
+     */
+    void evaluateForward() {
+      evaluateForward(getZeroPosition(), getPosition());
     }
 
     /**
@@ -311,31 +414,72 @@
     }
 
     /**
-     * @brief Prints statistics about the adjoint vector.
+     * @brief Prints statistics about the tape on the screen or into a stream
      *
-     * Displays the number of adjoints and the allocated memory. Also
-     * displays the information about the index handler.
+     * Prints information such as stored statements/adjoints and memory usage on screen or into
+     * the stream when an argument is provided.
      *
-     * @param[in,out]   out  The information is written to the stream.
-     * @param[in]     hLine  The horizontal line that seperates the sections of the output.
+     * @param[in,out] out  The information is written to the stream.
      *
      * @tparam Stream The type of the stream.
      */
-    template<typename Stream>
-    void printTapeBaseStatistics(Stream& out, const std::string hLine) const {
+    template<typename Stream = std::ostream>
+    void printStatistics(Stream& out = std::cout) const {
 
-      size_t nAdjoints      = indexHandler.getMaximumGlobalIndex() + 1;
-      double memoryAdjoints = (double)nAdjoints * (double)sizeof(Real) * BYTE_TO_MB;
+      TapeValues values = getTapeValues();
 
-      out << hLine
-          << "Adjoint vector\n"
-          << hLine
-          << "  Number of Adjoints: " << std::setw(10) << nAdjoints << "\n"
-          << "  Memory allocated:   " << std::setiosflags(std::ios::fixed)
-                                      << std::setprecision(2)
-                                      << std::setw(10)
-                                      << memoryAdjoints << " MB" << "\n";
-      indexHandler.printStatistics(out, hLine);
+      values.formatDefault(out);
+    }
+
+    /**
+     * @brief Print the table header for the tape information to the stream.
+     *
+     * The data is written in a csv format with semicolons as an seperator.
+     *
+     * @param[in,out] out  The stream which is used for the printing of the table header.
+     * @tparam Stream  The type of the stream.
+     */
+    template<typename Stream = std::ostream>
+    void printTableHeader(Stream& out = std::cout) const {
+
+      TapeValues values = getTapeValues();
+
+      values.formatHeader(out);
+    }
+
+    /**
+     * @brief Print the table data of the current tape state to the stream.
+     *
+     * The data is written in a csv format with semicolons as an seperator.
+     *
+     * @param[in,out] out  The stream which is used for the printing of the table data.
+     * @tparam Stream  The type of the stream.
+     */
+    template<typename Stream = std::ostream>
+    void printTableRow(Stream& out = std::cout) const {
+
+      TapeValues values = getTapeValues();
+
+      values.formatRow(out);
+    }
+
+    /**
+    * @brief Adds information about adjoint vector.
+    *
+    * Adds the number of adjoint vector entries and the size of the adjoint vector.
+    *
+    * @param[in,out] values  The information is added to the values
+    */
+    void addTapeBaseValues(TapeValues& values) const {
+
+      size_t nAdjoints      = INDEX_HANDLER_NAME.getMaximumGlobalIndex() + 1;
+      double memoryAdjoints = (double)nAdjoints * (double)sizeof(GradientValue) * BYTE_TO_MB;
+
+      values.addSection("Adjoint vector");
+      values.addData("Number of adjoints", nAdjoints);
+      values.addData("Memory allocated", memoryAdjoints, true, true);
+
+      INDEX_HANDLER_NAME.addValues(values);
     }
 
     /**
@@ -344,10 +488,18 @@
      * @return The size of the adjoint vector.
      */
     size_t getAdjointSize() {
-      return indexHandler.getMaximumGlobalIndex();
+      return INDEX_HANDLER_NAME.getMaximumGlobalIndex();
+    }
+
+    /**
+     * @brief Clear the adjoint vector and delete it.
+     */
+    void deleteAdjointVector() {
+      cleanTapeBase();
     }
 
 #undef POSITION_TYPE
-#undef INDEX_HANDLER_TYPE
+#undef INDEX_HANDLER_NAME
 #undef RESET_FUNCTION_NAME
 #undef EVALUATE_FUNCTION_NAME
+#undef EVALUATE_FORWARD_FUNCTION_NAME

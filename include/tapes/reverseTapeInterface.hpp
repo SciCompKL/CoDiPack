@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -32,6 +32,7 @@
 #include "../activeReal.hpp"
 #include "externalFunctions.hpp"
 #include "tapeInterface.hpp"
+#include "../tools/tapeValues.hpp"
 
 
 /**
@@ -78,18 +79,59 @@ namespace codi {
     virtual void evaluate() = 0;
 
     /**
+     * @brief Evaluate the tape from start to end.
+     *
+     * The function performs the forward evaluation of the recorded tape from
+     * the start position to the end position.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start The starting position for the forward evaluation.
+     * @param[in]   end The ending position for the forward evaluation.
+     */
+    virtual void evaluateForward(const Position& start, const Position& end) = 0;
+
+    /**
+     * @brief Evaluate the tape from the beginning to the current position.
+     */
+    virtual void evaluateForward() = 0;
+
+    /**
+     * @brief Special evaluation function for the preaccumulation of a tape part.
+     *
+     * The function just evaluates the tape and does not store the data for the preaccumulation.
+     * This function can be used by the tape implementation to reset its state in a more efficient way
+     * then it could be programmed from the outside.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in] start The starting position for the reverse evaluation.
+     * @param[in]   end The ending position for the reverse evaluation.
+     */
+    virtual void evaluatePreacc(const Position& start, const Position& end) = 0;
+
+    /**
      * @brief Declare a variable as an input variable.
      *
-     * @param[inout] value The input variable.
+     * @param[in,out] value The input variable.
      */
     virtual void registerInput(ActiveReal<TapeImplementation>& value) = 0;
 
     /**
      * @brief Declare a variable as an output variable.
      *
-     * @param[inout] value The output variable.
+     * @param[in,out] value The output variable.
      */
     virtual void registerOutput(ActiveReal<TapeImplementation>& value) = 0;
+
+    /**
+     * @brief Modify the output of an external function such that the tape sees it as an active variable.
+     *
+     * @param[in,out] value  The output value of the external function.
+     * @return The previously stored primal value for the value. (Only required for primal value tapes with an index
+     *         management.
+     */
+    virtual Real registerExtFunctionOutput(ActiveReal<TapeImplementation>& value) = 0;
 
     /**
     * @brief Set the tape to active.
@@ -108,6 +150,7 @@ namespace codi {
     */
     virtual void setPassive() = 0;
 
+    using TapeInterface<Real, GradientDataType, GradientValueType>::isActive; // enable both is active methods in this interface
 
     /**
     * @brief Get the current status if of tape.
@@ -170,6 +213,37 @@ namespace codi {
     void printStatistics(Stream& out = std::cout) const;
 
     /**
+     * @brief Print some statistics about the currently stored information in a table format.
+     *
+     * This function writes the header in a csv formatted table with a semicolon as a separator.
+     *
+     * @param[in,out] out  The information is written to the stream.
+     *
+     * @tparam Stream The type of the stream.
+     */
+    template<typename Stream = std::ostream>
+    void printTableHeader(Stream& out = std::cout) const;
+
+    /**
+     * @brief Print some statistics about the currently stored information in a table format.
+     *
+     * This function writes the current data of the tape in a csv formatted table with a semicolon as a separator.
+     *
+     * @param[in,out] out  The information is written to the stream.
+     *
+     * @tparam Stream The type of the stream.
+     */
+    template<typename Stream = std::ostream>
+    void printTableRow(Stream& out = std::cout) const;
+
+    /**
+     * Get some information about the stored data in the tape.
+     *
+     * @return The information about the tape.
+     */
+    virtual TapeValues getTapeValues() const = 0;
+
+    /**
      * @brief Add a external function to the tape.
      *
      * The external function is called during the reverse evaluation of the tape. It can be used to
@@ -197,9 +271,38 @@ namespace codi {
      */
     template<typename Data>
     void pushExternalFunction(
-        typename ExternalFunctionDataHelper<Data>::CallFunction extFunc,
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFunc,
         Data* checkpoint,
-        typename ExternalFunctionDataHelper<Data>::DeleteFunction delCheckpoint);
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::DeleteFunction delCheckpoint);
 
+    /**
+     * @brief Add a statement to the tape manually.
+     *
+     * This function can be called by the user to push a statement manually.
+     * The tape performs no checks for the pushes of the data.
+     * The user has to check the following before calling this function:
+     *  - If the tape is active
+     *
+     * Afterwards the pushJacobiManual method needs to be called size times otherwise the tape will be corrupted.
+     *
+     * @param[in]           lhsValue    The new primal value of the lhs
+     * @param[out]   lhsGradientData    The gradient data of the lhs. The tape will update the gradient data
+     *                                  according its implemenation.
+     * @param[in]           size  The number of arguments of the statement. No more than MaxStatementIntSize - 1
+     */
+    void storeManual(const Real& lhsValue, GradientDataType& lhsGradientData, const StatementInt size);
+
+    /**
+     * @brief Add a jacobi to the tape.
+     *
+     * Add a Jacobi for a manual statement push. The tape performs no checks if the Jacobi or the index is valid.
+     * Before this method is called the user needs to call storeManual and this method needs to be called exactly
+     * as often as the size argument provided there.
+     *
+     * @param[in]        jacobi  The value of the jacobi.
+     * @param[in]         value  The value of the active type which pushes the jacobi.
+     * @param[in]  gradientData  The gradient data of the active type which pushes the jacobi.
+     */
+    void pushJacobiManual(const Real& jacobi, const Real& value, const GradientDataType& gradientData);
   };
 }

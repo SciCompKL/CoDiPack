@@ -3,9 +3,12 @@ Performance:
   - Make a comparision with a big code which general rule is better: Precomputer the result or do not precompute the result.
     - Check it speratly for: Unary and binary operations.
   - Check performance increase in the simple by using direct pointer for the intel compiler and on ifrit.
-  - Implement reference counters for index reuse tape
   - Early out fuer passive values
-  - Create an assert just for CoDiPack
   - Move static tapes out of the active real type.
   - Add support for intermixed complex and double data types.
+  - Implement all comparison operators for positions.
+  - rename the reset() function to clear().
+    - reset(pos) performs then a rewind of the tape.
+    - clear() clears the tape so that it can be used anew.
+  - Create an interface for the primal evlauation.
 

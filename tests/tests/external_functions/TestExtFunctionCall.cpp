@@ -1,7 +1,7 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -40,9 +40,12 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
   z = w*v;
 }
 
-static void extFunc(void* checkpoint){
+static void extFunc(void* t, void* checkpoint, void* i){
+  CODI_UNUSED(t);
+
+  codi::AdjointInterface<typename NUMBER::Real>* ra = (codi::AdjointInterface<typename NUMBER::Real>*)i;
+
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
-  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
 
   typename NUMBER::Real x1_v, x2_v;
   typename NUMBER::GradientData x1_i, x2_i, w_i;
@@ -52,14 +55,21 @@ static void extFunc(void* checkpoint){
   check->getData(x2_i);
   check->getData(w_i);
 
-  typename NUMBER::GradientValue w_b = tape.gradient(w_i);
-  tape.gradient(w_i) = typename NUMBER::GradientValue();
+  size_t dim = ra->getVectorSize();
 
-  tape.gradient(x1_i) += x2_v*w_b;
-  tape.gradient(x2_i) += x1_v*w_b;
+  for(size_t i = 0; i < dim; ++i) {
+
+    typename NUMBER::Real w_b = ra->getAdjoint(w_i, i);
+    ra->resetAdjoint(w_i, i);
+
+    ra->updateAdjoint(x1_i, i, x2_v*w_b);
+    ra->updateAdjoint(x2_i, i, x1_v*w_b);
+  }
 }
 
-static void delFunc(void* checkpoint){
+static void delFunc(void* tape, void* checkpoint){
+  (void) tape;
+
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   delete check;
   std::cout << "Delete" << std::endl;

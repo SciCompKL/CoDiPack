@@ -1,7 +1,7 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -28,6 +28,8 @@
 
 
 #pragma once
+
+#include <initializer_list>
 
 #include "../configure.h"
 #include "../typeFunctions.hpp"
@@ -58,6 +60,37 @@ namespace codi {
        */
       CODI_INLINE Direction() :
         vector() {}
+
+      /**
+       * @brief Creates a direction with the same value in every component.
+       *
+       * @param[in] s  The value that is set to all components.
+       */
+      CODI_INLINE Direction(const Real& s) :
+        vector()
+      {
+        for(size_t i = 0; i < dim; ++i) {
+          vector[i] = s;
+        }
+      }
+
+      /**
+       * @brief The direction is initialized with the values from the initializer list.
+       *
+       * If the list is to small, then only the first m elements are set.
+       * If the list is to large, then only the first dim elements are set.
+       *
+       * @param[in] l  The list with the values for the direction.
+       */
+      CODI_INLINE Direction(std::initializer_list<Real> l) :
+        vector()
+      {
+        size_t size = std::min(dim, l.size());
+        const Real* array = l.begin(); // this is possible because the standard requires an array storage
+        for(size_t i = 0; i < size; ++i) {
+          vector[i] = array[i];
+        }
+      }
 
       /**
        * @brief Get the i-th element of the direction.
@@ -118,7 +151,7 @@ namespace codi {
       /**
        * @brief Checks if all entries in the direction are also a total zero.
        *
-       * @return true if all entires are a total zero.
+       * @return true if all entries are a total zero.
        */
       CODI_INLINE bool isTotalZero() const {
         for(size_t i = 0; i < dim; ++i) {
@@ -130,6 +163,27 @@ namespace codi {
         return true;
       }
   };
+
+  /**
+   * @brief Tests if all elements of the given direction are finite.
+   *
+   * Calls on all elements codi::isfinite.
+   *
+   * @param[in] d  The direction vector that is tested.
+   * @return true if all elements are finite.
+   * @tparam Real  The computation type of the direction vector.
+   * @tparam  dim  The dimension of the direction vector.
+   */
+  template<typename Real, size_t dim>
+  bool isfinite(const Direction<Real, dim>& d) {
+    bool finite = true;
+
+    for(size_t i = 0; i < dim; ++i) {
+      finite &= codi::isfinite(d[i]);
+    }
+
+    return finite;
+  }
 
   /**
    * @brief Scalar multiplication of a direction.
@@ -173,6 +227,97 @@ namespace codi {
   }
 
   /**
+   * @brief Scalar division of a direction.
+   *
+   * Performs the operation w = v / s
+   *
+   * @param[in] v  The direction that is divided.
+   * @param[in] s  The scalar value for the division.
+   *
+   * @return The direction with the result.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
+  template<typename Real, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator / (const Direction<Real, dim>& v, const Real& s) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = v[i] / s;
+    }
+
+    return r;
+  }
+
+  /**
+   * @brief Addition of two directions.
+   *
+   * Performs the operation w = v1 + v2
+   *
+   * @param[in] v1  The first direction that is added.
+   * @param[in] v2  The second direction that is added.
+   *
+   * @return The direction with the result.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
+  template<typename Real, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator + (const Direction<Real, dim>& v1, const Direction<Real, dim>& v2) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = v1[i] + v2[i];
+    }
+
+    return r;
+  }
+
+  /**
+   * @brief Subtraction of two directions.
+   *
+   * Performs the operation w = v1 - v2
+   *
+   * @param[in] v1  The first direction that is added.
+   * @param[in] v2  The second direction that is subtracted.
+   *
+   * @return The direction with the result.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
+  template<typename Real, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator - (const Direction<Real, dim>& v1, const Direction<Real, dim>& v2) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = v1[i] - v2[i];
+    }
+
+    return r;
+  }
+
+  /**
+   * @brief Negation of a direction.
+   *
+   * Performs the negation on all elements.
+   *
+   * @param[in] v  The first direction that is added.
+   *
+   * @return The direction with the result.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
+  template<typename Real, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator - (const Direction<Real, dim>& v) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = -v[i];
+    }
+
+    return r;
+  }
+
+  /**
    * @brief Check if at least one component of the direction is not equal to s.
    *
    * The operator returns false if all the components of the direction v are equal to s,
@@ -183,7 +328,7 @@ namespace codi {
    *
    * @return true if at least one component of v is not equal to s, false otherwise.
    *
-   * @tparam    A  The type of the scalr value.
+   * @tparam    A  The type of the scalar value.
    * @tparam Real  The scalar value type that is used by the direction.
    * @tparam  dim  The dimension of the direction.
    */
@@ -209,12 +354,39 @@ namespace codi {
    *
    * @return true if at least one component of v is not equal to s, false otherwise.
    *
-   * @tparam    A  The type of the scalr value.
+   * @tparam    A  The type of the scalar value.
    * @tparam Real  The scalar value type that is used by the direction.
    * @tparam  dim  The dimension of the direction.
    */
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator != (const Direction<Real, dim>& v, const A& s) {
     return s != v;
+  }
+
+  /**
+   * @brief Output the direction to a stream.
+   *
+   * The output format is: {v[0], v[1], ..., v[dim - 1]}
+   *
+   * @param[in,out] os  The output stream that is used for the writing.
+   * @param[in]      v  The direction that is written to the stream.
+   *
+   * @return The output stream os.
+   *
+   * @tparam Real  The scalar value type that is used by the direction.
+   * @tparam  dim  The dimension of the direction.
+   */
+  template<typename Real, size_t dim>
+  std::ostream& operator<<(std::ostream& os, const Direction<Real, dim>& v){
+    os << "{";
+    for(size_t i = 0; i < dim; ++i) {
+      if(i != 0) {
+        os << ", ";
+      }
+      os << v[i];
+    }
+    os << "}";
+
+    return os;
   }
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -42,9 +42,12 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
 
 const int ITER = 5;
 
-static void extFunc(void* checkpoint){
+static void extFunc(void* t, void* checkpoint, void* i){
+  CODI_UNUSED(t);
+
+  codi::AdjointInterface<typename NUMBER::Real>* ra = (codi::AdjointInterface<typename NUMBER::Real>*)i;
+
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
-  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
 
   typename NUMBER::Real x_v, w0_v;
   typename NUMBER::GradientData x_i, w0_i, w1_i;
@@ -54,14 +57,21 @@ static void extFunc(void* checkpoint){
   check->getData(w0_i);
   check->getData(w1_i);
 
-  typename NUMBER::GradientValue w1_b = tape.gradient(w1_i);
-  tape.gradient(w1_i) = typename NUMBER::GradientValue();
+  size_t dim = ra->getVectorSize();
 
-  tape.gradient(w0_i) += x_v*w1_b;
-  tape.gradient(x_i)  += w0_v*w1_b;
+  for(size_t i = 0; i < dim; ++i) {
+
+    typename NUMBER::Real w1_b = ra->getAdjoint(w1_i, i);
+    ra->resetAdjoint(w1_i, i);
+
+    ra->updateAdjoint(w0_i, i, x_v*w1_b);
+    ra->updateAdjoint(x_i, i, w0_v*w1_b);
+  }
 }
 
-static void delFunc(void* checkpoint){
+static void delFunc(void* tape, void* checkpoint){
+  (void) tape;
+
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   delete check;
   std::cout << "Delete" << std::endl;

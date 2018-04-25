@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -75,6 +75,9 @@ namespace codi {
      */
     typedef GradientValue GradientData;
 
+    /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
+    static const bool AllowJacobiOptimization = true;
+
     /**
      * @brief Evaluates the primal expression and the tangent
      *
@@ -91,7 +94,7 @@ namespace codi {
       lhsTangent  = gradient;
       value = rhs.getValue();
 
-#if CODI_AdjointHandle
+#if CODI_AdjointHandle_Tangent
       handleTangentOperation(value, lhsTangent);
 #endif
 
@@ -110,7 +113,7 @@ namespace codi {
       lhsTangent = rhs.getGradient();
       value = rhs.getValue();
 
-#if CODI_AdjointHandle
+#if CODI_AdjointHandle_Tangent
       handleTangentOperation(value, lhsTangent);
 #endif
     }
@@ -132,7 +135,7 @@ namespace codi {
      * This method is called for each value on the rhs. The tangent of the value is added to the
      * tangent of the lhs.
      *
-     * @param[inout]  lhsTangent  The tangent of the lhs.
+     * @param[in,out] lhsTangent  The tangent of the lhs.
      * @param[in]          value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
      *
@@ -150,7 +153,7 @@ namespace codi {
      * This method is called for each value on the rhs. The tangent of the value times the jacobi is added to the
      * tangent of the lhs.
      *
-     * @param[inout]  lhsTangent  The tangent of the lhs.
+     * @param[in,out] lhsTangent  The tangent of the lhs.
      * @param[in]         jacobi  The jacobi value of the operation.
      * @param[in]          value  Not used
      * @param[in]     curTangent  The tangent of the current rhs value.
@@ -160,7 +163,7 @@ namespace codi {
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& lhsTangent, const Real& jacobi, const Real& value, const GradientData& curTangent) {
       CODI_UNUSED(value);
-      ENABLE_CHECK(OptIgnoreInvalidJacobies, isfinite(jacobi)) {
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
         lhsTangent += jacobi * curTangent;
       }
     }
@@ -223,9 +226,20 @@ namespace codi {
      *
      * @param[in]  tangent  The gradient data of the active type is the tangent.
      *
-     * @return The tangent value of the active type.
+     * @return The reference of the tangent value of the active type.
      */
     CODI_INLINE GradientValue& gradient(GradientData& tangent) {
+      return tangent;
+    }
+
+    /**
+     * Returns the constant tangent value of the active type.
+     *
+     * @param[in]  tangent  The gradient data of the active type is the tangent.
+     *
+     * @return The constant reference to the tangent value of the active type.
+     */
+    CODI_INLINE const GradientValue& gradient(const GradientData& tangent) const {
       return tangent;
     }
 
@@ -235,8 +249,8 @@ namespace codi {
      * @param[in] tangent  The tangent value for the check.
      * @return False if the gradient data is zero, otherwise returns true.
      */
-    bool isActive(const GradientData& tangent) const{
-      return (tangent != 0.0);
+    bool isActive(const GradientData& tangent) const {
+      return !codi::isTotalZero(tangent);
     }
   };
 }

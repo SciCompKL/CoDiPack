@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -30,6 +30,9 @@
 
 #include <vector>
 
+#include "../../configure.h"
+#include "../../tools/tapeValues.hpp"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
@@ -41,15 +44,15 @@ namespace codi {
    * New indices are generated if required. All the freed indices are stored in a list
    * and are reused when indices are needed.
    *
-   * @tparam Index  The type for the handled indices.
+   * @tparam IndexType  The type for the handled indices.
    */
-  template<typename Index>
+  template<typename IndexType>
   class ReuseIndexHandler {
     public:
       /**
        * @brief The type definition for other tapes who want to access the type.
        */
-      typedef Index IndexType;
+      typedef IndexType Index;
 
 
       /**
@@ -57,32 +60,80 @@ namespace codi {
        */
       const static bool AssignNeedsStatement = true;
 
+      /**
+       * @brief Indicates if the index handler privides linear increasing indices.
+       *
+       * false for this index manager.
+       */
+      static const bool IsLinear = false;
+
     private:
 
       /** @brief The maximum index that was used over the whole process */
       Index globalMaximumIndex;
-      /**
-       * @brief The maximum index that is currently used.
-       *
-       * The maximum is decremented every time an index is released that corresponds to the
-       * current maximum.
-       */
-      Index currentMaximumIndex;
 
       /**
        * @brief The list with the indices that are available for reuse.
+       *
+       * These indices have already been used.
        */
-      std::vector<Index> freeIndices;
+      std::vector<Index> usedIndices;
+
+      /**
+       * @brief The position for the used indices.
+       */
+      size_t usedIndicesPos;
+
+      /**
+       * @brief The list with the indices that are available for reuse.
+       *
+       * These indices have not been used in the current tape.
+       */
+      std::vector<Index> unusedIndices;
+
+      /**
+       * @brief The position for the unused indices.
+       */
+      size_t unusedIndicesPos;
+
+      /**
+       * @brief The number of indices generated if new indices are required.
+       */
+      size_t indexSizeIncrement;
+
+      /**
+       * @brief Indicates the destruction of the index handler.
+       *
+       * Required to prevent segmentation faults if varaibles are deleted after the index handler.
+       */
+      bool valid;
 
     public:
 
       /**
-       * @brief Create a handler that has no indices in use.
+       * @brief Create a handler for index reuse.
+       *
+       * The argument reserveIndices will cause the index manager to reserve the first n indices, so that there are
+       * not used by the index manager and are freely available to anybody.
+       *
+       * @param[in] reserveIndices  The number of indices that are reserved and not used by the manager.
        */
-      ReuseIndexHandler() :
-        globalMaximumIndex(0),
-        currentMaximumIndex(0),
-        freeIndices() {}
+      ReuseIndexHandler(const Index reserveIndices) :
+        globalMaximumIndex(reserveIndices),
+        usedIndices(),
+        usedIndicesPos(0),
+        unusedIndices(),
+        unusedIndicesPos(0),
+        indexSizeIncrement(DefaultSmallChunkSize),
+        valid(true)
+      {
+        increaseIndicesSize(unusedIndices);
+        generateNewIndices();
+      }
+
+      ~ReuseIndexHandler() {
+        valid = false;
+      }
 
       /**
        * @brief Free the index that is given to the method.
@@ -91,16 +142,20 @@ namespace codi {
        * then the current maximum is decremented otherwise the index is added
        * to the freed list.
        *
-       * @param[inout] index  The index that is freed. It is set to zero in the method.
+       * @param[in,out] index  The index that is freed. It is set to zero in the method.
        */
       CODI_INLINE void freeIndex(Index& index) {
-        if(0 != index) { // do not free the zero index
-          if(currentMaximumIndex == index) {
-            // freed index is the maximum one so we can decrease the count
-            --currentMaximumIndex;
-          } else {
-            freeIndices.push_back(index);
+        if(valid && 0 != index) { // do not free the zero index
+
+#if CODI_IndexHandle
+          handleIndexFree(index);
+#endif
+          if(usedIndicesPos == usedIndices.size()) {
+            increaseIndicesSize(usedIndices);
           }
+
+          usedIndices[usedIndicesPos] = index;
+          usedIndicesPos += 1;
 
           index = 0;
         }
@@ -113,15 +168,44 @@ namespace codi {
        */
       CODI_INLINE Index createIndex() {
         Index index;
-        if(0 != freeIndices.size()) {
-          index = freeIndices.back();
-          freeIndices.pop_back();
-        } else {
-          if(globalMaximumIndex == currentMaximumIndex) {
-            ++globalMaximumIndex;
+
+        if(0 == usedIndicesPos) {
+          if(0 == unusedIndicesPos) {
+            generateNewIndices();
           }
-          index = ++currentMaximumIndex;
+
+          unusedIndicesPos -= 1;
+          index = unusedIndices[unusedIndicesPos];
+        } else {
+          usedIndicesPos -= 1;
+          index = usedIndices[usedIndicesPos];
         }
+
+#if CODI_IndexHandle
+        handleIndexCreate(index);
+#endif
+
+        return index;
+      }
+
+      /**
+       * @brief Generate a new index that has not been used in the tape.
+       *
+       * @return The new index that can be used.
+       */
+      CODI_INLINE Index createUnusedIndex() {
+        Index index;
+
+        if(0 == unusedIndicesPos) {
+          generateNewIndices();
+        }
+
+        unusedIndicesPos -= 1;
+        index = unusedIndices[unusedIndicesPos];
+
+#if CODI_IndexHandle
+        handleIndexCreate(index);
+#endif
 
         return index;
       }
@@ -129,7 +213,7 @@ namespace codi {
       /**
        * @brief Check if the index is active if not a new index is generated.
        *
-       * @param[inout] index The current value of the index. If 0 then a new index is generated.
+       * @param[in,out] index The current value of the index. If 0 then a new index is generated.
        */
       CODI_INLINE void assignIndex(Index& index) {
         if(0 == index) {
@@ -138,19 +222,40 @@ namespace codi {
       }
 
       /**
+       * @brief Check if the index is active if yes it is deleted and an unused index is generated.
+       *
+       * @param[in,out] index The current value of the index.
+       */
+      CODI_INLINE void assignUnusedIndex(Index& index) {
+        freeIndex(index); // zero check is performed inside
+
+        index = this->createUnusedIndex();
+      }
+
+      /**
        * @brief The index on the rhs is ignored in this manager.
        *
        * The manager ensures only that the lhs index is valid.
        */
       CODI_INLINE void copyIndex(Index& lhs, const Index& rhs) {
+        CODI_UNUSED(rhs);
         assignIndex(lhs);
       }
 
       /**
-       * @brief Not needed by this index manager.
+       * @brief Adds all used indices to the unused indices vector.
        */
-      CODI_INLINE void reset() const {
-        /* do nothing */
+      CODI_INLINE void reset() {
+        size_t totalSize = usedIndicesPos + unusedIndicesPos;
+        if(totalSize > unusedIndices.size()) {
+          increaseIndicesSizeTo(unusedIndices, totalSize);
+        }
+
+        for(size_t pos = 0; pos < usedIndicesPos; ++pos) {
+          unusedIndices[unusedIndicesPos + pos] = usedIndices[pos];
+        }
+        unusedIndicesPos = totalSize;
+        usedIndicesPos = 0;
       }
 
       /**
@@ -168,7 +273,7 @@ namespace codi {
        * @return The current maximum index that is in use.
        */
       CODI_INLINE Index getCurrentIndex() const {
-        return currentMaximumIndex;
+        return globalMaximumIndex;
       }
 
       /**
@@ -176,8 +281,8 @@ namespace codi {
        *
        * @return The number of stored indices.
        */
-      size_t getNumberStoredIndices() const {
-        return freeIndices.size();
+      CODI_INLINE size_t getNumberStoredIndices() const {
+        return unusedIndicesPos + usedIndicesPos;
       }
 
       /**
@@ -185,26 +290,22 @@ namespace codi {
        *
        * @return The number of the allocated indices.
        */
-      size_t getNumberAllocatedIndices() const {
-        return freeIndices.capacity();
+      CODI_INLINE size_t getNumberAllocatedIndices() const {
+        return unusedIndices.capacity() + usedIndices.capacity();
       }
 
       /**
-       * @brief Output statistics about the used indices.
+       * @brief Add statistics about the used indices.
        *
-       * Writes the
+       * Adds the
        *   maximum number of live indices,
        *   the current number of lives indices,
        *   the indices that are stored and
        *   the memory for the allocated indices.
        *
-       * @param[in,out] out  The information is written to the stream.
-       * @param[in]     hLine  The horizontal line that separates the sections of the output.
-       *
-       * @tparam Stream The type of the stream.
+       * @param[in,out] values  The values where the information is added to.
        */
-      template<typename Stream>
-      void printStatistics(Stream& out, const std::string hLine) const {
+      void addValues(TapeValues& values) const {
         size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
         size_t storedIndices          = (size_t)this->getNumberStoredIndices();
         size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();
@@ -212,20 +313,40 @@ namespace codi {
         double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * BYTE_TO_MB;
         double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
 
-        out << hLine
-            << "Indices\n"
-            << hLine
-            << "  Max. live indices: " << std::setw(10) << maximumGlobalIndex << "\n"
-            << "  Cur. live indices: " << std::setw(10) << currentLiveIndices << "\n"
-            << "  Indices stored:    " << std::setw(10) << storedIndices << "\n"
-            << "  Memory used:       " << std::setiosflags(std::ios::fixed)
-                                       << std::setprecision(2)
-                                       << std::setw(10)
-                                       << memoryStoredIndices << " MB" << "\n"
-            << "  Memory allocated:  " << std::setiosflags(std::ios::fixed)
-                                       << std::setprecision(2)
-                                       << std::setw(10)
-                                       << memoryAllocatedIndices << " MB" << "\n";
+        values.addSection("Indices");
+        values.addData("Max. live indices", maximumGlobalIndex);
+        values.addData("Cur. live indices", currentLiveIndices);
+        values.addData("Indices stored", storedIndices);
+        values.addData("Memory used", memoryStoredIndices, true, false);
+        values.addData("Memory allocated", memoryAllocatedIndices, false, true);
+      }
+
+    private:
+      CODI_NO_INLINE void generateNewIndices() {
+        // method is only called when unused indices are empty
+        // initialy it holds a number of unused indices which is
+        // the same amount as we now generate, therefore we do not
+        // check for size
+
+        codiAssert(unusedIndices.size() >= indexSizeIncrement);
+
+        for(size_t pos = 0; pos < indexSizeIncrement; ++pos) {
+          unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + (Index)pos;
+        }
+
+        unusedIndicesPos = indexSizeIncrement;
+        globalMaximumIndex += indexSizeIncrement;
+      }
+
+      CODI_NO_INLINE void increaseIndicesSize(std::vector<Index>& v) {
+        v.resize(v.size() + indexSizeIncrement);
+      }
+
+      CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
+        codiAssert(v.size() < minimalSize);
+
+        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1; // +1 rounds always up
+        v.resize(v.size() + increaseMul * indexSizeIncrement);
       }
   };
 }

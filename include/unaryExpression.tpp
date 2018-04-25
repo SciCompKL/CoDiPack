@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -106,7 +106,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    *
    * For f(x) it calculates df/dx and passes this value as the multiplier to the argument.
    *
-   * @param[inout] data A helper value which the tape can define and use for the evaluation.
+   * @param[in,out] data A helper value which the tape can define and use for the evaluation.
    *
    * @tparam Data The type for the tape data.
    */
@@ -120,8 +120,8 @@ struct OP : public Expression<Real, OP<Real, A> > {
    *
    * For f(x) it calculates multiplier * df/dx and passes this value as the multiplier to the argument.
    *
-   * @param[inout]     data A helper value which the tape can define and use for the evaluation.
-   * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
+   * @param[in,out]     data A helper value which the tape can define and use for the evaluation.
+   * @param[in]   multiplier The Jacobi from the expression where this expression was used as an argument.
    *
    * @tparam Data The type for the tape data.
    */
@@ -136,7 +136,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * The method is called for types that accumulate the jacobies before
    * they are pushed to the tape.
    *
-   * @param[inout]     data A helper value which the tape can define and use for the evaluation.
+   * @param[in,out]     data A helper value which the tape can define and use for the evaluation.
    *
    * @tparam Data The type for the tape data.
    */
@@ -167,13 +167,13 @@ struct OP : public Expression<Real, OP<Real, A> > {
    *
    * @return The corresponding primal value for the active real.
    *
-   * @tparam      IndexType  The type for the indices.
+   * @tparam          Index  The type for the indices.
    * @tparam         offset  The offset in the index array for the corresponding value.
    * @tparam constantOffset  The offset for the constant values array
    */
-  template<typename IndexType, size_t offset, size_t constantOffset>
-  static CODI_INLINE Real getValue(const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues) {
-    const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+  template<typename Index, size_t offset, size_t constantOffset>
+  static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
+    const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
 
     return PRIMAL_CALL(aPrimal);
   }
@@ -189,31 +189,66 @@ struct OP : public Expression<Real, OP<Real, A> > {
    * The adjustment of the offsets is take from the first argument.
    *
    * @param[in]           seed  The seeding for the expression. It is updated in the expressions
-   *                           for the operators and used as the upadte in the terminal points.
+   *                           for the operators and used as the update in the terminal points.
    * @param[in]        indices  The indices for the values in the expressions.
    * @param[in] constantValues  The array of constant values in the expression.
    * @param[in]   primalValues  The global primal value vector.
    * @param[in]  adjointValues  The global adjoint value vector.
    *
-   * @tparam      IndexType  The type for the indices.
+   * @tparam          Index  The type for the indices.
+   * @tparam  GradientValue  The type for the gradient values. It needs to provide add functions and a scalar copy.
    * @tparam         offset  The offset in the index array for the corresponding value.
    * @tparam constantOffset  The offset for the constant values array
    */
-  template<typename IndexType, size_t offset, size_t constantOffset>
-  static CODI_INLINE void evalAdjoint(const Real& seed, const IndexType* indices, const PassiveReal* constantValues, const Real* primalValues, Real* adjointValues) {
-    const Real aPrimal = A::template getValue<IndexType, offset, constantOffset>(indices, constantValues, primalValues);
+  template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
+  static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+    const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
+    const Real resPrimal = PRIMAL_CALL(aPrimal);
+
+    const PRIMAL_SEED_TYPE aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
+    A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
+  }
+
+  /**
+   * @brief Calculate the gradient of the expression and update the seed. The updated seed is then
+   *        given to the argument expressions.
+   *
+   * The method is called in the static evaluation of e.g. a primal value tape.
+   * It computes the tangent direction of the expression with a local reversal of the expression.
+   * It calls the same method on the arguments with updated offsets for the second argument.
+   * The adjustment of the offsets is take from the first argument.
+   *
+   * @param[in]           seed  The seeding for the expression. It is updated in the expressions
+   *                            for the operators and used as the update in the terminal points.
+   * @param[in,out] lhsAdjoint  The tangnet value of the lhs side. This value is updated in the
+   *                            arguments of the expression.
+   * @param[in]        indices  The indices for the values in the expressions.
+   * @param[in] constantValues  The array of constant values in the expression.
+   * @param[in]   primalValues  The global primal value vector.
+   * @param[in]  adjointValues  The global adjoint value vector.
+   *
+   * @tparam          Index  The type for the indices.
+   * @tparam  GradientValue  A type that supports add and scalar multiplication.
+   * @tparam         offset  The offset in the index array for the corresponding value.
+   * @tparam constantOffset  The offset for the constant values array
+   */
+  template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
+  static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
+    const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
     const Real resPrimal = PRIMAL_CALL(aPrimal);
 
     const Real aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
-    A::template evalAdjoint<IndexType, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
+    A::template evalTangent<Index, GradientValue, offset, constantOffset>(aJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
+
+    return resPrimal;
   }
 
   /**
    * @brief constantValueActions are called for every constant real in the expression.
    *
-   * @param[inout] tape  The tape that calls the action.
-   * @param[inout] data  The data that can be used by the action.
-   * @param[in]    func  The function that is called for every constant item.
+   * @param[in,out] tape  The tape that calls the action.
+   * @param[in,out] data  The data that can be used by the action.
+   * @param[in]     func  The function that is called for every constant item.
    *
    * @tparam CallTape  The type of the tape that calls the action.
    * @tparam     Data  The type of the data for the action.
@@ -227,8 +262,8 @@ struct OP : public Expression<Real, OP<Real, A> > {
   /**
    * @brief The action is called on the tape for every active real.
    *
-   * @param[inout] data  The data that can be used by the action.
-   * @param[in]    func  The function that is called for every active real in the expression.
+   * @param[in,out] data  The data that can be used by the action.
+   * @param[in]     func  The function that is called for every active real in the expression.
    *
    * @tparam     Data  The type of the data for the action.
    * @tparam     Func  The type of the function that is called.

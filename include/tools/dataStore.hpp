@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -72,7 +72,7 @@ namespace codi {
      * @brief The constructor will copy the given data.
      * @param[in] value The data for this object.
      */
-    DataHandle(const Type& value) {
+    explicit DataHandle(const Type& value) {
       data = (void*) new Type(value);
     }
 
@@ -202,12 +202,14 @@ namespace codi {
      * @brief Add data to the data store.
      *
      * @param[in] value  The data which is stored.
+     * @return The position of the added data.
      *
      * @tparam Type The type of the stored data.
      */
     template<typename Type>
-    void addData(const Type& value) {
+    size_t addData(const Type& value) {
       store.push_back(new DataHandle<Type>(value));
+      return store.size() - 1;
     }
 
     /**
@@ -215,12 +217,14 @@ namespace codi {
      *
      * @param[in] value  The data pointer to the array.
      * @param[in]  size  The size of the stored data.
+     * @return The position of the added data.
      *
      * @tparam Type The type of the stored array data.
      */
     template<typename Type>
-    void addData(const Type* value, const int size) {
+    size_t addData(const Type* value, const int size) {
       store.push_back(new DataHandleArray<Type>(value, size));
+      return store.size() - 1;
     }
 
     /**
@@ -289,6 +293,35 @@ namespace codi {
     }
 
     /**
+     * @brief Get data from the data store with the index from the add function.
+     *
+     * @param[out] value  The data will be set to this value.
+     * @param[in]    pos  The position for the data. This needs to be the index returned by the add function.
+     *
+     * @tparam Type The type of the extracted data.
+     */
+    template<typename Type>
+    void getDataByIndex(Type& value, size_t pos) {
+      getDataArrayByIndex<Type>(&value, 1, pos);
+    }
+
+    /**
+     * @brief Get data from the data store with the index from the add function.
+     *
+     * @param[out] value  The data will be copied to the value.
+     * @param[in]   size  The size of the data array.
+     * @param[in]    pos  The position for the data. This needs to be the index returned by the add function.
+     *
+     * @tparam Type The type of the extracted data.
+     */
+    template<typename Type>
+    void getDataArrayByIndex(Type* value, const int size, size_t pos) {
+      Type* convPointer = getStore<Type>(pos);
+
+      std::copy(convPointer, &convPointer[size], value);
+    }
+
+    /**
      * @brief Restart the reading process.
      */
     void resetPos() {
@@ -296,6 +329,20 @@ namespace codi {
     }
 
   private:
+
+    /**
+     * Gets a specific data item from the data vector.
+     *
+     * @param[in] pos  The position of the item.
+     * @return The data item for the specified position.
+     *
+     * @tparam Type The type of the extracted data.
+     */
+    template<typename Type>
+    Type* getStore(size_t pos) {
+      return (Type*) store[pos]->data;
+    }
+
     /**
      * @brief Gets the next data item out of the data vector.
      *
@@ -308,7 +355,8 @@ namespace codi {
      */
     template<typename Type>
     Type* nextStore() {
-      Type* pointer = (Type*) store[storePos++]->data;
+      Type* pointer = getStore<Type>(storePos);
+      storePos += 1;
       if(storePos >= store.size()) {
         storePos = 0;
       }

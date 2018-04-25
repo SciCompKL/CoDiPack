@@ -11,8 +11,8 @@
 The design principle for CoDiPack is that it is easy to use.
 However, it also gives experienced AD developers the full access to all the data structures.
 
-The [Scientific Computing Group](http://www.scicomp.uni-kl.de) at the TU Kaiserslautern develops CoDiPack and
-will enhance and extend CoDiPack in the future. There is a newsletter available at [codi-info@uni-kl.de](https://lists.uni-kl.de/uni-kl/subscribe/codi-info)
+The [Scientific Computing Group](http://www.scicomp.uni-kl.de) at the TU Kaiserslautern develops CoDiPack and will enhance and extend CoDiPack in the future.
+There is a newsletter available at [codi-info@uni-kl.de](https://lists.uni-kl.de/uni-kl/subscribe/codi-info) and if you want to contact us please write a mail to [codi@scicomp.uni-kl.de](mailto:codi@scicomp.uni-kl.de).
 
 [![Build Status](https://travis-ci.org/SciCompKL/CoDiPack.svg?branch=develop)](https://travis-ci.org/SciCompKL/CoDiPack)
 
@@ -84,3 +84,16 @@ for the gcc compiler or with
 for the intel compiler.
 
 Please visit the [tutorial page](http://www.scicomp.uni-kl.de/codi/db/d3c/tutorialPage.html) for further information.
+
+## Citation
+
+If you use CoDiPack in one of your applications and write a paper it would be nice if you could cite the paper
+[High-Performance Derivative Computations using CoDiPack](https://arxiv.org/abs/1709.07229) (submitted to ACM TOMS).
+~~~~{.txt}
+@article{sagebaum2017high,
+  title={{High-Performance Derivative Computations using CoDiPack}},
+  author={Sagebaum, Max and Albring, Tim and Gauger, Nicolas R.},
+  journal={arXiv preprint arXiv:1709.07229},
+  year={2017}
+}
+~~~~

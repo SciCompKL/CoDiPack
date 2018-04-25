@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -11,7 +11,7 @@
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 2 of the
+ * as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
  * CoDiPack is distributed in the hope that it will be useful,
@@ -39,28 +39,12 @@
   #error Please define the name of the tape.
 #endif
 
-  /**
-   * @brief Instantiation of the input handle.
-   *
-   * @tparam TapeTypes  The definition of the tape types.
-   */
-  template <typename TapeTypes>
-  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> TAPE_NAME<TapeTypes>::InputHandle(&TAPE_NAME<TapeTypes>::inputHandleFunc, 0, 0);
-
-  /**
-   * @brief Instantiation of the copy handle.
-   *
-   * @tparam TapeTypes  The definition of the tape types.
-   */
-  template <typename TapeTypes>
-  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> TAPE_NAME<TapeTypes>::CopyHandle(&TAPE_NAME<TapeTypes>::copyHandleFunc, 1, 0);
-
 /**
- * @brief Creates a preaccumulation handle for a spcific size
+ * @brief Creates a preaccumulation handle for a specific size
  *
  * @param[in] size  The size of the preaccumulation handle. This is the size of the index vector and the constant vector.
  */
-#define CREATE_PREACC_HANDLE(size) ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType>(&TAPE_NAME<TapeTypes>::preaccHandleFunc<size>, size, size)
+#define CREATE_PREACC_HANDLE(size) HandleFactory::template createHandle<PreaccExpr<typename TapeTypes::Real, size>, TAPE_NAME<TapeTypes>>()
 
   /**
    * @brief Instantiation of the preaccumulation handles.
@@ -68,7 +52,7 @@
    * @tparam TapeTypes  The definition of the tape types.
    */
   template <typename TapeTypes>
-  const ExpressionHandle<typename TapeTypes::RealType*, typename TapeTypes::RealType, typename TapeTypes::IndexType> TAPE_NAME<TapeTypes>::PreaccHandles[MaxStatementIntSize] = {
+  const typename TapeTypes::Handle TAPE_NAME<TapeTypes>::preaccHandles[MaxStatementIntSize] = {
     CREATE_PREACC_HANDLE(0), CREATE_PREACC_HANDLE(1), CREATE_PREACC_HANDLE(2), CREATE_PREACC_HANDLE(3), CREATE_PREACC_HANDLE(4),
     CREATE_PREACC_HANDLE(5), CREATE_PREACC_HANDLE(6), CREATE_PREACC_HANDLE(7), CREATE_PREACC_HANDLE(8), CREATE_PREACC_HANDLE(9),
     CREATE_PREACC_HANDLE(10), CREATE_PREACC_HANDLE(11), CREATE_PREACC_HANDLE(12), CREATE_PREACC_HANDLE(13), CREATE_PREACC_HANDLE(14),
@@ -119,8 +103,7 @@
     CREATE_PREACC_HANDLE(235), CREATE_PREACC_HANDLE(236), CREATE_PREACC_HANDLE(237), CREATE_PREACC_HANDLE(238), CREATE_PREACC_HANDLE(239),
     CREATE_PREACC_HANDLE(240), CREATE_PREACC_HANDLE(241), CREATE_PREACC_HANDLE(242), CREATE_PREACC_HANDLE(243), CREATE_PREACC_HANDLE(244),
     CREATE_PREACC_HANDLE(245), CREATE_PREACC_HANDLE(246), CREATE_PREACC_HANDLE(247), CREATE_PREACC_HANDLE(248), CREATE_PREACC_HANDLE(249),
-    CREATE_PREACC_HANDLE(250), CREATE_PREACC_HANDLE(251), CREATE_PREACC_HANDLE(252), CREATE_PREACC_HANDLE(253), CREATE_PREACC_HANDLE(254),
-    CREATE_PREACC_HANDLE(255)
+    CREATE_PREACC_HANDLE(250), CREATE_PREACC_HANDLE(251), CREATE_PREACC_HANDLE(252), CREATE_PREACC_HANDLE(253), CREATE_PREACC_HANDLE(254)
   };
 
 #undef CREATE_PREACC_HANDLE
