@@ -158,7 +158,7 @@ namespace codi {
         if(valid && 0 != index) { // do not free the zero index
           indexUse[index] -= 1;
 
-          if(indexUse[index] == 0) { // only free the index if it not used any longer
+          if(indexUse[index] == 0) { // only free the index if it is not used any longer
 
 #if CODI_IndexHandle
             handleIndexFree(index);
