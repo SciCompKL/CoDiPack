@@ -427,32 +427,32 @@ namespace codi {
     #define CODI_IndexHandle false
   #endif
   #if CODI_IndexHandle
-  /**
-   * @brief A function that is called for every index creation.
-   *
-   * All index managers of CoDiPack will call this function when they create a new index.
-   *
-   * @param[in] index  The created index.
-   *
-   * @tparam Index  The type for the identificaton of an adjoint value.
-   */
-  template<typename Index>
-  void handleIndexCreate(const Index& index);
+    /**
+     * @brief A function that is called for every index creation.
+     *
+     * All index managers of CoDiPack will call this function when they create a new index.
+     *
+     * @param[in] index  The created index.
+     *
+     * @tparam Index  The type for the identificaton of an adjoint value.
+     */
+    template<typename Index>
+    void handleIndexCreate(const Index& index);
 
-  /**
-   * @brief A function that is called for every index deletion.
-   *
-   * All index managers of CoDiPack will call this function when they delete a new index.
-   *
-   * @param[in] index  The deleted index.
-   *
-   * @tparam Index  The type for the identificaton of an adjoint value.
-   */
-  template<typename Index>
-  void handleIndexFree(const Index& index);
-#endif
+    /**
+     * @brief A function that is called for every index deletion.
+     *
+     * All index managers of CoDiPack will call this function when they delete a new index.
+     *
+     * @param[in] index  The deleted index.
+     *
+     * @tparam Index  The type for the identificaton of an adjoint value.
+     */
+    template<typename Index>
+    void handleIndexFree(const Index& index);
+  #endif
 
-#ifndef CODI_EnableAssert
+  #ifndef CODI_EnableAssert
     #define CODI_EnableAssert false
   #endif
   #ifndef codiAssert
