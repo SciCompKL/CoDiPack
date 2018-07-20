@@ -97,31 +97,29 @@ namespace codi {
    * Helper class for presenting compile time warnings to the user.
    *
    * The warning is presented as a deprecated note.
-   *
-   * @tparam true if the warning should be displayed.
    */
-  template<bool v>
   struct Warning {
 
     /**
-     * Constructor
+     * Show a warning about an implicit cast of an active real type.
      *
-     * @param w  The string is just seen in the note of the warning
+     * @tparam v false if the warning should be displayed
      */
-    Warning(const std::string& w) {
-      static_warning(::detail::converter<v>());
+    template<bool v>
+    static void implicitCast() {
+      implicitCastStatic(::std::integral_constant<bool, v>());
     }
 
 
     /**
      * Implementation of static_warning that displayes the warning.
      */
-    DEPRECATE(static void static_warning(::detail::false_type const&), "Static warning: See instantiation note") {};
+    DEPRECATE(static void implicitCastStatic(::std::false_type const&), "static_warning: Implicit conversion of CoDiPack type to real.") {};
 
     /**
      * Implementation of static_warning that ignores the warning.
      */
-    static void static_warning(::detail::true_type const&) {};
+    static void implicitCastStatic(::std::true_type const&) {};
   };
 }
 

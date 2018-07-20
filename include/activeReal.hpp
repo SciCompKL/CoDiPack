@@ -362,7 +362,7 @@ namespace codi {
      * @return The primal value.
      */
     CODI_INLINE operator Real() const {
-      Warning<CODI_DisableImplicitConversionWarning>("Implicit conversion of CoDiPack type to real.");
+      Warning::implicitCast<CODI_DisableImplicitConversionWarning>();
 
       return primalValue;
     }
