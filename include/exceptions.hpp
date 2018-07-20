@@ -84,5 +84,44 @@ namespace codi {
       abort();
     }
   }
+
+  #if defined(__GNUC__)
+    #define DEPRECATE(foo, msg) foo __attribute__((deprecated(msg)))
+  #elif defined(_MSC_VER)
+    #define DEPRECATE(foo, msg) __declspec(deprecated(msg)) foo
+  #else
+    #error This compiler is not supported
+  #endif
+
+  /**
+   * Helper class for presenting compile time warnings to the user.
+   *
+   * The warning is presented as a deprecated note.
+   *
+   * @tparam true if the warning should be displayed.
+   */
+  template<bool v>
+  struct Warning {
+
+    /**
+     * Constructor
+     *
+     * @param w  The string is just seen in the note of the warning
+     */
+    Warning(const std::string& w) {
+      static_warning(::detail::converter<v>());
+    }
+
+
+    /**
+     * Implementation of static_warning that displayes the warning.
+     */
+    DEPRECATE(static void static_warning(::detail::false_type const&), "Static warning: See instantiation note") {};
+
+    /**
+     * Implementation of static_warning that ignores the warning.
+     */
+    static void static_warning(::detail::true_type const&) {};
+  };
 }
 

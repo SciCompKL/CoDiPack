@@ -281,6 +281,24 @@ namespace codi {
   #undef CODI_DisableAssignOptimization
 
   /*
+   * This switch enables the implict conversion operator to the primal value in the
+   * active types.
+   *
+   * This will give a warning every time an implicit conversion is instantiated. This
+   * warning can be disabled with the compiler flag CODI_DisableImplicitConversionWarning
+   */
+  #ifndef CODI_EnableImplicitConversion
+    #define CODI_EnableImplicitConversion 0
+  #endif
+
+  /*
+   * This switch disables the warnings for an implicit conversion.
+   */
+  #ifndef CODI_DisableImplicitConversionWarning
+    #define CODI_DisableImplicitConversionWarning 0
+  #endif
+
+  /*
    * This switch is required such that the primal value tape of CoDiPack can also use a variable vector mode for the
    * reverse interpretation. The variable reverse interpretation enables the user to compile the software with one
    * of the CoDiPack scalar types and use an arbitrary vector size in the reverse evaluation.
