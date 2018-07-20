@@ -369,6 +369,14 @@ namespace codi {
 #endif
 
     /**
+     * @brief Get the primal value of this instance via implicit cast.
+     * @return The primal value.
+     */
+    CODI_INLINE operator Real() const {
+      return primalValue;
+    }
+
+    /**
      * @brief Set the primal value of this instance.
      * @param value The new primal value.
      */
