@@ -281,6 +281,36 @@ namespace codi {
   #undef CODI_DisableAssignOptimization
 
   /*
+   * This switch enables the implict conversion operator to the primal value in the
+   * active types.
+   *
+   * This will give a warning every time an implicit conversion is instantiated. This
+   * warning can be disabled with the compiler flag CODI_DisableImplicitConversionWarning
+   */
+  #ifndef CODI_EnableImplicitConversion
+    #define CODI_EnableImplicitConversion 0
+  #endif
+
+  /*
+   * This switch disables the warnings for an implicit conversion.
+   */
+  #ifndef CODI_DisableImplicitConversionWarning
+    #define CODI_DisableImplicitConversionWarning 0
+  #endif
+
+  #ifndef CODI_DisableSortIndicesOnReset
+    #define CODI_DisableSortIndicesOnReset false
+  #endif
+  /**
+   * @brief Sorts the available indices in the index managers when the tape is reset.
+   *
+   * It can be set with the preprocessor macro CODI_DisableSortIndicesOnReset=<true/false>
+   */
+  const bool OptSortIndicesOnReset = !CODI_DisableSortIndicesOnReset;
+  #undef CODI_DisableSortIndicesOnReset
+
+
+  /*
    * This switch is required such that the primal value tape of CoDiPack can also use a variable vector mode for the
    * reverse interpretation. The variable reverse interpretation enables the user to compile the software with one
    * of the CoDiPack scalar types and use an arbitrary vector size in the reverse evaluation.
@@ -427,32 +457,32 @@ namespace codi {
     #define CODI_IndexHandle false
   #endif
   #if CODI_IndexHandle
-  /**
-   * @brief A function that is called for every index creation.
-   *
-   * All index managers of CoDiPack will call this function when they create a new index.
-   *
-   * @param[in] index  The created index.
-   *
-   * @tparam Index  The type for the identificaton of an adjoint value.
-   */
-  template<typename Index>
-  void handleIndexCreate(const Index& index);
+    /**
+     * @brief A function that is called for every index creation.
+     *
+     * All index managers of CoDiPack will call this function when they create a new index.
+     *
+     * @param[in] index  The created index.
+     *
+     * @tparam Index  The type for the identificaton of an adjoint value.
+     */
+    template<typename Index>
+    void handleIndexCreate(const Index& index);
 
-  /**
-   * @brief A function that is called for every index deletion.
-   *
-   * All index managers of CoDiPack will call this function when they delete a new index.
-   *
-   * @param[in] index  The deleted index.
-   *
-   * @tparam Index  The type for the identificaton of an adjoint value.
-   */
-  template<typename Index>
-  void handleIndexFree(const Index& index);
-#endif
+    /**
+     * @brief A function that is called for every index deletion.
+     *
+     * All index managers of CoDiPack will call this function when they delete a new index.
+     *
+     * @param[in] index  The deleted index.
+     *
+     * @tparam Index  The type for the identificaton of an adjoint value.
+     */
+    template<typename Index>
+    void handleIndexFree(const Index& index);
+  #endif
 
-#ifndef CODI_EnableAssert
+  #ifndef CODI_EnableAssert
     #define CODI_EnableAssert false
   #endif
   #ifndef codiAssert

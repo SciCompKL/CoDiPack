@@ -256,6 +256,10 @@ namespace codi {
         }
         unusedIndicesPos = totalSize;
         usedIndicesPos = 0;
+
+        if(OptSortIndicesOnReset) {
+          std::sort(unusedIndices.begin(), unusedIndices.end());
+        }
       }
 
       /**

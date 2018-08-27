@@ -84,5 +84,42 @@ namespace codi {
       abort();
     }
   }
+
+  #if defined(__GNUC__)
+    #define DEPRECATE(foo, msg) foo __attribute__((deprecated(msg)))
+  #elif defined(_MSC_VER)
+    #define DEPRECATE(foo, msg) __declspec(deprecated(msg)) foo
+  #else
+    #error This compiler is not supported
+  #endif
+
+  /**
+   * Helper class for presenting compile time warnings to the user.
+   *
+   * The warning is presented as a deprecated note.
+   */
+  struct Warning {
+
+    /**
+     * Show a warning about an implicit cast of an active real type.
+     *
+     * @tparam v false if the warning should be displayed
+     */
+    template<bool v>
+    static void implicitCast() {
+      implicitCastStatic(::std::integral_constant<bool, v>());
+    }
+
+
+    /**
+     * Implementation of static_warning that displayes the warning.
+     */
+    DEPRECATE(static void implicitCastStatic(::std::false_type const&), "static_warning: Implicit conversion of CoDiPack type to real.") {};
+
+    /**
+     * Implementation of static_warning that ignores the warning.
+     */
+    static void implicitCastStatic(::std::true_type const&) {};
+  };
 }
 
