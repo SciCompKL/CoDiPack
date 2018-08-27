@@ -298,6 +298,18 @@ namespace codi {
     #define CODI_DisableImplicitConversionWarning 0
   #endif
 
+  #ifndef CODI_DisableSortIndicesOnReset
+    #define CODI_DisableSortIndicesOnReset false
+  #endif
+  /**
+   * @brief Sorts the available indices in the index managers when the tape is reset.
+   *
+   * It can be set with the preprocessor macro CODI_DisableSortIndicesOnReset=<true/false>
+   */
+  const bool OptSortIndicesOnReset = !CODI_DisableSortIndicesOnReset;
+  #undef CODI_DisableSortIndicesOnReset
+
+
   /*
    * This switch is required such that the primal value tape of CoDiPack can also use a variable vector mode for the
    * reverse interpretation. The variable reverse interpretation enables the user to compile the software with one
