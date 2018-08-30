@@ -304,7 +304,7 @@ namespace codi {
        * @return The gradient value from the internal adjoint vector.
        */
       GradientValue& gradientAt(const GradientData& value) {
-        return adjointVector[value];
+        return adjointVector[arrayAccess(value)];
       }
 
       /**
@@ -317,7 +317,7 @@ namespace codi {
        * @return The gradient value from the internal adjoint vector.
        */
       const GradientValue& gradientAt(const GradientData& value) const {
-        return adjointVector[value];
+        return adjointVector[arrayAccess(value)];
       }
 
       /**
@@ -331,7 +331,7 @@ namespace codi {
         checkAdjointVectorSize();
 
         if(0 != value && value < (GradientData)adjointVector.size()) {
-          return adjointVector[value];
+          return adjointVector[arrayAccess(value)];
         } else {
           zeroValue = GradientValue();
           return zeroValue;
@@ -347,7 +347,7 @@ namespace codi {
        */
       const GradientValue& gradient(const GradientData& value) const {
         if(0 != value && value < (GradientData)adjointVector.size()) {
-          return adjointVector[value];
+          return adjointVector[arrayAccess(value)];
         } else {
           return constZeroValue;
         }
@@ -374,7 +374,7 @@ namespace codi {
        */
       void clearAdjoints() {
         for(size_t i = 0; i < adjointVector.size(); i += 1) {
-          adjointVector[i] = GradientValue();
+          adjointVector[arrayAccess(i)] = GradientValue();
         }
       }
 

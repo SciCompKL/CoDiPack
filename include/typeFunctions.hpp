@@ -143,4 +143,19 @@ namespace codi {
   CODI_INLINE bool isfinite(const T& t) {
     return IsFiniteImpl<T>::get(t);
   }
+
+#ifndef DOXYGEN_DISABLE
+  // check if variable is finite
+  template <typename T>
+  struct ArrayAccessImpl {
+      static CODI_INLINE size_t get(const T &t) {
+          return t;
+      }
+  };
+#endif
+
+  template <typename T>
+  CODI_INLINE size_t arrayAccess(const T& t) {
+    return ArrayAccessImpl<T>::get(t);
+  }
 }
