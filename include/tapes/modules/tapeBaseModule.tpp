@@ -413,6 +413,14 @@
       return active;
     }
 
+    Index getPassiveIndex() const {
+      return Index(0);
+    }
+
+    Index getInvalidIndex() const {
+      return Index(-1);
+    }
+
     /**
      * @brief Prints statistics about the tape on the screen or into a stream
      *
@@ -487,7 +495,7 @@
      *
      * @return The size of the adjoint vector.
      */
-    size_t getAdjointSize() {
+    size_t getAdjointSize() const {
       return INDEX_HANDLER_NAME.getMaximumGlobalIndex();
     }
 
