@@ -145,7 +145,7 @@ void vectorHelperInterface() {
   tape.setPassive();
 
   codi::TapeVectorHelperInterface<codi::RealReverse>* vh = new codi::TapeVectorHelper<codi::RealReverse, codi::Direction<double, 2> >();
-  codi::AdjointInterface<codi::RealReverse::Real>* ai = vh->getAdjointInterface();
+  codi::AdjointInterface<codi::RealReverse::Real, codi::RealReverse::GradientData>* ai = vh->getAdjointInterface();
 
   for(size_t dim = 0; dim < ai->getVectorSize(); ++dim) {
     ai->updateAdjoint(yR[dim].getGradientData(), dim, 1.0);

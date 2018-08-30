@@ -42,11 +42,12 @@ namespace codi {
    * Nearly everything of the base interface is implemented only the method resetPrimal is left out.
    *
    * @tparam          Real  The primal value of the CoDiPack type.
+   * @tparam  GradientData  The identifier the CoDiPack type.
    * @tparam GradientValue  The adjoint value for the current evaluation. This type needs to support additions and
    *                        multiplications.
    */
-  template<typename Real, typename GradientValue>
-  struct AdjointInterfaceImplBase : public AdjointInterface<Real> {
+  template<typename Real, typename GradientData, typename GradientValue>
+  struct AdjointInterfaceImplBase : public AdjointInterface<Real, GradientData> {
       GradientValue* adjointVector; /**< The vector for the adjoint data.*/
 
       GradientValue lhs; /**< The stored value for the inplace updates. */
@@ -76,18 +77,18 @@ namespace codi {
        * @param[in] index  The position for the adjoint.
        * @param[in]   dim  The dimension in the vector.
        */
-      void resetAdjoint(const int index, const size_t dim) {
+      void resetAdjoint(const GradientData index, const size_t dim) {
         CODI_UNUSED(dim);
 
-        adjointVector[index] = GradientValue();
+        adjointVector[arrayAccess(index)] = GradientValue();
       }
 
       /**
        * @brief Set the adjoint vector at the position to zero.
        * @param[in] index  The position for the adjoint.
        */
-      void resetAdjointVec(const int index) {
-        adjointVector[index] = GradientValue();
+      void resetAdjointVec(const GradientData index) {
+        adjointVector[arrayAccess(index)] = GradientValue();
       }
 
       /**
@@ -101,10 +102,10 @@ namespace codi {
        * @param[in]   dim  The dimension in the vector.
        * @return The adjoint value at the position with the dimension.
        */
-      Real getAdjoint(const int index, const size_t dim) {
+      Real getAdjoint(const GradientData index, const size_t dim) {
         CODI_UNUSED(dim);
 
-        return (Real) adjointVector[index];
+        return (Real) adjointVector[arrayAccess(index)];
       }
 
       /**
@@ -121,8 +122,8 @@ namespace codi {
        * @param[in] index  The position for the adjoint
        * @param[out]  vec  The vector for the storage of the data.
        */
-      void getAdjointVec(const int index, Real* vec) {
-        *vec = (Real)adjointVector[index];
+      void getAdjointVec(const GradientData index, Real* vec) {
+        *vec = (Real)adjointVector[arrayAccess(index)];
       }
 
       /**
@@ -136,10 +137,10 @@ namespace codi {
        * @param[in]     dim  The dimension in the vector.
        * @param[in] adjoint  The update for the adjoint value.
        */
-      virtual void updateAdjoint(const int index, const size_t dim, const Real adjoint) {
+      virtual void updateAdjoint(const GradientData index, const size_t dim, const Real adjoint) {
         CODI_UNUSED(dim);
 
-        adjointVector[index] += adjoint;
+        adjointVector[arrayAccess(index)] += adjoint;
       }
 
       /**
@@ -156,8 +157,8 @@ namespace codi {
        * @param[in] index  The position for the adjoint
        * @param[in]   vec  The update for the adjoint value.
        */
-      virtual void updateAdjointVec(const int index, const Real* vec) {
-        adjointVector[index] += *vec;
+      virtual void updateAdjointVec(const GradientData index, const Real* vec) {
+        adjointVector[arrayAccess(index)] += *vec;
       }
 
       /**
@@ -179,8 +180,8 @@ namespace codi {
        *
        * @param[in] index  The index of the adjoint value that is stored and reset to zero.
        */
-      void setLhsAdjoint(const int index) {
-        lhs = adjointVector[index];
+      void setLhsAdjoint(const GradientData index) {
+        lhs = adjointVector[arrayAccess(index)];
       }
 
       /**
@@ -191,8 +192,8 @@ namespace codi {
        * @param[in]  index  The index of the adjoint value that receives the update.
        * @param[in] jacobi  The jacobi value that is multiplied with the lhs adjoint.
        */
-      void updateJacobiAdjoint(const int index, Real jacobi) {
-        adjointVector[index] += jacobi * lhs;
+      void updateJacobiAdjoint(const GradientData index, Real jacobi) {
+        adjointVector[arrayAccess(index)] += jacobi * lhs;
       }
 
       /**
@@ -212,8 +213,8 @@ namespace codi {
        *
        * @param[in] index  The index of the tangent value that is set to the current accumulated value.
        */
-      void setLhsTangent(const int index) {
-        adjointVector[index] = lhs;
+      void setLhsTangent(const GradientData index) {
+        adjointVector[arrayAccess(index)] = lhs;
         lhs = GradientValue();
       }
 
@@ -225,21 +226,22 @@ namespace codi {
        * @param[in]  index  The index of the tangent value that is used for the update.
        * @param[in] jacobi  The jacobi value that is multiplied with the tangnet value defined by index.
        */
-      void updateJacobiTangent(const int index, Real jacobi) {
-        lhs +=  jacobi * adjointVector[index];
+      void updateJacobiTangent(const GradientData index, Real jacobi) {
+        lhs +=  jacobi * adjointVector[arrayAccess(index)];
       }
   };
 
   /**
    * @brief Specialization for the the codi::Direction structure.
    *
-   * @tparam    Real  The primal value of the CoDiPack type.
-   * @tparam RealDir  The type for the entries of the vectors. This type needs to support addition and multiplication
-   *                  operations.
-   * @tparam  vecDim  The dimension of the vector
+   * @tparam         Real  The primal value of the CoDiPack type.
+   * @tparam GradientData  The identifier the CoDiPack type.
+   * @tparam      RealDir  The type for the entries of the vectors. This type needs to support addition and multiplication
+   *                       operations.
+   * @tparam       vecDim  The dimension of the vector
    */
-  template<typename Real, typename RealDir, size_t vecDim>
-  struct AdjointInterfaceImplBase <Real, Direction<RealDir, vecDim> > : public AdjointInterface<Real> {
+  template<typename Real, typename GradientData, typename RealDir, size_t vecDim>
+  struct AdjointInterfaceImplBase <Real, GradientData, Direction<RealDir, vecDim> > : public AdjointInterface<Real, GradientData> {
       Direction<RealDir, vecDim>* adjointVector; /**< The vector for the adjoint data.*/
 
       Direction<RealDir, vecDim> lhs; /**< The stored value for the inplace updates. */
@@ -267,16 +269,16 @@ namespace codi {
        * @param[in] index  The position for the adjoint.
        * @param[in]   dim  The dimension in the vector.
        */
-      void resetAdjoint(const int index, const size_t dim) {
-        adjointVector[index][dim] = RealDir();
+      void resetAdjoint(const GradientData index, const size_t dim) {
+        adjointVector[arrayAccess(index)][dim] = RealDir();
       }
 
       /**
        * @brief Set the adjoint vector at the position to zero.
        * @param[in] index  The position for the adjoint.
        */
-      void resetAdjointVec(const int index) {
-        adjointVector[index] = Direction<RealDir, vecDim>();
+      void resetAdjointVec(const GradientData index) {
+        adjointVector[arrayAccess(index)] = Direction<RealDir, vecDim>();
       }
 
       /**
@@ -290,8 +292,8 @@ namespace codi {
        * @param[in]   dim  The dimension in the vector.
        * @return The adjoint value at the position with the dimension.
        */
-      Real getAdjoint(const int index, const size_t dim) {
-        return (Real) adjointVector[index][dim];
+      Real getAdjoint(const GradientData index, const size_t dim) {
+        return (Real) adjointVector[arrayAccess(index)][dim];
       }
 
       /**
@@ -308,9 +310,9 @@ namespace codi {
        * @param[in] index  The position for the adjoint
        * @param[out]  vec  The vector for the storage of the data.
        */
-      void getAdjointVec(const int index, Real* vec) {
+      void getAdjointVec(const GradientData index, Real* vec) {
         for(size_t i = 0; i < vecDim; ++i) {
-          vec[i] = (Real)adjointVector[index][i];
+          vec[i] = (Real)adjointVector[arrayAccess(index)][i];
         }
       }
 
@@ -325,8 +327,8 @@ namespace codi {
        * @param[in]     dim  The dimension in the vector.
        * @param[in] adjoint  The update for the adjoint value.
        */
-      virtual void updateAdjoint(const int index, const size_t dim, const Real adjoint) {
-        adjointVector[index][dim] += adjoint;
+      virtual void updateAdjoint(const GradientData index, const size_t dim, const Real adjoint) {
+        adjointVector[arrayAccess(index)][dim] += adjoint;
       }
 
       /**
@@ -343,9 +345,9 @@ namespace codi {
        * @param[in] index  The position for the adjoint
        * @param[in]   vec  The update for the adjoint value.
        */
-      virtual void updateAdjointVec(const int index, const Real* vec) {
+      virtual void updateAdjointVec(const GradientData index, const Real* vec) {
         for(size_t i = 0; i < vecDim; ++i) {
-          adjointVector[index][i] += vec[i];
+          adjointVector[arrayAccess(index)][i] += vec[i];
         }
       }
 
@@ -368,8 +370,8 @@ namespace codi {
        *
        * @param[in] index  The index of the adjoint value that is stored and reset to zero.
        */
-      void setLhsAdjoint(const int index) {
-        lhs = adjointVector[index];
+      void setLhsAdjoint(const GradientData index) {
+        lhs = adjointVector[arrayAccess(index)];
       }
 
       /**
@@ -380,8 +382,8 @@ namespace codi {
        * @param[in]  index  The index of the adjoint value that receives the update.
        * @param[in] jacobi  The jacobi value that is multiplied with the lhs adjoint.
        */
-      void updateJacobiAdjoint(const int index, Real jacobi) {
-        adjointVector[index] += jacobi * lhs;
+      void updateJacobiAdjoint(const GradientData index, Real jacobi) {
+        adjointVector[arrayAccess(index)] += jacobi * lhs;
       }
 
       /**
@@ -401,8 +403,8 @@ namespace codi {
        *
        * @param[in] index  The index of the tangent value that is set to the current accumulated value.
        */
-      void setLhsTangent(const int index) {
-        adjointVector[index] = lhs;
+      void setLhsTangent(const GradientData index) {
+        adjointVector[arrayAccess(index)] = lhs;
         lhs = Direction<RealDir, vecDim>();
       }
 
@@ -414,8 +416,8 @@ namespace codi {
        * @param[in]  index  The index of the tangent value that is used for the update.
        * @param[in] jacobi  The jacobi value that is multiplied with the tangnet value defined by index.
        */
-      void updateJacobiTangent(const int index, Real jacobi) {
-        lhs +=  jacobi * adjointVector[index];
+      void updateJacobiTangent(const GradientData index, Real jacobi) {
+        lhs +=  jacobi * adjointVector[arrayAccess(index)];
       }
   };
 
@@ -423,11 +425,12 @@ namespace codi {
    * @brief The implementation for tapes that do not require a primal value reset.
    *
    * @tparam          Real  The primal value of the CoDiPack type.
+   * @tparam  GradientData  The identifier the CoDiPack type.
    * @tparam GradientValue  The adjoint value for the current evaluation. This type needs to support additions and
    *                        multiplications.
    */
-  template<typename Real, typename GradientValue>
-  struct AdjointInterfaceImpl final : public AdjointInterfaceImplBase<Real, GradientValue> {
+  template<typename Real, typename GradientData, typename GradientValue>
+  struct AdjointInterfaceImpl final : public AdjointInterfaceImplBase<Real, GradientData, GradientValue> {
 
       /**
        * @brief Create a new instance.
@@ -437,7 +440,7 @@ namespace codi {
        * @param[in] adjointVector  The adjoint vector on which all the operations are evaluated.
        */
       explicit AdjointInterfaceImpl(GradientValue* adjointVector) :
-        AdjointInterfaceImplBase<Real, GradientValue>(adjointVector) {}
+        AdjointInterfaceImplBase<Real, GradientData, GradientValue>(adjointVector) {}
 
       /**
        * @brief Some tapes need to revert the primal values in the primal value vector to the old value
@@ -449,7 +452,7 @@ namespace codi {
        * @param[in]  index  The index of the primal value that needs to be reverted.
        * @param[in] primal  The primal value that is set.
        */
-      virtual void resetPrimal(const int index, Real primal) {
+      virtual void resetPrimal(const GradientData index, Real primal) {
         CODI_UNUSED(index);
         CODI_UNUSED(primal);
 
@@ -461,11 +464,12 @@ namespace codi {
    * @brief The implementation for tapes that require a primal value reset.
    *
    * @tparam          Real  The primal value of the CoDiPack type.
+   * @tparam  GradientData  The identifier the CoDiPack type.
    * @tparam GradientValue  The adjoint value for the current evaluation. This type needs to support additions and
    *                        multiplications.
    */
-  template<typename Real, typename GradientValue>
-  struct AdjointInterfacePrimalImpl final : public AdjointInterfaceImplBase<Real, GradientValue> {
+  template<typename Real, typename GradientData, typename GradientValue>
+  struct AdjointInterfacePrimalImpl final : public AdjointInterfaceImplBase<Real, GradientData, GradientValue> {
 
       Real* primalVector; /**< The vector for the primal values */
 
@@ -479,7 +483,7 @@ namespace codi {
        * @param[in]  primalVector  The primal vector on which the primal reset is done.
        */
       explicit AdjointInterfacePrimalImpl(GradientValue* adjointVector, Real* primalVector) :
-        AdjointInterfaceImplBase<Real, GradientValue>(adjointVector),
+        AdjointInterfaceImplBase<Real, GradientData, GradientValue>(adjointVector),
         primalVector(primalVector) {}
 
       /**
@@ -492,7 +496,7 @@ namespace codi {
        * @param[in]  index  The index of the primal value that needs to be reverted.
        * @param[in] primal  The primal value that is set.
        */
-      virtual void resetPrimal(const int index, Real primal) {
+      virtual void resetPrimal(const GradientData index, Real primal) {
         primalVector[index] = primal;
       }
   };

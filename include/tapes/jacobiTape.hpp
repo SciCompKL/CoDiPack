@@ -353,7 +353,7 @@ namespace codi {
       };
       auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 
-      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+      AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
 
       evaluateExtFunc(start, end, reverseFunc, jacobiVector, &interface, evalFunc, adjointData);
     }
@@ -418,7 +418,7 @@ namespace codi {
       };
       auto forwardFunc = &JacobiVector::template evaluateForward<decltype(evalFunc), AdjointData*&>;
 
-      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+      AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
 
       evaluateExtFuncForward(start, end, forwardFunc, jacobiVector, &interface, evalFunc, adjointData);
     }

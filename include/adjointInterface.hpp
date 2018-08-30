@@ -38,8 +38,9 @@ namespace codi {
   /**
    *
    * @tparam Real  The floating point type that is used in the tape for the computation.
+   * @tparam Index The identifier that is used in the tape for the identification of variables.
    */
-  template<typename Real>
+  template<typename Real, typename Index>
   struct AdjointInterface {
 
       /**
@@ -59,13 +60,13 @@ namespace codi {
        * @param[in] index  The position for the adjoint.
        * @param[in]   dim  The dimension in the vector.
        */
-      virtual void resetAdjoint(const int index, const size_t dim) = 0;
+      virtual void resetAdjoint(const Index index, const size_t dim) = 0;
 
       /**
        * @brief Set the adjoint vector at the position to zero.
        * @param[in] index  The position for the adjoint.
        */
-      virtual void resetAdjointVec(const int index) = 0;
+      virtual void resetAdjointVec(const Index index) = 0;
 
       /**
        * @brief Get the adjoint value at the specified position and dimension.
@@ -78,7 +79,7 @@ namespace codi {
        * @param[in]   dim  The dimension in the vector.
        * @return The adjoint value at the position with the dimension.
        */
-      virtual Real getAdjoint(const int index, const size_t dim) = 0;
+      virtual Real getAdjoint(const Index index, const size_t dim) = 0;
 
       /**
        * @brief Get the adjoint vector at the specified position.
@@ -94,7 +95,7 @@ namespace codi {
        * @param[in] index  The position for the adjoint
        * @param[out]  vec  The vector for the storage of the data.
        */
-      virtual void getAdjointVec(const int index, Real* vec) = 0;
+      virtual void getAdjointVec(const Index index, Real* vec) = 0;
 
       /**
        * @brief Update the adjoint value at the specified position and dimension.
@@ -107,7 +108,7 @@ namespace codi {
        * @param[in]     dim  The dimension in the vector.
        * @param[in] adjoint  The update for the adjoint value.
        */
-      virtual void updateAdjoint(const int index, const size_t dim, const Real adjoint) = 0;
+      virtual void updateAdjoint(const Index index, const size_t dim, const Real adjoint) = 0;
 
       /**
        * @brief Update the adjoint vector at the specified position.
@@ -123,7 +124,7 @@ namespace codi {
        * @param[in]   index  The position for the adjoint
        * @param[in]     vec  The update for the adjoint vector.
        */
-      virtual void updateAdjointVec(const int index, const Real* vec) = 0;
+      virtual void updateAdjointVec(const Index index, const Real* vec) = 0;
 
       /**
        * @brief The adjoint target for the adjoint of the left hand side of an equation.
@@ -144,7 +145,7 @@ namespace codi {
        *
        * @param[in] index  The index of the adjoint value that is stored and reset to zero.
        */
-      virtual void setLhsAdjoint(const int index) = 0;
+      virtual void setLhsAdjoint(const Index index) = 0;
 
       /**
        * @brief Updates the target adjoint with the prior specified lhs multiplied with the jacobi.
@@ -154,7 +155,7 @@ namespace codi {
        * @param[in]  index  The index of the adjoint value that receives the update.
        * @param[in] jacobi  The jacobi value that is multiplied with the lhs adjoint.
        */
-      virtual void updateJacobiAdjoint(const int index, Real jacobi) = 0;
+      virtual void updateJacobiAdjoint(const Index index, Real jacobi) = 0;
 
       /**
        * @brief The tangent target for the tangent of the left hand side of an equation.
@@ -173,7 +174,7 @@ namespace codi {
        *
        * @param[in] index  The index of the tangent value that is set to the current accumulated value.
        */
-      virtual void setLhsTangent(const int index) = 0;
+      virtual void setLhsTangent(const Index index) = 0;
 
       /**
        * @brief Updates the lhs tangent with the jacobian multiplied with target tangent value.
@@ -183,7 +184,7 @@ namespace codi {
        * @param[in]  index  The index of the tangent value that is used for the update.
        * @param[in] jacobi  The jacobi value that is multiplied with the tangnet value defined by index.
        */
-      virtual void updateJacobiTangent(const int index, Real jacobi) = 0;
+      virtual void updateJacobiTangent(const Index index, Real jacobi) = 0;
 
       /**
        * @brief Some tapes need to revert the primal values in the primal value vector to the old value
@@ -195,6 +196,6 @@ namespace codi {
        * @param[in]  index  The index of the primal value that needs to be reverted.
        * @param[in] primal  The primal value that is set.
        */
-      virtual void resetPrimal(const int index, Real primal) = 0;
+      virtual void resetPrimal(const Index index, Real primal) = 0;
   };
 }

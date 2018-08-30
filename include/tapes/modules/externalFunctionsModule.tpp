@@ -132,7 +132,7 @@
        */
       template<typename ... Args>
       CODI_INLINE void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
-                        AdjointInterface<Real>* adjointInterface, Args&&... args) {
+                        AdjointInterface<Real, Index>* adjointInterface, Args&&... args) {
         // always evaluate the stack to the point of the external function
 
         (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
@@ -324,7 +324,7 @@
      */
     template<typename Function, typename Obj, typename ... Args>
     CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,
-                                     Obj& obj, AdjointInterface<Real>* adjointInterface, Args&&... args){
+                                     Obj& obj, AdjointInterface<Real, Index>* adjointInterface, Args&&... args){
       ExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
 
       extFuncVector.forEachReverse(start, end, evaluator, adjointInterface, std::forward<Args>(args)...);
@@ -353,7 +353,7 @@
      */
     template<typename Function, typename Obj, typename ... Args>
     void evaluateExtFuncForward(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,
-                                Obj& obj, AdjointInterface<Real>* adjointInterface, Args&&... args){
+                                Obj& obj, AdjointInterface<Real, Index>* adjointInterface, Args&&... args){
       CODI_UNUSED(adjointInterface);
 
       if(start.chunk != end.chunk || start.data != end.data) {

@@ -498,11 +498,11 @@ namespace codi {
         std::swap(primals, primalsCopy);
       }
 
-      AdjointInterfacePrimalImpl<Real, AdjointData> interface(adjointData, primalsCopy);
+      AdjointInterfacePrimalImpl<Real, Index, AdjointData> interface(adjointData, primalsCopy);
 
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      typedef AdjointInterfacePrimalImpl<Real, AdjointData> AdjVecType;
+      typedef AdjointInterfacePrimalImpl<Real, Index, AdjointData> AdjVecType;
       AdjVecType* adjVec = &interface;
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
@@ -575,11 +575,11 @@ namespace codi {
         std::swap(primals, primalsCopy);
       }
 
-      AdjointInterfacePrimalImpl<Real, AdjointData> interface(adjointData, primalsCopy);
+      AdjointInterfacePrimalImpl<Real, Index, AdjointData> interface(adjointData, primalsCopy);
 
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-      typedef AdjointInterfacePrimalImpl<Real, AdjointData> AdjVecType;
+      typedef AdjointInterfacePrimalImpl<Real, Index, AdjointData> AdjVecType;
       AdjVecType* adjVec = &interface;
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
