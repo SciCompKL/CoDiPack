@@ -119,7 +119,7 @@ namespace codi {
        * @param[in] reserveIndices  The number of indices that are reserved and not used by the manager.
        */
       ReuseIndexHandler(const Index reserveIndices) :
-        globalMaximumIndex(reserveIndices),
+        globalMaximumIndex(reserveIndices + 1),
         usedIndices(),
         usedIndicesPos(0),
         unusedIndices(),
