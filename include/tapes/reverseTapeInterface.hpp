@@ -60,6 +60,8 @@ namespace codi {
   class ReverseTapeInterface : public TapeInterface<Real, GradientDataType, GradientValueType> {
   public:
 
+    template<typename Adjoint>
+    void evaluate(const Position& start, const Position& end, Adjoint* data);
     /**
      * @brief Evaluate the tape from start to end.
      *
@@ -109,6 +111,8 @@ namespace codi {
      * @param[in]   end The ending position for the reverse evaluation.
      */
     virtual void evaluatePreacc(const Position& start, const Position& end) = 0;
+
+    virtual size_t getAdjointSize() const = 0;
 
     /**
      * @brief Declare a variable as an input variable.
@@ -166,6 +170,8 @@ namespace codi {
     */
     virtual void clearAdjoints() = 0;
 
+    virtual void deleteAdjointVector() = 0;
+
     /**
      * @brief Reset the tape to the given position.
      *
@@ -201,6 +207,9 @@ namespace codi {
      * @return The initial position of the tape.
      */
     virtual Position getZeroPosition() const = 0;
+
+    virtual GradientDataType getPassiveIndex() const = 0;
+    virtual GradientDataType getInvalidIndex() const = 0;
 
     /**
      * @brief Print some statistics about the currently stored information.

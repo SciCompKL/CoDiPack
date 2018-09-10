@@ -119,7 +119,7 @@ namespace codi {
        * @param[in] reserveIndices  The number of indices that are reserved and not used by the manager.
        */
       ReuseIndexHandler(const Index reserveIndices) :
-        globalMaximumIndex(reserveIndices),
+        globalMaximumIndex(reserveIndices + 1),
         usedIndices(),
         usedIndicesPos(0),
         unusedIndices(),
@@ -258,7 +258,11 @@ namespace codi {
         usedIndicesPos = 0;
 
         if(OptSortIndicesOnReset) {
-          std::sort(unusedIndices.begin(), unusedIndices.end());
+          if(totalSize == unusedIndices.size()) {
+            std::sort(unusedIndices.begin(), unusedIndices.end());
+          } else {
+            std::sort(&unusedIndices[0], &unusedIndices[unusedIndicesPos]);
+          }
         }
       }
 

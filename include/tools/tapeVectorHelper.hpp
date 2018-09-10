@@ -121,7 +121,7 @@ namespace codi {
        *
        * @return A general interface to the adjoint vector.
        */
-      virtual AdjointInterface<Real>* getAdjointInterface() = 0;
+      virtual AdjointInterface<Real, GradientData>* getAdjointInterface() = 0;
   };
 
   /**
@@ -243,7 +243,7 @@ namespace codi {
       GradientValue zeroValue; /**< Helper value for out of bounds access */
       const GradientValue constZeroValue; /**< Helper value for out of bounds access */
 
-      AdjointInterfaceImpl<Real, GradientValue>* adjointInterface; /**< General access to the adjoint vector for the generalized interface. */
+      AdjointInterfaceImpl<Real, GradientData, GradientValue>* adjointInterface; /**< General access to the adjoint vector for the generalized interface. */
 
       /**
        * @brief Create a new instance which uses the global tape as the default tape in the background.
@@ -304,7 +304,7 @@ namespace codi {
        * @return The gradient value from the internal adjoint vector.
        */
       GradientValue& gradientAt(const GradientData& value) {
-        return adjointVector[value];
+        return adjointVector[arrayAccess(value)];
       }
 
       /**
@@ -317,7 +317,7 @@ namespace codi {
        * @return The gradient value from the internal adjoint vector.
        */
       const GradientValue& gradientAt(const GradientData& value) const {
-        return adjointVector[value];
+        return adjointVector[arrayAccess(value)];
       }
 
       /**
@@ -331,7 +331,7 @@ namespace codi {
         checkAdjointVectorSize();
 
         if(0 != value && value < (GradientData)adjointVector.size()) {
-          return adjointVector[value];
+          return adjointVector[arrayAccess(value)];
         } else {
           zeroValue = GradientValue();
           return zeroValue;
@@ -347,7 +347,7 @@ namespace codi {
        */
       const GradientValue& gradient(const GradientData& value) const {
         if(0 != value && value < (GradientData)adjointVector.size()) {
-          return adjointVector[value];
+          return adjointVector[arrayAccess(value)];
         } else {
           return constZeroValue;
         }
@@ -374,7 +374,7 @@ namespace codi {
        */
       void clearAdjoints() {
         for(size_t i = 0; i < adjointVector.size(); i += 1) {
-          adjointVector[i] = GradientValue();
+          adjointVector[arrayAccess(i)] = GradientValue();
         }
       }
 
@@ -385,13 +385,13 @@ namespace codi {
        *
        * @return A general interface to the adjoint vector.
        */
-      AdjointInterface<Real>* getAdjointInterface() {
+      AdjointInterface<Real, GradientData>* getAdjointInterface() {
         if(nullptr != adjointInterface) {
           delete adjointInterface;
         }
 
         checkAdjointVectorSize();
-        adjointInterface = new AdjointInterfaceImpl<Real, GradientValue> (adjointVector.data());
+        adjointInterface = new AdjointInterfaceImpl<Real, GradientData, GradientValue> (adjointVector.data());
         return adjointInterface;
       }
 

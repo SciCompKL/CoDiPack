@@ -160,8 +160,9 @@
           Real* jacobies = NULL;
           Index* rhsIndices = NULL;
 
-          auto pos = JACOBI_VECTOR_NAME.getPosition();
-          JACOBI_VECTOR_NAME.getDataAtPosition(pos.chunk, startSize, jacobies, rhsIndices);
+          JACOBI_VECTOR_NAME.getDataPointer(jacobies, rhsIndices);
+          jacobies -= activeVariables;
+          rhsIndices -= activeVariables;
 
           handleAdjointOperation(rhs.getValue(), lhsIndex, jacobies, rhsIndices, activeVariables);
 #endif

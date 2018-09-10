@@ -157,7 +157,7 @@ namespace codi {
      * If a custiom adjoint vector is used in the tape evaluation, then this
      * interface needs to be used.
      */
-    typedef void (*CallFunction)(Tape*, Data*, AdjointInterface<typename Tape::Real>*);
+    typedef void (*CallFunction)(Tape*, Data*, AdjointInterface<typename Tape::Real, typename Tape::Index>*);
     /**
      * @brief Definition for the delete function of the user data.
      *
@@ -199,7 +199,7 @@ namespace codi {
      */
     static void callFunction(void* tape, void* data, void* ra) {
       ExternalFunctionDataHelper<Tape, Data>* castData = cast(data);
-      castData->func((Tape*)tape, castData->data, (AdjointInterface<typename Tape::Real>*)ra);
+      castData->func((Tape*)tape, castData->data, (AdjointInterface<typename Tape::Real, typename Tape::Index>*)ra);
     }
 
     /**

@@ -247,10 +247,10 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
-      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+      AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        typedef AdjointInterfaceImpl<Real, AdjointData> AdjVecType;
+        typedef AdjointInterfaceImpl<Real, Index, AdjointData> AdjVecType;
         AdjVecType* adjVec = &interface;
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,
@@ -291,10 +291,10 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
-      AdjointInterfaceImpl<Real, AdjointData> interface(adjointData);
+      AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        typedef AdjointInterfaceImpl<Real, AdjointData> AdjVecType;
+        typedef AdjointInterfaceImpl<Real, Index, AdjointData> AdjVecType;
         AdjVecType* adjVec = &interface;
 #else
       static_assert(std::is_same<AdjointData, GradientValue>::value,

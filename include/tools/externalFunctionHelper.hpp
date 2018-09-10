@@ -106,7 +106,7 @@ namespace codi {
       static void evalRevFuncStatic(void* t, void* d, void* ra) {
         ExternalFunctionData<CoDiType>* data = (ExternalFunctionData<CoDiType>*)d;
 
-        data->evalRevFunc((Tape*)t, (AdjointInterface<Real>*)ra);
+        data->evalRevFunc((Tape*)t, (AdjointInterface<Real, GradientData>*)ra);
       }
 
       /**
@@ -120,7 +120,7 @@ namespace codi {
        * @param[in,out]  t  The tape which evaluates this function.
        * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
        */
-      void evalRevFunc(Tape* t, AdjointInterface<Real>* ra) {
+      void evalRevFunc(Tape* t, AdjointInterface<Real, GradientData>* ra) {
         CODI_UNUSED(t);
 
         Real* x_b = new Real[inputIndices.size()];
