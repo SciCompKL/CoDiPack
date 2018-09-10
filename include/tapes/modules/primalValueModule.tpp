@@ -54,6 +54,9 @@
 #ifndef CHILD_VECTOR_TYPE
   #error Please define the type of the child vector
 #endif
+#ifndef PASSIVE_VECTOR_TYPE
+  #error Please define the name of the constant value vector type.
+#endif
 #ifndef CONSTANT_VECTOR_TYPE
   #error Please define the name of the constant value vector type.
 #endif
@@ -96,6 +99,15 @@
     typedef typename IndexVector::Position IndexPosition;
     /** @brief The data for the indices of each statements. */
     IndexVector indexVector;
+
+    /** @brief The vector for the passive data. */
+    typedef PASSIVE_VECTOR_TYPE PassiveValueVector;
+    /** @brief The data for the passives*/
+    typedef typename PassiveValueVector::ChunkType PassiveValueChunk;
+    /** @brief The position type of the passive data. */
+    typedef typename PassiveValueVector::Position PassiveValuePosition;
+    /** @brief The data for the passive values of each statements. */
+    PassiveValueVector passiveValueVector;
 
     /** @brief The vector for the constant data. */
     typedef CONSTANT_VECTOR_TYPE ConstantValueVector;
@@ -213,7 +225,7 @@
       if(0 == pushIndex) {
         *passiveVariableCount += 1;
         pushIndex = *passiveVariableCount;
-        constantValueVector.setDataAndMove(value);
+        passiveValueVector.setDataAndMove(value);
       }
 
       indexVector.setDataAndMove(pushIndex);
@@ -248,20 +260,22 @@
                                                  const StatementInt& passiveActives,
                                                  size_t& indexPos,
                                                  Index* &indices,
+                                                 size_t& passivePos,
+                                                 Real* &passives,
                                                  size_t& constantPos,
                                                  PassiveReal* &constants,
                                                  Real* primalVector) {
 
-      size_t tempConstantPos = constantPos + constSize;
       // first restore the primal values of the passive indices
       for(StatementInt i = 0; i < passiveActives; ++i) {
-        primalVector[i + 1] = constants[tempConstantPos + i];
+        primalVector[i + 1] = passives[passivePos + i];
       }
 
       Real result = funcObj(codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector);
 
       indexPos += varSize;
-      constantPos += constSize + passiveActives;
+      constantPos += constSize;
+      passivePos += passiveActives;
 
       return result;
     }
@@ -285,11 +299,13 @@
     static CODI_INLINE Real curryEvaluatePrimalHandle(const StatementInt& passiveActives,
                                                       size_t& indexPos,
                                                       Index* &indices,
+                                                      size_t& passivePos,
+                                                      Real* &passives,
                                                       size_t& constantPos,
                                                       PassiveReal* &constants,
                                                       Real* primalVector) {
       return evaluatePrimalHandle(Expr::template getValue<Index, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
-                                  passiveActives, indexPos, indices, constantPos, constants, primalVector);
+                                  passiveActives, indexPos, indices, passivePos, passives, constantPos, constants, primalVector);
     }
 
     /**
@@ -320,14 +336,16 @@
                                            const StatementInt& passiveActives,
                                            size_t& indexPos,
                                            Index* &indices,
+                                           size_t& passivePos,
+                                           Real* &passives,
                                            size_t& constantPos,
                                            PassiveReal* &constants,
                                            Real* primalVector,
                                            PRIMAL_ADJOINT_TYPE* adjoints) {
       // first restore the primal values of the passive indices
-      constantPos -= passiveActives;
+      passivePos -= passiveActives;
       for(StatementInt i = 0; i < passiveActives; ++i) {
-        primalVector[i + 1] = constants[constantPos + i];
+        primalVector[i + 1] = passives[passivePos + i];
       }
 
       // now update the regular pointers
@@ -360,12 +378,14 @@
                                                 const StatementInt& passiveActives,
                                                 size_t& indexPos,
                                                 Index* &indices,
+                                                size_t& passivePos,
+                                                Real* &passives,
                                                 size_t& constantPos,
                                                 PassiveReal* &constants,
                                                 Real* primalVector,
                                                 PRIMAL_ADJOINT_TYPE* adjoints) {
       evaluateHandle(Expr::template evalAdjoint<Index, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
-                     adj, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
+                     adj, passiveActives, indexPos, indices, passivePos, passives, constantPos, constants, primalVector, adjoints);
     }
 
     /**
@@ -398,21 +418,23 @@
                                                   const StatementInt& passiveActives,
                                                   size_t& indexPos,
                                                   Index* &indices,
+                                                  size_t& passivePos,
+                                                  Real* &passives,
                                                   size_t& constantPos,
                                                   PassiveReal* &constants,
                                                   Real* primalVector,
                                                   PRIMAL_ADJOINT_TYPE* adjoints) {
 
-      size_t tempConstantPos = constantPos + constSize;
       // first restore the primal values of the passive indices
       for(StatementInt i = 0; i < passiveActives; ++i) {
-        primalVector[i + 1] = constants[tempConstantPos + i];
+        primalVector[i + 1] = passives[passivePos + i];
       }
 
       Real result = funcObj(adj, lhsAdjoint, codi::addressof(indices[indexPos]), codi::addressof(constants[constantPos]), primalVector, adjoints);
 
       indexPos += varSize;
-      constantPos += constSize + passiveActives;
+      constantPos += constSize;
+      passivePos += passiveActives;
 
       return result;
     }
@@ -441,12 +463,14 @@
                                                        const StatementInt& passiveActives,
                                                        size_t& indexPos,
                                                        Index* &indices,
+                                                       size_t& passivePos,
+                                                       Real* &passives,
                                                        size_t& constantPos,
                                                        PassiveReal* &constants,
                                                        Real* primalVector,
                                                        PRIMAL_ADJOINT_TYPE* adjoints) {
       return evaluateForwardHandle(Expr::template evalTangent<Index, GradientValue, 0, 0>, ExpressionTraits<Expr>::maxActiveVariables, ExpressionTraits<Expr>::maxConstantVariables,
-                                  adj, lhsAdjoint, passiveActives, indexPos, indices, constantPos, constants, primalVector, adjoints);
+                                  adj, lhsAdjoint, passiveActives, indexPos, indices, passivePos, passives, constantPos, constants, primalVector, adjoints);
     }
 
     /**

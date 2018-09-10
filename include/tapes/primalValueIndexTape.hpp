@@ -84,9 +84,14 @@ namespace codi {
     typedef DataVector<IndexChunk, StatementVector> IndexVector;
 
     /** @brief The data for the constant values of each statement */
+    typedef Chunk1< Real> PassiveValueChunk;
+    /** @brief The chunk vector for the constant data. */
+    typedef DataVector<PassiveValueChunk, IndexVector> PassiveValueVector;
+
+    /** @brief The data for the constant values of each statement */
     typedef Chunk1< PassiveReal> ConstantValueChunk;
     /** @brief The chunk vector for the constant data. */
-    typedef DataVector<ConstantValueChunk, IndexVector> ConstantValueVector;
+    typedef DataVector<ConstantValueChunk, PassiveValueVector> ConstantValueVector;
 
     /** @brief The data for the external functions. */
     typedef Chunk2<ExternalFunction,typename ConstantValueVector::Position> ExternalFunctionChunk;
@@ -159,6 +164,7 @@ namespace codi {
     #define CHILD_VECTOR_TYPE EmptyChunkVector
     #define STMT_VECTOR_TYPE typename TapeTypes::StatementVector
     #define INDEX_VECTOR_TYPE typename TapeTypes::IndexVector
+    #define PASSIVE_VECTOR_TYPE typename TapeTypes::PassiveValueVector
     #define CONSTANT_VECTOR_TYPE typename TapeTypes::ConstantValueVector
     #include "modules/primalValueModule.tpp"
 
@@ -189,7 +195,8 @@ namespace codi {
       /* defined in tapeBaseModule */active(false),
       /* defined in the primalValueModule */stmtVector(DefaultChunkSize, &emptyVector),
       /* defined in the primalValueModule */indexVector(DefaultChunkSize, &stmtVector),
-      /* defined in the primalValueModule */constantValueVector(DefaultChunkSize, &indexVector),
+      /* defined in the primalValueModule */passiveValueVector(DefaultChunkSize, &indexVector),
+      /* defined in the primalValueModule */constantValueVector(DefaultChunkSize, &passiveValueVector),
       /* defined in the primalValueModule */primals(NULL),
       /* defined in the primalValueModule */primalsSize(0),
       /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
@@ -248,7 +255,7 @@ namespace codi {
         };
 
 
-        stmtVector.forEachReverse(start.inner.inner.inner, end.inner.inner.inner, clearFunc);
+        stmtVector.forEachReverse(start.inner.inner.inner.inner, end.inner.inner.inner.inner, clearFunc);
       }
     }
 
@@ -359,17 +366,19 @@ namespace codi {
      */
     CODI_INLINE void evaluateStackPrimal(Real* primalVector,
                                          size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                         size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                          size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                                          size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
                                          Handle* &statements, StatementInt* &passiveActiveReal) {
       CODI_UNUSED(endConstantPos);
+      CODI_UNUSED(endPassivePos);
       CODI_UNUSED(endIndexPos);
 
       while(stmtPos < endStmtPos) {
         const Index& lhsIndex = lhsIndices[stmtPos];
 
         storedPrimals[stmtPos] = primalVector[lhsIndex];
-        primalVector[lhsIndex] = HandleFactory::template callPrimalHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector);
+        primalVector[lhsIndex] = HandleFactory::template callPrimalHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalVector);
         stmtPos += 1;
       }
     }
@@ -399,10 +408,12 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateStackReverse(AdjointData* adjointData, Real* primalVector,
                                           size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                          size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                                           size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
                                           Handle* &statements, StatementInt* &passiveActiveReal) {
       CODI_UNUSED(endConstantPos);
+      CODI_UNUSED(endPassivePos);
       CODI_UNUSED(endIndexPos);
 
       while(stmtPos > endStmtPos) {
@@ -414,12 +425,12 @@ namespace codi {
           adjointData->setLhsAdjoint(lhsIndex);
           adjointData->resetAdjointVec(lhsIndex);
 
-          HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjointData);
+          HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalVector, adjointData);
 #else
           const GradientValue adj = adjointData[lhsIndex];
           adjointData[lhsIndex] = GradientValue();
 
-          HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjointData);
+          HandleFactory::template callHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalVector, adjointData);
 #endif
       }
     }
@@ -449,11 +460,13 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateStackForward(AdjointData* adjointData, Real* primalVector,
                                           size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                          size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                                           size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
                                           Handle* &statements, StatementInt* &passiveActiveReal) {
       CODI_UNUSED(storedPrimals); // Stored primal are only used in the reverse evaluation
       CODI_UNUSED(endConstantPos);
+      CODI_UNUSED(endPassivePos);
       CODI_UNUSED(endIndexPos);
 
       while(stmtPos < endStmtPos) {
@@ -461,7 +474,7 @@ namespace codi {
 
         GradientValue lhsAdj = GradientValue();
 
-        primalVector[lhsIndex] = HandleFactory::template callForwardHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primalVector, adjointData);
+        primalVector[lhsIndex] = HandleFactory::template callForwardHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalVector, adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
         adjointData->setLhsTangent(stmtPos); /* Resets the lhs tangent, too */
@@ -515,10 +528,11 @@ namespace codi {
 
       auto evalFunc = [this] (AdjVecType* adjointData, Real* primalVector,
                               size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                               size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                               size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
                                 Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackReverse<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
+        evaluateStackReverse<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
                                      statements, passiveActiveReal);
       };
@@ -592,10 +606,11 @@ namespace codi {
 
       auto evalFunc = [this] (AdjVecType* adjointData, Real* primalVector,
                               size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                               size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                               size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
                                 Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackForward<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants,
+        evaluateStackForward<AdjVecType>(adjointData, primalVector, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
                                      statements, passiveActiveReal);
       };
@@ -647,7 +662,7 @@ namespace codi {
 
         StmtPosition stmtEnd = stmtVector.getPosition();
 
-        stmtVector.forEachReverse(stmtEnd, pos.inner.inner.inner, resetFunc);
+        stmtVector.forEachReverse(stmtEnd, pos.inner.inner.inner.inner, resetFunc);
       }
     }
 
@@ -687,10 +702,11 @@ namespace codi {
 
       auto primalFunc = [this] (Real* primalVector,
                                 size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                 size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                                 size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
                                   Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackPrimal(primalVector, constantPos, endConstantPos, constants,
+        evaluateStackPrimal(primalVector, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
                             indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
                             statements, passiveActiveReal);
       };

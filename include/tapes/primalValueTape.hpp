@@ -73,22 +73,27 @@ namespace codi {
     /** @brief The data for each statement. */
     typedef Chunk2<Handle, StatementInt> StatementChunk;
       /** @brief The chunk vector for the statement data. */
-    typedef ChunkVector<StatementChunk, IndexHandler> StatementVector;
+    typedef DataVector<StatementChunk, IndexHandler> StatementVector;
 
     /** @brief The data for the indices of each statement */
     typedef Chunk1< Index> IndexChunk;
     /** @brief The chunk vector for the index data. */
-    typedef ChunkVector<IndexChunk, StatementVector> IndexVector;
+    typedef DataVector<IndexChunk, StatementVector> IndexVector;
+
+    /** @brief The data for the constant values of each statement */
+    typedef Chunk1< Real> PassiveValueChunk;
+    /** @brief The chunk vector for the constant data. */
+    typedef DataVector<PassiveValueChunk, IndexVector> PassiveValueVector;
 
     /** @brief The data for the constant values of each statement */
     typedef Chunk1< PassiveReal> ConstantValueChunk;
     /** @brief The chunk vector for the constant data. */
-    typedef ChunkVector<ConstantValueChunk, IndexVector> ConstantValueVector;
+    typedef DataVector<ConstantValueChunk, PassiveValueVector> ConstantValueVector;
 
     /** @brief The data for the external functions. */
     typedef Chunk2<ExternalFunction,typename ConstantValueVector::Position> ExternalFunctionChunk;
     /** @brief The chunk vector for the external  function data. */
-    typedef ChunkVector<ExternalFunctionChunk, ConstantValueVector> ExternalFunctionVector;
+    typedef DataVector<ExternalFunctionChunk, ConstantValueVector> ExternalFunctionVector;
 
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
@@ -153,6 +158,7 @@ namespace codi {
     #define CHILD_VECTOR_TYPE EmptyChunkVector
     #define STMT_VECTOR_TYPE typename TapeTypes::StatementVector
     #define INDEX_VECTOR_TYPE typename TapeTypes::IndexVector
+    #define PASSIVE_VECTOR_TYPE typename TapeTypes::PassiveValueVector
     #define CONSTANT_VECTOR_TYPE typename TapeTypes::ConstantValueVector
     #include "modules/primalValueModule.tpp"
 
@@ -178,7 +184,8 @@ namespace codi {
       /* defined in tapeBaseModule */active(false),
       /* defined in the primalValueModule */stmtVector(DefaultChunkSize, &indexHandler),
       /* defined in the primalValueModule */indexVector(DefaultChunkSize, &stmtVector),
-      /* defined in the primalValueModule */constantValueVector(DefaultChunkSize, &indexVector),
+      /* defined in the primalValueModule */passiveValueVector(DefaultChunkSize, &indexVector),
+      /* defined in the primalValueModule */constantValueVector(DefaultChunkSize, &passiveValueVector),
       /* defined in the primalValueModule */primals(NULL),
       /* defined in the primalValueModule */primalsSize(0),
       /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
@@ -216,8 +223,8 @@ namespace codi {
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end) {
 
-      Index startPos = min(end.inner.inner.inner.inner, adjointsSize - 1);
-      Index endPos = min(start.inner.inner.inner.inner, adjointsSize - 1);
+      Index startPos = min(end.inner.inner.inner.inner.inner, adjointsSize - 1);
+      Index endPos = min(start.inner.inner.inner.inner.inner, adjointsSize - 1);
 
       for(Index i = startPos + 1; i <= endPos; ++i) {
         adjoints[i] = GradientValue();
@@ -257,10 +264,11 @@ namespace codi {
       auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos,
                               AdjVecType* adjointData,
                               size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                               size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                               size_t& stmtPos, const size_t& endStmtPos,
                                 Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackReverse<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants,
+        evaluateStackReverse<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
       };
       auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType*&>;
@@ -300,10 +308,11 @@ namespace codi {
       auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos,
                               AdjVecType* adjointData,
                               size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                               size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                               size_t& stmtPos, const size_t& endStmtPos,
                                 Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackForward<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants,
+        evaluateStackForward<AdjVecType>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
       };
       auto forwardFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc), AdjVecType*&>;
@@ -408,10 +417,12 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateStackReverse(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
                                           size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
+                                          size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                                           size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
                                           StatementInt* &passiveActiveReal) {
       CODI_UNUSED(endConstPos);
+      CODI_UNUSED(endPassivePos);
       CODI_UNUSED(endIndexPos);
       CODI_UNUSED(endStmtPos);
 
@@ -434,9 +445,9 @@ namespace codi {
 
         if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-          HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjointData);
+          HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primals, adjointData);
 #else
-          HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjointData);
+          HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primals, adjointData);
 #endif
         }
       }
@@ -465,10 +476,12 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateStackForward(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
                                           size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
+                                         size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
                                           size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
                                           StatementInt* &passiveActiveReal) {
       CODI_UNUSED(endConstPos);
+      CODI_UNUSED(endPassivePos);
       CODI_UNUSED(endIndexPos);
       CODI_UNUSED(endStmtPos);
 
@@ -480,7 +493,7 @@ namespace codi {
         GradientValue lhsAdj = GradientValue();
 
         // primal return value is currently not updated here (would be the same)
-        HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, constantPos, constants, primals, adjointData);
+        HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primals, adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
         adjointData->setLhsTangent(adjPos); /* Resets the lhs tangent, too */
