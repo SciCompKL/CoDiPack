@@ -680,6 +680,32 @@ namespace codi {
   public:
 
 
+    CODI_INLINE void evaluatePrimal(const Position& start, const Position& end) {
+
+      resizeAdjointsToIndexSize();
+
+      std::swap(primals, primalsCopy);
+
+      auto primalFunc = [this] (Real* primalVector,
+                                size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                size_t& passivePos, const size_t& endPassivePos, Real* &passives,
+                                size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                  Handle* &statements, StatementInt* &passiveActiveReal) {
+        evaluateStackPrimal(primalVector, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
+                            indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
+                            statements, passiveActiveReal);
+      };
+      auto primalIter = &ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
+      evaluateExtFuncPrimal(end, start, primalIter, constantValueVector, primalFunc, primalsCopy);
+
+      std::swap(primals, primalsCopy);
+    }
+
+    CODI_INLINE void evaluatePrimal() {
+      evaluatePrimal(getZeroPosition(), getPosition());
+    }
+
     /**
      * @brief Specialized evaluate function for the preaccumulation.
      *
@@ -697,23 +723,7 @@ namespace codi {
 
       evaluateInt(start, end, adjoints, false);
 
-      // evaluate int swaps back so we need to swap here again
-      std::swap(primals, primalsCopy);
-
-      auto primalFunc = [this] (Real* primalVector,
-                                size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                                size_t& passivePos, const size_t& endPassivePos, Real* &passives,
-                                size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                                size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                  Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackPrimal(primalVector, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
-                            indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
-                            statements, passiveActiveReal);
-      };
-      auto primalIter = &ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
-      evaluateExtFuncPrimal(end, start, primalIter, constantValueVector, primalFunc, primalsCopy);
-
-      std::swap(primals, primalsCopy);
+      evaluatePrimal(end, start);
     }
 
     /**

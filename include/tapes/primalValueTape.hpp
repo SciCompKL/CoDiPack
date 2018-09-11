@@ -319,6 +319,21 @@ namespace codi {
       evaluateExtFuncForward(start, end, forwardFunc, constantValueVector, &interface, evalFunc, adjVec);
     }
 
+    CODI_INLINE void evaluatePrimalInt(const Position& start, const Position& end) {
+
+
+      auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos,
+                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
+                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                              size_t& stmtPos, const size_t& endStmtPos, Handle* &statements, StatementInt* &passiveActiveReal) {
+        evaluateStackPrimal(startAdjPos, endAdjPos, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
+                            indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
+      };
+      auto primalFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc)>;
+      evaluateExtFuncPrimal(start, end, primalFunc, constantValueVector, evalFunc);
+    }
+
     /**
      * @brief Set the size of the index and statement data and the primal vector.
      * @param[in] dataSize  The new size of the index vector.
@@ -504,6 +519,28 @@ namespace codi {
       }
     }
 
+    CODI_INLINE void evaluateStackPrimal(const size_t& startAdjPos, const size_t& endAdjPos,
+                                          size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
+                                          size_t& passivePos, const size_t& endPassivePos, Real* &passives,
+                                          size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                          size_t& stmtPos, const size_t& endStmtPos, Handle* &statements,
+                                          StatementInt* &passiveActiveReal) {
+      CODI_UNUSED(endConstPos);
+      CODI_UNUSED(endPassivePos);
+      CODI_UNUSED(endIndexPos);
+      CODI_UNUSED(endStmtPos);
+
+      size_t adjPos = startAdjPos;
+
+      while(adjPos < endAdjPos) {
+        adjPos += 1;
+
+        primals[adjPos] = HandleFactory::template callPrimalHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primals);
+
+        stmtPos += 1;
+      }
+    }
+
   public:
 
     /**
@@ -539,6 +576,16 @@ namespace codi {
     CODI_INLINE void evaluateForwardPreacc(const Position& start, const Position& end) {
 
       evaluateForward(start, end);
+    }
+
+    CODI_INLINE void evaluatePrimal(const Position& start, const Position& end) {
+
+      evaluatePrimalInt(start, end);
+    }
+
+    CODI_INLINE void evaluatePrimal() {
+
+      evaluatePrimal(getZeroPosition(), getPosition());
     }
 
     /**

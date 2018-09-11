@@ -483,6 +483,13 @@
       primals[index] = primal;
     }
 
+    Real getPrimalValue(const Index& index) const {
+      return primals[index];
+    }
+
+    Real& primalValue(const Index& index) {
+      return primals[index];
+    }
     private:
 
     /**
