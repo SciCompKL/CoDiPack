@@ -186,7 +186,7 @@ namespace codi {
      *
      * The reset will clear everything the tape has recorded.
      */
-    virtual void reset() = 0;
+    virtual void reset(bool resetAdjoints = true) = 0;
 
     /**
      * @brief Get the current position of the tape.

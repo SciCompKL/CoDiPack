@@ -309,8 +309,11 @@
     /**
      * @brief Reset the tape to its initial state.
      */
-    CODI_INLINE void reset() {
-      clearAdjoints();
+    CODI_INLINE void reset(bool resetAdjoints = true) {
+      if(resetAdjoints) {
+        clearAdjoints();
+      }
+
       INDEX_HANDLER_NAME.reset();
 
       // reset will be done iteratively through the vectors
