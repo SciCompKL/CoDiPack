@@ -184,6 +184,8 @@ namespace codi {
     /** @brief The size of the copied primal vector */
     Index primalsCopySize;
 
+    bool usePrimalCopy;
+
   public:
     /**
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
@@ -202,7 +204,8 @@ namespace codi {
       /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
       /* defined in externalFunctionsModule */extFuncVector(1000, &constantValueVector),
       primalsCopy(NULL),
-      primalsCopySize(0) {}
+      primalsCopySize(0),
+      usePrimalCopy(true) {}
 
     /** @brief Tear down the tape. Delete all values from the modules */
     ~PrimalValueIndexTape() {
@@ -559,9 +562,8 @@ namespace codi {
      */
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
-      evaluateInt(start, end, adjointData, true);
+      evaluateInt(start, end, adjointData, usePrimalCopy);
     }
-
 
     /**
      * @brief The forward evaluation that may create a copy of the primal value vector.
@@ -810,6 +812,14 @@ namespace codi {
           pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
         }
       }
+    }
+
+    CODI_INLINE void setUsePrimalCopy(bool useCopy) {
+      usePrimalCopy = useCopy;
+    }
+
+    CODI_INLINE bool getUsePrimalCopy() {
+      return usePrimalCopy;
     }
 
     /**
