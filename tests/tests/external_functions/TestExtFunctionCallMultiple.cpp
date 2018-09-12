@@ -45,7 +45,7 @@ const int ITER = 5;
 static void extFunc(void* t, void* checkpoint, void* i){
   CODI_UNUSED(t);
 
-  codi::AdjointInterface<typename NUMBER::Real>* ra = (codi::AdjointInterface<typename NUMBER::Real>*)i;
+  codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>* ra = (codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>*)i;
 
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
 

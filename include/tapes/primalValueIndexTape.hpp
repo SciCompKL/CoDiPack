@@ -699,7 +699,7 @@ namespace codi {
                             statements, passiveActiveReal);
       };
       auto primalIter = &ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
-      evaluateExtFuncPrimal(end, start, primalIter, constantValueVector, primalFunc, primalsCopy);
+      evaluateExtFuncPrimal(start, end, primalIter, constantValueVector, primalFunc, primalsCopy);
 
       std::swap(primals, primalsCopy);
     }

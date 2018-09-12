@@ -196,7 +196,7 @@ namespace codi {
      * @tparam constantOffset  The offset for the constant values array
      */
     template<typename Index, size_t offset, size_t constantOffset>
-    static CODI_INLINE const Real& getValue(const Index* indices, const Real* constantValues, const Real* primalValues) {
+    static CODI_INLINE const Real& getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
       return ActiveType::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
     }
 
@@ -219,7 +219,7 @@ namespace codi {
      */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
     static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices,
-                                        const Real* constantValues, const Real* primalValues,
+                                        const PassiveReal* constantValues, const Real* primalValues,
                                         PRIMAL_ADJOINT_TYPE* adjointValues) {
       ActiveType::template evalAdjoint<Index, GradientValue, offset, constantOffset>(seed, indices, constantValues, primalValues, adjointValues);
     }
@@ -244,7 +244,7 @@ namespace codi {
      */
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
     static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices,
-                                        const Real* constantValues, const Real* primalValues,
+                                        const PassiveReal* constantValues, const Real* primalValues,
                                         PRIMAL_ADJOINT_TYPE* adjointValues) {
       return ActiveType::template evalTangent<Index, GradientValue, offset, constantOffset>(seed, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
     }

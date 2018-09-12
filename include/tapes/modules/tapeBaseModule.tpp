@@ -124,7 +124,7 @@
         adjoints[i].~GradientValue();
       }
 
-      adjoints = (GradientValue*)realloc(adjoints, sizeof(GradientValue) * (size_t)adjointsSize);
+      adjoints = (GradientValue*)realloc((void*)adjoints, sizeof(GradientValue) * (size_t)adjointsSize);
 
       if(NULL == adjoints) {
         throw std::bad_alloc();

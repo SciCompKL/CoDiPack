@@ -162,7 +162,7 @@
       Index oldSize = primalsSize;
       primalsSize = size;
 
-      primals = (Real*)realloc(primals, sizeof(Real) * (size_t)primalsSize);
+      primals = (Real*)realloc((void*)primals, sizeof(Real) * (size_t)primalsSize);
 
       for(Index i = oldSize; i < primalsSize; ++i) {
         primals[i] = Real();
@@ -623,7 +623,7 @@
         constantValueVector.reserveItems(size);
         indexVector.reserveItems(size);
 
-        pushStmtData(lhsIndex, lhsValue, preaccHandles[size], 0);
+        pushStmtData(lhsIndex, lhsValue, preaccHandles[size], size);
       }
     }
 
@@ -676,7 +676,7 @@
     CODI_INLINE void pushJacobiManual(const Real& jacobi, const Real& value, const Index& index) {
       CODI_UNUSED(value);
 
-      constantValueVector.setDataAndMove(jacobi);
+      passiveValueVector.setDataAndMove(jacobi);
       indexVector.setDataAndMove(index);
     }
 

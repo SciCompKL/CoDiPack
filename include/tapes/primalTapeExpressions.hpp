@@ -273,12 +273,14 @@ namespace codi {
     template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
     static void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       CODI_UNUSED(primalValues);
+      CODI_UNUSED(constantValues);
+
       for(int i = 0; i < (int)size; ++i) {
         // jacobies are stored in the constant values
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-          adjointValues->updateJacobiAdjoint(indices[i], constantValues[i] * seed);
+          adjointValues->updateJacobiAdjoint(indices[i], primalValues[i + 1] * seed);
 #else
-          adjointValues[indices[i]] += constantValues[i] * seed;
+          adjointValues[indices[i]] += primalValues[i + 1] * seed;
 #endif
       }
     }
@@ -353,6 +355,6 @@ namespace codi {
     /** @brief The preaccumulation expression has the given size of arguments */
     static const size_t maxActiveVariables = size;
     /** @brief The preaccumulation expression stores the Jacobi entries in the constant value stream.*/
-    static const size_t maxConstantVariables = size;
+    static const size_t maxConstantVariables = 0;
   };
 }
