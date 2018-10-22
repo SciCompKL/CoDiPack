@@ -91,59 +91,6 @@
   // ----------------------------------------------------------------------
 
     /**
-     * @brief Function object for the evaluation of the external functions.
-     *
-     * It stores the last position for the statement vector. With this
-     * position it evaluates the statement vector to the position
-     * where the external function was added and then calls the
-     * external function.
-     *
-     * @tparam Function  A function object which is called with the nested start and end positions.
-     * @tparam      Obj  The object on which the function is called.
-     */
-    template<typename Function, typename Obj>
-    struct ExtFuncEvaluator {
-      ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
-
-      const Function& func; /**< The function evaluated before and after each external function call. */
-      Obj& obj; /**< The object on which the function is evaluated. */
-
-      /**
-       * @brief Create the function object.
-       *
-       * @param[in] curInnerPos  The position were the evaluation starts.
-       * @param[in]        func  The function that is evaluated before and after each external function call.
-       * @param[in,out]     obj  The object on which the function is evaluated.
-       */
-      ExtFuncEvaluator(ExtFuncChildPosition curInnerPos, const Function& func, Obj& obj) :
-        curInnerPos(curInnerPos),
-        func(func),
-        obj(obj){}
-
-      /**
-       * @brief The operator evaluates the tape to the position were the next external function was stored and then the function is evaluated
-       *
-       * @param[in]              extFunc  The external function object.
-       * @param[in]          endInnerPos  The position were the external function object was stored.
-       * @param[in,out] adjointInterface  Interface for accessing the adjoint vector for this evaluation.
-       * @param[in,out]             args  The arguments for the evaluation.
-       *
-       * @tparam Args  The types of the other arguments.
-       */
-      template<typename ... Args>
-      CODI_INLINE void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
-                        AdjointInterface<Real, Index>* adjointInterface, Args&&... args) {
-        // always evaluate the stack to the point of the external function
-
-        (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
-
-        extFunc->evaluate(&obj, adjointInterface);
-
-        curInnerPos = *endInnerPos;
-      }
-    };
-
-    /**
      * @brief Function object for the primal evaluation of the external functions.
      *
      * It stores the last position for the statement vector. With this
@@ -325,12 +272,24 @@
     template<typename Function, typename Obj, typename ... Args>
     CODI_INLINE void evaluateExtFunc(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,
                                      Obj& obj, AdjointInterface<Real, Index>* adjointInterface, Args&&... args){
-      ExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
 
-      extFuncVector.forEachReverse(start, end, evaluator, adjointInterface, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
-      (obj.*func)(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
+      ExtFuncChildPosition curInnerPos = start.inner;
+      auto evalFunc = [&] (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
+                           AdjointInterface<Real, GradientData>* adjointInterface, Args&&... args) {
+
+         (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+
+         extFunc->evaluateReverse(&obj, adjointInterface);
+
+         curInnerPos = *endInnerPos;
+
+       };
+       extFuncVector.forEachReverse(start, end, evalFunc, adjointInterface, std::forward<Args>(args)...);
+
+       // Iterate over the reminder also covers the case if there have been no external functions.
+       (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
     }
 
     /**
@@ -354,13 +313,21 @@
     template<typename Function, typename Obj, typename ... Args>
     void evaluateExtFuncForward(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,
                                 Obj& obj, AdjointInterface<Real, Index>* adjointInterface, Args&&... args){
-      CODI_UNUSED(adjointInterface);
+      ExtFuncChildPosition curInnerPos = start.inner;
+      auto evalFunc = [&] (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
+                           AdjointInterface<Real, GradientData>* adjointInterface, Args&&... args) {
 
-      if(start.chunk != end.chunk || start.data != end.data) {
-        CODI_EXCEPTION("Currently no support for forward evaluated external functions.");
-      }
+        (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-      (obj.*func)(start.inner, end.inner, std::forward<Args>(args)...);
+        extFunc->evaluateForward(&obj, adjointInterface);
+
+        curInnerPos = *endInnerPos;
+
+      };
+      extFuncVector.forEachForward(start, end, evalFunc, adjointInterface, std::forward<Args>(args)...);
+
+      // Iterate over the reminder also covers the case if there have been no external functions.
+      (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
     }
 
   public:
@@ -388,9 +355,9 @@
      * @param[in,out] data  The data for the external function. The tape takes ownership over the data.
      * @param[in]  delData  The delete function for the data.
      */
-    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData){
+    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData, ExternalFunction::CallFunction extFuncForward = nullptr){
       ENABLE_CHECK (OptTapeActivity, isActive()){
-        pushExternalFunctionHandle(ExternalFunction(extFunc, data, delData));
+        pushExternalFunctionHandle(ExternalFunction(extFunc, extFuncForward, data, delData));
       }
     }
 
@@ -406,9 +373,9 @@
      * @param[in]  delData  The delete function for the data.
      */
     template<typename Data>
-    void pushExternalFunction(typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::DeleteFunction delData){
+    void pushExternalFunction(typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::DeleteFunction delData, typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFuncForward = nullptr){
       ENABLE_CHECK (OptTapeActivity, isActive()){
-        pushExternalFunctionHandle(ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::createHandle(extFunc, data, delData));
+        pushExternalFunctionHandle(ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::createHandle(extFunc, extFuncForward, data, delData));
       }
     }
 

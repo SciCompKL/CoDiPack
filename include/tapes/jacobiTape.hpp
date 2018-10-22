@@ -389,8 +389,10 @@ namespace codi {
         ++adjPos;
         AdjointData adj = AdjointData();
 
-        incrementTangents(adj, adjointData, statements[stmtPos], dataPos, jacobies, indices);
-        adjointData[adjPos] = adj;
+        if(StatementIntInputTag != statements[stmtPos]) {
+          incrementTangents(adj, adjointData, statements[stmtPos], dataPos, jacobies, indices);
+          adjointData[adjPos] = adj;
+        }
 
         ++stmtPos;
       }

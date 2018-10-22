@@ -76,7 +76,8 @@ namespace codi {
 
   private:
     /** @brief The function given by the user. */
-    CallFunction func;
+    CallFunction funcReverse;
+    CallFunction funcForward;
     /** @brief The delete function for the user data. */
     DeleteFunction deleteCheckpoint;
 
@@ -95,8 +96,9 @@ namespace codi {
      * @param[in,out]         data  The data for the user function.
      * @param[in] deleteCheckpoint  The function which deletes the user data. The function handle can be NULL.
      */
-    ExternalFunction(CallFunction func, void* data, DeleteFunction deleteCheckpoint) :
-      func(func),
+    ExternalFunction(CallFunction funcReverse, CallFunction funcForward, void* data, DeleteFunction deleteCheckpoint) :
+      funcReverse(funcReverse),
+      funcForward(funcForward),
       deleteCheckpoint(deleteCheckpoint),
       data(data){}
 
@@ -120,9 +122,15 @@ namespace codi {
      * @param[in,out] tape  The tape that calls the function.
      * @param[in,out]   ra  The interface to the used adjoint vector.
      */
-    void evaluate(void* tape, void* ra) {
-      if(NULL != func) {
-        func(tape, data, ra);
+    void evaluateReverse(void* tape, void* ra) {
+      if(NULL != funcReverse) {
+        funcReverse(tape, data, ra);
+      }
+    }
+
+    void evaluateForward(void* tape, void* ra) {
+      if(NULL != funcForward) {
+        funcForward(tape, data, ra);
       }
     }
   };
@@ -169,7 +177,8 @@ namespace codi {
 
   private:
     /** @brief The function given by the user. */
-    CallFunction func;
+    CallFunction funcReverse;
+    CallFunction funcForward;
     /** @brief The delete function for the user data. */
     DeleteFunction deleteData;
 
@@ -184,8 +193,9 @@ namespace codi {
      * @param[in,out]         data  The data for the user function.
      * @param[in] deleteCheckpoint  The function which deletes the user data. The function handle can be NULL.
      */
-    ExternalFunctionDataHelper(CallFunction func, Data* data, DeleteFunction deleteData) :
-      func(func),
+    ExternalFunctionDataHelper(CallFunction funcReverse, CallFunction funcForward, Data* data, DeleteFunction deleteData) :
+      funcReverse(funcReverse),
+      funcForward(funcForward),
       deleteData(deleteData),
       data(data){}
 
@@ -197,9 +207,22 @@ namespace codi {
      * @param[in,out] tape  The tape which calls the function
      * @param[in,out] data  The void handle from the #ExternalFunction is a handle to a #ExternalFunctionDataHelper object.
      */
-    static void callFunction(void* tape, void* data, void* ra) {
+    static void callFunctionReverse(void* tape, void* data, void* ra) {
       ExternalFunctionDataHelper<Tape, Data>* castData = cast(data);
-      castData->func((Tape*)tape, castData->data, (AdjointInterface<typename Tape::Real, typename Tape::Index>*)ra);
+      castData->funcReverse((Tape*)tape, castData->data, (AdjointInterface<typename Tape::Real, typename Tape::Index>*)ra);
+    }
+
+    /**
+     * @brief Helper function which is called from the #ExternalFunction structure.
+     *
+     * The method calls the user function with the data stored in the data handle.
+     *
+     * @param[in,out] tape  The tape which calls the function
+     * @param[in,out] data  The void handle from the #ExternalFunction is a handle to a #ExternalFunctionDataHelper object.
+     */
+    static void callFunctionForward(void* tape, void* data, void* ra) {
+      ExternalFunctionDataHelper<Tape, Data>* castData = cast(data);
+      castData->funcForward((Tape*)tape, castData->data, (AdjointInterface<typename Tape::Real, typename Tape::Index>*)ra);
     }
 
     /**
@@ -238,9 +261,9 @@ namespace codi {
      *
      * @return The ExternalFunction object with strong typed data.
      */
-    static CODI_INLINE ExternalFunction createHandle(CallFunction func, Data* data, DeleteFunction deleteData) {
-      ExternalFunctionDataHelper<Tape, Data>* functionHelper = new ExternalFunctionDataHelper<Tape, Data>(func, data, deleteData);
-      return ExternalFunction(ExternalFunctionDataHelper<Tape, Data>::callFunction, functionHelper, ExternalFunctionDataHelper<Tape, Data>::deleteFunction);
+    static CODI_INLINE ExternalFunction createHandle(CallFunction funcReverse, CallFunction funcFoward, Data* data, DeleteFunction deleteData) {
+      ExternalFunctionDataHelper<Tape, Data>* functionHelper = new ExternalFunctionDataHelper<Tape, Data>(funcReverse, funcFoward, data, deleteData);
+      return ExternalFunction(ExternalFunctionDataHelper<Tape, Data>::callFunctionReverse, ExternalFunctionDataHelper<Tape, Data>::callFunctionForward, functionHelper, ExternalFunctionDataHelper<Tape, Data>::deleteFunction);
     }
   };
 }

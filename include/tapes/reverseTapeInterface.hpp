@@ -263,7 +263,7 @@ namespace codi {
      * @param[in]    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
      * @param[in] delCheckpoint The delete function for the data.
      */
-    virtual void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint) = 0;
+    virtual void pushExternalFunctionHandle(ExternalFunction::CallFunction extFuncReverse, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint, ExternalFunction::CallFunction extFuncForward = nullptr) = 0;
 
     /**
      * @brief Add a external function to the tape.
@@ -280,9 +280,10 @@ namespace codi {
      */
     template<typename Data>
     void pushExternalFunction(
-        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFunc,
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFuncReverse,
         Data* checkpoint,
-        typename ExternalFunctionDataHelper<TapeImplementation, Data>::DeleteFunction delCheckpoint);
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::DeleteFunction delCheckpoint,
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFuncForward = nullptr);
 
     /**
      * @brief Add a statement to the tape manually.
