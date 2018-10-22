@@ -39,7 +39,7 @@ namespace codi {
   /**
    * @brief The implementation assumes that each element in the adjoint vector consists only of one entry.
    *
-   * Nearly everything of the base interface is implemented only the method resetPrimal is left out.
+   * Nearly everything of the base interface is implemented only the methods setPrimal and getPrimal are left out.
    *
    * @tparam          Real  The primal value of the CoDiPack type.
    * @tparam  GradientData  The identifier the CoDiPack type.
@@ -452,11 +452,23 @@ namespace codi {
        * @param[in]  index  The index of the primal value that needs to be reverted.
        * @param[in] primal  The primal value that is set.
        */
-      virtual void resetPrimal(const GradientData index, Real primal) {
+      virtual void setPrimal(const GradientData index, Real primal) {
         CODI_UNUSED(index);
         CODI_UNUSED(primal);
 
         // no primal handling required for the tape
+      }
+
+      /**
+       * @brief Get primal value support for the primal evaluation of primal value tapes.
+       *
+       * @param[in]  index  The index of the primal value
+       */
+      Real getPrimal(const GradientData index) {
+        CODI_UNUSED(index);
+
+        // no primal handling required for the tape
+        return Real();
       }
   };
 
@@ -493,11 +505,22 @@ namespace codi {
        * If the tape needs this behaviour can be checked with Tape::RequiresPrimalReset. The value required
        * here is returned on a registerExtFunctionOutput call.
        *
+       * The function can also be used to enable a primal evaluation for primal value tapes.
+       *
        * @param[in]  index  The index of the primal value that needs to be reverted.
        * @param[in] primal  The primal value that is set.
        */
-      virtual void resetPrimal(const GradientData index, Real primal) {
+      void setPrimal(const GradientData index, Real primal) {
         primalVector[index] = primal;
+      }
+
+      /**
+       * @brief Get primal value support for the primal evaluation of primal value tapes.
+       *
+       * @param[in]  index  The index of the primal value
+       */
+      Real getPrimal(const GradientData index) {
+        return primalVector[index];
       }
   };
 }

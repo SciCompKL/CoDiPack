@@ -91,58 +91,6 @@
   // ----------------------------------------------------------------------
 
     /**
-     * @brief Function object for the primal evaluation of the external functions.
-     *
-     * It stores the last position for the statement vector. With this
-     * position it evaluates the statement vector to the position
-     * where the external function was added and then calls the
-     * external function.
-     *
-     * @tparam Function  A function object which is called with the nested start and end positions.
-     * @tparam      Obj  The object on which the function is called.
-     */
-    template<typename Function, typename Obj>
-    struct PrimalExtFuncEvaluator {
-      ExtFuncChildPosition curInnerPos; /**< The inner position were the last external function was evaluated. */
-
-      const Function& func; /**< The function evaluated before and after each external function call. */
-      Obj& obj; /**< The object on which the function is evaluated. */
-
-      /**
-       * @brief Create the function object.
-       *
-       * @param[in] curInnerPos  The position were the evaluation starts.
-       * @param[in]        func  The function that is evaluated before and after each external function call.
-       * @param[in,out]     obj  The object on which the function is evaluated.
-       */
-      PrimalExtFuncEvaluator(ExtFuncChildPosition curInnerPos, const Function &func, Obj &obj) :
-        curInnerPos(curInnerPos),
-        func(func),
-        obj(obj){}
-
-      /**
-       * @brief The operator evaluates the tape to the position were the next external function was stored and then the function is evaluated
-       *
-       * @param[in]     extFunc  The external function object.
-       * @param[in] endInnerPos  The position were the external function object was stored.
-       * @param[in,out]    args  The arguments for the evaluation.
-       *
-       * @tparam Args  The types of the other arguments.
-       */
-      template<typename ... Args>
-      void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos, Args&&... args) {
-        // always evaluate the stack to the point of the external function
-
-        (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
-
-        CODI_UNUSED(extFunc);
-        std::cerr << "External functions currently can not be forward evaluated." << std::endl;
-
-        curInnerPos = *endInnerPos;
-      }
-    };
-
-    /**
      * @brief Private common method to add to the external function stack.
      *
      * @param[in] function The external function structure to push.
@@ -242,13 +190,23 @@
      * @tparam      Obj  The object on which the function is called.
      */
     template<typename Function, typename Obj, typename ... Args>
-    void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func, Obj& obj, Args&&... args){
-      PrimalExtFuncEvaluator<Function, Obj> evaluator(start.inner, func, obj);
+    void evaluateExtFuncPrimal(const ExtFuncPosition& start, const ExtFuncPosition &end, const Function& func,
+                               Obj& obj, AdjointInterface<Real, Index>* adjointInterface, Args&&... args){
+      ExtFuncChildPosition curInnerPos = start.inner;
+      auto evalFunc = [&] (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
+                           AdjointInterface<Real, GradientData>* adjointInterface, Args&&... args) {
 
-      extFuncVector.forEachReverse(start, end, evaluator, std::forward<Args>(args)...);
+        (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+
+        extFunc->evaluatePrimal(&obj, adjointInterface);
+
+        curInnerPos = *endInnerPos;
+
+      };
+      extFuncVector.forEachForward(start, end, evalFunc, adjointInterface, std::forward<Args>(args)...);
 
       // Iterate over the reminder also covers the case if there have been no external functions.
-      (obj.*func)(evaluator.curInnerPos, end.inner, std::forward<Args>(args)...);
+      (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
     }
 
     /**
@@ -351,13 +309,19 @@
      * The data handle provided to the tape is considered in possession of the tape. The tape will now be responsible to
      * free the handle. For this it will use the delete function provided by the user.
      *
-     * @param[in]  extFunc  The external function which is called by the tape.
-     * @param[in,out] data  The data for the external function. The tape takes ownership over the data.
-     * @param[in]  delData  The delete function for the data.
+     * @param[in]         extFunc  The external function which is called by the tape.
+     * @param[in,out]        data  The data for the external function. The tape takes ownership over the data.
+     * @param[in]         delData  The delete function for the data.
+     * @param[in]  extFuncForward  The external function which is called by the tape for a forward evaluation [Default=null].
+     * @param[in]   extFuncPrimal  The external function which is called by the tape for a primal evaluation [Default=null].
      */
-    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc, void* data, ExternalFunction::DeleteFunction delData, ExternalFunction::CallFunction extFuncForward = nullptr){
+    void pushExternalFunctionHandle(ExternalFunction::CallFunction extFunc,
+                                    void* data,
+                                    ExternalFunction::DeleteFunction delData,
+                                    ExternalFunction::CallFunction extFuncForward = nullptr,
+                                    ExternalFunction::CallFunction extFuncPrimal = nullptr){
       ENABLE_CHECK (OptTapeActivity, isActive()){
-        pushExternalFunctionHandle(ExternalFunction(extFunc, extFuncForward, data, delData));
+        pushExternalFunctionHandle(ExternalFunction(extFunc, extFuncForward, extFuncPrimal, data, delData));
       }
     }
 
@@ -368,14 +332,19 @@
      * The data pointer provided to the tape is considered in possession of the tape. The tape will now be responsible to
      * free the data. For this it will use the delete function provided by the user.
      *
-     * @param[in]  extFunc  The external function which is called by the tape.
-     * @param[in,out] data  The data for the external function. The tape takes ownership over the data.
-     * @param[in]  delData  The delete function for the data.
+     * @param[in]         extFunc  The external function which is called by the tape.
+     * @param[in,out]        data  The data for the external function. The tape takes ownership over the data.
+     * @param[in]         delData  The delete function for the data.
+     * @param[in]  extFuncForward  The external function which is called by the tape for a forward evaluation [Default=null].
+     * @param[in]   extFuncPrimal  The external function which is called by the tape for a primal evaluation [Default=null].
      */
     template<typename Data>
-    void pushExternalFunction(typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFunc, Data* data, typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::DeleteFunction delData, typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFuncForward = nullptr){
+    void pushExternalFunction(typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFunc,
+                              Data* data, typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::DeleteFunction delData,
+                              typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFuncForward = nullptr,
+                              typename ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::CallFunction extFuncPrimal = nullptr){
       ENABLE_CHECK (OptTapeActivity, isActive()){
-        pushExternalFunctionHandle(ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::createHandle(extFunc, extFuncForward, data, delData));
+        pushExternalFunctionHandle(ExternalFunctionDataHelper<TAPE_NAME<TapeTypes>, Data>::createHandle(extFunc, extFuncForward, extFuncPrimal, data, delData));
       }
     }
 

@@ -142,7 +142,7 @@ namespace codi {
 
         if(Tape::RequiresPrimalReset) {
           for(size_t i = 0; i < outputIndices.size(); ++i) {
-            ra->resetPrimal(outputIndices[i], oldPrimals[i]);
+            ra->setPrimal(outputIndices[i], oldPrimals[i]);
           }
         }
 

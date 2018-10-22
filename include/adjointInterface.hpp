@@ -193,9 +193,18 @@ namespace codi {
        * If the tape needs this behaviour can be checked with Tape::RequiresPrimalReset. The value required
        * here is returned on a registerExtFunctionOutput call.
        *
+       * The function can also be used to enable a primal evaluation for primal value tapes.
+       *
        * @param[in]  index  The index of the primal value that needs to be reverted.
        * @param[in] primal  The primal value that is set.
        */
-      virtual void resetPrimal(const Index index, Real primal) = 0;
+      virtual void setPrimal(const Index index, Real primal) = 0;
+
+      /**
+       * @brief Get primal value support for the primal evaluation of primal value tapes.
+       *
+       * @param[in]  index  The index of the primal value
+       */
+      virtual Real getPrimal(const Index index) = 0;
   };
 }

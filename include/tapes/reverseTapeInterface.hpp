@@ -259,11 +259,17 @@ namespace codi {
      * give special treatment to code sections which have simpler reverse implementation than the
      * AD tool.
      *
-     * @param[in]       extFunc The function which is called during the reverse evaluation of the tape.
-     * @param[in]    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
-     * @param[in] delCheckpoint The delete function for the data.
+     * @param[in]         extFunc  The function which is called during the reverse evaluation of the tape.
+     * @param[in]      checkpoint  The data argument for the function. The tape takes procession of the data and will delete it.
+     * @param[in]   delCheckpoint  The delete function for the data.
+     * @param[in]  extFuncForward  The function which is called during the forward evaluation of the tape. [Default=null].
+     * @param[in]   extFuncPrimal  The function which is called during the primal evaluation of the tape. [Default=null].
      */
-    virtual void pushExternalFunctionHandle(ExternalFunction::CallFunction extFuncReverse, void* checkpoint, ExternalFunction::DeleteFunction delCheckpoint, ExternalFunction::CallFunction extFuncForward = nullptr) = 0;
+    virtual void pushExternalFunctionHandle(ExternalFunction::CallFunction extFuncReverse,
+                                            void* checkpoint,
+                                            ExternalFunction::DeleteFunction delCheckpoint,
+                                            ExternalFunction::CallFunction extFuncForward = nullptr,
+                                            ExternalFunction::CallFunction extFuncPrimal = nullptr) = 0;
 
     /**
      * @brief Add a external function to the tape.
@@ -272,9 +278,11 @@ namespace codi {
      * give special treatment to code sections which have simpler reverse implementation than the
      * AD tool.
      *
-     * @param[in]       extFunc The function which is called during the reverse evaluation of the tape.
-     * @param[in]    checkpoint The data argument for the function. The tape takes procession of the data and will delete it.
-     * @param[in] delCheckpoint The delete function for the data.
+     * @param[in]         extFunc  The function which is called during the reverse evaluation of the tape.
+     * @param[in]      checkpoint  The data argument for the function. The tape takes procession of the data and will delete it.
+     * @param[in]   delCheckpoint  The delete function for the data.
+     * @param[in]  extFuncForward  The function which is called during the forward evaluation of the tape. [Default=null].
+     * @param[in]   extFuncPrimal  The function which is called during the primal evaluation of the tape. [Default=null].
      *
      * @tparam Data The data type for the data.
      */
@@ -283,7 +291,8 @@ namespace codi {
         typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFuncReverse,
         Data* checkpoint,
         typename ExternalFunctionDataHelper<TapeImplementation, Data>::DeleteFunction delCheckpoint,
-        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFuncForward = nullptr);
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFuncForward = nullptr,
+        typename ExternalFunctionDataHelper<TapeImplementation, Data>::CallFunction extFuncPrimal = nullptr);
 
     /**
      * @brief Add a statement to the tape manually.

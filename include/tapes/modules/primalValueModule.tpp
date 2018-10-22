@@ -138,6 +138,33 @@
 
   private:
 
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+    template<typename AdjointData>
+    using AdjVecType = AdjointInterfacePrimalImpl<Real, Index, AdjointData>;
+#else
+    template<typename AdjointData>
+    using AdjVecType = AdjointData;
+#endif
+
+    template<typename AdjointData>
+    using AdjVecInterface = AdjointInterfacePrimalImpl<Real, Index, AdjointData>;
+
+    template<typename AdjointData>
+    AdjVecType<AdjointData>* wrapAdjointVector(AdjVecInterface<AdjointData>& interface, AdjointData* adjointData) {
+       CODI_UNUSED(interface);   // To avoid unused warnings
+       CODI_UNUSED(adjointData); // To avoid unused warnings
+
+#if CODI_EnableVariableAdjointInterfaceInPrimalTapes
+      return &interface;
+#else
+      static_assert(std::is_same<AdjointData, GradientValue>::value,
+        "Please enable 'CODI_EnableVariableAdjointInterfacePrimalInPrimalTapes' in order"
+        " to use custom adjoint vectors in the primal value tapes.");
+
+      return adjointData;
+#endif
+    }
+
   // ----------------------------------------------------------------------
   // Private function for the communication with the including class
   // ----------------------------------------------------------------------

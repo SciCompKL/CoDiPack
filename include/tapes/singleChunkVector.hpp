@@ -292,7 +292,6 @@ namespace codi {
      *
      * It has to hold start >= end.
      *
-     * @param chunkPos  The position of the chunk.
      * @param    start  The starting point inside the data of the chunk.
      * @param      end  The end point inside the data of the chunk.
      * @param function  The function called for each data entry.
@@ -310,6 +309,33 @@ namespace codi {
       for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
         --dataPos; // decrement of loop variable
 
+        pHandle.setPointers(dataPos, &chunk);
+        pHandle.call(function, std::forward<Args>(args)...);
+      }
+    }
+
+    /**
+     * @brief Iterates over the data entries in the chunk.
+     *
+     * Iterates of the data entries and calls the function object with each data item.
+     *
+     * It has to hold start <= end.
+     *
+     * @param    start  The starting point inside the data of the chunk.
+     * @param      end  The end point inside the data of the chunk.
+     * @param function  The function called for each data entry.
+     * @param     args  Additional arguments for the function.
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachDataForward(const size_t& start, const size_t& end, FunctionObject& function, Args&&... args) {
+      codiAssert(start <= end);
+
+      PointerHandle<ChunkType> pHandle;
+
+      // we do not initialize dataPos with start - 1 because the type can be unsigned
+      for(size_t dataPos = start; dataPos < end; dataPos += 1) {
         pHandle.setPointers(dataPos, &chunk);
         pHandle.call(function, std::forward<Args>(args)...);
       }
@@ -339,6 +365,30 @@ namespace codi {
       codiAssert(start.data <= chunk.getSize());
 
       forEachDataReverse(start.data, end.data, function, std::forward<Args>(args)...);
+    }
+
+    /**
+     * @brief Iterates over all data entries in the given range
+     *
+     * Iterates of the data entries and calls the function object with each data item.
+     *
+     * It has to hold start <= end.
+     *
+     * @param    start  The starting point of the range.
+     * @param      end  The end point of the range.
+     * @param function  The function called for each data entry.
+     * @param     args  Additional arguments for the function
+     *
+     * @tparam  Args  The data types for the arguments.
+     */
+    template<typename FunctionObject, typename ... Args>
+    CODI_INLINE void forEachForward(const Position& start, const Position& end, FunctionObject& function, Args &&... args) {
+      codiAssert(start.chunk == 0);
+      codiAssert(end.chunk == 0);
+      codiAssert(start.data <= end.data);
+      codiAssert(end.data <= chunk.getSize());
+
+      forEachDataForward(start.data, end.data, function, std::forward<Args>(args)...);
     }
 
     /**
