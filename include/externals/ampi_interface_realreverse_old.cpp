@@ -76,8 +76,9 @@ extern "C" {
   }
 
 
-  void execFunc(void*tape, void* handle) {
+  void execFunc(void*tape, void* handle, void* ra) {
     CODI_UNUSED(tape);
+    CODI_UNUSED(ra);
     ampi_interpret_tape(handle);
   }
 
