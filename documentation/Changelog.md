@@ -1,6 +1,12 @@
 Changelog      {#Changelog}
 ===========================
 
+### v 1.7.0 - 2018-10-30
+ - Support for forward evaluation of tapes finalized
+ - Support for primal evaluation of tapes
+ - MeDiPack interfaces are now provided with CoDiPack
+ - Removed AdjointMPI interfaces
+
 ### v 1.6.0 - 2018-03-15
  - First support for forward evaluation of tapes
    * Used in the preaccumulation helper for code sections
