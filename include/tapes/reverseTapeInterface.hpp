@@ -60,8 +60,30 @@ namespace codi {
   class ReverseTapeInterface : public TapeInterface<Real, GradientDataType, GradientValueType> {
   public:
 
+    /**
+     * @brief Evaluate the tape from start to end with a custom adjoint vector.
+     *
+     * The function performs the reverse evaluation of the recorded tape from
+     * the start position to the end position.
+     *
+     * See tutorial A4 for an example.
+     *
+     * It has to hold start >= end.
+     *
+     * @param[in]    start  The starting position for the reverse evaluation.
+     * @param[in]      end  The ending position for the reverse evaluation.
+     * @param[in,out] data  The adjoint vector for the evaluation.
+     *
+     * @tparam Adjoint  The type for the adjoint vector. In general the type needs
+     *                  to support scalar multiplication and vector addition. See
+     *                  #Direction for a sample implementation.
+     *                  For primal value tapes the switch CODI_EnableVariableAdjointInterfaceInPrimalTapes
+     *                  needs to be set to support this feature. (If not and the
+     *                  types do not match a compile time error is thrown.)
+     */
     template<typename Adjoint>
     void evaluate(const Position& start, const Position& end, Adjoint* data);
+
     /**
      * @brief Evaluate the tape from start to end.
      *
@@ -81,6 +103,30 @@ namespace codi {
     virtual void evaluate() = 0;
 
     /**
+     * @brief Evaluate the tape from start to end with a custom adjoint vector.
+     *
+     * The function performs the forward evaluation of the recorded tape from
+     * the start position to the end position.
+     *
+     * See tutorial A4 for an example.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in]    start  The starting position for the reverse evaluation.
+     * @param[in]      end  The ending position for the reverse evaluation.
+     * @param[in,out] data  The adjoint vector for the evaluation.
+     *
+     * @tparam Adjoint  The type for the adjoint vector. In general the type needs
+     *                  to support scalar multiplication and vector addition. See
+     *                  #Direction for a sample implementation.
+     *                  For primal value tapes the switch CODI_EnableVariableAdjointInterfaceInPrimalTapes
+     *                  needs to be set to support this feature. (If not and the
+     *                  types do not match a compile time error is thrown.)
+     */
+    template<typename Adjoint>
+    void evaluateForward(const Position& start, const Position& end, Adjoint* data);
+
+    /**
      * @brief Evaluate the tape from start to end.
      *
      * The function performs the forward evaluation of the recorded tape from
@@ -97,6 +143,29 @@ namespace codi {
      * @brief Evaluate the tape from the beginning to the current position.
      */
     virtual void evaluateForward() = 0;
+
+    /**
+     * @brief Evaluate the tape from start to end.
+     *
+     * The function performs the primal evaluation of the recorded tape from
+     * the start position to the end position.
+     *
+     * This method is only evaluated for primal value tapes. Here the new primal values
+     * are stored in the internal primal value vector.
+     *
+     * Jacobian tapes can not perform this evaluation since, they do not have the information.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start The starting position for the forward evaluation.
+     * @param[in]   end The ending position for the forward evaluation.
+     */
+    virtual void evaluatePrimal(const Position& start, const Position& end) = 0;
+
+    /**
+     * @brief Evaluate the tape from the beginning to the current position.
+     */
+    virtual void evaluatePrimal() = 0;
 
     /**
      * @brief Special evaluation function for the preaccumulation of a tape part.

@@ -159,6 +159,7 @@ namespace codi {
     #define RESET_FUNCTION_NAME resetAll
     #define EVALUATE_FUNCTION_NAME evaluateInt
     #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
+    #define EVALUATE_PRIMAL_FUNCTION_NAME evaluatePrimalInt
     #include "modules/tapeBaseModule.tpp"
 
     #define CHILD_VECTOR_TYPE EmptyChunkVector
@@ -667,7 +668,7 @@ namespace codi {
   public:
 
 
-    CODI_INLINE void evaluatePrimal(const Position& start, const Position& end) {
+    CODI_INLINE void evaluatePrimalInt(const Position& start, const Position& end) {
 
       resizeAdjointsToIndexSize();
 
@@ -691,10 +692,6 @@ namespace codi {
       std::swap(primals, primalsCopy);
     }
 
-    CODI_INLINE void evaluatePrimal() {
-      evaluatePrimal(getZeroPosition(), getPosition());
-    }
-
     /**
      * @brief Specialized evaluate function for the preaccumulation.
      *
@@ -712,7 +709,7 @@ namespace codi {
 
       evaluateInt(start, end, adjoints, false);
 
-      evaluatePrimal(end, start);
+      evaluatePrimalInt(end, start);
     }
 
     /**

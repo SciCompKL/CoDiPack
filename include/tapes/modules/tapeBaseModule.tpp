@@ -75,6 +75,10 @@
 #error Please define the name of the forward evaluation function for the tape.
 #endif
 
+#ifndef EVALUATE_PRIMAL_FUNCTION_NAME
+#error Please define the name of the primal evaluation function for the tape.
+#endif
+
   // ----------------------------------------------------------------------
   // All definitons of the module
   // ----------------------------------------------------------------------
@@ -395,6 +399,25 @@
     }
 
     /**
+     * @brief Perform the primal evaluation from start to end.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start  The starting position for the forward evaluation.
+     * @param[in]   end  The ending position for the forward evaluation.
+     */
+    CODI_NO_INLINE void evaluatePrimal(const Position& start, const Position& end) {
+      EVALUATE_PRIMAL_FUNCTION_NAME(start, end);
+    }
+
+    /**
+     * @brief Perform the primal evaluation from the initial position to the current position.
+     */
+    void evaluatePrimal() {
+      evaluatePrimal(getZeroPosition(), getPosition());
+    }
+
+    /**
      * @brief Start recording.
      */
     CODI_INLINE void setActive(){
@@ -514,3 +537,4 @@
 #undef RESET_FUNCTION_NAME
 #undef EVALUATE_FUNCTION_NAME
 #undef EVALUATE_FORWARD_FUNCTION_NAME
+#undef EVALUATE_PRIMAL_FUNCTION_NAME

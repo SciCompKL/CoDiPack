@@ -153,6 +153,7 @@ namespace codi {
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateInt
     #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
+    #define EVALUATE_PRIMAL_FUNCTION_NAME evaluatePrimalInt
     #include "modules/tapeBaseModule.tpp"
 
     #define CHILD_VECTOR_TYPE EmptyChunkVector
@@ -559,16 +560,6 @@ namespace codi {
     CODI_INLINE void evaluateForwardPreacc(const Position& start, const Position& end) {
 
       evaluateForward(start, end);
-    }
-
-    CODI_INLINE void evaluatePrimal(const Position& start, const Position& end) {
-
-      evaluatePrimalInt(start, end);
-    }
-
-    CODI_INLINE void evaluatePrimal() {
-
-      evaluatePrimal(getZeroPosition(), getPosition());
     }
 
     /**

@@ -43,7 +43,7 @@
  *
  * It defines the methods store(Expr), store(const), store(User), printStmtStatistics from the TapeInterface and ReverseTapeInterface.
  *
- * It defines the methods setStatementChunkSize, getUsedStatementSize, evaluateInt, resizeStmt as interface functions for the
+ * It defines the methods setStatementChunkSize, getUsedStatementSize, evaluatePrimalStub, resizeStmt as interface functions for the
  * including class.
  */
 
@@ -100,6 +100,17 @@
      */
     void resizeStmt(const size_t& statementSize) {
       stmtVector.resize(statementSize);
+    }
+
+    /**
+     * @brief Stub for no primal evaluation, since it is not supported for Jacobian tapes.
+     *
+     * @param[in] start  The starting position for the forward evaluation.
+     * @param[in]   end  The ending position for the forward evaluation.
+     */
+    CODI_INLINE void evaluatePrimalStub(const Position& start, const Position& end) {
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
     }
 
   public:
