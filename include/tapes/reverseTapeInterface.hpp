@@ -76,7 +76,7 @@ namespace codi {
      *
      * @tparam Adjoint  The type for the adjoint vector. In general the type needs
      *                  to support scalar multiplication and vector addition. See
-     *                  #Direction for a sample implementation.
+     *                  #codi::Direction for a sample implementation.
      *                  For primal value tapes the switch CODI_EnableVariableAdjointInterfaceInPrimalTapes
      *                  needs to be set to support this feature. (If not and the
      *                  types do not match a compile time error is thrown.)
@@ -118,7 +118,7 @@ namespace codi {
      *
      * @tparam Adjoint  The type for the adjoint vector. In general the type needs
      *                  to support scalar multiplication and vector addition. See
-     *                  #Direction for a sample implementation.
+     *                  #codi::Direction for a sample implementation.
      *                  For primal value tapes the switch CODI_EnableVariableAdjointInterfaceInPrimalTapes
      *                  needs to be set to support this feature. (If not and the
      *                  types do not match a compile time error is thrown.)
@@ -181,6 +181,11 @@ namespace codi {
      */
     virtual void evaluatePreacc(const Position& start, const Position& end) = 0;
 
+    /**
+     * @brief Get the size of the adjoint vector.
+     *
+     * @return The size of the adjoint vector.
+     */
     virtual size_t getAdjointSize() const = 0;
 
     /**
@@ -239,6 +244,9 @@ namespace codi {
     */
     virtual void clearAdjoints() = 0;
 
+    /**
+     * @brief Delete the adjoint vector of the tape.
+     */
     virtual void deleteAdjointVector() = 0;
 
     /**
@@ -254,6 +262,8 @@ namespace codi {
      * @brief Completely reset the tape.
      *
      * The reset will clear everything the tape has recorded.
+     *
+     * @param[in] resetAdjoints  If the adjoint vector of the tape is zeroed. [Default: true]
      */
     virtual void reset(bool resetAdjoints = true) = 0;
 
@@ -277,7 +287,18 @@ namespace codi {
      */
     virtual Position getZeroPosition() const = 0;
 
+    /**
+     * @brief Get the passive identifier from the tape.
+     *
+     * @return The passive identifier.
+     */
     virtual GradientDataType getPassiveIndex() const = 0;
+
+    /**
+     * @brief Get the invalid identifier from the tape.
+     *
+     * @return The invalid identifier.
+     */
     virtual GradientDataType getInvalidIndex() const = 0;
 
     /**
@@ -328,7 +349,7 @@ namespace codi {
      * give special treatment to code sections which have simpler reverse implementation than the
      * AD tool.
      *
-     * @param[in]         extFunc  The function which is called during the reverse evaluation of the tape.
+     * @param[in]  extFuncReverse  The function which is called during the reverse evaluation of the tape.
      * @param[in]      checkpoint  The data argument for the function. The tape takes procession of the data and will delete it.
      * @param[in]   delCheckpoint  The delete function for the data.
      * @param[in]  extFuncForward  The function which is called during the forward evaluation of the tape. [Default=null].
@@ -347,7 +368,7 @@ namespace codi {
      * give special treatment to code sections which have simpler reverse implementation than the
      * AD tool.
      *
-     * @param[in]         extFunc  The function which is called during the reverse evaluation of the tape.
+     * @param[in]  extFuncReverse  The function which is called during the reverse evaluation of the tape.
      * @param[in]      checkpoint  The data argument for the function. The tape takes procession of the data and will delete it.
      * @param[in]   delCheckpoint  The delete function for the data.
      * @param[in]  extFuncForward  The function which is called during the forward evaluation of the tape. [Default=null].

@@ -185,6 +185,7 @@ namespace codi {
     /** @brief The size of the copied primal vector */
     Index primalsCopySize;
 
+    /** @brief Enables or disables the copy of the primal value vector. */
     bool usePrimalCopy;
 
   public:
@@ -667,7 +668,19 @@ namespace codi {
 
   public:
 
-
+    /**
+     * @brief Evaluate the tape from start to end.
+     *
+     * The function performs the primal evaluation of the recorded tape from
+     * the start position to the end position.
+     *
+     * The primal evaluation will also overwrite the old stored primal values.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start The starting position for the forward evaluation.
+     * @param[in]   end The ending position for the forward evaluation.
+     */
     CODI_INLINE void evaluatePrimalInt(const Position& start, const Position& end) {
 
       resizeAdjointsToIndexSize();
@@ -798,10 +811,23 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief Set if the primal value vector should be copied in a reverse evaluation.
+     *
+     * This is usually required for multiple reverse evaluations.
+     *
+     * @param[in] useCopy  If the primal value vector gets copied.
+     */
     CODI_INLINE void setUsePrimalCopy(bool useCopy) {
       usePrimalCopy = useCopy;
     }
 
+
+    /**
+     * @brief Get if the primal value vector is copied in a reverse evaluation.
+     *
+     * @return If the primal value vector gets copied.
+     */
     CODI_INLINE bool getUsePrimalCopy() {
       return usePrimalCopy;
     }

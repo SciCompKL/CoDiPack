@@ -298,6 +298,19 @@ namespace codi {
       evaluateExtFuncForward(start, end, forwardFunc, constantValueVector, &interface, evalFunc, adjVec);
     }
 
+    /**
+     * @brief Evaluate the tape from start to end.
+     *
+     * The function performs the primal evaluation of the recorded tape from
+     * the start position to the end position.
+     *
+     * The primal evaluation will update the internal primal value vector.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in] start The starting position for the forward evaluation.
+     * @param[in]   end The ending position for the forward evaluation.
+     */
     CODI_INLINE void evaluatePrimalInt(const Position& start, const Position& end) {
 
       AdjVecInterface<GradientValue> interface(adjoints, primals);

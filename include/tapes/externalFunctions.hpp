@@ -306,8 +306,8 @@ namespace codi {
      *
      * @return The ExternalFunction object with strong typed data.
      */
-    static CODI_INLINE ExternalFunction createHandle(CallFunction funcReverse, CallFunction funcFoward, CallFunction funcPrimal, Data* data, DeleteFunction deleteData) {
-      ExternalFunctionDataHelper<Tape, Data>* functionHelper = new ExternalFunctionDataHelper<Tape, Data>(funcReverse, funcFoward, funcPrimal, data, deleteData);
+    static CODI_INLINE ExternalFunction createHandle(CallFunction funcReverse, CallFunction funcForward, CallFunction funcPrimal, Data* data, DeleteFunction deleteData) {
+      ExternalFunctionDataHelper<Tape, Data>* functionHelper = new ExternalFunctionDataHelper<Tape, Data>(funcReverse, funcForward, funcPrimal, data, deleteData);
       return ExternalFunction(ExternalFunctionDataHelper<Tape, Data>::callFunctionReverse, ExternalFunctionDataHelper<Tape, Data>::callFunctionForward, ExternalFunctionDataHelper<Tape, Data>::callFunctionPrimal, functionHelper, ExternalFunctionDataHelper<Tape, Data>::deleteFunction);
     }
   };

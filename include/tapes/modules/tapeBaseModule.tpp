@@ -439,10 +439,20 @@
       return active;
     }
 
+    /**
+     * @brief The default passive index from the tape.
+     *
+     * @return Zero in the defined index type.
+     */
     Index getPassiveIndex() const {
       return Index(0);
     }
 
+    /**
+     * @brief The default invalid index from the tape.
+     *
+     * @return Minus one in the defined index type.
+     */
     Index getInvalidIndex() const {
       return Index(-1);
     }

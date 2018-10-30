@@ -136,7 +136,7 @@ namespace codi {
    *
    * The default implementation calls isfinite(t) without a namespace specifier.
    *
-   * @param[in] t The for which the is finite attribute is checked.
+   * @param[in] t The value for which the is finite attribute is checked.
    * @tparam T Type of the variable
    */
   template <typename T>
@@ -154,6 +154,16 @@ namespace codi {
   };
 #endif
 
+  /**
+   * @brief Helper function to convert a CoDiPack index into a size_t object.
+   *
+   * The default implementation converts T to size_t.
+   *
+   * @param[in] t The value which is converted.
+   * @return The converted value.
+   *
+   * @tparam T Type of the variable
+   */
   template <typename T>
   CODI_INLINE size_t arrayAccess(const T& t) {
     return ArrayAccessImpl<T>::get(t);

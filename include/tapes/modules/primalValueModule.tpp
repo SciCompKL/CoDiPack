@@ -274,6 +274,8 @@
      * @param[in]   passiveActives  The number of inactive values in the statement.
      * @param[in,out]     indexPos  The position in the index array.
      * @param[in]          indices  The index array.
+     * @param[in,out]   passivePos  The position in the passive value array.
+     * @param[in]         passives  The passive value array.
      * @param[in,out]  constantPos  The position in the constant value array.
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
@@ -316,6 +318,8 @@
      * @param[in]   passiveActives  The number of inactive values in the statement.
      * @param[in,out]     indexPos  The position in the index array.
      * @param[in]          indices  The index array.
+     * @param[in,out]   passivePos  The position in the passive value array.
+     * @param[in]         passives  The passive value array.
      * @param[in,out]  constantPos  The position in the constant value array.
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
@@ -348,6 +352,8 @@
      * @param[in]   passiveActives  The number of inactive values in the statement.
      * @param[in,out]     indexPos  The position in the index array.
      * @param[in]          indices  The index array.
+     * @param[in,out]   passivePos  The position in the passive value array.
+     * @param[in]         passives  The passive value array.
      * @param[in,out]  constantPos  The position in the constant value array.
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
@@ -393,6 +399,8 @@
      * @param[in]   passiveActives  The number of inactive values in the statement.
      * @param[in,out]     indexPos  The position in the index array.
      * @param[in]          indices  The index array.
+     * @param[in,out]   passivePos  The position in the passive value array.
+     * @param[in]         passives  The passive value array.
      * @param[in,out]  constantPos  The position in the constant value array.
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
@@ -429,6 +437,8 @@
      * @param[in]   passiveActives  The number of inactive values in the statement.
      * @param[in,out]     indexPos  The position in the index array.
      * @param[in]          indices  The index array.
+     * @param[in,out]   passivePos  The position in the passive value array.
+     * @param[in]         passives  The passive value array.
      * @param[in,out]  constantPos  The position in the constant value array.
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
@@ -477,6 +487,8 @@
      * @param[in]   passiveActives  The number of inactive values in the statement.
      * @param[in,out]     indexPos  The position in the index array.
      * @param[in]          indices  The index array.
+     * @param[in,out]   passivePos  The position in the passive value array.
+     * @param[in]         passives  The passive value array.
      * @param[in,out]  constantPos  The position in the constant value array.
      * @param[in]        constants  The constant value array.
      * @param[in,out] primalVector  The global vector with the primal variables.
@@ -510,13 +522,28 @@
       primals[index] = primal;
     }
 
+    /**
+     * @brief Get the primal value from the primal value vector.
+     *
+     * @param[in]  index  The index of the primal value which is get.
+     *
+     * @return The value which is get from the vector.
+     */
     Real getPrimalValue(const Index& index) const {
       return primals[index];
     }
 
+    /**
+     * @brief Get the primal value from the primal value vector.
+     *
+     * @param[in]  index  The index of the primal value which is get.
+     *
+     * @return The value which is get from the vector.
+     */
     Real& primalValue(const Index& index) {
       return primals[index];
     }
+
     private:
 
     /**

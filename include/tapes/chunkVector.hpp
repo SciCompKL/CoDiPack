@@ -338,11 +338,34 @@ namespace codi {
       curChunk->setDataAndMove(data...);
     }
 
+    /**
+     * @brief Sets the provided data pointers to the internal pointers of the
+     *        current data.
+     *
+     * This method should only be called if 'reserveItems' was called
+     * beforehand with enough items to accommodate all data that will
+     * be written to the pointers.
+     *
+     * @param[out] pointers  The pointers which are set to the internal data pointers.
+     *
+     * @tparam Pointers  The data types for the pointers to be set.
+     */
     template< typename ... Pointers>
     CODI_INLINE void getDataPointer(Pointers* &... pointers) {
       curChunk->dataPointer(curChunk->usedSize, pointers...);
     }
 
+    /**
+     * @brief Advance the count for the data size.
+     *
+     * This method should only be called if 'reserveItems' was called
+     * beforehand with enough items so that this size is smaller or
+     * equal.
+     *
+     * See also #getDataPointer.
+     *
+     * @param[in] count  The number of items written to the vector.
+     */
     CODI_INLINE void addDataSize(size_t count) {
       curChunk->usedSize += count;
     }
