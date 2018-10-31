@@ -137,7 +137,7 @@ struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
 };
 
 template<typename CoDiType>
-struct CoDiPackTool : public medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDiType::TapeType::RequiresPrimalReset, false, CoDiType, typename CoDiType::GradientValue, typename CoDiType::PassiveReal, typename CoDiType::GradientData> {
+struct CoDiPackTool : public medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDiType::TapeType::RequiresPrimalReset, false, CoDiType, typename CoDiType::GradientValue, typename CoDiType::Real, typename CoDiType::GradientData> {
   public:
     // All type definitions for the interface
     typedef CoDiType Type;
@@ -170,7 +170,7 @@ struct CoDiPackTool : public medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDi
 
   public:
     CoDiPackTool(MPI_Datatype primalMpiType, MPI_Datatype adjointMpiType) :
-      medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDiType::TapeType::RequiresPrimalReset, false, CoDiType, typename CoDiType::GradientValue, typename CoDiType::PassiveReal, typename CoDiType::GradientData>(primalMpiType, adjointMpiType) {}
+      medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDiType::TapeType::RequiresPrimalReset, false, CoDiType, typename CoDiType::GradientValue, typename CoDiType::Real, typename CoDiType::GradientData>(primalMpiType, adjointMpiType) {}
 
     // Implementation of the interface
 
@@ -241,10 +241,10 @@ struct CoDiPackTool : public medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDi
           // in createIndices the primal value has been set to zero. So set now the correct value
           Type::getGlobalTape().setPrimalValue(index, value.getValue());
           if(CoDiType::TapeType::RequiresPrimalReset) {
-            oldPrimal = 0.0;
+            oldPrimal = PrimalType(0.0);
           }
         } else {
-          double primal = Type::getGlobalTape().registerExtFunctionOutput(value);
+          PrimalType primal = Type::getGlobalTape().registerExtFunctionOutput(value);
           if(CoDiType::TapeType::RequiresPrimalReset) {
             oldPrimal = primal;
           }
@@ -253,7 +253,7 @@ struct CoDiPackTool : public medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDi
       } else {
 
         if(CoDiType::TapeType::RequiresPrimalReset) {
-          oldPrimal = 0.0;
+          oldPrimal = PrimalType(0.0);
         }
         if(!CoDiType::TapeType::LinearIndexHandler) {
           index = Type::getGlobalTape().getPassiveIndex();
