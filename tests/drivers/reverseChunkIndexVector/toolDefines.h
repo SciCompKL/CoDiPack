@@ -29,7 +29,6 @@
 #pragma once
 
 #include <codi.hpp>
-#include <tools/direction.hpp>
 
 const size_t DIM = 5;
 typedef codi::RealReverseIndexVec<DIM> NUMBER;
