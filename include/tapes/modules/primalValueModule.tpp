@@ -600,12 +600,13 @@
         if(0 != activeCount) {
           int passiveVariableNumber = ExpressionTraits<Rhs>::maxActiveVariables - activeCount;
 
-          constantValueVector.reserveItems(ExpressionTraits<Rhs>::maxConstantVariables + passiveVariableNumber); // the additional passives are create in pushIndices
+          constantValueVector.reserveItems(ExpressionTraits<Rhs>::maxConstantVariables);
           size_t constantSize = constantValueVector.getChunkPosition();
           rhs.constantValueAction(*this, NULL, &TAPE_NAME<TapeTypes>::pushPassive);
           codiAssert(ExpressionTraits<Rhs>::maxConstantVariables == constantValueVector.getChunkPosition() - constantSize);
 
           indexVector.reserveItems(ExpressionTraits<Rhs>::maxActiveVariables);
+          passiveValueVector.reserveItems(passiveVariableNumber);
           size_t indexSize = indexVector.getChunkPosition();
           int passieveVariableCount = 0;
           rhs.valueAction(&passieveVariableCount, &TAPE_NAME<TapeTypes>::pushIndices);
@@ -674,7 +675,7 @@
      */
     CODI_INLINE void storeManual(const Real& lhsValue, Index& lhsIndex, StatementInt size) {
       ENABLE_CHECK (OptTapeActivity, active){
-        constantValueVector.reserveItems(size);
+        passiveValueVector.reserveItems(size);
         indexVector.reserveItems(size);
 
         pushStmtData(lhsIndex, lhsValue, preaccHandles[size], size);
