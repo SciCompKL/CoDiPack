@@ -229,7 +229,7 @@ struct CoDiPackTool : public medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDi
 
     static inline void registerValue(Type& value, PrimalType& oldPrimal, IndexType& index) {
 
-      bool wasActive = 0 != value.getGradientData();
+      bool wasActive = Type::getGlobalTape().isActive(value.getGradientData());
       value.getGradientData() = IndexType();
 
       // make the value active again if it has been active before on the other processor
@@ -302,7 +302,7 @@ struct CoDiPackTool : public medi::ADToolImplCommon<CoDiPackTool<CoDiType>, CoDi
 
     static void modifyDependency(ModifiedType& inval, ModifiedType& inoutval) {
 
-      bool active = (0 != inoutval.getGradientData()) || (0 != inval.getGradientData());
+      bool active = Type::getGlobalTape().isActive(inoutval.getGradientData()) || Type::getGlobalTape().isActive(inval.getGradientData());
       if(active) {
         inoutval.getGradientData() = Type::getGlobalTape().getInvalidIndex();
       } else {
