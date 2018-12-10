@@ -111,6 +111,14 @@ namespace codi {
         addDataInternal(std::make_tuple("Total memory allocated", EntryType::Double, allocatedMemoryIndex));
       }
 
+      double getUsedMemory() {
+        return doubleData[0];
+      }
+
+      double getAllocatedMemory() {
+        return doubleData[1];
+      }
+
       /**
        * @brief Start a new section.
        *

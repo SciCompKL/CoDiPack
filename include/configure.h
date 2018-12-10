@@ -482,6 +482,12 @@ namespace codi {
     void handleIndexFree(const Index& index);
   #endif
 
+  #ifndef CODI_OverflowCheck
+    #define CODI_OverflowCheck 1
+  #endif
+  const bool IsOverflowCheck = CODI_OverflowCheck;
+  #undef CODI_OverflowCheck
+
   #ifndef CODI_EnableAssert
     #define CODI_EnableAssert false
   #endif

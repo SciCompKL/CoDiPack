@@ -126,6 +126,9 @@ namespace codi {
        * @return The new index that can be used.
        */
       CODI_INLINE Index createIndex() {
+        ENABLE_CHECK(IsOverflowCheck, count > count + 1) {
+          CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
+        }
         return ++count;
       }
 
