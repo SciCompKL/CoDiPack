@@ -72,7 +72,7 @@ else
     while [ $# -gt 0 ]
     do
         res+=" "
-        [[ $1 =~ "_([^/]+)\.out" ]] &&
+        [[ $1 =~ _([^/]+)\.out ]] &&
             res+=${BASH_REMATCH[1]}:
         cmp $baseFileName $1
         if [ $? -eq 0 ];
