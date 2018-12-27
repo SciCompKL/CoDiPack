@@ -763,6 +763,118 @@ namespace codi {
   #include "binaryExpression.tpp"
 
   /*
+   * Implementation for f(a,b) = copysign(a,b)
+   */
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientA_Copysign(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    if(a < 0.0) {
+      if (b < 0.0) {return (typename TypeTraits<Real>::PassiveReal)1.0;}
+      else {return (typename  TypeTraits<Real>::PassiveReal)-1.0;}
+    } else if(a > 0.0) {
+      if (b < 0.0) {return (typename TypeTraits<Real>::PassiveReal)-1.0;}
+      else {return (typename TypeTraits<Real>::PassiveReal)1.0;}
+    } else {
+      return (typename TypeTraits<Real>::PassiveReal)0.0;
+    }
+  }
+
+  template<typename Real, typename A, typename B> CODI_INLINE const typename TypeTraits<Real>::PassiveReal gradientB_Copysign(const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(b);
+    CODI_UNUSED(result);
+    return 0.0;
+  }
+
+  template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Copysign(Data& data, const A& a, const B& b, const Real& result) {
+    CODI_UNUSED(result);
+    if(a.getValue() < 0.0) {
+      if (b.getValue() < 0.0) {return a.calcGradient(data);}
+      else {return a.calcGradient(data, -1.0);}
+    } else if(a.getValue() > 0.0) {
+      if (b.getValue() < 0.0) {return a.calcGradient(data, -1.0);}
+      else {return a.calcGradient(data);}
+    } else {
+      return a.calcGradient(data, 0.0);
+    }
+    b.calcGradient(data, 0.0);
+  }
+
+  template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11M_Copysign(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
+    if(a.getValue() < 0.0) {
+      if (b.getValue() < 0.0) {return a.calcGradient(data, multiplier);}
+      else {return a.calcGradient(data, -1.0*multiplier);}
+    } else if(a.getValue() > 0.0) {
+      if (b.getValue() < 0.0) {return a.calcGradient(data, -1.0*multiplier);}
+      else {return a.calcGradient(data, multiplier);}
+    } else {
+      return a.calcGradient(data, 0.0);
+    }
+    b.calcGradient(data, 0.0);
+  }
+
+  template<typename Data, typename Real, typename A> CODI_INLINE void derv10_Copysign(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+    CODI_UNUSED(result);
+    if(a.getValue() < 0.0) {
+      if (b < 0.0) {return a.calcGradient(data);}
+      else {return a.calcGradient(data, -1.0);}
+    } else if(a.getValue() > 0.0) {
+      if (b < 0.0) {return a.calcGradient(data, -1.0);}
+      else {return a.calcGradient(data);}
+    } else {
+      return a.calcGradient(data, 0.0);
+    }
+  }
+
+  template<typename Data, typename Real, typename A> CODI_INLINE void derv10M_Copysign(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(result);
+    if(a.getValue() < 0.0) {
+      if (b < 0.0) {return a.calcGradient(data, multiplier);}
+      else {return a.calcGradient(data, -1.0*multiplier);}
+    } else if(a.getValue() > 0.0) {
+      if (b < 0.0) {return a.calcGradient(data, -1.0*multiplier);}
+      else {return a.calcGradient(data, multiplier);}
+    } else {
+      return a.calcGradient(data, 0.0);
+    }
+  }
+
+  template<typename Data, typename Real, typename B> CODI_INLINE void derv01_Copysign(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(b);
+    CODI_UNUSED(result);
+    b.calcGradient(data, 0.0);
+  }
+
+  template<typename Data, typename Real, typename B> CODI_INLINE void derv01M_Copysign(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+    CODI_UNUSED(a);
+    CODI_UNUSED(b);
+    CODI_UNUSED(result);
+    b.calcGradient(data, 0.0);
+  }
+
+  using std::copysign;
+  #define NAME Copysign
+  #define FUNCTION copysign
+  #define PRIMAL_FUNCTION copysign
+  #include "binaryExpression.tpp"
+
+  template <typename Real, class A, class B>
+  CODI_INLINE Copysign11<Real, A, B> copysignf(const Expression<Real, A>& a, const Expression<Real, B>& b) {
+    return Copysign11<Real, A, B>(a.cast(), b.cast());
+  }
+
+  template <typename Real, class A>
+  CODI_INLINE Copysign10<Real, A> copysignf(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+    return Copysign10<Real, A>(a.cast(), b);
+  }
+
+  template <typename Real, class B>
+  CODI_INLINE Copysign01<Real, B> copysignf(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
+    return Copysign01<Real, B>(a, b.cast());
+  }
+
+  /*
    * Forward of fmax to max
    */
   /**
