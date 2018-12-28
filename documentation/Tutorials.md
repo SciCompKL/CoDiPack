@@ -11,7 +11,8 @@ The CoDiPack tutorials:
   - \subpage Tutorial7 "Tutorial 7": Higher order derivatives
    - \subpage Tutorial7_1 "Tutorial 7.1": Higher order derivatives with the template interface
    - \subpage Tutorial7_2 "Tutorial 7.2": Higher order derivatives without a helper interface
-  - \subpage Tutorial8 "Tutorial 8": Gradient computation for different parts of an application / rest of reverse tapes
+  - \subpage Tutorial8 "Tutorial 8": Several different gradient computations / rest of reverse tapes
+  - \subpage Tutorial9 "Tutorial 9": Gradient evaluations for different program configurations
 
 The advanced CoDiPack tutorials:
   - \subpage TutorialA1 "Tutorial A1": External functions

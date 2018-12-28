@@ -189,6 +189,15 @@ namespace codi {
     virtual size_t getAdjointSize() const = 0;
 
     /**
+     * @brief Clear the derivative information from a value.
+     *
+     * The value is considered afterswards as not dependent on any input variables.
+     *
+     * @param[in,out] value The cleared variable.
+     */
+    virtual void deactivateValue(ActiveReal<TapeImplementation>& value) = 0;
+
+    /**
      * @brief Declare a variable as an input variable.
      *
      * @param[in,out] value The input variable.

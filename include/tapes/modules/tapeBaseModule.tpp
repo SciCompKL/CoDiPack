@@ -298,6 +298,17 @@
     }
 
     /**
+     * @brief Clear the derivative information from a value.
+     *
+     * The value is considered afterswards as not dependent on any input variables.
+     *
+     * @param[in,out] value The cleared variable.
+     */
+    void deactivateValue(ActiveReal<TAPE_NAME<TapeTypes>>& value) {
+      INDEX_HANDLER_NAME.freeIndex(value.getGradientData());
+    }
+
+    /**
      * @brief Reset the tape to the given position.
      *
      * @param[in] pos Reset the state of the tape to the given position.

@@ -1,13 +1,13 @@
-Tutorial 8: Reverse mode tape reset {#Tutorial8}
+Tutorial 8: Several tape recordings {#Tutorial8}
 ============
 
 In this tutorial we want to compute the same function as in [Tutorial 2](@ref Tutorial2),
-but now the function will not be evaluated at one but at several points.
+but now the function will be evaluated at several points.
 
-This will require the same steps as in Tutorial 2 but in addition the tape needs to be reset for the
-different evaluation.
-If this is not done, the tape will grow with each sucessife function evaluation.
-In addition to the increased memory requirements the evaluation time for the tape will increase exponential, too.
+This will require the same steps as in Tutorial 2 and in addition the tape needs to be reset for the
+different evaluations.
+If this is not done, the tape will grow with each successive function evaluation.
+In addition to the increased memory requirements the evaluation time for the tape will increase with each pass, too.
 
 The recording and evaluation procedure from Tutorial 2 is:
 ~~~~{.cpp}
@@ -43,10 +43,9 @@ This procedure is now changed such that multiple evaluations are performed:
       }
 ~~~~
 
-The change is quite simple but would lead to the above mentioned problem, that the tape size would increase
-with each loop iteration.
-The tape is not reset in CoDiPack with the setActive call since, we want to be able to exlude code regions from the taping process.
-The reset of the tape has to be done manually with the reset function of the ReverseTapeInterface.
+The change is quite simple but would lead to the above mentioned problem, that the tape size would increase with each loop iteration.
+'setActive' does not reset the in CoDiPack since we want to be able to exclude code regions from the taping process.
+The reset of the tape has to be done manually with the 'reset' function of the ReverseTapeInterface.
 
 This adds just one call inside of the loop:
 ~~~~{.cpp}
@@ -65,7 +64,7 @@ This adds just one call inside of the loop:
       }
 ~~~~
 
-Now the tape will have always the same size in each loope iteration.
+Now the tape will have always the same size in each loop iteration.
 
 The full code of the example is now:
 ~~~~{.cpp}
