@@ -29,7 +29,6 @@
 #pragma once
 
 #include <codi.hpp>
-#include <tools/direction.hpp>
 
 typedef codi::RealReversePrimal NUMBER;
 
