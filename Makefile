@@ -1,7 +1,7 @@
 #
 # CoDiPack, a Code Differentiation Package
 #
-# Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+# Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
 # Homepage: http://www.scicomp.uni-kl.de
 # Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
 #
@@ -26,7 +26,7 @@
 # Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
 #
 
-# names of the basic deriectories
+# names of the basic directories
 BUILD_DIR = build
 DOC_DIR   = documentation
 
