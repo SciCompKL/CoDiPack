@@ -100,7 +100,7 @@
      * @param[in]              indices  The indices from the arguments of the statements.
      */
      template<typename AdjointData>
-     CODI_INLINE void incrementAdjoints(const AdjointData& adj, AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, Index* &indices) {
+     static CODI_INLINE void incrementAdjoints(const AdjointData& adj, AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, Real* &jacobies, Index* &indices) {
       ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
         for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
           --dataPos;
@@ -130,7 +130,7 @@
      * @param[in]              indices  The indices from the arguments of the statements.
      */
     template<typename AdjointData>
-    CODI_INLINE void incrementTangents(AdjointData& adj, const AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, const Real* jacobies, const Index* indices) {
+    static CODI_INLINE void incrementTangents(AdjointData& adj, const AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, const Real* jacobies, const Index* indices) {
       for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
         adj += adjoints[indices[dataPos]] * jacobies[dataPos];
         dataPos += 1;

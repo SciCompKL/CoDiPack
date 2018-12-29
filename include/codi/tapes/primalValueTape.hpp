@@ -251,18 +251,9 @@ namespace codi {
       AdjVecInterface<AdjointData> interface(adjointData, primals);
       AdjVecType<AdjointData>* adjVec = wrapAdjointVector(interface, adjointData);
 
-      auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos,
-                              AdjVecType<AdjointData>* adjointData,
-                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
-                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                              size_t& stmtPos, const size_t& endStmtPos,
-                                Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackReverse<AdjVecType<AdjointData>>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
-                                     indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
-      };
-      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType<AdjointData>*&>;
-      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, adjVec);
+      Wrap_evaluateStackReverse<AdjVecType<AdjointData>> evalFunc{};
+      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), Real*&, AdjVecType<AdjointData>*&>;
+      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, primals, adjVec);
     }
 
     /**
@@ -284,18 +275,9 @@ namespace codi {
       AdjVecInterface<AdjointData> interface(adjointData, primals);
       AdjVecType<AdjointData>* adjVec = wrapAdjointVector(interface, adjointData);
 
-      auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos,
-                              AdjVecType<AdjointData>* adjointData,
-                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
-                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                              size_t& stmtPos, const size_t& endStmtPos,
-                                Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackForward<AdjVecType<AdjointData>>(startAdjPos, endAdjPos, adjointData, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
-                                     indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
-      };
-      auto forwardFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc), AdjVecType<AdjointData>*&>;
-      evaluateExtFuncForward(start, end, forwardFunc, constantValueVector, &interface, evalFunc, adjVec);
+      Wrap_evaluateStackForward<AdjVecType<AdjointData>> evalFunc{};
+      auto forwardFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc), Real*&, AdjVecType<AdjointData>*&>;
+      evaluateExtFuncForward(start, end, forwardFunc, constantValueVector, &interface, evalFunc, primals, adjVec);
     }
 
     /**
@@ -315,16 +297,9 @@ namespace codi {
 
       AdjVecInterface<GradientValue> interface(adjoints, primals);
 
-      auto evalFunc = [this] (const size_t& startAdjPos, const size_t& endAdjPos,
-                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
-                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                              size_t& stmtPos, const size_t& endStmtPos, Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackPrimal(startAdjPos, endAdjPos, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
-                            indexPos, endIndexPos, indices, stmtPos, endStmtPos, statements, passiveActiveReal);
-      };
-      auto primalFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc)>;
-      evaluateExtFuncPrimal(start, end, primalFunc, constantValueVector, &interface, evalFunc);
+      Wrap_evaluateStackPrimal evalFunc{};
+      auto primalFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc), Real*&>;
+      evaluateExtFuncPrimal(start, end, primalFunc, constantValueVector, &interface, evalFunc, primals);
     }
 
     /**
@@ -409,6 +384,7 @@ namespace codi {
      *
      * @param[in]       startAdjPos  The starting position for the adjoint evaluation.
      * @param[in]         endAdjPos  The ending position for the adjoint evaluation.
+     * @param[in,out]    primalData  The vector of the primal variables.
      * @param[in,out]   adjointData  The vector of the adjoint variables.
      * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
      * @param[in]    endConstantPos  The ending position in the constant data vector.
@@ -423,7 +399,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStackReverse(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
+    static CODI_INLINE void evaluateStackReverse(const size_t& startAdjPos, const size_t& endAdjPos, Real* primalData, AdjointData* adjointData,
                                           size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
                                           size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
@@ -453,13 +429,15 @@ namespace codi {
 
         if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-          HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primals, adjointData);
+          HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalData, adjointData);
 #else
-          HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primals, adjointData);
+          HandleFactory::template callHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], adj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalData, adjointData);
 #endif
         }
       }
     }
+
+    WRAP_FUNCTION_TEMPLATE(Wrap_evaluateStackReverse, evaluateStackReverse);
 
     /**
      * @brief Evaluate the stack from the start to to the end position.
@@ -468,6 +446,7 @@ namespace codi {
      *
      * @param[in]       startAdjPos  The starting position for the adjoint evaluation.
      * @param[in]         endAdjPos  The ending position for the adjoint evaluation.
+     * @param[in,out]    primalData  The vector of the primal variables.
      * @param[in,out]   adjointData  The vector of the adjoint variables.
      * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
      * @param[in]    endConstantPos  The ending position in the constant data vector.
@@ -482,7 +461,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStackForward(const size_t& startAdjPos, const size_t& endAdjPos, AdjointData* adjointData,
+    static CODI_INLINE void evaluateStackForward(const size_t& startAdjPos, const size_t& endAdjPos, Real* primalData, AdjointData* adjointData,
                                           size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
                                          size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
@@ -502,7 +481,7 @@ namespace codi {
 
         if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
           // primal return value is currently not updated here (would be the same)
-          HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primals, adjointData);
+          HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalData, adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
           adjointData->setLhsTangent(adjPos); /* Resets the lhs tangent, too */
@@ -514,7 +493,9 @@ namespace codi {
       }
     }
 
-    CODI_INLINE void evaluateStackPrimal(const size_t& startAdjPos, const size_t& endAdjPos,
+    WRAP_FUNCTION_TEMPLATE(Wrap_evaluateStackForward, evaluateStackForward);
+
+    static CODI_INLINE void evaluateStackPrimal(const size_t& startAdjPos, const size_t& endAdjPos, Real* primalData,
                                           size_t& constantPos, const size_t& endConstPos, PassiveReal* &constants,
                                           size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
@@ -531,12 +512,14 @@ namespace codi {
         adjPos += 1;
 
         if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
-          primals[adjPos] = HandleFactory::template callPrimalHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primals);
+          primalData[adjPos] = HandleFactory::template callPrimalHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalData);
         }
 
         stmtPos += 1;
       }
     }
+
+    WRAP_FUNCTION(Wrap_evaluateStackPrimal, evaluateStackPrimal);
 
   public:
 

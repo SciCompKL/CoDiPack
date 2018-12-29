@@ -369,7 +369,7 @@ namespace codi {
      *
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
-    CODI_INLINE void evaluateStackPrimal(Real* primalVector,
+    static CODI_INLINE void evaluateStackPrimal(Real* primalVector,
                                          size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
                                          size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                          size_t& indexPos, const size_t& endIndexPos, Index* &indices,
@@ -389,6 +389,8 @@ namespace codi {
         stmtPos += 1;
       }
     }
+
+    WRAP_FUNCTION(Wrap_evaluateStackPrimal, evaluateStackPrimal);
 
     /**
      * @brief Evaluate the stack from the start to to the end position.
@@ -413,7 +415,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStackReverse(AdjointData* adjointData, Real* primalVector,
+    static CODI_INLINE void evaluateStackReverse(AdjointData* adjointData, Real* primalVector,
                                           size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
                                           size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
@@ -446,6 +448,8 @@ namespace codi {
       }
     }
 
+    WRAP_FUNCTION_TEMPLATE(Wrap_evaluateStackReverse, evaluateStackReverse);
+
     /**
      * @brief Evaluate the stack in the forward mode from the start to to the end position.
      *
@@ -469,7 +473,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStackForward(AdjointData* adjointData, Real* primalVector,
+    static CODI_INLINE void evaluateStackForward(AdjointData* adjointData, Real* primalVector,
                                           size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
                                           size_t& passivePos, const size_t& endPassivePos, Real* &passives,
                                           size_t& indexPos, const size_t& endIndexPos, Index* &indices,
@@ -498,6 +502,8 @@ namespace codi {
         stmtPos += 1;
       }
     }
+
+    WRAP_FUNCTION_TEMPLATE(Wrap_evaluateStackForward, evaluateStackForward);
 
     /**
      * @brief Allocates a copy of the primal vector that is used in the evaluation.
@@ -528,16 +534,7 @@ namespace codi {
       AdjVecInterface<AdjointData> interface(adjointData, primalsCopy);
       AdjVecType<AdjointData>* adjVec = wrapAdjointVector(interface, adjointData);
 
-      auto evalFunc = [this] (AdjVecType<AdjointData>* adjointData, Real* primalVector,
-                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
-                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                              size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackReverse<AdjVecType<AdjointData>>(adjointData, primalVector, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
-                                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
-                                                      statements, passiveActiveReal);
-      };
+      Wrap_evaluateStackReverse<AdjVecType<AdjointData>> evalFunc{};
       auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType<AdjointData>*&, Real*&>;
       evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
 
@@ -593,16 +590,7 @@ namespace codi {
       AdjVecInterface<AdjointData> interface(adjointData, primalsCopy);
       AdjVecType<AdjointData>* adjVec = wrapAdjointVector(interface, adjointData);
 
-      auto evalFunc = [this] (AdjVecType<AdjointData>* adjointData, Real* primalVector,
-                              size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                              size_t& passivePos, const size_t& endPassivePos, Real* &passives,
-                              size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                              size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackForward<AdjVecType<AdjointData>>(adjointData, primalVector, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
-                                                      indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
-                                                      statements, passiveActiveReal);
-      };
+      Wrap_evaluateStackForward<AdjVecType<AdjointData>> evalFunc{};
       auto forwardFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc), AdjVecType<AdjointData>*&, Real*&>;
       evaluateExtFuncForward(start, end, forwardFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
 
@@ -689,16 +677,7 @@ namespace codi {
 
       AdjVecInterface<GradientValue> interface(adjoints, primalsCopy);
 
-      auto primalFunc = [this] (Real* primalVector,
-                                size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                                size_t& passivePos, const size_t& endPassivePos, Real* &passives,
-                                size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                                size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                  Handle* &statements, StatementInt* &passiveActiveReal) {
-        evaluateStackPrimal(primalVector, constantPos, endConstantPos, constants, passivePos, endPassivePos, passives,
-                            indexPos, endIndexPos, indices, stmtPos, endStmtPos, lhsIndices, storedPrimals,
-                            statements, passiveActiveReal);
-      };
+      Wrap_evaluateStackPrimal primalFunc{};
       auto primalIter = &ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
       evaluateExtFuncPrimal(start, end, primalIter, constantValueVector, &interface, primalFunc, primalsCopy);
 

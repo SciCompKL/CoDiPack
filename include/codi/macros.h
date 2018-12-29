@@ -108,6 +108,33 @@
 #define CODI_UNUSED(name) (void)name
 
 /**
+ * @brief Creates a function object wrapper for a non-member function
+ *
+ * This macro is used to inline function which are given as template arguments
+ */
+#define WRAP_FUNCTION(NAME, FUNC) \
+  struct NAME { \
+    template<typename ... Args> \
+    void operator()(Args&& ... args) const { \
+      FUNC(std::forward<Args>(args)...); \
+    } \
+  }
+
+/**
+ * @brief Creates a function object wrapper for a non-member template function
+ *
+ * This macro is used to inline function which are given as template arguments
+ */
+#define WRAP_FUNCTION_TEMPLATE(NAME, FUNC) \
+  template<typename ... TT> \
+  struct NAME { \
+    template<typename ... Args> \
+    void operator()(Args&& ... args) const { \
+      FUNC<TT...>(std::forward<Args>(args)...); \
+    } \
+  }
+
+/**
  * @brief helper function that avoids unused variable warnings for variadic args.
  *
  * See https://stackoverflow.com/questions/19532475/casting-a-variadic-parameter-pack-to-void for the idea.

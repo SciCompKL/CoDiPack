@@ -325,7 +325,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStackReverse(AdjointData* adjointData,
+    static CODI_INLINE void evaluateStackReverse(AdjointData* adjointData,
                                           size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
                                           size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
                                           Index* lhsIndices) {
@@ -346,6 +346,8 @@ namespace codi {
       }
     }
 
+    WRAP_FUNCTION_TEMPLATE(Wrap_evaluateStackReverse, evaluateStackReverse);
+
     /**
      * @brief Evaluate the stack in reverse order.
      *
@@ -360,12 +362,7 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
-      auto evalFunc = [this] (AdjointData* adjointData,
-          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
-          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements, Index* lhsIndices) {
-        evaluateStackReverse<AdjointData>(adjointData, dataPos, endDataPos, jacobies, indices,
-                                      stmtPos, endStmtPos, statements, lhsIndices);
-      };
+      Wrap_evaluateStackReverse<AdjointData> evalFunc{};
       auto reverseFunc = &JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 
       AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
@@ -391,7 +388,7 @@ namespace codi {
      * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateStackForward(AdjointData* adjointData,
+    static CODI_INLINE void evaluateStackForward(AdjointData* adjointData,
                                           size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
                                           size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
                                           Index* lhsIndices) {
@@ -408,6 +405,8 @@ namespace codi {
       }
     }
 
+    WRAP_FUNCTION_TEMPLATE(Wrap_evaluateStackForward, evaluateStackForward);
+
     /**
      * @brief Evaluate the stack in forward order.
      *
@@ -422,12 +421,7 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
 
-      auto evalFunc = [this] (AdjointData* adjointData,
-          size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
-          size_t& stmtPos, const size_t& endStmtPos, StatementInt* &statements, Index* lhsIndices) {
-        evaluateStackForward<AdjointData>(adjointData, dataPos, endDataPos, jacobies, indices,
-                                      stmtPos, endStmtPos, statements, lhsIndices);
-      };
+      Wrap_evaluateStackForward<AdjointData> evalFunc{};
       auto forwardFunc = &JacobiVector::template evaluateForward<decltype(evalFunc), AdjointData*&>;
 
       AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
