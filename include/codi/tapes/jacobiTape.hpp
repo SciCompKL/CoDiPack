@@ -43,6 +43,7 @@
 #include "singleChunkVector.hpp"
 #include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
+#include "../tools/jacobianSorter.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -169,8 +170,8 @@ namespace codi {
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
       /* defined in statementModule */stmtVector(DefaultChunkSize, &indexHandler),
+      /* defined in statementModule */insertData(),
       /* defined in jacobiModule */jacobiVector(DefaultChunkSize, &stmtVector),
-      /* defined in jacobiModule */insertData(),
       /* defined in externalFunctionsModule */extFuncVector(1000, &jacobiVector) {
     }
 

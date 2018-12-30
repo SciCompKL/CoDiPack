@@ -149,45 +149,8 @@
       jacobiVector.resize(dataSize);
     }
 
-    struct InsertData {
-
-        std::array<GradientData, MaxStatementIntSize> indices;
-        std::array<Real, MaxStatementIntSize> jacobies;
-        uint8_t size;
-
-        InsertData() = default;
-
-        CODI_INLINE void addData(const GradientData& index, const Real& jacobi) {
-          bool found = false;
-          uint8_t pos;
-          for(pos = 0; pos < size; ++pos) {
-            if(indices[pos] == index) {
-              found = true;
-              break;
-            }
-          }
-
-          if(!found) {
-            size += 1;
-            indices[pos] = index;
-          }
-
-          jacobies[pos] += jacobi;
-        }
-    };
-
   public:
 
-    InsertData insertData;
-
-    CODI_INLINE void storeData() {
-      for(uint8_t pos = 0; pos < insertData.size; ++pos) {
-        this->jacobiVector.setDataAndMove(insertData.jacobies[pos], insertData.indices[pos]);
-        insertData.jacobies[pos] = 0.0;
-      }
-
-      insertData.size = 0;
-    }
 
   // ----------------------------------------------------------------------
   // Public function from the TapeInterface and ReverseTapeInterface
@@ -210,13 +173,13 @@
      * @param[in] value Not used in this implementation.
      * @param[in] index Used to check if the variable is active.
      *
-     * @tparam Data  The type of the data for the tape.
+     * @tparam Data   Requires a 'setDataAndMove' method as in the codi::ChunkVector interface.
      */
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& data, const Real& value, const Index& index) {
       CODI_UNUSED(value);
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        data.addData(index, PassiveReal(1.0));
+        data.setDataAndMove(PassiveReal(1.0), index);
       }
     }
 
@@ -228,7 +191,7 @@
      * @param[in]  value Not used in this implementation.
      * @param[in]  index Used to check if the variable is active.
      *
-     * @tparam Data  The type of the data for the tape.
+     * @tparam Data   Requires a 'setDataAndMove' method as in the codi::ChunkVector interface.
      */
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const Index& index) {
@@ -236,7 +199,7 @@
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
         ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
           ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
-            data.addData(index, jacobi);
+            data.setDataAndMove(jacobi, index);
           }
         }
       }

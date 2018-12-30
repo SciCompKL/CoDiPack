@@ -84,6 +84,9 @@
     /** @brief The data for the statements. */
     StmtVector stmtVector;
 
+    /** @brief Helper structure to buffer the argument data and add arguments with the same identifier */
+    JacobianSorter<Real, GradientData> insertData;
+
   private:
 
   // ----------------------------------------------------------------------
@@ -161,7 +164,7 @@
         size_t startSize = JACOBI_VECTOR_NAME.getChunkPosition();
         rhs.template calcGradient(insertData);
         rhs.template pushLazyJacobies(insertData);
-        storeData();
+        insertData.storeData(JACOBI_VECTOR_NAME);
         size_t activeVariables = JACOBI_VECTOR_NAME.getChunkPosition() - startSize;
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
 
