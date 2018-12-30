@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -32,6 +32,9 @@
 #include <vector>
 
 int main(int nargs, char** args) {
+  (void)nargs;
+  (void)args;
+
   int evalPoints = getEvalPointsCount();
   int inputs = getInputCount();
   int outputs = getOutputCount();
@@ -39,7 +42,7 @@ int main(int nargs, char** args) {
   NUMBER* y = new NUMBER[outputs];
 
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
-  tape.resize(1000, 1000);
+  tape.resize(10000, 10000);
   tape.setExternalFunctionChunkSize(1000);
   tape.setActive();
 

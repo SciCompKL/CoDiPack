@@ -1,7 +1,7 @@
 #
 # CoDiPack, a Code Differentiation Package
 #
-# Copyright (C) 2015-2017 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+# Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
 # Homepage: http://www.scicomp.uni-kl.de
 # Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
 #
@@ -26,11 +26,11 @@
 # Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
 #
 
-# names of the basic deriectories
+# names of the basic directories
 BUILD_DIR = build
 DOC_DIR   = documentation
 
-#list all source files in TEST_DIR
+#list all source files in DOC_DIR
 DOC_FILES   = $(wildcard $(DOC_DIR)/*.cpp)
 
 #list all dependency files in BUILD_DIR
@@ -38,7 +38,7 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/*.d)
 
 CODI_DIR := .
 
-FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include
+FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
 
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
