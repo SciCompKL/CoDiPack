@@ -331,6 +331,17 @@ namespace codi {
   #endif
 
   /*
+   * This switch enables a memory reduction technique for the Jacobian tapes. The arguments of each expression are
+   * are searched for common identifiers. If one is found, then the Jacobians of the two arguments are summed together
+   * and only one argument instead of the two is stored.
+   *
+   * It can be set with the preprocessor macro CODI_EnableCombineJacobianArguments=<1/0>
+   */
+  #ifndef CODI_EnableCombineJacobianArguments
+    #define CODI_EnableCombineJacobianArguments 0
+  #endif
+
+  /*
    * This disable the special implementations for the gradients in the binary operators.
    *
    * It can be set with the preprocessor macro CODI_DisableCalcGradientSpecialization=<true/false>

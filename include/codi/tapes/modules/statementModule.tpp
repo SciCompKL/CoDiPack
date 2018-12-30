@@ -84,10 +84,43 @@
     /** @brief The data for the statements. */
     StmtVector stmtVector;
 
+#if CODI_EnableCombineJacobianArguments
     /** @brief Helper structure to buffer the argument data and add arguments with the same identifier */
     JacobianSorter<Real, GradientData> insertData;
+#endif
 
   private:
+
+    /**
+     * @brief Perform all actions to compute the Jacobians of the expression and store them in the jacobian vector.
+     *
+     * @param[in] rhs  The right hand side expression
+     *
+     * @tparam Rhs  The expression of the right hand side.
+     */
+    template<typename Rhs>
+    CODI_INLINE size_t addJacobianEntries(const Rhs& rhs) {
+
+      size_t startSize = JACOBI_VECTOR_NAME.getChunkPosition();
+
+#if !CODI_EnableCombineJacobianArguments
+      // If enabled insertData is defined as a member
+      auto& insertData = JACOBI_VECTOR_NAME;
+#endif
+
+
+      // Push the regular Jacobian arguments
+      rhs.template calcGradient(insertData);
+
+      // Push Jacobians from ReferencReal arguments
+      rhs.template pushLazyJacobies(insertData);
+
+      // Store the Jacobians if the cobine optimization is enabled
+#if CODI_EnableCombineJacobianArguments
+      insertData.storeData(JACOBI_VECTOR_NAME);
+#endif
+      return JACOBI_VECTOR_NAME.getChunkPosition() - startSize;
+    }
 
   // ----------------------------------------------------------------------
   // Private function for the communication with the including class
@@ -151,7 +184,6 @@
      */
     template<typename Rhs>
     CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const Rhs& rhs) {
-      void* null = NULL;
 
       static_assert(ExpressionTraits<Rhs>::maxActiveVariables < MaxStatementIntSize, "Expression with to many arguments.");
 
@@ -161,11 +193,8 @@
         /* first store the size of the current stack position and evaluate the
          rhs expression. If there was an active variable on the rhs, update
          the index of the lhs */
-        size_t startSize = JACOBI_VECTOR_NAME.getChunkPosition();
-        rhs.template calcGradient(insertData);
-        rhs.template pushLazyJacobies(insertData);
-        insertData.storeData(JACOBI_VECTOR_NAME);
-        size_t activeVariables = JACOBI_VECTOR_NAME.getChunkPosition() - startSize;
+
+        size_t activeVariables = addJacobianEntries(rhs);
         ENABLE_CHECK(OptCheckEmptyStatements, 0 != activeVariables) {
 
           indexHandler.assignIndex(lhsIndex);

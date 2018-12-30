@@ -177,7 +177,9 @@ namespace codi {
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
       /* defined in statementModule */stmtVector(DefaultChunkSize, &emptyVector),
+#if CODI_EnableCombineJacobianArguments
       /* defined in statementModule */insertData(),
+#endif
       /* defined in jacobiModule */jacobiVector(DefaultChunkSize, &stmtVector),
       /* defined in externalFunctionsModule */extFuncVector(1000, &jacobiVector) {
     }
