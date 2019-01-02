@@ -86,7 +86,6 @@ namespace codi {
 
     public:
 
-
       /**
        * @brief Default constructor
        */

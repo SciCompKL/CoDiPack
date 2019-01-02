@@ -210,6 +210,14 @@ namespace codi {
     }
 
     /**
+     * @brief Get the nested vector.
+     * @return The nested vector.
+     */
+    NestedVector& getNested() {
+      return *nested;
+    }
+
+    /**
      * @brief Swap the contents of this chunk vector with the contents of the other
      *        chunk vector.
      *
