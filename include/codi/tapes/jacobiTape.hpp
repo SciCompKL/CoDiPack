@@ -39,6 +39,7 @@
 #include "chunkVector.hpp"
 #include "externalFunctions.hpp"
 #include "modules/externalFunctionsModule.hpp"
+#include "modules/ioModule.hpp"
 #include "modules/jacobiModule.hpp"
 #include "modules/statementModule.hpp"
 #include "reverseTapeInterface.hpp"
@@ -113,11 +114,13 @@ namespace codi {
       public JacobiModule<TapeTypes, JacobiTape<TapeTypes>>,
       public StatementModule<TapeTypes, JacobiTape<TapeTypes>>,
       public ExternalFunctionModule<TapeTypes, typename TapeTypes::Index, JacobiTape<TapeTypes>>,
+      public IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiTape<TapeTypes>>,
       public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, JacobiTape<TapeTypes>, typename TapeTypes::Position >
   {
   public:
 
     friend StatementModule<TapeTypes, JacobiTape>;
+    friend IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiTape>;
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -147,9 +150,6 @@ namespace codi {
     #define EVALUATE_PRIMAL_FUNCTION_NAME this->evaluatePrimalStub
     #include "modules/tapeBaseModule.tpp"
 
-    #define ROOT_VECTOR this->extFuncVector
-    #include "modules/ioModule.tpp"
-
     #undef TAPE_NAME
 
   public:
@@ -161,6 +161,7 @@ namespace codi {
       JacobiModule<TapeTypes, JacobiTape>(),
       StatementModule<TapeTypes, JacobiTape<TapeTypes> > (),
       ExternalFunctionModule<TapeTypes, typename TapeTypes::Index, JacobiTape<TapeTypes> > (),
+      IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiTape<TapeTypes> > (),
       indexHandler(0),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
@@ -168,6 +169,7 @@ namespace codi {
       this->initStmtModule(&indexHandler);
       this->initJacobiModule(&this->stmtVector);
       this->initExtFuncModule(&this->jacobiVector);
+      this->initIOModule(&this->extFuncVector);
     }
 
     /** @brief Tear down the tape. Delete all values from the modules */
