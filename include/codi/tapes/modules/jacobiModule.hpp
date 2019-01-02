@@ -69,6 +69,13 @@ namespace codi {
       /** @brief The global position for the tape */
       typedef typename TapeTypes::Position Position;
 
+      /**
+       * @brief Cast this class to the full.
+       *
+       * The full type is able to access all functions from the tape and other modules.
+       *
+       * @return  The full tape implemenation.
+       */
       Tape& cast() {
         return *static_cast<Tape*>(this);
       }

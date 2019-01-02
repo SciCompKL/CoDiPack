@@ -39,6 +39,7 @@
 #include "chunkVector.hpp"
 #include "externalFunctions.hpp"
 #include "modules/jacobiModule.hpp"
+#include "modules/statementModule.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 #include "../tapeTypes.hpp"
@@ -109,9 +110,12 @@ namespace codi {
   template <typename TapeTypes>
   class JacobiTape final :
       public JacobiModule<TapeTypes, JacobiTape<TapeTypes>>,
+      public StatementModule<TapeTypes, JacobiTape<TapeTypes>>,
       public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, JacobiTape<TapeTypes>, typename TapeTypes::Position >
   {
   public:
+
+    friend StatementModule<TapeTypes, JacobiTape>;
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -138,14 +142,8 @@ namespace codi {
     #define RESET_FUNCTION_NAME resetExtFunc
     #define EVALUATE_FUNCTION_NAME evaluateInt
     #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
-    #define EVALUATE_PRIMAL_FUNCTION_NAME evaluatePrimalStub
+    #define EVALUATE_PRIMAL_FUNCTION_NAME this->evaluatePrimalStub
     #include "modules/tapeBaseModule.tpp"
-
-    #define CHILD_VECTOR_TYPE IndexHandler
-    #define JACOBI_VECTOR_NAME JacobiModule<TapeTypes, JacobiTape>::jacobiVector
-    #define VECTOR_TYPE typename TapeTypes::StatementVector
-    #define STATEMENT_PUSH_FUNCTION_NAME pushStmtData
-    #include "modules/statementModule.tpp"
 
     #define CHILD_VECTOR_TYPE typename TapeTypes::JacobiVector
     #define CHILD_VECTOR_NAME JacobiModule<TapeTypes, JacobiTape>::jacobiVector
@@ -164,14 +162,16 @@ namespace codi {
      */
     JacobiTape() :
       JacobiModule<TapeTypes, JacobiTape>(),
+      StatementModule<TapeTypes, JacobiTape<TapeTypes> > (),
       indexHandler(0),
       /* defined in tapeBaseModule */adjoints(NULL),
       /* defined in tapeBaseModule */adjointsSize(0),
       /* defined in tapeBaseModule */active(false),
-      /* defined in statementModule */stmtVector(DefaultChunkSize, &indexHandler),
       /* defined in externalFunctionsModule */extFuncVector(1000) {
-      this->initJacobiModule(&stmtVector);
+      this->initStmtModule(&indexHandler);
+      this->initJacobiModule(&this->stmtVector);
       extFuncVector.setNested(&(this->jacobiVector));
+
     }
 
     /** @brief Tear down the tape. Delete all values from the modules */
@@ -216,6 +216,8 @@ namespace codi {
       lhsValue = rhs.getValue();
     }
 
+    using StatementModule<TapeTypes, JacobiTape>::store;
+
     /**
      * @brief Set the size of the jacobi and statement data.
      *
@@ -227,7 +229,7 @@ namespace codi {
      */
     void resize(const size_t& dataSize, const size_t& statementSize) {
       this->resizeJacobi(dataSize);
-      resizeStmt(statementSize);
+      this->resizeStmt(statementSize);
     }
 
     /**
@@ -284,7 +286,7 @@ namespace codi {
     CODI_INLINE void pushStmtData(const StatementInt& numberOfArguments, const Index& lhsIndex) {
       CODI_UNUSED(lhsIndex);
 
-      stmtVector.setDataAndMove(numberOfArguments);
+      this->stmtVector.setDataAndMove(numberOfArguments);
     }
 
     /**
@@ -435,8 +437,8 @@ namespace codi {
     CODI_INLINE void registerInputInternal(Real& value, Index& index) {
       CODI_UNUSED(value);
 
-      stmtVector.reserveItems(1);
-      stmtVector.setDataAndMove((StatementInt)StatementIntInputTag);
+      this->stmtVector.reserveItems(1);
+      this->stmtVector.setDataAndMove((StatementInt)StatementIntInputTag);
 
       index = indexHandler.createIndex();
     }
@@ -463,10 +465,10 @@ namespace codi {
       CODI_UNUSED(value);
 
       ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-        stmtVector.reserveItems(1);
+        this->stmtVector.reserveItems(1);
         this->jacobiVector.reserveItems(1);
 
-        stmtVector.setDataAndMove((StatementInt)1);
+        this->stmtVector.setDataAndMove((StatementInt)1);
         this->jacobiVector.setDataAndMove(1.0, index);
 
         index = indexHandler.createIndex();
@@ -509,7 +511,7 @@ namespace codi {
       TapeValues values(name);
 
       addTapeBaseValues(values);
-      addStmtValues(values);
+      this->addStmtValues(values);
       this->addJacobiValues(values);
       addExtFuncValues(values);
       indexHandler.addValues(values);
