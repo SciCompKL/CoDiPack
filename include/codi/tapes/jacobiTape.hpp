@@ -261,7 +261,6 @@ namespace codi {
       return this->getExtFuncZeroPosition();
     }
 
-
   private:
 
     /**
@@ -427,7 +426,6 @@ namespace codi {
 
       this->evaluateExtFuncForward(start, end, forwardFunc, this->jacobiVector, &interface, evalFunc, adjointData);
     }
-
 
   public:
     /**

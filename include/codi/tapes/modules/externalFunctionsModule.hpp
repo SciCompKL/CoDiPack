@@ -26,6 +26,8 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
+#pragma once
+
 #include "../reverseTapeInterface.hpp"
 #include "../../configure.h"
 #include "../../tapeTypes.hpp"
