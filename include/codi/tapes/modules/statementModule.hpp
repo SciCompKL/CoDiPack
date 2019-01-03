@@ -138,7 +138,7 @@ namespace codi {
        * @param[in] start  The starting position for the forward evaluation.
        * @param[in]   end  The ending position for the forward evaluation.
        */
-      CODI_INLINE void evaluatePrimalStub(const Position& start, const Position& end) {
+      CODI_INLINE void evaluatePrimalInternal(const Position& start, const Position& end) {
         CODI_UNUSED(start);
         CODI_UNUSED(end);
       }

@@ -42,6 +42,7 @@ namespace codi {
    * The module defines the methods writeToFile, readFromFile, deleteData, resetHard.
    *
    * @tparam    TapeTypes  All the types for the tape. Including the calculation type and the vector types.
+   * @tparam   RootVector  The type of the root vector of the tape.
    * @tparam         Tape  The full tape implementation
    */
   template<typename TapeTypes, typename RootVector, typename Tape>

@@ -49,10 +49,9 @@ namespace codi {
    * including class.
 
    * @tparam    TapeTypes  All the types for the tape. Including the calculation type and the vector types.
-   * @tparam GradientData  The gradient data of the tape.
    * @tparam         Tape  The full tape implementation
    */
-  template<typename TapeTypes, typename GradientData, typename Tape>
+  template<typename TapeTypes, typename Tape>
   struct ExternalFunctionModule : public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, Tape, typename TapeTypes::Position > {
 
     private:
@@ -77,6 +76,9 @@ namespace codi {
 
       /** @brief The position type of the external function module. */
       typedef typename ExtFuncVector::Position ExtFuncPosition;
+
+      /** @brief Forward the GradientData from the tape types. */
+      typedef typename TapeTypes::GradientData GradientData;
 
       /**
        * @brief Cast this class to the full.
