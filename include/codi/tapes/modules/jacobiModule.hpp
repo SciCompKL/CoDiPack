@@ -34,18 +34,24 @@
 #include "../../tools/tapeValues.hpp"
 #include "../../typeFunctions.hpp"
 
-//#ifndef CHILD_VECTOR_TYPE
-//  #error Please define the type of the child vector
-//#endif
-//#ifndef VECTOR_TYPE
-//  #error Please define the name of the chunk vector type.
-//#endif
-
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
 
+  /**
+   * The module defines the structures jacobiVector.
+   * The module defines the types JacobiChildVector, JacobiChildPosition, JacobiVector, JacobiChunk,
+   * JacobiPosition.
+   *
+   * It defines the methods pushJacobi(1.0), pushJacobi(Mul) printJacobiStatistics from the TapeInterface and ReverseTapeInterface.
+   *
+   * It defines the methods evaluateJacobies, incrementAdjoints, incrementTangents, setDataChunkSize, getUsedJacobiesSize, resizeJacobi as interface functions for the
+   * including class.
+   *
+   * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
+   * @tparam      Tape  The full tape implementation
+   */
   template<typename TapeTypes, typename Tape>
   struct JacobiModule : public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, Tape, typename TapeTypes::Position > {
 
