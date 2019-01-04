@@ -149,6 +149,13 @@ namespace codi {
       nested(nested)
     {}
 
+    /**
+     * @brief Initializes the data structures without touching the nested vector.
+     *
+     * The method setNested needs to be called to finalize the initialization.
+     *
+     * @param chunkSize   The size for the chunks.
+     */
     SingleChunkVector(const size_t& chunkSize) :
       chunk(chunkSize),
       nested(NULL)

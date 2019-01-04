@@ -171,6 +171,13 @@ namespace codi {
       setNested(nested);
     }
 
+    /**
+     * @brief Initializes the data structures without touching the nested vector.
+     *
+     * The method setNested needs to be called to finalize the initialization.
+     *
+     * @param chunkSize   The size for the chunks.
+     */
     ChunkVector(const size_t& chunkSize) :
       chunks(),
       positions(),
@@ -178,9 +185,7 @@ namespace codi {
       curChunkIndex(0),
       chunkSize(chunkSize),
       nested(NULL)
-    {
-
-    }
+    {}
 
     /**
      * @brief Deletes all chunks.
