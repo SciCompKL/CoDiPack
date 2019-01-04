@@ -40,6 +40,8 @@
 #include "codi/tapes/indices/linearIndexHandler.hpp"
 #include "codi/tapes/indices/reuseIndexHandler.hpp"
 #include "codi/tapes/indices/reuseIndexHandlerUseCount.hpp"
+#include "codi/tapes/handles/staticFunctionHandleFactory.hpp"
+#include "codi/tapes/handles/staticObjectHandleFactory.hpp"
 #include "codi/tools/dataStore.hpp"
 #include "codi/tools/derivativeHelper.hpp"
 #include "codi/tools/direction.hpp"

@@ -37,11 +37,14 @@
 #include "chunkVector.hpp"
 #include "indices/reuseIndexHandler.hpp"
 #include "handles/functionHandleFactory.hpp"
-#include "handles/staticObjectHandleFactory.hpp"
-#include "handles/staticFunctionHandleFactory.hpp"
+#include "modules/externalFunctionsModule.hpp"
+#include "modules/ioModule.hpp"
+#include "modules/primalValueModule.hpp"
+#include "modules/tapeBaseModule.hpp"
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
 #include "singleChunkVector.hpp"
+#include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
 
 namespace codi {
@@ -53,9 +56,7 @@ namespace codi {
    *
    * See PrimalValueIndexTape for details.
    *
-   * @tparam          Real  The type for the primal values.
-   * @tparam  IndexHandler  The index handler for the managing of the indices. It has to be a index handler that assumes index reuse.
-   * @tparam GradientValue  The type for the adjoint values. (Default: Same as the primal value.)
+   * @tparam           RTT  The basic type definitions for the tape. Need to define everything from ReverseTapeTypes.
    * @tparam HandleFactory  The factory for the reverse interpretation of the expressions. Needs to implement the HandleFactoryInterface class.
    * @tparam    DataVector  The data manager for the chunks. Needs to implement a ChunkVector interface.
    */
@@ -101,6 +102,9 @@ namespace codi {
     /** @brief The position for all the different data vectors. */
     typedef typename ExternalFunctionVector::Position Position;
 
+    /** @brief The gradient data is just the index type. */
+    typedef Index GradientData;
+
     /** @brief The name of the tape as a string. */
     constexpr static const char* tapeName = "PrimalValueIndexTape";
 
@@ -123,10 +127,23 @@ namespace codi {
    * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
    */
   template <typename TapeTypes>
-  class PrimalValueIndexTape : public ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, PrimalValueIndexTape<TapeTypes>, typename TapeTypes::Position > {
+  class PrimalValueIndexTape :
+      public TapeBaseModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
+      public PrimalValueModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
+      public ExternalFunctionModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
+      public IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, PrimalValueIndexTape<TapeTypes>>,
+      public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, PrimalValueIndexTape<TapeTypes>, typename TapeTypes::Position >
+  {
   public:
 
+    friend TapeBaseModule<TapeTypes, PrimalValueIndexTape>;
+    friend PrimalValueModule<TapeTypes, PrimalValueIndexTape>;
+    friend IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, PrimalValueIndexTape>;
+
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
+
+    /** @brief The tape type structure, that defines the basic types. */
+    typedef typename TapeTypes::BaseTypes BaseTypes;
 
     /** @brief The factory for the expression handles. */
     typedef typename TapeTypes::HandleFactory HandleFactory;
@@ -134,11 +151,19 @@ namespace codi {
     /** @brief The data type for the created handles. */
     typedef typename HandleFactory::Handle Handle;
 
-    /** @brief The tape type structure, that defines the basic types. */
-    typedef typename TapeTypes::BaseTypes BaseTypes;
-
     /** @brief The gradient data is just the index type. */
-    typedef Index GradientData;
+    typedef typename TapeTypes::GradientData GradientData;
+
+    /** @brief The global position for the tape */
+    typedef typename TapeTypes::Position Position;
+
+    /** @brief Vector type of the adjoint vector. Defaults to the template argument but can be switch to a gneral interface. */
+    template<typename AdjointData>
+    using AdjVecType = typename PrimalValueModule<TapeTypes, PrimalValueIndexTape>::template AdjVecType<AdjointData>;
+
+    /** @brief Adjoint vector interface type. Default vector is the template argument but can be switch to a gneral interface. */
+    template<typename AdjointData>
+    using AdjVecInterface = typename PrimalValueModule<TapeTypes, PrimalValueIndexTape>::template AdjVecInterface<AdjointData>;
 
     /** @brief The termination of the vector sequence. */
     EmptyChunkVector emptyVector;
@@ -151,33 +176,6 @@ namespace codi {
 
     /** @brief This tape requires no special primal value handling since the primal value vector is not overwritten. */
     static const bool RequiresPrimalReset = true;
-
-    #define TAPE_NAME PrimalValueIndexTape
-
-    #define POSITION_TYPE typename TapeTypes::Position
-    #define INDEX_HANDLER_NAME indexHandler
-    #define RESET_FUNCTION_NAME resetAll
-    #define EVALUATE_FUNCTION_NAME evaluateInt
-    #define EVALUATE_FORWARD_FUNCTION_NAME evaluateForwardInt
-    #define EVALUATE_PRIMAL_FUNCTION_NAME evaluatePrimalInt
-    #include "modules/tapeBaseModule.tpp"
-
-    #define CHILD_VECTOR_TYPE EmptyChunkVector
-    #define STMT_VECTOR_TYPE typename TapeTypes::StatementVector
-    #define INDEX_VECTOR_TYPE typename TapeTypes::IndexVector
-    #define PASSIVE_VECTOR_TYPE typename TapeTypes::PassiveValueVector
-    #define CONSTANT_VECTOR_TYPE typename TapeTypes::ConstantValueVector
-    #include "modules/primalValueModule.tpp"
-
-    #define CHILD_VECTOR_TYPE ConstantValueVector
-    #define CHILD_VECTOR_NAME constantValueVector
-    #define VECTOR_TYPE typename TapeTypes::ExternalFunctionVector
-    #include "modules/externalFunctionsModule.tpp"
-
-    #define ROOT_VECTOR extFuncVector
-    #include "modules/ioModule.tpp"
-
-    // TAPE_NAME is undefined at the end of the file
 
     /** @brief The temporary vector for the reverse evaluation. */
     Real* primalsCopy;
@@ -193,31 +191,26 @@ namespace codi {
      * @brief Creates a tape with the size of zero for the data, statements and external functions.
      */
     PrimalValueIndexTape() :
-      emptyVector(),
-      /* defined in tapeBaseModule */adjoints(NULL),
-      /* defined in tapeBaseModule */adjointsSize(0),
-      /* defined in tapeBaseModule */active(false),
-      /* defined in the primalValueModule */stmtVector(DefaultChunkSize, &emptyVector),
-      /* defined in the primalValueModule */indexVector(DefaultChunkSize, &stmtVector),
-      /* defined in the primalValueModule */passiveValueVector(DefaultChunkSize, &indexVector),
-      /* defined in the primalValueModule */constantValueVector(DefaultChunkSize, &passiveValueVector),
-      /* defined in the primalValueModule */primals(NULL),
-      /* defined in the primalValueModule */primalsSize(0),
-      /* defined in the primalValueModule */primalsIncr(DefaultSmallChunkSize),
-      /* defined in externalFunctionsModule */extFuncVector(1000, &constantValueVector),
-      primalsCopy(NULL),
-      primalsCopySize(0),
-      usePrimalCopy(true) {}
+        TapeBaseModule<TapeTypes, PrimalValueIndexTape<TapeTypes> > (),
+        PrimalValueModule<TapeTypes, PrimalValueIndexTape>(),
+        ExternalFunctionModule<TapeTypes, PrimalValueIndexTape<TapeTypes> > (),
+        IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, PrimalValueIndexTape<TapeTypes> > (),
+        emptyVector(),
+        primalsCopy(NULL),
+        primalsCopySize(0),
+        usePrimalCopy(true) {
+      this->initPrimalValueModule(&emptyVector);
+      this->initExtFuncModule(&this->constantValueVector);
+      this->initIOModule(&this->extFuncVector);
+      this->initTapeBaseModule();
+     }
 
     /** @brief Tear down the tape. Delete all values from the modules */
     ~PrimalValueIndexTape() {
-      cleanTapeBase();
-
       if(NULL != primalsCopy) {
         free(primalsCopy);
         primalsCopy = NULL;
       }
-
     }
 
     /**
@@ -231,12 +224,12 @@ namespace codi {
      *
      */
     void swap(PrimalValueIndexTape& other) {
-      swapTapeBaseModule(other);
-      swapPrimalValueModule(other);
+      this->swapTapeBaseModule(other);
+      this->swapPrimalValueModule(other);
 
       // the index handler is not swapped because the indices of the program state need to stay valid
 
-      extFuncVector.swap(other.extFuncVector);
+      this->extFuncVector.swap(other.extFuncVector);
     }
 
     /**
@@ -248,21 +241,22 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end) {
-      if(NULL != adjoints) {
+      if(NULL != this->adjoints) {
         auto clearFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
           CODI_UNUSED(value);
           CODI_UNUSED(handle);
           CODI_UNUSED(stmtSize);
 
-          if(*index < adjointsSize) {
+          if(*index < this->adjointsSize) {
             this->adjoints[*index] = GradientValue();
           }
         };
 
 
-        stmtVector.forEachReverse(start.inner.inner.inner.inner, end.inner.inner.inner.inner, clearFunc);
+        this->stmtVector.forEachReverse(start.inner.inner.inner.inner, end.inner.inner.inner.inner, clearFunc);
       }
     }
+    using TapeBaseModule<TapeTypes, PrimalValueIndexTape>::clearAdjoints;
 
     /**
      * @brief Set the size of the index and statement data and the primal vector.
@@ -270,10 +264,10 @@ namespace codi {
      * @param[in] stmtSize  The new size of the statement vector.
      */
     void resize(const size_t& dataSize, const size_t& stmtSize) {
-      indexVector.resize(dataSize);
-      stmtVector.resize(stmtSize);
+      this->indexVector.resize(dataSize);
+      this->stmtVector.resize(stmtSize);
 
-      resizePrimals(stmtSize + 1);
+      this->resizePrimals(stmtSize + 1);
     }
 
     /**
@@ -288,11 +282,11 @@ namespace codi {
      */
     CODI_INLINE void pushStmtData(Index& lhsIndex, const Real& rhsValue, const Handle& handle, const StatementInt& passiveVariableNumber) {
       indexHandler.assignIndex(lhsIndex);
-      stmtVector.reserveItems(1);
-      checkPrimalsSize();
-      stmtVector.setDataAndMove(lhsIndex, primals[lhsIndex], handle, passiveVariableNumber);
+      this->stmtVector.reserveItems(1);
+      this->checkPrimalsSize();
+      this->stmtVector.setDataAndMove(lhsIndex, this->primals[lhsIndex], handle, passiveVariableNumber);
 
-      primals[lhsIndex] = rhsValue;
+      this->primals[lhsIndex] = rhsValue;
     }
 
     /**
@@ -308,12 +302,12 @@ namespace codi {
      * @param[in]         rhs    The right hand side expression of the assignment.
      */
     CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const ActiveReal<PrimalValueIndexTape<TapeTypes> >& rhs) {
-      ENABLE_CHECK(OptTapeActivity, active){
+      ENABLE_CHECK(OptTapeActivity, this->active){
         ENABLE_CHECK(OptCheckZeroIndex, 0 != rhs.getGradientData()) {
           indexHandler.copyIndex(lhsIndex, rhs.getGradientData());
 
           if(IndexHandler::AssignNeedsStatement) {
-            pushCopyHandle(rhs.getValue(), lhsIndex, rhs.getGradientData());
+            this->pushCopyHandle(rhs.getValue(), lhsIndex, rhs.getGradientData());
           }
         } else {
           indexHandler.freeIndex(lhsIndex);
@@ -323,6 +317,7 @@ namespace codi {
       }
       lhsValue = rhs.getValue();
     }
+    using PrimalValueModule<TapeTypes, PrimalValueIndexTape>::store;
 
     /**
      * @brief Get the current position of the tape.
@@ -332,7 +327,7 @@ namespace codi {
      * @return The current position of the tape.
      */
     CODI_INLINE Position getPosition() const {
-      return getExtFuncPosition();
+      return this->getExtFuncPosition();
     }
 
     /**
@@ -343,55 +338,47 @@ namespace codi {
      * @return The current position of the tape.
      */
     CODI_INLINE Position getZeroPosition() const {
-      return getExtFuncZeroPosition();
+      return this->getExtFuncZeroPosition();
     }
 
   private:
 
     /**
-     * @brief Evaluate the stack from the start to to the end position for the primal evaluation.
+     * @brief Resets the primal values up to the specified position.
      *
-     * It has to hold start <= end.
+     * The stack is reversed such that the primal value changes are reversed until the specified position is reached.
+     * The primal value vector of the tape has the same status when the position was recorded.
      *
-     * @param[in,out]  primalVector  The vector of the primal variables.
-     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
-     * @param[in]    endConstantPos  The ending position in the constant data vector.
-     * @param[in]         constants  The constant values in the rhs expressions.
-     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
-     * @param[in]       endIndexPos  The ending position for the index data.
-     * @param[in]           indices  The indices for the arguments of the rhs.
-     * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
-     * @param[in]        endStmtPos  The ending position for statement data.
-     * @param[in]        lhsIndices  The indices from the lhs of each statement.
-     * @param[in]     storedPrimals  The overwritten primal from the primal vector.
-     * @param[in]        statements  The vector with the handles for each statement.
-     * @param[in] passiveActiveReal  The number passive values for each statement.
-     *
-     * @tparam AdjointData The data for the adjoint vector it needs to support add, multiply and comparison operations.
+     * @param[in] pos  The position for the tape reset.
      */
-    static CODI_INLINE void evaluateStackPrimal(Real* primalVector,
-                                         size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
-                                         size_t& passivePos, const size_t& endPassivePos, Real* &passives,
-                                         size_t& indexPos, const size_t& endIndexPos, Index* &indices,
-                                         size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
-                                         Handle* &statements, StatementInt* &passiveActiveReal) {
-      CODI_UNUSED(endConstantPos);
-      CODI_UNUSED(endPassivePos);
-      CODI_UNUSED(endIndexPos);
+    CODI_INLINE void resetPrimalValues(const Position& pos) {
 
-      while(stmtPos < endStmtPos) {
-        const Index& lhsIndex = lhsIndices[stmtPos];
+      // Do not perform a global reset on the primal value vector if the tape is cleared
+      if(getZeroPosition() != pos) {
 
-        if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
-          storedPrimals[stmtPos] = primalVector[lhsIndex];
-          primalVector[lhsIndex] = HandleFactory::template callPrimalHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalVector);
-        }
-        stmtPos += 1;
+        auto resetFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
+          CODI_UNUSED(handle);
+          CODI_UNUSED(stmtSize);
+
+          this->primals[*index] = *value;
+        };
+
+        typename TapeTypes::StatementVector::Position stmtEnd = this->stmtVector.getPosition();
+
+        this->stmtVector.forEachReverse(stmtEnd, pos.inner.inner.inner.inner, resetFunc);
       }
     }
 
-    WRAP_FUNCTION(Wrap_evaluateStackPrimal, evaluateStackPrimal);
+    /**
+     * @brief Resets the primal values and the vectors up to the specified position.
+     *
+     * @param[in] pos  The position for the tape reset.
+     */
+    CODI_INLINE void resetInternal(const Position& pos) {
+      resetPrimalValues(pos);
 
+      this->resetExtFunc(pos);
+    }
     /**
      * @brief Evaluate the stack from the start to to the end position.
      *
@@ -506,6 +493,49 @@ namespace codi {
     WRAP_FUNCTION_TEMPLATE(Wrap_evaluateStackForward, evaluateStackForward);
 
     /**
+     * @brief Evaluate the stack from the start to to the end position for the primal evaluation.
+     *
+     * It has to hold start <= end.
+     *
+     * @param[in,out]  primalVector  The vector of the primal variables.
+     * @param[in,out]   constantPos  The current position in the constant data vector. It will decremented in the method.
+     * @param[in]    endConstantPos  The ending position in the constant data vector.
+     * @param[in]         constants  The constant values in the rhs expressions.
+     * @param[in,out]      indexPos  The current position for the index data. It will decremented in the method.
+     * @param[in]       endIndexPos  The ending position for the index data.
+     * @param[in]           indices  The indices for the arguments of the rhs.
+     * @param[in,out]       stmtPos  The current position in the statement data. It will decremented in the method.
+     * @param[in]        endStmtPos  The ending position for statement data.
+     * @param[in]        lhsIndices  The indices from the lhs of each statement.
+     * @param[in]     storedPrimals  The overwritten primal from the primal vector.
+     * @param[in]        statements  The vector with the handles for each statement.
+     * @param[in] passiveActiveReal  The number passive values for each statement.
+     */
+    static CODI_INLINE void evaluateStackPrimal(Real* primalVector,
+                                         size_t& constantPos, const size_t& endConstantPos, PassiveReal* &constants,
+                                         size_t& passivePos, const size_t& endPassivePos, Real* &passives,
+                                         size_t& indexPos, const size_t& endIndexPos, Index* &indices,
+                                         size_t& stmtPos, const size_t& endStmtPos, Index* lhsIndices, Real* storedPrimals,
+                                         Handle* &statements, StatementInt* &passiveActiveReal) {
+      CODI_UNUSED(endConstantPos);
+      CODI_UNUSED(endPassivePos);
+      CODI_UNUSED(endIndexPos);
+
+      while(stmtPos < endStmtPos) {
+        const Index& lhsIndex = lhsIndices[stmtPos];
+
+        if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
+          storedPrimals[stmtPos] = primalVector[lhsIndex];
+          primalVector[lhsIndex] = HandleFactory::template callPrimalHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalVector);
+        }
+        stmtPos += 1;
+      }
+    }
+
+    WRAP_FUNCTION(Wrap_evaluateStackPrimal, evaluateStackPrimal);
+
+
+    /**
      * @brief Allocates a copy of the primal vector that is used in the evaluation.
      *
      * It has to hold start >= end.
@@ -519,27 +549,27 @@ namespace codi {
      * @tparam AdjointData  The data type for the adjoint vector.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData, bool useCopy) {
+    CODI_INLINE void evaluateInternal(const Position& start, const Position& end, AdjointData* adjointData, bool useCopy) {
 
       if(useCopy) {
-        if(primalsCopySize < primalsSize) {
-          primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * primalsSize);
-          primalsCopySize = primalsSize;
+        if(primalsCopySize < this->primalsSize) {
+          primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * this->primalsSize);
+          primalsCopySize = this->primalsSize;
         }
-        memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
+        memcpy(primalsCopy, this->primals, sizeof(Real) * this->primalsSize);
       } else {
-        std::swap(primals, primalsCopy);
+        std::swap(this->primals, primalsCopy);
       }
 
       AdjVecInterface<AdjointData> interface(adjointData, primalsCopy);
-      AdjVecType<AdjointData>* adjVec = wrapAdjointVector(interface, adjointData);
+      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(interface, adjointData);
 
       Wrap_evaluateStackReverse<AdjVecType<AdjointData>> evalFunc{};
-      auto reverseFunc = &ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType<AdjointData>*&, Real*&>;
-      evaluateExtFunc(start, end, reverseFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
+      auto reverseFunc = &TapeTypes::ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType<AdjointData>*&, Real*&>;
+      this->evaluateExtFunc(start, end, reverseFunc, this->constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
 
       if(!useCopy) {
-        std::swap(primals, primalsCopy);
+        std::swap(this->primals, primalsCopy);
       }
     }
 
@@ -557,8 +587,8 @@ namespace codi {
      * @tparam AdjointData  The data type for the adjoint vector.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateInt(const Position& start, const Position& end, AdjointData* adjointData) {
-      evaluateInt(start, end, adjointData, usePrimalCopy);
+    CODI_INLINE void evaluateInternal(const Position& start, const Position& end, AdjointData* adjointData) {
+      evaluateInternal(start, end, adjointData, usePrimalCopy);
     }
 
     /**
@@ -575,27 +605,27 @@ namespace codi {
      * @tparam AdjointData  The data type for the adjoint vector.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData, bool useCopy) {
+    CODI_INLINE void evaluateForwardInternal(const Position& start, const Position& end, AdjointData* adjointData, bool useCopy) {
 
       if(useCopy) {
-        if(primalsCopySize < primalsSize) {
-          primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * primalsSize);
-          primalsCopySize = primalsSize;
+        if(primalsCopySize < this->primalsSize) {
+          primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * this->primalsSize);
+          primalsCopySize = this->primalsSize;
         }
-        memcpy(primalsCopy, primals, sizeof(Real) * primalsSize);
+        memcpy(primalsCopy, this->primals, sizeof(Real) * this->primalsSize);
       } else {
-        std::swap(primals, primalsCopy);
+        std::swap(this->primals, primalsCopy);
       }
 
       AdjVecInterface<AdjointData> interface(adjointData, primalsCopy);
-      AdjVecType<AdjointData>* adjVec = wrapAdjointVector(interface, adjointData);
+      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(interface, adjointData);
 
       Wrap_evaluateStackForward<AdjVecType<AdjointData>> evalFunc{};
-      auto forwardFunc = &ConstantValueVector::template evaluateForward<decltype(evalFunc), AdjVecType<AdjointData>*&, Real*&>;
-      evaluateExtFuncForward(start, end, forwardFunc, constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
+      auto forwardFunc = &TapeTypes::ConstantValueVector::template evaluateForward<decltype(evalFunc), AdjVecType<AdjointData>*&, Real*&>;
+      this->evaluateExtFuncForward(start, end, forwardFunc, this->constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
 
       if(!useCopy) {
-        std::swap(primals, primalsCopy);
+        std::swap(this->primals, primalsCopy);
       }
     }
 
@@ -613,48 +643,9 @@ namespace codi {
      * @tparam AdjointData  The data type for the adjoint vector.
      */
     template<typename AdjointData>
-    CODI_INLINE void evaluateForwardInt(const Position& start, const Position& end, AdjointData* adjointData) {
-      evaluateForwardInt(start, end, adjointData, true);
+    CODI_INLINE void evaluateForwardInternal(const Position& start, const Position& end, AdjointData* adjointData) {
+      evaluateForwardInternal(start, end, adjointData, true);
     }
-
-    /**
-     * @brief Resets the primal values up to the specified position.
-     *
-     * The stack is reversed such that the primal value changes are reversed until the specified position is reached.
-     * The primal value vector of the tape has the same status when the position was recorded.
-     *
-     * @param[in] pos  The position for the tape reset.
-     */
-    CODI_INLINE void resetPrimalValues(const Position& pos) {
-
-      // Do not perform a global reset on the primal value vector if the tape is cleared
-      if(getZeroPosition() != pos) {
-
-        auto resetFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
-          CODI_UNUSED(handle);
-          CODI_UNUSED(stmtSize);
-
-          primals[*index] = *value;
-        };
-
-        StmtPosition stmtEnd = stmtVector.getPosition();
-
-        stmtVector.forEachReverse(stmtEnd, pos.inner.inner.inner.inner, resetFunc);
-      }
-    }
-
-    /**
-     * @brief Resets the primal values and the vectors up to the specified position.
-     *
-     * @param[in] pos  The position for the tape reset.
-     */
-    CODI_INLINE void resetAll(const Position& pos) {
-      resetPrimalValues(pos);
-
-      resetExtFunc(pos);
-    }
-
-  public:
 
     /**
      * @brief Evaluate the tape from start to end.
@@ -669,20 +660,22 @@ namespace codi {
      * @param[in] start The starting position for the forward evaluation.
      * @param[in]   end The ending position for the forward evaluation.
      */
-    CODI_INLINE void evaluatePrimalInt(const Position& start, const Position& end) {
+    CODI_INLINE void evaluatePrimalInternal(const Position& start, const Position& end) {
 
-      resizeAdjointsToIndexSize();
+      this->resizeAdjointsToIndexSize();
 
-      std::swap(primals, primalsCopy);
+      std::swap(this->primals, primalsCopy);
 
-      AdjVecInterface<GradientValue> interface(adjoints, primalsCopy);
+      AdjVecInterface<GradientValue> interface(this->adjoints, primalsCopy);
 
       Wrap_evaluateStackPrimal primalFunc{};
-      auto primalIter = &ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
-      evaluateExtFuncPrimal(start, end, primalIter, constantValueVector, &interface, primalFunc, primalsCopy);
+      auto primalIter = &TapeTypes::ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
+      this->evaluateExtFuncPrimal(start, end, primalIter, this->constantValueVector, &interface, primalFunc, primalsCopy);
 
-      std::swap(primals, primalsCopy);
+      std::swap(this->primals, primalsCopy);
     }
+
+  public:
 
     /**
      * @brief Specialized evaluate function for the preaccumulation.
@@ -697,11 +690,11 @@ namespace codi {
      */
     CODI_INLINE void evaluatePreacc(const Position& start, const Position& end) {
 
-      resizeAdjointsToIndexSize();
+      this->resizeAdjointsToIndexSize();
 
-      evaluateInt(start, end, adjoints, false);
+      evaluateInternal(start, end, this->adjoints, false);
 
-      evaluatePrimalInt(end, start);
+      evaluatePrimalInternal(end, start);
     }
 
     /**
@@ -716,11 +709,11 @@ namespace codi {
      */
     CODI_INLINE void evaluateForwardPreacc(const Position& start, const Position& end) {
 
-      resizeAdjointsToIndexSize();
+      this->resizeAdjointsToIndexSize();
 
-      resetPrimalValues(start);
+      this->resetPrimalValues(start);
 
-      evaluateForwardInt(start, end, adjoints, false);
+      evaluateForwardInternal(start, end, this->adjoints, false);
     }
 
     /**
@@ -730,14 +723,13 @@ namespace codi {
      * @param[in,out] value The value which will be marked as an active variable.
      */
     CODI_INLINE void registerInput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
-      if(isActive()) {
+      if(this->isActive()) {
         indexHandler.assignUnusedIndex(value.getGradientData());
 
-        checkPrimalsSize();
-        primals[value.getGradientData()] = value.getValue();
+        this->checkPrimalsSize();
+        this->primals[value.getGradientData()] = value.getValue();
       }
     }
-
 
     /**
      * @brief Modify the output of an external function such that the tape sees it as an active variable.
@@ -747,12 +739,12 @@ namespace codi {
      */
     CODI_INLINE Real registerExtFunctionOutput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
       Real oldValue = value.getValue();
-      if(isActive()) {
+      if(this->isActive()) {
         indexHandler.assignUnusedIndex(value.getGradientData());
 
-        checkPrimalsSize();
-        oldValue = primals[value.getGradientData()];
-        primals[value.getGradientData()] = value.getValue();
+        this->checkPrimalsSize();
+        oldValue = this->primals[value.getGradientData()];
+        this->primals[value.getGradientData()] = value.getValue();
       }
 
       return oldValue;
@@ -768,7 +760,6 @@ namespace codi {
      * @param[in] primal  The new primal value for the index.
      */
     CODI_INLINE void setExternalValueChange(const GradientData& index, const Real& primal) {
-
       // TODO: only allowed during reverse evaluation. Add check.
 
       primalsCopy[index] = primal;
@@ -780,12 +771,12 @@ namespace codi {
      * @param[in] value  The value will have an unique index that is used by no other variable.
      */
     CODI_INLINE void registerOutput(ActiveReal<PrimalValueIndexTape<TapeTypes> >& value) {
-      if(isActive() && value.getGradientData() != 0) {
+      if(this->isActive() && value.getGradientData() != 0) {
         if(!IndexHandler::AssignNeedsStatement) {
           Index rhsIndex = value.getGradientData();
 
           indexHandler.assignIndex(value.getGradientData());
-          pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
+          this->pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
         }
       }
     }
@@ -822,9 +813,9 @@ namespace codi {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);
 
-      addTapeBaseValues(values);
-      addPrimalValueValues(values);
-      addExtFuncValues(values);
+      this->addTapeBaseValues(values);
+      this->addPrimalValueValues(values);
+      this->addExtFuncValues(values);
 
       return values;
     }
@@ -835,8 +826,4 @@ namespace codi {
    */
   template <typename TapeTypes>
   typename TapeTypes::IndexHandler PrimalValueIndexTape<TapeTypes>::indexHandler(MaxStatementIntSize - 1);
-
-  #include "modules/primalValueStaticModule.tpp"
-  #undef TAPE_NAME
-
 }
