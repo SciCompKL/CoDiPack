@@ -57,7 +57,7 @@
 #define OP NAME
 #define FUNC FUNCTION
 #define PRIMAL_CALL PRIMAL_FUNCTION
-#define GRADIENT_FUNC   COMBINE(grad, NAME)
+#define GRADIENT_FUNC   COMBINE(gradient_, NAME)
 
 /* predefine the struct and the function for higher order derivatives */
 template<typename Real, class A> struct OP;

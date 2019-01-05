@@ -81,7 +81,7 @@ namespace codi {
        *
        * Called after all members of the tape have been initialized.
        *
-       * @param[in,out] rootVector  The root vector for the data vectors.
+       * @param[in,out] r  The root vector for the data vectors.
        */
       void initIOModule(RootVector* r) {
         rootVector = r;

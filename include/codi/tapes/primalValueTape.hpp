@@ -136,9 +136,9 @@ namespace codi {
   {
   public:
 
-    friend TapeBaseModule<TapeTypes, PrimalValueTape>;
-    friend PrimalValueModule<TapeTypes, PrimalValueTape>;
-    friend IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, PrimalValueTape>;
+    friend TapeBaseModule<TapeTypes, PrimalValueTape>;  /**< No doc */
+    friend PrimalValueModule<TapeTypes, PrimalValueTape>;  /**< No doc */
+    friend ::codi::IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, PrimalValueTape>;  /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 

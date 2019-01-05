@@ -160,6 +160,63 @@ namespace codi {
 
     protected:
 
+
+      /**
+       * @brief Adds information about primal value tape.
+       *
+       * Adds the number of chunks, the total number of entries, the
+       * allocated memory and the used memory for the constant vector, the statement
+       * vector and the index vector.
+       *
+       * @param[in,out] values  The information is added to the values
+       */
+      void addPrimalValueValues(TapeValues& values) const {
+
+        size_t nChunksIndex  = indexVector.getNumChunks();
+        size_t totalIndex    = indexVector.getDataSize();
+        size_t sizeIndexEntry = IndexChunk::EntrySize;
+        double memoryUsedIndex = (double)totalIndex*(double)sizeIndexEntry* BYTE_TO_MB;
+        double memoryAllocIndex= (double)nChunksIndex*(double)indexVector.getChunkSize()*(double)sizeIndexEntry* BYTE_TO_MB;
+
+        size_t nChunksStmt  = stmtVector.getNumChunks();
+        size_t totalStmt    = stmtVector.getDataSize();
+        size_t sizeStmtEntry = StatementChunk::EntrySize;
+        double memoryUsedStmt = (double)totalStmt*(double)sizeStmtEntry* BYTE_TO_MB;
+        double memoryAllocStmt= (double)nChunksStmt*(double)stmtVector.getChunkSize()*(double)sizeStmtEntry* BYTE_TO_MB;
+
+        size_t nChunksPassive  = constantValueVector.getNumChunks();
+        size_t totalPassive    = constantValueVector.getDataSize();
+        size_t sizePassiveEntry = ConstantValueChunk::EntrySize;
+        double memoryUsedPassive = (double)totalPassive*(double)sizePassiveEntry* BYTE_TO_MB;
+        double memoryAllocPassive= (double)nChunksPassive*(double)constantValueVector.getChunkSize()*(double)sizePassiveEntry* BYTE_TO_MB;
+
+        size_t totalPrimal   = primalsSize;
+        size_t sizePrimalEntry = sizeof(Real);
+        double memoryAllocPrimal = (double)totalPrimal*(double)sizePrimalEntry* BYTE_TO_MB;
+
+        values.addSection("Primal vector");
+        values.addData("Total number", totalPrimal);
+        values.addData("Memory allocated", memoryAllocPrimal, true, true);
+
+        values.addSection("Statements");
+        values.addData("Total number", totalStmt);
+        values.addData("Number of chunks", nChunksStmt);
+        values.addData("Memory used", memoryUsedStmt, true, false);
+        values.addData("Memory allocated", memoryAllocStmt, false, true);
+
+        values.addSection("Index entries");
+        values.addData("Total number", totalIndex);
+        values.addData("Number of chunks", nChunksIndex);
+        values.addData("Memory used", memoryUsedIndex, true, false);
+        values.addData("Memory allocated", memoryAllocIndex, false, true);
+
+        values.addSection("Passive data entries");
+        values.addData("Total number", totalPassive);
+        values.addData("Number of chunks", nChunksPassive);
+        values.addData("Memory used", memoryUsedPassive, true, false);
+        values.addData("Memory allocated", memoryAllocPassive, false, true);
+      }
+
       /**
        * @brief Initialize the JacobiModule.
        *
@@ -174,6 +231,18 @@ namespace codi {
         constantValueVector.setNested(&passiveValueVector);
       }
 
+      /**
+       * @brief Definition of the adjoint vector type in the evaluation process.
+       *
+       * If CODI_EnableVariableAdjointInterfaceInPrimalTapes is set the type is a general one
+       * which allows for arbitrary adjoint vectors but will reduce the performance.
+       *
+       * If CODI_EnableVariableAdjointInterfaceInPrimalTapes is not set, the adjoint vector
+       * is directly accessed but then only the GradientValue definition from the tape
+       * is allowed in the reverse interpretation.
+       *
+       * @tparam AdjointData  The actual type of the adjoint data.
+       */
   #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
       template<typename AdjointData>
       using AdjVecType = AdjointInterfacePrimalImpl<Real, Index, AdjointData>;
@@ -182,9 +251,24 @@ namespace codi {
       using AdjVecType = AdjointData;
   #endif
 
+      /**
+       * @brief The general interface for accessing the adjoint vector without knowing the actual data type.
+       *
+       * @tparam AdjointData  The actual type of the adjoint data.
+       */
       template<typename AdjointData>
       using AdjVecInterface = AdjointInterfacePrimalImpl<Real, Index, AdjointData>;
 
+      /**
+       * @brief Helper function for wrapping the adjoint data vector if necessary.
+       *
+       * @return Either interface or adjointData
+       *
+       * @param[in,out]   interface  The interface for the wrapped adjointData.
+       * @param[in,out] adjointData  The adjoint data vector.
+       *
+       * @tparam AdjointData  The actual type of the adjoint data.
+       */
       template<typename AdjointData>
       AdjVecType<AdjointData>* wrapAdjointVector(AdjVecInterface<AdjointData>& interface, AdjointData* adjointData) {
          CODI_UNUSED(interface);   // To avoid unused warnings
@@ -234,8 +318,6 @@ namespace codi {
 
       /**
        * @brief Helper function: Cheks if the primal vector is big enough. Increases the vector size otherwise.
-       *
-       * @param[in] size The new size for the primal vector.
        */
       CODI_INLINE void checkPrimalsSize() {
         if(primalsSize <= cast().indexHandler.getMaximumGlobalIndex()) {
@@ -279,9 +361,9 @@ namespace codi {
        * The correspoinding primal value is then pushed to the constant value vector.
        * The constant value is then used in the reverse sweep.
        *
-       * @param[in,out] count  The current count of the  inactive variables.
-       * @param[in]     value  The primal value of the active real.
-       * @param[in]     index  The index of the active real.
+       * @param[in,out] passiveVariableCount  The current count of the  inactive variables.
+       * @param[in]                    value  The primal value of the active real.
+       * @param[in]                    index  The index of the active real.
        */
       CODI_INLINE void pushIndices(int* passiveVariableCount, const Real& value, const Index& index) {
         Index pushIndex = index;
@@ -293,8 +375,6 @@ namespace codi {
 
         indexVector.setDataAndMove(pushIndex);
       }
-
-    public:
 
       /**
        * @brief Evaluate one handle in the primal sweep.
@@ -548,6 +628,8 @@ namespace codi {
                                     adj, lhsAdjoint, passiveActives, indexPos, indices, passivePos, passives, constantPos, constants, primalVector, adjoints);
       }
 
+    public:
+
       /**
        * @brief Set the primal value in the primal value vector.
        *
@@ -769,62 +851,6 @@ namespace codi {
 
         passiveValueVector.setDataAndMove(jacobi);
         indexVector.setDataAndMove(index);
-      }
-
-      /**
-       * @brief Adds information about primal value tape.
-       *
-       * Adds the number of chunks, the total number of entries, the
-       * allocated memory and the used memory for the constant vector, the statement
-       * vector and the index vector.
-       *
-       * @param[in,out] values  The information is added to the values
-       */
-      void addPrimalValueValues(TapeValues& values) const {
-
-        size_t nChunksIndex  = indexVector.getNumChunks();
-        size_t totalIndex    = indexVector.getDataSize();
-        size_t sizeIndexEntry = IndexChunk::EntrySize;
-        double memoryUsedIndex = (double)totalIndex*(double)sizeIndexEntry* BYTE_TO_MB;
-        double memoryAllocIndex= (double)nChunksIndex*(double)indexVector.getChunkSize()*(double)sizeIndexEntry* BYTE_TO_MB;
-
-        size_t nChunksStmt  = stmtVector.getNumChunks();
-        size_t totalStmt    = stmtVector.getDataSize();
-        size_t sizeStmtEntry = StatementChunk::EntrySize;
-        double memoryUsedStmt = (double)totalStmt*(double)sizeStmtEntry* BYTE_TO_MB;
-        double memoryAllocStmt= (double)nChunksStmt*(double)stmtVector.getChunkSize()*(double)sizeStmtEntry* BYTE_TO_MB;
-
-        size_t nChunksPassive  = constantValueVector.getNumChunks();
-        size_t totalPassive    = constantValueVector.getDataSize();
-        size_t sizePassiveEntry = ConstantValueChunk::EntrySize;
-        double memoryUsedPassive = (double)totalPassive*(double)sizePassiveEntry* BYTE_TO_MB;
-        double memoryAllocPassive= (double)nChunksPassive*(double)constantValueVector.getChunkSize()*(double)sizePassiveEntry* BYTE_TO_MB;
-
-        size_t totalPrimal   = primalsSize;
-        size_t sizePrimalEntry = sizeof(Real);
-        double memoryAllocPrimal = (double)totalPrimal*(double)sizePrimalEntry* BYTE_TO_MB;
-
-        values.addSection("Primal vector");
-        values.addData("Total number", totalPrimal);
-        values.addData("Memory allocated", memoryAllocPrimal, true, true);
-
-        values.addSection("Statements");
-        values.addData("Total number", totalStmt);
-        values.addData("Number of chunks", nChunksStmt);
-        values.addData("Memory used", memoryUsedStmt, true, false);
-        values.addData("Memory allocated", memoryAllocStmt, false, true);
-
-        values.addSection("Index entries");
-        values.addData("Total number", totalIndex);
-        values.addData("Number of chunks", nChunksIndex);
-        values.addData("Memory used", memoryUsedIndex, true, false);
-        values.addData("Memory allocated", memoryAllocIndex, false, true);
-
-        values.addSection("Passive data entries");
-        values.addData("Total number", totalPassive);
-        values.addData("Number of chunks", nChunksPassive);
-        values.addData("Memory used", memoryUsedPassive, true, false);
-        values.addData("Memory allocated", memoryAllocPassive, false, true);
       }
 
       /**

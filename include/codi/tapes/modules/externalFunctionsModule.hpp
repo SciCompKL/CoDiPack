@@ -134,39 +134,26 @@ namespace codi {
         extFuncVector.setDataAndMove(function, extFuncVector.getNested().getPosition());
       }
 
-      /**
-       * @brief Function object for the deletion of external functions.
-       */
-      struct ExtFuncDeleter {
-        Tape& tape;
-
-        /**
-         * @brief Create the function object.
-         *
-         * @param[in,out]     tape  The reference to the actual tape.
-         */
-        ExtFuncDeleter(Tape& tape) :
-          tape(tape){}
-
-        /**
-         * @brief The operator deletes the external function object.
-         *
-         * @param[in]     extFunc  The external function object.
-         * @param[in] endInnerPos  The position were the external function object was stored.
-         */
-        void operator () (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos) {
-          CODI_UNUSED(endInnerPos);
-
-          /* we just need to call the delete function */
-          extFunc->deleteData(&tape);
-        }
-      };
-
     protected:
 
     // ----------------------------------------------------------------------
     // Protected function for the communication with the including class
     // ----------------------------------------------------------------------
+
+
+      /**
+       * @brief Adds information about the external functions.
+       *
+       * Adds the number of external functions.
+       *
+       * @param[in,out] values  The information is added to the values
+       */
+      void addExtFuncValues(TapeValues& values) const {
+        size_t nExternalFunc = extFuncVector.getDataSize();
+
+        values.addSection("External functions");
+        values.addData("Total Number", nExternalFunc);
+      }
 
       /**
        * @brief Get the position from the external function vector.
@@ -198,9 +185,14 @@ namespace codi {
        * @param[in] pos  The position to which the tape is reset.
        */
       void resetExtFunc(const ExtFuncPosition& pos) {
-        ExtFuncDeleter deleter(cast());
+        auto deleteFunc = [this] (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos) {
+          CODI_UNUSED(endInnerPos);
 
-        extFuncVector.forEachReverse(getExtFuncPosition(), pos, deleter);
+          /* we just need to call the delete function */
+          extFunc->deleteData(&cast());
+        };
+
+        extFuncVector.forEachReverse(getExtFuncPosition(), pos, deleteFunc);
 
         // reset will be done iteratively through the vectors
         extFuncVector.reset(pos);
@@ -213,11 +205,12 @@ namespace codi {
        *
        * It calls the primal evaluation method for the statement vector.
        *
-       * @param[in]       start  The starting point for the external function vector.
-       * @param[in]         end  The ending point for the external function vector.
-       * @param[in]        func  The function that is evaluated before and after each external function call.
-       * @param[in,out]     obj  The object on which the function is evaluated.
-       * @param[in,out]    args  The arguments for the evaluation.
+       * @param[in]                start  The starting point for the external function vector.
+       * @param[in]                  end  The ending point for the external function vector.
+       * @param[in]                 func  The function that is evaluated before and after each external function call.
+       * @param[in,out]              obj  The object on which the function is evaluated.
+       * @param[in,out] adjointInterface  Interface for accessing the adjoint vector for this evaluation.
+       * @param[in,out]             args  The arguments for the evaluation.
        *
        * @tparam     Args  The types of the other arguments.
        * @tparam Function  A function object which is called with the nested start and end positions.
@@ -380,20 +373,6 @@ namespace codi {
         ENABLE_CHECK (OptTapeActivity, cast().isActive()){
           pushExternalFunctionHandle(ExternalFunctionDataHelper<Tape, Data>::createHandle(extFunc, extFuncForward, extFuncPrimal, data, delData));
         }
-      }
-
-      /**
-       * @brief Adds information about the external functions.
-       *
-       * Adds the number of external functions.
-       *
-       * @param[in,out] values  The information is added to the values
-       */
-      void addExtFuncValues(TapeValues& values) const {
-        size_t nExternalFunc = extFuncVector.getDataSize();
-
-        values.addSection("External functions");
-        values.addData("Total Number", nExternalFunc);
       }
   };
 }

@@ -859,16 +859,52 @@ namespace codi {
   #define PRIMAL_FUNCTION copysign
   #include "binaryExpression.tpp"
 
+  /**
+   * @brief Overload for copysignf with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Copysign11.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    A  The expression for the first argument of the function
+   * @tparam    B  The expression for the second argument of the function
+   */
   template <typename Real, class A, class B>
   CODI_INLINE Copysign11<Real, A, B> copysignf(const Expression<Real, A>& a, const Expression<Real, B>& b) {
     return Copysign11<Real, A, B>(a.cast(), b.cast());
   }
 
+  /**
+   * @brief Overload for copysignf with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Copysign10.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    A  The expression for the first argument of the function
+   * @tparam    B  The expression for the second argument of the function
+   */
   template <typename Real, class A>
   CODI_INLINE Copysign10<Real, A> copysignf(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
     return Copysign10<Real, A>(a.cast(), b);
   }
 
+  /**
+   * @brief Overload for copysignf with the CoDiPack expressions.
+   *
+   * @param[in] a  The first argument of the operation.
+   * @param[in] b  The second argument of the operation.
+   *
+   * @return The implementing expression Copysign01.
+   *
+   * @tparam Real  The real type used in the active types.
+   * @tparam    A  The expression for the first argument of the function
+   * @tparam    B  The expression for the second argument of the function
+   */
   template <typename Real, class B>
   CODI_INLINE Copysign01<Real, B> copysignf(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
     return Copysign01<Real, B>(a, b.cast());
@@ -893,6 +929,7 @@ namespace codi {
   CODI_INLINE Max11<Real, A, B> fmax(const Expression<Real, A>& a, const Expression<Real, B>& b) {
     return Max11<Real, A, B>(a.cast(), b.cast());
   }
+
   /**
    * @brief Overload for fmax with the CoDiPack expressions.
    *
@@ -998,7 +1035,7 @@ namespace codi {
    *
    */
 
-  template<typename Real> CODI_INLINE typename TypeTraits<Real>::PassiveReal gradUnaryMinus(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE typename TypeTraits<Real>::PassiveReal gradient_UnaryMinus(const Real& a, const Real& result) {
     CODI_UNUSED(a);
     CODI_UNUSED(result);
     return -1.0;
@@ -1009,7 +1046,7 @@ namespace codi {
   #define PRIMAL_FUNCTION primal_UnaryMinus
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradSqrt(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Sqrt(const Real& a, const Real& result) {
     if(CheckExpressionArguments) {
       if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
         CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
@@ -1027,7 +1064,7 @@ namespace codi {
   #define PRIMAL_FUNCTION sqrt
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradCbrt(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Cbrt(const Real& a, const Real& result) {
     if(CheckExpressionArguments) {
       if(0.0 == TypeTraits<Real>::getBaseValue(a)) {
         CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
@@ -1045,7 +1082,7 @@ namespace codi {
   #define PRIMAL_FUNCTION cbrt
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradTanh(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Tanh(const Real& a, const Real& result) {
     CODI_UNUSED(a);
     return 1 - result * result;
   }
@@ -1055,7 +1092,7 @@ namespace codi {
   #define PRIMAL_FUNCTION tanh
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradLog(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Log(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     if(CheckExpressionArguments) {
       if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
@@ -1070,7 +1107,7 @@ namespace codi {
   #define PRIMAL_FUNCTION log
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradLog10(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Log10(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     if(CheckExpressionArguments) {
       if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
@@ -1085,7 +1122,7 @@ namespace codi {
   #define PRIMAL_FUNCTION log10
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradSin(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Sin(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return cos(a);
   }
@@ -1095,7 +1132,7 @@ namespace codi {
   #define PRIMAL_FUNCTION sin
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradCos(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Cos(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return -sin(a);
   }
@@ -1106,7 +1143,7 @@ namespace codi {
   #include "unaryExpression.tpp"
 
   using std::sqrt;
-  template<typename Real> CODI_INLINE Real gradAsin(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Asin(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     if(CheckExpressionArguments) {
       if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
@@ -1121,7 +1158,7 @@ namespace codi {
   #define PRIMAL_FUNCTION asin
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradAcos(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Acos(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     if(CheckExpressionArguments) {
       if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
@@ -1136,7 +1173,7 @@ namespace codi {
   #define PRIMAL_FUNCTION acos
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradAtan(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Atan(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return 1.0 / (1 + a * a);
   }
@@ -1146,7 +1183,7 @@ namespace codi {
   #define PRIMAL_FUNCTION atan
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradSinh(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Sinh(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return cosh(a);
   }
@@ -1156,7 +1193,7 @@ namespace codi {
   #define PRIMAL_FUNCTION sinh
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradCosh(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Cosh(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return sinh(a);
   }
@@ -1166,7 +1203,7 @@ namespace codi {
   #define PRIMAL_FUNCTION cosh
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradExp(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Exp(const Real& a, const Real& result) {
     CODI_UNUSED(a);
     return result;
   }
@@ -1176,7 +1213,7 @@ namespace codi {
   #define PRIMAL_FUNCTION exp
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradAtanh(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Atanh(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     if(CheckExpressionArguments) {
       if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
@@ -1191,7 +1228,7 @@ namespace codi {
   #define PRIMAL_FUNCTION atanh
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradAbs(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Abs(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     if(a < 0.0) {
       return (Real)-1.0;
@@ -1207,7 +1244,7 @@ namespace codi {
   #define PRIMAL_FUNCTION abs
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradTan(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Tan(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     if(CheckExpressionArguments) {
       if(0.0 == cos(TypeTraits<Real>::getBaseValue(a))) {
@@ -1223,7 +1260,7 @@ namespace codi {
   #define PRIMAL_FUNCTION tan
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradErf(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Erf(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return 1.128379167095513 * exp( -(a * a) ); // erf'(a) = 2.0 / sqrt(pi) * exp(-a^2)
   }
@@ -1233,7 +1270,7 @@ namespace codi {
   #define PRIMAL_FUNCTION erf
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradErfc(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Erfc(const Real& a, const Real& result) {
     CODI_UNUSED(result);
     return -1.128379167095513 * exp( -(a * a) ); // erfc'(a) = - 2.0 / sqrt(pi) * exp(-a^2)
   }
@@ -1243,7 +1280,7 @@ namespace codi {
   #define PRIMAL_FUNCTION erfc
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradTgamma(const Real& a, const Real& result) {
+  template<typename Real> CODI_INLINE Real gradient_Tgamma(const Real& a, const Real& result) {
     if(a <= 0.0) {
       std::cout << "Derivative for gamma function only for positive arguments at the moment" << std::endl;
       std::exit(1);

@@ -131,7 +131,7 @@ namespace codi {
        * @param[in]                  adj  The adjoint of the lhs of the statement.
        * @param[in,out]         adjoints  The adjoint vector containing the adjoints of all variables.
        * @param[in]      activeVariables  The number of active arguments on the rhs.
-       * @param[int,out]         dataPos  The position inside the jacobi and indices vectors. It is decremented by the number of active variables.
+       * @param[in,out]          dataPos  The position inside the jacobi and indices vectors. It is decremented by the number of active variables.
        * @param[in]             jacobies  The jacobies from the arguments of the statement.
        * @param[in]              indices  The indices from the arguments of the statements.
        */
@@ -161,7 +161,7 @@ namespace codi {
        * @param[in]                  adj  The tangent of the lhs of the statement.
        * @param[in,out]         adjoints  The adjoint vector containing the tangent of all variables.
        * @param[in]      activeVariables  The number of active arguments on the rhs.
-       * @param[int,out]         dataPos  The position inside the jacobi and indices vectors. It is decremented by the number of active variables.
+       * @param[in,out]          dataPos  The position inside the jacobi and indices vectors. It is decremented by the number of active variables.
        * @param[in]             jacobies  The jacobies from the arguments of the statement.
        * @param[in]              indices  The indices from the arguments of the statements.
        */

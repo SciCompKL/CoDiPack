@@ -128,9 +128,9 @@ namespace codi {
   {
   public:
 
-    friend TapeBaseModule<TapeTypes, JacobiIndexTape>;
-    friend StatementModule<TapeTypes, JacobiIndexTape>;
-    friend IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiIndexTape>;
+    friend TapeBaseModule<TapeTypes, JacobiIndexTape>; /**< No doc */
+    friend StatementModule<TapeTypes, JacobiIndexTape>;  /**< No doc */
+    friend ::codi::IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiIndexTape>;  /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 

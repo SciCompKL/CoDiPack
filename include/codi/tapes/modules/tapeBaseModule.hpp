@@ -143,8 +143,27 @@ namespace codi {
     protected:
 
     // ----------------------------------------------------------------------
-    // Private function for the communication with the including class
+    // Protected function for the communication with the including class
     // ----------------------------------------------------------------------
+
+      /**
+      * @brief Adds information about adjoint vector.
+      *
+      * Adds the number of adjoint vector entries and the size of the adjoint vector.
+      *
+      * @param[in,out] values  The information is added to the values
+      */
+      void addTapeBaseValues(TapeValues& values) const {
+
+        size_t nAdjoints      = cast().indexHandler.getMaximumGlobalIndex() + 1;
+        double memoryAdjoints = (double)nAdjoints * (double)sizeof(GradientValue) * BYTE_TO_MB;
+
+        values.addSection("Adjoint vector");
+        values.addData("Number of adjoints", nAdjoints);
+        values.addData("Memory allocated", memoryAdjoints, true, true);
+
+        cast().indexHandler.addValues(values);
+      }
 
       /**
        * @brief Helper function: Sets the adjoint vector to a new size.
@@ -547,25 +566,6 @@ namespace codi {
         TapeValues values = cast().getTapeValues();
 
         values.formatRow(out);
-      }
-
-      /**
-      * @brief Adds information about adjoint vector.
-      *
-      * Adds the number of adjoint vector entries and the size of the adjoint vector.
-      *
-      * @param[in,out] values  The information is added to the values
-      */
-      void addTapeBaseValues(TapeValues& values) const {
-
-        size_t nAdjoints      = cast().indexHandler.getMaximumGlobalIndex() + 1;
-        double memoryAdjoints = (double)nAdjoints * (double)sizeof(GradientValue) * BYTE_TO_MB;
-
-        values.addSection("Adjoint vector");
-        values.addData("Number of adjoints", nAdjoints);
-        values.addData("Memory allocated", memoryAdjoints, true, true);
-
-        cast().indexHandler.addValues(values);
       }
 
       /**

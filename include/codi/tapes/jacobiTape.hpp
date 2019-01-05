@@ -124,9 +124,9 @@ namespace codi {
   {
   public:
 
-    friend TapeBaseModule<TapeTypes, JacobiTape>;
-    friend StatementModule<TapeTypes, JacobiTape>;
-    friend IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiTape>;
+    friend TapeBaseModule<TapeTypes, JacobiTape>;  /**< No doc */
+    friend StatementModule<TapeTypes, JacobiTape>;  /**< No doc */
+    friend ::codi::IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiTape>;  /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -184,29 +184,6 @@ namespace codi {
     }
 
     /**
-     * @brief Optimization for the copy operation just copies the index of the rhs.
-     *
-     * No data is stored in this method.
-     *
-     * The primal value of the lhs is set to the primal value of the rhs.
-     *
-     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
-     *                           of the right hand side.
-     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
-     * @param[in]         rhs    The right hand side expression of the assignment.
-     */
-    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const ActiveReal<JacobiTape<TapeTypes> >& rhs) {
-      ENABLE_CHECK (OptTapeActivity, this->active){
-        lhsIndex = rhs.getGradientData();
-      } else {
-        indexHandler.freeIndex(lhsIndex);
-      }
-      lhsValue = rhs.getValue();
-    }
-
-    using StatementModule<TapeTypes, JacobiTape>::store;
-
-    /**
      * @brief Set the size of the jacobi and statement data.
      *
      * The tape will allocate enough chunks such that the given data
@@ -262,6 +239,29 @@ namespace codi {
     }
 
   private:
+
+    /**
+     * @brief Optimization for the copy operation just copies the index of the rhs.
+     *
+     * No data is stored in this method.
+     *
+     * The primal value of the lhs is set to the primal value of the rhs.
+     *
+     * @param[out]   lhsValue    The primal value of the lhs. This value is set to the value
+     *                           of the right hand side.
+     * @param[out]   lhsIndex    The gradient data of the lhs. The index will be set to the index of the rhs.
+     * @param[in]         rhs    The right hand side expression of the assignment.
+     */
+    CODI_INLINE void store(Real& lhsValue, Index& lhsIndex, const ActiveReal<JacobiTape<TapeTypes> >& rhs) {
+      ENABLE_CHECK (OptTapeActivity, this->active){
+        lhsIndex = rhs.getGradientData();
+      } else {
+        indexHandler.freeIndex(lhsIndex);
+      }
+      lhsValue = rhs.getValue();
+    }
+
+    using StatementModule<TapeTypes, JacobiTape>::store;
 
     /**
      * @brief Reset the tape structure to the given position.
@@ -427,7 +427,6 @@ namespace codi {
       this->evaluateExtFuncForward(start, end, forwardFunc, this->jacobiVector, &interface, evalFunc, adjointData);
     }
 
-  public:
     /**
      * @brief Internal function for input variable registration.
      *
@@ -443,16 +442,6 @@ namespace codi {
       this->stmtVector.setDataAndMove((StatementInt)StatementIntInputTag);
 
       index = indexHandler.createIndex();
-    }
-
-    /**
-     * @brief Register a variable as an active variable.
-     *
-     * The index of the variable is set to a non zero number.
-     * @param[in,out] value The value which will be marked as an active variable.
-     */
-    CODI_INLINE void registerInput(ActiveReal<JacobiTape<TapeTypes> >& value) {
-      registerInputInternal(value.value(), value.getGradientData());
     }
 
     /**
@@ -475,6 +464,17 @@ namespace codi {
 
         index = indexHandler.createIndex();
       }
+    }
+
+  public:
+    /**
+     * @brief Register a variable as an active variable.
+     *
+     * The index of the variable is set to a non zero number.
+     * @param[in,out] value The value which will be marked as an active variable.
+     */
+    CODI_INLINE void registerInput(ActiveReal<JacobiTape<TapeTypes> >& value) {
+      registerInputInternal(value.value(), value.getGradientData());
     }
 
     /**
