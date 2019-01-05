@@ -44,18 +44,12 @@ namespace codi {
    * The module defines the methods writeToFile, readFromFile, deleteData, resetHard.
    *
    * @tparam    TapeTypes  All the types for the tape. Including the calculation type and the vector types.
-   * @tparam   RootVector  The type of the root vector of the tape.
    * @tparam         Tape  The full tape implementation
    */
-  template<typename TapeTypes, typename RootVector, typename Tape>
+  template<typename TapeTypes, typename Tape>
   struct IOModule : public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, Tape, typename TapeTypes::Position > {
 
     private:
-
-      /**
-       * @brief The root of the data vector structure.
-       */
-      RootVector* rootVector;
 
       /**
        * @brief Cast this class to the full.
@@ -70,8 +64,7 @@ namespace codi {
 
     public:
 
-      IOModule() :
-        rootVector(NULL)
+      IOModule()
       {}
 
     protected:
@@ -80,11 +73,9 @@ namespace codi {
        * @brief Initialize the IoModule.
        *
        * Called after all members of the tape have been initialized.
-       *
-       * @param[in,out] r  The root vector for the data vectors.
        */
-      void initIOModule(RootVector* r) {
-        rootVector = r;
+      void initIOModule() {
+        // Nothing to do
       }
 
     // ----------------------------------------------------------------------
@@ -139,7 +130,7 @@ namespace codi {
         CoDiIoHandle ioHandle(filename, true);
 
         // we ignore the external function vector here because the data there should not be written
-        rootVector->forEachChunkForward(writeFunction, true, ioHandle);
+        cast().getRootVector().forEachChunkForward(writeFunction, true, ioHandle);
       }
 
       /**
@@ -155,7 +146,7 @@ namespace codi {
       void readFromFile(const std::string& filename) {
         CoDiIoHandle ioHandle(filename, false);
 
-        rootVector->forEachChunkForward(readFunction, true, ioHandle);
+        cast().getRootVector().forEachChunkForward(readFunction, true, ioHandle);
       }
 
       /**
@@ -166,7 +157,7 @@ namespace codi {
        *
        */
       void deleteData() {
-        rootVector->forEachChunkForward(deleteFunction, true);
+        cast().getRootVector().forEachChunkForward(deleteFunction, true);
       }
 
       /**
@@ -182,7 +173,7 @@ namespace codi {
         tape.reset();
 
         tape.cleanTapeBase();
-        rootVector->resetHard();
+        cast().getRootVector().resetHard();
       }
   };
 }

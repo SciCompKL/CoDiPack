@@ -156,28 +156,6 @@ namespace codi {
       }
 
       /**
-       * @brief Get the position from the external function vector.
-       *
-       * The position contains also the positions information for all nested vectors.
-       *
-       * @return The position for the external function vector.
-       */
-      ExtFuncPosition getExtFuncPosition() const {
-        return extFuncVector.getPosition();
-      }
-
-      /**
-       * @brief Get the zero position from the external function vector.
-       *
-       * The position contains also the positions information for all nested vectors.
-       *
-       * @return The zero position for the external function vector.
-       */
-      ExtFuncPosition getExtFuncZeroPosition() const {
-        return extFuncVector.getZeroPosition();
-      }
-
-      /**
        * @brief Reset the external function module to the position.
        *
        * The reset will also reset the vector and therefore all nested vectors.
@@ -192,7 +170,7 @@ namespace codi {
           extFunc->deleteData(&cast());
         };
 
-        extFuncVector.forEachReverse(getExtFuncPosition(), pos, deleteFunc);
+        extFuncVector.forEachReverse(extFuncVector.getPosition(), pos, deleteFunc);
 
         // reset will be done iteratively through the vectors
         extFuncVector.reset(pos);

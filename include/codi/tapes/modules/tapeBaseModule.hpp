@@ -45,7 +45,7 @@ namespace codi {
    * in the including class.
    * The module defines the types Position.
    *
-   * It defines the methods initGradientData, destroyGradientData, setGradient, getGradient, gradient, clearAdjoints,
+   * It defines the methods initGradientData, destroyGradientData, getPosition, getZeroPosition, setGradient, getGradient, gradient, clearAdjoints,
    * reset(Pos), reset(), evaluate(), evaluate(Pos, Pos), evaluateForward(), evaluateForward(Pos, Pos), setActive,
    * setPassive, isActive, print Statistics from the TapeInterface and ReverseTapeInterface.
    *
@@ -249,6 +249,28 @@ namespace codi {
         CODI_UNUSED(value);
 
         cast().indexHandler.freeIndex(index);
+      }
+
+      /**
+       * @brief Get the current position of the tape.
+       *
+       * The position can be used to reset the tape to that position or to
+       * evaluate only parts of the tape.
+       * @return The current position of the tape.
+       */
+      CODI_INLINE Position getPosition() const {
+        return cast().getRootVector().getPosition();
+      }
+
+      /**
+       * @brief Get the initial position of the tape.
+       *
+       * The position can be used to reset the tape to that position or to
+       * evaluate only parts of the tape.
+       * @return The initial position of the tape.
+       */
+      CODI_INLINE Position getZeroPosition() const {
+        return cast().getRootVector().getZeroPosition();
       }
 
       /**

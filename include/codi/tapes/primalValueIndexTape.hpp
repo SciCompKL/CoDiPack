@@ -131,14 +131,14 @@ namespace codi {
       public TapeBaseModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
       public PrimalValueModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
       public ExternalFunctionModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
-      public IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, PrimalValueIndexTape<TapeTypes>>,
+      public IOModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
       public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, PrimalValueIndexTape<TapeTypes>, typename TapeTypes::Position >
   {
   public:
 
     friend TapeBaseModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
     friend PrimalValueModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
-    friend ::codi::IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, PrimalValueIndexTape>;  /**< No doc */
+    friend ::codi::IOModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -194,14 +194,14 @@ namespace codi {
         TapeBaseModule<TapeTypes, PrimalValueIndexTape<TapeTypes> > (),
         PrimalValueModule<TapeTypes, PrimalValueIndexTape>(),
         ExternalFunctionModule<TapeTypes, PrimalValueIndexTape<TapeTypes> > (),
-        IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, PrimalValueIndexTape<TapeTypes> > (),
+        IOModule<TapeTypes, PrimalValueIndexTape<TapeTypes> > (),
         emptyVector(),
         primalsCopy(NULL),
         primalsCopySize(0),
         usePrimalCopy(true) {
       this->initPrimalValueModule(&emptyVector);
       this->initExtFuncModule(&this->constantValueVector);
-      this->initIOModule(&this->extFuncVector);
+      this->initIOModule();
       this->initTapeBaseModule();
      }
 
@@ -319,29 +319,25 @@ namespace codi {
     }
     using PrimalValueModule<TapeTypes, PrimalValueIndexTape>::store;
 
-    /**
-     * @brief Get the current position of the tape.
-     *
-     * The position can be used to reset the tape to that position or to
-     * evaluate only parts of the tape.
-     * @return The current position of the tape.
-     */
-    CODI_INLINE Position getPosition() const {
-      return this->getExtFuncPosition();
-    }
-
-    /**
-     * @brief Get the current position of the tape.
-     *
-     * The position can be used to reset the tape to that position or to
-     * evaluate only parts of the tape.
-     * @return The current position of the tape.
-     */
-    CODI_INLINE Position getZeroPosition() const {
-      return this->getExtFuncZeroPosition();
-    }
-
   private:
+
+    /**
+     * @brief Get the root vector for general data operations.
+     *
+     * @return The root vector for general data operations.
+     */
+    CODI_INLINE typename TapeTypes::ExternalFunctionVector& getRootVector() {
+      return this->extFuncVector;
+    }
+
+    /**
+     * @brief Get the root vector for general data operations.
+     *
+     * @return The root vector for general data operations.
+     */
+    CODI_INLINE const typename TapeTypes::ExternalFunctionVector& getRootVector() const {
+      return this->extFuncVector;
+    }
 
     /**
      * @brief Resets the primal values up to the specified position.
@@ -354,7 +350,7 @@ namespace codi {
     CODI_INLINE void resetPrimalValues(const Position& pos) {
 
       // Do not perform a global reset on the primal value vector if the tape is cleared
-      if(getZeroPosition() != pos) {
+      if(this->getZeroPosition() != pos) {
 
         auto resetFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
           CODI_UNUSED(handle);

@@ -124,14 +124,14 @@ namespace codi {
       public JacobiModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
       public StatementModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
       public ExternalFunctionModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
-      public IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiIndexTape<TapeTypes>>,
+      public IOModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
       public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position >
   {
   public:
 
     friend TapeBaseModule<TapeTypes, JacobiIndexTape>; /**< No doc */
     friend StatementModule<TapeTypes, JacobiIndexTape>;  /**< No doc */
-    friend ::codi::IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiIndexTape>;  /**< No doc */
+    friend ::codi::IOModule<TapeTypes, JacobiIndexTape>;  /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -166,12 +166,12 @@ namespace codi {
       JacobiModule<TapeTypes, JacobiIndexTape>(),
       StatementModule<TapeTypes, JacobiIndexTape<TapeTypes> > (),
       ExternalFunctionModule<TapeTypes, JacobiIndexTape<TapeTypes> > (),
-      IOModule<TapeTypes, typename TapeTypes::ExternalFunctionVector, JacobiIndexTape<TapeTypes> > (),
+      IOModule<TapeTypes, JacobiIndexTape<TapeTypes> > (),
       emptyVector() {
       this->initStmtModule(&emptyVector);
       this->initJacobiModule(&this->stmtVector);
       this->initExtFuncModule(&this->jacobiVector);
-      this->initIOModule(&this->extFuncVector);
+      this->initIOModule();
       this->initTapeBaseModule();
     }
 
@@ -265,29 +265,25 @@ namespace codi {
 
     using TapeBaseModule<TapeTypes, JacobiIndexTape>::clearAdjoints;
 
-    /**
-     * @brief Get the current position of the tape.
-     *
-     * The position can be used to reset the tape to that position or to
-     * evaluate only parts of the tape.
-     * @return The current position of the tape.
-     */
-    CODI_INLINE Position getPosition() const {
-      return this->getExtFuncPosition();
-    }
-
-    /**
-     * @brief Get the initial position of the tape.
-     *
-     * The position can be used to reset the tape to that position or to
-     * evaluate only parts of the tape.
-     * @return The initial position of the tape.
-     */
-    CODI_INLINE Position getZeroPosition() const {
-      return this->getExtFuncZeroPosition();
-    }
-
   private:
+
+    /**
+     * @brief Get the root vector for general data operations.
+     *
+     * @return The root vector for general data operations.
+     */
+    CODI_INLINE typename TapeTypes::ExternalFunctionVector& getRootVector() {
+      return this->extFuncVector;
+    }
+
+    /**
+     * @brief Get the root vector for general data operations.
+     *
+     * @return The root vector for general data operations.
+     */
+    CODI_INLINE const typename TapeTypes::ExternalFunctionVector& getRootVector() const {
+      return this->extFuncVector;
+    }
 
     /**
      * @brief Reset the tape structure to the given position.
