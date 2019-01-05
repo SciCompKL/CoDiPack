@@ -40,9 +40,9 @@
 namespace codi {
 
   #define CODI_MAJOR_VERSION 1
-  #define CODI_MINOR_VERSION 7
+  #define CODI_MINOR_VERSION 8
   #define CODI_BUILD_VERSION 0
-  #define CODI_VERSION "1.7.0"
+  #define CODI_VERSION "1.8.0"
 
   /**
    * @brief Constant for the conversion from byte to megabyte.

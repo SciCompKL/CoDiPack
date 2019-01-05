@@ -1,6 +1,17 @@
 Changelog      {#Changelog}
 ===========================
 
+### v 1.8.0 - 2019-01-07
+ - Interface:
+    - Added function to disable active variables
+ - Feature: On the fly combination of entries for the same argument in Jacobian tapes.
+   - See CODI_EnableCombineJacobianArguments for details
+ - New tutorials:
+   - Tutorial for recording of several different tapes in one application at different times
+ - Internal:
+   - Removed intermediate lambda functions in tape evaluation functions
+   - Tape modules are now implemented as structures and no longer included as super macros
+
 ### v 1.7.0 - 2018-10-30
  - Support for forward evaluation of tapes finalized
  - Support for primal evaluation of tapes
