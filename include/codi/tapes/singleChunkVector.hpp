@@ -77,6 +77,11 @@ namespace codi {
     typedef ChunkData ChunkType;
 
     /**
+     * @brief Position of the nested vector
+     */
+    typedef NestedVector NestedVectorType;
+
+    /**
      * @brief Position of this chunk vector.
      *
      * The position also includes the position of the nested vector,
@@ -143,6 +148,40 @@ namespace codi {
       chunk(chunkSize),
       nested(nested)
     {}
+
+    /**
+     * @brief Initializes the data structures without touching the nested vector.
+     *
+     * The method setNested needs to be called to finalize the initialization.
+     *
+     * @param chunkSize   The size for the chunks.
+     */
+    SingleChunkVector(const size_t& chunkSize) :
+      chunk(chunkSize),
+      nested(NULL)
+    {}
+
+    /**
+     * @brief Initialize the nested vector.
+     *
+     * Can only be called once.
+     *
+     * @param[in,out] v  The nested vector.
+     */
+    void setNested(NestedVector* v) {
+      // Set nested is only called once during the initialization.
+      codiAssert(this->nested == NULL);
+
+      this->nested = v;
+    }
+
+    /**
+     * @brief Get the nested vector.
+     * @return The nested vector.
+     */
+    NestedVector& getNested() {
+      return *nested;
+    }
 
     /**
      * @brief Swap the contents of this chunk vector with the contents of the other

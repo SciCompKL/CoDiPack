@@ -79,6 +79,11 @@ namespace codi {
       typedef ChunkData ChunkType;
 
       /**
+       * @brief Typedef of NestedVector for other classes
+       */
+      typedef NestedVector NestedVectorType;
+
+      /**
        * @brief Position of this chunk vector.
        *
        * The position also includes the position of the nested vector,
@@ -161,12 +166,26 @@ namespace codi {
       curChunk(NULL),
       curChunkIndex(0),
       chunkSize(chunkSize),
-      nested(nested)
+      nested(NULL)
     {
-      curChunk = new ChunkData(chunkSize);
-      chunks.push_back(curChunk);
-      positions.push_back(nested->getZeroPosition());
+      setNested(nested);
     }
+
+    /**
+     * @brief Initializes the data structures without touching the nested vector.
+     *
+     * The method setNested needs to be called to finalize the initialization.
+     *
+     * @param chunkSize   The size for the chunks.
+     */
+    ChunkVector(const size_t& chunkSize) :
+      chunks(),
+      positions(),
+      curChunk(NULL),
+      curChunkIndex(0),
+      chunkSize(chunkSize),
+      nested(NULL)
+    {}
 
     /**
      * @brief Deletes all chunks.
@@ -175,6 +194,32 @@ namespace codi {
       for(size_t i = 0; i < chunks.size(); ++i) {
         delete chunks[i];
       }
+    }
+
+    /**
+     * @brief Initialize the nested vector.
+     *
+     * Can only be called once.
+     *
+     * @param[in,out] v  The nested vector.
+     */
+    void setNested(NestedVector* v) {
+      // Set nested is only called once during the initialization.
+      codiAssert(this->nested == NULL);
+
+      this->nested = v;
+
+      curChunk = new ChunkData(chunkSize);
+      chunks.push_back(curChunk);
+      positions.push_back(nested->getZeroPosition());
+    }
+
+    /**
+     * @brief Get the nested vector.
+     * @return The nested vector.
+     */
+    NestedVector& getNested() {
+      return *nested;
     }
 
     /**

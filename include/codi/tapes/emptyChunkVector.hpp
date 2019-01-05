@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "../macros.h"
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
