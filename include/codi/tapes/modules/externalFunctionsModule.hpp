@@ -203,7 +203,7 @@ namespace codi {
 
           (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-          extFunc->evaluatePrimal(&obj, adjointInterface);
+          extFunc->evaluatePrimal(&cast(), adjointInterface);
 
           curInnerPos = *endInnerPos;
 
@@ -244,7 +244,7 @@ namespace codi {
 
            (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-           extFunc->evaluateReverse(&obj, adjointInterface);
+           extFunc->evaluateReverse(&cast(), adjointInterface);
 
            curInnerPos = *endInnerPos;
 
@@ -282,7 +282,7 @@ namespace codi {
 
           (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-          extFunc->evaluateForward(&obj, adjointInterface);
+          extFunc->evaluateForward(&cast(), adjointInterface);
 
           curInnerPos = *endInnerPos;
 
