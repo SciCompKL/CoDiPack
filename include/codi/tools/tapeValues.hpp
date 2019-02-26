@@ -163,6 +163,22 @@ namespace codi {
 
       }
 
+      template<typename Stream>
+      void addStreamData(const Stream& stream) {
+
+        size_t numberOfChunks = stream.getNumChunks();
+        size_t dataEntries    = stream.getDataSize();
+        size_t entrySize      = Stream::ChunkType::EntrySize;
+
+        double  memoryUsed  = (double)dataEntries*(double)entrySize* BYTE_TO_MB;
+        double  memoryAlloc = (double)numberOfChunks*(double)stream.getChunkSize()*(double)entrySize* BYTE_TO_MB;
+
+        addData("Total number", dataEntries);
+        addData("Number of chunks", numberOfChunks);
+        addData("Memory used", memoryUsed, true, false);
+        addData("Memory allocated", memoryAlloc, false, true);
+      }
+
       /**
        * @brief Output the default format.
        *
