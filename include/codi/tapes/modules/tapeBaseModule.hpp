@@ -41,7 +41,7 @@
 namespace codi {
 
   /**
-   * The module defines the structures adjoints, adjointSize and active that have to initialized
+   * The module defines the structures adjoints, adjointSize and active that have to be initialized
    * in the including class.
    * The module defines the types Position.
    *

@@ -668,7 +668,7 @@ namespace codi {
         dataPos = chunks[curChunk - 1]->getUsedSize();
       }
 
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      // Iterate over the remainder also covers the case if the start chunk and end chunk are the same
       pHandle.setPointers(0, chunks[end.chunk]);
       pHandle.callNestedReverse(nested, curInnerPos, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
 
@@ -693,7 +693,7 @@ namespace codi {
      *
      * Debug checks will ensure this behaviour.
      *
-     * It has to hold start >= end.
+     * It has to hold start <= end.
      *
      * @param    start  The start point for the stack interpretation.
      * @param      end  The end point for the stack interpretation.
@@ -725,7 +725,7 @@ namespace codi {
         dataPos = 0;
       }
 
-      // Iterate over the reminder also covers the case if the start chunk and end chunk are the same
+      // Iterate over the remainder also covers the case if the start chunk and end chunk are the same
       pHandle.setPointers(0, chunks[end.chunk]);
       pHandle.callNestedForward(nested, curInnerPos, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
 
