@@ -154,6 +154,18 @@ namespace codi {
       cast().valueAction(data, func);
     }
 
+#if CODI_EnableImplicitConversion
+    /**
+     * @brief Get the primal value of this instance via implicit cast.
+     * @return The primal value.
+     */
+    CODI_INLINE operator const Real() const {
+      Warning::implicitCast<CODI_DisableImplicitConversionWarning>();
+
+      return getValue();
+    }
+#endif
+
   private:
     /**
      * Intentionally inaccessible to prevent an expression appearing
