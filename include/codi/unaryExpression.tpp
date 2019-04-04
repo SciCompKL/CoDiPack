@@ -31,14 +31,14 @@
  */
 
 /*
- * In order to include this file the user has to define the preprocessor macro NAME, FUNCTION and PRIMAL_FUNCTION.
+ * In order to include this file the user has to define the preprocessor macro NAME and FUNCTION.
  * NAME contains the name of the generated operation. FUNCTION represents the normal name of that function
- * e.g. 'operator -' or 'sin'. PRIMAL_FUNCTION is the name of a function which can call the primal operator.
+ * e.g. 'operator -' or 'sin'.
  *
- * The defines NAME, FUNCTION and PRIMAL_FUNCTION will be undefined at the end of this template.
+ * The defines NAME and FUNCTION will be undefined at the end of this template.
  *
- * The user needs to define the following functions:
- *
+ * The user needs to implement the primal and derivative logic according to UnaryOpInterface.
+ * The name of the implementing class must be NAME ## Impl.
  * gradNAME: Computes the derivative df(x)/dx for y = f(x)
  */
 
@@ -48,16 +48,13 @@
 #ifndef FUNCTION
   #error Please define the primal function representation.
 #endif
-#ifndef PRIMAL_FUNCTION
-  #error Please define a function which calls the primal functions representation.
-#endif
 
 #include "macros.h"
 
 #define OP NAME
 #define FUNC FUNCTION
-#define PRIMAL_CALL PRIMAL_FUNCTION
-#define GRADIENT_FUNC   COMBINE(gradient_, NAME)
+#define PRIMAL_CALL COMBINE(NAME, Impl<Real>::primal)
+#define GRADIENT_FUNC COMBINE(NAME, Impl<Real>::gradient)
 
 /* predefine the struct and the function for higher order derivatives */
 template<typename Real, class A> struct OP;
@@ -324,6 +321,5 @@ CODI_INLINE OP<Real, A> FUNC(const Expression<Real, A>& a) {
 #undef PRIMAL_CALL
 #undef GRADIENT_FUNC
 
-#undef PRIMAL_FUNCTION
 #undef FUNCTION
 #undef NAME

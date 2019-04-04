@@ -1021,310 +1021,444 @@ namespace codi {
 
   #undef CODI_DEFINE_UNARY_CONDITIONAL
 
-  #define CODI_OPERATOR_HELPER(NAME, OP) \
-    /** @brief Helper function to call operators as a function. @param[in] a The argument of the operation. @return The value of OP b @tparam A The expression for the argument of the function*/ \
-    template<typename A> \
-    CODI_INLINE auto primal_ ## NAME(const A& a) -> decltype(OP a) { \
-      return OP a; \
-    }
+  /**
+   * @brief Interface for unary elementary operation logic.
+   *
+   * @tparam Real   The real type used in the active types.
+   *
+   * Must be implemented for every unary elementary operation.
+   * Each implementation is followed by an include of unaryExpression.tpp with prior #defines.
+   */
+  template<typename Real>
+  struct UnaryOpInterface {
+    /**
+     * @brief primal Primal function call.
+     * @param[in] a   The argument of the operation.
+     * @return        The result of the operation.
+     */
+    static CODI_INLINE Real primal(const Real& a);
+
+    /**
+     * @brief gradient Gradient of the operation.
+     * @tparam ReturnType Indicates that the return type depends on the specific elementary operation.
+     * @param[in] a       Argument of the operation.
+     * @param[in] result  Result of the primal function call.
+     * @return            Gradient value.
+     */
+    template<typename ReturnType>
+    static CODI_INLINE ReturnType gradient(const Real& a, const Real& result);
+  };
 
   /*
    * Now all unary functions are implemented.
-   *
-   * We use the naming scheme gradName for the gradient computation of the function.
-   *
    */
 
-  template<typename Real> CODI_INLINE typename TypeTraits<Real>::PassiveReal gradient_UnaryMinus(const Real& a, const Real& result) {
-    CODI_UNUSED(a);
-    CODI_UNUSED(result);
-    return -1.0;
-  }
-  CODI_OPERATOR_HELPER(UnaryMinus, -)
+  template<typename Real>
+  struct UnaryMinusImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return -a;
+    }
+
+    static CODI_INLINE typename TypeTraits<Real>::PassiveReal gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(a);
+      CODI_UNUSED(result);
+      return -1.0;
+    }
+  };
   #define NAME UnaryMinus
   #define FUNCTION operator -
-  #define PRIMAL_FUNCTION primal_UnaryMinus
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Sqrt(const Real& a, const Real& result) {
-    if(CheckExpressionArguments) {
-      if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
-        CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+  using std::sqrt;
+  template<typename Real>
+  struct SqrtImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return sqrt(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      if(CheckExpressionArguments) {
+        if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
+          CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        }
+      }
+      if(result != 0.0) {
+        return 0.5 / result;
+      } else {
+        return (Real)0.0;
       }
     }
-    if(result != 0.0) {
-      return 0.5 / result;
-    } else {
-      return (Real)0.0;
-    }
-  }
-  using std::sqrt;
+  };
   #define NAME Sqrt
   #define FUNCTION sqrt
-  #define PRIMAL_FUNCTION sqrt
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Cbrt(const Real& a, const Real& result) {
-    if(CheckExpressionArguments) {
-      if(0.0 == TypeTraits<Real>::getBaseValue(a)) {
-        CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+  using std::cbrt;
+  template<typename Real>
+  struct CbrtImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return cbrt(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      if(CheckExpressionArguments) {
+        if(0.0 == TypeTraits<Real>::getBaseValue(a)) {
+          CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        }
+      }
+      if(result != 0.0) {
+        return 1.0 / (3.0 * result * result);
+      } else {
+        return (Real)0.0;
       }
     }
-    if(result != 0.0) {
-      return 1.0 / (3.0 * result * result);
-    } else {
-      return (Real)0.0;
-    }
-  }
-  using std::cbrt;
+  };
   #define NAME Cbrt
   #define FUNCTION cbrt
-  #define PRIMAL_FUNCTION cbrt
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Tanh(const Real& a, const Real& result) {
-    CODI_UNUSED(a);
-    return 1 - result * result;
-  }
   using std::tanh;
+  template<typename Real>
+  struct TanhImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return tanh(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(a);
+      return 1 - result * result;
+    }
+  };
   #define NAME Tanh
   #define FUNCTION tanh
-  #define PRIMAL_FUNCTION tanh
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Log(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    if(CheckExpressionArguments) {
-      if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
-        CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
-      }
-    }
-    return 1.0 / a;
-  }
   using std::log;
+  template<typename Real>
+  struct LogImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return log(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      if(CheckExpressionArguments) {
+        if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
+          CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        }
+      }
+      return 1.0 / a;
+    }
+  };
   #define NAME Log
   #define FUNCTION log
-  #define PRIMAL_FUNCTION log
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Log10(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    if(CheckExpressionArguments) {
-      if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
-        CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
-      }
-    }
-    return 0.434294481903252 / a;
-  }
   using std::log10;
+  template<typename Real>
+  struct Log10Impl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return log10(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      if(CheckExpressionArguments) {
+        if(0.0 > TypeTraits<Real>::getBaseValue(a)) {
+          CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        }
+      }
+      return 0.434294481903252 / a;
+    }
+  };
   #define NAME Log10
   #define FUNCTION log10
-  #define PRIMAL_FUNCTION log10
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Sin(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    return cos(a);
-  }
   using std::sin;
+  using std::cos;
+  template<typename Real>
+  struct SinImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return sin(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      return cos(a);
+    }
+  };
   #define NAME Sin
   #define FUNCTION sin
-  #define PRIMAL_FUNCTION sin
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Cos(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    return -sin(a);
-  }
-  using std::cos;
+  template<typename Real>
+  struct CosImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return cos(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      return -sin(a);
+    }
+  };
   #define NAME Cos
   #define FUNCTION cos
-  #define PRIMAL_FUNCTION cos
   #include "unaryExpression.tpp"
 
-  using std::sqrt;
-  template<typename Real> CODI_INLINE Real gradient_Asin(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    if(CheckExpressionArguments) {
-      if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
-        CODI_EXCEPTION("asin outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
-      }
-    }
-    return 1.0 / sqrt(1.0 - a * a);
-  }
   using std::asin;
+  template<typename Real>
+  struct AsinImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return asin(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      if(CheckExpressionArguments) {
+        if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
+          CODI_EXCEPTION("asin outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        }
+      }
+      return 1.0 / sqrt(1.0 - a * a);
+    }
+  };
   #define NAME Asin
   #define FUNCTION asin
-  #define PRIMAL_FUNCTION asin
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Acos(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    if(CheckExpressionArguments) {
-      if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
-        CODI_EXCEPTION("acos outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
-      }
-    }
-    return -1.0 / sqrt(1.0 - a * a);
-  }
   using std::acos;
+  template<typename Real>
+  struct AcosImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return acos(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      if(CheckExpressionArguments) {
+        if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
+          CODI_EXCEPTION("acos outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        }
+      }
+      return -1.0 / sqrt(1.0 - a * a);
+    }
+  };
   #define NAME Acos
   #define FUNCTION acos
-  #define PRIMAL_FUNCTION acos
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Atan(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    return 1.0 / (1 + a * a);
-  }
   using std::atan;
+  template<typename Real>
+  struct AtanImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return atan(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      return 1.0 / (1 + a * a);
+    }
+  };
   #define NAME Atan
   #define FUNCTION atan
-  #define PRIMAL_FUNCTION atan
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Sinh(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    return cosh(a);
-  }
   using std::sinh;
+  using std::cosh;
+  template<typename Real>
+  struct SinhImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return sinh(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      return cosh(a);
+    }
+  };
   #define NAME Sinh
   #define FUNCTION sinh
-  #define PRIMAL_FUNCTION sinh
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Cosh(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    return sinh(a);
-  }
-  using std::cosh;
+  template<typename Real>
+  struct CoshImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return cosh(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      return sinh(a);
+    }
+  };
   #define NAME Cosh
   #define FUNCTION cosh
-  #define PRIMAL_FUNCTION cosh
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Exp(const Real& a, const Real& result) {
-    CODI_UNUSED(a);
-    return result;
-  }
   using std::exp;
+  template<typename Real>
+  struct ExpImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return exp(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(a);
+      return result;
+    }
+  };
   #define NAME Exp
   #define FUNCTION exp
-  #define PRIMAL_FUNCTION exp
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Atanh(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    if(CheckExpressionArguments) {
-      if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
-        CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
-      }
-    }
-    return 1.0 / (1 - a * a);
-  }
   using std::atanh;
+  template<typename Real>
+  struct AtanhImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return atanh(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      if(CheckExpressionArguments) {
+        if(TypeTraits<Real>::getBaseValue(a) <= -1.0 || 1.0 <= TypeTraits<Real>::getBaseValue(a)) {
+          CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        }
+      }
+      return 1.0 / (1 - a * a);
+    }
+  };
   #define NAME Atanh
   #define FUNCTION atanh
-  #define PRIMAL_FUNCTION atanh
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Abs(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    if(a < 0.0) {
-      return (Real)-1.0;
-    } else if(a > 0.0) {
-      return (Real)1.0;
-    } else {
-      return (Real)0.0;
-    }
-  }
   using std::abs;
+  template<typename Real>
+  struct AbsImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return abs(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      if(a < 0.0) {
+        return (Real)-1.0;
+      } else if(a > 0.0) {
+        return (Real)1.0;
+      } else {
+        return (Real)0.0;
+      }
+    }
+  };
   #define NAME Abs
   #define FUNCTION abs
-  #define PRIMAL_FUNCTION abs
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Tan(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    if(CheckExpressionArguments) {
-      if(0.0 == cos(TypeTraits<Real>::getBaseValue(a))) {
-        CODI_EXCEPTION("Tan evaluated at (0.5  + i) * PI.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
-      }
+  using std::tan;
+  template<typename Real>
+  struct TanImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return tan(a);
     }
-    Real tmp = 1.0 / cos(a);
-    return tmp * tmp;
-  }
-  using std::tan ;
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      if(CheckExpressionArguments) {
+        if(0.0 == cos(TypeTraits<Real>::getBaseValue(a))) {
+          CODI_EXCEPTION("Tan evaluated at (0.5  + i) * PI.(Value: %0.15e)", TypeTraits<Real>::getBaseValue(a));
+        }
+      }
+      Real tmp = 1.0 / cos(a);
+      return tmp * tmp;
+    }
+  };
   #define NAME Tan
   #define FUNCTION tan
-  #define PRIMAL_FUNCTION tan
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Erf(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    return 1.128379167095513 * exp( -(a * a) ); // erf'(a) = 2.0 / sqrt(pi) * exp(-a^2)
-  }
   using std::erf;
+  template<typename Real>
+  struct ErfImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return erf(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      return 1.128379167095513 * exp( -(a * a) ); // erf'(a) = 2.0 / sqrt(pi) * exp(-a^2)
+    }
+  };
   #define NAME Erf
   #define FUNCTION erf
-  #define PRIMAL_FUNCTION erf
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Erfc(const Real& a, const Real& result) {
-    CODI_UNUSED(result);
-    return -1.128379167095513 * exp( -(a * a) ); // erfc'(a) = - 2.0 / sqrt(pi) * exp(-a^2)
-  }
   using std::erfc;
+  template<typename Real>
+  struct ErfcImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return erfc(a);
+    }
+
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      CODI_UNUSED(result);
+      return -1.128379167095513 * exp( -(a * a) ); // erfc'(a) = - 2.0 / sqrt(pi) * exp(-a^2)
+    }
+  };
   #define NAME Erfc
   #define FUNCTION erfc
-  #define PRIMAL_FUNCTION erfc
   #include "unaryExpression.tpp"
 
-  template<typename Real> CODI_INLINE Real gradient_Tgamma(const Real& a, const Real& result) {
-    if(a <= 0.0) {
-      std::cout << "Derivative for gamma function only for positive arguments at the moment" << std::endl;
-      std::exit(1);
+  using std::tgamma;
+  template<typename Real>
+  struct TgammaImpl : public UnaryOpInterface<Real> {
+    static CODI_INLINE Real primal(const Real& a) {
+      return tgamma(a);
     }
 
-    // Implementation of the digamma function is taken from John Burkardt,
-    // http://people.sc.fsu.edu/~jburkardt/cpp_src/asa103/asa103.cpp
-    //
-    // Definition of Gamma(a): https://en.wikipedia.org/wiki/Gamma_function
-    // Definition of DiGamma(a): https://en.wikipedia.org/wiki/Digamma_function
-    // Differentation is Gamma'(a) = Gamma(a) * DiGamma(a)
-
-    Real diGamma = 0.0;
-    if(a <= 0.000001) { // special case for small numbers
-      const Real eulerMascheroni = 0.57721566490153286060;
-      diGamma = -eulerMascheroni - 1.0/a + 1.6449340668482264365*a;
-    } else {
-      // shift DiGamma(a) = DiGamma(a + 1) - 1/a
-      // we require a large such that the approximation below is more accurate
-      Real shiftBound = 8.5;
-
-      Real shiftedValue = a;
-      while( shiftedValue < shiftBound ) {
-        diGamma      -= 1.0/shiftedValue;
-        shiftedValue += 1.0;
+    static CODI_INLINE Real gradient(const Real& a, const Real& result) {
+      if(a <= 0.0) {
+        std::cout << "Derivative for gamma function only for positive arguments at the moment" << std::endl;
+        std::exit(1);
       }
 
-      // Now compute the approximation via an asymptotic series
-      Real r = 1.0/shiftedValue;
-      diGamma += log(shiftedValue) - 0.5*r;
+      // Implementation of the digamma function is taken from John Burkardt,
+      // http://people.sc.fsu.edu/~jburkardt/cpp_src/asa103/asa103.cpp
+      //
+      // Definition of Gamma(a): https://en.wikipedia.org/wiki/Gamma_function
+      // Definition of DiGamma(a): https://en.wikipedia.org/wiki/Digamma_function
+      // Differentation is Gamma'(a) = Gamma(a) * DiGamma(a)
 
-      Real rSqr = r*r;
-      diGamma -= rSqr*(1.0/12.0 - rSqr*(1.0/120.0 - rSqr*(1.0/252.0 - rSqr*(1.0/240.0 - rSqr*(1.0/132.0)))));
+      Real diGamma = 0.0;
+      if(a <= 0.000001) { // special case for small numbers
+        const Real eulerMascheroni = 0.57721566490153286060;
+        diGamma = -eulerMascheroni - 1.0/a + 1.6449340668482264365*a;
+      } else {
+        // shift DiGamma(a) = DiGamma(a + 1) - 1/a
+        // we require a large such that the approximation below is more accurate
+        Real shiftBound = 8.5;
+
+        Real shiftedValue = a;
+        while( shiftedValue < shiftBound ) {
+          diGamma      -= 1.0/shiftedValue;
+          shiftedValue += 1.0;
+        }
+
+        // Now compute the approximation via an asymptotic series
+        Real r = 1.0/shiftedValue;
+        diGamma += log(shiftedValue) - 0.5*r;
+
+        Real rSqr = r*r;
+        diGamma -= rSqr*(1.0/12.0 - rSqr*(1.0/120.0 - rSqr*(1.0/252.0 - rSqr*(1.0/240.0 - rSqr*(1.0/132.0)))));
+      }
+
+      return diGamma*result;
     }
-
-    return diGamma*result;
-  }
-  using std::tgamma;
+  };
   #define NAME Tgamma
   #define FUNCTION tgamma
-  #define PRIMAL_FUNCTION tgamma
   #include "unaryExpression.tpp"
-
-  #undef CODI_OPERATOR_HELPER
 
   /**
    * @brief The fabs function is redirected to abs.
