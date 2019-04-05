@@ -37,9 +37,8 @@
  *
  * The defines NAME and FUNCTION will be undefined at the end of this template.
  *
- * The user needs to implement the primal and derivative logic according to UnaryOpInterface.
+ * Prior to including this file, the user has to implement the primal and derivative logic according to UnaryOpInterface.
  * The name of the implementing class must be NAME ## Impl.
- * gradNAME: Computes the derivative df(x)/dx for y = f(x)
  */
 
 #ifndef NAME

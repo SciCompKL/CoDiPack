@@ -31,42 +31,15 @@
  */
 
 /*
- * In order to include this file the user has to define the preprocessor macro NAME, FUNCTION and PRIMAL_FUNCTION.
+ * In order to include this file the user has to define the preprocessor macros NAME and FUNCTION.
  * NAME contains the name of the generated operation. FUNCTION represents the normal name of that function
- * e.g. 'operator -' or 'sin'. PRIMAL_FUNCTION is the name of a function which can call the primal operator.
+ * e.g. 'operator -' or 'sin'.
  *
- * The defines NAME, FUNCTION and PRIMAL_FUNCTION will be undefined at the end of this template.
+ * The defines NAME and FUNCTION will be undefined at the end of this template.
  *
- * The user needs to define the derivative computation functions that calculate the derivative
- * with respect to the first and/or second argument. The naming convention is:
- *
- *  dervBB[M]_Name.
- *
- * BB tells which variable is active. Thus we have the combinations
- * 11 -> both are active
- * 10 -> first argument is active
- * 01 -> second argument is active
- *
- * If the M is present the jacobi from the lower expression is not equal to 1.0 and given as an argument.
- * If the M is not present the jacobi is assumed to be equal to 1.0 and not given as an argument.
- *
- * In addition the user needs to define the gradient computations with respect to both arguments.
- * The naming convention is
- *
- *   gradientA_Name
- *   gradientB_Name
- *
- * These functions needs to compute the derivatives with respect to the active variables and
- * call the pushJacobi function on the arguments.That results in the following combinations:
- *
- * derv11_NAME
- * derv11M_NAME
- * derv10_NAME
- * derv10M_NAME
- * derv01_NAME
- * derv01M_NAME
- * gradientA_NAME
- * gradientB_NAME
+ * Prior to including this file, the user has to implement the operation's primal and derivative logic
+ * according to BinaryOpInterface.
+ * The name of the implementing class must be NAME ## Impl.
  */
 
 #ifndef NAME
@@ -74,9 +47,6 @@
 #endif
 #ifndef FUNCTION
   #error Please define the primal function representation.
-#endif
-#ifndef PRIMAL_FUNCTION
-  #error Please define a function which calls the primal functions representation.
 #endif
 
 #include "macros.h"
@@ -86,16 +56,16 @@
 #define OP10 COMBINE(NAME,10)
 #define OP01 COMBINE(NAME,01)
 #define FUNC FUNCTION
-#define PRIMAL_CALL PRIMAL_FUNCTION
-#define DERIVATIVE_FUNC_11   COMBINE(derv11_, NAME)
-#define DERIVATIVE_FUNC_11M  COMBINE(derv11M_, NAME)
-#define DERIVATIVE_FUNC_10   COMBINE(derv10_, NAME)
-#define DERIVATIVE_FUNC_10M  COMBINE(derv10M_, NAME)
-#define DERIVATIVE_FUNC_01   COMBINE(derv01_, NAME)
-#define DERIVATIVE_FUNC_01M  COMBINE(derv01M_, NAME)
+#define PRIMAL_CALL COMBINE(NAME, Impl<Real>::primal)
+#define DERIVATIVE_FUNC_11   COMBINE(NAME, Impl<Real>::derv11)
+#define DERIVATIVE_FUNC_11M  COMBINE(NAME, Impl<Real>::derv11M)
+#define DERIVATIVE_FUNC_10   COMBINE(NAME, Impl<Real>::derv10)
+#define DERIVATIVE_FUNC_10M  COMBINE(NAME, Impl<Real>::derv10M)
+#define DERIVATIVE_FUNC_01   COMBINE(NAME, Impl<Real>::derv01)
+#define DERIVATIVE_FUNC_01M  COMBINE(NAME, Impl<Real>::derv01M)
 
-#define GRADIENT_FUNC_A COMBINE(gradientA_, NAME)
-#define GRADIENT_FUNC_B COMBINE(gradientB_, NAME)
+#define GRADIENT_FUNC_A COMBINE(NAME, Impl<Real>::gradientA)
+#define GRADIENT_FUNC_B COMBINE(NAME, Impl<Real>::gradientB)
 
 /* predefine the structs and the functions for higher order derivatives */
 template <typename Real, class A, class B> struct OP11;
@@ -945,6 +915,5 @@ CODI_INLINE OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, 
 #undef GRADIENT_FUNC_A
 #undef GRADIENT_FUNC_B
 
-#undef PRIMAL_FUNCTION
 #undef FUNCTION
 #undef NAME
