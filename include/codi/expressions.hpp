@@ -48,123 +48,22 @@ namespace codi {
 
   template<typename A> struct ExpressionTraits;
 
-  /**
-   * The Expression type from which all other types of expression
-   * derive. Each member function simply calls the specialized version
-   * of the function according to the expression's true type, which is
-   * given by its template argument.
-   *
-   * @tparam Real  The data type of the primal values and the gradient values.
-   * @tparam    A  The implementing class of the expression.
+  /*
+   * Define the expression interface.
    */
-  template<typename Real, class A>
-  struct Expression {
 
-    /**
-     * @brief If true, implementations of the expression are stored as references otherwise by values.
-     *
-     * This values is used by the macro CODI_CREATE_STORE_TYPE.
-     */
-    static const bool storeAsReference;
-
-    /**
-     * @brief The passive value is used where the expressions are combined with normal double values.
-     */
-    typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-
-    /**
-     * Cast the expression to its true type, given by the template
-     * argument.
-     *
-     * @return The instance of the implementing class.
-     */
-    CODI_INLINE const A& cast() const {
-      return static_cast<const A&>(*this);
-    }
-
-    /**
-     * @brief Calculate the gradient of the expression.
-     *
-     * Calculate the gradient of the mathematical operation that this
-     * expression represents and pass the result to its argument.
-     * For functions f(a), pass df/da to the argument.
-     *
-     * @param[in,out] data A helper value which the tape can define and use for the evaluation.
-     *
-     * @tparam Data The type for the tape data.
-     */
-    template<typename Data>
-    CODI_INLINE void calcGradient(Data& data) const {
-      cast().calcGradient(data);
-    }
-
-    /**
-     * @brief Calculate the gradient of the expression.
-     *
-     * Calculate the gradient of the mathematical operation that this
-     * expression represents and pass the result to its argument.
-     * For functions f(a), pass multiplier * df/da to the argument.
-     *
-     * @param[in,out]    data A helper value which the tape can define and use for the evaluation.
-     * @param[in]  multiplier The Jacobi from the expression where this expression was used as an argument.
-     *
-     * @tparam Data The type for the tape data.
-     */
-    template<typename Data>
-    CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
-      cast().calcGradient(data, multiplier);
-    }
-
-    /**
-     * @brief Return the numerical value of the expression.
-     *
-     * @return The value of the expression.
-     */
-    CODI_INLINE const Real getValue() const {
-      return cast().getValue();
-    }
-
-    /**
-     * @brief constantValueActions are called for every constant real in the expression.
-     *
-     * @param[in,out] tape  The tape that calls the action.
-     * @param[in,out] data  The data that can be used by the action.
-     * @param[in]     func  The function that is called for every constant item.
-     *
-     * @tparam CallTape  The type of the tape that calls the action.
-     * @tparam     Data  The type of the data for the action.
-     * @tparam     Func  The type of the function that is called.
-     */
-    template<typename CallTape, typename Data, typename Func>
-    CODI_INLINE void constantValueAction(CallTape& tape, Data data, Func func) const {
-      cast().constantValueAction(tape, data, func);
-    }
-
-    /**
-     * @brief The action is called for every active real in the expression.
-     *
-     * @param[in,out] data  The data that can be used by the action.
-     * @param[in]     func  The function that is called for every active real in the expression.
-     *
-     * @tparam     Data  The type of the data for the action.
-     * @tparam     Func  The type of the function that is called.
-     */
-    template<typename Data, typename Func>
-    CODI_INLINE void valueAction(Data data, Func func) const {
-      cast().valueAction(data, func);
-    }
-
-  private:
-    /**
-     * Intentionally inaccessible to prevent an expression appearing
-     * on the left-hand-side of a statement
-     */
-    Expression& operator=(const Expression&) = delete;
-  };
+  #include "expressionInterface.hpp"
 
   /*
-   * Now define particular types of expression, using static
+   * Now define particular types of expressions, using static
    * polymorphism via the Curiously Recurring Template Pattern
+   */
+
+  #include "unaryOperatorExpressions.hpp"
+  #include "binaryOperatorExpressions.hpp"
+
+  /*
+   * Now implement the operator logic.
    */
 
   /**
@@ -173,7 +72,7 @@ namespace codi {
    * @tparam Real   The real type used in the active types.
    *
    * Must be implemented for every binary elementary operation.
-   * Each implementation is followed by an include of binaryExpression.tpp with prior #defines.
+   * Each implementation is followed by an include of binaryOverloads.tpp with prior #defines.
    *
    * The gradient methods immediately return the jacobie with respect to the first and
    * second argument respectively.
@@ -246,11 +145,15 @@ namespace codi {
     static CODI_INLINE void derv01M(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier);
   };
 
+  /*
+   * Now all binary functions are implemented.
+   */
+
   /**
    * @brief Operator logic for f(a,b) = a + b
    */
   template<typename Real>
-  struct AddImpl : public BinaryOpInterface<Real> {
+  struct Add : public BinaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a, const Real& b) {
       return a + b;
     }
@@ -313,15 +216,15 @@ namespace codi {
       b.calcGradient(data, multiplier);
     }
   };
-  #define NAME Add
+  #define OPERATOR_LOGIC Add
   #define FUNCTION operator +
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
    /**
    * @brief Operator logic for f(a,b) = a - b
    */
   template<typename Real>
-  struct SubtractImpl : public BinaryOpInterface<Real> {
+  struct Subtract : public BinaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a, const Real& b) {
       return a - b;
     }
@@ -384,15 +287,15 @@ namespace codi {
       b.calcGradient(data, -multiplier);
     }
   };
-  #define NAME Subtract
+  #define OPERATOR_LOGIC Subtract
   #define FUNCTION operator -
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
    /**
    * @brief Operator logic for f(a,b) = a * b
    */
   template<typename Real>
-  struct MultiplyImpl : public BinaryOpInterface<Real> {
+  struct Multiply : public BinaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a, const Real& b) {
       return a * b;
     }
@@ -449,15 +352,15 @@ namespace codi {
       b.calcGradient(data, a * multiplier);
     }
   };
-  #define NAME Multiply
+  #define OPERATOR_LOGIC Multiply
   #define FUNCTION operator *
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
    /**
    * @brief Operator logic for f(a,b) = a / b
    */
   template<typename Real>
-  struct DivideImpl : public BinaryOpInterface<Real> {
+  struct Divide : public BinaryOpInterface<Real> {
     private:
       /**
        * @brief Helper function which checks if the divisor is zero.
@@ -544,16 +447,16 @@ namespace codi {
         b.calcGradient(data, -result * one_over_b);
       }
   };
-  #define NAME Divide
+  #define OPERATOR_LOGIC Divide
   #define FUNCTION operator /
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
    /**
    * @brief Operator logic for f(a,b) = atan2(a,b)
    */
   using std::atan2;
   template<typename Real>
-  struct Atan2Impl : public BinaryOpInterface<Real> {
+  struct Atan2 : public BinaryOpInterface<Real> {
     private:
       /**
        * @brief Helper function which checks if both arguments are zero.
@@ -653,16 +556,16 @@ namespace codi {
         b.calcGradient(data, multiplier * -a * divisor);
       }
   };
-  #define NAME Atan2
+  #define OPERATOR_LOGIC Atan2
   #define FUNCTION atan2
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
   /**
    * @brief Operator logic for f(a,b) = pow(a,b)
    */
   using std::pow;
   template<typename Real>
-  struct PowImpl : public BinaryOpInterface<Real> {
+  struct Pow : public BinaryOpInterface<Real> {
     private:
       /**
        * @brief Helper function which checks if the base of the power is negative.
@@ -751,16 +654,16 @@ namespace codi {
         }
       }
   };
-  #define NAME Pow
+  #define OPERATOR_LOGIC Pow
   #define FUNCTION pow
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
   /**
    * @brief Operator logic for f(a,b) = min(a,b)
    */
   using std::min;
   template<typename Real>
-  struct MinImpl : public BinaryOpInterface<Real> {
+  struct Min : public BinaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a, const Real& b) {
       return min(a, b);
     }
@@ -837,9 +740,9 @@ namespace codi {
       }
     }
   };
-  #define NAME Min
+  #define OPERATOR_LOGIC Min
   #define FUNCTION min
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
   /*
    * Forward of fmin to min
@@ -857,8 +760,8 @@ namespace codi {
    * @tparam    B  The expression for the second argument of the function
    */
   template <typename Real, class A, class B>
-  CODI_INLINE Min11<Real, A, B> fmin(const Expression<Real, A>& a, const Expression<Real, B>& b) {
-    return Min11<Real, A, B>(a.cast(), b.cast());
+  CODI_INLINE BinaryOp11<Real, A, B, Min> fmin(const Expression<Real, A>& a, const Expression<Real, B>& b) {
+    return BinaryOp11<Real, A, B, Min>(a.cast(), b.cast());
   }
   /**
    * @brief Overload for fmin with the CoDiPack expressions.
@@ -872,8 +775,8 @@ namespace codi {
    * @tparam    A  The expression for the first argument of the function
    */
   template <typename Real, class A>
-  CODI_INLINE Min10<Real, A> fmin(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
-    return Min10<Real, A>(a.cast(), b);
+  CODI_INLINE BinaryOp10<Real, A, Min> fmin(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+    return BinaryOp10<Real, A, Min>(a.cast(), b);
   }
   /**
    * @brief Overload for fmin with the CoDiPack expressions.
@@ -887,8 +790,8 @@ namespace codi {
    * @tparam    B  The expression for the second argument of the function
    */
   template <typename Real, class B>
-  CODI_INLINE Min01<Real, B> fmin(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
-    return Min01<Real, B>(a, b.cast());
+  CODI_INLINE BinaryOp01<Real, B, Min> fmin(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
+    return BinaryOp01<Real, B, Min>(a, b.cast());
   }
 
   /**
@@ -896,7 +799,7 @@ namespace codi {
    */
   using std::max;
   template<typename Real>
-  struct MaxImpl : public BinaryOpInterface<Real> {
+  struct Max : public BinaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a, const Real& b) {
       return max(a, b);
     }
@@ -973,9 +876,9 @@ namespace codi {
       }
     }
   };
-  #define NAME Max
+  #define OPERATOR_LOGIC Max
   #define FUNCTION max
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
   /*
    * Forward of fmax to max
@@ -993,8 +896,8 @@ namespace codi {
    * @tparam    B  The expression for the second argument of the function
    */
   template <typename Real, class A, class B>
-  CODI_INLINE Max11<Real, A, B> fmax(const Expression<Real, A>& a, const Expression<Real, B>& b) {
-    return Max11<Real, A, B>(a.cast(), b.cast());
+  CODI_INLINE BinaryOp11<Real, A, B, Max> fmax(const Expression<Real, A>& a, const Expression<Real, B>& b) {
+    return BinaryOp11<Real, A, B, Max>(a.cast(), b.cast());
   }
 
   /**
@@ -1009,8 +912,8 @@ namespace codi {
    * @tparam    A  The expression for the first argument of the function
    */
   template <typename Real, class A>
-  CODI_INLINE Max10<Real, A> fmax(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
-    return Max10<Real, A>(a.cast(), b);
+  CODI_INLINE BinaryOp10<Real, A, Max> fmax(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+    return BinaryOp10<Real, A, Max>(a.cast(), b);
   }
   /**
    * @brief Overload for fmax with the CoDiPack expressions.
@@ -1024,8 +927,8 @@ namespace codi {
    * @tparam    B  The expression for the second argument of the function
    */
   template <typename Real, class B>
-  CODI_INLINE Max01<Real, B> fmax(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
-    return Max01<Real, B>(a, b.cast());
+  CODI_INLINE BinaryOp01<Real, B, Max> fmax(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
+    return BinaryOp01<Real, B, Max>(a, b.cast());
   }
 
   /**
@@ -1033,7 +936,7 @@ namespace codi {
    */
   using std::copysign;
   template<typename Real>
-  struct CopysignImpl : public BinaryOpInterface<Real> {
+  struct Copysign : public BinaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a, const Real& b) {
       return copysign(a, b);
     }
@@ -1134,9 +1037,9 @@ namespace codi {
       b.calcGradient(data, 0.0);
     }
   };
-  #define NAME Copysign
+  #define OPERATOR_LOGIC Copysign
   #define FUNCTION copysign
-  #include "binaryExpression.tpp"
+  #include "binaryOverloads.tpp"
 
   /**
    * @brief Overload for copysignf with the CoDiPack expressions.
@@ -1151,8 +1054,8 @@ namespace codi {
    * @tparam    B  The expression for the second argument of the function
    */
   template <typename Real, class A, class B>
-  CODI_INLINE Copysign11<Real, A, B> copysignf(const Expression<Real, A>& a, const Expression<Real, B>& b) {
-    return Copysign11<Real, A, B>(a.cast(), b.cast());
+  CODI_INLINE BinaryOp11<Real, A, B, Copysign> copysignf(const Expression<Real, A>& a, const Expression<Real, B>& b) {
+    return BinaryOp11<Real, A, B, Copysign>(a.cast(), b.cast());
   }
 
   /**
@@ -1168,8 +1071,8 @@ namespace codi {
    * @tparam    B  The expression for the second argument of the function
    */
   template <typename Real, class A>
-  CODI_INLINE Copysign10<Real, A> copysignf(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
-    return Copysign10<Real, A>(a.cast(), b);
+  CODI_INLINE BinaryOp10<Real, A, Copysign> copysignf(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+    return BinaryOp10<Real, A, Copysign>(a.cast(), b);
   }
 
   /**
@@ -1185,8 +1088,8 @@ namespace codi {
    * @tparam    B  The expression for the second argument of the function
    */
   template <typename Real, class B>
-  CODI_INLINE Copysign01<Real, B> copysignf(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
-    return Copysign01<Real, B>(a, b.cast());
+  CODI_INLINE BinaryOp01<Real, B, Copysign> copysignf(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
+    return BinaryOp01<Real, B, Copysign>(a, b.cast());
   }
 
   #undef CODI_OPERATOR_HELPER
@@ -1281,7 +1184,7 @@ namespace codi {
    */
 
   template<typename Real>
-  struct UnaryMinusImpl : public UnaryOpInterface<Real> {
+  struct UnaryMinus : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return -a;
     }
@@ -1292,13 +1195,13 @@ namespace codi {
       return -1.0;
     }
   };
-  #define NAME UnaryMinus
+  #define OPERATOR_LOGIC UnaryMinus
   #define FUNCTION operator -
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::sqrt;
   template<typename Real>
-  struct SqrtImpl : public UnaryOpInterface<Real> {
+  struct Sqrt : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return sqrt(a);
     }
@@ -1316,13 +1219,13 @@ namespace codi {
       }
     }
   };
-  #define NAME Sqrt
+  #define OPERATOR_LOGIC Sqrt
   #define FUNCTION sqrt
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::cbrt;
   template<typename Real>
-  struct CbrtImpl : public UnaryOpInterface<Real> {
+  struct Cbrt : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return cbrt(a);
     }
@@ -1340,13 +1243,13 @@ namespace codi {
       }
     }
   };
-  #define NAME Cbrt
+  #define OPERATOR_LOGIC Cbrt
   #define FUNCTION cbrt
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::tanh;
   template<typename Real>
-  struct TanhImpl : public UnaryOpInterface<Real> {
+  struct Tanh : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return tanh(a);
     }
@@ -1356,13 +1259,13 @@ namespace codi {
       return 1 - result * result;
     }
   };
-  #define NAME Tanh
+  #define OPERATOR_LOGIC Tanh
   #define FUNCTION tanh
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::log;
   template<typename Real>
-  struct LogImpl : public UnaryOpInterface<Real> {
+  struct Log : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return log(a);
     }
@@ -1377,13 +1280,13 @@ namespace codi {
       return 1.0 / a;
     }
   };
-  #define NAME Log
+  #define OPERATOR_LOGIC Log
   #define FUNCTION log
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::log10;
   template<typename Real>
-  struct Log10Impl : public UnaryOpInterface<Real> {
+  struct Log10 : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return log10(a);
     }
@@ -1398,14 +1301,14 @@ namespace codi {
       return 0.434294481903252 / a;
     }
   };
-  #define NAME Log10
+  #define OPERATOR_LOGIC Log10
   #define FUNCTION log10
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::sin;
   using std::cos;
   template<typename Real>
-  struct SinImpl : public UnaryOpInterface<Real> {
+  struct Sin : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return sin(a);
     }
@@ -1415,12 +1318,12 @@ namespace codi {
       return cos(a);
     }
   };
-  #define NAME Sin
+  #define OPERATOR_LOGIC Sin
   #define FUNCTION sin
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   template<typename Real>
-  struct CosImpl : public UnaryOpInterface<Real> {
+  struct Cos : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return cos(a);
     }
@@ -1430,13 +1333,13 @@ namespace codi {
       return -sin(a);
     }
   };
-  #define NAME Cos
+  #define OPERATOR_LOGIC Cos
   #define FUNCTION cos
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::asin;
   template<typename Real>
-  struct AsinImpl : public UnaryOpInterface<Real> {
+  struct Asin : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return asin(a);
     }
@@ -1451,13 +1354,13 @@ namespace codi {
       return 1.0 / sqrt(1.0 - a * a);
     }
   };
-  #define NAME Asin
+  #define OPERATOR_LOGIC Asin
   #define FUNCTION asin
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::acos;
   template<typename Real>
-  struct AcosImpl : public UnaryOpInterface<Real> {
+  struct Acos : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return acos(a);
     }
@@ -1472,13 +1375,13 @@ namespace codi {
       return -1.0 / sqrt(1.0 - a * a);
     }
   };
-  #define NAME Acos
+  #define OPERATOR_LOGIC Acos
   #define FUNCTION acos
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::atan;
   template<typename Real>
-  struct AtanImpl : public UnaryOpInterface<Real> {
+  struct Atan : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return atan(a);
     }
@@ -1488,14 +1391,14 @@ namespace codi {
       return 1.0 / (1 + a * a);
     }
   };
-  #define NAME Atan
+  #define OPERATOR_LOGIC Atan
   #define FUNCTION atan
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::sinh;
   using std::cosh;
   template<typename Real>
-  struct SinhImpl : public UnaryOpInterface<Real> {
+  struct Sinh : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return sinh(a);
     }
@@ -1505,12 +1408,12 @@ namespace codi {
       return cosh(a);
     }
   };
-  #define NAME Sinh
+  #define OPERATOR_LOGIC Sinh
   #define FUNCTION sinh
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   template<typename Real>
-  struct CoshImpl : public UnaryOpInterface<Real> {
+  struct Cosh : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return cosh(a);
     }
@@ -1520,13 +1423,13 @@ namespace codi {
       return sinh(a);
     }
   };
-  #define NAME Cosh
+  #define OPERATOR_LOGIC Cosh
   #define FUNCTION cosh
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::exp;
   template<typename Real>
-  struct ExpImpl : public UnaryOpInterface<Real> {
+  struct Exp : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return exp(a);
     }
@@ -1536,13 +1439,13 @@ namespace codi {
       return result;
     }
   };
-  #define NAME Exp
+  #define OPERATOR_LOGIC Exp
   #define FUNCTION exp
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::atanh;
   template<typename Real>
-  struct AtanhImpl : public UnaryOpInterface<Real> {
+  struct Atanh : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return atanh(a);
     }
@@ -1557,13 +1460,13 @@ namespace codi {
       return 1.0 / (1 - a * a);
     }
   };
-  #define NAME Atanh
+  #define OPERATOR_LOGIC Atanh
   #define FUNCTION atanh
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::abs;
   template<typename Real>
-  struct AbsImpl : public UnaryOpInterface<Real> {
+  struct Abs : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return abs(a);
     }
@@ -1579,13 +1482,13 @@ namespace codi {
       }
     }
   };
-  #define NAME Abs
+  #define OPERATOR_LOGIC Abs
   #define FUNCTION abs
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::tan;
   template<typename Real>
-  struct TanImpl : public UnaryOpInterface<Real> {
+  struct Tan : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return tan(a);
     }
@@ -1601,13 +1504,13 @@ namespace codi {
       return tmp * tmp;
     }
   };
-  #define NAME Tan
+  #define OPERATOR_LOGIC Tan
   #define FUNCTION tan
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::erf;
   template<typename Real>
-  struct ErfImpl : public UnaryOpInterface<Real> {
+  struct Erf : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return erf(a);
     }
@@ -1617,13 +1520,13 @@ namespace codi {
       return 1.128379167095513 * exp( -(a * a) ); // erf'(a) = 2.0 / sqrt(pi) * exp(-a^2)
     }
   };
-  #define NAME Erf
+  #define OPERATOR_LOGIC Erf
   #define FUNCTION erf
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::erfc;
   template<typename Real>
-  struct ErfcImpl : public UnaryOpInterface<Real> {
+  struct Erfc : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return erfc(a);
     }
@@ -1633,13 +1536,13 @@ namespace codi {
       return -1.128379167095513 * exp( -(a * a) ); // erfc'(a) = - 2.0 / sqrt(pi) * exp(-a^2)
     }
   };
-  #define NAME Erfc
+  #define OPERATOR_LOGIC Erfc
   #define FUNCTION erfc
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   using std::tgamma;
   template<typename Real>
-  struct TgammaImpl : public UnaryOpInterface<Real> {
+  struct Tgamma : public UnaryOpInterface<Real> {
     static CODI_INLINE Real primal(const Real& a) {
       return tgamma(a);
     }
@@ -1683,9 +1586,9 @@ namespace codi {
       return diGamma*result;
     }
   };
-  #define NAME Tgamma
+  #define OPERATOR_LOGIC Tgamma
   #define FUNCTION tgamma
-  #include "unaryExpression.tpp"
+  #include "unaryOverloads.tpp"
 
   /**
    * @brief The fabs function is redirected to abs.
@@ -1698,8 +1601,8 @@ namespace codi {
    * @tparam A The expression for the argument of the function
    */
   template<typename Real, class A>
-  CODI_INLINE Abs<Real, A> fabs(const codi::Expression<Real, A>& a) {
-    return Abs<Real, A>(a.cast());
+  CODI_INLINE UnaryOp<Real, A, Abs> fabs(const codi::Expression<Real, A>& a) {
+    return UnaryOp<Real, A, Abs>(a.cast());
   }
 
   /**

@@ -30,66 +30,18 @@
  * released under GPL 3.0 (Copyright (C) 2012-2013 Robin Hogan and the University of Reading).
  */
 
-/*
- * In order to include this file the user has to define the preprocessor macros NAME and FUNCTION.
- * NAME contains the name of the generated operation. FUNCTION represents the normal name of that function
- * e.g. 'operator -' or 'sin'.
- *
- * The defines NAME and FUNCTION will be undefined at the end of this template.
- *
- * Prior to including this file, the user has to implement the operation's primal and derivative logic
- * according to BinaryOpInterface.
- * The name of the implementing class must be NAME ## Impl.
- */
-
-#ifndef NAME
-  #error Please define a name for the binary expression.
-#endif
-#ifndef FUNCTION
-  #error Please define the primal function representation.
-#endif
-
-#include "macros.h"
-
-#define OP NAME
-#define OP11 COMBINE(NAME,11)
-#define OP10 COMBINE(NAME,10)
-#define OP01 COMBINE(NAME,01)
-#define FUNC FUNCTION
-#define PRIMAL_CALL COMBINE(NAME, Impl<Real>::primal)
-#define DERIVATIVE_FUNC_11   COMBINE(NAME, Impl<Real>::derv11)
-#define DERIVATIVE_FUNC_11M  COMBINE(NAME, Impl<Real>::derv11M)
-#define DERIVATIVE_FUNC_10   COMBINE(NAME, Impl<Real>::derv10)
-#define DERIVATIVE_FUNC_10M  COMBINE(NAME, Impl<Real>::derv10M)
-#define DERIVATIVE_FUNC_01   COMBINE(NAME, Impl<Real>::derv01)
-#define DERIVATIVE_FUNC_01M  COMBINE(NAME, Impl<Real>::derv01M)
-
-#define GRADIENT_FUNC_A COMBINE(NAME, Impl<Real>::gradientA)
-#define GRADIENT_FUNC_B COMBINE(NAME, Impl<Real>::gradientB)
-
-/* predefine the structs and the functions for higher order derivatives */
-template <typename Real, class A, class B> struct OP11;
-template <typename Real, class A> struct OP10;
-template <typename Real, class B> struct OP01;
-
-template <typename Real, class A, class B>
-CODI_INLINE  OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b);
-
-template <typename Real, class A>
-CODI_INLINE  OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b);
-
-template <typename Real, class B>
-CODI_INLINE  OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b);
+#pragma once
 
 /**
- * @brief Expression implementation for OP with two active variables.
+ * @brief Expression implementation for binary operation with two active variables.
  *
  * @tparam Real The real type used in the active types.
- * @tparam A The expression for the first argument of the function
- * @tparam B The expression for the second argument of the function
+ * @tparam A The expression for the first argument of the function.
+ * @tparam B The expression for the second argument of the function.
+ * @tparam Impl Implementation of BinaryOpInterface.
  */
-template<typename Real, class A, class B>
-struct OP11: public Expression<Real, OP11<Real, A, B> > {
+template<typename Real, class A, class B, template<typename> class Impl>
+struct BinaryOp11: public Expression<Real, BinaryOp11<Real, A, B, Impl> > {
   private:
 
     /** @brief The first argument of the function. */
@@ -116,7 +68,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
-    explicit OP11(const Expression<Real, A>& a, const Expression<Real, B>& b) :
+    explicit BinaryOp11(const Expression<Real, A>& a, const Expression<Real, B>& b) :
       a_(a.cast()), b_(b.cast()) {}
 
     /**
@@ -131,10 +83,10 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data) const {
 #if CODI_DisableCalcGradientSpecialization
-        a_.calcGradient(data, GRADIENT_FUNC_A(a_.getValue(), b_.getValue(), getValue()));
-        b_.calcGradient(data, GRADIENT_FUNC_B(a_.getValue(), b_.getValue(), getValue()));
+        a_.calcGradient(data, Impl<Real>::gradientA(a_.getValue(), b_.getValue(), getValue()));
+        b_.calcGradient(data, Impl<Real>::gradientB(a_.getValue(), b_.getValue(), getValue()));
 #else
-        DERIVATIVE_FUNC_11(data, a_, b_, getValue());
+        Impl<Real>::derv11(data, a_, b_, getValue());
 #endif
     }
 
@@ -151,10 +103,10 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
 #if CODI_DisableCalcGradientSpecialization
-        a_.calcGradient(data, GRADIENT_FUNC_A(a_.getValue(), b_.getValue(), getValue()) * multiplier);
-        b_.calcGradient(data, GRADIENT_FUNC_B(a_.getValue(), b_.getValue(), getValue()) * multiplier);
+        a_.calcGradient(data, Impl<Real>::gradientA(a_.getValue(), b_.getValue(), getValue()) * multiplier);
+        b_.calcGradient(data, Impl<Real>::gradientB(a_.getValue(), b_.getValue(), getValue()) * multiplier);
 #else
-        DERIVATIVE_FUNC_11M(data, a_, b_, getValue(), multiplier);
+        Impl<Real>::derv11M(data, a_, b_, getValue(), multiplier);
 #endif
     }
 
@@ -180,7 +132,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
      * @return The value of the expression.
      */
     CODI_INLINE const Real getValue() const {
-      return PRIMAL_CALL(a_.getValue(), b_.getValue());
+      return Impl<Real>::primal(a_.getValue(), b_.getValue());
     }
 
     /**
@@ -208,7 +160,7 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
           constantOffset + ExpressionTraits<A>::maxConstantVariables>
             (indices, constantValues, primalValues);
 
-      return PRIMAL_CALL(aPrimal, bPrimal);
+      return Impl<Real>::primal(aPrimal, bPrimal);
     }
 
     /**
@@ -242,10 +194,10 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
           offset + ExpressionTraits<A>::maxActiveVariables,
           constantOffset + ExpressionTraits<A>::maxConstantVariables>
             (indices, constantValues, primalValues);
-      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+      const Real resPrimal = Impl<Real>::primal(aPrimal, bPrimal);
 
-      const PRIMAL_SEED_TYPE aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
-      const PRIMAL_SEED_TYPE bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      const PRIMAL_SEED_TYPE aJac = Impl<Real>::gradientA(aPrimal, bPrimal, resPrimal) * seed;
+      const PRIMAL_SEED_TYPE bJac = Impl<Real>::gradientB(aPrimal, bPrimal, resPrimal) * seed;
       A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
       B::template evalAdjoint<Index, GradientValue,
           offset + ExpressionTraits<A>::maxActiveVariables,
@@ -285,10 +237,10 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
           offset + ExpressionTraits<A>::maxActiveVariables,
           constantOffset + ExpressionTraits<A>::maxConstantVariables>
             (indices, constantValues, primalValues);
-      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+      const Real resPrimal = Impl<Real>::primal(aPrimal, bPrimal);
 
-      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
-      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      const Real aJac = Impl<Real>::gradientA(aPrimal, bPrimal, resPrimal) * seed;
+      const Real bJac = Impl<Real>::gradientB(aPrimal, bPrimal, resPrimal) * seed;
       A::template evalTangent<Index, GradientValue, offset, constantOffset>(aJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
       B::template evalTangent<Index, GradientValue,
           offset + ExpressionTraits<A>::maxActiveVariables,
@@ -332,13 +284,14 @@ struct OP11: public Expression<Real, OP11<Real, A, B> > {
 };
 
 /**
- * @brief Expression implementation for OP with one active variables.
+ * @brief Expression implementation for binary operation with one active variables.
  *
  * @tparam Real The real type used in the active types.
  * @tparam A The expression for the first argument of the function
+ * @tparam Impl Implementation of BinaryOpInterface.
  */
-template<typename Real, class A>
-struct OP10: public Expression<Real, OP10<Real, A> > {
+template<typename Real, class A, template<typename> class Impl>
+struct BinaryOp10: public Expression<Real, BinaryOp10<Real, A, Impl> > {
   private:
     /** @brief The type for the passive values. */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
@@ -360,7 +313,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
-    explicit OP10(const Expression<Real, A>& a, const PassiveReal& b) :
+    explicit BinaryOp10(const Expression<Real, A>& a, const PassiveReal& b) :
       a_(a.cast()), b_(b) {}
 
     /**
@@ -375,9 +328,9 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data) const {
 #if CODI_DisableCalcGradientSpecialization
-        a_.calcGradient(data, GRADIENT_FUNC_A(a_.getValue(), b_, getValue()));
+        a_.calcGradient(data, Impl<Real>::gradientA(a_.getValue(), b_, getValue()));
 #else
-        DERIVATIVE_FUNC_10(data, a_, b_, getValue());
+        Impl<Real>::derv10(data, a_, b_, getValue());
 #endif
     }
 
@@ -394,9 +347,9 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
 #if CODI_DisableCalcGradientSpecialization
-        a_.calcGradient(data, GRADIENT_FUNC_A(a_.getValue(), b_, getValue()) * multiplier);
+        a_.calcGradient(data, Impl<Real>::gradientA(a_.getValue(), b_, getValue()) * multiplier);
 #else
-        DERIVATIVE_FUNC_10M(data, a_, b_, getValue(), multiplier);
+        Impl<Real>::derv10M(data, a_, b_, getValue(), multiplier);
 #endif
     }
 
@@ -421,7 +374,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
      * @return The value of the expression.
      */
     CODI_INLINE const Real getValue() const {
-      return PRIMAL_CALL(a_.getValue(), b_);
+      return Impl<Real>::primal(a_.getValue(), b_);
     }
 
     /**
@@ -446,7 +399,7 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
       const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
       const PassiveReal& bPrimal = constantValues[constantOffset + ExpressionTraits<A>::maxConstantVariables];
 
-      return PRIMAL_CALL(aPrimal, bPrimal);
+      return Impl<Real>::primal(aPrimal, bPrimal);
     }
 
     /**
@@ -475,9 +428,9 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
       const PassiveReal& bPrimal = constantValues[constantOffset + ExpressionTraits<A>::maxConstantVariables];
-      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+      const Real resPrimal = Impl<Real>::primal(aPrimal, bPrimal);
 
-      const PRIMAL_SEED_TYPE aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      const PRIMAL_SEED_TYPE aJac = Impl<Real>::gradientA(aPrimal, bPrimal, resPrimal) * seed;
       A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
     }
 
@@ -508,9 +461,9 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
     static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
       const PassiveReal& bPrimal = constantValues[constantOffset + ExpressionTraits<A>::maxConstantVariables];
-      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+      const Real resPrimal = Impl<Real>::primal(aPrimal, bPrimal);
 
-      const Real aJac = GRADIENT_FUNC_A(aPrimal, bPrimal, resPrimal) * seed;
+      const Real aJac = Impl<Real>::gradientA(aPrimal, bPrimal, resPrimal) * seed;
       A::template evalTangent<Index, GradientValue, offset, constantOffset>(aJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
 
       return resPrimal;
@@ -549,13 +502,14 @@ struct OP10: public Expression<Real, OP10<Real, A> > {
 };
 
 /**
- * @brief Expression implementation for OP with one active variables.
+ * @brief Expression implementation for binary operation with one active variables.
  *
  * @tparam Real The real type used in the active types.
- * @tparam B The expression for the second argument of the function
+ * @tparam B The expression for the second argument of the function.
+ * @tparam Impl Implementation of BinaryOpInterface.
  */
-template<typename Real, class B>
-struct OP01 : public Expression<Real, OP01<Real, B> > {
+template<typename Real, class B, template<typename> class Impl>
+struct BinaryOp01 : public Expression<Real, BinaryOp01<Real, B, Impl> > {
   private:
 
     /** @brief The type for the passive values. */
@@ -577,7 +531,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @param[in] a  First argument of the expression.
      * @param[in] b  Second argument of the expression.
      */
-    explicit OP01(const PassiveReal& a, const Expression<Real, B>& b) :
+    explicit BinaryOp01(const PassiveReal& a, const Expression<Real, B>& b) :
       a_(a), b_(b.cast()) {}
 
     /**
@@ -592,9 +546,9 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data) const {
 #if CODI_DisableCalcGradientSpecialization
-        b_.calcGradient(data, GRADIENT_FUNC_B(a_, b_.getValue(), getValue()));
+        b_.calcGradient(data, Impl<Real>::gradientB(a_, b_.getValue(), getValue()));
 #else
-        DERIVATIVE_FUNC_01(data, a_, b_, getValue());
+        Impl<Real>::derv01(data, a_, b_, getValue());
 #endif
     }
 
@@ -611,9 +565,9 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
 #if CODI_DisableCalcGradientSpecialization
-        b_.calcGradient(data, GRADIENT_FUNC_B(a_, b_.getValue(), getValue()) * multiplier);
+        b_.calcGradient(data, Impl<Real>::gradientB(a_, b_.getValue(), getValue()) * multiplier);
 #else
-        DERIVATIVE_FUNC_01M(data, a_, b_, getValue(), multiplier);
+        Impl<Real>::derv01M(data, a_, b_, getValue(), multiplier);
 #endif
     }
 
@@ -638,7 +592,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
      * @return The value of the expression.
      */
     CODI_INLINE const Real getValue() const {
-      return PRIMAL_CALL(a_, b_.getValue());
+      return Impl<Real>::primal(a_, b_.getValue());
     }
 
     /**
@@ -663,7 +617,7 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
       const PassiveReal& aPrimal = constantValues[constantOffset];
       const Real bPrimal = B::template getValue<Index, offset, constantOffset + 1>(indices, constantValues, primalValues);
 
-      return PRIMAL_CALL(aPrimal, bPrimal);
+      return Impl<Real>::primal(aPrimal, bPrimal);
     }
 
     /**
@@ -692,9 +646,9 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       const PassiveReal& aPrimal = constantValues[constantOffset];
       const Real bPrimal = B::template getValue<Index, offset, constantOffset + 1>(indices, constantValues, primalValues);
-      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+      const Real resPrimal = Impl<Real>::primal(aPrimal, bPrimal);
 
-      const PRIMAL_SEED_TYPE bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      const PRIMAL_SEED_TYPE bJac = Impl<Real>::gradientB(aPrimal, bPrimal, resPrimal) * seed;
       B::template evalAdjoint<Index, GradientValue, offset, constantOffset + 1>(bJac, indices, constantValues, primalValues, adjointValues);
     }
 
@@ -725,9 +679,9 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
     static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
       const PassiveReal& aPrimal = constantValues[constantOffset];
       const Real bPrimal = B::template getValue<Index, offset, constantOffset + 1>(indices, constantValues, primalValues);
-      const Real resPrimal = PRIMAL_CALL(aPrimal, bPrimal);
+      const Real resPrimal = Impl<Real>::primal(aPrimal, bPrimal);
 
-      const Real bJac = GRADIENT_FUNC_B(aPrimal, bPrimal, resPrimal) * seed;
+      const Real bJac = Impl<Real>::gradientB(aPrimal, bPrimal, resPrimal) * seed;
       B::template evalTangent<Index, GradientValue, offset, constantOffset + 1>(bJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
 
       return resPrimal;
@@ -771,9 +725,10 @@ struct OP01 : public Expression<Real, OP01<Real, B> > {
  * @tparam Real  The floating point value of the active real.
  * @tparam    A  The type of the first argument of the binary operator.
  * @tparam    B  The type of the second argument of the binary operator.
+ * @tparam Impl  Implementation of UnaryOpInterface.
  */
-template<typename RealType, typename A, typename B>
-class TypeTraits< OP11<RealType, A, B> > {
+template<typename RealType, typename A, typename B, template<typename> class Impl>
+class TypeTraits< BinaryOp11<RealType, A, B, Impl> > {
   public:
     /**
      * @brief The passive type is the passive type of Real.
@@ -790,7 +745,7 @@ class TypeTraits< OP11<RealType, A, B> > {
      * @param[in] t The value from which the primal is extracted.
      * @return The primal value of the origin of this type..
      */
-    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP11<RealType, A, B>& t) {
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const BinaryOp11<RealType, A, B, Impl>& t) {
       return TypeTraits<RealType>::getBaseValue(t.getValue());
     }
 };
@@ -800,9 +755,10 @@ class TypeTraits< OP11<RealType, A, B> > {
  *
  * @tparam Real  The floating point value of the active real.
  * @tparam    A  The type of the first argument of the binary operator.
+ * @tparam Impl  Implementation of UnaryOpInterface.
  */
-template<typename RealType, typename A>
-class TypeTraits< OP10<RealType, A> > {
+template<typename RealType, typename A, template<typename> class Impl>
+class TypeTraits< BinaryOp10<RealType, A, Impl> > {
   public:
     /**
      * @brief The passive type is the passive type of Real.
@@ -819,7 +775,7 @@ class TypeTraits< OP10<RealType, A> > {
      * @param[in] t The value from which the primal is extracted.
      * @return The primal value of the origin of this type..
      */
-    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP10<RealType, A>& t) {
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const BinaryOp10<RealType, A, Impl>& t) {
       return TypeTraits<RealType>::getBaseValue(t.getValue());
     }
 };
@@ -829,9 +785,10 @@ class TypeTraits< OP10<RealType, A> > {
  *
  * @tparam Real  The floating point value of the active real.
  * @tparam    B  The type of the second argument of the binary operator.
+ * @tparam Impl  Implementation of UnaryOpInterface.
  */
-template<typename RealType, typename B>
-class TypeTraits< OP01<RealType, B> > {
+template<typename RealType, typename B, template<typename> class Impl>
+class TypeTraits< BinaryOp01<RealType, B, Impl> > {
   public:
     /**
      * @brief The passive type is the passive type of Real.
@@ -848,72 +805,7 @@ class TypeTraits< OP01<RealType, B> > {
      * @param[in] t The value from which the primal is extracted.
      * @return The primal value of the origin of this type..
      */
-    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP01<RealType, B>& t) {
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const BinaryOp01<RealType, B, Impl>& t) {
       return TypeTraits<RealType>::getBaseValue(t.getValue());
     }
 };
-
-/**
- * @brief Overload for FUNC with the CoDiPack expressions.
- *
- * @param[in] a  The first argument of the operation.
- * @param[in] b  The second argument of the operation.
- *
- * @return The implementing expression OP.
- *
- * @tparam Real  The real type used in the active types.
- * @tparam    A  The expression for the first argument of the function
- * @tparam    B  The expression for the second argument of the function
- */
-template <typename Real, class A, class B>
-CODI_INLINE OP11<Real, A, B> FUNC(const Expression<Real, A>& a, const Expression<Real, B>& b) {
-  return OP11<Real, A, B>(a.cast(), b.cast());
-}
-/**
- * @brief Overload for FUNC with the CoDiPack expressions.
- *
- * @param[in] a  The first argument of the operation.
- * @param[in] b  The second argument of the operation.
- *
- * @return The implementing expression OP.
- *
- * @tparam Real  The real type used in the active types.
- * @tparam    A  The expression for the first argument of the function
- */
-template <typename Real, class A>
-CODI_INLINE OP10<Real, A> FUNC(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
-  return OP10<Real, A>(a.cast(), b);
-}
-/**
- * @brief Overload for FUNC with the CoDiPack expressions.
- *
- * @param[in] a  The first argument of the operation.
- * @param[in] b  The second argument of the operation.
- *
- * @return The implementing expression OP.
- *
- * @tparam Real  The real type used in the active types.
- * @tparam    B  The expression for the second argument of the function
- */
-template <typename Real, class B>
-CODI_INLINE OP01<Real, B> FUNC(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
-  return OP01<Real, B>(a, b.cast());
-}
-
-#undef OP
-#undef OP11
-#undef OP01
-#undef OP10
-#undef FUNC
-#undef PRIMAL_CALL
-#undef DERIVATIVE_FUNC_11
-#undef DERIVATIVE_FUNC_11M
-#undef DERIVATIVE_FUNC_10
-#undef DERIVATIVE_FUNC_10M
-#undef DERIVATIVE_FUNC_01
-#undef DERIVATIVE_FUNC_01M
-#undef GRADIENT_FUNC_A
-#undef GRADIENT_FUNC_B
-
-#undef FUNCTION
-#undef NAME

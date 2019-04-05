@@ -30,45 +30,17 @@
  * released under GPL 3.0 (Copyright (C) 2012-2013 Robin Hogan and the University of Reading).
  */
 
-/*
- * In order to include this file the user has to define the preprocessor macro NAME and FUNCTION.
- * NAME contains the name of the generated operation. FUNCTION represents the normal name of that function
- * e.g. 'operator -' or 'sin'.
- *
- * The defines NAME and FUNCTION will be undefined at the end of this template.
- *
- * Prior to including this file, the user has to implement the primal and derivative logic according to UnaryOpInterface.
- * The name of the implementing class must be NAME ## Impl.
- */
-
-#ifndef NAME
-  #error Please define a name for the binary expression.
-#endif
-#ifndef FUNCTION
-  #error Please define the primal function representation.
-#endif
-
-#include "macros.h"
-
-#define OP NAME
-#define FUNC FUNCTION
-#define PRIMAL_CALL COMBINE(NAME, Impl<Real>::primal)
-#define GRADIENT_FUNC COMBINE(NAME, Impl<Real>::gradient)
-
-/* predefine the struct and the function for higher order derivatives */
-template<typename Real, class A> struct OP;
-
-template <typename Real, class A>
-CODI_INLINE OP<Real, A> FUNC(const Expression<Real, A>& a);
+#pragma once
 
 /**
  * @brief Expression implementation for OP.
  *
  * @tparam Real  The real type used in the active types.
  * @tparam    A  The expression for the argument of the function.
+ * @tparam Impl  Implementation of UnaryOpInterface
  */
-template<typename Real, class A>
-struct OP : public Expression<Real, OP<Real, A> > {
+template<typename Real, typename A, template<typename> class Impl>
+struct UnaryOp : public Expression<Real, UnaryOp<Real, A, Impl> > {
   private:
 
     /** @brief The argument of the function. */
@@ -93,9 +65,9 @@ struct OP : public Expression<Real, OP<Real, A> > {
      *
      * @param[in] a Argument of the expression.
      */
-    explicit OP(const Expression<Real, A>& a) :
+    explicit UnaryOp(const Expression<Real, A>& a) :
       a_(a.cast()),
-      result_(PRIMAL_CALL(a.getValue())) {}
+      result_(Impl<Real>::primal(a.getValue())) {}
 
   /**
    * @brief Calculates the jacobie of the expression and hands them down to the argument.
@@ -108,7 +80,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    */
   template<typename Data>
   CODI_INLINE void calcGradient(Data& data) const {
-    a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_));
+    a_.calcGradient(data, Impl<Real>::gradient(a_.getValue(), result_));
   }
 
   /**
@@ -123,7 +95,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
    */
   template<typename Data>
   CODI_INLINE void calcGradient(Data& data, const Real& multiplier) const {
-    a_.calcGradient(data, GRADIENT_FUNC(a_.getValue(), result_)*multiplier);
+    a_.calcGradient(data, Impl<Real>::gradient(a_.getValue(), result_)*multiplier);
   }
 
   /**
@@ -171,7 +143,7 @@ struct OP : public Expression<Real, OP<Real, A> > {
   static CODI_INLINE Real getValue(const Index* indices, const PassiveReal* constantValues, const Real* primalValues) {
     const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
 
-    return PRIMAL_CALL(aPrimal);
+    return Impl<Real>::primal(aPrimal);
   }
 
   /**
@@ -199,9 +171,9 @@ struct OP : public Expression<Real, OP<Real, A> > {
   template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
   static CODI_INLINE void evalAdjoint(const PRIMAL_SEED_TYPE& seed, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
     const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
-    const Real resPrimal = PRIMAL_CALL(aPrimal);
+    const Real resPrimal = Impl<Real>::primal(aPrimal);
 
-    const PRIMAL_SEED_TYPE aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
+    const PRIMAL_SEED_TYPE aJac = Impl<Real>::gradient(aPrimal, resPrimal) * seed;
     A::template evalAdjoint<Index, GradientValue, offset, constantOffset>(aJac, indices, constantValues, primalValues, adjointValues);
   }
 
@@ -231,9 +203,9 @@ struct OP : public Expression<Real, OP<Real, A> > {
   template<typename Index, typename GradientValue, size_t offset, size_t constantOffset>
   static CODI_INLINE Real evalTangent(const Real& seed, GradientValue& lhsAdjoint, const Index* indices, const PassiveReal* constantValues, const Real* primalValues, PRIMAL_ADJOINT_TYPE* adjointValues) {
     const Real aPrimal = A::template getValue<Index, offset, constantOffset>(indices, constantValues, primalValues);
-    const Real resPrimal = PRIMAL_CALL(aPrimal);
+    const Real resPrimal = Impl<Real>::primal(aPrimal);
 
-    const Real aJac = GRADIENT_FUNC(aPrimal, resPrimal) * seed;
+    const Real aJac = Impl<Real>::gradient(aPrimal, resPrimal) * seed;
     A::template evalTangent<Index, GradientValue, offset, constantOffset>(aJac, lhsAdjoint, indices, constantValues, primalValues, adjointValues);
 
     return resPrimal;
@@ -277,8 +249,8 @@ struct OP : public Expression<Real, OP<Real, A> > {
  * @tparam Real  The floating point value of the active real.
  * @tparam    A  The type of the argument of the unary operator.
  */
-template<typename RealType, typename A>
-class TypeTraits< OP<RealType, A> > {
+template<typename RealType, typename A, template<typename> class Impl>
+class TypeTraits< UnaryOp<RealType, A, Impl> > {
   public:
     /**
      * @brief The passive type is the passive type of Real.
@@ -295,30 +267,7 @@ class TypeTraits< OP<RealType, A> > {
      * @param[in] t The value from which the primal is extracted.
      * @return The primal value of the origin of this type..
      */
-    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const OP<RealType, A>& t) {
+    static const typename TypeTraits<RealType>::PassiveReal getBaseValue(const UnaryOp<RealType, A, Impl>& t) {
       return TypeTraits<RealType>::getBaseValue(t.getValue());
     }
 };
-
-/**
- * @brief Overload for FUNC with the CoDiPack expressions.
- *
- * @param[in] a The argument of the operation.
- *
- * @return The implementing expression OP.
- *
- * @tparam Real The real type used in the active types.
- * @tparam A The expression for the first argument of the function.
- */
-template <typename Real, class A>
-CODI_INLINE OP<Real, A> FUNC(const Expression<Real, A>& a) {
-  return OP<Real, A>(a.cast());
-}
-
-#undef OP
-#undef FUNC
-#undef PRIMAL_CALL
-#undef GRADIENT_FUNC
-
-#undef FUNCTION
-#undef NAME
