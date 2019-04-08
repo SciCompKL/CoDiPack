@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -29,7 +29,6 @@
 #pragma once
 
 #include <codi.hpp>
-#include <tools/direction.hpp>
 
 const size_t DIM = 5;
 typedef codi::RealReverseIndexVec<DIM> NUMBER;

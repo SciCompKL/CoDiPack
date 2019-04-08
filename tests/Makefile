@@ -1,7 +1,7 @@
 #
 # CoDiPack, a Code Differentiation Package
 #
-# Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+# Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
 # Homepage: http://www.scicomp.uni-kl.de
 # Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
 #
@@ -26,7 +26,7 @@
 # Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
 #
 
-# names of the basic deriectories
+# names of the basic directories
 TEST_DIR = tests
 BUILD_DIR = build
 DRIVER_DIR = drivers
@@ -43,7 +43,7 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
-FLAGS = -Wall -Wextra -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true
+FLAGS = -Wall -Wextra -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -DCODI_EnableCombineJacobianArguments
 
 # The default is to run all drives
 DRIVERS?=ALL
