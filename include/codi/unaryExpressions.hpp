@@ -30,14 +30,18 @@
  * released under GPL 3.0 (Copyright (C) 2012-2013 Robin Hogan and the University of Reading).
  */
 
+/*
+ * Prior to including this file, expressionInterface.hpp must be included.
+ */
+
 #pragma once
 
 /**
- * @brief Expression implementation for OP.
+ * @brief Expression implementation for unary operations.
  *
  * @tparam Real  The real type used in the active types.
  * @tparam    A  The expression for the argument of the function.
- * @tparam Impl  Implementation of UnaryOpInterface
+ * @tparam Impl  Implementation of UnaryOpInterface.
  */
 template<typename Real, typename A, template<typename> class Impl>
 struct UnaryOp : public Expression<Real, UnaryOp<Real, A, Impl> > {
@@ -244,10 +248,11 @@ struct UnaryOp : public Expression<Real, UnaryOp<Real, A, Impl> > {
 
 
 /**
- * @brief Specialization of the TypeTraits for the unary operator type.
+ * @brief Specialization of the TypeTraits for the unary operation type.
  *
  * @tparam Real  The floating point value of the active real.
- * @tparam    A  The type of the argument of the unary operator.
+ * @tparam    A  The type of the argument of the unary operation.
+ * @tparam Impl  Implementation of UnaryOpInterface.
  */
 template<typename RealType, typename A, template<typename> class Impl>
 class TypeTraits< UnaryOp<RealType, A, Impl> > {

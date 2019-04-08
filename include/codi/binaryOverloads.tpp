@@ -31,16 +31,16 @@
  */
 
 /*
- * In order to include this file the user has to define the preprocessor macros OPERATOR_LOGIC and FUNCTION.
- * OPERATOR_LOGIC contains the name of the operator logic class. FUNCTION represents the normal name of that function
+ * In order to include this file the user has to define the preprocessor macros OPERATION_LOGIC and FUNCTION.
+ * OPERATION_LOGIC contains the name of the operation logic class. FUNCTION represents the normal name of that function
  * e.g. 'operator -' or 'sin'.
  *
- * The defines OPERATOR_LOGIC and FUNCTION will be undefined at the end of this template.
+ * The defines OPERATION_LOGIC and FUNCTION will be undefined at the end of this template.
  *
- * Prior to including this file, the user has to implement the operator's primal and derivative logic according to BinaryOpInterface.
+ * Prior to including this file, the user has to implement the operation's primal and derivative logic according to BinaryOpInterface.
  */
 
-#ifndef OPERATOR_LOGIC
+#ifndef OPERATION_LOGIC
   #error Please define a name for the binary expression.
 #endif
 #ifndef FUNCTION
@@ -50,51 +50,51 @@
 #include "macros.h"
 
 /**
- * @brief Overload for FUNC with the CoDiPack expressions.
+ * @brief Overload for FUNCTION with the CoDiPack expressions.
  *
  * @param[in] a  The first argument of the operation.
  * @param[in] b  The second argument of the operation.
  *
- * @return The implementing expression OP.
+ * @return BinaryOp11 instanciated for OPERATION_LOGIC.
  *
  * @tparam Real  The real type used in the active types.
  * @tparam    A  The expression for the first argument of the function
  * @tparam    B  The expression for the second argument of the function
  */
 template <typename Real, class A, class B>
-CODI_INLINE BinaryOp11<Real, A, B, OPERATOR_LOGIC> FUNCTION(const Expression<Real, A>& a, const Expression<Real, B>& b) {
-  return BinaryOp11<Real, A, B, OPERATOR_LOGIC>(a.cast(), b.cast());
+CODI_INLINE BinaryOp11<Real, A, B, OPERATION_LOGIC> FUNCTION(const Expression<Real, A>& a, const Expression<Real, B>& b) {
+  return BinaryOp11<Real, A, B, OPERATION_LOGIC>(a.cast(), b.cast());
 }
 /**
- * @brief Overload for FUNC with the CoDiPack expressions.
+ * @brief Overload for FUNCTION with the CoDiPack expressions.
  *
  * @param[in] a  The first argument of the operation.
  * @param[in] b  The second argument of the operation.
  *
- * @return The implementing expression OP.
+ * @return BinaryOp10 instanciated for OPERATION_LOGIC.
  *
  * @tparam Real  The real type used in the active types.
  * @tparam    A  The expression for the first argument of the function
  */
 template <typename Real, class A>
-CODI_INLINE BinaryOp10<Real, A, OPERATOR_LOGIC> FUNCTION(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
-  return BinaryOp10<Real, A, OPERATOR_LOGIC>(a.cast(), b);
+CODI_INLINE BinaryOp10<Real, A, OPERATION_LOGIC> FUNCTION(const Expression<Real, A>& a, const typename TypeTraits<Real>::PassiveReal& b) {
+  return BinaryOp10<Real, A, OPERATION_LOGIC>(a.cast(), b);
 }
 /**
- * @brief Overload for FUNC with the CoDiPack expressions.
+ * @brief Overload for FUNCTION with the CoDiPack expressions.
  *
  * @param[in] a  The first argument of the operation.
  * @param[in] b  The second argument of the operation.
  *
- * @return The implementing expression OP.
+ * @return BinaryOp01 instanciated for OPERATION_LOGIC.
  *
  * @tparam Real  The real type used in the active types.
  * @tparam    B  The expression for the second argument of the function
  */
 template <typename Real, class B>
-CODI_INLINE BinaryOp01<Real, B, OPERATOR_LOGIC> FUNCTION(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
-  return BinaryOp01<Real, B, OPERATOR_LOGIC>(a, b.cast());
+CODI_INLINE BinaryOp01<Real, B, OPERATION_LOGIC> FUNCTION(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) {
+  return BinaryOp01<Real, B, OPERATION_LOGIC>(a, b.cast());
 }
 
 #undef FUNCTION
-#undef OPERATOR_LOGIC
+#undef OPERATION_LOGIC

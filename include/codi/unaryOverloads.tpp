@@ -31,16 +31,16 @@
  */
 
 /*
- * In order to include this file the user has to define the preprocessor macro OPERATOR_LOGIC and FUNCTION.
- * OPERATOR_LOGIC contains the name of the operator logic class. FUNCTION represents the normal name of that function
+ * In order to include this file the user has to define the preprocessor macro OPERATION_LOGIC and FUNCTION.
+ * OPERATION_LOGIC contains the name of the operation logic class. FUNCTION represents the normal name of that function
  * e.g. 'operator -' or 'sin'.
  *
- * The defines OPERATOR_LOGIC and FUNCTION will be undefined at the end of this template.
+ * The defines OPERATION_LOGIC and FUNCTION will be undefined at the end of this template.
  *
- * Prior to including this file, the user has to implement the operator's primal and derivative logic according to UnaryOpInterface.
+ * Prior to including this file, the user has to implement the operation's primal and derivative logic according to UnaryOpInterface.
  */
 
-#ifndef OPERATOR_LOGIC
+#ifndef OPERATION_LOGIC
   #error Please define a name for the unary expression.
 #endif
 #ifndef FUNCTION
@@ -50,19 +50,19 @@
 #include "macros.h"
 
 /**
- * @brief Overload for FUNC with the CoDiPack expressions.
+ * @brief Overload for FUNCTION with the CoDiPack expressions.
  *
  * @param[in] a The argument of the operation.
  *
- * @return UnaryOp instanciated for IMPL.
+ * @return UnaryOp instanciated for OPERATION_LOGIC.
  *
  * @tparam Real The real type used in the active types.
  * @tparam A The expression for the first argument of the function.
  */
 template <typename Real, class A>
-CODI_INLINE UnaryOp<Real, A, OPERATOR_LOGIC> FUNCTION(const Expression<Real, A>& a) {
-  return UnaryOp<Real, A, OPERATOR_LOGIC>(a.cast());
+CODI_INLINE UnaryOp<Real, A, OPERATION_LOGIC> FUNCTION(const Expression<Real, A>& a) {
+  return UnaryOp<Real, A, OPERATION_LOGIC>(a.cast());
 }
 
 #undef FUNCTION
-#undef OPERATOR_LOGIC
+#undef OPERATION_LOGIC
