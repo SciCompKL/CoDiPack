@@ -24,10 +24,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
- *          Prof. Robin Hogan, (Univ. of Reading).
- *
- * Originally based on Adept 1.0 (http://www.met.rdg.ac.uk/clouds/adept/)
- * released under GPL 3.0 (Copyright (C) 2012-2013 Robin Hogan and the University of Reading).
  */
 
 #pragma once
@@ -69,7 +65,13 @@ namespace codi {
     static const size_t maxPassiveVariable;
   };
 
-  /** @brief Specialization for BinaryOp11. @tparam Real The real type used in the active types. @tparam A The expression for the first argumen of the function. @tparam B The expression for the second argument of the function. @tparam Impl Operation logic implementation. */
+  /**
+   * @brief Specialization for BinaryOp11. @tparam Real The real type used in the active types.
+   *
+   * @tparam A The expression for the first argumen of the function.
+   * @tparam B The expression for the second argument of the function.
+   * @tparam Impl Operation logic implementation.
+   */
   template<typename Real, typename A, typename B, template<typename> class Impl>
   struct ExpressionTraits<BinaryOp11<Real, A, B, Impl> > {
     /** @brief Number of maximum active variables is the sum of the active variables from both arguments. */
@@ -81,7 +83,14 @@ namespace codi {
          ExpressionTraits<A>::maxConstantVariables
        + ExpressionTraits<B>::maxConstantVariables;
   };
-  /** @brief Specialization for BinaryOp10  with only the first argument active. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function. @tparam Impl Operation logic implementation. */
+
+  /**
+   * @brief Specialization for BinaryOp10  with only the first argument active.
+   *
+   * @tparam Real The real type used in the active types.
+   * @tparam A The expression for the first argument of the function.
+   * @tparam Impl Operation logic implementation.
+   */
   template<typename Real, typename A, template<typename> class Impl>
   struct ExpressionTraits<BinaryOp10<Real, A, Impl> > {
     /** @brief Number of maximum active variables is the number of active variables from the first argument. */
@@ -91,7 +100,14 @@ namespace codi {
     static const size_t maxConstantVariables =
          1 + ExpressionTraits<A>::maxConstantVariables;
   };
-  /** @brief Specialization for BinaryOp01 with only the second argument active. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function. @tparam Impl Operation logic implementation. */
+
+  /**
+   * @brief Specialization for BinaryOp01 with only the second argument active.
+   *
+   * @tparam Real The real type used in the active types.
+   * @tparam B The expression for the second argument of the function.
+   * @tparam Impl Operation logic implementation.
+   */
   template<typename Real, typename B, template<typename> class Impl>
   struct ExpressionTraits<BinaryOp01<Real, B, Impl> > {
     /** @brief Number of maximum active variables is the number of active variables from the second argument. */
@@ -102,7 +118,13 @@ namespace codi {
          1 + ExpressionTraits<B>::maxConstantVariables;
   };
 
-  /** @brief Specialization for UnaryOp. @tparam Real The real type used in the active types. @tparam A The expression for the argument of the function. @tparam Impl Operation logic implementation. */
+  /**
+   * @brief Specialization for UnaryOp.
+   *
+   * @tparam Real The real type used in the active types.
+   * @tparam A The expression for the argument of the function.
+   * @tparam Impl Operation logic implementation.
+   */
   template<typename Real, typename A, template<typename> class Impl>
   struct ExpressionTraits<UnaryOp<Real, A, Impl> > {
     /** @brief Number of maximum active variables is the number of active variables from the expression in the argument. */

@@ -36,35 +36,18 @@
 #include <algorithm>
 #include <iostream>
 
+#include "binaryExpressions.hpp"
 #include "configure.h"
 #include "exceptions.hpp"
+#include "expressionInterface.hpp"
 #include "macros.h"
 #include "typeTraits.hpp"
+#include "unaryExpressions.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
 namespace codi {
-
-  template<typename A> struct ExpressionTraits;
-
-  /*
-   * Define the expression interface.
-   */
-
-  #include "expressionInterface.hpp"
-
-  /*
-   * Now define particular types of expressions, using static
-   * polymorphism via the Curiously Recurring Template Pattern
-   */
-
-  #include "unaryExpressions.hpp"
-  #include "binaryExpressions.hpp"
-
-  /*
-   * Implement the operation logic.
-   */
 
   /**
    * @brief Interface for binary elementary operation logic.
