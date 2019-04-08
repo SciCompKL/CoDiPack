@@ -210,7 +210,7 @@ namespace codi {
         };
         extFuncVector.forEachForward(start, end, evalFunc, adjointInterface, std::forward<Args>(args)...);
 
-        // Iterate over the reminder also covers the case if there have been no external functions.
+        // Iterate over the remainder also covers the case if there have been no external functions.
         (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
@@ -237,7 +237,7 @@ namespace codi {
                                        Obj& obj, AdjointInterface<Real, Index>* adjointInterface, Args&&... args){
 
 
-        // Iterate over the reminder also covers the case if there have been no external functions.
+        // Iterate over the remainder also covers the case if there have been no external functions.
         ExtFuncChildPosition curInnerPos = start.inner;
         auto evalFunc = [&] (ExternalFunction* extFunc, const ExtFuncChildPosition* endInnerPos,
                              AdjointInterface<Real, GradientData>* adjointInterface, Args&&... args) {
@@ -251,7 +251,7 @@ namespace codi {
          };
          extFuncVector.forEachReverse(start, end, evalFunc, adjointInterface, std::forward<Args>(args)...);
 
-         // Iterate over the reminder also covers the case if there have been no external functions.
+         // Iterate over the remainder also covers the case if there have been no external functions.
          (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
@@ -289,7 +289,7 @@ namespace codi {
         };
         extFuncVector.forEachForward(start, end, evalFunc, adjointInterface, std::forward<Args>(args)...);
 
-        // Iterate over the reminder also covers the case if there have been no external functions.
+        // Iterate over the remainder also covers the case if there have been no external functions.
         (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 

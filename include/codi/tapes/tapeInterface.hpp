@@ -70,8 +70,8 @@ namespace codi {
     typedef GradientValueType GradientValue;
 
     /**
-     * This functions are called from the expression templates. They tell the
-     * tape about the operations which is evaluated.
+     * These functions are called from the expression templates. They tell the
+     * tape about the operations which are evaluated.
      */
 
     /**
