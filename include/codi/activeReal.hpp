@@ -356,18 +356,6 @@ namespace codi {
       return primalValue;
     }
 
-#if CODI_EnableImplicitConversion
-    /**
-     * @brief Get the primal value of this instance via implicit cast.
-     * @return The primal value.
-     */
-    CODI_INLINE operator Real() const {
-      Warning::implicitCast<CODI_DisableImplicitConversionWarning>();
-
-      return primalValue;
-    }
-#endif
-
     /**
      * @brief Set the primal value of this instance.
      * @param value The new primal value.
