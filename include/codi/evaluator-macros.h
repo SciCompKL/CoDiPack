@@ -1,0 +1,47 @@
+// This file is included multiple times
+// each time CODE is defined differently
+CODE(1)
+CODE(2)
+CODE(3)
+CODE(4)
+CODE(5)
+CODE(6)
+CODE(7)
+CODE(8)
+CODE(9)
+CODE(10)
+CODE(11)
+CODE(12)
+CODE(13)
+CODE(14)
+CODE(15)
+CODE(16)
+CODE(17)
+CODE(18)
+CODE(19)
+CODE(20)
+CODE(21)
+CODE(22)
+CODE(23)
+CODE(24)
+CODE(25)
+CODE(26)
+CODE(27)
+CODE(28)
+CODE(29)
+CODE(30)
+CODE(31)
+CODE(32)
+CODE(33)
+CODE(34)
+CODE(35)
+CODE(36)
+CODE(37)
+CODE(38)
+CODE(39)
+
+// When extending this for more dimensions, do not forget
+// to bump CODI_MAXDIM
+#ifndef CODI_MAXDIM
+#define CODI_MAXDIM 39
+#endif

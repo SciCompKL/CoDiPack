@@ -358,3 +358,7 @@ namespace codi {
    */
   typedef RealReversePrimalIndexUncheckedGen<double, double> RealReversePrimalIndexUnchecked;
 }
+
+// codi::Evaluator needs RealForwardVec
+#include "codi/evaluator.hpp"
+
