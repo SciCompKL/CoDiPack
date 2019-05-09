@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -50,10 +50,10 @@ namespace codi {
     private:
 
       /** @brief The first argument of the function. */
-      CODI_CREATE_STORE_TYPE(A) a_;
+      typename TypeTraits<A>::StoreType a_;
 
       /** @brief The second argument of the function. */
-      CODI_CREATE_STORE_TYPE(B) b_;
+      typename TypeTraits<B>::StoreType b_;
 
     public:
       /**
@@ -63,9 +63,6 @@ namespace codi {
        * otherwise the PassiveValue from Real is used.
        */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-
-      /** @brief Because these are temporary objects they need to be stored as values. */
-      static const bool storeAsReference = false;
 
       /**
        * @brief Stores both arguments of the expression.
@@ -302,15 +299,12 @@ namespace codi {
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
       /** @brief Active first argument of the function */
-      CODI_CREATE_STORE_TYPE(A) a_;
+      typename TypeTraits<A>::StoreType a_;
 
       /** @brief Passive second argument of the function */
       const PassiveReal b_;
 
     public:
-
-      /** @brief Because these are temporary objects they need to be stored as values. */
-      static const bool storeAsReference = false;
 
       /**
        * @brief Stores both arguments of the expression.
@@ -524,11 +518,8 @@ namespace codi {
       const PassiveReal a_;
 
       /** @brief Active second argument of the function */
-      CODI_CREATE_STORE_TYPE(B) b_;
+      typename TypeTraits<B>::StoreType b_;
     public:
-
-      /** @brief Because these are temporary objects they need to be stored as values. */
-      static const bool storeAsReference = false;
 
       /**
        * @brief Stores both arguments of the expression.
@@ -746,6 +737,11 @@ namespace codi {
       typedef RealType Real;
 
       /**
+       * @brief Expressions are temporary and therefore stored by value.
+       */
+      typedef const BinaryOp11<RealType, A, B, Impl> StoreType;
+
+      /**
        * @brief Get the primal value of the origin of this type.
        * @param[in] t The value from which the primal is extracted.
        * @return The primal value of the origin of this type..
@@ -776,6 +772,11 @@ namespace codi {
       typedef RealType Real;
 
       /**
+       * @brief Expressions are temporary and therefore stored by value.
+       */
+      typedef const BinaryOp10<RealType, A, Impl> StoreType;
+
+      /**
        * @brief Get the primal value of the origin of this type.
        * @param[in] t The value from which the primal is extracted.
        * @return The primal value of the origin of this type..
@@ -804,6 +805,11 @@ namespace codi {
        * @brief The real is just the type that is defined as the template argument.
        */
       typedef RealType Real;
+
+      /**
+       * @brief Expressions are temporary and therefore stored by value.
+       */
+      typedef const BinaryOp01<RealType, B, Impl> StoreType;
 
       /**
        * @brief Get the primal value of the origin of this type.

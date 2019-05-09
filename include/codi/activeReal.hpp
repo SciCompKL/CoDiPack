@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -80,11 +80,6 @@ namespace codi {
      * @brief The floating point type used for the calculations.
      */
     typedef typename Tape::Real Real;
-
-    /**
-     * @brief Defines that the active real's are stored as references in the expression templates.
-     */
-    static const bool storeAsReference = true;
 
     /**
      * @brief Static definition of the tape.
@@ -681,6 +676,9 @@ namespace codi {
 
       /** @brief The passive type is the passive type of Real. */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      /** @brief Variables of active type are stored by reference. */
+      typedef const ActiveReal<Tape>& StoreType;
 
       /** @brief The maximum derivative order that the active type contains. */
       static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;

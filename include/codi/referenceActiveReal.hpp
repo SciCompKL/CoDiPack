@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -57,11 +57,6 @@ namespace codi {
   template<typename ActiveType>
   class ReferenceActiveReal : public Expression<typename ActiveType::Real, ReferenceActiveReal<ActiveType> > {
   public:
-
-    /**
-     * @brief This type needs to be stored as a reference.
-     */
-    static const bool storeAsReference = true;
 
     /**
      * @brief The tape type for other classes.
@@ -311,6 +306,11 @@ namespace codi {
      * @brief The passive type is the passive type of Real.
      */
     typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+    /**
+     * @brief This type needs to be stored by reference.
+     */
+    typedef const ReferenceActiveReal<ActiveType>& StoreType;
 
     /**
      * @brief Get the primal value of the origin of this type.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -46,13 +46,6 @@ namespace codi {
    */
   template<typename Real, class A>
   struct Expression {
-
-    /**
-     * @brief If true, implementations of the expression are stored as references otherwise by values.
-     *
-     * This values is used by the macro CODI_CREATE_STORE_TYPE.
-     */
-    static const bool storeAsReference;
 
     /**
      * @brief The passive value is used where the expressions are combined with normal double values.

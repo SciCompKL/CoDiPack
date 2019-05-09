@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -58,6 +58,11 @@ namespace codi {
      * The default implementation defines the type itself as the type.
      */
     typedef T Real;
+
+    /**
+     * @brief Used to determine whether this type is stored by value of by reference.
+     */
+    typedef T StoreType;
 
     /**
      * @brief The maximum derivative order of the type
