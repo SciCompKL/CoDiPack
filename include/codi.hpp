@@ -358,3 +358,5 @@ namespace codi {
    */
   typedef RealReversePrimalIndexUncheckedGen<double, double> RealReversePrimalIndexUnchecked;
 }
+
+#include "codi/tools/evaluationHelper.hpp"

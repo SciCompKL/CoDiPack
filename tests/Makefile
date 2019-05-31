@@ -242,6 +242,19 @@ DRIVER_SRC = $(DRIVER_DIR)/reversePrimalOverForward/reverseOverForwardDriver.cpp
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalOverForward
 $(eval $(value DRIVER_INST))
 
+# Driver for evaluation helper test with forward type
+DRIVER_NAME  := EH_fwd
+DRIVER_TESTS := $(BASIC_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForward
+$(eval $(value DRIVER_INST))
+
+DRIVER_NAME  := EH_fwdVec
+DRIVER_TESTS := $(BASIC_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForwardVec\<4\>
+$(eval $(value DRIVER_INST))
+
 # rules for generating the test files
 $(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
 	@mkdir -p $(@D)
