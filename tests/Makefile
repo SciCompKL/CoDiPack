@@ -255,6 +255,13 @@ DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForwardVec\<4\>
 $(eval $(value DRIVER_INST))
 
+# Driver for evaluation helper test with forward type
+DRIVER_NAME  := EH_rws
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReverse -DREVERSE_TAPE -DEVAL_HELPER
+$(eval $(value DRIVER_INST))
+
 # rules for generating the test files
 $(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
 	@mkdir -p $(@D)

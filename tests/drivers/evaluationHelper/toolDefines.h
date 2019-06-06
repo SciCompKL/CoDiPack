@@ -26,19 +26,10 @@
  * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
  */
 
-#include <toolDefines.h>
+#pragma once
 
-IN(1)
-OUT(1)
-POINTS(1) = {{1.0}};
+#include <codi.hpp>
 
-void func(NUMBER* x, NUMBER* y) {
-  y[0] = x[0];
+typedef EVAL_HELPER_NUMBER NUMBER;
 
-#ifndef EVAL_HELPER
-  NUMBER::getGlobalTape().resetHard();
-  NUMBER::getGlobalTape().resize(1000,1000);
-#endif
-
-  y[0] = 0.0;
-}
+#include "../globalDefines.h"
