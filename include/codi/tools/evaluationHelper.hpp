@@ -32,7 +32,15 @@
 #include <array>
 #include <vector>
 
+#include "data/dummyValue.hpp"
+#include "data/dummyVector.hpp"
+#include "data/jacobian.hpp"
+#include "data/hessian.hpp"
+#include "data/vectorStorage.hpp"
+#include "tapeHelper.hpp"
+#include "../tapes/tapeTraits.hpp"
 #include "../../codi.hpp"
+
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -44,150 +52,6 @@ namespace codi {
    * Jacobian \frac{\d f}{\d x} \in \R^{m \cross n}
    * Hessian \frac{\d^2 f}{\d^2 x} \in \R^{m \cross n \cross n}
    */
-
-  struct DummyValue {
-      template<typename T>
-      void operator=(const T& v) {
-        CODI_UNUSED(v);
-      }
-  };
-
-  struct DummyVector {
-      DummyValue operator[](const size_t i) {
-        CODI_UNUSED(i);
-        return DummyValue();
-      }
-
-      size_t size() const {
-        return (size_t)0;
-      }
-  };
-
-  struct DummyJacobian {
-      DummyValue operator()(const size_t i, const size_t j) {
-        CODI_UNUSED(i);
-        CODI_UNUSED(j);
-
-        return DummyValue();
-      }
-  };
-
-  struct DummyHessian {
-      DummyValue operator()(const size_t i, const size_t j, const size_t k) {
-        CODI_UNUSED(i);
-        CODI_UNUSED(j);
-        CODI_UNUSED(k);
-
-        return DummyValue();
-      }
-  };
-
-  template <typename Vec>
-  struct DataStorage;
-
-  template <typename T, typename Allocator>
-  struct DataStorage<std::vector<T, Allocator>> {
-
-      using VecType = std::vector<T, Allocator>;
-      using Element = T;
-
-      VecType vec;
-
-      DataStorage(size_t size) : vec(size) {}
-
-      T* data() {
-        return vec.data();
-      }
-
-      T& operator[](size_t i) {
-        return vec[i];
-      }
-
-      size_t size() {
-        return vec.size();
-      }
-  };
-
-  template <typename T, size_t N>
-  struct DataStorage<std::array<T, N>> {
-
-      using VecType = std::array<T, N>;
-      using Element = T;
-
-
-      VecType vec;
-
-      DataStorage(size_t size) : vec() {CODI_UNUSED(size);}
-
-      T* data() {
-        return vec.data();
-      }
-
-      T& operator[](size_t i) {
-        return vec[i];
-      }
-
-      size_t size() {
-        return N;
-      }
-  };
-
-  template <typename Vec>
-  struct Jacobian {
-
-      DataStorage<Vec> values;
-      using T = typename DataStorage<Vec>::Element;
-
-      size_t m;
-      size_t n;
-
-      Jacobian(size_t m, size_t n) : values(n * m), m(m), n(n) {}
-
-      T operator()(const size_t i, const size_t j) const {
-        return values.data()[computeIndex(i,j)];
-      }
-
-      T& operator()(const size_t i, const size_t j) {
-        return values.data()[computeIndex(i,j)];
-      }
-
-    private:
-
-      size_t computeIndex(const size_t i, const size_t j) const {
-        return i * n + j;
-      }
-  };
-
-  template <typename Vec>
-  struct Hessian {
-
-      DataStorage<Vec> values;
-      using T = typename DataStorage<Vec>::Element;
-
-      size_t m;
-      size_t n;
-
-      Hessian(size_t m, size_t n) : values(n * n * m), m(m), n(n) {}
-
-      T operator()(const size_t i, const size_t j, const size_t k) const {
-        return values.data()[computeIndex(i,j,k)];
-      }
-
-      T& operator()(const size_t i, const size_t j, const size_t k) {
-        return values.data()[computeIndex(i,j,k)];
-      }
-
-      template<typename T>
-      void set(const size_t i, const size_t j, const size_t k, const T& v) {
-        values.data()[computeIndex(i,j,k)] = v;
-      }
-
-    private:
-
-      size_t computeIndex(const size_t i, const size_t j, const size_t k) const {
-        return k * n * m + i * n + j;
-      }
-  };
 
   template <typename Func, typename CoDiType,
             template<typename> class InputVectorType,
@@ -202,8 +66,8 @@ namespace codi {
 
       Func func;
 
-      DataStorage<InputVector> x;
-      DataStorage<OutputVector> y;
+      VectorStorage<InputVector> x;
+      VectorStorage<OutputVector> y;
 
       DummyVector dummyVector;
       DummyJacobian dummyJacobian;
@@ -388,20 +252,91 @@ namespace codi {
 
   template <typename Func, typename CoDiType,
             template<typename> class InputVectorType,
+            template<typename> class OutputVectorType>
+  struct ReverseHandle : public EvaluationHandlerBase<Func, CoDiType, InputVectorType, OutputVectorType> {
+
+      TapeHelper<CoDiType> th;
+
+      ReverseHandle(Func func, size_t m, size_t n) :
+        EvaluationHandlerBase<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n),
+        th()
+      {}
+
+      template<typename VecX>
+      void setAllPrimals(const VecX& locX, bool reg) {
+        codiAssert(locX.size() <= this->x.size());
+        for(size_t j = 0; j < locX.size(); j += 1) {
+          this->x[j] = locX[j];
+
+          if(reg) {
+            th.registerInput(this->x[j]);
+          }
+        }
+      }
+
+      template<typename VecY>
+      void getAllPrimals(VecY& locY, bool reg) {
+        codiAssert(locY.size() <= this->y.size());
+        for(size_t i = 0; i < this->y.size(); i += 1) {
+          if(reg) {
+            th.registerOutput(this->y[i]);
+          }
+
+          locY[i] = this->y[i];
+        }
+      }
+
+      template<typename VecX, typename VecY>
+      void computePrimal(const VecX& locX, VecY& locY) {
+        setAllPrimals(locX, false);
+
+        this->eval();
+
+        getAllPrimals(locY, false);
+      }
+
+      template<typename VecX, typename Jac, typename VecY>
+      void computeJacobian(const VecX& locX, Jac& jac, VecY& locY) {
+
+        th.startRecording();
+        setAllPrimals(locX, true);
+
+        this->eval();
+
+        getAllPrimals(locY, true);
+        th.stopRecording();
+
+        th.evalJacobian(jac);
+      }
+
+      template<typename VecX, typename Hes, typename VecY, typename Jac>
+      void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac) {
+        // TODO
+      }
+  };
+
+  template <typename Func, typename CoDiType,
+            template<typename> class InputVectorType,
             template<typename> class OutputVectorType,
             typename = void>
   struct HandleSwitch;
 
-  template<typename CoDiType>
-  using isForwardType = typename std::enable_if<true>::type; //TODO: Implement tape type selection
+  template <typename Func, typename CoDiType,
+            template<typename> class InputVectorType,
+            template<typename> class OutputVectorType>
+  struct HandleSwitch<Func, CoDiType, InputVectorType, OutputVectorType, enableIfForwardTape<typename CoDiType::TapeType>> :
+      public ForwardHandle<Func, CoDiType, InputVectorType, OutputVectorType> {
+
+      HandleSwitch(Func func, size_t m, size_t n) : ForwardHandle<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n) {}
+  };
 
   template <typename Func, typename CoDiType,
             template<typename> class InputVectorType,
             template<typename> class OutputVectorType>
-  struct HandleSwitch<Func, CoDiType, InputVectorType, OutputVectorType, isForwardType<CoDiType>> :
-      public ForwardHandle<Func, CoDiType, InputVectorType, OutputVectorType> {
+  struct HandleSwitch<Func, CoDiType, InputVectorType, OutputVectorType, enableIfReverseTape<typename CoDiType::TapeType>> :
+      public ReverseHandle<Func, CoDiType, InputVectorType, OutputVectorType> {
 
-      HandleSwitch(Func func, size_t m, size_t n) : ForwardHandle<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n) {}
+      HandleSwitch(Func func, size_t m, size_t n) : ReverseHandle<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n) {}
   };
 
 
