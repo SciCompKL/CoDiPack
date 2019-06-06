@@ -39,6 +39,25 @@
 #define OUT(number) \
   int getOutputCount() {return number;}
 
+#if defined(SECOND_ORDER) & defined(VECTOR)
+# error "Second order and Vector not supported"
+#endif
+
+#ifdef VECTOR
+# define GRAD_DIM_ACCESS [curDim]
+#else
+  const size_t DIM = 1;
+# define GRAD_DIM_ACCESS /* 0 */
+#endif
+
+#ifndef SECOND_ORDER
+# define SECOND_ORDER 0
+#endif
+
+#ifndef PRIMAL
+# define PRIMAL 0
+#endif
+
 int getEvalPointsCount();
 double getEvalPoint(int point, int col);
 int getInputCount();

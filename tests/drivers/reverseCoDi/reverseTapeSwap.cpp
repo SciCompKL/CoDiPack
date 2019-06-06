@@ -47,7 +47,11 @@ int main(int nargs, char** args) {
   NUMBER::TapeType swapTape;
 
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
-  tape.resize(2, 3);
+  tape.resize(10000, 10000);
+  tape.setExternalFunctionChunkSize(1000);
+#if PRIMAL
+  tape.setConstantDataSize(10000);
+#endif
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
@@ -95,10 +99,7 @@ int main(int nargs, char** args) {
       for(int curIn = 0; curIn < inputs; ++curIn) {
         jac[curOut].push_back(swapTape.getGradient(xIndex[curIn]));
       }
-      swapTape.clearAdjoints();
     }
-
-    swapTape.reset();
 
     for(int curIn = 0; curIn < inputs; ++curIn) {
       for(int curOut = 0; curOut < outputs; ++curOut) {

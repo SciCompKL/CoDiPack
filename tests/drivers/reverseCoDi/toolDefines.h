@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -28,11 +28,4 @@
 
 #pragma once
 
-#include <codi.hpp>
-
-typedef codi::RealReversePrimalUnchecked NUMBER;
-
-#include "../globalDefines.h"
-
-#define SIMPLE_TAPE
-#define REVERSE_TAPE
+#include "../codiDefines.h"

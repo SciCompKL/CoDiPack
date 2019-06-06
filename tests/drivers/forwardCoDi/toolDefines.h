@@ -28,13 +28,4 @@
 
 #pragma once
 
-#include <codi.hpp>
-
-const size_t DIM = 5;
-typedef codi::RealReverseVec<DIM> NUMBER;
-typedef NUMBER::GradientValue Gradient;
-
-#include "../globalDefines.h"
-
-#define CHUNK_TAPE
-#define REVERSE_TAPE
+#include "../codiDefines.h"
