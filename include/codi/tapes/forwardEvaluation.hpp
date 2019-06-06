@@ -29,6 +29,7 @@
 #pragma once
 
 #include "../activeReal.hpp"
+#include "../tapeTypes.hpp"
 #include "../typeFunctions.hpp"
 #include "tapeInterface.hpp"
 
@@ -52,21 +53,16 @@ namespace codi {
    * GradientData is just the same as the active type
    * uses for the storage of the floating point values.
    *
-   * @tparam           Real  The floating point type of the primal data.
-   * @tparam  GradientValue  The floating point type of the tangent data.
+   *
+   * @tparam TapeTypes_t  All the types for the tape. Including the calculation type and the vector types.
    */
-  template<typename RealType, typename GradientValueType = RealType>
-  class ForwardEvaluation final : public TapeInterface<RealType, GradientValueType, GradientValueType>{
+  template<typename TapeTypes_t>
+  class ForwardEvaluation final : public TapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::GradientValue, typename TapeTypes_t::GradientValue>{
   public:
 
-    /**
-     * @brief The real type for the primal values.
-     */
-    typedef RealType Real;
-    /**
-     * @brief The real type for the tangent values.
-     */
-    typedef GradientValueType GradientValue;
+    using TapeTypes = TapeTypes_t;
+
+    CODI_INLINE_FORWARD_TAPE_TYPES(TapeTypes)
 
     /**
      * @brief The tangent value for the active variable.
@@ -110,7 +106,7 @@ namespace codi {
      * @param[out] lhsTangent  The tangent of the lhs.
      * @param[in]         rhs  The expression of the rhs.
      */
-    CODI_INLINE void store(Real& value, GradientData& lhsTangent, const ActiveReal<ForwardEvaluation<Real> >& rhs) {
+    CODI_INLINE void store(Real& value, GradientData& lhsTangent, const ActiveReal<ForwardEvaluation<TapeTypes> >& rhs) {
       lhsTangent = rhs.getGradient();
       value = rhs.getValue();
 

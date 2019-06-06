@@ -124,17 +124,19 @@ namespace codi {
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
    *
-   * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
+   * @tparam TapeTypes_t  All the types for the tape. Including the calculation type and the vector types.
    */
-  template <typename TapeTypes>
+  template <typename TapeTypes_t>
   class PrimalValueTape :
-      public TapeBaseModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public PrimalValueModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public ExternalFunctionModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public IOModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, PrimalValueTape<TapeTypes>, typename TapeTypes::Position >
+      public TapeBaseModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public PrimalValueModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public ExternalFunctionModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public IOModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public virtual ReverseTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, PrimalValueTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
+
+    typedef TapeTypes_t TapeTypes;
 
     friend TapeBaseModule<TapeTypes, PrimalValueTape>;  /**< No doc */
     friend PrimalValueModule<TapeTypes, PrimalValueTape>;  /**< No doc */

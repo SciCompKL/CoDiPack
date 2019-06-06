@@ -64,7 +64,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealForwardGen = ActiveReal<ForwardEvaluation<Real, Gradient> >;
+  using RealForwardGen = ActiveReal<ForwardEvaluation<ForwardTapeTypes<Real, Gradient> > >;
 
   /**
    * @brief The default forward type in CoDiPack.
