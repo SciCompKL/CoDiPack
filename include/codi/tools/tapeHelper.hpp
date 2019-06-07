@@ -162,42 +162,23 @@ namespace codi {
       }
 
       CODI_INLINE void evalJacobian(JacobianType& jac) {
-        if(inputValues.size() < outputValues.size()) {
 
+        using Algo = Algorithms<CoDiType>;
+        typename Algo::EvaluationType evalType = Algo::getEvaluationChoice(inputValues.size(), outputValues.size());
+
+        if(Algo::EvaluationType::Forward == evalType) {
           changeStateToForwardEvaluation();
-
-          for(size_t j = 0; j < inputValues.size(); j += 1) {
-            tape.setGradient(inputValues[j], GradientValue(1.0));
-
-            tape.evaluateForward();
-
-            for(size_t i = 0; i < outputValues.size(); i += 1) {
-               jac(i,j) = tape.getGradient(outputValues[i]);
-            }
-
-            tape.setGradient(inputValues[j], GradientValue());
-          }
-        } else {
-
+        } else if(Algo::EvaluationType::Reverse == evalType) {
           changeStateToReverseEvaluation();
-
-          for(size_t i = 0; i < outputValues.size(); i += 1) {
-            tape.setGradient(outputValues[i], GradientValue(1.0));
-
-            tape.evaluate();
-
-            for(size_t j = 0; j < inputValues.size(); j += 1) {
-               jac(i,j) = tape.getGradient(inputValues[j]);
-               tape.setGradient(inputValues[j], GradientValue());
-            }
-
-            tape.setGradient(outputValues[i], GradientValue());
-
-            if(!ZeroAdjointReverse) {
-              tape.clearAdjoints();
-            }
-          }
+        } else {
+          CODI_EXCEPTION("Evaluation type not implemented.");
         }
+
+        Algorithms<CoDiType>::computeJacobian(
+              tape, tape.getZeroPosition(), tape.getPosition(),
+              inputValues.data(), inputValues.size(),
+              outputValues.data(), outputValues.size(),
+              jac);
       }
 
       CODI_INLINE void evalForwardAt(Real const* x, GradientValue const* x_d, GradientValue* y_d, Real* y = nullptr) {
