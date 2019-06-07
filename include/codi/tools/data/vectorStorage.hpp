@@ -46,11 +46,15 @@ namespace codi {
 
       explicit VectorStorage(size_t size);
 
+      CODI_INLINE Element const* data() const;
+
       CODI_INLINE Element* data();
 
       CODI_INLINE Element& operator[](size_t i);
 
       CODI_INLINE size_t size();
+
+      CODI_NO_INLINE void resize(size_t const size);
   };
 
   template <typename T, typename Allocator>
@@ -63,6 +67,10 @@ namespace codi {
 
       explicit VectorStorage(size_t size) : vec(size) {}
 
+      CODI_INLINE T const* data() const {
+        return vec.data();
+      }
+
       CODI_INLINE T* data() {
         return vec.data();
       }
@@ -73,6 +81,10 @@ namespace codi {
 
       CODI_INLINE size_t size() {
         return vec.size();
+      }
+
+      CODI_NO_INLINE void resize(size_t const size) {
+        vec.resize(size);
       }
   };
 
@@ -87,6 +99,10 @@ namespace codi {
 
       explicit VectorStorage(size_t size) : vec() {CODI_UNUSED(size);}
 
+      CODI_INLINE T const* data() const {
+        return vec.data();
+      }
+
       CODI_INLINE T* data() {
         return vec.data();
       }
@@ -97,6 +113,12 @@ namespace codi {
 
       CODI_INLINE size_t size() {
         return N;
+      }
+
+      CODI_INLINE void resize(size_t const size) {
+        CODI_UNUSED(size);
+
+        CODI_EXCEPTION("Can not resize std::array.");
       }
   };
 }
