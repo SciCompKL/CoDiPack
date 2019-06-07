@@ -34,6 +34,9 @@ int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
 
+  using GT = codi::GradientValueTraits<Gradient>;
+  constexpr size_t gradDim = GT::getVectorSize();
+
   int evalPoints = getEvalPointsCount();
   int inputs = getInputCount();
   int outputs = getOutputCount();
@@ -58,17 +61,17 @@ int main(int nargs, char** args) {
       y[i] = 0.0;
     }
 
-    int runs = inputs / DIM;
-    if(inputs % DIM != 0) {
+    int runs = inputs / gradDim;
+    if(inputs % gradDim != 0) {
       runs += 1;
     }
     for(int curIn = 0; curIn < runs; ++curIn) {
-      size_t curSize = DIM;
-      if((curIn + 1) * DIM  > (size_t)inputs) {
-        curSize = inputs % DIM;
+      size_t curSize = gradDim;
+      if((curIn + 1) * gradDim  > (size_t)inputs) {
+        curSize = inputs % gradDim;
       }
       for(size_t curDim = 0; curDim < curSize; ++curDim) {
-        x[curIn * DIM + curDim].gradient() GRAD_DIM_ACCESS  = 1.0;
+        GT::at(x[curIn * gradDim + curDim].gradient(), curDim) = 1.0;
       }
 
       for(int i = 0; i < outputs; ++i) {
@@ -79,12 +82,12 @@ int main(int nargs, char** args) {
 
       for(size_t curDim = 0; curDim < curSize; ++curDim) {
         for(int curOut = 0; curOut < outputs; ++curOut) {
-          std::cout << curIn * DIM + curDim << " " << curOut << " " << y[curOut].getGradient() GRAD_DIM_ACCESS << std::endl;
+          std::cout << curIn * gradDim + curDim << " " << curOut << " " << GT::at(y[curOut].getGradient(), curDim) << std::endl;
         }
       }
 
       for(size_t curDim = 0; curDim < curSize; ++curDim) {
-        x[curIn * DIM + curDim].setGradient(Gradient());
+        x[curIn * gradDim + curDim].setGradient(Gradient());
       }
     }
   }

@@ -30,6 +30,8 @@
 
 #include <codi.hpp>
 
+  const size_t DefaultVectorDim = 5;
+
 #if defined(FWD)
   typedef codi::RealForward NUMBER;
 
@@ -38,18 +40,14 @@
   typedef codi::RealForwardGen<codi::RealForward> NUMBER;
 
 #elif defined(FWD_Vec)
-  const size_t DIM = 5;
-  #define VECTOR 1
-  typedef codi::RealForwardVec<DIM> NUMBER;
+  typedef codi::RealForwardVec<DefaultVectorDim> NUMBER;
 
 #elif defined(RWS_Chunk)
   typedef codi::RealReverse NUMBER;
   #define REVERSE_TAPE
 
 #elif defined(RWS_ChunkVec)
-  const size_t DIM = 5;
-  #define VECTOR 1
-  typedef codi::RealReverseVec<DIM> NUMBER;
+  typedef codi::RealReverseVec<DefaultVectorDim> NUMBER;
   #define REVERSE_TAPE
 
 #elif defined(RWS_Unch)
@@ -61,9 +59,7 @@
   #define REVERSE_TAPE
 
 #elif defined(RWS_ChunkIndVec)
-  const size_t DIM = 5;
-  #define VECTOR 1
-  typedef codi::RealReverseIndexVec<DIM> NUMBER;
+  typedef codi::RealReverseIndexVec<DefaultVectorDim> NUMBER;
   #define REVERSE_TAPE
 
 #elif defined(RWS_UnchInd)
@@ -75,9 +71,7 @@
   #define REVERSE_TAPE
 
 #elif defined(RWS_PrimVec)
-  const size_t DIM = 5;
-  #define VECTOR 1
-  typedef codi::RealReversePrimalVec<DIM> NUMBER;
+  typedef codi::RealReversePrimalVec<DefaultVectorDim> NUMBER;
   #define REVERSE_TAPE
 
 #elif defined(RWS_PrimIndex)

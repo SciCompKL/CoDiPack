@@ -35,6 +35,9 @@ int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
 
+  using GT = codi::GradientValueTraits<Gradient>;
+  constexpr size_t gradDim = GT::getVectorSize();
+
   int evalPoints = getEvalPointsCount();
   int inputs = getInputCount();
   int outputs = getOutputCount();
@@ -66,15 +69,15 @@ int main(int nargs, char** args) {
       y[i] = 0.0;
     }
 
-    int runs = outputs / DIM;
-    if(outputs % DIM != 0) {
+    int runs = outputs / gradDim;
+    if(outputs % gradDim != 0) {
       runs += 1;
     }
     std::vector<std::vector<double> > jac(outputs);
     for(int curOut = 0; curOut < runs; ++curOut) {
-      size_t curSize = DIM;
-      if((curOut + 1) * DIM  > (size_t)outputs) {
-        curSize = outputs % DIM;
+      size_t curSize = gradDim;
+      if((curOut + 1) * gradDim  > (size_t)outputs) {
+        curSize = outputs % gradDim;
       }
 
       tape.setActive();
@@ -89,11 +92,10 @@ int main(int nargs, char** args) {
         tape.registerOutput(y[i]);
       }
 
-      Gradient grad;
       for(size_t curDim = 0; curDim < curSize; ++curDim) {
-        grad GRAD_DIM_ACCESS = 1.0;
-        y[curOut * DIM + curDim].setGradient(grad);
-        grad GRAD_DIM_ACCESS = 0.0;
+        if(y[curOut * gradDim + curDim].isActive()) {
+          GT::at(y[curOut * gradDim + curDim].gradient(), curDim) = 1.0;
+        }
       }
 
       tape.setPassive();
@@ -103,9 +105,9 @@ int main(int nargs, char** args) {
       for(size_t curDim = 0; curDim < curSize; ++curDim) {
         for(int curIn = 0; curIn < inputs; ++curIn) {
 #if SECOND_ORDER
-          jac[curOut * DIM + curDim].push_back(x[curIn].getGradient().getValue());
+          jac[curOut * gradDim + curDim].push_back(x[curIn].getGradient().getValue());
 #else
-          jac[curOut * DIM + curDim].push_back(x[curIn].getGradient() GRAD_DIM_ACCESS);
+          jac[curOut * gradDim + curDim].push_back(GT::at(x[curIn].getGradient(), curDim));
 #endif
         }
       }
