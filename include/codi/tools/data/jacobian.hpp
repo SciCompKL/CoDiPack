@@ -64,7 +64,84 @@ namespace codi {
         return values.data()[computeIndex(i,j)];
       }
 
-    private:
+      CODI_INLINE void resize(size_t const m, size_t const n) {
+        this->m = m;
+        this->n = n;
+
+        values.resize(m*n);
+      }
+
+    protected:
+
+      CODI_INLINE size_t computeIndex(const size_t i, const size_t j) const {
+        return i * n + j;
+      }
+  };
+
+  template <typename Vec>
+  struct JacobianCountNonZerosRow {
+
+      using T = typename VectorStorage<Vec>::Element;
+
+      struct ValueAccessor {
+          size_t i;
+          size_t j;
+
+          JacobianCountNonZerosRow& data;
+
+          ValueAccessor(size_t const i, size_t const j, JacobianCountNonZerosRow& data) : i(i), j(j), data(data) {}
+
+          ValueAccessor& operator =(JacobianCountNonZerosRow::T const& v) {
+            data.set(i,j, v);
+
+            return *this;
+          }
+
+          operator T() const {
+            return data.get(i, j);
+          }
+      };
+
+      VectorStorage<Vec> values;
+      std::vector<int> nonZerosRow;
+
+      size_t m;
+      size_t n;
+
+      explicit JacobianCountNonZerosRow(size_t m, size_t n) : values(n * m), nonZerosRow(m), m(m), n(n) {}
+
+      CODI_INLINE T operator()(const size_t i, const size_t j) const {
+        return get(i,j);
+      }
+
+      CODI_INLINE ValueAccessor operator()(const size_t i, const size_t j) {
+        return ValueAccessor(i,j,*this);
+      }
+
+      CODI_INLINE T get(const size_t i, const size_t j) const {
+        return values.data()[computeIndex(i,j)];
+      }
+
+      CODI_INLINE void set(const size_t i, const size_t j, T const& v) {
+        if(T() != v) {
+          nonZerosRow[i] += 1;
+          values.data()[computeIndex(i,j)] = v;
+        }
+      }
+
+      CODI_INLINE void resize(size_t const m, size_t const n) {
+        this->m = m;
+        this->n = n;
+
+        values.resize(m*n);
+        nonZerosRow.resize(m);
+      }
+
+      CODI_INLINE size_t size() {
+        return m * n;
+      }
+
+    protected:
 
       CODI_INLINE size_t computeIndex(const size_t i, const size_t j) const {
         return i * n + j;
