@@ -27,94 +27,32 @@
  */
 
 #include <toolDefines.h>
+#include <codi.hpp>
 
-#include <iostream>
-#include <vector>
+#include "reverseDriverBase.hpp"
+
+struct ReverseDriverVectorAdapter : public ReverseDriverBase {
+
+    codi::TapeVectorHelper<NUMBER, Gradient> vh;
+
+    NUMBER::GradientValue& getGradient(NUMBER &number) {
+      return vh.gradient(number.getGradientData());
+    }
+
+    void evaluate() {
+      vh.evaluate();
+    }
+
+    void doLoopCleanup() {
+      vh.clearAdjoints();
+    }
+};
 
 int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
 
-  using GT = codi::GradientValueTraits<Gradient>;
-  constexpr size_t gradDim = GT::getVectorSize();
+  ReverseDriverVectorAdapter driver;
 
-  int evalPoints = getEvalPointsCount();
-  int inputs = getInputCount();
-  int outputs = getOutputCount();
-  NUMBER* x = new NUMBER[inputs];
-  NUMBER* y = new NUMBER[outputs];
-
-  NUMBER::TapeType& tape = NUMBER::getGlobalTape();
-  tape.resize(10000, 10000);
-  tape.setExternalFunctionChunkSize(1000);
-#if PRIMAL
-  tape.setConstantDataSize(10000);
-#endif
-
-  codi::TapeVectorHelper<NUMBER, Gradient> vh;
-
-  for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
-    std::cout << "Point " << curPoint << " : {";
-
-    for(int i = 0; i < inputs; ++i) {
-      if(i != 0) {
-        std::cout << ", ";
-      }
-      double val = getEvalPoint(curPoint, i);
-      std::cout << val;
-
-      x[i] = (NUMBER)(val);
-    }
-    std::cout << "}\n";
-
-    for(int i = 0; i < outputs; ++i) {
-      y[i] = 0.0;
-    }
-
-    int runs = outputs / gradDim;
-    if(outputs % gradDim != 0) {
-      runs += 1;
-    }
-    std::vector<std::vector<double> > jac(outputs);
-    for(int curOut = 0; curOut < runs; ++curOut) {
-      size_t curSize = gradDim;
-      if((curOut + 1) * gradDim  > (size_t)outputs) {
-        curSize = outputs % gradDim;
-      }
-
-      tape.setActive();
-
-      for(int i = 0; i < inputs; ++i) {
-        tape.registerInput(x[i]);
-      }
-
-      func(x, y);
-
-      for(int i = 0; i < outputs; ++i) {
-        tape.registerOutput(y[i]);
-      }
-
-      for(size_t curDim = 0; curDim < curSize; ++curDim) {
-        GT::at(vh.gradient(y[curOut * gradDim + curDim].getGradientData()), curDim) = grad;
-      }
-
-      tape.setPassive();
-
-      vh.evaluate();
-
-      for(size_t curDim = 0; curDim < curSize; ++curDim) {
-        for(int curIn = 0; curIn < inputs; ++curIn) {
-          jac[curOut * gradDim + curDim].push_back(vh.getGradient(x[curIn].getGradientData())[curDim]);
-        }
-      }
-
-      tape.reset();
-    }
-
-    for(int curIn = 0; curIn < inputs; ++curIn) {
-      for(int curOut = 0; curOut < outputs; ++curOut) {
-        std::cout << curIn << " " << curOut << " " << jac[curOut][curIn] << std::endl;
-      }
-    }
-  }
+  driver.run();
 }

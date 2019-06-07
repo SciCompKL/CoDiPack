@@ -202,11 +202,11 @@ $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)
 $(eval $(value DRIVER_INST))
 
 ## Driver for RealReverseVectorAdapter
-#DRIVER_NAME  := RWS_ChunkVecA
-#DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-#DRIVER_SRC = $(DRIVER_DIR)/reverseChunkVectorAdapter/reverseDriver.cpp
-#$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkVectorAdapter
-#$(eval $(value DRIVER_INST))
+DRIVER_NAME  := RWS_ChunkVecA
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseVectorAdapter.cpp
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_Chunk
+$(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndex
 DRIVER_NAME  := RWS_ChunkInd
@@ -215,12 +215,12 @@ DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkInd
 $(eval $(value DRIVER_INST))
 
-## Driver for RealReverseIndex with tape swap
-#DRIVER_NAME  := RWS_ChunkIndSwap
-#DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-#DRIVER_SRC = $(DRIVER_DIR)/reverseChunkIndexTapeSwap/reverseDriver.cpp
-#$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndexTapeSwap
-#$(eval $(value DRIVER_INST))
+# Driver for RealReverseIndex with tape swap
+DRIVER_NAME  := RWS_ChunkIndSwap
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseTapeSwap.cpp
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkInd
+$(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndexVector
 DRIVER_NAME  := RWS_ChunkIndVec
