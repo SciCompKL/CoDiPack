@@ -38,9 +38,9 @@
 #include "data/hessian.hpp"
 #include "data/vectorStorage.hpp"
 #include "tapeHelper.hpp"
+#include "../gradientTraits.hpp"
 #include "../tapes/tapeTraits.hpp"
 #include "../../codi.hpp"
-
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -83,42 +83,6 @@ namespace codi {
         func(x.vec, y.vec);
       }
   };
-
-
-  template<typename T>
-  struct GradientValueTraits {
-      static constexpr size_t getVectorSize() {
-        return 1;
-      }
-
-      static T& at(T& v, const size_t pos) {
-        CODI_UNUSED(pos);
-
-        return v;
-      }
-
-      static const T& at(const T& v, const size_t pos) {
-        CODI_UNUSED(pos);
-
-        return v;
-      }
-  };
-
-  template<typename T, size_t n>
-  struct GradientValueTraits<Direction<T, n>> {
-      static constexpr size_t getVectorSize() {
-        return n;
-      }
-
-      static T& at(Direction<T,n>& v, const size_t pos) {
-        return v[pos];
-      }
-
-      static const T& at(const Direction<T,n>& v, const size_t pos) {
-        return v[pos];
-      }
-  };
-
 
   template <typename Func, typename CoDiType,
             template<typename> class InputVectorType,
