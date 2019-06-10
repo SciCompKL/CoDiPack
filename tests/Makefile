@@ -39,7 +39,7 @@ TEST_FILES  += $(wildcard $(TEST_DIR)/**/Test**.cpp)
 TEST_FILES  += $(wildcard $(TEST_DIR)/**/**/Test**.cpp)
 
 #list all dependency files in BUILD_DIR
-DEP_FILES   = $(wildcard $(BUILD_DIR)/Test**.d)
+DEP_FILES   = $(wildcard $(BUILD_DIR)/**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 
@@ -173,12 +173,12 @@ DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
 $(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_PrimVec
 $(eval $(value DRIVER_INST))
 
-## Driver for RealReversePrimalVectorAdapter
-#DRIVER_NAME  := RWS_PrimVecA
-#DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-#DRIVER_SRC = $(DRIVER_DIR)/reversePrimalVectorAdapter/reverseDriver.cpp
-#$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalVectorAdapter -DCODI_EnableVariableAdjointInterfaceInPrimalTapes
-#$(eval $(value DRIVER_INST))
+# Driver for RealReversePrimalVectorAdapter
+DRIVER_NAME  := RWS_PrimVecA
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseVectorAdapter.cpp
+$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_Prim -DCODI_EnableVariableAdjointInterfaceInPrimalTapes
+$(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimalIndex
 DRIVER_NAME  := RWS_PrimIndex
