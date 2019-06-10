@@ -98,5 +98,6 @@
 #endif
 
 
+typedef NUMBER::Real Real;
 typedef NUMBER::GradientValue Gradient;
 #include "globalDefines.h"

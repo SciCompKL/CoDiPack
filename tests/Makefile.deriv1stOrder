@@ -2,7 +2,7 @@
 DRIVER_MODE := deriv1stOrder
 
 # Complete list of first order test files
-TESTS_1ST_ORDER = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/deriv1stOrder/%.test,$(TEST_FILES))
+TESTS_1ST_ORDER := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/$(DRIVER_MODE)/%.test,$(TEST_FILES))
 
 # The first 3 lines of each driver define the basic parameters for this driver.
 # DRIVER_NAME:    The short name for the driver. This used to create the specific files for the driver

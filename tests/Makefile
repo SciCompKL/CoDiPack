@@ -39,8 +39,7 @@ TEST_FILES  += $(wildcard $(TEST_DIR)/**/Test**.cpp)
 TEST_FILES  += $(wildcard $(TEST_DIR)/**/**/Test**.cpp)
 
 #list all dependency files in BUILD_DIR
-DEP_FILES   = $(wildcard $(BUILD_DIR)/**.d)
-DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
+DEP_FILES   = $(wildcard $(BUILD_DIR)/**/**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/**/Test**.d)
 
@@ -114,6 +113,9 @@ endef
 
 include Makefile.deriv1stOrder
 TESTS += $(TESTS_1ST_ORDER)
+
+include Makefile.deriv2ndOrder
+TESTS += $(TESTS_2ND_ORDER)
 
 # rules for generating the test files
 $(RESULT_DIR)/%.out : $(BUILD_DIR)/%.exe
