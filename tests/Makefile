@@ -92,7 +92,7 @@ $(BUILD_DIR)/%_$(DRIVER_NAME).o : $(TEST_DIR)/%.cpp
 	$(CXX) $(CXX_FLAGS) $(DRIVER_INC) $< -c -o $@
 	@$(CXX) $(CXX_FLAGS) $(DRIVER_INC) $< -MM -MP -MT $@ -MF $@.d
 
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(BUILD_DIR)/%_$(DRIVER_NAME).o $(BUILD_DIR)/$(DRIVER_NAME).o
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : $(BUILD_DIR)/%_$(DRIVER_NAME).o $(BUILD_DIR)/$(DRIVER_NAME).o
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
 
@@ -121,158 +121,158 @@ endef
 DRIVER_NAME  := FWD
 DRIVER_TESTS := $(BASIC_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/forwardCoDi/forwardDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD
 $(eval $(value DRIVER_INST))
 
 # Driver for RealForwardVector
 DRIVER_NAME  := FWD_Vec
 DRIVER_TESTS := $(BASIC_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/forwardCoDi/forwardDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD_Vec
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD_Vec
 $(eval $(value DRIVER_INST))
 
 # Driver for 2nd order type but first derivative evaluation both forward.
 DRIVER_NAME  := FWD2nd
 DRIVER_TESTS := $(BASIC_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/forwardCoDi/forwardDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD2nd
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD2nd
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseUnchecked
 DRIVER_NAME  := RWS_Unch
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_Unch
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_Unch
 $(eval $(value DRIVER_INST))
 
 ## Driver for RealReverseIndexUncheckedIndex
 DRIVER_NAME  := RWS_UnchInd
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_UnchInd
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_UnchInd
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimalUnchecked
 DRIVER_NAME  := RWS_PrimUnch
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_PrimUnch
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_PrimUnch
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimal
 DRIVER_NAME  := RWS_Prim
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_Prim
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_Prim
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimalVec
 DRIVER_NAME  := RWS_PrimVec
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_PrimVec
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_PrimVec
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimalVectorAdapter
 DRIVER_NAME  := RWS_PrimVecA
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseVectorAdapter.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_Prim -DCODI_EnableVariableAdjointInterfaceInPrimalTapes
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_Prim -DCODI_EnableVariableAdjointInterfaceInPrimalTapes
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReversePrimalIndex
 DRIVER_NAME  := RWS_PrimIndex
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_PrimIndex
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_PrimIndex
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverse
 DRIVER_NAME  := RWS_Chunk
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_Chunk
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_Chunk
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseVector
 DRIVER_NAME  := RWS_ChunkVec
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkVec
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkVec
 $(eval $(value DRIVER_INST))
 
 ## Driver for RealReverseVectorAdapter
 DRIVER_NAME  := RWS_ChunkVecA
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseVectorAdapter.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_Chunk
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_Chunk
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndex
 DRIVER_NAME  := RWS_ChunkInd
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkInd
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkInd
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndex with tape swap
 DRIVER_NAME  := RWS_ChunkIndSwap
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseTapeSwap.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkInd
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkInd
 $(eval $(value DRIVER_INST))
 
 # Driver for RealReverseIndexVector
 DRIVER_NAME  := RWS_ChunkIndVec
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkIndVec
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS_ChunkIndVec
 $(eval $(value DRIVER_INST))
 
 # Driver for reverse over forward
 DRIVER_NAME  := RWS2nd
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS2nd
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS2nd
 $(eval $(value DRIVER_INST))
 
 # Driver for reversePrimal over forward
 DRIVER_NAME  := RWS2nd_Prim
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/reverseCoDi/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS2nd_Prim
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/reverseCoDi -DRWS2nd_Prim
 $(eval $(value DRIVER_INST))
 
 # Driver for evaluation helper test with forward type
 DRIVER_NAME  := EH_fwd
 DRIVER_TESTS := $(BASIC_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForward
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForward
 $(eval $(value DRIVER_INST))
 
 # Driver for evaluation helper test with forward vector type
 DRIVER_NAME  := EH_fwdVec
 DRIVER_TESTS := $(BASIC_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForwardVec\<4\>
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForwardVec\<4\>
 $(eval $(value DRIVER_INST))
 
 # Driver for evaluation helper test with reverse type
 DRIVER_NAME  := EH_rws
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReverse -DREVERSE_TAPE -DEVAL_HELPER
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReverse -DREVERSE_TAPE -DEVAL_HELPER
 $(eval $(value DRIVER_INST))
 
 # Driver for evaluation helper test with reverse vector type
 DRIVER_NAME  := EH_rwsVec
 DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReverseVec\<4\> -DREVERSE_TAPE -DEVAL_HELPER
+$(BUILD_DIR)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReverseVec\<4\> -DREVERSE_TAPE -DEVAL_HELPER
 $(eval $(value DRIVER_INST))
 
 # rules for generating the test files
-$(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
+$(RESULT_DIR)/%.out : $(BUILD_DIR)/%.exe
 	@mkdir -p $(@D)
 	$< > $@
 
