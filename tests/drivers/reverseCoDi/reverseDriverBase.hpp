@@ -31,6 +31,7 @@
 #include <iostream>
 #include <vector>
 
+#include "../output.hpp"
 
 struct ReverseDriverBase {
 
@@ -54,6 +55,8 @@ struct ReverseDriverBase {
       int outputs = getOutputCount();
       NUMBER* x = new NUMBER[inputs];
       NUMBER* y = new NUMBER[outputs];
+
+      codi::Jacobian<std::vector<double>> jac(outputs, inputs);
 
       NUMBER::TapeType& tape = NUMBER::getGlobalTape();
       tape.resize(10000, 10000);
@@ -84,7 +87,6 @@ struct ReverseDriverBase {
         if(outputs % gradDim != 0) {
           runs += 1;
         }
-        std::vector<std::vector<double> > jac(outputs);
         for(int curOut = 0; curOut < runs; ++curOut) {
           size_t curSize = gradDim;
           if((curOut + 1) * gradDim  > (size_t)outputs) {
@@ -117,11 +119,11 @@ struct ReverseDriverBase {
 
           for(size_t curDim = 0; curDim < curSize; ++curDim) {
             for(int curIn = 0; curIn < inputs; ++curIn) {
-    #if SECOND_ORDER
-              jac[curOut * gradDim + curDim].push_back(getGradient(x[curIn]).getValue());
-    #else
-              jac[curOut * gradDim + curDim].push_back(GT::at(getGradient(x[curIn]), curDim));
-    #endif
+#if SECOND_ORDER
+              jac(curOut * gradDim + curDim, curIn) = getGradient(x[curIn]).getValue();
+#else
+              jac(curOut * gradDim + curDim, curIn) = GT::at(getGradient(x[curIn]), curDim);
+#endif
             }
           }
 
@@ -130,11 +132,7 @@ struct ReverseDriverBase {
           doLoopCleanup();
         }
 
-        for(int curIn = 0; curIn < inputs; ++curIn) {
-          for(int curOut = 0; curOut < outputs; ++curOut) {
-            std::cout << curIn << " " << curOut << " " << jac[curOut][curIn] << std::endl;
-          }
-        }
+        writeOutputJacobian(jac);
       }
     }
 };

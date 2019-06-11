@@ -30,6 +30,8 @@
 
 #include <iostream>
 
+#include "../output.hpp"
+
 int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
@@ -42,6 +44,8 @@ int main(int nargs, char** args) {
   int outputs = getOutputCount();
   NUMBER* x = new NUMBER[inputs];
   NUMBER* y = new NUMBER[outputs];
+
+  codi::Jacobian<std::vector<double>> jac(outputs, inputs);
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
@@ -82,7 +86,11 @@ int main(int nargs, char** args) {
 
       for(size_t curDim = 0; curDim < curSize; ++curDim) {
         for(int curOut = 0; curOut < outputs; ++curOut) {
-          std::cout << curIn * gradDim + curDim << " " << curOut << " " << GT::at(y[curOut].getGradient(), curDim) << std::endl;
+#if SECOND_ORDER
+          jac(curOut, curIn) = y[curOut].getGradient().getValue();
+#else
+          jac(curOut, curIn * gradDim + curDim) = GT::at(y[curOut].getGradient(), curDim);
+#endif
         }
       }
 
@@ -90,5 +98,7 @@ int main(int nargs, char** args) {
         x[curIn * gradDim + curDim].setGradient(Gradient());
       }
     }
+
+    writeOutputJacobian(jac);
   }
 }

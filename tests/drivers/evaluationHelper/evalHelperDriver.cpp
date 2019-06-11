@@ -30,6 +30,8 @@
 
 #include <iostream>
 
+#include "../output.hpp"
+
 void evalTest(std::vector<NUMBER>& x, std::vector<NUMBER>& y) {
   func(x.data(), y.data());
 }
@@ -66,10 +68,6 @@ int main(int nargs, char** args) {
     // evaluate a second time to force at least one tape reset.
     codi::EvaluationHelper::evalHandleJacobian(handle, x, jac);
 
-    for(int curIn = 0; curIn < inputs; ++curIn) {
-      for(int curOut = 0; curOut < outputs; ++curOut) {
-        std::cout << curIn << " " << curOut << " " << jac(curOut, curIn) << std::endl;
-      }
-    }
+    writeOutputJacobian(jac);
   }
 }

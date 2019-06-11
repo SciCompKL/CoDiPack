@@ -36,7 +36,7 @@
   typedef codi::RealForward NUMBER;
 
 #elif defined(FWD2nd)
-  #define SECOND_ORDER
+  #define SECOND_ORDER 1
   typedef codi::RealForwardGen<codi::RealForward> NUMBER;
 
 #elif defined(FWD_Vec)
