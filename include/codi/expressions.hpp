@@ -556,7 +556,12 @@ namespace codi {
   }
   template<typename Data, typename Real, typename A, typename B> CODI_INLINE void derv11_Pow(Data& data, const A& a, const B& b, const Real& result) {
     checkArgumentsPow(a.getValue());
-    a.calcGradient(data, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+    if (a.getValue() <= 0.0 && 1 <= TypeTraits<B>::MaxDerivativeOrder) {
+      // Special case for higher order derivatives. Derivative will be wrong since the b part is not evaluated.
+      a.calcGradient(data, TypeTraits<B>::getBaseValue(b) * pow(a.getValue(), b.getValue() - 1.0));
+    } else {
+      a.calcGradient(data, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+    }
     if (a.getValue() > 0.0) {
       b.calcGradient(data, log(a.getValue()) * result);
     }
