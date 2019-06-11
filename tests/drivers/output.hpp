@@ -28,12 +28,23 @@
 
 #pragma once
 
+#include <codi/tools/data/jacobian.hpp>
 #include <codi/tools/data/hessian.hpp>
 
 char const *const HEADER_FORMAT = "%6s_%03zd";
 char const *const VALUE_FORMAT  = "%10g";
 char const *const COL_SEPERATOR = " ";
 char const *const LINE_END      = "\n";
+
+template<typename Vec>
+void writeOutputJacobian(codi::Jacobian<Vec> const& jac) {
+
+  for(size_t curIn = 0; curIn < jac.n; curIn += 1) {
+    for(size_t curOut = 0; curOut < jac.m; curOut += 1) {
+      std::cout << curIn << " " << curOut << " " << jac(curOut, curIn) << std::endl;
+    }
+  }
+}
 
 template<typename Vec>
 void writeOutputHessian(codi::Hessian<Vec> const& hes) {
