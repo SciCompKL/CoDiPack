@@ -94,7 +94,7 @@ $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).o : $(TEST_DIR)/%.cpp
 
 $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).o $(BUILD_DIR)/$(DRIVER_MODE)/$(DRIVER_NAME).o
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $^ -o $@
+	$(CXX) $(CXX_FLAGS) $(DRIVER_LIB) $^ -o $@
 
 DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/$(DRIVER_MODE)/%.test,$(DRIVER_TESTS))
 $(DRIVER_TEST_FILES): $(RESULT_DIR)/$(DRIVER_MODE)/%.test: $(RESULT_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).out
@@ -127,6 +127,12 @@ $(RESULT_DIR)/%.test:
 	@./compare.sh -n $* -b $(RESULT_BASE_DIR)/$*.out $^
 
 all: $(TESTS)
+	@mkdir -p $(BUILD_DIR)
+
+all1st: $(TESTS_1ST_ORDER)
+	@mkdir -p $(BUILD_DIR)
+
+all2nd: $(TESTS_2ND_ORDER)
 	@mkdir -p $(BUILD_DIR)
 
 .PHONY: clean
