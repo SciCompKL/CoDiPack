@@ -91,10 +91,16 @@ then
   echo Test$testName:$res
 else
 
-  # just update the results file
-  echo "Test$testName: updating $1 --> $baseFileName"
-  mkdir -p $(dirname $baseFileName)
-  cp $1 $baseFileName
+  if [[ 0 == $# ]];
+  then
+      res+=" $failure No file for update."
+      fail=-1
+  else
+      # just update the results file
+      echo "Test$testName: updating $1 --> $baseFileName"
+      mkdir -p $(dirname $baseFileName)
+      cp $1 $baseFileName
+  fi;
 fi;
 
 exit $fail
