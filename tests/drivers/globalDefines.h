@@ -47,6 +47,10 @@
 # define PRIMAL 0
 #endif
 
+#ifndef REVERSE_TAPE
+# define REVERSE_TAPE 0
+#endif
+
 int getEvalPointsCount();
 double getEvalPoint(int point, int col);
 int getInputCount();

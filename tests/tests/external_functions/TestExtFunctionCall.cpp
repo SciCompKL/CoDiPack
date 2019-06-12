@@ -38,6 +38,7 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
   z = w*v;
 }
 
+#if REVERSE_TAPE
 static void extFunc(void* t, void* checkpoint, void* i){
   CODI_UNUSED(t);
 
@@ -91,3 +92,11 @@ void func(NUMBER* x, NUMBER* y) {
 
   y[0] = w*w;
 }
+#else
+void func(NUMBER* x, NUMBER* y) {
+  NUMBER w;
+  func_forward(w,x[0],x[1]);
+
+  y[0] = w*w;
+}
+#endif

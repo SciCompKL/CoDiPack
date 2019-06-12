@@ -12,14 +12,14 @@ TESTS_PRIMAL := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/$(DRIVER_MODE)/%.test
 
 # Driver for RealForwardVector
 DRIVER_NAME  := D0_double
-DRIVER_TESTS := $(BASIC_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/forwardCoDi/forwardDriverPrimal.cpp
 $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DDOUBLE
 $(eval $(value DRIVER_INST))
 
 # Driver for RealForward
 DRIVER_NAME  := D0_FWD
-DRIVER_TESTS := $(BASIC_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/forwardCoDi/forwardDriverPrimal.cpp
 $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD
 $(eval $(value DRIVER_INST))

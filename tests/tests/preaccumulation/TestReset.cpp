@@ -40,17 +40,23 @@ POINTS(1) =
 
 void func(NUMBER* x, NUMBER* y) {
 
+#if REVERSE_TAPE
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
+#endif
 
   NUMBER a = x[0] * x[1];
   NUMBER b = x[0] / sin(x[1]);
   NUMBER c = b * a;
 
+#if REVERSE_TAPE
   NUMBER::TapeType::Position pos = tape.getPosition();
+#endif
 
   b = a * x[0];
 
+#if REVERSE_TAPE
   tape.reset(pos);
+#endif
 
   y[0] = c * a;
 }
