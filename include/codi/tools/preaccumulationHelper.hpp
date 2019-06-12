@@ -336,7 +336,6 @@ namespace codi {
             GradientData lastGradientData = value.getGradientData();
             bool staggeringActive = false;
             int curIn = 0;
-            size_t jacobiOffset = curOut * inputData.size();
 
             // push statements as long as there are non zeros left
             // if there are more than MaxStatementIntValue non zeros, then we need to stagger the

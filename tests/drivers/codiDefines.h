@@ -44,53 +44,53 @@
 
 #elif defined(RWS_Chunk)
   typedef codi::RealReverse NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_ChunkVec)
   typedef codi::RealReverseVec<DefaultVectorDim> NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_Unch)
   typedef codi::RealReverseUnchecked NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_ChunkInd)
   typedef codi::RealReverseIndex NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_ChunkIndVec)
   typedef codi::RealReverseIndexVec<DefaultVectorDim> NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_UnchInd)
   typedef codi::RealReverseIndexUnchecked NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_Prim)
   typedef codi::RealReversePrimal NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_PrimVec)
   typedef codi::RealReversePrimalVec<DefaultVectorDim> NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_PrimIndex)
   typedef codi::RealReversePrimalIndex NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS_PrimUnch)
   typedef codi::RealReversePrimalUnchecked NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS2nd)
   #define SECOND_ORDER 1
   typedef codi::RealReverseGen<codi::RealForward> NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(RWS2nd_Prim)
   #define SECOND_ORDER 1
   typedef codi::RealReversePrimalGen<codi::RealForward> NUMBER;
-  #define REVERSE_TAPE
+  #define REVERSE_TAPE 1
 
 #elif defined(DOUBLE)
   using namespace std;
