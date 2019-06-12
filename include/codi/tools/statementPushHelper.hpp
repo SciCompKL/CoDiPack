@@ -31,6 +31,7 @@
 
 #include "../configure.h"
 #include "../exceptions.hpp"
+#include "../tapes/tapeTraits.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -86,7 +87,7 @@ namespace codi {
    *
    * @tparam CoDiType  This needs to be one of the CoDiPack types defined through an ActiveReal
    */
-  template<typename CoDiType>
+  template<typename CoDiType, typename = void>
   struct StatementPushHelper {
 
       typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
@@ -234,7 +235,7 @@ namespace codi {
    * @tparam CoDiType
    */
   template<typename CoDiType>
-  struct ForwardStatementPushHelper {
+  struct StatementPushHelper<CoDiType, enableIfForwardTape<typename CoDiType::TapeType> > {
 
       typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
       typedef typename CoDiType::GradientValue GradientValue; /**< The type for the values of gradients. */
@@ -327,6 +328,90 @@ namespace codi {
         }
 
         endPushStatement(lhs, primal);
+      }
+  };
+
+  /**
+   * @brief Helper for the manual pushing of a statement on the CoDiPack tape.
+   *
+   * For a general explanation see StatementPushHelper.
+   *
+   * This is a default implemenation for double values. It does not push anything to any tape.
+   */
+  template<>
+  struct StatementPushHelper<double, void> {
+
+      using T = double; /**< Definition for the template type. */
+      using Real = double; /**< The floating point calculation type in the CoDiPack types. */
+
+
+      /**
+       * @brief Does nothing
+       */
+      void startPushStatement() {}
+
+      /**
+       * @brief Does nothing
+       *
+       * @param[in]    arg  Unused.
+       * @param[in] jacobi  Unused.
+       */
+      void pushArgument(const T& arg, const Real& jacobi) {
+        CODI_UNUSED(arg);
+        CODI_UNUSED(jacobi);
+      }
+
+      /**
+       * @brief Sets the primal value on lhs.
+       *
+       * @param[in,out] lhs  The CoDiPack value on the left hand side of the statement.
+       * @param[in]  primal  The new primal value that is assigned to the left hand side.
+       */
+      void endPushStatement(T& lhs, const Real& primal) {
+        lhs = primal;
+      }
+
+      /**
+       * @brief Sets the primal value on the lhs. Other arguments are ignored.
+       *
+       * @param[in,out]  lhs  The CoDiPack value on the left hand side of the statement.
+       * @param[in]   primal  The new primal value that is assigned to the left hand side.
+       * @param[in] startArg  Unused.
+       * @param[in]   endArg  Unused.
+       * @param[in] startJac  Unused.
+       *
+       * @tparam    ArgIter  Iterator type for the arguments.
+       * @tparam JacobiIter  Iterator type for the Jacobies.
+       */
+      template<typename ArgIter, typename JacobiIter>
+      void pushStatement(T& lhs, const Real& primal, const ArgIter startArg, const ArgIter endArg, const JacobiIter startJac) {
+        CODI_UNUSED(startArg);
+        CODI_UNUSED(endArg);
+        CODI_UNUSED(startJac);
+
+        lhs = primal;
+      }
+
+      /**
+       * @brief Sets the primal value on the lhs. Other arguments are ignored.
+       *
+       * @param[in,out]   lhs  The CoDiPack value on the left hand side of the statement.
+       * @param[in]    primal  The new primal value that is assigned to the left hand side.
+       * @param[in] arguments  Unused.
+       * @param[in]  jacobies  Unused.
+       * @param[in]      size  Unused.
+       *
+       * @tparam    ArgVector  Array type for the arguments.
+       * @tparam JacobiVector  Array type for the Jacobies.
+       */
+      template<typename ArgVector, typename JacobiVector>
+      void pushStatement(T& lhs, const Real& primal, const ArgVector& arguments, const JacobiVector& jacobies, const size_t size) {
+
+        CODI_UNUSED(arguments);
+        CODI_UNUSED(jacobies);
+        CODI_UNUSED(size);
+
+        lhs = primal;
       }
   };
 }
