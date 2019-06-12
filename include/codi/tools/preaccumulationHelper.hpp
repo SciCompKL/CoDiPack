@@ -36,6 +36,7 @@
 #include "../configure.h"
 #include "../exceptions.hpp"
 #include "../gradientTraits.hpp"
+#include "../tapes/tapeTraits.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -82,7 +83,7 @@ namespace codi {
    *
    * @tparam CoDiType  This needs to be one of the CoDiPack types defined through an ActiveReal
    */
-  template<typename CoDiType>
+  template<typename CoDiType, typename = void>
   struct PreaccumulationHelper {
 
       typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
@@ -386,8 +387,7 @@ namespace codi {
    * This implementation does nothing in all methods.
    * @tparam CoDiType
    */
-  template<typename CoDiType>
-  struct ForwardPreaccumulationHelper {
+  struct PreaccumulationHelperNoOpBase {
 
       /**
        * @brief Does nothing
@@ -436,4 +436,23 @@ namespace codi {
         // do nothing
       }
   };
+
+  /**
+   * Helper implementation of the same interface as the PreaccumulationHelper for forward AD tapes.
+   *
+   * This implementation does nothing in all methods.
+   * @tparam CoDiType
+   */
+  template<typename CoDiType>
+  struct PreaccumulationHelper<CoDiType, enableIfForwardTape<typename CoDiType::TapeType>>
+      : public PreaccumulationHelperNoOpBase {};
+
+  /**
+   * Helper implementation of the same interface as the PreaccumulationHelper for double types.
+   *
+   * This implementation does nothing in all methods.
+   */
+  template<>
+  struct PreaccumulationHelper<double, void>
+      : public PreaccumulationHelperNoOpBase {};
 }

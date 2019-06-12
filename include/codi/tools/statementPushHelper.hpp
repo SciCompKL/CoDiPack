@@ -31,6 +31,7 @@
 
 #include "../configure.h"
 #include "../exceptions.hpp"
+#include "../typeFunctions.hpp"
 #include "../tapes/tapeTraits.hpp"
 
 /**
