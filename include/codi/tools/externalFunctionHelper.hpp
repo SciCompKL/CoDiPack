@@ -359,12 +359,10 @@ namespace codi {
        * @param[in,out] output  The output value which is added to the output set.
        */
       void addOutput(CoDiType& output) {
-        if(isTapeActive) {
-          if(isPassiveExtFunc) {
-            addOutputToData(output);
-          } else {
-            outputValues.push_back(&output);
-          }
+        if(isTapeActive && isPassiveExtFunc) {
+          addOutputToData(output);
+        } else {
+          outputValues.push_back(&output);
         }
       }
 
@@ -440,7 +438,9 @@ namespace codi {
           for(size_t i = 0; i < outputValues.size(); ++i) {
             outputValues[i]->setValue(y[i]);
 
-            addOutputToData(*outputValues[i]);
+            if(isTapeActive) {
+              addOutputToData(*outputValues[i]);
+            }
           }
 
           delete [] y;
