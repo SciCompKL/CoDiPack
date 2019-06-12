@@ -92,12 +92,21 @@
   typedef codi::RealReversePrimalGen<codi::RealForward> NUMBER;
   #define REVERSE_TAPE
 
+#elif defined(DOUBLE)
+  using namespace std;
+  typedef double NUMBER;
+
 #else
 # error "No CoDi type defined"
 
 #endif
 
+#if !defined(DOUBLE)
+  using Real = NUMBER::Real;
+  using Gradient = NUMBER::GradientValue;
+#else
+  using Real = double;
+  using Gradient = double;
+#endif
 
-typedef NUMBER::Real Real;
-typedef NUMBER::GradientValue Gradient;
 #include "globalDefines.h"

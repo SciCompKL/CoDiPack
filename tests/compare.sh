@@ -94,7 +94,7 @@ else
   # just update the results file
   echo "Test$testName: updating $1 --> $baseFileName"
   mkdir -p $(dirname $baseFileName)
-  echo "cp $1 $baseFileName"
+  cp $1 $baseFileName
 fi;
 
 exit $fail

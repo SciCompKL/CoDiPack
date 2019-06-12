@@ -42,7 +42,7 @@ int main(int nargs, char** args) {
   NUMBER* x = new NUMBER[inputs];
   NUMBER* y = new NUMBER[outputs];
 
-  codi::Hessian<std::vector<double>> hes(outputs, inputs);
+  std::vector<double> primals(outputs);
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";
@@ -58,25 +58,17 @@ int main(int nargs, char** args) {
     }
     std::cout << "}\n";
 
-    for(int curIn1st = 0; curIn1st < inputs; ++curIn1st) {
-      x[curIn1st].gradient().value() = 1.0;
-
-      for(int curIn2nd = 0; curIn2nd < inputs; ++curIn2nd) {
-        x[curIn2nd].value().gradient() = 1.0;
-
-        func(x, y);
-
-        for(int curOut = 0; curOut < outputs; ++curOut) {
-          hes(curOut, curIn1st, curIn2nd) =  y[curOut].getGradient().getGradient();
-        }
-
-        x[curIn2nd].value().setGradient(Real::Real());
-      }
-
-      x[curIn1st].setGradient(Gradient());
+    for(int i = 0; i < outputs; ++i) {
+      y[i] = 0.0;
     }
 
-    writeOutputHessian(hes);
+    func(x, y);
+
+    for(int curOut = 0; curOut < outputs; ++curOut) {
+      primals[curOut] = codi::TypeTraits<NUMBER>::getBaseValue(y[curOut]);
+    }
+
+    writeOutputPrimal(primals);
   }
 
   delete [] x;

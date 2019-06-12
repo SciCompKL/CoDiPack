@@ -101,4 +101,7 @@ int main(int nargs, char** args) {
 
     writeOutputJacobian(jac);
   }
+
+  delete [] x;
+  delete [] y;
 }

@@ -111,6 +111,9 @@ define DRIVER_INST
   endif
 endef
 
+include Makefile.primal
+TESTS += $(TESTS_PRIMAL)
+
 include Makefile.deriv1stOrder
 TESTS += $(TESTS_1ST_ORDER)
 
@@ -127,6 +130,9 @@ $(RESULT_DIR)/%.test:
 	@./compare.sh -n $* -b $(RESULT_BASE_DIR)/$*.out $^
 
 all: $(TESTS)
+	@mkdir -p $(BUILD_DIR)
+
+all0th: $(TESTS_PRIMAL)
 	@mkdir -p $(BUILD_DIR)
 
 all1st: $(TESTS_1ST_ORDER)

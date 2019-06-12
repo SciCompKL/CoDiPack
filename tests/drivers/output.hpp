@@ -37,6 +37,17 @@ char const *const COL_SEPERATOR = " ";
 char const *const LINE_END      = "\n";
 char const *const BLANK         = "          ";
 
+template<typename T>
+void writeOutputPrimal(std::vector<T> const& primal) {
+
+  for(size_t curOut = 0; curOut < primal.size(); curOut += 1) {
+    printf(HEADER_FORMAT, "out", curOut);
+    printf(COL_SEPERATOR);
+    printf(VALUE_FORMAT, primal[curOut]);
+    printf(LINE_END);
+  }
+}
+
 template<typename Vec>
 void writeOutputJacobian(codi::Jacobian<Vec> const& jac) {
 

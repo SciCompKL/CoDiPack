@@ -37,7 +37,11 @@ POINTS(1) = {
   {0.5}
 };
 
-typedef codi::ReferenceActiveReal<NUMBER> RefReal;
+#if !defined(DOUBLE)
+  using RefReal = codi::ReferenceActiveReal<NUMBER>;
+#else
+  using RefReal = double;
+#endif
 
 void func(NUMBER* x, NUMBER* y) {
 
