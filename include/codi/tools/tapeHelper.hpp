@@ -46,7 +46,9 @@ namespace codi {
       typedef typename CoDiType::GradientData GradientData; /**< The type for the identification of gradients. */
       typedef typename CoDiType::GradientValue GradientValue; /**< The type for the gradient computation */
 
-      using JacobianType = Jacobian<std::vector<Real>>; // Maybe passive real here
+      typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      using JacobianType = Jacobian<std::vector<PassiveReal>>;
 
       /** The type of the tape implementation. */
       //typedef ReverseTapeInterface<Real, GradientData, GradientValue, typename CoDiType::TapeType, typename CoDiType::TapeType::Position> Tape;
@@ -162,6 +164,13 @@ namespace codi {
       }
 
       CODI_INLINE void evalJacobian(JacobianType& jac) {
+        JacobianConvertWrapper<JacobianType> wrapper(jac);
+
+        evalJacobianGen(wrapper);
+      }
+
+      template<typename Jac>
+      CODI_INLINE void evalJacobianGen(Jac& jac) {
 
         using Algo = Algorithms<CoDiType>;
         typename Algo::EvaluationType evalType = Algo::getEvaluationChoice(inputValues.size(), outputValues.size());
@@ -174,7 +183,7 @@ namespace codi {
           CODI_EXCEPTION("Evaluation type not implemented.");
         }
 
-        Algorithms<CoDiType>::computeJacobian(
+        Algorithms<CoDiType>::template computeJacobian<Jac, false>(
               tape, tape.getZeroPosition(), tape.getPosition(),
               inputValues.data(), inputValues.size(),
               outputValues.data(), outputValues.size(),

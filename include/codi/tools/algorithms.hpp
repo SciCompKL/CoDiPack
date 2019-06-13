@@ -64,7 +64,7 @@ namespace codi {
         }
       }
 
-      template<typename Jac>
+      template<typename Jac, bool usePreAccEval = true>
       static CODI_INLINE void computeJacobian(
           Tape& tape, Position const& start, Position const& end,
           GradientData const * input, size_t const inputSize,
@@ -79,7 +79,11 @@ namespace codi {
           for(size_t j = 0; j < inputSize; j += gradDim) {
             seedGradient(tape, j, input, inputSize);
 
-            tape.evaluateForwardPreacc(start, end);
+            if(usePreAccEval) {
+              tape.evaluateForwardPreacc(start, end);
+            } else {
+              tape.evaluateForward(start, end);
+            }
 
             for(size_t i = 0; i < outputSize; i += 1) {
               for(size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
@@ -94,7 +98,11 @@ namespace codi {
           for(size_t i = 0; i < outputSize; i += gradDim) {
             seedGradient(tape, i, output, outputSize);
 
-            tape.evaluatePreacc(end, start);
+            if(usePreAccEval) {
+              tape.evaluatePreacc(end, start);
+            } else {
+              tape.evaluate(end, start);
+            }
 
             for(size_t j = 0; j < inputSize; j += 1) {
               for(size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {

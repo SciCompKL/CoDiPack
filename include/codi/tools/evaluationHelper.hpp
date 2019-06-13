@@ -261,7 +261,15 @@ namespace codi {
 
       template<typename VecX, typename Jac, typename VecY>
       void computeJacobian(const VecX& locX, Jac& jac, VecY& locY) {
+        recordTape(locX, locY);
 
+        th.evalJacobian(jac);
+      }
+
+    private:
+
+      template<typename VecX, typename VecY>
+      void recordTape(const VecX& locX, VecY& locY) {
         th.startRecording();
         setAllPrimals(locX, true);
 
@@ -269,8 +277,6 @@ namespace codi {
 
         getAllPrimals(locY, true);
         th.stopRecording();
-
-        th.evalJacobian(jac);
       }
 
       template<typename VecX, typename Hes, typename VecY, typename Jac>

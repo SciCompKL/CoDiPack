@@ -30,6 +30,7 @@
 
 #include "dummyValue.hpp"
 #include "vectorStorage.hpp"
+#include "../../typeTraits.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -37,7 +38,7 @@
 namespace codi {
 
   struct DummyJacobian {
-      CODI_INLINE DummyValue operator()(const size_t i, const size_t j) {
+      CODI_INLINE DummyValue operator()(const size_t i, const size_t j) const {
         CODI_UNUSED(i);
         CODI_UNUSED(j);
 
@@ -148,4 +149,41 @@ namespace codi {
       }
   };
 
+  template <typename Nested>
+  struct JacobianConvertWrapper {
+
+      using T = typename Nested::T;
+
+      struct ValueAccessor {
+          size_t i;
+          size_t j;
+
+          Nested& data;
+
+          ValueAccessor(size_t const i, size_t const j, Nested& data) : i(i), j(j), data(data) {}
+
+          template<typename SetT>
+          ValueAccessor& operator =(SetT const& v) {
+            data(i, j) = TypeTraits<SetT>::getBaseValue(v);
+
+            return *this;
+          }
+
+          operator T() const {
+            return data(i, j);
+          }
+      };
+
+      Nested& nested;
+
+      explicit JacobianConvertWrapper(Nested& nested) : nested(nested) {}
+
+      CODI_INLINE T operator()(const size_t i, const size_t j) const {
+        return nested.get(i,j);
+      }
+
+      CODI_INLINE ValueAccessor operator()(const size_t i, const size_t j) {
+        return ValueAccessor(i,j, nested);
+      }
+  };
 }
