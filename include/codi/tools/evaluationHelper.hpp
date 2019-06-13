@@ -246,7 +246,7 @@ namespace codi {
             th.registerOutput(this->y[i]);
           }
 
-          locY[i] = this->y[i];
+          locY[i] = this->y[i].getValue();
         }
       }
 

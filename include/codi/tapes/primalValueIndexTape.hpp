@@ -478,7 +478,7 @@ namespace codi {
           primalVector[lhsIndex] = HandleFactory::template callForwardHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalVector, adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-          adjointData->setLhsTangent(stmtPos); /* Resets the lhs tangent, too */
+          adjointData->setLhsTangent(lhsIndex); /* Resets the lhs tangent, too */
 #else
           adjointData[lhsIndex] = lhsAdj;
 #endif

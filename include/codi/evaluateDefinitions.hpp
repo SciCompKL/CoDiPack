@@ -115,7 +115,7 @@ namespace codi {
        * The function is called in the expressions for the reverse evaluation of a statement. The arrays are
        * defined in the local address space of the expression. They need to indexed starting with zero.
        */
-      typedef void (*AdjointExprFunc)(const Real& adj,
+      typedef void (*AdjointExprFunc)(const PRIMAL_SEED_TYPE& adj,
                                       const Index* indices,
                                       const PassiveReal* constants,
                                       const Real* primalVector,
