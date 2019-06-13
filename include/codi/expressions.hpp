@@ -543,7 +543,12 @@ namespace codi {
   template<typename Real, typename A, typename B> CODI_INLINE Real gradientA_Pow(const A& a, const B& b, const Real& result) {
     CODI_UNUSED(result);
     checkArgumentsPow(a);
-    return b * pow(a, b - 1.0);
+    if (a <= 0.0 && 1 <= TypeTraits<B>::MaxDerivativeOrder) {
+      // Special case for higher order derivatives. Derivative will be wrong since the b part is not evaluated.
+      return TypeTraits<B>::getBaseValue(b) * pow(a, b - 1.0);
+    } else {
+      return b * pow(a, b - 1.0);
+    }
   }
   template<typename Real, typename A, typename B> CODI_INLINE Real gradientB_Pow(const A& a, const B& b, const Real& result) {
     CODI_UNUSED(b);

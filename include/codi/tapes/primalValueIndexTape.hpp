@@ -341,6 +341,7 @@ namespace codi {
       return this->extFuncVector;
     }
 
+    public:
     /**
      * @brief Resets the primal values up to the specified position.
      *
@@ -349,10 +350,10 @@ namespace codi {
      *
      * @param[in] pos  The position for the tape reset.
      */
-    CODI_INLINE void resetPrimalValues(const Position& pos) {
+    CODI_INLINE void resetPrimalValues(const Position& pos, bool forceReset = false) {
 
       // Do not perform a global reset on the primal value vector if the tape is cleared
-      if(this->getZeroPosition() != pos) {
+      if(forceReset || this->getZeroPosition() != pos) {
 
         auto resetFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
           CODI_UNUSED(handle);
@@ -366,6 +367,8 @@ namespace codi {
         this->stmtVector.forEachReverse(stmtEnd, pos.inner.inner.inner.inner, resetFunc);
       }
     }
+
+    private:
 
     /**
      * @brief Resets the primal values and the vectors up to the specified position.

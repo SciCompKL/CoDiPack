@@ -49,6 +49,7 @@ namespace codi {
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
 
       using JacobianType = Jacobian<std::vector<PassiveReal>>;
+      using HessianType = Hessian<std::vector<PassiveReal>>;
 
       /** The type of the tape implementation. */
       //typedef ReverseTapeInterface<Real, GradientData, GradientValue, typename CoDiType::TapeType, typename CoDiType::TapeType::Position> Tape;
@@ -94,6 +95,18 @@ namespace codi {
         JacobianType* jacPointer = *jac;
 
         delete jacPointer;
+      }
+
+      JacobianType& createHessian() {
+        HessianType* hesPointer = new HessianType(getOutputSize(), getInputSize());
+
+        return *hesPointer;
+      }
+
+      void deleteHessian(HessianType& hes) {
+        HessianType* hesPointer = *hes;
+
+        delete hesPointer;
       }
 
       size_t getInputSize() {
@@ -190,6 +203,26 @@ namespace codi {
               jac);
       }
 
+      CODI_INLINE void evalHessian(HessianType& hes) {
+
+        using Algo = Algorithms<CoDiType>;
+        typename Algo::EvaluationType evalType = Algo::getEvaluationChoice(inputValues.size(), outputValues.size());
+
+        if(Algo::EvaluationType::Forward == evalType) {
+          changeStateToForwardEvaluation();
+        } else if(Algo::EvaluationType::Reverse == evalType) {
+          changeStateToReverseEvaluation();
+        } else {
+          CODI_EXCEPTION("Evaluation type not implemented.");
+        }
+
+        Algorithms<CoDiType>::computeHessian(
+              tape, tape.getZeroPosition(), tape.getPosition(),
+              inputValues.data(), inputValues.size(),
+              outputValues.data(), outputValues.size(),
+              hes);
+      }
+
       CODI_INLINE void evalForwardAt(Real const* x, GradientValue const* x_d, GradientValue* y_d, Real* y = nullptr) {
         evalPrimal(x, y);
 
@@ -206,6 +239,12 @@ namespace codi {
         evalPrimal(x, y);
 
         evalJacobian(jac);
+      }
+
+      CODI_INLINE void evalHessianAt(Real const* x, HessianType& hes, Real* y = nullptr) {
+        evalPrimal(x, y);
+
+        evalHessian(hes);
       }
 
     private:

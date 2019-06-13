@@ -266,6 +266,13 @@ namespace codi {
         th.evalJacobian(jac);
       }
 
+      template<typename VecX, typename Hes, typename VecY, typename Jac>
+      void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac) {
+        recordTape(locX, locY);
+
+        th.evalHessian(hes);
+      }
+
     private:
 
       template<typename VecX, typename VecY>
@@ -277,11 +284,6 @@ namespace codi {
 
         getAllPrimals(locY, true);
         th.stopRecording();
-      }
-
-      template<typename VecX, typename Hes, typename VecY, typename Jac>
-      void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac) {
-        // TODO
       }
   };
 

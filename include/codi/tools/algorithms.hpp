@@ -132,6 +132,69 @@ namespace codi {
         computeJacobian(CoDiType::getGlobalTape(), start, end, input, inputSize, output, outputSize, jac);
       }
 
+      template<typename Hes>
+      static CODI_INLINE void computeHessian(
+          Tape& tape, Position const& start, Position const& end,
+          GradientData const * input, size_t const inputSize,
+          GradientData const * output, size_t const outputSize,
+          Hes& hes)
+      {
+        using GT1st = GT;
+        constexpr size_t gradDim1st = GT1st::getVectorSize();
+        using GT2nd = GradientValueTraits<typename Real::GradientValue>;
+        constexpr size_t gradDim2nd = GT2nd::getVectorSize();
+
+//        EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
+//        if(EvaluationType::Forward == evalType) {
+
+//          // TODO
+//        } else if(EvaluationType::Reverse == evalType) {
+
+          // Assume tape that was just recorded
+          tape.resetPrimalValues(start, true);
+
+          for(size_t j = 0; j < inputSize; j += gradDim2nd) {
+            for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
+              GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data(1.0);
+            }
+
+            // propagate the new derivative information
+            tape.evaluatePrimal(start, end);
+
+            for(size_t i = 0; i < outputSize; i += gradDim1st) {
+              seedGradient(tape, i, output, outputSize);
+
+              // propaget the derivatives backward for second order derivatives
+              tape.evaluatePreacc(end, start);
+
+              for(size_t k = 0; k < inputSize; k += 1) {
+                for(size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < outputSize; vecPos1st += 1) {
+                  for(size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
+                    hes(i + vecPos1st, j + vecPos2nd, k) = GT2nd::at(GT1st::at(tape.gradient(input[k]), vecPos1st).gradient(), vecPos2nd);
+                  }
+                }
+
+                tape.gradient(input[k]) = GradientValue();
+              }
+
+              unseedGradient(tape, i, output, outputSize);
+
+              if(!ZeroAdjointReverse) {
+                tape.clearAdjoints(end, start);
+              }
+            }
+
+            for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
+              GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data();
+            }
+
+            tape.resetPrimalValues(start, true);
+          }
+//        } else {
+//          CODI_EXCEPTION("Evaluation mode not implemented for preaccumulation. Mode is: %d.", (int)evalType);
+//        }
+      }
+
     private:
       static CODI_INLINE void seedGradient(Tape& tape, size_t const pos, GradientData const* values, const size_t size) {
         constexpr size_t gradDim = GT::getVectorSize();

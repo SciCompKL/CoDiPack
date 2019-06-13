@@ -208,6 +208,16 @@ namespace codi {
     return r;
   }
 
+  template<typename Real, size_t dim, typename = typename std::enable_if<!std::is_same<Real, typename TypeTraits<Real>::PassiveReal>::value>::type>
+  CODI_INLINE Direction<Real, dim> operator * (const typename TypeTraits<Real>::PassiveReal& s, const Direction<Real, dim>& v) {
+    Direction<Real, dim> r;
+    for(size_t i = 0; i < dim; ++i) {
+      r[i] = s * v[i];
+    }
+
+    return r;
+  }
+
   /**
    * @brief Scalar multiplication of a direction.
    *
@@ -223,6 +233,11 @@ namespace codi {
    */
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const Real& s) {
+    return s * v;
+  }
+
+  template<typename Real, size_t dim, typename , typename = typename std::enable_if<!std::is_same<Real, typename TypeTraits<Real>::PassiveReal>::value>::type>
+  CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const typename TypeTraits<Real>::PassiveReal& s) {
     return s * v;
   }
 
