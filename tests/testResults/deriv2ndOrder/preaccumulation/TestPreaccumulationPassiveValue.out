@@ -1,1 +1,9 @@
-Test deriv2ndOrder/preaccumulation/TestPreaccumulationPassiveValue: updating --
+Point 0 : {1, 0.5}
+   out_000     in_000     in_001
+    in_000          0          0
+    in_001          0    13829.1
+
+   out_001     in_000     in_001
+    in_000          0          0
+    in_001          0   -2559.17
+

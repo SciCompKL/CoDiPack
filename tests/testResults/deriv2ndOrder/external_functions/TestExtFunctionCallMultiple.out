@@ -1,1 +1,5 @@
-Test deriv2ndOrder/external_functions/TestExtFunctionCallMultiple: updating --
+Point 0 : {2, 3}
+   out_000     in_000     in_001
+    in_000      13122      69984
+    in_001      69984     163296
+
