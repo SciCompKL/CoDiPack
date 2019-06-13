@@ -172,7 +172,7 @@ namespace codi {
 
             // Set derivatives from j to j + vecSize_j
             for(size_t vecPos = 0; vecPos < VectorSizeSecondOrder && j + vecPos < locX.size(); vecPos += 1) {
-              GradientTraits1st::at(this->x[j + vecPos].value().gradient(), vecPos) = 1.0;
+              GradientTraits2nd::at(this->x[j + vecPos].value().gradient(), vecPos) = 1.0;
             }
 
             this->eval();
@@ -195,14 +195,14 @@ namespace codi {
 
               if(k == 0) {
                 for(size_t vecPos = 0; vecPos < VectorSizeSecondOrder && j + vecPos < locX.size(); vecPos += 1) {
-                  jac(i, j + vecPos) = this->y[i].value().gradient()[vecPos];
+                  jac(i, j + vecPos) = GradientTraits2nd::at(this->y[i].value().gradient(), vecPos);
                 }
               }
             }
 
             // Reset the deriative seeding
             for(size_t vecPos = 0; vecPos < VectorSizeSecondOrder && j + vecPos < locX.size(); vecPos += 1) {
-              GradientTraits1st::at(this->x[j + vecPos].value().gradient(), vecPos) = 0.0;
+              GradientTraits2nd::at(this->x[j + vecPos].value().gradient(), vecPos) = 0.0;
             }
           }
 
@@ -371,6 +371,16 @@ namespace codi {
       template<size_t m, size_t n, typename T = double>
       static CODI_INLINE Jacobian<typename StdArrayAdapter<m*n>::template Type<T>> createJacobianFixed() {
         return Jacobian<typename StdArrayAdapter<m*n>::template Type<T>>(m, n);
+      }
+
+      template<typename T = double>
+      static CODI_INLINE Hessian<StdVectorAdapter<T>> createHessian(size_t m, size_t n) {
+        return Hessian<StdVectorAdapter<T>>(m, n);
+      }
+
+      template<size_t m, size_t n, typename T = double>
+      static CODI_INLINE Hessian<typename StdArrayAdapter<m*n*n>::template Type<T>> createHessianFixed() {
+        return Hessian<typename StdArrayAdapter<m*n*n>::template Type<T>>(m, n);
       }
 
       template<typename Func, typename VecX, typename VecY>

@@ -15,7 +15,21 @@ TESTS_2ND_ORDER = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/$(DRIVER_MODE)/%.te
 
 # Driver for RealForward
 DRIVER_NAME  := D2_FWD
-DRIVER_TESTS := $(BASIC_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/forwardCoDi/forwardDriver2ndOrder.cpp
 $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD2nd
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with forward type
+DRIVER_NAME  := D2_EH_fwd
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForwardGen\<codi::RealForward\>
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with forward vector type
+DRIVER_NAME  := D2_EH_fwdVec
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealForwardGen<codi::RealForwardVec<4>, codi::Direction<codi::RealForwardVec<4>, 4>>"
 $(eval $(value DRIVER_INST))
