@@ -163,3 +163,45 @@ DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
 $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReverseVec\<4\> -DREVERSE_TAPE -DEVAL_HELPER
 $(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse index type
+DRIVER_NAME  := D1_EH_rwsInd
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReverseIndex -DREVERSE_TAPE -DEVAL_HELPER
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse vector type
+DRIVER_NAME  := D1_EH_rwsIndVec
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReverseIndexVec\<4\> -DREVERSE_TAPE -DEVAL_HELPER
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse type
+DRIVER_NAME  := D1_EH_rwsPrimal
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReversePrimal -DREVERSE_TAPE -DEVAL_HELPER
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse vector type
+DRIVER_NAME  := D1_EH_rwsPrimalVec
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReversePrimalVec\<4\> -DREVERSE_TAPE -DEVAL_HELPER -DCODI_EnableVariableAdjointInterfaceInPrimalTapes
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse index type
+DRIVER_NAME  := D1_EH_rwsPrimalInd
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReversePrimalIndex -DREVERSE_TAPE -DEVAL_HELPER
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse vector type
+DRIVER_NAME  := D1_EH_rwsPrimalIndVec
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealReversePrimalIndexVec\<4\> -DREVERSE_TAPE -DEVAL_HELPER -DCODI_EnableVariableAdjointInterfaceInPrimalTapes
+$(eval $(value DRIVER_INST))

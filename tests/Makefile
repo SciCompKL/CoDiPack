@@ -79,6 +79,7 @@ all:
 ### define general sets for tests
 # Tests for all tapes
 BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp) $(wildcard $(TEST_DIR)/jacobiOptimizations/Test**.cpp) $(wildcard $(TEST_DIR)/helpers/Test**.cpp)
+BASIC_TESTS_EH = $(filter-out $(TEST_DIR)/helpers/TestStatementPushHelper.cpp, $(BASIC_TESTS))
 # Tests that run only for reverse mode tapes
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp) $(wildcard $(TEST_DIR)/io/Test**.cpp) $(wildcard $(TEST_DIR)/helpers/reverse/Test**.cpp)
 # Tests that run for non vector mode tapes

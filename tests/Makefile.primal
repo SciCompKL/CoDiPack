@@ -26,7 +26,7 @@ $(eval $(value DRIVER_INST))
 
 # Driver for 2nd order type
 DRIVER_NAME  := D0_FWD2nd
-DRIVER_TESTS := $(BASIC_TESTS)
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
 DRIVER_SRC = $(DRIVER_DIR)/forwardCoDi/forwardDriverPrimal.cpp
 $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD2nd
 $(eval $(value DRIVER_INST))

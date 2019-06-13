@@ -51,6 +51,14 @@
 # define REVERSE_TAPE 0
 #endif
 
+#if !defined(DOUBLE)
+  using Real = NUMBER::Real;
+  using Gradient = NUMBER::GradientValue;
+#else
+  using Real = double;
+  using Gradient = double;
+#endif
+
 int getEvalPointsCount();
 double getEvalPoint(int point, int col);
 int getInputCount();

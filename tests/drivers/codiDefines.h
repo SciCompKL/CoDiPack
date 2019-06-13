@@ -101,12 +101,4 @@
 
 #endif
 
-#if !defined(DOUBLE)
-  using Real = NUMBER::Real;
-  using Gradient = NUMBER::GradientValue;
-#else
-  using Real = double;
-  using Gradient = double;
-#endif
-
 #include "globalDefines.h"
