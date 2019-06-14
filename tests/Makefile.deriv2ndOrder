@@ -35,6 +35,27 @@ $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/in
 $(eval $(value DRIVER_INST))
 
 # Driver for evaluation helper test with reverse vector type
+DRIVER_NAME  := D2_EH_rwsPrimal
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReversePrimalGen<codi::RealForward>" -DREVERSE_TAPE -DEVAL_HELPER
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse vector type
+DRIVER_NAME  := D2_EH_rwsPrimalVec
+DRIVER_TESTS := $(BASIC_TESTS_EH)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReversePrimalGen<codi::RealForwardVec<4>, codi::Direction<codi::RealForwardVec<4>, 4>>" -DREVERSE_TAPE -DEVAL_HELPER
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse vector type
+DRIVER_NAME  := D2_EH_rwsPrimalInd
+DRIVER_TESTS := $(BASIC_TESTS_EH)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReversePrimalIndexGen<codi::RealForward>" -DREVERSE_TAPE -DEVAL_HELPER
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse vector type
 DRIVER_NAME  := D2_EH_rwsPrimalIndVec
 DRIVER_TESTS := $(BASIC_TESTS_EH)
 DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp

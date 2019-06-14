@@ -68,6 +68,28 @@ static void extFunc(void* t, void* checkpoint, void* i){
   }
 }
 
+static void extFuncPrimal(void* t, void* checkpoint, void* i) {
+  CODI_UNUSED(t);
+
+  codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>* ra = (codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>*)i;
+
+  codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
+
+  typename NUMBER::GradientData x1_i, x2_i, w_i;
+  Real& x1_v = check->getDataRef<Real>();
+  check->getData(x1_i);
+  Real& x2_v = check->getDataRef<Real>();
+  check->getData(x2_i);
+  check->getData(w_i);
+
+  x1_v = ra->getPrimal(x1_i); // Data is overwritten here
+  x2_v = ra->getPrimal(x2_i); // Data is overwritten here
+
+  typename NUMBER::Real z = x1_v * x2_v;
+  ra->setPrimal( w_i, z);
+}
+
+
 static void delFunc(void* tape, void* checkpoint){
   (void) tape;
 
@@ -93,7 +115,7 @@ void func(NUMBER* x, NUMBER* y) {
     checkpoint->addData(w[i-1].getValue());
     checkpoint->addData(w[i-1].getGradientData());
     checkpoint->addData(w[i].getGradientData());
-    tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
+    tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc, nullptr, extFuncPrimal);
   }
 
 

@@ -258,6 +258,12 @@ namespace codi {
       return *data;
     }
 
+    template<typename Type>
+    Type& getDataRef() {
+      Type* data = nextStore<Type>();
+      return *data;
+    }
+
     /**
      * @brief Get data from the data store.
      *
