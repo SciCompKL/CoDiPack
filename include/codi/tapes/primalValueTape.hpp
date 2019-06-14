@@ -420,7 +420,7 @@ namespace codi {
 
         if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
           // primal return value is currently not updated here (would be the same)
-          HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalData, adjointData);
+          primalData[adjPos] = HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalData, adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
           adjointData->setLhsTangent(adjPos); /* Resets the lhs tangent, too */

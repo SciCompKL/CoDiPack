@@ -139,62 +139,114 @@ namespace codi {
           GradientData const * output, size_t const outputSize,
           Hes& hes)
       {
+        EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
+        if(EvaluationType::Forward == evalType) {
+          computeHessianPrimalValueTapeForward(tape, start, end, input, inputSize, output, outputSize, hes);
+        } else if(EvaluationType::Reverse == evalType) {
+          computeHessianPrimalValueTapeReverse(tape, start, end, input, inputSize, output, outputSize, hes);
+        } else {
+          CODI_EXCEPTION("Evaluation mode not implemented for preaccumulation. Mode is: %d.", (int)evalType);
+        }
+      }
+
+      template<typename Hes>
+      static CODI_INLINE void computeHessianPrimalValueTapeForward(
+          Tape& tape, Position const& start, Position const& end,
+          GradientData const * input, size_t const inputSize,
+          GradientData const * output, size_t const outputSize,
+          Hes& hes)
+      {
         using GT1st = GT;
         constexpr size_t gradDim1st = GT1st::getVectorSize();
         using GT2nd = GradientValueTraits<typename Real::GradientValue>;
         constexpr size_t gradDim2nd = GT2nd::getVectorSize();
 
-//        EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
-//        if(EvaluationType::Forward == evalType) {
+        // Assume tape that was just recorded
+        tape.revertPrimals(start);
 
-//          // TODO
-//        } else if(EvaluationType::Reverse == evalType) {
+        for(size_t j = 0; j < inputSize; j += gradDim2nd) {
+          for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
+            GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data(1.0);
+          }
 
-          // Assume tape that was just recorded
-          tape.revertPrimals(start);
+          // The k = j init is no prolbem, it will evaluated slightly more elements around the diagonal
+          for(size_t k = j; k < inputSize; k += gradDim1st) {
+            seedGradient(tape, k, input, inputSize);
 
-          for(size_t j = 0; j < inputSize; j += gradDim2nd) {
-            for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
-              GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data(1.0);
-            }
+            tape.evaluateForward(start, end);
 
-            // propagate the new derivative information
-            tape.evaluatePrimal(start, end);
-
-            for(size_t i = 0; i < outputSize; i += gradDim1st) {
-              seedGradient(tape, i, output, outputSize);
-
-              // propaget the derivatives backward for second order derivatives
-              tape.evaluatePreacc(end, start);
-
-              for(size_t k = 0; k < inputSize; k += 1) {
-                for(size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < outputSize; vecPos1st += 1) {
-                  for(size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
-                    hes(i + vecPos1st, j + vecPos2nd, k) = GT2nd::at(GT1st::at(tape.gradient(input[k]), vecPos1st).gradient(), vecPos2nd);
-                  }
+            for(size_t i = 0; i < outputSize; i += 1) {
+              for(size_t vecPos1st = 0; vecPos1st < gradDim1st && k + vecPos1st < inputSize; vecPos1st += 1) {
+                for(size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
+                  hes(i, j + vecPos2nd, k + vecPos1st) = GT2nd::at(GT1st::at(tape.getGradient(output[i]), vecPos1st).gradient(), vecPos2nd);
+                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st); // symmetry
                 }
-
-                tape.gradient(input[k]) = GradientValue();
-              }
-
-              unseedGradient(tape, i, output, outputSize);
-
-              if(!ZeroAdjointReverse) {
-                tape.clearAdjoints(end, start);
               }
             }
 
-            for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
-              GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data();
+            unseedGradient(tape, k, input, inputSize);
+          }
+
+          for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
+            GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data();
+          }
+        }
+      }
+
+      template<typename Hes>
+      static CODI_INLINE void computeHessianPrimalValueTapeReverse(
+          Tape& tape, Position const& start, Position const& end,
+          GradientData const * input, size_t const inputSize,
+          GradientData const * output, size_t const outputSize,
+          Hes& hes)
+      {
+        using GT1st = GT;
+        constexpr size_t gradDim1st = GT1st::getVectorSize();
+        using GT2nd = GradientValueTraits<typename Real::GradientValue>;
+        constexpr size_t gradDim2nd = GT2nd::getVectorSize();
+
+        // Assume tape that was just recorded
+        tape.revertPrimals(start);
+
+        for(size_t j = 0; j < inputSize; j += gradDim2nd) {
+          for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
+            GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data(1.0);
+          }
+
+          // propagate the new derivative information
+          tape.evaluatePrimal(start, end);
+
+          for(size_t i = 0; i < outputSize; i += gradDim1st) {
+            seedGradient(tape, i, output, outputSize);
+
+            // propaget the derivatives backward for second order derivatives
+            tape.evaluatePreacc(end, start);
+
+            for(size_t k = 0; k < inputSize; k += 1) {
+              for(size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < outputSize; vecPos1st += 1) {
+                for(size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
+                  hes(i + vecPos1st, j + vecPos2nd, k) = GT2nd::at(GT1st::at(tape.gradient(input[k]), vecPos1st).gradient(), vecPos2nd);
+                }
+              }
+
+              tape.gradient(input[k]) = GradientValue();
             }
 
-            if(j + gradDim2nd < inputSize) {
-              tape.revertPrimals(start);
+            unseedGradient(tape, i, output, outputSize);
+
+            if(!ZeroAdjointReverse) {
+              tape.clearAdjoints(end, start);
             }
           }
-//        } else {
-//          CODI_EXCEPTION("Evaluation mode not implemented for preaccumulation. Mode is: %d.", (int)evalType);
-//        }
+
+          for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
+            GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data();
+          }
+
+          if(j + gradDim2nd < inputSize) {
+            tape.revertPrimals(start);
+          }
+        }
       }
 
     private:
