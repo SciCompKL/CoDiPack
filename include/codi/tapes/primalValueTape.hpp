@@ -43,6 +43,7 @@
 #include "modules/tapeBaseModule.hpp"
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
+#include "reversePrimalValueTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 #include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
@@ -132,7 +133,7 @@ namespace codi {
       public PrimalValueModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
       public ExternalFunctionModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
       public IOModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
-      public virtual ReverseTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, PrimalValueTape<TapeTypes_t>, typename TapeTypes_t::Position >
+      public virtual ReversePrimalValueTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, PrimalValueTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
 
@@ -623,6 +624,12 @@ namespace codi {
 
         this->pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
       }
+    }
+
+    void revertPrimals(Position const& pos) {
+      CODI_UNUSED(pos);
+
+      // primal values do not need to be reset
     }
 
     /**

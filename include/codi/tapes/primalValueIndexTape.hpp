@@ -43,6 +43,7 @@
 #include "modules/tapeBaseModule.hpp"
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
+#include "reversePrimalValueTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 #include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
@@ -132,7 +133,7 @@ namespace codi {
       public PrimalValueModule<TapeTypes_t, PrimalValueIndexTape<TapeTypes_t>>,
       public ExternalFunctionModule<TapeTypes_t, PrimalValueIndexTape<TapeTypes_t>>,
       public IOModule<TapeTypes_t, PrimalValueIndexTape<TapeTypes_t>>,
-      public virtual ReverseTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, PrimalValueIndexTape<TapeTypes_t>, typename TapeTypes_t::Position >
+      public virtual ReversePrimalValueTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, PrimalValueIndexTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
 
@@ -341,7 +342,6 @@ namespace codi {
       return this->extFuncVector;
     }
 
-    public:
     /**
      * @brief Resets the primal values up to the specified position.
      *
@@ -350,7 +350,7 @@ namespace codi {
      *
      * @param[in] pos  The position for the tape reset.
      */
-    CODI_INLINE void resetPrimalValues(const Position& pos, bool forceReset = false) {
+    CODI_INLINE void resetPrimalValues(const Position& pos, bool forceReset) {
 
       // Do not perform a global reset on the primal value vector if the tape is cleared
       if(forceReset || this->getZeroPosition() != pos) {
@@ -368,15 +368,13 @@ namespace codi {
       }
     }
 
-    private:
-
     /**
      * @brief Resets the primal values and the vectors up to the specified position.
      *
      * @param[in] pos  The position for the tape reset.
      */
     CODI_INLINE void resetInternal(const Position& pos) {
-      resetPrimalValues(pos);
+      resetPrimalValues(pos, false);
 
       this->resetExtFunc(pos);
     }
@@ -712,7 +710,7 @@ namespace codi {
 
       this->resizeAdjointsToIndexSize();
 
-      this->resetPrimalValues(start);
+      this->resetPrimalValues(start, true);
 
       evaluateForwardInternal(start, end, this->adjoints, false);
     }
@@ -749,6 +747,10 @@ namespace codi {
       }
 
       return oldValue;
+    }
+
+    void revertPrimals(Position const& pos) {
+      resetPrimalValues(pos, true);
     }
 
     /**

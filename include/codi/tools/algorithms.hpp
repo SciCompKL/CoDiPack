@@ -133,7 +133,7 @@ namespace codi {
       }
 
       template<typename Hes>
-      static CODI_INLINE void computeHessian(
+      static CODI_INLINE void computeHessianPrimalValueTape(
           Tape& tape, Position const& start, Position const& end,
           GradientData const * input, size_t const inputSize,
           GradientData const * output, size_t const outputSize,
@@ -151,7 +151,7 @@ namespace codi {
 //        } else if(EvaluationType::Reverse == evalType) {
 
           // Assume tape that was just recorded
-          tape.resetPrimalValues(start, true);
+          tape.revertPrimals(start);
 
           for(size_t j = 0; j < inputSize; j += gradDim2nd) {
             for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < inputSize; curDim += 1) {
@@ -188,7 +188,9 @@ namespace codi {
               GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data();
             }
 
-            tape.resetPrimalValues(start, true);
+            if(j + gradDim2nd < inputSize) {
+              tape.revertPrimals(start);
+            }
           }
 //        } else {
 //          CODI_EXCEPTION("Evaluation mode not implemented for preaccumulation. Mode is: %d.", (int)evalType);

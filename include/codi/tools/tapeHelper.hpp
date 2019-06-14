@@ -216,7 +216,7 @@ namespace codi {
           CODI_EXCEPTION("Evaluation type not implemented.");
         }
 
-        Algorithms<CoDiType>::computeHessian(
+        Algorithms<CoDiType>::computeHessianPrimalValueTape(
               tape, tape.getZeroPosition(), tape.getPosition(),
               inputValues.data(), inputValues.size(),
               outputValues.data(), outputValues.size(),
