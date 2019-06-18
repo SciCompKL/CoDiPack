@@ -249,6 +249,110 @@ namespace codi {
         }
       }
 
+      template<typename Func, typename VecIn, typename VecOut, typename Hes>
+      static CODI_INLINE void computeHessian(Func func, VecIn& input, VecOut& output, Hes& hes) {
+        EvaluationType evalType = getEvaluationChoice(input.size(), output.size());
+        if(EvaluationType::Forward == evalType) {
+          computeHessianForward(func, input, output, hes);
+        } else if(EvaluationType::Reverse == evalType) {
+          computeHessianReverse(func, input, output, hes);
+        } else {
+          CODI_EXCEPTION("Evaluation mode not implemented for preaccumulation. Mode is: %d.", (int)evalType);
+        }
+      }
+
+      template<typename Func, typename VecIn, typename VecOut, typename Hes>
+      static CODI_INLINE void computeHessianForward(Func func, VecIn& input, VecOut& output, Hes& hes) {
+        using GT1st = GT;
+        constexpr size_t gradDim1st = GT1st::getVectorSize();
+        using GT2nd = GradientValueTraits<typename Real::GradientValue>;
+        constexpr size_t gradDim2nd = GT2nd::getVectorSize();
+
+        Tape& tape = CoDiType::getGlobalTape();
+
+        for(size_t j = 0; j < input.size(); j += gradDim2nd) {
+          for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < input.size(); curDim += 1) {
+            GT2nd::at(input[j + curDim].value().gradient(), curDim)= typename GT2nd::Data(1.0);
+          }
+
+          // propagate the new derivative information
+          recordTape(func, input, output);
+
+          // The k = j init is no prolbem, it will evaluated slightly more elements around the diagonal
+          for(size_t k = j; k < input.size(); k += gradDim1st) {
+            setGradientOnValue1stOrder(tape, k, input.data(), input.size(), typename GT::Data(1.0));
+
+            // propaget the derivatives backward for second order derivatives
+            tape.evaluateForwardPreacc(tape.getZeroPosition(), tape.getPosition());
+
+            for(size_t i = 0; i < output.size(); i += 1) {
+              for(size_t vecPos1st = 0; vecPos1st < gradDim1st && k + vecPos1st < input.size(); vecPos1st += 1) {
+                for(size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < input.size(); vecPos2nd += 1) {
+                  hes(i, j + vecPos2nd, k + vecPos1st) = GT2nd::at(GT1st::at(tape.getGradient(output[i].getGradientData()), vecPos1st).gradient(), vecPos2nd);
+                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st); // symmetry
+                }
+              }
+            }
+
+            setGradientOnValue1stOrder(tape, k, input.data(), input.size(), typename GT::Data());
+          }
+
+          for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < input.size(); curDim += 1) {
+            GT2nd::at(input[j + curDim].value().gradient(), curDim)= typename GT2nd::Data();
+          }
+
+          tape.reset();
+        }
+      }
+
+      template<typename Func, typename VecIn, typename VecOut, typename Hes>
+      static CODI_INLINE void computeHessianReverse(Func func, VecIn& input, VecOut& output, Hes& hes) {
+        using GT1st = GT;
+        constexpr size_t gradDim1st = GT1st::getVectorSize();
+        using GT2nd = GradientValueTraits<typename Real::GradientValue>;
+        constexpr size_t gradDim2nd = GT2nd::getVectorSize();
+
+        Tape& tape = CoDiType::getGlobalTape();
+
+        for(size_t j = 0; j < input.size(); j += gradDim2nd) {
+          for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < input.size(); curDim += 1) {
+            GT2nd::at(input[j + curDim].value().gradient(), curDim)= typename GT2nd::Data(1.0);
+          }
+
+          // propagate the new derivative information
+          recordTape(func, input, output);
+
+          for(size_t i = 0; i < output.size(); i += gradDim1st) {
+            setGradientOnValue1stOrder(tape, i, output.data(), output.size(), typename GT::Data(1.0));
+
+            // propaget the derivatives backward for second order derivatives
+            tape.evaluatePreacc(tape.getPosition(), tape.getZeroPosition());
+
+            for(size_t k = 0; k < input.size(); k += 1) {
+              for(size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < output.size(); vecPos1st += 1) {
+                for(size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < input.size(); vecPos2nd += 1) {
+                  hes(i + vecPos1st, j + vecPos2nd, k) = GT2nd::at(GT1st::at(tape.gradient(input[k].getGradientData()), vecPos1st).gradient(), vecPos2nd);
+                }
+              }
+
+              tape.gradient(input[k].getGradientData()) = GradientValue();
+            }
+
+            setGradientOnValue1stOrder(tape, i, output.data(), output.size(), typename GT::Data());
+
+            if(!ZeroAdjointReverse) {
+              tape.clearAdjoints(tape.getPosition(), tape.getZeroPosition());
+            }
+          }
+
+          for(size_t curDim = 0; curDim < gradDim2nd && j + curDim < input.size(); curDim += 1) {
+            GT2nd::at(input[j + curDim].value().gradient(), curDim)= typename GT2nd::Data();
+          }
+
+          tape.reset();
+        }
+      }
+
     private:
       static CODI_INLINE void seedGradient(Tape& tape, size_t const pos, GradientData const* values, const size_t size) {
         constexpr size_t gradDim = GT::getVectorSize();
@@ -268,6 +372,35 @@ namespace codi {
             GT::at(tape.gradient(values[pos + curDim]), curDim) = typename GT::Data();
           }
         }
+      }
+
+      template<typename T>
+      static CODI_INLINE void setGradientOnValue1stOrder(Tape& tape, size_t const pos, CoDiType* values, const size_t size, T value) {
+        constexpr size_t gradDim = GT::getVectorSize();
+
+        for(size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
+          ENABLE_CHECK(ZeroChecks, tape.isActive(values[pos + curDim].getGradientData())) {
+            GT::at(tape.gradient(values[pos + curDim].getGradientData()), curDim) = value;
+          }
+        }
+      }
+
+
+      template<typename Func, typename VecIn, typename VecOut>
+      static CODI_INLINE void recordTape(Func func, VecIn& input, VecOut& output) {
+
+        Tape& tape = CoDiType::getGlobalTape();
+        tape.setActive();
+        for(size_t curIn = 0; curIn < input.size(); curIn += 1) {
+          tape.registerInput(input[curIn]);
+        }
+
+        func(input, output);
+
+        for(size_t curOut = 0; curOut < output.size(); curOut += 1) {
+          tape.registerOutput(output[curOut]);
+        }
+        tape.setPassive();
       }
   };
 
