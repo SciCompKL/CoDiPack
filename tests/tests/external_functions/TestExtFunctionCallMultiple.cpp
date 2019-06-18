@@ -103,8 +103,10 @@ static void extFuncForward(void* t, void* checkpoint, void* i) {
   check->getData(x2_i);
   check->getData(w_i);
 
-  x1_v = ra->getPrimal(x1_i); // Data is overwritten here
-  x2_v = ra->getPrimal(x2_i); // Data is overwritten here
+  if(ra->hasPrimals()) {
+    x1_v = ra->getPrimal(x1_i); // Data is overwritten here
+    x2_v = ra->getPrimal(x2_i); // Data is overwritten here
+  }
 
   size_t dim = ra->getVectorSize();
 
@@ -127,7 +129,9 @@ static void delFunc(void* tape, void* checkpoint){
 
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   delete check;
+#if !SECOND_ORDER
   std::cout << "Delete" << std::endl;
+#endif
 }
 
 void func(NUMBER* x, NUMBER* y) {
