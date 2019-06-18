@@ -314,6 +314,6 @@ namespace codi {
   class TapeHelper<CoDiType, enableIfJacobianTape<typename CoDiType::TapeType>> : public TapeHelperJacobi<CoDiType> {};
 
   template<typename CoDiType>
-  class TapeHelper<CoDiType, enableIfPrimalValueTape<typename CoDiType::TapeType>> : public TapeHelperJacobi<CoDiType> {};
+  class TapeHelper<CoDiType, enableIfPrimalValueTape<typename CoDiType::TapeType>> : public TapeHelperPrimal<CoDiType> {};
 
 }

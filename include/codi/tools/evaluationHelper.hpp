@@ -217,11 +217,13 @@ namespace codi {
   template <typename Func, typename CoDiType,
             template<typename> class InputVectorType,
             template<typename> class OutputVectorType>
-  struct ReverseHandle : public EvaluationHandlerBase<Func, CoDiType, InputVectorType, OutputVectorType> {
+  struct ReverseHandleBase : public EvaluationHandlerBase<Func, CoDiType, InputVectorType, OutputVectorType> {
 
+    protected:
       TapeHelper<CoDiType> th;
 
-      ReverseHandle(Func func, size_t m, size_t n) :
+    public:
+      ReverseHandleBase(Func func, size_t m, size_t n) :
         EvaluationHandlerBase<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n),
         th()
       {}
@@ -267,13 +269,9 @@ namespace codi {
       }
 
       template<typename VecX, typename Hes, typename VecY, typename Jac>
-      void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac) {
-        recordTape(locX, locY);
+      void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac);
 
-        th.evalHessian(hes);
-      }
-
-    private:
+    protected:
 
       template<typename VecX, typename VecY>
       void recordTape(const VecX& locX, VecY& locY) {
@@ -284,6 +282,44 @@ namespace codi {
 
         getAllPrimals(locY, true);
         th.stopRecording();
+      }
+  };
+
+  template <typename Func, typename CoDiType,
+            template<typename> class InputVectorType,
+            template<typename> class OutputVectorType>
+  struct ReverseHandlePrimalValueTapes : public ReverseHandleBase<Func, CoDiType, InputVectorType, OutputVectorType> {
+
+
+      ReverseHandlePrimalValueTapes(Func func, size_t m, size_t n) :
+        ReverseHandleBase<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n)
+      {}
+
+      template<typename VecX, typename Hes, typename VecY, typename Jac>
+      void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac) {
+        this->recordTape(locX, locY);
+
+        this->th.evalHessian(hes);
+      }
+  };
+
+  template <typename Func, typename CoDiType,
+            template<typename> class InputVectorType,
+            template<typename> class OutputVectorType>
+  struct ReverseHandleJacobiTapes : public ReverseHandleBase<Func, CoDiType, InputVectorType, OutputVectorType> {
+
+
+      ReverseHandleJacobiTapes(Func func, size_t m, size_t n) :
+        ReverseHandleBase<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n)
+      {}
+
+      template<typename VecX, typename Hes, typename VecY, typename Jac>
+      void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac) {
+        this->setAllPrimals(locX, false);
+
+        Algorithms<CoDiType>::computeHessian(this->func, this->x.vec, this->y.vec, hes);
+
+        this->getAllPrimals(locY, false);
       }
   };
 
@@ -305,10 +341,19 @@ namespace codi {
   template <typename Func, typename CoDiType,
             template<typename> class InputVectorType,
             template<typename> class OutputVectorType>
-  struct HandleSwitch<Func, CoDiType, InputVectorType, OutputVectorType, enableIfReverseTape<typename CoDiType::TapeType>> :
-      public ReverseHandle<Func, CoDiType, InputVectorType, OutputVectorType> {
+  struct HandleSwitch<Func, CoDiType, InputVectorType, OutputVectorType, enableIfJacobianTape<typename CoDiType::TapeType>> :
+      public ReverseHandleJacobiTapes<Func, CoDiType, InputVectorType, OutputVectorType> {
 
-      HandleSwitch(Func func, size_t m, size_t n) : ReverseHandle<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n) {}
+      HandleSwitch(Func func, size_t m, size_t n) : ReverseHandleJacobiTapes<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n) {}
+  };
+
+  template <typename Func, typename CoDiType,
+            template<typename> class InputVectorType,
+            template<typename> class OutputVectorType>
+  struct HandleSwitch<Func, CoDiType, InputVectorType, OutputVectorType, enableIfPrimalValueTape<typename CoDiType::TapeType>> :
+      public ReverseHandlePrimalValueTapes<Func, CoDiType, InputVectorType, OutputVectorType> {
+
+      HandleSwitch(Func func, size_t m, size_t n) : ReverseHandlePrimalValueTapes<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n) {}
   };
 
 
