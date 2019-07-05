@@ -112,6 +112,22 @@ namespace codi {
       }
 
       /**
+       * @brief Return the size of the used memory of the tape.
+       * @return Memory in MB.
+       */
+      double getUsedMemorySize() {
+        return doubleData[0];
+      }
+
+      /**
+       * @brief Return the size of the allocated memory of the tape.
+       * @return Memory in MB.
+       */
+      double getAllocatedMemorySize() {
+        return doubleData[1];
+      }
+
+      /**
        * @brief Start a new section.
        *
        * All following addData calls will add there data to this section.
@@ -281,7 +297,7 @@ namespace codi {
       }
 
       /**
-       * @brief Helper function that combines the tape data on with an MPI_Allreduce on MPI_COMM_WORLD.
+       * @brief Helper function that combines the tape data with an MPI_Allreduce on MPI_COMM_WORLD.
        */
       void addData() {
 #ifdef MPI_VERSION
