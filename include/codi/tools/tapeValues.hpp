@@ -179,6 +179,16 @@ namespace codi {
 
       }
 
+      /**
+       * @brief Add the default data of a data stream to the tape values.
+       *
+       * Adds total number of entries, number of chunks, used memory and allocated memory
+       * as values.
+       *
+       * @param[in] stream  The data stream from which the values are taken.
+       *
+       * @tparm Stream  Either a ChunkVector or a SingleChunkVector
+       */
       template<typename Stream>
       void addStreamData(const Stream& stream) {
 

@@ -128,19 +128,8 @@ namespace codi {
        * @param[in,out] values  The values where the information is added to.
        */
       void addStmtValues(TapeValues& values) const {
-        size_t nChunksStmts  = stmtVector.getNumChunks();
-        size_t totalStmts    = stmtVector.getDataSize();
-        size_t sizeStmtEntry = StmtChunk::EntrySize;
-
-        double  memoryUsedStmts = (double)totalStmts*(double)sizeStmtEntry* BYTE_TO_MB;
-        double  memoryAllocStmts= (double)nChunksStmts*(double)stmtVector.getChunkSize()
-                                  *(double)sizeStmtEntry* BYTE_TO_MB;
-
         values.addSection("Statements");
-        values.addData("Total number", totalStmts);
-        values.addData("Number of chunks", nChunksStmts);
-        values.addData("Memory used", memoryUsedStmts, true, false);
-        values.addData("Memory allocated", memoryAllocStmts, false, true);
+        values.addStreamData(stmtVector);
       }
 
       /**
