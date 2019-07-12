@@ -538,7 +538,7 @@ namespace codi {
        * @return true
        */
       bool hasPrimals() {
-        return false;
+        return true;
       }
   };
 }

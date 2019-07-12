@@ -41,36 +41,93 @@
  */
 namespace codi {
 
+  /**
+   * @brief Check if the tape is a forward tape.
+   *
+   * std::integral_constant which is true if Tape extends from ForwardEvaluation otherwise false.
+   *
+   * @tparam Tape  A CoDiPack tape type.
+   */
   template<typename Tape>
   using isForwardTape = std::is_base_of<ForwardEvaluation<typename Tape::TapeTypes>, Tape>;
 
+  /**
+   * @brief Enable if the tape is a forward tape.
+   *
+   * std::true_type if Tape extends from ForwardEvaluation otherwise undefined.
+   *
+   * @tparam Tape  A CoDiPack tape type.
+   */
   template<typename Tape>
   using enableIfForwardTape = typename std::enable_if<isForwardTape<Tape>::value>::type;
 
+  /**
+   * @brief Check if the tape is a primal value tape.
+   *
+   * std::integral_constant which is true if Tape extends from PrimalValueIndexTape or PrimalValueTape otherwise false.
+   *
+   * @tparam Tape  A CoDiPack tape type.
+   */
   template<typename Tape>
   using isPrimalValueTape = std::integral_constant<bool,
          std::is_base_of<PrimalValueIndexTape<typename Tape::TapeTypes>, Tape>::value
       || std::is_base_of<PrimalValueTape<typename Tape::TapeTypes>, Tape>::value
     >;
 
+  /**
+   * @brief Enable if the tape is a primal value tape.
+   *
+   * std::true_type if Tape extends from PrimalValueIndexTape or PrimalValueTape otherwise undefined.
+   *
+   * @tparam Tape  A CoDiPack tape type.
+   */
   template<typename Tape>
   using enableIfPrimalValueTape = typename std::enable_if<isPrimalValueTape<Tape>::value>::type;
 
+
+  /**
+   * @brief Check if the tape is a Jacobian tape.
+   *
+   * std::integral_constant which is true if Tape extends from JacobiIndexTape or JacobiTape otherwise false.
+   *
+   * @tparam Tape  A CoDiPack tape type.
+   */
   template<typename Tape>
   using isJacobianTape = std::integral_constant<bool,
        std::is_base_of<JacobiIndexTape<typename Tape::TapeTypes>, Tape>::value
     || std::is_base_of<JacobiTape<typename Tape::TapeTypes>, Tape>::value
     >;
 
+  /**
+   * @brief Enable if the tape is a Jacobian tape.
+   *
+   * std::true_type if Tape extends from JacobiIndexTape or JacobiTape otherwise undefined.
+   *
+   * @tparam Tape  A CoDiPack tape type.
+   */
   template<typename Tape>
   using enableIfJacobianTape = typename std::enable_if<isJacobianTape<Tape>::value>::type;
 
+  /**
+   * @brief Check if the tape is a CoDiPack reverse tape.
+   *
+   * std::integral_constant which is true if Tape extends from ReverseTapeInterface otherwise false.
+   *
+   * @tparam Tape  A CoDiPack tape type.
+   */
   template<typename Tape>
   using isReverseTape = std::integral_constant<bool,
          isJacobianTape<Tape>::value
       || isPrimalValueTape<Tape>::value
-    >;
+    >; // TODO: Change to ReverseTapeInterface check
 
+  /**
+   * @brief Enable if the tape is a CoDiPack reverse tape.
+   *
+   * std::true_type if Tape extends from ReverseTapeInterface otherwise undefined.
+   *
+   * @tparam Tape  A CoDiPack tape type.
+   */
   template<typename Tape>
   using enableIfReverseTape = typename std::enable_if<isReverseTape<Tape>::value>::type;
 }

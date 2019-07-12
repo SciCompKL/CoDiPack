@@ -137,7 +137,7 @@ namespace codi {
   {
   public:
 
-    typedef TapeTypes_t TapeTypes;
+    using TapeTypes = TapeTypes_t; /**< All types used to define the tape */
 
     friend TapeBaseModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
     friend PrimalValueModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
@@ -348,7 +348,10 @@ namespace codi {
      * The stack is reversed such that the primal value changes are reversed until the specified position is reached.
      * The primal value vector of the tape has the same status when the position was recorded.
      *
-     * @param[in] pos  The position for the tape reset.
+     * If the position is the zero position of the tape, then the reset is not done.
+     *
+     * @param[in]        pos  The position for the tape reset.
+     * @param[in] forceReset  Forces the reset of the primal values.
      */
     CODI_INLINE void resetPrimalValues(const Position& pos, bool forceReset) {
 
@@ -749,6 +752,9 @@ namespace codi {
       return oldValue;
     }
 
+    /**
+     * \copydoc ReversePrimalValueTapeInterface::revertPrimals()
+     */
     void revertPrimals(Position const& pos) {
       resetPrimalValues(pos, true);
     }

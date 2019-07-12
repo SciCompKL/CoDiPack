@@ -129,7 +129,7 @@ namespace codi {
   {
   public:
 
-    typedef TapeTypes_t TapeTypes;
+    using TapeTypes = TapeTypes_t; /**< All types used to define the tape */
 
     friend TapeBaseModule<TapeTypes, JacobiIndexTape>; /**< No doc */
     friend StatementModule<TapeTypes, JacobiIndexTape>;  /**< No doc */

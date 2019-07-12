@@ -137,7 +137,7 @@ namespace codi {
   {
   public:
 
-    typedef TapeTypes_t TapeTypes;
+    using TapeTypes = TapeTypes_t; /**< All types used to define the tape */
 
     friend TapeBaseModule<TapeTypes, PrimalValueTape>;  /**< No doc */
     friend PrimalValueModule<TapeTypes, PrimalValueTape>;  /**< No doc */
@@ -626,6 +626,11 @@ namespace codi {
       }
     }
 
+    /**
+     * @brief For this tape primal values do not need to be reset.
+     *
+     * @param[in] pos  Unused.
+     */
     void revertPrimals(Position const& pos) {
       CODI_UNUSED(pos);
 

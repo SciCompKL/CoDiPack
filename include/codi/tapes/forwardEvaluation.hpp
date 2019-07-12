@@ -60,7 +60,7 @@ namespace codi {
   class ForwardEvaluation final : public TapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::GradientValue, typename TapeTypes_t::GradientValue>{
   public:
 
-    using TapeTypes = TapeTypes_t;
+    using TapeTypes = TapeTypes_t; /**< All types used to define the tape */
 
     CODI_INLINE_FORWARD_TAPE_TYPES(TapeTypes)
 

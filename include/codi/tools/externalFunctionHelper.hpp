@@ -62,12 +62,20 @@ namespace codi {
        * @brief The function for the reverse evaluation.
        *
        * If the primal function evaluates y = f(x), then this function evaluates
-       * \f[\bar x = \frac{d f}{d x}(x) \bar y\f]
+       * \f[\bar x = \frac{d f}{d x}(x)^T \bar y\f]
        *
        * If the user disabled the storing of the primal values. Then the corresponding vectors are null pointers.
        */
       typedef void (*ReverseFunc)(const Real* x, Real* x_b, size_t m, const Real* y, const Real* y_b, size_t n, DataStore* d);
 
+      /**
+       * @brief The function for the forward evaluation.
+       *
+       * If the primal function evaluates y = f(x), then this function evaluates
+       * \f[\dot y = \frac{d f}{d x}(x) \dot x\f]
+       *
+       * If the user disabled the storing of the primal values. Then the corresponding vectors are null pointers.
+       */
       typedef void (*ForwardFunc)(const Real* x, const Real* x_d, size_t m, Real* y, Real* y_d, size_t n, DataStore* d);
 
       /**
@@ -107,16 +115,35 @@ namespace codi {
         delete data;
       }
 
+      /**
+      * @brief Forward evaluation function that is registered on the tape.
+      *
+      * The method casts the data object to an instance of this class and calls the evalForwFunc.
+      *
+      * @param[in,out]  t  The tape which evaluates this function.
+      * @param[in,out]  d  An instance of this class.
+      * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
+      */
       static void evalForwFuncStatic(void* t, void* d, void* ra) {
         ExternalFunctionData<CoDiType>* data = (ExternalFunctionData<CoDiType>*)d;
 
         if(nullptr != data->forwFunc) {
           data->evalForwFunc((Tape*)t, (AdjointInterface<Real, GradientData>*)ra);
         } else {
-          CODI_EXCEPTION("Calling forward evaluation in external function helpter without a forward function pointer.");
+          CODI_EXCEPTION("Calling forward evaluation in external function helper without a forward function pointer.");
         }
       }
 
+      /**
+       * @brief The forward evaluation function.
+       *
+       * This function retrieves the primal values and tangent values of the input. Afterwards the user defined
+       * evaluation function is called. The output values are then used for the update of the tape primal and the
+       * tangent values of the primal.
+       *
+       * @param[in,out]  t  The tape which evaluates this function.
+       * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
+       */
       void evalForwFunc(Tape* t, AdjointInterface<Real, GradientData>* ra) {
         CODI_UNUSED(t);
 
@@ -153,16 +180,34 @@ namespace codi {
         delete [] y_d;
       }
 
+      /**
+      * @brief Primal evaluation function that is registered on the tape.
+      *
+      * The method casts the data object to an instance of this class and calls the evalPrimFunc.
+      *
+      * @param[in,out]  t  The tape which evaluates this function.
+      * @param[in,out]  d  An instance of this class.
+      * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
+      */
       static void evalPrimFuncStatic(void* t, void* d, void* ra) {
         ExternalFunctionData<CoDiType>* data = (ExternalFunctionData<CoDiType>*)d;
 
         if(nullptr != data->primFunc) {
           data->evalPrimFunc((Tape*)t, (AdjointInterface<Real, GradientData>*)ra);
         } else {
-          CODI_EXCEPTION("Calling primal evaluation in external function helpter without a primal function pointer.");
+          CODI_EXCEPTION("Calling primal evaluation in external function helper without a primal function pointer.");
         }
       }
 
+      /**
+       * @brief The primal evaluation function.
+       *
+       * This function retrieves the primal values of the input. Afterwards the user defined evaluation function is
+       * called. The output values are then used for the update of the tape primal.
+       *
+       * @param[in,out]  t  The tape which evaluates this function.
+       * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
+       */
       void evalPrimFunc(Tape* t, AdjointInterface<Real, GradientData>* ra) {
         CODI_UNUSED(t);
 
@@ -196,7 +241,7 @@ namespace codi {
         if(nullptr != data->revFunc) {
           data->evalRevFunc((Tape*)t, (AdjointInterface<Real, GradientData>*)ra);
         } else {
-          CODI_EXCEPTION("Calling reverse evaluation in external function helpter without a reverse function pointer.");
+          CODI_EXCEPTION("Calling reverse evaluation in external function helper without a reverse function pointer.");
         }
       }
 

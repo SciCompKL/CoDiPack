@@ -102,6 +102,7 @@ namespace codi {
 
       JacobianCountNonZerosRow<std::vector<Real>> jacobie; /**< The Jacobi matrix used to hold the result of the preaccumulation. */
 
+      /** Default constructor with empty Jacobian. */
       PreaccumulationHelper() :inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobie(0,0) {}
 
       /**

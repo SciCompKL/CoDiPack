@@ -169,7 +169,7 @@ namespace codi {
             GT2nd::at(tape.primalValue(input[j + curDim]).gradient(), curDim) = typename GT2nd::Data(1.0);
           }
 
-          // The k = j init is no prolbem, it will evaluated slightly more elements around the diagonal
+          // The k = j init is no problem, it will evaluated slightly more elements around the diagonal
           for(size_t k = j; k < inputSize; k += gradDim1st) {
             seedGradient(tape, k, input, inputSize);
 
@@ -219,7 +219,7 @@ namespace codi {
           for(size_t i = 0; i < outputSize; i += gradDim1st) {
             seedGradient(tape, i, output, outputSize);
 
-            // propaget the derivatives backward for second order derivatives
+            // propagate the derivatives backward for second order derivatives
             tape.evaluatePreacc(end, start);
 
             for(size_t k = 0; k < inputSize; k += 1) {
@@ -278,7 +278,7 @@ namespace codi {
           // propagate the new derivative information
           recordTape(func, input, output);
 
-          // The k = j init is no prolbem, it will evaluated slightly more elements around the diagonal
+          // The k = j init is no problem, it will evaluated slightly more elements around the diagonal
           for(size_t k = j; k < input.size(); k += gradDim1st) {
             setGradientOnValue1stOrder(tape, k, input.data(), input.size(), typename GT::Data(1.0));
 
@@ -325,7 +325,7 @@ namespace codi {
           for(size_t i = 0; i < output.size(); i += gradDim1st) {
             setGradientOnValue1stOrder(tape, i, output.data(), output.size(), typename GT::Data(1.0));
 
-            // propaget the derivatives backward for second order derivatives
+            // propagate the derivatives backward for second order derivatives
             tape.evaluatePreacc(tape.getPosition(), tape.getZeroPosition());
 
             for(size_t k = 0; k < input.size(); k += 1) {

@@ -208,6 +208,9 @@ namespace codi {
     return r;
   }
 
+  /**
+   * \copydoc operator*(const Real& s, const Direction<Real, dim>& v)
+   */
   template<typename Real, size_t dim, typename = typename std::enable_if<!std::is_same<Real, typename TypeTraits<Real>::PassiveReal>::value>::type>
   CODI_INLINE Direction<Real, dim> operator * (const typename TypeTraits<Real>::PassiveReal& s, const Direction<Real, dim>& v) {
     Direction<Real, dim> r;
@@ -236,6 +239,9 @@ namespace codi {
     return s * v;
   }
 
+  /**
+   * \copydoc operator*(const Direction<Real, dim>& v, const Real& s)
+   */
   template<typename Real, size_t dim, typename , typename = typename std::enable_if<!std::is_same<Real, typename TypeTraits<Real>::PassiveReal>::value>::type>
   CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const typename TypeTraits<Real>::PassiveReal& s) {
     return s * v;
