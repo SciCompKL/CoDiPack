@@ -53,15 +53,15 @@ void writeOutputJacobian(codi::Jacobian<Vec> const& jac) {
 
   // print header
   printf(BLANK);
-  for(size_t curIn = 0; curIn < jac.n; curIn += 1) {
+  for(size_t curIn = 0; curIn < jac.getN(); curIn += 1) {
     printf(COL_SEPERATOR);
     printf(HEADER_FORMAT, "in", curIn);
   }
   printf(LINE_END);
 
-  for(size_t curOut = 0; curOut < jac.m; curOut += 1) {
+  for(size_t curOut = 0; curOut < jac.getM(); curOut += 1) {
     printf(HEADER_FORMAT, "out", curOut);
-    for(size_t curIn1st = 0; curIn1st < jac.n; curIn1st += 1) {
+    for(size_t curIn1st = 0; curIn1st < jac.getN(); curIn1st += 1) {
       printf(COL_SEPERATOR);
       printf(VALUE_FORMAT, jac(curOut, curIn1st));
     }
@@ -73,20 +73,20 @@ void writeOutputJacobian(codi::Jacobian<Vec> const& jac) {
 template<typename Vec>
 void writeOutputHessian(codi::Hessian<Vec> const& hes) {
 
-  for(size_t curOut = 0; curOut < hes.m; curOut += 1) {
+  for(size_t curOut = 0; curOut < hes.getM(); curOut += 1) {
 
     // print header
     printf(HEADER_FORMAT, "out", curOut);
-    for(size_t curIn = 0; curIn < hes.n; curIn += 1) {
+    for(size_t curIn = 0; curIn < hes.getN(); curIn += 1) {
       printf(COL_SEPERATOR);
       printf(HEADER_FORMAT, "in", curIn);
     }
     printf(LINE_END);
 
-    for(size_t curIn1st = 0; curIn1st < hes.n; curIn1st += 1) {
+    for(size_t curIn1st = 0; curIn1st < hes.getN(); curIn1st += 1) {
       printf(HEADER_FORMAT, "in", curIn1st);
 
-      for(size_t curIn2nd = 0; curIn2nd < hes.n; curIn2nd += 1) {
+      for(size_t curIn2nd = 0; curIn2nd < hes.getN(); curIn2nd += 1) {
         printf(COL_SEPERATOR);
         printf(VALUE_FORMAT, hes(curOut, curIn1st, curIn2nd));
       }

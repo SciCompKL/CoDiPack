@@ -35,7 +35,18 @@
  */
 namespace codi {
 
+  /**
+   * @brief A dummy value that can be assigned but does not store any updates.
+   */
   struct DummyValue {
+
+      /**
+       * @brief The assign operator performs no assign.
+       *
+       * @param[in] v  Not used
+       *
+       * @tparam T Any type
+       */
       template<typename T>
       CODI_INLINE void operator=(const T& v) {
         CODI_UNUSED(v);

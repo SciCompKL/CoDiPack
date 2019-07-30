@@ -39,86 +39,169 @@
  */
 namespace codi {
 
+  /**
+   * @brief Empty definition of a vector storage object
+   *
+   * This interface captures the access to an arbitrary data store. In CoDiPack it is specialized
+   * for std::vector and std::array. If a user wants to use the Jacobian or Hessian data structures with other
+   * data objects in the background this class needs to be specialized.
+   *
+   * @tparam Vec  The implementation of the vector storage.
+   */
   template <typename Vec>
   struct VectorStorage {
-      using VecType = Vec;
-      using Element = char;
+      using VecType = Vec; /**< The type this specialization is implemented for. */
+      using Element = char; /**< The type of the data entries for the storage. */
 
+      /**
+       * @brief Constructor that initializes the storage with a given size.
+       *
+       * @param[in] size  The size of the data.
+       */
       explicit VectorStorage(size_t size);
 
+      /**
+       * @brief Get access to the data of the storage.
+       *
+       * @return A pointer to the data representation.
+       */
       CODI_INLINE Element const* data() const;
 
+      /** \copydoc data() const */
       CODI_INLINE Element* data();
 
+      /**
+       * @brief Reference to the i-th data element.
+       * @param[in] i  The position in the data vector.
+       * @return The reference to the i-th element.
+       */
       CODI_INLINE Element& operator[](size_t i);
 
+      /**
+       * @brief The current size of the storage data.
+       * @return The size of the storage data.
+       */
       CODI_INLINE size_t size();
 
+      /**
+       * @brief Resize the underlying data to fit the new size.
+       *
+       * If the vector type does not allow to be resized, then an exception is thrown.
+       * @param[in] size  The new size.
+       */
       CODI_NO_INLINE void resize(size_t const size);
   };
 
+  /**
+   * @brief Specialization of the VectorStorage interface for std::vector
+   *
+   * All calls are forwarded to the equivalent routines in the std::vector interface.
+   *
+   * @tparam T  The elements in the std::vector
+   * @tparam Allocator  The allocation object for the std::vector
+   */
   template <typename T, typename Allocator>
   struct VectorStorage<std::vector<T, Allocator>> {
 
-      using VecType = std::vector<T, Allocator>;
-      using Element = T;
+      using VecType = std::vector<T, Allocator>; /**< std::vector */
+      using Element = T; /**< Element type of the std::vector */
 
-      VecType vec;
+    private:
+      VecType vec; /**< Instantiation of the std::vector */
 
+    public:
+
+      /** \copydoc VectorStorage::VectorStorage */
       explicit VectorStorage(size_t size) : vec(size) {}
 
+      /** \copydoc VectorStorage::data */
       CODI_INLINE T const* data() const {
         return vec.data();
       }
 
+      /** \copydoc VectorStorage::data */
       CODI_INLINE T* data() {
         return vec.data();
       }
 
+      /** \copydoc VectorStorage::operator[] */
       CODI_INLINE T& operator[](size_t i) {
         return vec[i];
       }
 
+      /** \copydoc VectorStorage::size */
       CODI_INLINE size_t size() {
         return vec.size();
       }
 
+      /**
+       * \copybrief
+       *
+       * @param[in] size  The new size of the vector.
+       */
       CODI_NO_INLINE void resize(size_t const size) {
         vec.resize(size);
       }
   };
 
+  /**
+   * @brief Specialization of the VectorStorage interface for std::array
+   *
+   * The resize function in this specialization throws an error if the new size is different then the template
+   * parameter.
+   *
+   * All other calls are forwarded to the equivalent routines in the std::array interface.
+   *
+   * @tparam T  The elements in the std::array
+   * @tparam N  The size of the std::array.
+   */
   template <typename T, size_t N>
   struct VectorStorage<std::array<T, N>> {
 
-      using VecType = std::array<T, N>;
-      using Element = T;
+      using VecType = std::array<T, N>; /**< std::array */
+      using Element = T; /**< Element type of std::array */
 
+    private:
+      VecType vec; /**< Instantiation of the std::vector */
 
-      VecType vec;
+    public:
 
+      /**
+       * @brief The constructor ignores the given size.
+       *
+       * @param[in] size  Unused
+       */
       explicit VectorStorage(size_t size) : vec() {CODI_UNUSED(size);}
 
+      /** \copydoc VectorStorage::data */
       CODI_INLINE T const* data() const {
         return vec.data();
       }
 
+      /** \copydoc VectorStorage::data */
       CODI_INLINE T* data() {
         return vec.data();
       }
 
+      /** \copydoc VectorStorage::operator[] */
       CODI_INLINE T& operator[](size_t i) {
         return vec[i];
       }
 
+      /** \copydoc VectorStorage::size */
       CODI_INLINE size_t size() {
         return N;
       }
 
+      /**
+       * @brief Throws an exception if the given size is different than N
+       *
+       * @param[in] size  Unused
+       */
       CODI_INLINE void resize(size_t const size) {
-        CODI_UNUSED(size);
-
-        CODI_EXCEPTION("Can not resize std::array.");
+        if(N != size) {
+          CODI_EXCEPTION("Can not resize std::array.");
+        }
       }
   };
 }

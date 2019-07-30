@@ -36,12 +36,27 @@
  */
 namespace codi {
 
+  /**
+   * @brief A dummy vector that can be accessed via the subscript operator.
+   */
   struct DummyVector {
+
+      /**
+       * @brief Returns a dummy value
+       *
+       * @param[in] i  Not used
+       * @return A dummy value
+       */
       CODI_INLINE DummyValue operator[](const size_t i) {
         CODI_UNUSED(i);
         return DummyValue();
       }
 
+      /**
+       * @brief Returns a zero size.
+       *
+       * @return Zero size.
+       */
       CODI_INLINE size_t size() const {
         return (size_t)0;
       }

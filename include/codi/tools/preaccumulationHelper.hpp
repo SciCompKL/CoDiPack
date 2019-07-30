@@ -328,10 +328,10 @@ namespace codi {
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
 
           CoDiType& value = *outputValues[curOut];
-          if(0 != jacobie.nonZerosRow[curOut]) {
+          if(0 != jacobie.nonZeroRow(curOut)) {
 
-            int nonZerosLeft = jacobie.nonZerosRow[curOut];
-            jacobie.nonZerosRow[curOut] = 0;
+            int nonZerosLeft = jacobie.nonZeroRow(curOut);
+            jacobie.nonZeroRow(curOut) = 0;
 
             // we need to use here the value of the gradient data such that it is correctly deleted.
             GradientData lastGradientData = value.getGradientData();
