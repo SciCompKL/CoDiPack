@@ -281,7 +281,7 @@ namespace codi {
   #undef CODI_DisableAssignOptimization
 
   /*
-   * This switch enables the implict conversion operator to the primal value in the
+   * This switch enables the implicit conversion operator to the primal value in the
    * active types.
    *
    * This will give a warning every time an implicit conversion is instantiated. This

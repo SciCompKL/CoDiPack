@@ -357,6 +357,16 @@ namespace codi {
    * See the documentation of #RealReversePrimal, #RealReverseIndex and #RealReverseUnchecked
    */
   typedef RealReversePrimalIndexUncheckedGen<double, double> RealReversePrimalIndexUnchecked;
+
+  /**
+   * @brief A regular CoDiPack type that can be used for Hessian computations in the TapeHelper.
+   */
+  using HessianComputationType = RealReversePrimalGen<RealForwardVec<4>, Direction< RealForward<4>>>;
+
+  /**
+   * @brief A regular CoDiPack type that can be used for Jacobian computations in the TapeHelper.
+   */
+  using JacobianComputationType = RealReverseIndexVec<4>;
 }
 
 #include "codi/tools/evaluationHelper.hpp"

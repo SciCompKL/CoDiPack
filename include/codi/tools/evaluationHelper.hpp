@@ -167,7 +167,7 @@ namespace codi {
             GradientTraits1st::at(this->x[k + vecPos].gradient(), vecPos).value() = 1.0;
           }
 
-          // The j = k init is no prolbem, it will evaluated slightly more elements around the diagonal
+          // The j = k init is no problem, it will evaluated slightly more elements around the diagonal
           for(size_t j = k; j < locX.size(); j+= VectorSizeSecondOrder) {
 
             // Set derivatives from j to j + vecSize_j
@@ -181,7 +181,7 @@ namespace codi {
               getAllPrimals(locY);
             }
 
-            // Extract all hessian values, this pobulates the hessian from (j,k) to (j + vecSize_j, k + vecSize_k).
+            // Extract all hessian values, this populates the hessian from (j,k) to (j + vecSize_j, k + vecSize_k).
             for(size_t i = 0; i < this->y.size(); i += 1) {
               for(size_t vecPos1st = 0; vecPos1st < VectorSizeFirstOrder && k + vecPos1st < locX.size(); vecPos1st += 1) {
                 for(size_t vecPos2nd = 0; vecPos2nd < VectorSizeSecondOrder && j + vecPos2nd < locX.size(); vecPos2nd += 1) {
@@ -200,13 +200,13 @@ namespace codi {
               }
             }
 
-            // Reset the deriative seeding
+            // Reset the derivative seeding
             for(size_t vecPos = 0; vecPos < VectorSizeSecondOrder && j + vecPos < locX.size(); vecPos += 1) {
               GradientTraits2nd::at(this->x[j + vecPos].value().gradient(), vecPos) = 0.0;
             }
           }
 
-          // Reset the deriative seeding
+          // Reset the derivative seeding
           for(size_t vecPos = 0; vecPos < VectorSizeFirstOrder && k + vecPos < locX.size(); vecPos += 1) {
             GradientTraits1st::at(this->x[k + vecPos].gradient(), vecPos).value() = 0.0;
           }
@@ -299,7 +299,7 @@ namespace codi {
       void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac) {
         this->recordTape(locX, locY);
 
-        this->th.evalHessian(hes);
+        this->th.evalHessian(hes, jac);
       }
   };
 
@@ -317,7 +317,7 @@ namespace codi {
       void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac) {
         this->setAllPrimals(locX, false);
 
-        Algorithms<CoDiType>::computeHessian(this->func, this->x.vec, this->y.vec, hes);
+        Algorithms<CoDiType>::computeHessian(this->func, this->x.vec, this->y.vec, hes, jac);
 
         this->getAllPrimals(locY, false);
       }
@@ -493,7 +493,18 @@ namespace codi {
           Jac& jac,
           Hes& hes) {
         auto h = createDefault2nd(func, y.size(), x.size());
-        evalPrimalAndJacobianAndHessian(h, x, y, jac, hes);
+        evalHandlePrimalAndJacobianAndHessian(h, x, y, jac, hes);
+      }
+
+      template<typename Func, typename VecX, typename VecY, typename Jac, typename Hes>
+      static CODI_INLINE void evalJacobianAndHessian(
+          Func& func,
+          const VecX& x,
+          size_t ySize,
+          Jac& jac,
+          Hes& hes) {
+        auto h = createDefault2nd(func, ySize, x.size());
+        evalHandleJacobianAndHessian(h, x, jac, hes);
       }
 
       template<typename Handle, typename VecX, typename VecY>
@@ -550,6 +561,16 @@ namespace codi {
           Jac& jac,
           Hes& hes) {
         handle.computeHessian(x, hes, y, jac);
+      }
+
+      template<typename Handle, typename VecX, typename VecY, typename Jac, typename Hes>
+      static CODI_INLINE void evalHandleJacobianAndHessian(
+          Handle& handle,
+          const VecX& x,
+          Jac& jac,
+          Hes& hes) {
+        DummyVector dv;
+        handle.computeHessian(x, hes, dv, jac);
       }
   };
 
