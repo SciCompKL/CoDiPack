@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -87,11 +87,6 @@ namespace codi {
     static const bool storeAsReference = true;
 
     /**
-     * @brief Static definition of the tape.
-     */
-    static Tape globalTape;
-
-    /**
      * @brief The tape used for the derivative calculations.
      */
     typedef Tape TapeType;
@@ -128,13 +123,20 @@ namespace codi {
      */
     GradientData gradientData;
 
+    /**
+     * @brief Global tape used by the active type.
+     *
+     * Each thread has its own global tape.
+     */
+    static thread_local Tape* globalTape;
+
   public:
 
     /**
      * @brief Constructs the equivalent of zero and initializes the gradient data.
      */
     CODI_INLINE ActiveReal() : primalValue() {
-      globalTape.initGradientData(primalValue, gradientData);
+      getGlobalTape().initGradientData(primalValue, gradientData);
     }
 
     /**
@@ -145,7 +147,7 @@ namespace codi {
      * @param[in] value   The primal value of the active type.
      */
     CODI_INLINE ActiveReal(const PassiveReal& value) : primalValue(value) {
-      globalTape.initGradientData(this->primalValue, gradientData);
+      getGlobalTape().initGradientData(this->primalValue, gradientData);
     }
 
     /**
@@ -155,8 +157,8 @@ namespace codi {
      * @param[in] gradient  The gradient value for this type.
      */
     CODI_INLINE ActiveReal(const Real& value, const Real& gradient) : primalValue(value) {
-      globalTape.initGradientData(this->primalValue, gradientData);
-      globalTape.setGradient(gradientData, gradient);
+      getGlobalTape().initGradientData(this->primalValue, gradientData);
+      getGlobalTape().setGradient(gradientData, gradient);
     }
 
     /**
@@ -171,8 +173,8 @@ namespace codi {
      */
     template<class R>
     CODI_INLINE ActiveReal(const Expression<Real, R>& rhs) {
-      globalTape.initGradientData(this->primalValue, gradientData);
-      globalTape.store(primalValue, gradientData, rhs.cast());
+      getGlobalTape().initGradientData(this->primalValue, gradientData);
+      getGlobalTape().store(primalValue, gradientData, rhs.cast());
     }
 
     /**
@@ -184,12 +186,12 @@ namespace codi {
      * @param[in] v The value to copy.
      */
     CODI_INLINE ActiveReal(const ActiveReal<Tape>& v) {
-      globalTape.initGradientData(primalValue, gradientData);
+      getGlobalTape().initGradientData(primalValue, gradientData);
 
       if(OptDisableAssignOptimization) {
         *this = PassiveReal(1.0) * v;
       } else {
-        globalTape.store(primalValue, gradientData, v);
+        getGlobalTape().store(primalValue, gradientData, v);
       }
     }
 
@@ -197,7 +199,7 @@ namespace codi {
      * @brief Call the tape to destroy the gradient data.
      */
     CODI_INLINE ~ActiveReal() {
-      globalTape.destroyGradientData(primalValue, gradientData);
+      getGlobalTape().destroyGradientData(primalValue, gradientData);
     }
 
     /**
@@ -209,7 +211,7 @@ namespace codi {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data) const {
-      globalTape.pushJacobi(data, primalValue, gradientData);
+      getGlobalTape().pushJacobi(data, primalValue, gradientData);
     }
 
     /**
@@ -222,7 +224,7 @@ namespace codi {
      */
     template<typename Data>
     CODI_INLINE void calcGradient(Data& data, const Real& jacobi) const {
-      globalTape.pushJacobi(data, jacobi, primalValue, gradientData);
+      getGlobalTape().pushJacobi(data, jacobi, primalValue, gradientData);
     }
 
     /**
@@ -272,7 +274,7 @@ namespace codi {
      */
     template<typename Data, typename Func>
     CODI_INLINE void valueAction(Data data, Func func) const {
-      CODI_CALL_MEMBER_FN(globalTape, func)(data, primalValue, gradientData);
+      CODI_CALL_MEMBER_FN(getGlobalTape(), func)(data, primalValue, gradientData);
     }
 
     /**
@@ -296,7 +298,7 @@ namespace codi {
      * @return Reference to the gradient value.
      */
     CODI_INLINE GradientValue& gradient() {
-      return globalTape.gradient(gradientData);
+      return getGlobalTape().gradient(gradientData);
     }
 
     /**
@@ -304,7 +306,7 @@ namespace codi {
      * @return Constant reference to the gradient value.
      */
     CODI_INLINE const GradientValue& gradient() const {
-      return globalTape.gradient(gradientData);
+      return getGlobalTape().gradient(gradientData);
     }
 
 
@@ -313,7 +315,7 @@ namespace codi {
      * @return The gradient value.
      */
     CODI_INLINE GradientValue getGradient() const {
-      return globalTape.getGradient(gradientData);
+      return getGlobalTape().getGradient(gradientData);
     }
 
     /**
@@ -321,7 +323,7 @@ namespace codi {
      * @param gradient  The new gradient value.
      */
     CODI_INLINE void setGradient(const GradientValue& gradient) {
-      globalTape.setGradient(gradientData, gradient);
+      getGlobalTape().setGradient(gradientData, gradient);
     }
 
     /**
@@ -329,7 +331,7 @@ namespace codi {
      * @return True if the variables is active, otherwise false.
      */
     CODI_INLINE bool isActive() const{
-      return globalTape.isActive(this->gradientData);
+      return getGlobalTape().isActive(this->gradientData);
     }
 
     /**
@@ -381,7 +383,7 @@ namespace codi {
      * @return true if both are zero.
      */
     CODI_INLINE bool isTotalZero() const {
-      return codi::isTotalZero(this->primalValue) && globalTape.isGradientTotalZero(this->gradientData);
+      return codi::isTotalZero(this->primalValue) && getGlobalTape().isGradientTotalZero(this->gradientData);
     }
 
     /**
@@ -394,7 +396,7 @@ namespace codi {
      * @return Reference to this.
      */
     CODI_INLINE ActiveReal<Tape>& operator=(const PassiveReal& rhs){
-      globalTape.store(primalValue, gradientData, rhs);
+      getGlobalTape().store(primalValue, gradientData, rhs);
       return *this;
     }
 
@@ -409,7 +411,7 @@ namespace codi {
      */
     template<class R>
     CODI_INLINE ActiveReal<Tape>& operator=(const Expression<Real, R>& rhs){
-      globalTape.store(primalValue, gradientData, rhs.cast());
+      getGlobalTape().store(primalValue, gradientData, rhs.cast());
       return *this;
     }
 
@@ -426,7 +428,7 @@ namespace codi {
       if(OptDisableAssignOptimization) {
            *this = PassiveReal(1.0) * rhs;
       } else {
-          globalTape.store(primalValue, gradientData, rhs);
+          getGlobalTape().store(primalValue, gradientData, rhs);
       }
       return *this;
     }
@@ -561,10 +563,26 @@ namespace codi {
 
     /**
      * @brief Get the reference to the global tape for this type.
-     * @return  The global reference to the tape.
+     * @return  Reference to the global tape associated with the calling thread.
      */
     static CODI_INLINE Tape& getGlobalTape() {
+      return *globalTape;
+    }
+
+    /**
+     * @brief Get the pointer to the global tape of this type.
+     * @return Pointer to the global tape associated with the calling thread.
+     */
+    static CODI_INLINE Tape* getGlobalTapePtr() {
       return globalTape;
+    }
+
+    /**
+     * @brief For the calling thread, set the global tape of this type.
+     * @param tape Pointer to the tape to use.
+     */
+    static CODI_INLINE void setGlobalTapePtr(Tape* tape) {
+      globalTape = tape;
     }
 
     /**
@@ -668,6 +686,12 @@ namespace codi {
   };
 
   /**
+   * @brief Initialization of static thread-local tapes.
+   */
+  template<typename Tape>
+  thread_local Tape* ActiveReal<Tape>::globalTape = new Tape;
+
+  /**
    * @brief Specialization of the TypeTraits for the ActiveReal type.
    *
    * @tparam Tape The tape of the active real.
@@ -694,12 +718,6 @@ namespace codi {
         return TypeTraits<Real>::getBaseValue(t.getValue());
       }
   };
-
-  /**
-   * @brief The instantiation of the tape for the ActiveReal.
-   */
-  template<typename Tape>
-  Tape ActiveReal<Tape>::globalTape;
 
   /**
    * @brief Specialization of the ExpressionTraits for the ActiveReal type.

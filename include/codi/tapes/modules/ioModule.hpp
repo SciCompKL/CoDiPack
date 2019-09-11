@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -172,7 +172,7 @@ namespace codi {
 
         tape.reset();
 
-        tape.cleanTapeBase();
+        tape.cleanAdjoints();
         cast().getRootVector().resetHard();
       }
   };

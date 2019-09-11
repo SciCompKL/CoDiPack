@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -29,6 +29,8 @@
 #pragma once
 
 #include "typeTraits.hpp"
+#include "tapes/indices/defaultGlobalIndexHandler.hpp"
+#include "tapes/modules/defaultAdjointsModule.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -71,7 +73,9 @@ namespace codi {
   typedef typename name::GradientValue GradientValue; /**< The type for the gradient computation */ \
   typedef typename name::PassiveReal PassiveReal; /**< The most inner floating point type if CoDiPack types are nested. */ \
   typedef typename name::IndexHandler IndexHandler; /**< The type of the index handler */ \
-  typedef typename name::Index Index; /**< The actual type for the adjoint identification. */
+  typedef typename name::Index Index; /**< The actual type for the adjoint identification. */ \
+  template<typename _TapeTypes, typename _Tape> \
+  using AdjointsModule = typename name::template AdjointsModule<_TapeTypes, _Tape>;
 
 
   /**
@@ -84,13 +88,16 @@ namespace codi {
    * @tparam  IndexHandlerType  The index handler for the identification of the adjoint values. It needs to implement the
    *                            common interface from the index handlers in include/tapes/indices
    */
-  template<typename RealType, typename GradientValueType, typename IndexHandlerType>
+  template<typename RealType, typename GradientValueType, typename IndexHandlerType, template<typename, typename> class AdjointsModuleTemplate = DefaultAdjointsModule>
   struct ReverseTapeTypes {
 
       typedef RealType Real; /**< The floating point calculation type in the CoDiPack types. */
       typedef GradientValueType GradientValue; /**< The type for the gradient computation */
       typedef IndexHandlerType IndexHandler; /**< The type of the index handler */
       typedef typename IndexHandlerType::Index Index; /**< The actual type for the adjoint identification. */
+
+      template<typename _TapeTypes, typename _Tape>
+      using AdjointsModule = AdjointsModuleTemplate<_TapeTypes, _Tape>;
 
       /**
        * The most inner floating point type if CoDiPack types are nested.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -60,6 +60,17 @@ namespace codi {
        */
       CODI_INLINE Direction() :
         vector() {}
+
+      /**
+       * @brief Copy constructor.
+       *
+       * Creates a new direction from a given one.
+       */
+      CODI_INLINE Direction(const Direction& v) {
+        for(size_t i = 0; i < dim; ++i) {
+          vector[i] = v.vector[i];
+        }
+      }
 
       /**
        * @brief Creates a direction with the same value in every component.
@@ -198,8 +209,8 @@ namespace codi {
    * @tparam Real  The scalar value type that is used by the direction.
    * @tparam  dim  The dimension of the direction.
    */
-  template<typename Real, size_t dim>
-  CODI_INLINE Direction<Real, dim> operator * (const Real& s, const Direction<Real, dim>& v) {
+  template<typename Real, typename Scalar, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator * (const Scalar& s, const Direction<Real, dim>& v) {
     Direction<Real, dim> r;
     for(size_t i = 0; i < dim; ++i) {
       r[i] = s * v[i];
@@ -221,8 +232,8 @@ namespace codi {
    * @tparam Real  The scalar value type that is used by the direction.
    * @tparam  dim  The dimension of the direction.
    */
-  template<typename Real, size_t dim>
-  CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const Real& s) {
+  template<typename Real, typename Scalar, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const Scalar& s) {
     return s * v;
   }
 

@@ -523,4 +523,8 @@ namespace codi {
       #define codiAssert(x) /* disabled by CODI_EnableAssert */
     #endif
   #endif
+
+  #ifndef CODI_EnableParallelHelperDebugOutput
+    #define CODI_EnableParallelHelperDebugOutput false
+  #endif
 }

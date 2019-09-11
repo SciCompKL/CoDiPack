@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -29,6 +29,7 @@
 #pragma once
 
 #include "../macros.h"
+#include <iostream>
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -64,6 +65,38 @@ namespace codi {
         bool operator == (const Position& o) {
           CODI_UNUSED(o);
           return true;
+        }
+
+        /**
+         * @brief Ordering of positions.
+         * @param o The position to compare to.
+         * @return Always false.
+         */
+        bool operator < (const Position& o) {
+          CODI_UNUSED(o);
+          return false;
+        }
+
+        /**
+         * @brief Ordering of positions.
+         * @param o The position to compare to.
+         * @return Always true.
+         */
+        bool operator <= (const Position& o) {
+          CODI_UNUSED(o);
+          return true;
+        }
+
+        /**
+         * @brief Output position to std ostream.
+         * @param stream The output stream.
+         * @param pos Position.
+         * @return Reference to the output stream.
+         */
+        friend std::ostream& operator<<(std::ostream& stream, const Position& pos) {
+          CODI_UNUSED(pos);
+          stream << "[]";
+          return stream;
         }
     };
 

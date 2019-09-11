@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -132,6 +132,7 @@ namespace codi {
       public PrimalValueModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
       public ExternalFunctionModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
       public IOModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
+      public TapeTypes::template AdjointsModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
       public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, PrimalValueIndexTape<TapeTypes>, typename TapeTypes::Position >
   {
   public:
@@ -139,6 +140,7 @@ namespace codi {
     friend TapeBaseModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
     friend PrimalValueModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
     friend ::codi::IOModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
+    friend typename TapeTypes::template AdjointsModule<TapeTypes, PrimalValueIndexTape>; /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -169,7 +171,7 @@ namespace codi {
     EmptyChunkVector emptyVector;
 
     /** @brief The index handler for the active real's. */
-    static typename TapeTypes::IndexHandler indexHandler;
+    typename TapeTypes::IndexHandler indexHandler;
 
     /** @brief Disables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = false;
@@ -195,18 +197,21 @@ namespace codi {
         PrimalValueModule<TapeTypes, PrimalValueIndexTape>(),
         ExternalFunctionModule<TapeTypes, PrimalValueIndexTape<TapeTypes> > (),
         IOModule<TapeTypes, PrimalValueIndexTape<TapeTypes> > (),
+        TapeTypes::template AdjointsModule<TapeTypes, PrimalValueIndexTape<TapeTypes> >(),
         emptyVector(),
+        indexHandler(MaxStatementIntSize - 1),
         primalsCopy(NULL),
         primalsCopySize(0),
         usePrimalCopy(true) {
+      this->initTapeBaseModule();
       this->initPrimalValueModule(&emptyVector);
       this->initExtFuncModule(&this->constantValueVector);
       this->initIOModule();
-      this->initTapeBaseModule();
+      this->initAdjointsModule();
      }
 
     /** @brief Tear down the tape. Delete all values from the modules */
-    ~PrimalValueIndexTape() {
+    virtual ~PrimalValueIndexTape() {
       if(NULL != primalsCopy) {
         free(primalsCopy);
         primalsCopy = NULL;
@@ -226,6 +231,7 @@ namespace codi {
     void swap(PrimalValueIndexTape& other) {
       this->swapTapeBaseModule(other);
       this->swapPrimalValueModule(other);
+      this->swapAdjointsModule(other);
 
       // the index handler is not swapped because the indices of the program state need to stay valid
 
@@ -241,14 +247,14 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end) {
-      if(NULL != this->adjoints) {
+      if(this->adjointsValid()) {
         auto clearFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
           CODI_UNUSED(value);
           CODI_UNUSED(handle);
           CODI_UNUSED(stmtSize);
 
-          if(*index < this->adjointsSize) {
-            this->adjoints[*index] = GradientValue();
+          if(*index < this->getAdjointsSize()) {
+            this->clearAdjoint(*index);
           }
         };
 
@@ -256,7 +262,7 @@ namespace codi {
         this->stmtVector.forEachReverse(start.inner.inner.inner.inner, end.inner.inner.inner.inner, clearFunc);
       }
     }
-    using TapeBaseModule<TapeTypes, PrimalValueIndexTape>::clearAdjoints;
+    using typename TapeTypes::template AdjointsModule<TapeTypes, PrimalValueIndexTape>::clearAdjoints;
 
     /**
      * @brief Set the size of the index and statement data and the primal vector.
@@ -662,7 +668,7 @@ namespace codi {
 
       std::swap(this->primals, primalsCopy);
 
-      AdjVecInterface<GradientValue> interface(this->adjoints, primalsCopy);
+      AdjVecInterface<GradientValue> interface(this->getAdjoints(), primalsCopy);
 
       Wrap_evaluateStackPrimal primalFunc{};
       auto primalIter = &TapeTypes::ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
@@ -688,7 +694,7 @@ namespace codi {
 
       this->resizeAdjointsToIndexSize();
 
-      evaluateInternal(start, end, this->adjoints, false);
+      evaluateInternal(start, end, this->getAdjoints(), false);
 
       evaluatePrimalInternal(end, start);
     }
@@ -709,7 +715,7 @@ namespace codi {
 
       this->resetPrimalValues(start);
 
-      evaluateForwardInternal(start, end, this->adjoints, false);
+      evaluateForwardInternal(start, end, this->getAdjoints(), false);
     }
 
     /**
@@ -809,17 +815,11 @@ namespace codi {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);
 
-      this->addTapeBaseValues(values);
+      this->addAdjointValues(values);
       this->addPrimalValueValues(values);
       this->addExtFuncValues(values);
 
       return values;
     }
   };
-
-  /**
-   * @brief The instantiation of the index manager for the primal index tapes.
-   */
-  template <typename TapeTypes>
-  typename TapeTypes::IndexHandler PrimalValueIndexTape<TapeTypes>::indexHandler(MaxStatementIntSize - 1);
 }

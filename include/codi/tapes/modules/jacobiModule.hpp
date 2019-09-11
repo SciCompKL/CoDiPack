@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -140,8 +140,7 @@ namespace codi {
         ENABLE_CHECK(OptZeroAdjoint, !isTotalZero(adj)){
           for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
             --dataPos;
-            adjoints[indices[dataPos]] += adj * jacobies[dataPos];
-
+            Tape::incrementAdjoint(indices[dataPos], adj, jacobies[dataPos], adjoints);
           }
         } else {
           dataPos -= activeVariables;
@@ -168,7 +167,7 @@ namespace codi {
       template<typename AdjointData>
       static CODI_INLINE void incrementTangents(AdjointData& adj, const AdjointData* adjoints, const StatementInt& activeVariables, size_t& dataPos, const Real* jacobies, const Index* indices) {
         for(StatementInt curVar = 0; curVar < activeVariables; ++curVar) {
-          adj += adjoints[indices[dataPos]] * jacobies[dataPos];
+          Tape::incrementTangent(adj, adjoints, indices[dataPos], jacobies[dataPos]);
           dataPos += 1;
         }
       }

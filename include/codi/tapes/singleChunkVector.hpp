@@ -129,6 +129,35 @@ namespace codi {
       bool operator == (const Position& o) {
         return this->inner == o.inner && chunk == o.chunk && data == o.data;
       }
+
+      /**
+       * @brief Ordering of positions.
+       * @param o The position to compare to.
+       * @return True if this position is ordered before the other.
+       */
+      bool operator < (const Position& o) {
+        return this->chunk < o.chunk || (this->chunk == o.chunk && (this->data < o.data || (this->data == o.data && this->inner < o.inner)));
+      }
+
+      /**
+       * @brief Ordering of positions.
+       * @param o The position to compare to.
+       * @return True if this position is ordered before the other, or if both are the same.
+       */
+      bool operator <= (const Position& o) {
+        return this->chunk < o.chunk || (this->chunk == o.chunk && (this->data < o.data || (this->data == o.data && this->inner <= o.inner)));
+      }
+
+      /**
+       * @brief Output position to std ostream.
+       * @param stream The output stream.
+       * @param pos Position.
+       * @return Reference to the output stream.
+       */
+      friend std::ostream& operator<<(std::ostream& stream, const Position& pos) {
+        stream << "[" << pos.chunk << ", " << pos.data << ", " << pos.inner << "]";
+        return stream;
+      }
     };
 
   private:
