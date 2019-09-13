@@ -40,6 +40,38 @@
 namespace codi {
 
   /**
+   *  @brief Adapters for arrays such that they can be provided as template template arguments.
+   */
+  namespace adapters {
+
+    /**
+     * @brief Template template argument adapters for std::array
+     *
+     * @tparam s  The size of the array.
+     */
+    template<size_t s>
+    struct StdArray {
+
+        /**
+         * @brief Type definition for std::array that can be used as a template template argument.
+         *
+         * @tparam T  The storage type of the array.
+         */
+        template <typename T>
+        using Type = std::array<T, s>;
+    };
+
+    /**
+     * @brief Type definition for std::vector that can be used as a template template argument.
+     *
+     * @tparam T  The storage type of the vector.
+     */
+    template <typename T>
+    using StdVector = std::vector<T>;
+
+  }
+
+  /**
    * @brief Empty definition of a vector storage object
    *
    * This interface captures the access to an arbitrary data store. In CoDiPack it is specialized
