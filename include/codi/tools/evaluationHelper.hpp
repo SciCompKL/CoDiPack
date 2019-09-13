@@ -159,6 +159,9 @@ namespace codi {
       void computeHessian(const VecX& locX, Hes& hes, VecY& locY, Jac& jac);
     protected:
 
+      /**
+       * @brief Helper for the evaluation of the function object with the CoDiPack vectors. *
+       */
       void eval() {
         func(x.vec, y.vec);
       }
@@ -332,7 +335,7 @@ namespace codi {
   struct ReverseHandleBase : public EvaluationHandleBase<Func, CoDiType, InputVectorType, OutputVectorType> {
 
     protected:
-      TapeHelper<CoDiType> th;
+      TapeHelper<CoDiType> th; /**< Tape helper handle for the algorithms */
 
     public:
 
@@ -342,7 +345,10 @@ namespace codi {
         th()
       {}
 
-      /** \copydoc EvaluationHandleBase::setAllPrimals */
+      /** \copydoc EvaluationHandleBase::setAllPrimals
+       *
+       * @param[in] reg  If the input variables should be registered.
+       */
       template<typename VecX>
       void setAllPrimals(const VecX& locX, bool reg) {
         codiAssert(locX.size() <= this->x.size());
@@ -355,7 +361,11 @@ namespace codi {
         }
       }
 
-      /** \copydoc EvaluationHandleBase::getAllPrimals */
+      /**
+       * \copydoc EvaluationHandleBase::getAllPrimals
+       *
+       * @param[in] reg  If the output variables should be registered.
+       */
       template<typename VecY>
       void getAllPrimals(VecY& locY, bool reg) {
         codiAssert(locY.size() <= this->y.size());
@@ -831,6 +841,8 @@ namespace codi {
        * \endcode
        *
        * @param[in] func  The function object for the evaluation.
+       * @param[in]    m  The size of the output vector.
+       * @param[in]    n  The size of the input vector.
        *
        * @tparam         CoDiType  An arbitrary CoDiPack type based on ActiveReal. All definitions in codi.hpp are
        *                           supported. For user developed tapes some sub classes need to be specialized.
@@ -1096,7 +1108,6 @@ namespace codi {
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]      x  The vector with the primal values where the function object is evaluated.
-       * @param[in]  ySize  The size of the output vector.
        * @param[out]   jac  The Jacobian in which the values are stored.
        *
        * @tparam  Handle  The handle type for the data storage and the evaluation.
@@ -1117,7 +1128,6 @@ namespace codi {
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]      x  The vector with the primal values where the function object is evaluated.
-       * @param[in]  ySize  The size of the output vector.
        * @param[out]   hes  The Hessian in which the values are stored.
        *
        * @tparam  Handle  The handle type for the data storage and the evaluation.
@@ -1220,7 +1230,6 @@ namespace codi {
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]      x  The vector with the primal values where the function object is evaluated.
-       * @param[in]  ySize  The size of the output vector.
        * @param[out]   jac  The Jacobian in which the values are stored.
        * @param[out]   hes  The Hessian in which the values are stored.
        *

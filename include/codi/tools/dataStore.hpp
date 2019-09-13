@@ -258,6 +258,16 @@ namespace codi {
       return *data;
     }
 
+    /**
+     * @brief Get data from the data store, without copying it as a reference.
+     *
+     * The call to this function has to correspond to
+     * the write call which stored the actual data.
+     *
+     * @return The reference to the data stored.
+     *
+     * @tparam Type The type of the extracted data.
+     */
     template<typename Type>
     Type& getDataRef() {
       Type* data = nextStore<Type>();

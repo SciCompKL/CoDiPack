@@ -723,7 +723,7 @@ namespace codi {
   template<typename CoDiType>
   class TapeHelper<CoDiType, enableIfJacobianTape<typename CoDiType::TapeType>> : public TapeHelperJacobi<CoDiType> {};
 
-  /** \copydoc ::codi::TapeHelperBase */
+  /** \copydoc codi::TapeHelperBase */
   template<typename CoDiType>
   class TapeHelper<CoDiType, enableIfPrimalValueTape<typename CoDiType::TapeType>> : public TapeHelperPrimal<CoDiType> {};
 

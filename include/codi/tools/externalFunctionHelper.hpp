@@ -592,7 +592,9 @@ namespace codi {
        * @brief This function needs to be called as the last function. It will finally add the external function to the
        * tape such that the specialized reverse implementation is called during the reverse interpretation.
        *
-       * @param[in] func  The logic for the reverse implementation.
+       * @param[in]    revFunc  The logic for the reverse implementation. Can be NULL.
+       * @param[in]   forwFunc  The logic for the forward implementation. Can be NULL.
+       * @param[in] primalFunc  The logic for the primal implementation. Can be NULL.
        */
       void addToTape(ReverseFunc revFunc, ForwardFunc forwFunc = nullptr, PrimalFunc primalFunc = nullptr) {
         if(isTapeActive) {
