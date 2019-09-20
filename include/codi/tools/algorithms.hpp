@@ -529,7 +529,7 @@ namespace codi {
               }
 
               if(j == 0) {
-                for(size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < outputSize; vecPos1st += 1) {
+                for(size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < output.szie(); vecPos1st += 1) {
                   jac(i + vecPos1st, k) = GT1st::at(tape.getGradient(input[k].getGradientData()), vecPos1st).value();
                 }
               }
@@ -635,7 +635,7 @@ namespace codi {
 
         for(size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
           // No check required since this are forward types.
-          GT2nd::at(input[pos + curDim].value().gradient(), curDim) = value;
+          GT2nd::at(values[pos + curDim].value().gradient(), curDim) = value;
         }
       }
 

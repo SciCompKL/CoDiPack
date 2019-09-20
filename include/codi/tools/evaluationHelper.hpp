@@ -70,7 +70,7 @@ namespace codi {
       size_t m; /**< Size of the output variables */
       size_t n; /**< Size of the input variables */
 
-      Func func; /**< The function object for the evaluations. */
+      Func& func; /**< The function object for the evaluations. */
 
       VectorStorage<InputVector> x;  /**< Storage for the input values as the CoDiPack types. */
       VectorStorage<OutputVector> y;  /**< Storage for the output values as the CoDiPack types. */
@@ -87,7 +87,7 @@ namespace codi {
        * @param[in]    m  The size of the output vector.
        * @param[in]    n  The size of the input vector.
        */
-      EvaluationHandleBase(Func func, size_t m, size_t n) : m(m), n(n), func(func), x(n), y(m),
+      EvaluationHandleBase(Func& func, size_t m, size_t n) : m(m), n(n), func(func), x(n), y(m),
           dummyVector(), dummyJacobian() {}
 
       /**
@@ -340,7 +340,7 @@ namespace codi {
     public:
 
       /** \copydoc EvaluationHandleBase::EvaluationHandleBase */
-      ReverseHandleBase(Func func, size_t m, size_t n) :
+      ReverseHandleBase(Func& func, size_t m, size_t n) :
         EvaluationHandleBase<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n),
         th()
       {}
@@ -483,8 +483,6 @@ namespace codi {
             template<typename> class InputVectorType,
             template<typename> class OutputVectorType>
   struct ReverseHandleJacobiTapes : public ReverseHandleBase<Func, CoDiType, InputVectorType, OutputVectorType> {
-
-
 
       // Use constructors of the base class.
       using ReverseHandleBase<Func, CoDiType, InputVectorType, OutputVectorType>::ReverseHandleBase;
@@ -741,7 +739,7 @@ namespace codi {
        * @tparam Func  The function object which describes the evaluation function.
        */
       template<typename Func>
-      static CODI_INLINE DefaultHandle<Func> createHandleDefault(const Func& func, size_t m, size_t n) {
+      static CODI_INLINE DefaultHandle<Func> createHandleDefault(Func& func, size_t m, size_t n) {
         return DefaultHandle<Func>(func, m, n);
       }
 
@@ -755,7 +753,7 @@ namespace codi {
        * @tparam    n  The size of the input vector.
        */
       template<typename Func, size_t m, size_t n>
-      static CODI_INLINE DefaultHandleFixed<Func, m, n> createHandleDefaultFixed(const Func& func) {
+      static CODI_INLINE DefaultHandleFixed<Func, m, n> createHandleDefaultFixed(Func& func) {
         return DefaultHandleFixed<Func, m, n>(func, m, n);
       }
 
@@ -769,7 +767,7 @@ namespace codi {
        * @tparam Func  The function object which describes the evaluation function.
        */
       template<typename Func>
-      static CODI_INLINE DefaultHandle2nd<Func> createHandleDefault2nd(const Func& func, size_t m, size_t n) {
+      static CODI_INLINE DefaultHandle2nd<Func> createHandleDefault2nd(Func& func, size_t m, size_t n) {
         return DefaultHandle2nd<Func>(func, m, n);
       }
 
@@ -783,7 +781,7 @@ namespace codi {
        * @tparam    n  The size of the input vector.
        */
       template<typename Func, size_t m, size_t n>
-      static CODI_INLINE DefaultHandleFixed2nd<Func, m, n> createHandleDefaultFixed2nd(const Func& func) {
+      static CODI_INLINE DefaultHandleFixed2nd<Func, m, n> createHandleDefaultFixed2nd(Func& func) {
         return DefaultHandleFixed2nd<Func, m, n>(func, m, n);
       }
 
@@ -805,7 +803,7 @@ namespace codi {
        * @tparam     Func  The function object which describes the evaluation function.
        */
       template<typename CoDiType, typename Func>
-      static CODI_INLINE EvaluationHandle<Func, CoDiType, InputVectorType, OutputVectorType> createHandle(const Func& func, size_t m, size_t n) {
+      static CODI_INLINE EvaluationHandle<Func, CoDiType, adapters::StdVector, adapters::StdVector> createHandle(Func& func, size_t m, size_t n) {
         return EvaluationHandle<Func, CoDiType, adapters::StdVector, adapters::StdVector>(func, m, n);
       }
 
@@ -827,7 +825,7 @@ namespace codi {
        * @tparam        n  The size of the input vector.
        */
       template<typename CoDiType, size_t m, size_t n, typename Func>
-      static CODI_INLINE EvaluationHandle<Func, CoDiType, adapters::StdArray<n>::template Type, adapters::StdArray<m>::template Type> createHandleFixed(const Func& func) {
+      static CODI_INLINE EvaluationHandle<Func, CoDiType, adapters::StdArray<n>::template Type, adapters::StdArray<m>::template Type> createHandleFixed(Func& func) {
         return EvaluationHandle<Func, CoDiType, adapters::StdArray<n>::template Type, adapters::StdArray<m>::template Type>(func, m, n);
       }
 
@@ -854,7 +852,7 @@ namespace codi {
                template<typename> class InputVectorType,
                template<typename> class OutputVectorType,
                typename Func>
-      static CODI_INLINE EvaluationHandle<Func, CoDiType, InputVectorType, OutputVectorType> createHandleFull(const Func& func, size_t m, size_t n) {
+      static CODI_INLINE EvaluationHandle<Func, CoDiType, InputVectorType, OutputVectorType> createHandleFull(Func& func, size_t m, size_t n) {
         return EvaluationHandle<Func, CoDiType, InputVectorType, OutputVectorType>(func, m, n);
       }
 

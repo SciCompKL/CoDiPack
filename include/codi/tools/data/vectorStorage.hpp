@@ -138,10 +138,7 @@ namespace codi {
       using VecType = std::vector<T, Allocator>; /**< std::vector */
       using Element = T; /**< Element type of the std::vector */
 
-    private:
       VecType vec; /**< Instantiation of the std::vector */
-
-    public:
 
       /** \copydoc VectorStorage::VectorStorage */
       explicit VectorStorage(size_t size) : vec(size) {}
@@ -193,10 +190,7 @@ namespace codi {
       using VecType = std::array<T, N>; /**< std::array */
       using Element = T; /**< Element type of std::array */
 
-    private:
-      VecType vec; /**< Instantiation of the std::vector */
-
-    public:
+      VecType vec; /**< Instantiation of the std::array */
 
       /**
        * @brief The constructor ignores the given size.

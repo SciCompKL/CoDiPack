@@ -47,5 +47,5 @@ namespace codi {
   };
 
   template<typename Dummy>
-  Dummy StaticDummy::dummy;
+  Dummy StaticDummy<Dummy>::dummy;
 }

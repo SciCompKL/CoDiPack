@@ -151,15 +151,15 @@ namespace codi {
 
     public:
 
-//      /**
-//       * @brief Constructor for the helper.
-//       */
-//      TapeHelperBase() :
-//        tape(CoDiType::getGlobalTape()),
-//        inputValues(),
-//        outputValues(),
-//        wasForwardEvaluated(false)
-//      {}
+      /**
+       * @brief Constructor for the helper.
+       */
+      TapeHelperBase() :
+        tape(CoDiType::getGlobalTape()),
+        inputValues(),
+        outputValues(),
+        wasForwardEvaluated(false)
+      {}
 
       /**
        * @brief Destructor for the helper.
@@ -546,7 +546,7 @@ namespace codi {
        * @tparam Jac  Needs to implement the access operators (e.g. operator()) as in the Jacobian class.
        */
       template<typename Jac = DummyJacobian>
-      void evalHessian(HessianType& hes, Jac& jac = StaticDummy::dummy);
+      void evalHessian(HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy);
 
       /**
        * @brief Reevaluate the tape at a given position and compute the full Hessian at the new position.
@@ -649,7 +649,7 @@ namespace codi {
        * @tparam Jac Unused.
        */
       template<typename Jac = DummyJacobian>
-      void evalHessian(HessianType& hes, Jac& jac = StaticDummy::dummy) {
+      void evalHessian(typename TapeHelperBase<CoDiType>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         CODI_UNUSED(hes);
 
         CODI_EXCEPTION(
@@ -694,23 +694,23 @@ namespace codi {
        * \copydoc TapeHelperBase::evalHessian
        */
       template<typename Jac = DummyJacobian>
-      void evalHessian(HessianType& hes, Jac& jac = StaticDummy::dummy) {
+      void evalHessian(typename TapeHelperBase<CoDiType>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
 
         using Algo = Algorithms<CoDiType>;
-        typename Algo::EvaluationType evalType = Algo::getEvaluationChoice(inputValues.size(), outputValues.size());
+        typename Algo::EvaluationType evalType = Algo::getEvaluationChoice(this->inputValues.size(), this->outputValues.size());
 
         if(Algo::EvaluationType::Forward == evalType) {
-          changeStateToForwardEvaluation();
+          this->changeStateToForwardEvaluation();
         } else if(Algo::EvaluationType::Reverse == evalType) {
-          changeStateToReverseEvaluation();
+          this->changeStateToReverseEvaluation();
         } else {
           CODI_EXCEPTION("Evaluation type not implemented.");
         }
 
         Algorithms<CoDiType>::computeHessianPrimalValueTape(
-              tape, tape.getZeroPosition(), tape.getPosition(),
-              inputValues.data(), inputValues.size(),
-              outputValues.data(), outputValues.size(),
+              this->tape, this->tape.getZeroPosition(), this->tape.getPosition(),
+              this->inputValues.data(), this->inputValues.size(),
+              this->outputValues.data(), this->outputValues.size(),
               hes, jac);
       }
   };
