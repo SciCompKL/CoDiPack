@@ -1,6 +1,21 @@
 Tutorials {#tutorialPage}
 =======
 
+The CoDiPack tutorials are structured in three parts. The first part are the beginner (B) tutorials where we use some
+helper tools in CoDiPack to compute the derivative, Jacobians and Hessians of some functions.
+
+The second section of the tutorials are the regular CoDiPack tutorials. Here, all details of the usage of CoDiPack are
+explained step step and the user has the full control about how the derivatives are computed.
+
+The third section are the advanced (A) tutorials which introduce some additional helpers, which can be used to reduce
+the required memory and the runtime of the tape evaluations.
+
+The beginner CoDiPack tutorials:
+  - \subpage TutorialB1 "Tutorial B1": Evaluation helper introduction
+    - Compute Jacbioans and Hessians of functions
+  - \subpage TutorialB2 "Tutorial B2": Tape helper introduction
+    - Simple tape management and algorithms for computation of gradients, Jacobians and Hessians
+
 The CoDiPack tutorials:
   - \subpage Tutorial1 "Tutorial 1": Explains the basic usage for the RealForward type.
   - \subpage Tutorial2 "Tutorial 2": Explains the basic usage for the RealReverse type.
@@ -11,7 +26,7 @@ The CoDiPack tutorials:
   - \subpage Tutorial7 "Tutorial 7": Higher order derivatives
    - \subpage Tutorial7_1 "Tutorial 7.1": Higher order derivatives with the template interface
    - \subpage Tutorial7_2 "Tutorial 7.2": Higher order derivatives without a helper interface
-  - \subpage Tutorial8 "Tutorial 8": Several different gradient computations / rest of reverse tapes
+  - \subpage Tutorial8 "Tutorial 8": Several different gradient computations / reset of reverse tapes
   - \subpage Tutorial9 "Tutorial 9": Gradient evaluations for different program configurations
 
 The advanced CoDiPack tutorials:

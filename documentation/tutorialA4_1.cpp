@@ -41,7 +41,7 @@ void func(const Real* x, size_t l, Real* y) {
 }
 
 void vectorHelper() {
-  std::cout << "codi::RealReverse( vector helper):" << std::endl;
+  std::cout << "codi::RealReverse( vector helper): " << std::endl;
   // Reverse vector mode
 
   codi::RealReverse xR[5];
