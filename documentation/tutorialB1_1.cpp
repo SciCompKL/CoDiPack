@@ -46,11 +46,16 @@ void dotWithNorms(Real const* a, Real const* b, size_t n, Real& alpha, Real& aNo
   alpha = acos(alpha / (aNorm * bNorm));
 }
 
-template<typename Real>
-void codiDotWithNormsWrap(std::vector<Real> const &x, std::vector<Real> &y) {
-  size_t n = x.size() / 2;
-  dotWithNorms(&x[0], &x[n], n, y[0], y[1], y[2]);
-}
+struct WrapperDotWithNorms {
+  size_t n;
+
+  WrapperDotWithNorms(size_t n) : n(n) {}
+
+  template<typename VecX, typename VecY>
+  void operator() (VecX const &x, VecY &y) {
+    dotWithNorms(&x[0], &x[this->n], this->n, y[0], y[1], y[2]);
+  }
+};
 
 void printVector(std::string const& name, std::vector<double> const& v, size_t length, size_t offset) {
   std::cout << "Vector " << name << ": {";
@@ -97,10 +102,11 @@ int main(int nargs, char** args) {
   if(2 <= nargs) {
     mode = std::stoi(args[1]);
 
-    if(mode < 1 || 2 < mode) {
-      std::cerr << "Error: Please enter a mode from 1 to 2, it was '" << mode << "'." << std::endl;
-      std::cerr << "  Mode 1: evalJacobian and evalHessian call" << std::endl;
-      std::cerr << "  Mode 2: evalJacobianAndHessian call" << std::endl;
+    if(mode < 1 || 3 < mode) {
+      std::cerr << "Error: Please enter a mode from 1 to 3, it was '" << mode << "'." << std::endl;
+      std::cerr << "  Mode 1: Function object" << std::endl;
+      std::cerr << "  Mode 2: C++11 lambda" << std::endl;
+      std::cerr << "  Mode 1: C++14 generic lambda" << std::endl;
 
       exit(-1);
     }
@@ -122,13 +128,36 @@ int main(int nargs, char** args) {
   auto jac = EH::createJacobian(3, xSize);
   auto hes = EH::createHessian(3, xSize);
 
-  if(1 == mode) {
-    std::cout << "Using evalJacobian and evalHessian." << std::endl;
-    EH::evalJacobian(codiDotWithNormsWrap<EH::JacobianComputationType>, x, 3, jac);
-    EH::evalHessian(codiDotWithNormsWrap<EH::HessianComputationType>, x, 3, hes);
-  } else if(2 == mode) {
-    std::cout << "Using evalJacobianAndHessian." << std::endl;
-    EH::evalJacobianAndHessian(codiDotWithNormsWrap<EH::HessianComputationType>, x, 3, jac, hes);
+  if(1 == mode) { // Function object
+
+    std::cout << "Using a structure function object." << std::endl;
+    WrapperDotWithNorms wrapDotWithNorms(n);
+
+    EH::evalJacobian(wrapDotWithNorms, x, 3, jac);
+    EH::evalHessian(wrapDotWithNorms, x, 3, hes);
+
+  } else if(2 == mode) { // C++11 lambda
+
+    std::cout << "Using a C++11 lambda." << std::endl;
+    auto lambdaWrapDotWithNorms = [n](std::vector<EH::HessianComputationType> const &x, std::vector<EH::HessianComputationType> &y) {
+      dotWithNorms(&x[0], &x[n], n, y[0], y[1], y[2]);
+    };
+
+    EH::evalJacobianAndHessian(lambdaWrapDotWithNorms, x, 3, jac, hes);
+  } else if(3 == mode) { // C++14 generic lambda
+#if 201402L <= __cplusplus
+
+    std::cout << "Using a C++14 generic lambda." << std::endl;
+    auto lambdaWrapDotWithNorms = [n](auto const&x, auto &y) {
+      dotWithNorms(&x[0], &x[n], n, y[0], y[1], y[2]);
+    };
+
+    EH::evalJacobian(lambdaWrapDotWithNorms, x, 3, jac);
+    EH::evalHessian(lambdaWrapDotWithNorms, x, 3, hes);
+#else
+    std::cerr << "Error: Compile with C++14 to use generic lambdas." << std::endl;
+    exit(-1);
+#endif
   } else {
     std::cerr << "Error: Undefined mode '" << mode << "'." << std::endl;
     exit(-1);

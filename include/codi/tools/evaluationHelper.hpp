@@ -1070,7 +1070,7 @@ namespace codi {
        * @tparam   Jac  The type of the Jacobian where the results are stored.
        * @tparam   Hes  The type of the Jacobian where the results are stored.
        */
-      template<typename Func, typename VecX, typename VecY, typename Jac, typename Hes>
+      template<typename Func, typename VecX, typename Jac, typename Hes>
       static CODI_INLINE void evalJacobianAndHessian(
           Func& func,
           const VecX& x,
@@ -1236,7 +1236,7 @@ namespace codi {
        * @tparam     Jac  The type of the Jacobian where the results are stored.
        * @tparam     Hes  The type of the Jacobian where the results are stored.
        */
-      template<typename Handle, typename VecX, typename VecY, typename Jac, typename Hes>
+      template<typename Handle, typename VecX, typename Jac, typename Hes>
       static CODI_INLINE void evalHandleJacobianAndHessian(
           Handle& handle,
           const VecX& x,

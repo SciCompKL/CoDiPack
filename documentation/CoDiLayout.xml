@@ -5,7 +5,10 @@
     <tab type="mainpage" visible="yes" title=""/>
     <!-- <tab type="pages" visible="yes" title="" intro=""/> -->
     <tab type="usergroup" title="Tutorials" url="@ref tutorialPage">
-      <tab type="user" title="Tutorial B1" url="@ref TutorialB1"/>
+      <tab type="usergroup" title="Tutorial B1" url="@ref TutorialB1">
+        <tab type="user" title="Tutorial B1.1" url="@ref TutorialB1_1"/>
+        <tab type="user" title="Tutorial B1.2" url="@ref TutorialB1_2"/>
+      </tab>
       <tab type="user" title="Tutorial B2" url="@ref TutorialB2"/>
       <tab type="user" title="Tutorial 1" url="@ref Tutorial1"/>
       <tab type="user" title="Tutorial 2" url="@ref Tutorial2"/>
