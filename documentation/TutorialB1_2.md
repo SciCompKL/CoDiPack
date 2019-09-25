@@ -1,6 +1,10 @@
 Tutorial B1.2: Handle creation and advanced uses of the evaluation helper {#TutorialB1_2}
 ============
 
+This tutorial explains in more details than tutorial [B1](@ref TutorialB1) how other CoDiPack types than the default ones
+in the codi::EvaluationHelper can be used and how the performance can be improved if a function object needs to be
+evaluated multiple times.
+
 The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper computes the angle between two vectors \f$a\f$
 and \f$b\f$. The equation is:
 \f[

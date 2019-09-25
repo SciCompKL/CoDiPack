@@ -1,6 +1,9 @@
 Tutorial B1.1: Function objects for the evaluation helper {#TutorialB1_1}
 ============
 
+This tutorial explains in more details than tutorial [B1](@ref TutorialB1) how function objects can be implemented
+such that they can be used together with the codi::EvaluationHelper.
+
 The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper computes the angle between two vectors \f$a\f$
 and \f$b\f$. The equation is:
 \f[

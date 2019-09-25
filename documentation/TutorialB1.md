@@ -1,7 +1,10 @@
 Tutorial B1: Evaluation helper {#TutorialB1}
 ============
 
-In this tutorial we want to differentiate a function that computes the angle between two vectors \f$a\f$ and \f$b\f$.
+This tutorial describes the basic use of the codi::EvaluationHelper which can be used to compute Jacobians and Hessians
+of arbitrary function in an automatic fashion.
+
+We want to differentiate a function that computes the angle between two vectors \f$a\f$ and \f$b\f$.
 Mathematical this is done by computing the dot product of the normalized vectors and taking the arcus cosine function of
 the result:
 \f[

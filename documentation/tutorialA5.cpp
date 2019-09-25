@@ -124,9 +124,7 @@ int main(int nargs, char** args) {
   using EH = codi::EvaluationHelper;
 
   WrapperDotWithNorms wrapDotWithNorms(n);
-
-  auto hDef2nd = EH::createHandleDefault2nd(wrapDotWithNorms, 3, xSize);
-  EH::evalHandleHessian(hDef2nd, x, hes);
+  EH::evalHessian(wrapDotWithNorms, x, 3, hes);
 
   printVector("a", x, n, 0);
   printVector("b", x, n, n);
