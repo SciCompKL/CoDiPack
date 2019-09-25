@@ -40,3 +40,4 @@ The advanced CoDiPack tutorials:
     - Handle small functions where the derivative is known
   - \subpage TutorialA4 "Tutorial A4": Advanced vector mode usage
     - \subpage TutorialA4_1 "Tutorial A4.1": OpenMP reverse mode evaluation
+  - \subpage TutorialA5 "Tutorial A5": Custom Jacobian and Hessian storage

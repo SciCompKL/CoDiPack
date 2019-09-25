@@ -1,7 +1,7 @@
 Tutorial B1.1: Function objects for the evaluation helper {#TutorialB1_1}
 ============
 
-The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper computed the  angle between two vectors \f$a\f$
+The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper computes the angle between two vectors \f$a\f$
 and \f$b\f$. The equation is:
 \f[
   \alpha = f(a, b) = \arccos\left(\frac{\scalar{a}{b}}{\norm{a} \norm{b}}\right)

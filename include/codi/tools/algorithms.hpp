@@ -529,7 +529,7 @@ namespace codi {
               }
 
               if(j == 0) {
-                for(size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < output.szie(); vecPos1st += 1) {
+                for(size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < output.size(); vecPos1st += 1) {
                   jac(i + vecPos1st, k) = GT1st::at(tape.getGradient(input[k].getGradientData()), vecPos1st).value();
                 }
               }

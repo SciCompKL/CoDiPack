@@ -37,6 +37,37 @@
  */
 namespace codi {
 
+
+  /**
+   * @brief Basic interface definition what the algorithms in the EvaluationHelper, Algorithms, etc. classes use to
+   * access the data.
+   *
+   * @tparam T  The data type of the internal storage.
+   */
+  template<typename T>
+  struct JacobianInterface {
+
+      virtual ~JacobianInterface(){}
+
+      /**
+       * @brief Constant access to the specified element of the Jacobian.
+       *
+       * @param[in] i  Output value of the function. Range: [0, m)
+       * @param[in] j  Input value of the function. Range: [0,n)
+       *
+       * @return Value/reference of the specified location.
+       */
+      virtual T operator()(const size_t i, const size_t j) const = 0;
+
+      /**
+       * @brief Access to the specified element of the hessian.
+       *
+       * \copydetails operator()(const size_t i, const size_t j) const
+       */
+      virtual T& operator()(const size_t i, const size_t j) = 0;
+  };
+
+
   /**
    * @brief A dummy hessian that can be accessed via the call operator.
    */

@@ -26,6 +26,7 @@
       <tab type="usergroup" title="Tutorial A4" url="@ref TutorialA4">
         <tab type="user" title="Tutorial A4.1" url="@ref TutorialA4_1"/>
       </tab>
+      <tab type="user" title="Tutorial A5" url="@ref TutorialA5"/>
     </tab>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">

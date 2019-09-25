@@ -38,6 +38,37 @@
 namespace codi {
 
   /**
+   * @brief Basic interface definition what the algorithms in the EvaluationHelper, Algorithms, etc. classes use to
+   * access the data.
+   *
+   * @tparam T  The data type of the internal storage.
+   */
+  template<typename T>
+  struct HessianInterface {
+
+      virtual ~HessianInterface(){}
+
+      /**
+       * @brief Constant access to the specified element of the hessian.
+       *
+       * @param[in] i  Output value of the function. Range: [0, m)
+       * @param[in] j  Input value of the function. First derivative direction. Range: [0,n) (Fastest running index)
+       * @param[in] k  Input value of the function. Second derivative direction. Range: [0,n) (Slowest running index)
+       *
+       * @return Value/reference of the specified location.
+       */
+      virtual T operator()(const size_t i, const size_t j, const size_t k) const = 0;
+
+      /**
+       * @brief Access to the specified element of the hessian.
+       *
+       * \copydetails operator()(const size_t i, const size_t j, const size_t k) const
+       */
+      virtual T& operator()(const size_t i, const size_t j, const size_t k) = 0;
+
+  };
+
+  /**
    * @brief A dummy hessian that can be accessed via the call operator.
    */
   struct DummyHessian {

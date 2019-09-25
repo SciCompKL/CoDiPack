@@ -748,11 +748,11 @@ namespace codi {
        *
        * @param[in] func  The function object for the evaluation.
        *
-       * @tparam Func  The function object which describes the evaluation function.
        * @tparam    m  The size of the output vector.
        * @tparam    n  The size of the input vector.
+       * @tparam Func  The function object which describes the evaluation function.
        */
-      template<typename Func, size_t m, size_t n>
+      template<size_t m, size_t n, typename Func>
       static CODI_INLINE DefaultHandleFixed<Func, m, n> createHandleDefaultFixed(Func& func) {
         return DefaultHandleFixed<Func, m, n>(func, m, n);
       }
@@ -776,11 +776,11 @@ namespace codi {
        *
        * @param[in] func  The function object for the evaluation.
        *
-       * @tparam Func  The function object which describes the evaluation function.
        * @tparam    m  The size of the output vector.
        * @tparam    n  The size of the input vector.
+       * @tparam Func  The function object which describes the evaluation function.
        */
-      template<typename Func, size_t m, size_t n>
+      template<size_t m, size_t n, typename Func>
       static CODI_INLINE DefaultHandleFixed2nd<Func, m, n> createHandleDefaultFixed2nd(Func& func) {
         return DefaultHandleFixed2nd<Func, m, n>(func, m, n);
       }

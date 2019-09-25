@@ -361,7 +361,7 @@ namespace codi {
   /**
    * @brief A regular CoDiPack type that can be used for Hessian computations in the TapeHelper.
    */
-  using HessianComputationType = RealReversePrimalGen<RealForwardVec<4>, Direction< RealForwardVec<4>, 4>>;
+  using HessianComputationType = RealReversePrimalIndexGen<RealForwardVec<4>, Direction< RealForwardVec<4>, 4>>;
 
   /**
    * @brief A regular CoDiPack type that can be used for Jacobian computations in the TapeHelper.

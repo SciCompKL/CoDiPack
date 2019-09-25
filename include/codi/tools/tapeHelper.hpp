@@ -567,7 +567,7 @@ namespace codi {
         evalHessian(hes);
       }
 
-    private:
+    protected:
 
       /**
        * @brief Create a gradient vector with the given size.
