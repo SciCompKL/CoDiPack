@@ -127,19 +127,21 @@ namespace codi {
    * recording is deleted and a new one is started.
    *
    * @tparam CoDiType  A CoDiPack type e.g. codi::HessianComputationType, codi::JacobianComputationType, codi::RealReverse
+   * @tparam     Impl  The type of the implementing class for the virtual template methods.
    */
-  template<typename CoDiType>
+  template<typename CoDiType, typename Impl>
   class TapeHelperBase {
-    protected:
-      typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
-      typedef typename CoDiType::GradientData GradientData; /**< The type for the identification of gradients. */
-      typedef typename CoDiType::GradientValue GradientValue; /**< The type for the gradient computation */
+    public:
+      using Real = typename CoDiType::Real; /**< The floating point calculation type in the CoDiPack types. */
+      using GradientData = typename CoDiType::GradientData; /**< The type for the identification of gradients. */
+      using GradientValue = typename CoDiType::GradientValue; /**< The type for the gradient computation */
 
-      typedef typename TypeTraits<Real>::PassiveReal PassiveReal; /**< The basic type of the CoDiPack type */
+      using PassiveReal = typename TypeTraits<Real>::PassiveReal; /**< The basic type of the CoDiPack type */
 
       using JacobianType = Jacobian<std::vector<PassiveReal>>; /**< The Jacobian type for the evaluation. */
       using HessianType = Hessian<std::vector<PassiveReal>>; /**< The Hessian type for the evaluation. */
 
+    protected:
       typedef typename CoDiType::TapeType Tape; /**< The type of the tape implementation. */
 
       Tape& tape; /**< Reference to the global tape .*/
@@ -259,7 +261,7 @@ namespace codi {
        * @param[in,out] jac  The reference to the Jacobian.
        */
       void deleteJacobian(JacobianType& jac) {
-        JacobianType* jacPointer = *jac;
+        JacobianType* jacPointer = &jac;
 
         delete jacPointer;
       }
@@ -270,7 +272,7 @@ namespace codi {
        * @param[in,out] hes  The reference to the Hessian.
        */
       void deleteHessian(HessianType& hes) {
-        HessianType* hesPointer = *hes;
+        HessianType* hesPointer = &hes;
 
         delete hesPointer;
       }
@@ -424,23 +426,23 @@ namespace codi {
 
       /**
        * @brief Perform a reverse (adjoint) evaluation of the recorded tape.
-       * @param[in]  y_d  The seeding vector for the output variables (dependent variables).
+       * @param[in]  y_b  The seeding vector for the output variables (dependent variables).
        *                  The vector should be created with createGradientVectorOutput.
-       * @param[out] x_d  The result vector for the input variables (independent variables)
+       * @param[out] x_b  The result vector for the input variables (independent variables)
        *                  The vector should be created with createGradientVectorInput.
        */
-      CODI_INLINE void evalReverse(GradientValue const* y_d, GradientValue* x_d) {
+      CODI_INLINE void evalReverse(GradientValue const* y_b, GradientValue* x_b) {
         changeStateToReverseEvaluation();
 
         for(size_t i = 0; i < outputValues.size(); i += 1) {
-          tape.setGradient(outputValues[i], y_d[i]);
+          tape.setGradient(outputValues[i], y_b[i]);
         }
 
         tape.evaluate();
 
 
         for(size_t j = 0; j < inputValues.size(); j += 1) {
-          x_d[j] = tape.getGradient(inputValues[j]);
+          x_b[j] = tape.getGradient(inputValues[j]);
           tape.setGradient(inputValues[j], GradientValue());
         }
 
@@ -456,18 +458,18 @@ namespace codi {
        *
        * @param[in]    x  The new seeding vector for the primal input variables. The sequence of variables is the same as
        *                  for the register input call. The vector should be created with createPrimalVectorInput.
-       * @param[out] y_d  The seeding vector for the output variables (dependent variables)
+       * @param[out] y_b  The seeding vector for the output variables (dependent variables)
        *                  The vector should be created with createGradientVectorOutput.
-       * @param[in]  x_d  The result vector for the input variables (independent variables)
+       * @param[in]  x_b  The result vector for the input variables (independent variables)
        *                  The vector should be created with createGradientVectorInput.
        * @param[out]   y  The result of the primal evaluation. The sequence of variables is the same as for the register
        *                  output call. If the pointer is a null pointer then the result is not stored. The vector should
        *                  be created with createPrimalVectorOutput.
        */
-      CODI_INLINE void evalReverseAt(Real const* x, GradientValue const* y_d, GradientValue* x_d, Real* y = nullptr) {
+      CODI_INLINE void evalReverseAt(Real const* x, GradientValue const* y_b, GradientValue* x_b, Real* y = nullptr) {
         evalPrimal(x, y);
 
-        evalReverse(y_d, x_d);
+        evalReverse(y_b, x_b);
       }
 
       /**
@@ -560,14 +562,28 @@ namespace codi {
        * @param[out]   y  The result of the primal evaluation. The sequence of variables is the same as for the register
        *                  output call. If the pointer is a null pointer then the result is not stored. The vector should
        *                  be created with createPrimalVectorOutput.
+       * @param[out] jac  If also the Jacobian should be computed alongside the Hessian, a storage for the Jacobian can
+       *                  be provided. Needs to have the correct size and should be created with createJacobian.
+       *
+       * @tparam Jac  Needs to implement the access operators (e.g. operator()) as in the Jacobian class.
        */
-      CODI_INLINE void evalHessianAt(Real const* x, HessianType& hes, Real* y = nullptr) {
+      template<typename Jac = DummyJacobian>
+      CODI_INLINE void evalHessianAt(Real const* x, HessianType& hes, Real* y = nullptr, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         evalPrimal(x, y);
 
-        evalHessian(hes);
+        cast().evalHessian(hes, jac);
       }
 
     protected:
+
+      /**
+       * Cast to the implementing class for the virtual template functions
+       *
+       * @return The instance of the implementing class.
+       */
+      CODI_INLINE Impl& cast() {
+        return static_cast<Impl&>(*this);
+      }
 
       /**
        * @brief Create a gradient vector with the given size.
@@ -613,6 +629,39 @@ namespace codi {
       }
   };
 
+
+  /**
+   * @brief Empty implementation of TapeHelperBase.
+   *
+   * @tparam CoDiType  The CoDiPack type for which the helper works.
+   */
+  template<typename CoDiType>
+  class TapeHelperNoImpl : public TapeHelperBase <CoDiType, TapeHelperNoImpl<CoDiType> > {
+    public:
+      typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
+
+    private:
+      using Impl = TapeHelperNoImpl<CoDiType>; /**< The definition this class */
+    public:
+
+      /**
+       * * @brief No implementation yields compile time error.
+       * @param[in]  x  Unused.
+       * @param[out] y  Unused.
+       */
+      virtual void evalPrimal(Real const* x, Real* y = nullptr) = 0;
+
+      /**
+       * @brief No implementation yields compile time error.
+       * @param[out] hes  Unused.
+       * @param[out] jac  Unused.
+       *
+       * @tparam Jac Unused.
+       */
+      template<typename Jac = DummyJacobian>
+      void evalHessian(typename TapeHelperBase<CoDiType, Impl>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy);
+  };
+
   /**
    * @brief Tape helper functionality for Jacobian tapes.
    *
@@ -622,10 +671,13 @@ namespace codi {
    * @tparam CoDiType  The CoDiPack type for which the helper works.
    */
   template<typename CoDiType>
-  class TapeHelperJacobi : public TapeHelperBase <CoDiType> {
-    private:
+  class TapeHelperJacobi : public TapeHelperBase <CoDiType, TapeHelperJacobi<CoDiType> > {
+    public:
       typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
 
+    private:
+      using Impl = TapeHelperJacobi<CoDiType>; /**< The definition this class */
+    public:
 
       /**
        * @brief Throws an exception since primal evaluations are not support for Jacobian tapes.
@@ -649,7 +701,7 @@ namespace codi {
        * @tparam Jac Unused.
        */
       template<typename Jac = DummyJacobian>
-      void evalHessian(typename TapeHelperBase<CoDiType>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
+      void evalHessian(typename TapeHelperBase<CoDiType, Impl>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         CODI_UNUSED(hes);
 
         CODI_EXCEPTION(
@@ -667,10 +719,12 @@ namespace codi {
    * @tparam CoDiType  The CoDiPack type for which the helper works.
    */
   template<typename CoDiType>
-  class TapeHelperPrimal : public TapeHelperBase <CoDiType> {
-    private:
+  class TapeHelperPrimal : public TapeHelperBase <CoDiType, TapeHelperPrimal<CoDiType> > {
+    public:
       typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
 
+    private:
+      using Impl = TapeHelperJacobi<CoDiType>; /**< The definition this class */
     public:
 
       /**
@@ -694,7 +748,7 @@ namespace codi {
        * \copydoc TapeHelperBase::evalHessian
        */
       template<typename Jac = DummyJacobian>
-      void evalHessian(typename TapeHelperBase<CoDiType>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
+      void evalHessian(typename TapeHelperBase<CoDiType, Impl>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
 
         using Algo = Algorithms<CoDiType>;
         typename Algo::EvaluationType evalType = Algo::getEvaluationChoice(this->inputValues.size(), this->outputValues.size());
@@ -717,7 +771,7 @@ namespace codi {
 
   /** \copydoc codi::TapeHelperBase */
   template<typename CoDiType, typename = void>
-  class TapeHelper : public TapeHelperBase<CoDiType> {};
+  class TapeHelper : public TapeHelperBase<CoDiType, TapeHelperNoImpl<CoDiType>> {};
 
   /** \copydoc codi::TapeHelperBase */
   template<typename CoDiType>

@@ -364,9 +364,24 @@ namespace codi {
   using HessianComputationType = RealReversePrimalIndexGen<RealForwardVec<4>, Direction< RealForwardVec<4>, 4>>;
 
   /**
+   * @brief A regular CoDiPack type that can be used for Hessian computations in the TapeHelper.
+   *
+   * This is the scalar version which does not use a vector mode.
+   */
+  using HessianComputationScalarType = RealReversePrimalIndexGen<RealForward>;
+
+
+  /**
    * @brief A regular CoDiPack type that can be used for Jacobian computations in the TapeHelper.
    */
   using JacobianComputationType = RealReverseIndexVec<4>;
+
+  /**
+   * @brief A regular CoDiPack type that can be used for Jacobian computations in the TapeHelper.
+   *
+   * This is the scalar version which does not use a vector mode.
+   */
+  using JacobianComputationScalarType = RealReverseIndex;
 }
 
 #include "codi/tools/evaluationHelper.hpp"
