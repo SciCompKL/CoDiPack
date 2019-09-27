@@ -1,7 +1,7 @@
 Tutorial B1.1: Function objects for the evaluation helper {#TutorialB1_1}
 ============
 
-This tutorial explains in more details than tutorial [B1](@ref TutorialB1) how function objects can be implemented
+This tutorial explains in more detail than tutorial [B1](@ref TutorialB1) how function objects can be implemented
 such that they can be used together with the codi::EvaluationHelper.
 
 The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper computes the angle between two vectors \f$a\f$
@@ -40,7 +40,7 @@ In tutorial [B1](@ref TutorialB1) the expected interface is presented as:
 template<typename Real>
 void func(std::vector<Real> const &x, std::vector<Real> &y);
 ~~~~
-which is already generalized for the computation type. The next codi::EvaluationHelper will call the function object
+which is already generalized for the computation type. The codi::EvaluationHelper will call the function object
 as `func(x,y)` where the type of `x` and `y` are vectors of CoDiPack types. The vector type can be specified by the
 user in the more generalized `evalHandle` versions of the codi::EvaluationHelper. The expected function interface can
 then be generalized for the vectors:
@@ -69,7 +69,7 @@ Structures as function objects
 
 Structures can act as function objects if there functional call operator, that is `operator()`, is overloaded. Since
 this operator can have template paraemters the user no longer needs to know which kind of vectors or CoDiPack types are
-used. In addition the structure can have members which provide additional information for the call operator. The wrapper
+used. In addition, the structure can have members which provide additional information for the call operator. The wrapper
 object for the function `dotWithNorms` could then be implemented like:
 ~~~~{.cpp}
 struct WrapperDotWithNorms {
@@ -119,7 +119,7 @@ With the lambda functions in C++11 it is not possible to add a template paramete
 Therefore the Hessian type is used and the combined evaluation procedure. Otherwise two seperate lambda functions would
 need to be specified.
 
-For C++14 the situation is much simpler. Here introduction of generic lambdas provides us with the generalization such
+For C++14 the situation is much simpler. Here the introduction of generic lambdas provides us with the generalization such
 that we can define the function parameters with the auto variable:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;

@@ -2,7 +2,7 @@ Tutorial B1: Evaluation helper {#TutorialB1}
 ============
 
 This tutorial describes the basic use of the codi::EvaluationHelper which can be used to compute Jacobians and Hessians
-of arbitrary function in an automatic fashion.
+of an arbitrary function in an automatic fashion.
 
 We want to differentiate a function that computes the angle between two vectors \f$a\f$ and \f$b\f$.
 Mathematical this is done by computing the dot product of the normalized vectors and taking the arcus cosine function of
@@ -34,8 +34,8 @@ void dotWithNorms(double const* a, double const* b, size_t n, double& alpha, dou
 
 Since this function has \f$ 2 \cdot n \f$ input values and 3 output values, we would like to compute the Hessian and the
 Jacobian with the codi::EvaluationHelper. This class provides several helper functions for the evaluation of Jacobians
-and Hessians of functions object. Which kinds of function objects are accepted by the codi::EvaluationHelper is
-discussed in the sub tutorial ??. Here, we assume the simplest default case where the where the function declaration is:
+and Hessians of functions object. Which kind of function objects are accepted by the codi::EvaluationHelper is
+discussed in the sub tutorial [B1.1](@ref TutorialB1_1). Here, we assume the simplest default case where the function declaration is:
 ~~~~{.cpp}
 void func(std::vector<CoDiType> const &x, std::vector<CoDiType> &y);
 ~~~~
@@ -78,7 +78,7 @@ for the output values. Here, the first output value is the angle between the vec
 norms of the vectors.
 
 The codi::EvaluationHelper needs now to know where the function should be evaluated. For this we create a vector and fill
-it with the data for the vectors:
+it with the data for the vectors `a` and `b`:
 ~~~~{.cpp}
 std::vector<double> x(xSize);
 for(size_t i = 0; i < n; i += 1) {
@@ -112,7 +112,7 @@ the pointer to the `codiDotWithNormsWrap` wrapper function instantiated with the
 parameter it is now quite easy to use the function for both evaluations. The vector `x` contains the two packed vectors
 `a` and `b`. This packing of the input and output variables is necessary since we needed to fix an interface for the
 implementation of all the helpers in CoDiPack. The implementation in CoDiPack provides still a lot of flexibility that
-we will show in the other sub tutorials. The number of output variables need to be provieded for this function since
+we will show in the other sub tutorials. The number of output variables needs to be provieded for this function since
 the result is not requested with the call. The final argument needs to be the storage space for the Jacobian. A default
 value can be generated through the codi::EvaluationHelper function [createJacobian](@ref codi::EvaluationHelper::createJacobian).
 

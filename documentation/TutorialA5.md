@@ -32,10 +32,10 @@ void dotWithNorms(Real const* a, Real const* b, size_t n, Real& alpha, Real& aNo
 ~~~~
 For the implementation of the function wrapper please see tutorial [B1.1](@ref TutorialB1_1).
 
-Until now we used the function [createJacobian](@ref codi::EvaluationHelper::createJacobian) and
+In the B1 tutorials we used the function [createJacobian](@ref codi::EvaluationHelper::createJacobian) and
 [createHessian](@ref codi::EvaluationHelper::createHessian) to create the data storage for the derivatives. These functions
 return instances of the default CoDiPack implementations codi::Jacobian and codi::Hessian. The interfaces of these two
-implementations are already quite small but the algorithms behind the codi::EvaluationHelper require only functional
+implementations are already quite small but the algorithms behind the codi::EvaluationHelper require only the functional
 call operator, that is `operator ()`, as they are define in [JacobianInterface](@ref codi::JacobianInterface) and
 [HessianInterface](@ref codi::HessianInterface). The reference access of both interfaces looks like:
 ~~~~{.cpp}
@@ -49,7 +49,7 @@ For both interfaces the parameter `i` iterates over the output variables and j i
 Hessian version of the operator, the parameter `k` iterates over the input variables from the second order derivation.
 
 In order to demonstrate how a simple wrapper for the data structure can be written. We will create a wrapper for a
-Hessian. Our underlying data will be an array which is organized such that all values for one output are stored in
+Hessian. Our underlying data will be an array which is organized such that all values for one output are stored in a
 column major matrix. That is `j` is the fastest running index, `k` the second one and `i` is the slowest running index.
 The implementation of the wrapper is then:
 ~~~~{.cpp}
@@ -91,7 +91,7 @@ WrapperDotWithNorms wrapDotWithNorms(n);
 EH::evalHessian(wrapDotWithNorms, hDef2nd, x, 3, hes);
 ~~~~
 
-For the codi::JacobianInterface the implementation is nearly be the same. With the wrapper a user can directly store the
+For the codi::JacobianInterface the implementation is nearly the same. With the wrapper a user can directly store the
 computed Jacobians and Hessians in its own data structures.
 
 

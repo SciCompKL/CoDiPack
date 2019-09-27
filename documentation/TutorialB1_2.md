@@ -1,7 +1,7 @@
 Tutorial B1.2: Handle creation and advanced uses of the evaluation helper {#TutorialB1_2}
 ============
 
-This tutorial explains in more details than tutorial [B1](@ref TutorialB1) how other CoDiPack types than the default ones
+This tutorial explains in more detail than tutorial [B1](@ref TutorialB1) how other CoDiPack types than the default ones
 in the codi::EvaluationHelper can be used and how the performance can be improved if a function object needs to be
 evaluated multiple times.
 
@@ -86,7 +86,7 @@ Otherwise they behave in the same way.
 As we have now the handles available, they can be used in the `evalHandle...` function of the codi::EvaluationHelper.
 These are the same functions as in the tutorial [B1](@ref TutorialB1) and have nearly the same argument structure. Instead
 of the function object the handle needs to be provided. For all functions that did not perform a primal evaluation (e.g.
-`evalHandleJacobian`) it is no longer necessary to provide the number of output arguments. An example to use the handles
+`evalHandleJacobian`) it is no longer necessary to provide the number of output arguments. An example use of the handles
 is:
 ~~~~{.cpp}
 EH::evalHandleJacobian(hDef, x, jac);
@@ -106,7 +106,7 @@ for(size_t j = 0; j < 1000000; j += 1) {
 ~~~~
 
 The other `eval...` functions from tutorial [B1](@ref TutorialB1) can be called in the same way. Now we will present the
-other handle creation functions that provide more flexibility which CoDiPack type is used and for the underlying data
+other handle creation functions that provide more flexibility in terms of the used CoDiPack type and for the underlying data
 structure.
 
 The next two functions are [createHandle](@ref codi::EvaluationHelper::createHandle) and
