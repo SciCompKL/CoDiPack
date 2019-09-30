@@ -33,9 +33,9 @@ void dotWithNorms(double const* a, double const* b, size_t n, double& alpha, dou
 }
 ~~~~
 
-In order to record the derivative for this function we need to create a codi::TapeHelper instance. The only difficultiy
-here is the choise of the CoDiPack type. By default all `Reverse` CoDiPack types in codi.hpp are supported by the helper.
-Some features are not available for some types which will be explained later. codi.hpp provides two default type defintions
+In order to record the derivative for this function we need to create a codi::TapeHelper instance. The only difficulty
+here is the choice of the CoDiPack type. By default all `Reverse` CoDiPack types in codi.hpp are supported by the helper.
+Some features are not available for some types which will be explained later. codi.hpp provides two default type definitions
 codi::JacobianComputationType and codi::HessianComputationType which can also be used in the helper class. The first one
 supports Jacobian computations and the second one supports Hessian and Jacobian computations. So a basic setup of a
 codi::TapeHelper is:
@@ -49,7 +49,7 @@ which will create the tape helper. For the recording of the tape the helper prov
 [registerOutput](@ref codi::TapeHelper::registerOutput) and
 [stopRecording](@ref codi::TapeHelper::stopRecording). `startRecording` and `stopRecording` define the borders for the
 code that will be recorded on the tape. `registerInput` and `registerOutput` will tell CoDiPack which are independent and
-deependent variables of the source code that is beeing taped. In our case the recording of `dotWithNorms` will look
+dependent variables of the source code that is being taped. In our case the recording of `dotWithNorms` will look
 like:
 ~~~~{.cpp}
 const size_t n = 10;
@@ -79,7 +79,7 @@ th.registerOutput(bNorm);
 th.stopRecording();
 ~~~~
 The initialization of the vectors `a` and `b` can be inside the recorded section or outside. Since, CoDiPack does not
-track these initializations it makes not difference. The more important matter is the order in which the values of `a`
+track these initializations, it makes not difference. The more important matter is the order in which the values of `a`
 and `b` are registered as inputs. The codi::TapeHelper class identifies all variables in the gradient vectors, Jacobians
 and Hessians by the order in which they are registered on the tape. Therefore, the first variable corresponds to the
 first entry, the second to the second etc.. For the output values this is the same. In the code above, vector `a` is
@@ -96,7 +96,7 @@ of these objects the codi::TapeHelper provides several functions:
 [evalReverse](@ref codi::TapeHelper::evalReverse).
 We will first have a look at `evalJacobian` and `evalHessian` and then look at `evalForward` and `evalReverse`.
 
-The Jacobian and Hessian evaluation function will use the recorded information to compute the respective derivtiave
+The Jacobian and Hessian evaluation function will use the recorded information to compute the respective derivative
 information of the recorded evaluation. If the recorded evaluation can be described by the mathematical function
   \f[ F: \R^n \rightarrow \R^m \f]
 then `evalJacobian` will compute
@@ -145,7 +145,7 @@ th.deletePrimalVector(y);
 ~~~~
 For the reevaluation we have to create an input vector `x` which holds the values for the the new position where the
 tape is evaluated. Otherwise the call to `evalHessianAt` is the same as `evalHessian`, the difference is only that we
-provide a new intput position with `x` and also retrive the new output values with `y`.
+provide a new input position with `x` and also retrieve the new output values with `y`.
 
 The second option requires the same calls as for the recording and therefore we will not repeat it here.
 
@@ -173,14 +173,14 @@ th.deleteGradientVector(x_b);
 th.deleteGradientVector(y_b);
 ~~~~
 Since the default [Hessian  computation type](@ref codi::HessianComputationType) uses a vector mode of size four, it is possible to
-compute the derivative with respect to all three output values simultaniously. In the example, each output varaible is
-seeded with a different unit vector. The result in `x_b` contains then the derivaative in the same dimension
-as it is choosen for the output value. For a more indeep tutorial about the vector mode please see [tutorial 6](@ref Tutorial6).
+compute the derivative with respect to all three output values simultaneously. In the example, each output variable is
+seeded with a different unit vector. The result in `x_b` contains then the derivative in the same dimension
+as it is chosen for the output value. For a more indep tutorial about the vector mode please see [tutorial 6](@ref Tutorial6).
 There are also definitions of the codi::HessianComputationType and codi::JacobianComputationType for scalar values
 available: codi::HessianComputationScalarType, codi::JacobianComputationScalarType.
 
 As already seen in the examples above, the codi::TapeHelper provides several ease of access functions that can be used
-to create all vectors and derivative objects which are used in the evaluation functions. For a propper release of the
+to create all vectors and derivative objects which are used in the evaluation functions. For a proper release of the
 acquired resources from the `create` method, the matching `delete` method needs to be called on the same object. Each
 call of the `create` methods will create a new objects, such that e.g. multiple Jacobians can be used at the same time.
 All creation methods are:

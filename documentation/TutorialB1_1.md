@@ -49,14 +49,14 @@ template<template<typename> class VecX, template<typename> class VecY, typename 
 void func(VecX<Real> const &x, VecY<Real> &y);
 ~~~~
 `VecX` and `VecY` are the types of the vectors the user can provide for the storage of the data. `Real` is the CoDiPack
-type used for the evaluation. Since the instatiation of such templates is quite cumbersome and also the autodeduction
-of the template parameters might have some problems, the template template paraemters can be left out and be replaced
+type used for the evaluation. Since the instantiation of such templates is quite cumbersome and also the auto deduction
+of the template parameters might have some problems, the template template parameters can be left out and be replaced
 with regular template parameters:
 ~~~~{.cpp}
 template<typename VecX, typename VecY>
 void func(VecX const &x, VecY &y);
 ~~~~
-With this function definition an autodeduction will have no problems. The instatiation of this method would now look like
+With this function definition an auto deduction will have no problems. The instantiation of this method would now look like
 ~~~~{.cpp}
 func<std::vector<codi::EvaluationHelper::HessianComputationType>, std::vector<codi::EvaluationHelper::HessianComputationType>
 ~~~~
@@ -68,7 +68,7 @@ Structures as function objects
 ------------------------------
 
 Structures can act as function objects if there functional call operator, that is `operator()`, is overloaded. Since
-this operator can have template paraemters the user no longer needs to know which kind of vectors or CoDiPack types are
+this operator can have template parameters the user no longer needs to know which kind of vectors or CoDiPack types are
 used. In addition, the structure can have members which provide additional information for the call operator. The wrapper
 object for the function `dotWithNorms` could then be implemented like:
 ~~~~{.cpp}
@@ -84,7 +84,7 @@ struct WrapperDotWithNorms {
 };
 ~~~~
 The member `n` stores now the size of the vectors and does no longer need to be deduced from the input vector `x`.
-The instatiation and use of the wrapper object is now quite simple:
+The instantiation and use of the wrapper object is now quite simple:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
 
@@ -101,7 +101,7 @@ Lambda functions
 ----------------
 
 Lambda function have been introduced in C++11 and have been extended in C++14. The restrictions on lambda functions in
-C++11 require a similar awarenes of the used vector and CoDiPack types in the wrapper implementation as with the
+C++11 require a similar awareness of the used vector and CoDiPack types in the wrapper implementation as with the
 function definition in tutorial [B1](@ref TutorialB1). The implementation and call would be:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
@@ -116,7 +116,7 @@ auto lambdaWrapDotWithNorms = [n](std::vector<EH::HessianComputationType> const 
 EH::evalJacobianAndHessian(lambdaWrapDotWithNorms, x, 3, jac, hes);
 ~~~~
 With the lambda functions in C++11 it is not possible to add a template parameter for the CoDiPack evaluation type.
-Therefore the Hessian type is used and the combined evaluation procedure. Otherwise two seperate lambda functions would
+Therefore the Hessian type is used and the combined evaluation procedure. Otherwise two separate lambda functions would
 need to be specified.
 
 For C++14 the situation is much simpler. Here the introduction of generic lambdas provides us with the generalization such

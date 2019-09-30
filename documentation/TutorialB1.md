@@ -89,7 +89,7 @@ for(size_t i = 0; i < n; i += 1) {
 }
 ~~~~
 
-Now everything is setup such that the codi::EvaluationHelper can be called. The code is shown now and dicussed
+Now everything is setup such that the codi::EvaluationHelper can be called. The code is shown now and discussed
 afterwards:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
@@ -112,7 +112,7 @@ the pointer to the `codiDotWithNormsWrap` wrapper function instantiated with the
 parameter it is now quite easy to use the function for both evaluations. The vector `x` contains the two packed vectors
 `a` and `b`. This packing of the input and output variables is necessary since we needed to fix an interface for the
 implementation of all the helpers in CoDiPack. The implementation in CoDiPack provides still a lot of flexibility that
-we will show in the other sub tutorials. The number of output variables needs to be provieded for this function since
+we will show in the other sub tutorials. The number of output variables needs to be provided for this function since
 the result is not requested with the call. The final argument needs to be the storage space for the Jacobian. A default
 value can be generated through the codi::EvaluationHelper function [createJacobian](@ref codi::EvaluationHelper::createJacobian).
 

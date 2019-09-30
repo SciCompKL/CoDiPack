@@ -79,7 +79,7 @@ We store the data pointer and the sizes as member variables which are initialize
 `computeIndex` calculates from `i`, `j` and `k` the offset into the data pointer. The two `operator()` functions provide
 the implementation of the interface.
 
-This warpper can now be used in the algorithms of the codi::EvaluationHelper. After creating the data manually, we create
+This wrapper can now be used in the algorithms of the codi::EvaluationHelper. After creating the data manually, we create
 the wrapper and provide the wrapper to the eval function call:
 ~~~~{.cpp}
 double* hesData = new double[3 * xSize * xSize];

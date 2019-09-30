@@ -112,11 +112,11 @@ structure.
 The next two functions are [createHandle](@ref codi::EvaluationHelper::createHandle) and
 [createHandleFixed](@ref codi::EvaluationHelper::createHandleFixed). The first one creates a handle with `std::vector`
 as the underlying container type. The second one uses `std::array`. In both functions the used CoDiPack type is given as
-a template parameter. All `Real...` type definitions in [codi.hpp](@ref codi.hpp) can be used here. Since the defintion
+a template parameter. All `Real...` type definitions in [codi.hpp](@ref codi.hpp) can be used here. Since the definition
 of higher order types can be quite involved there are two additional definitions, namely
 [JacobianComputationType](@ref codi::JacobianComputationType) and [HessianComputationType](@ref codi::HessianComputationType)
 in this file in the global `codi` namespace. They represent a Jacobian index management taping approach  with a vector
-mode of 4 for the first one. The second one uses a primal value index mangement tape with a vector mode of 4 and the
+mode of 4 for the first one. The second one uses a primal value index management tape with a vector mode of 4 and the
 inner AD type is a forward type with a vector dimension of 4. Some example custom handle creations are now:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
@@ -132,7 +132,7 @@ auto hJac2nd = EH::createHandle<codi::RealReverseGen<codi::RealForwardVec<4>, co
 
 The final method for the most flexibility is [createHandleFull](@ref codi::EvaluationHelper::createHandleFull). In
 addition to all other methods, the storage types for the input and output vectors can be given as template template
-parameters. Since it is no longer possible to deduce a fixed size from the template argumetns, this method requires that
+parameters. Since it is no longer possible to deduce a fixed size from the template arguments, this method requires that
 the number of input and output variables are given as arguments. Examples for the use of this method are:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
