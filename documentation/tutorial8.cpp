@@ -38,7 +38,7 @@ void call(bool reset, bool stats) {
   const size_t n = 5;
   double points[n] = {2.0, 2.1, 2.5, 3.0, -1.0};
 
-  for(int i = 0; i < n; i += 1) {
+  for(size_t i = 0; i < n; i += 1) {
     if(reset) {
       tape.reset();
     }

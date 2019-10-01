@@ -43,6 +43,7 @@
 #include "modules/tapeBaseModule.hpp"
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
+#include "reversePrimalValueTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 #include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
@@ -124,17 +125,19 @@ namespace codi {
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
    *
-   * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
+   * @tparam TapeTypes_t  All the types for the tape. Including the calculation type and the vector types.
    */
-  template <typename TapeTypes>
+  template <typename TapeTypes_t>
   class PrimalValueIndexTape :
-      public TapeBaseModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
-      public PrimalValueModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
-      public ExternalFunctionModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
-      public IOModule<TapeTypes, PrimalValueIndexTape<TapeTypes>>,
-      public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, PrimalValueIndexTape<TapeTypes>, typename TapeTypes::Position >
+      public TapeBaseModule<TapeTypes_t, PrimalValueIndexTape<TapeTypes_t>>,
+      public PrimalValueModule<TapeTypes_t, PrimalValueIndexTape<TapeTypes_t>>,
+      public ExternalFunctionModule<TapeTypes_t, PrimalValueIndexTape<TapeTypes_t>>,
+      public IOModule<TapeTypes_t, PrimalValueIndexTape<TapeTypes_t>>,
+      public virtual ReversePrimalValueTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, PrimalValueIndexTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
+
+    using TapeTypes = TapeTypes_t; /**< All types used to define the tape */
 
     friend TapeBaseModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
     friend PrimalValueModule<TapeTypes, PrimalValueIndexTape>;  /**< No doc */
@@ -345,12 +348,15 @@ namespace codi {
      * The stack is reversed such that the primal value changes are reversed until the specified position is reached.
      * The primal value vector of the tape has the same status when the position was recorded.
      *
-     * @param[in] pos  The position for the tape reset.
+     * If the position is the zero position of the tape, then the reset is not done.
+     *
+     * @param[in]        pos  The position for the tape reset.
+     * @param[in] forceReset  Forces the reset of the primal values.
      */
-    CODI_INLINE void resetPrimalValues(const Position& pos) {
+    CODI_INLINE void resetPrimalValues(const Position& pos, bool forceReset) {
 
       // Do not perform a global reset on the primal value vector if the tape is cleared
-      if(this->getZeroPosition() != pos) {
+      if(forceReset || this->getZeroPosition() != pos) {
 
         auto resetFunc = [this] (Index* index, Real* value, Handle* handle, StatementInt* stmtSize) {
           CODI_UNUSED(handle);
@@ -371,7 +377,7 @@ namespace codi {
      * @param[in] pos  The position for the tape reset.
      */
     CODI_INLINE void resetInternal(const Position& pos) {
-      resetPrimalValues(pos);
+      resetPrimalValues(pos, false);
 
       this->resetExtFunc(pos);
     }
@@ -476,7 +482,7 @@ namespace codi {
           primalVector[lhsIndex] = HandleFactory::template callForwardHandle<PrimalValueIndexTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalVector, adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-          adjointData->setLhsTangent(stmtPos); /* Resets the lhs tangent, too */
+          adjointData->setLhsTangent(lhsIndex); /* Resets the lhs tangent, too */
 #else
           adjointData[lhsIndex] = lhsAdj;
 #endif
@@ -707,7 +713,7 @@ namespace codi {
 
       this->resizeAdjointsToIndexSize();
 
-      this->resetPrimalValues(start);
+      this->resetPrimalValues(start, true);
 
       evaluateForwardInternal(start, end, this->adjoints, false);
     }
@@ -744,6 +750,13 @@ namespace codi {
       }
 
       return oldValue;
+    }
+
+    /**
+     * \copydoc ReversePrimalValueTapeInterface::revertPrimals()
+     */
+    void revertPrimals(Position const& pos) {
+      resetPrimalValues(pos, true);
     }
 
     /**

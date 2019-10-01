@@ -42,7 +42,7 @@ namespace codi {
   /**
    * @brief Interface common to all reverse tapes.
    *
-   * The extended interface each reverse tape has to implement. It defines functions which are used to activate
+   * This extended interface each reverse tape has to implement. It defines functions which are used to activate
    * or deactivate the recording. The user can add external functions and register the input variable and output
    * variables for the computation.
    *

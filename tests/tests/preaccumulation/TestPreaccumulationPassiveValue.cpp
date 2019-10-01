@@ -42,7 +42,7 @@ void evalFunc(NUMBER* x, NUMBER* y) {
   y[1] = x[1];
 
   NUMBER two = 2.0;
-  NUMBER zeroSix = 2.0;
+  NUMBER zeroSix = 0.65;
   for(int i = 0; i < 5; ++i) {
     NUMBER xTemp = y[0];
     NUMBER yTemp = y[1];
@@ -53,6 +53,7 @@ void evalFunc(NUMBER* x, NUMBER* y) {
 }
 
 void func(NUMBER* x, NUMBER* y) {
+
 #ifdef REVERSE_TAPE
   codi::PreaccumulationHelper<NUMBER> ph;
 #else

@@ -61,7 +61,7 @@ namespace codi {
       const static bool AssignNeedsStatement = true;
 
       /**
-       * @brief Indicates if the index handler privides linear increasing indices.
+       * @brief Indicates if the index handler provides linear increasing indices.
        *
        * false for this index manager.
        */
@@ -104,7 +104,7 @@ namespace codi {
       /**
        * @brief Indicates the destruction of the index handler.
        *
-       * Required to prevent segmentation faults if varaibles are deleted after the index handler.
+       * Required to prevent segmentation faults if variables are deleted after the index handler.
        */
       bool valid;
 
@@ -332,7 +332,7 @@ namespace codi {
     private:
       CODI_NO_INLINE void generateNewIndices() {
         // method is only called when unused indices are empty
-        // initialy it holds a number of unused indices which is
+        // initially it holds a number of unused indices which is
         // the same amount as we now generate, therefore we do not
         // check for size
 

@@ -41,7 +41,7 @@ void func(NUMBER* x, NUMBER* y) {
   }
   NUMBER d = 2.72;
 
-#ifdef REVERSE_TAPE
+#if REVERSE_TAPE
   NUMBER::getGlobalTape().registerInput(d);
 #endif
 

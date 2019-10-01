@@ -30,7 +30,7 @@
 TEST_DIR = tests
 BUILD_DIR = build
 DRIVER_DIR = drivers
-RESULT_BASE_DIR = results_base
+RESULT_BASE_DIR = testResults
 RESULT_DIR = results
 
 #list all source files in TEST_DIR
@@ -39,9 +39,10 @@ TEST_FILES  += $(wildcard $(TEST_DIR)/**/Test**.cpp)
 TEST_FILES  += $(wildcard $(TEST_DIR)/**/**/Test**.cpp)
 
 #list all dependency files in BUILD_DIR
-DEP_FILES   = $(wildcard $(BUILD_DIR)/Test**.d)
-DEP_FILES  += $(wildcard $(BUILD_DIR)/**/Test**.d)
+DEP_FILES   = $(wildcard $(BUILD_DIR)/**.d)
+DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
+DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/**/Test**.d)
 
 FLAGS = -Wall -Wextra -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -DCODI_EnableCombineJacobianArguments
 
@@ -60,10 +61,15 @@ else
 	CXX := $(CXX)
 endif
 
-CODI_DIR := ..
+ifeq ($(UPDATE), yes)
+  UPDATE_FLAG=-u
+endif
 
-# Complete list of test files
-TESTS = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(TEST_FILES))
+CODI_DIR := ..
+CODI_INCLUDE = -I$(CODI_DIR)/include
+
+# Tests will contain the complete list of all tests
+TESTS =
 
 # set default rule
 all:
@@ -74,6 +80,7 @@ all:
 ### define general sets for tests
 # Tests for all tapes
 BASIC_TESTS = $(wildcard $(TEST_DIR)/basic/Test**.cpp) $(wildcard $(TEST_DIR)/expressions/Test**.cpp) $(wildcard $(TEST_DIR)/exceptions/Test**.cpp) $(wildcard $(TEST_DIR)/jacobiOptimizations/Test**.cpp) $(wildcard $(TEST_DIR)/helpers/Test**.cpp)
+BASIC_TESTS_EH = $(filter-out $(TEST_DIR)/helpers/TestStatementPushHelper.cpp, $(BASIC_TESTS))
 # Tests that run only for reverse mode tapes
 REVERSE_TESTS = $(wildcard $(TEST_DIR)/external_functions/Test**.cpp) $(wildcard $(TEST_DIR)/io/Test**.cpp) $(wildcard $(TEST_DIR)/helpers/reverse/Test**.cpp)
 # Tests that run for non vector mode tapes
@@ -81,22 +88,22 @@ REVERSE_VALUE_TESTS = $(wildcard $(TEST_DIR)/preaccumulation/Test**.cpp)
 
 # The build rules for all drivers.
 define DRIVER_RULE
-$(BUILD_DIR)/$(DRIVER_NAME).o : $(DRIVER_SRC)
+$(BUILD_DIR)/$(DRIVER_MODE)/$(DRIVER_NAME).o : $(DRIVER_SRC)
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $(DRIVER_INC) $< -c -o $@
 	@$(CXX) $(CXX_FLAGS) $(DRIVER_INC) $< -MM -MP -MT $@ -MF $@.d
 
-$(BUILD_DIR)/%_$(DRIVER_NAME).o : $(TEST_DIR)/%.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).o : $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXX_FLAGS) $(DRIVER_INC) $< -c -o $@
 	@$(CXX) $(CXX_FLAGS) $(DRIVER_INC) $< -MM -MP -MT $@ -MF $@.d
 
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : $(BUILD_DIR)/%_$(DRIVER_NAME).o $(BUILD_DIR)/$(DRIVER_NAME).o
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : $(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).o $(BUILD_DIR)/$(DRIVER_MODE)/$(DRIVER_NAME).o
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $^ -o $@
+	$(CXX) $(CXX_FLAGS) $(DRIVER_LIB) $^ -o $@
 
-DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/%.test,$(DRIVER_TESTS))
-$(DRIVER_TEST_FILES): $(RESULT_DIR)/%.test: $(RESULT_DIR)/%_$(DRIVER_NAME).out
+DRIVER_TEST_FILES := $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/$(DRIVER_MODE)/%.test,$(DRIVER_TESTS))
+$(DRIVER_TEST_FILES): $(RESULT_DIR)/$(DRIVER_MODE)/%.test: $(RESULT_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).out
 endef
 
 # The general template for each driver. It checks if the driver should be run
@@ -110,148 +117,39 @@ define DRIVER_INST
   endif
 endef
 
-# The first 3 lines of each driver define the basic parameters for this driver.
-# DRIVER_NAME:    The short name for the driver. This used to create the specific files for the driver
-# DRIVER_TESTS:   The full list of tests which are run for this driver. See the general test list for details.
-# DRIVER:         The special flags for this driver. It needs to be defined inside the build rule.
-# The eval line creates the rules and dependencies for the driver
+include Makefile.primal
+TESTS += $(TESTS_PRIMAL)
 
-# Driver for RealForward
-DRIVER_NAME  := FWD
-DRIVER_TESTS := $(BASIC_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/forward/forwardDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward
-$(eval $(value DRIVER_INST))
+include Makefile.deriv1stOrder
+TESTS += $(TESTS_1ST_ORDER)
 
-# Driver for RealForwardVector
-DRIVER_NAME  := FWD_Vec
-DRIVER_TESTS := $(BASIC_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/forwardVector/forwardDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forwardVector
-$(eval $(value DRIVER_INST))
-
-# Driver for 2nd order type but first derivative evaluation both forward.
-DRIVER_NAME  := FWD2nd
-DRIVER_TESTS := $(BASIC_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/forward2ndOrder/forwardDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(CODI_DIR)/source -I$(DRIVER_DIR)/forward2ndOrder
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReverseUnchecked
-DRIVER_NAME  := RWS_Unch
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseSimple/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimple
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReverseIndexUncheckedIndex
-DRIVER_NAME  := RWS_UnchInd
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseSimpleIndex/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseSimpleIndex
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReversePrimalUnchecked
-DRIVER_NAME  := RWS_PrimUnch
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reversePrimalSimple/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalSimple
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReversePrimal
-DRIVER_NAME  := RWS_Prim
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reversePrimal/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimal
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReversePrimalVec
-DRIVER_NAME  := RWS_PrimVec
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reversePrimalVector/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalVector
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReversePrimalVectorAdapter
-DRIVER_NAME  := RWS_PrimVecA
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reversePrimalVectorAdapter/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalVectorAdapter -DCODI_EnableVariableAdjointInterfaceInPrimalTapes
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReversePrimalIndex
-DRIVER_NAME  := RWS_PrimIndex
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reversePrimalIndex/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalIndex
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReverse
-DRIVER_NAME  := RWS_Chunk
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseChunk/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunk
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReverseVector
-DRIVER_NAME  := RWS_ChunkVec
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseChunkVector/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkVector
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReverseVectorAdapter
-DRIVER_NAME  := RWS_ChunkVecA
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseChunkVectorAdapter/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkVectorAdapter
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReverseIndex
-DRIVER_NAME  := RWS_ChunkInd
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseChunkIndex/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndex
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReverseIndex with tape swap
-DRIVER_NAME  := RWS_ChunkIndSwap
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseChunkIndexTapeSwap/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndexTapeSwap
-$(eval $(value DRIVER_INST))
-
-# Driver for RealReverseIndexVector
-DRIVER_NAME  := RWS_ChunkIndVec
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseChunkIndexVector/reverseDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseChunkIndexVector
-$(eval $(value DRIVER_INST))
-
-# Driver for reverse over forward
-DRIVER_NAME  := RWS2nd
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reverseOverForward/reverseOverForwardDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reverseOverForward
-$(eval $(value DRIVER_INST))
-
-# Driver for reversePrimal over forward
-DRIVER_NAME  := RWS2nd_Prim
-DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
-DRIVER_SRC = $(DRIVER_DIR)/reversePrimalOverForward/reverseOverForwardDriver.cpp
-$(BUILD_DIR)/%_$(DRIVER_NAME)_bin : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/reversePrimalOverForward
-$(eval $(value DRIVER_INST))
+include Makefile.deriv2ndOrder
+TESTS += $(TESTS_2ND_ORDER)
 
 # rules for generating the test files
-$(RESULT_DIR)/%.out : $(BUILD_DIR)/%_bin
+$(RESULT_DIR)/%.out : $(BUILD_DIR)/%.exe
 	@mkdir -p $(@D)
 	$< > $@
 
+$(BUILD_DIR)/%.exe : %.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $< -o $@
+	@$(CXX) $(CXX_FLAGS) $< -MM -MP -MT $@ -MF $@.d
+
 # rule for printing the results (dependencies are generated by the drivers)
-$(RESULT_DIR)/%.test:
-	@./compare.sh -n $* -b $(RESULT_BASE_DIR)/$*.out $^
+$(RESULT_DIR)/%.test: $(BUILD_DIR)/compare.exe
+	@./compare.sh $(UPDATE_FLAG) -n $* -b $(RESULT_BASE_DIR)/$*.out $(filter-out $(BUILD_DIR)/compare.exe,$^)
 
 all: $(TESTS)
+	@mkdir -p $(BUILD_DIR)
+
+all0th: $(TESTS_PRIMAL)
+	@mkdir -p $(BUILD_DIR)
+
+all1st: $(TESTS_1ST_ORDER)
+	@mkdir -p $(BUILD_DIR)
+
+all2nd: $(TESTS_2ND_ORDER)
 	@mkdir -p $(BUILD_DIR)
 
 .PHONY: clean

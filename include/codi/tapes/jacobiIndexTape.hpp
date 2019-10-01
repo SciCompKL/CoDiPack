@@ -116,18 +116,20 @@ namespace codi {
    * they are no longer used. No c-like memory operations like memset and memcpy should be applied
    * to these types.
    *
-   * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
+   * @tparam TapeTypes_t  All the types for the tape. Including the calculation type and the vector types.
    */
-  template <typename TapeTypes>
+  template <typename TapeTypes_t>
   class JacobiIndexTape final :
-      public TapeBaseModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
-      public JacobiModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
-      public StatementModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
-      public ExternalFunctionModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
-      public IOModule<TapeTypes, JacobiIndexTape<TapeTypes>>,
-      public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, JacobiIndexTape<TapeTypes>, typename TapeTypes::Position >
+      public TapeBaseModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
+      public JacobiModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
+      public StatementModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
+      public ExternalFunctionModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
+      public IOModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
+      public virtual ReverseTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, JacobiIndexTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
+
+    using TapeTypes = TapeTypes_t; /**< All types used to define the tape */
 
     friend TapeBaseModule<TapeTypes, JacobiIndexTape>; /**< No doc */
     friend StatementModule<TapeTypes, JacobiIndexTape>;  /**< No doc */

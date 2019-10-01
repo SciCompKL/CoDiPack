@@ -578,7 +578,12 @@ namespace codi {
       static CODI_INLINE Real gradientA(const A& a, const B& b, const Real& result) {
         CODI_UNUSED(result);
         checkArguments(a);
-        return b * pow(a, b - 1.0);
+        if (a <= 0.0 && 1 <= TypeTraits<B>::MaxDerivativeOrder) {
+          // Special case for higher order derivatives. Derivative will be wrong since the b part is not evaluated.
+          return TypeTraits<B>::getBaseValue(b) * pow(a, b - 1.0);
+        } else {
+          return b * pow(a, b - 1.0);
+        }
       }
 
       template<typename A, typename B>
@@ -595,7 +600,12 @@ namespace codi {
       template<typename Data, typename A, typename B>
       static CODI_INLINE void derv11(Data& data, const A& a, const B& b, const Real& result) {
         checkArguments(a);
-        a.calcGradient(data, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+        if (a.getValue() <= 0.0 && 1 <= TypeTraits<B>::MaxDerivativeOrder) {
+          // Special case for higher order derivatives. Derivative will be wrong since the b part is not evaluated.
+          a.calcGradient(data, TypeTraits<B>::getBaseValue(b) * pow(a.getValue(), b.getValue() - 1.0));
+        } else {
+          a.calcGradient(data, b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+        }
         if (a.getValue() > 0.0) {
           b.calcGradient(data, log(a.getValue()) * result);
         }
@@ -604,7 +614,12 @@ namespace codi {
       template<typename Data, typename A, typename B>
       static CODI_INLINE void derv11M(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
         checkArguments(a);
-        a.calcGradient(data, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+        if (a.getValue() <= 0.0 && 1 <= TypeTraits<B>::MaxDerivativeOrder) {
+          // Special case for higher order derivatives. Derivative will be wrong since the b part is not evaluated.
+          a.calcGradient(data, multiplier * TypeTraits<B>::getBaseValue(b) * pow(a.getValue(), b.getValue() - 1.0));
+        } else {
+          a.calcGradient(data, multiplier * b.getValue() * pow(a.getValue(), b.getValue() - 1.0));
+        }
         if (a.getValue() > 0.0) {
           b.calcGradient(data, multiplier * log(a.getValue()) * result);
         }

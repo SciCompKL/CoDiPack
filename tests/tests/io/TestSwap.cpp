@@ -35,7 +35,9 @@ POINTS(1) = {{1.0}};
 void func(NUMBER* x, NUMBER* y) {
   y[0] = x[0];
 
+#if REVERSE_TAPE
   NUMBER::TapeType other;
   NUMBER::getGlobalTape().swap(other);
   NUMBER::getGlobalTape().swap(other);
+#endif
 }

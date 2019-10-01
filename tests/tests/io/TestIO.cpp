@@ -42,6 +42,7 @@ POINTS(1) = {{1.0}};
 void func(NUMBER* x, NUMBER* y) {
   y[0] = x[0];
 
+#if REVERSE_TAPE
   auto& tape = NUMBER::getGlobalTape();
   std::stringstream filename;
   filename << "test" << getpid() << ".tape";
@@ -51,4 +52,5 @@ void func(NUMBER* x, NUMBER* y) {
   tape.readFromFile(filename.str());
 
   unlink(filename.str().c_str());
+#endif
 }

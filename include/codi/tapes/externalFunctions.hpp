@@ -131,6 +131,8 @@ namespace codi {
     void evaluateReverse(void* tape, void* ra) {
       if(NULL != funcReverse) {
         funcReverse(tape, data, ra);
+      } else {
+        CODI_EXCEPTION("Calling an external function in reverse mode without providing a reverse evaluation function.");
       }
     }
 
@@ -143,6 +145,8 @@ namespace codi {
     void evaluateForward(void* tape, void* ra) {
       if(NULL != funcForward) {
         funcForward(tape, data, ra);
+      } else {
+        CODI_EXCEPTION("Calling an external function in forward mode without providing a forward evaluation function.");
       }
     }
 
@@ -155,6 +159,8 @@ namespace codi {
     void evaluatePrimal(void* tape, void* ra) {
       if(NULL != funcPrimal) {
         funcPrimal(tape, data, ra);
+      } else {
+        CODI_EXCEPTION("Calling an external function in primal mode without providing a primal evaluation function.");
       }
     }
   };

@@ -5,6 +5,11 @@
     <tab type="mainpage" visible="yes" title=""/>
     <!-- <tab type="pages" visible="yes" title="" intro=""/> -->
     <tab type="usergroup" title="Tutorials" url="@ref tutorialPage">
+      <tab type="usergroup" title="Tutorial B1" url="@ref TutorialB1">
+        <tab type="user" title="Tutorial B1.1" url="@ref TutorialB1_1"/>
+        <tab type="user" title="Tutorial B1.2" url="@ref TutorialB1_2"/>
+      </tab>
+      <tab type="user" title="Tutorial B2" url="@ref TutorialB2"/>
       <tab type="user" title="Tutorial 1" url="@ref Tutorial1"/>
       <tab type="user" title="Tutorial 2" url="@ref Tutorial2"/>
       <tab type="user" title="Tutorial 3" url="@ref Tutorial3"/>
@@ -21,6 +26,7 @@
       <tab type="usergroup" title="Tutorial A4" url="@ref TutorialA4">
         <tab type="user" title="Tutorial A4.1" url="@ref TutorialA4_1"/>
       </tab>
+      <tab type="user" title="Tutorial A5" url="@ref TutorialA5"/>
     </tab>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
