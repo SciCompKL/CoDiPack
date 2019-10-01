@@ -120,6 +120,22 @@ namespace codi {
       }
 
       /**
+       * @brief Return the size of the used memory of the tape.
+       * @return Memory in MB.
+       */
+      double getUsedMemorySize() {
+        return doubleData[0];
+      }
+
+      /**
+       * @brief Return the size of the allocated memory of the tape.
+       * @return Memory in MB.
+       */
+      double getAllocatedMemorySize() {
+        return doubleData[1];
+      }
+
+      /**
        * @brief Start a new section.
        *
        * All following addData calls will add there data to this section.
@@ -169,6 +185,32 @@ namespace codi {
           doubleData[allocatedMemoryIndex] += value;
         }
 
+      }
+
+      /**
+       * @brief Add the default data of a data stream to the tape values.
+       *
+       * Adds total number of entries, number of chunks, used memory and allocated memory
+       * as values.
+       *
+       * @param[in] stream  The data stream from which the values are taken.
+       *
+       * @tparm Stream  Either a ChunkVector or a SingleChunkVector
+       */
+      template<typename Stream>
+      void addStreamData(const Stream& stream) {
+
+        size_t numberOfChunks = stream.getNumChunks();
+        size_t dataEntries    = stream.getDataSize();
+        size_t entrySize      = Stream::ChunkType::EntrySize;
+
+        double  memoryUsed  = (double)dataEntries*(double)entrySize* BYTE_TO_MB;
+        double  memoryAlloc = (double)numberOfChunks*(double)stream.getChunkSize()*(double)entrySize* BYTE_TO_MB;
+
+        addData("Total number", dataEntries);
+        addData("Number of chunks", numberOfChunks);
+        addData("Memory used", memoryUsed, true, false);
+        addData("Memory allocated", memoryAlloc, false, true);
       }
 
       /**
@@ -289,7 +331,7 @@ namespace codi {
       }
 
       /**
-       * @brief Helper function that combines the tape data on with an MPI_Allreduce on MPI_COMM_WORLD.
+       * @brief Helper function that combines the tape data with an MPI_Allreduce on MPI_COMM_WORLD.
        */
       void addData() {
 #ifdef MPI_VERSION

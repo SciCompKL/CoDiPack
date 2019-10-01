@@ -43,7 +43,7 @@ namespace codi {
    *
    * @return THe binomial coefficient n over k.
    */
-  CODI_INLINE size_t binomial(size_t n, size_t k) {
+  inline size_t binomial(size_t n, size_t k) {
     if(k == 0) {
       return 1;
     } else if(n < k) {

@@ -15,6 +15,7 @@ The [Scientific Computing Group](http://www.scicomp.uni-kl.de) at the TU Kaisers
 There is a newsletter available at [codi-info@uni-kl.de](https://lists.uni-kl.de/uni-kl/subscribe/codi-info) and if you want to contact us please write a mail to [codi@scicomp.uni-kl.de](mailto:codi@scicomp.uni-kl.de).
 
 [![Build Status](https://travis-ci.org/SciCompKL/CoDiPack.svg?branch=develop)](https://travis-ci.org/SciCompKL/CoDiPack)
+[![DOI](https://zenodo.org/badge/37602249.svg)](https://zenodo.org/badge/latestdoi/37602249)
 
 ## Usage
 

@@ -1100,6 +1100,7 @@ namespace codi {
     CODI_INLINE bool OPERATOR(const typename TypeTraits<Real>::PassiveReal& a, const Expression<Real, B>& b) { \
       return a OP b.getValue(); \
     } \
+    \
     /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
     template<typename Real, class A> \
     CODI_INLINE bool OPERATOR(const Expression<Real, A>& a, const int& b) { \
@@ -1109,6 +1110,66 @@ namespace codi {
     /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
     template<typename Real, class B>            \
     CODI_INLINE bool OPERATOR(const int& a, const Expression<Real, B>& b) { \
+      return a OP b.getValue(); \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
+    template<typename Real, class A> \
+    CODI_INLINE bool OPERATOR(const Expression<Real, A>& a, const unsigned int& b) { \
+      return a.getValue() OP b; \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
+    template<typename Real, class B>            \
+    CODI_INLINE bool OPERATOR(const unsigned int& a, const Expression<Real, B>& b) { \
+      return a OP b.getValue(); \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
+    template<typename Real, class A> \
+    CODI_INLINE bool OPERATOR(const Expression<Real, A>& a, const long& b) { \
+      return a.getValue() OP b; \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
+    template<typename Real, class B>            \
+    CODI_INLINE bool OPERATOR(const long& a, const Expression<Real, B>& b) { \
+      return a OP b.getValue(); \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
+    template<typename Real, class A> \
+    CODI_INLINE bool OPERATOR(const Expression<Real, A>& a, const unsigned long& b) { \
+      return a.getValue() OP b; \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
+    template<typename Real, class B>            \
+    CODI_INLINE bool OPERATOR(const unsigned long& a, const Expression<Real, B>& b) { \
+      return a OP b.getValue(); \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
+    template<typename Real, class A> \
+    CODI_INLINE bool OPERATOR(const Expression<Real, A>& a, const long long& b) { \
+      return a.getValue() OP b; \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
+    template<typename Real, class B>            \
+    CODI_INLINE bool OPERATOR(const long long& a, const Expression<Real, B>& b) { \
+      return a OP b.getValue(); \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
+    template<typename Real, class A> \
+    CODI_INLINE bool OPERATOR(const Expression<Real, A>& a, const unsigned long long& b) { \
+      return a.getValue() OP b; \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
+    template<typename Real, class B>            \
+    CODI_INLINE bool OPERATOR(const unsigned long long& a, const Expression<Real, B>& b) { \
       return a OP b.getValue(); \
     }
 
