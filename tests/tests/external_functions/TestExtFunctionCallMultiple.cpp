@@ -129,9 +129,6 @@ static void delFunc(void* tape, void* checkpoint){
 
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   delete check;
-#if !SECOND_ORDER
-  std::cout << "Delete" << std::endl;
-#endif
 }
 
 void func(NUMBER* x, NUMBER* y) {

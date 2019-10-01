@@ -78,7 +78,7 @@ then
           res+=" "
           [[ $1 =~ _([^/]+)\.out ]] &&
               res+=${BASH_REMATCH[1]}:
-          cmp $baseFileName $1
+          build/compare.exe -t 1e-14 $baseFileName $1
           if [ $? -eq 0 ];
           then res+=$ok;
           else

@@ -48,7 +48,7 @@ int main(int nargs, char** args) {
   std::vector<double> x(inputs);
   std::vector<double> y(outputs);
 
-  auto handle = codi::EvaluationHelper::template create<NUMBER>(&evalTest, outputs, inputs);
+  auto handle = codi::EvaluationHelper::template createHandle<NUMBER>(evalTest, outputs, inputs);
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
     std::cout << "Point " << curPoint << " : {";

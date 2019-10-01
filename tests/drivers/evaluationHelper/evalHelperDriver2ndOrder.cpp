@@ -47,7 +47,7 @@ int main(int nargs, char** args) {
 
   std::vector<double> x(inputs);
 
-  auto handle = codi::EvaluationHelper::template create<NUMBER>(&evalTest, outputs, inputs);
+  auto handle = codi::EvaluationHelper::template createHandle<NUMBER>(evalTest, outputs, inputs);
   auto hes = codi::EvaluationHelper::createHessian(outputs, inputs);
 
   for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
