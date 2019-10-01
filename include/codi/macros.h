@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -27,17 +27,6 @@
  */
 
 #pragma once
-
-/**
- * @brief Create a store by value or store by reference member based on the setting of the expression template.
- *
- * The constant member storeAsReference is looked of from the type named by Name and the
- * either a reference or a value is stored.
- *
- * @param   Name  The name of the type for which a member declaration is crated.
- */
-#define CODI_CREATE_STORE_TYPE(Name) \
-  typename std::conditional<Name::storeAsReference, const Name &, const Name>::type
 
 /**
  * @brief Call the member function of an object.
