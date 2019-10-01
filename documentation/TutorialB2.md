@@ -6,7 +6,7 @@ The user does not need to care about which variables are registered as inputs or
 them. Also, all the tape management - like resets or adjoint clears - is handled by the codi::TapeHelper.
 
 We want to differentiate a function that computes the angle between two vectors \f$a\f$ and \f$b\f$.
-Mathematical this is done by computing the dot product of the normalized vectors and taking the arcus cosine function of
+Mathematically this is done by computing the dot product of the normalized vectors and taking the arcus cosine function of
 the result:
 \f[
   \alpha = f(a, b) = \arccos\left(\frac{\scalar{a}{b}}{\norm{a} \norm{b}}\right)
@@ -45,7 +45,7 @@ TH th;
 ~~~~
 which will create the tape helper. For the recording of the tape the helper provides four functions:
 [startRecording](@ref codi::TapeHelper::startRecording),
-[registerInput](@ref codi::TapeHelper::registerInput)
+[registerInput](@ref codi::TapeHelper::registerInput),
 [registerOutput](@ref codi::TapeHelper::registerOutput) and
 [stopRecording](@ref codi::TapeHelper::stopRecording). `startRecording` and `stopRecording` define the borders for the
 code that will be recorded on the tape. `registerInput` and `registerOutput` will tell CoDiPack which are independent and
@@ -78,14 +78,14 @@ th.registerOutput(bNorm);
 
 th.stopRecording();
 ~~~~
-The initialization of the vectors `a` and `b` can be inside the recorded section or outside. Since, CoDiPack does not
+The initialization of the vectors `a` and `b` can be inside the recorded section or outside. Since CoDiPack does not
 track these initializations, it makes not difference. The more important matter is the order in which the values of `a`
 and `b` are registered as inputs. The codi::TapeHelper class identifies all variables in the gradient vectors, Jacobians
 and Hessians by the order in which they are registered on the tape. Therefore, the first variable corresponds to the
 first entry, the second to the second etc.. For the output values this is the same. In the code above, vector `a` is
 identified by the first 10 entries in the input vector which are the indices 0 to 9. For `b` the indices 10 to 19 are
-used. We could also have registered the vectors `a` and `b` directly after there values have been initialized. Then the
-values of `a` and `b` would have been interleaved in the CoDiPack representation. Vector `a` taking every even index and `b`
+used. We could also have registered the vectors `a` and `b` directly after their values have been initialized. Then the
+values of `a` and `b` would have been interleaved in the CoDiPack representation. Vector `a` would take every even index and `b`
 every uneven index.
 
 After the tape is recorded, the next step is the evaluation of the Hessians, Jacobians and gradients. For the evaluation
@@ -175,11 +175,11 @@ th.deleteGradientVector(y_b);
 Since the default [Hessian  computation type](@ref codi::HessianComputationType) uses a vector mode of size four, it is possible to
 compute the derivative with respect to all three output values simultaneously. In the example, each output variable is
 seeded with a different unit vector. The result in `x_b` contains then the derivative in the same dimension
-as it is chosen for the output value. For a more indep tutorial about the vector mode please see [tutorial 6](@ref Tutorial6).
+as it is chosen for the output value. For a more in-depth tutorial about the vector mode please see [tutorial 6](@ref Tutorial6).
 There are also definitions of the codi::HessianComputationType and codi::JacobianComputationType for scalar values
 available: codi::HessianComputationScalarType, codi::JacobianComputationScalarType.
 
-As already seen in the examples above, the codi::TapeHelper provides several ease of access functions that can be used
+As already seen in the examples above, the codi::TapeHelper provides several convenience functions that can be used
 to create all vectors and derivative objects which are used in the evaluation functions. For a proper release of the
 acquired resources from the `create` method, the matching `delete` method needs to be called on the same object. Each
 call of the `create` methods will create a new objects, such that e.g. multiple Jacobians can be used at the same time.

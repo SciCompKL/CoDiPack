@@ -48,9 +48,9 @@ call operator, that is `operator ()`, as they are define in [JacobianInterface](
 For both interfaces the parameter `i` iterates over the output variables and j iterates over the input variables. In the
 Hessian version of the operator, the parameter `k` iterates over the input variables from the second order derivation.
 
-In order to demonstrate how a simple wrapper for the data structure can be written. We will create a wrapper for a
+In order to demonstrate how a simple wrapper for the data structure can be written, we will create a wrapper for a
 Hessian. Our underlying data will be an array which is organized such that all values for one output are stored in a
-column major matrix. That is `j` is the fastest running index, `k` the second one and `i` is the slowest running index.
+column major matrix, that is `j` is the fastest running index, `k` the second one and `i` is the slowest running index.
 The implementation of the wrapper is then:
 ~~~~{.cpp}
 struct HessianPointer {

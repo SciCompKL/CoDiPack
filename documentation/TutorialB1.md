@@ -64,7 +64,7 @@ void dotWithNorms(Real const* a, Real const* b, size_t n, Real& alpha, Real& aNo
 ~~~~
 Now we can instantiate a version of `dotWithNorms` for each of the two evaluation types. In order to provide this
 function to the codi::EvaluationHelper we need to bring it into the form `func(x,y)`. We could rewrite `dotWithNorms` a
-second time such that this interface is meet but in this tutorial we decide to write a wrapper function, that will call
+second time such that this interface is met but in this tutorial we decide to write a wrapper function, that will call
 `dotWithNorms` and provides the required interface for the codi::EvaluationHelper. The wrapper function is:
 ~~~~{.cpp}
 template<typename Real>
@@ -113,8 +113,9 @@ parameter it is now quite easy to use the function for both evaluations. The vec
 `a` and `b`. This packing of the input and output variables is necessary since we needed to fix an interface for the
 implementation of all the helpers in CoDiPack. The implementation in CoDiPack provides still a lot of flexibility that
 we will show in the other sub tutorials. The number of output variables needs to be provided for this function since
-the result is not requested with the call. The final argument needs to be the storage space for the Jacobian. A default
-value can be generated through the codi::EvaluationHelper function [createJacobian](@ref codi::EvaluationHelper::createJacobian).
+the result `y` is not requested with the call. Otherwise, the function call would not know the size for the internal structures.
+The final argument needs to be the storage space for the Jacobian. A default value can be generated through the
+codi::EvaluationHelper function [createJacobian](@ref codi::EvaluationHelper::createJacobian).
 
 As already stated, the call for the Hessian is nearly the same and is not explained. The EvaluationHelper contains
 several other functions which provide also the functionality for to compute e.g. the Hessian and Jacobian in one call.

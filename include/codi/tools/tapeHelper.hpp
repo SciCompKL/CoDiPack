@@ -40,12 +40,12 @@
 namespace codi {
 
   /**
-   * @brief A helper class that allows for a much simpler access an management of a CoDiPack tape.
+   * @brief A helper class that allows for a much simpler access and management of a CoDiPack tape.
    *
    *
    * This class provides helper functionality to record a tape and to evaluate the forward and reverse mode of AD as
    * well as the capability to compute the full Jacobian and Hessian. Some functionality is only available with specific
-   * CoDiPack types. For hessian computations a second order primal value type is required (e.g. HessianComputationType)
+   * CoDiPack types. For Hessian computations a second order primal value type is required (e.g. HessianComputationType)
    * and for primal reevaluations a primal value type is required (e.g. RealReversePrimalIndex).
    *
    * The nomenclature and mathematical definitions for the function, the Jacobian and the Hessian can be found in the
@@ -76,7 +76,7 @@ namespace codi {
    * They prepare the helper and the tape structure of CoDiPack for the recording and the evaluation and ensure that
    * everything has the correct state.
    *
-   * The order order registerInput() and registerOutput() calls is important. It defines which variable is represented
+   * The order of registerInput() and registerOutput() calls is important. It defines which variable is represented
    * by the first entry, the second, etc. in the gradient vector, primal vector, Jacobian etc.
    *
    * The computation of derivatives can then be done with the functions evalForward(), evalReverse(), evalJacobian(),
@@ -102,7 +102,7 @@ namespace codi {
    *  th.deleteHessian(hes);
    * \endcode
    *
-   * A simple reverse interpretation is done as:
+   * A simple reverse evaluation is done as:
    * \code{.cpp}
    *  auto x_d = th.createGradientVectorInput();
    *  auto y_d = th.createGradientVectorOutput();

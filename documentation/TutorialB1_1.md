@@ -58,7 +58,7 @@ void func(VecX const &x, VecY &y);
 ~~~~
 With this function definition an auto deduction will have no problems. The instantiation of this method would now look like
 ~~~~{.cpp}
-func<std::vector<codi::EvaluationHelper::HessianComputationType>, std::vector<codi::EvaluationHelper::HessianComputationType>
+func<std::vector<codi::EvaluationHelper::HessianComputationType>, std::vector<codi::EvaluationHelper::HessianComputationType>>
 ~~~~
 for the default values. Since this definition is quite cumbersome we are now presenting different techniques for the
 implementation of function objects.
@@ -67,7 +67,7 @@ implementation of function objects.
 Structures as function objects
 ------------------------------
 
-Structures can act as function objects if there functional call operator, that is `operator()`, is overloaded. Since
+Structures can act as function objects if their functional call operator, that is `operator()`, is overloaded. Since
 this operator can have template parameters the user no longer needs to know which kind of vectors or CoDiPack types are
 used. In addition, the structure can have members which provide additional information for the call operator. The wrapper
 object for the function `dotWithNorms` could then be implemented like:
@@ -95,7 +95,7 @@ EH::evalHessian(wrapDotWithNorms, x, 3, hes);
 ~~~~
 The advantage is now that in the `evalJacobian` and `evalHessian` calls the user does not need to specify the used
 CoDiPack type. Everything is auto deduced by the compiler during the instantiation of the functions. The structure
-function object makes it also simpler to handle arguments, that are not active types.
+function object makes it also simpler to handle arguments that are not active types.
 
 Lambda functions
 ----------------

@@ -47,8 +47,8 @@ struct WrapperDotWithNorms {
 };
 ~~~~
 
-The default logic in the codi::EvaluationHelper will create a default handle internally every time an `eval...` function
-is called. With the handle creation there is also the creation of the internal data structures which are required to
+Every time an `eval...` function is called, the codi::EvaluationHelper creates a default handle internally. With each
+handle creation the internal data structures of the handle are also created. They are required to
 convert the user provided evaluation points into the CoDiPack data structures. For single calls to an `eval...` function
 this is fine but if the function is called millions of times, the overhead will be noticeable. Therefore it is possible
 to create the handle up front and then reuse the same data structures for all evaluation points. A second advantage of
@@ -80,12 +80,12 @@ auto hDefFixed = EH::createHandleDefaultFixed<3, xSize>(wrapDotWithNorms);
 auto hDef2nd = EH::createHandleDefault2nd(wrapDotWithNorms, 3, xSize);
 auto hDefFixed2nd = EH::createHandleDefaultFixed2nd<3, xSize>(wrapDotWithNorms);
 ~~~~
-For the `Fixed` versions of the methods, it is necessary that the arguments for the sizes are known at compile time.
+For the `fixed` versions of the methods, it is necessary that the arguments for the sizes are known at compile time.
 Otherwise they behave in the same way.
 
 As we have now the handles available, they can be used in the `evalHandle...` function of the codi::EvaluationHelper.
 These are the same functions as in the tutorial [B1](@ref TutorialB1) and have nearly the same argument structure. Instead
-of the function object the handle needs to be provided. For all functions that did not perform a primal evaluation (e.g.
+of the function object, the handle needs to be provided. For all functions that did not perform a primal evaluation (e.g.
 `evalHandleJacobian`) it is no longer necessary to provide the number of output arguments. An example use of the handles
 is:
 ~~~~{.cpp}
@@ -106,7 +106,7 @@ for(size_t j = 0; j < 1000000; j += 1) {
 ~~~~
 
 The other `eval...` functions from tutorial [B1](@ref TutorialB1) can be called in the same way. Now we will present the
-other handle creation functions that provide more flexibility in terms of the used CoDiPack type and for the underlying data
+other handle creation functions that provide more flexibility in terms of the used CoDiPack type and of the underlying data
 structure.
 
 The next two functions are [createHandle](@ref codi::EvaluationHelper::createHandle) and

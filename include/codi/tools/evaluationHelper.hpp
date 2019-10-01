@@ -561,10 +561,10 @@ namespace codi {
    * \endcode
    *
    * x is the vector of input values and y is the vector of output values. ADType is the chosen CoDiPack type for the
-   * function. For most users this definition will be enough. For more general examples please got to section
+   * function. For most users this definition will be enough. For more general examples please go to section
    * \ref AdvFuncObjDef.
    *
-   * The CoDiPack type can be any ActiveReal type from CoDiPack. For example all types that are defined in codi.hpp. The
+   * The CoDiPack type can be any ActiveReal type from CoDiPack, for example all types that are defined in codi.hpp. The
    * evaluation helper provides the default CoDiPack type definitions EvaluationHelper::JacobianComputationType and
    * EvaluationHelper::HessianComputationType. These two use the forward mode of algorithmic differentiation and are
    * more appropriate if \f$ m \f$ and \f$ n \f$ are small. They can also be used if \f$ n \f$ is smaller than
@@ -572,7 +572,7 @@ namespace codi {
    * codi::JacobianComputationType and codi::HessianComputationType can be used. They use the reverse AD mode for the
    * computation.
    *
-   * The most simple example in using the EvaluationHelper is:
+   * The most simple example of using the EvaluationHelper is:
    * \code{.cpp}
    *  using ADType = codi::EvaluationHelper::HessianComputationType;
    *
@@ -608,9 +608,9 @@ namespace codi {
    * evalPrimalAndJacobianAndHessian(). Each of these functions uses the default CoDiPack types in the evaluation helper.
    * In the cases where the primal is not stored, the user has to provide the number of output values manually.
    *
-   * If the EvaluationHelper is used to evaluate the same function several times a higher performance can be archived if
+   * If the EvaluationHelper is used to evaluate the same function several times, a higher performance can be achived if
    * a handle for the evaluation is created up front and then used several times. The above example with the handle
-   * creation would look like:   *
+   * creation would look like:
    * \code{.cpp}
    *  // func and ADType as before
    *
@@ -671,7 +671,7 @@ namespace codi {
    * \endcode
    *
    * \section AdvFuncObjDef Advanced function object definitions
-   * The function object can also has a template argument for the evaluation type e.g.:
+   * The function object can also have a template argument for the evaluation type e.g.:
    * \code{.cpp}
    *  struct Func {
    *    template<typename T>
