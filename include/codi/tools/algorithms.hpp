@@ -451,7 +451,7 @@ namespace codi {
         Tape& tape = CoDiType::getGlobalTape();
 
         for(size_t j = 0; j < input.size(); j += gradDim2nd) {
-          setGradient2ndOnCoDiValue(tape, j, input.data(), input.size(), typename GT2nd::Data(1.0));
+          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Data(1.0));
 
           // propagate the new derivative information
           recordTape(func, input, output);
@@ -481,7 +481,7 @@ namespace codi {
             setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT::Data());
           }
 
-          setGradient2ndOnCoDiValue(tape, j, input.data(), input.size(), typename GT2nd::Data());
+          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Data());
 
           tape.reset();
         }
@@ -510,7 +510,7 @@ namespace codi {
         Tape& tape = CoDiType::getGlobalTape();
 
         for(size_t j = 0; j < input.size(); j += gradDim2nd) {
-          setGradient2ndOnCoDiValue(tape, j, input.data(), input.size(), typename GT2nd::Data(1.0));
+          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Data(1.0));
 
           // propagate the new derivative information
           recordTape(func, input, output);
@@ -544,7 +544,7 @@ namespace codi {
             }
           }
 
-          setGradient2ndOnCoDiValue(tape, j, input.data(), input.size(), typename GT2nd::Data());
+          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Data());
 
           tape.reset();
         }
@@ -620,7 +620,6 @@ namespace codi {
       /**
        * @brief Set gradient values for a vector mode evaluation on the second order gradient information.
        *
-       * @param[in,out] tape  The tape on which the seeding is set.
        * @param[in]      pos  The position in the value vector.
        * @param[in]   values  The value vector.
        * @param[in]     size  The size of the value vector.
@@ -629,7 +628,7 @@ namespace codi {
        * @tparam T  The type of the provided value.
        */
       template<typename T>
-      static CODI_INLINE void setGradient2ndOnCoDiValue(Tape& tape, size_t const pos, CoDiType* values, const size_t size, T value) {
+      static CODI_INLINE void setGradient2ndOnCoDiValue(size_t const pos, CoDiType* values, const size_t size, T value) {
         using GT2nd = GradientValueTraits<typename Real::GradientValue>;
         constexpr size_t gradDim2nd = GT2nd::getVectorSize();
 

@@ -110,6 +110,7 @@ namespace codi {
       }
   };
 
+#ifndef  DOXYGEN_DISABLE
   /**
    * The instantiation of the static store object.
    *
@@ -122,6 +123,7 @@ namespace codi {
       &Tape::template curryEvaluatePrimalHandle<Expr>,
       &Tape::template curryEvaluateHandle<Expr>,
       &Tape::template curryEvaluateForwardHandle<Expr>);
+#endif
 
   /**
    * @brief A factory for function handles, that use static objects to store the data for the function call.

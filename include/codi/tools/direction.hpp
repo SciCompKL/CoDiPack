@@ -75,6 +75,19 @@ namespace codi {
       }
 
       /**
+       * @brief Copy constructor.
+       *
+       * @param[in] d  The other direction.
+       */
+      CODI_INLINE Direction(const Direction<Real, dim>& d) :
+        vector()
+      {
+        for(size_t i = 0; i < dim; ++i) {
+          vector[i] = d.vector[i];
+        }
+      }
+
+      /**
        * @brief The direction is initialized with the values from the initializer list.
        *
        * If the list is to small, then only the first m elements are set.

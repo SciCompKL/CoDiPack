@@ -741,6 +741,9 @@ namespace codi {
        */
       typedef const BinaryOp11<RealType, A, B, Impl> StoreType;
 
+      /** @brief The maximum derivative order that the active type contains. */
+      static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;
+
       /**
        * @brief Get the primal value of the origin of this type.
        * @param[in] t The value from which the primal is extracted.
@@ -776,6 +779,9 @@ namespace codi {
        */
       typedef const BinaryOp10<RealType, A, Impl> StoreType;
 
+      /** @brief The maximum derivative order that the active type contains. */
+      static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;
+
       /**
        * @brief Get the primal value of the origin of this type.
        * @param[in] t The value from which the primal is extracted.
@@ -810,6 +816,9 @@ namespace codi {
        * @brief Expressions are temporary and therefore stored by value.
        */
       typedef const BinaryOp01<RealType, B, Impl> StoreType;
+
+      /** @brief The maximum derivative order that the active type contains. */
+      static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;
 
       /**
        * @brief Get the primal value of the origin of this type.

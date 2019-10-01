@@ -555,10 +555,10 @@ namespace codi {
 
       if(useCopy) {
         if(primalsCopySize < this->primalsSize) {
-          primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * this->primalsSize);
+          primalsCopy = (Real*)realloc((void*)primalsCopy, sizeof(Real) * this->primalsSize);
           primalsCopySize = this->primalsSize;
         }
-        memcpy(primalsCopy, this->primals, sizeof(Real) * this->primalsSize);
+        memcpy((void*)primalsCopy, (void*)this->primals, sizeof(Real) * this->primalsSize);
       } else {
         std::swap(this->primals, primalsCopy);
       }
@@ -611,10 +611,10 @@ namespace codi {
 
       if(useCopy) {
         if(primalsCopySize < this->primalsSize) {
-          primalsCopy = (Real*)realloc(primalsCopy, sizeof(Real) * this->primalsSize);
+          primalsCopy = (Real*)realloc((void*)primalsCopy, sizeof(Real) * this->primalsSize);
           primalsCopySize = this->primalsSize;
         }
-        memcpy(primalsCopy, this->primals, sizeof(Real) * this->primalsSize);
+        memcpy((void*)primalsCopy, (void*)this->primals, sizeof(Real) * this->primalsSize);
       } else {
         std::swap(this->primals, primalsCopy);
       }

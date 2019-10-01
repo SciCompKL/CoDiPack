@@ -111,14 +111,6 @@ namespace codi {
         addDataInternal(std::make_tuple("Total memory allocated", EntryType::Double, allocatedMemoryIndex));
       }
 
-      double getUsedMemory() {
-        return doubleData[0];
-      }
-
-      double getAllocatedMemory() {
-        return doubleData[1];
-      }
-
       /**
        * @brief Return the size of the used memory of the tape.
        * @return Memory in MB.
@@ -195,7 +187,7 @@ namespace codi {
        *
        * @param[in] stream  The data stream from which the values are taken.
        *
-       * @tparm Stream  Either a ChunkVector or a SingleChunkVector
+       * @tparam Stream  Either a ChunkVector or a SingleChunkVector
        */
       template<typename Stream>
       void addStreamData(const Stream& stream) {

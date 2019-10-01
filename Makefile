@@ -71,6 +71,10 @@ $(BUILD_DIR)/%.exe : $(DOC_DIR)/%.cpp
 tutorials: $(TUTORIALS)
 	@mkdir -p $(BUILD_DIR)
 
+doc:
+	@mkdir -p $(BUILD_DIR)
+	doxygen
+
 .PHONY: clean
 clean:
 	rm -fr $(BUILD_DIR)

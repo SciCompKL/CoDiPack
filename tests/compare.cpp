@@ -168,7 +168,7 @@ class ResultDiff {
             double curValue = std::stod(tokens[curFile]);
 
             if(getDeviation(base, curValue) > settings.threshold) {
-              diffPos = inPos;
+              diffPos = curToken;
               fileDiff = curFile;
               return false;
             }

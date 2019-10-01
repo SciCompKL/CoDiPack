@@ -494,8 +494,13 @@ namespace codi {
   #endif
 
   #ifndef CODI_OverflowCheck
-    #define CODI_OverflowCheck 1
+    #define CODI_OverflowCheck true
   #endif
+    /**
+     * @brief Checks for index overflow in the linear index manager.
+     *
+     * Throws an exception if an overflow occurs.
+     */
   const bool IsOverflowCheck = CODI_OverflowCheck;
   #undef CODI_OverflowCheck
 
