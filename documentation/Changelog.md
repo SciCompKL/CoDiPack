@@ -1,6 +1,26 @@
 Changelog      {#Changelog}
 ===========================
 
+### v 1.9.0 - 2019-10-09
+ - Helper structures:
+   * EvaluationHelper:
+     + Simplifies the computation of Jacobian and Hessian matrices for functions, function objects and lambda functions.
+       Only the function needs to be provided and the helper will compute all derivatives.
+     + See Tutorial B1, B1.1 and B1.2.
+   * TapeHelper:
+     + Provides a more convenient handling of the tape recording and derivative computation process. All CoDiPack
+       specifics are hidden and the user can compute the full Jacobian or Hessian matrix with a simple function call.
+     + See Tutorial B2
+ - Expression rework:
+   * Binary and unary expressions are now defined via logic objects that provide the derivative and primal evaluation
+     functions.
+   * Users can now change the derivative logic for custom types by the specialization of these logic objects.
+ - Test suite:
+   * The test suite checks now also primal and second order derivatives.
+ - Bugfix:
+   * Overflow check for linear index handlers
+
+
 ### v 1.8.0 - 2019-01-07
  - Interface:
     - Added function to disable active variables
