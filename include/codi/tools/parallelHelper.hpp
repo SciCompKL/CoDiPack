@@ -39,6 +39,8 @@
 #include <list>
 #include <atomic>
 #include <deque>
+#include <string>
+#include <fstream>
 
 #include "../configure.h"
 
@@ -59,7 +61,7 @@ namespace codi {
    * - management of thread-local tapes,
    * - recording of meta information that reflects the tapes' dependencies,
    * - helpers for custom reverse evaluation,
-   * - a built-in evaluation routine as a convient option for an automatically parallelized reverse pass.
+   * - a built-in evaluation routine as a convenient option for an automatically parallelized reverse pass.
    *
    * The public member functions can safely be used in a multithreaded application.
    *
@@ -69,6 +71,12 @@ namespace codi {
    * Such misuse is (amongst others) detected by setting CODI_EnableAssert.
    *
    * Setting CODI_EnableParallelHelperDebugOutput provides additional information about tapes.
+   * - 1: Report beginnings and ends of frames.
+   * - 2: Report setting and clearing of threadlocal tapes.
+   * - 4: Report beginnings and ends of frame evaluations.
+   * - 8: Scheduler reports on submitted and finished frames.
+   *
+   * Multiple options can be enabled simultaneously by forming sums.
    */
   template<typename Tape>
   class ParallelHelper {
@@ -157,6 +165,7 @@ namespace codi {
         CODI_INLINE void unlockWrite() {
           int previous = this->hasWriter.fetch_and(0); // set has Writer to false
           codiAssert(previous); // assert if it was false already
+          CODI_UNUSED(previous);
         }
 
         /**
@@ -236,6 +245,13 @@ namespace codi {
         TapeId tapeId;
 
         /**
+         * @brief User-defined name of the tape.
+         *
+         * Makes debugging output more readable.
+         */
+        std::string name;
+
+        /**
          * @brief Indicates ownership of tape pointer.
          *
          * As an example, the master tape might be externally managed wheres tapes of local workers are not.
@@ -299,14 +315,15 @@ namespace codi {
          * @param tape Pointer to the tape.
          * @param tapeId Id of the tape.
          * @param externallyManaged Memory management flag.
+         * @param name User-defined name of the tape.
          */
-        TapeData(Tape* tape, TapeId tapeId, bool externallyManaged) : tape(tape), tapeId(tapeId), externallyManaged(externallyManaged) {
+        TapeData(Tape* tape, TapeId tapeId, bool externallyManaged, const std::string& name) : tape(tape), tapeId(tapeId), name(name), externallyManaged(externallyManaged) {
         }
 
         /**
          * @brief Default constructor.
          */
-        TapeData() : tape(nullptr), tapeId(InvalidTapeId), externallyManaged(false) {
+        TapeData() : tape(nullptr), tapeId(InvalidTapeId), name(), externallyManaged(false) {
         }
       };
 
@@ -366,9 +383,9 @@ namespace codi {
        * @param externallyManaged Ownership of the tape pointer.
        * @return The id assigned to the tape.
        */
-      CODI_INLINE TapeId internalRegisterTape(Tape* tape, bool externallyManaged) {
+      CODI_INLINE TapeId internalRegisterTape(Tape* tape, bool externallyManaged, const std::string& name) {
         TapeId id = nextTapeId++;
-        this->tapeData[id] = TapeData(tape, id, externallyManaged);
+        this->tapeData[id] = TapeData(tape, id, externallyManaged, name);
         return id;
       }
 
@@ -500,10 +517,10 @@ namespace codi {
        *
        * The counterpart is forgetTape.
        */
-      CODI_INLINE TapeId registerTape(Tape* tape) {
+      CODI_INLINE TapeId registerTape(Tape* tape, std::string name = "") {
         codiAssert(!hasTape(tape));
         WriteLock lock(this->tapeDataMutex);
-        return this->internalRegisterTape(tape, true);
+        return this->internalRegisterTape(tape, true, name);
       }
 
       /**
@@ -512,11 +529,11 @@ namespace codi {
        *
        * The counterpart is forgetTape.
        */
-      CODI_INLINE TapeId registerTape() {
+      CODI_INLINE TapeId registerTape(std::string name = "") {
         ActiveReal<Tape> dummy;
         Tape* tape = dummy.getGlobalTapePtr();
         codiAssert(tape != nullptr);
-        return this->registerTape(tape);
+        return this->registerTape(tape, name);
       }
 
       /**
@@ -549,10 +566,10 @@ namespace codi {
        *
        * The counterpart is deleteTape.
        */
-      CODI_INLINE TapeId createTape() {
+      CODI_INLINE TapeId createTape(std::string name = "") {
         WriteLock lock(this->tapeDataMutex);
         Tape* tape = new Tape;
-        return this->internalRegisterTape(tape, false);
+        return this->internalRegisterTape(tape, false, name);
       }
 
       /**
@@ -666,7 +683,7 @@ namespace codi {
       CODI_INLINE void printStatistics() {
         ReadLock lock(this->tapeDataMutex);
         for (auto& tapeDataPair : this->tapeData) {
-          std::cout << "------------- Statistics of tape " << tapeDataPair.first << " (" << tapeDataPair.second.tape << ") -------------" << std::endl;
+          std::cout << "------------- Statistics of tape " << tapeDataPair.first << " (" << tapeDataPair.second.name << ", " << tapeDataPair.second.tape << ") -------------" << std::endl;
           tapeDataPair.second.tape->printStatistics();
         }
       }
@@ -689,8 +706,11 @@ namespace codi {
 
         SyncEvent event = this->nextEvent++;
 
-        #if CODI_EnableParallelHelperDebugOutput
-          debugOutput("thread", threadId, "tape", id, "begins frame at", this->tapeData.at(id).tape->getPosition(), event);
+        #if CODI_EnableParallelHelperDebugOutput & 1
+          std::string spaces;
+          for (int i = 0; i < id; ++i)
+            spaces.push_back(' ');
+          debugOutput(spaces, this->tapeData.at(id).name, "begins frame at", this->tapeData.at(id).tape->getPosition(), event);
         #endif
 
         codiAssert(this->validFrame(id)); // incomplete frame detection
@@ -714,6 +734,8 @@ namespace codi {
       /**
        * @brief Ends a frame on the tape with the given id.
        * @param id Tape id.
+       * @param discardIfEmpty Control whether empty frames are kept or discarded.
+       * @return true if the frame was discarded, false otherwise.
        *
        * Automatically skips empty frames, that is, start == end.
        *
@@ -722,38 +744,45 @@ namespace codi {
        *
        * The counterpart is beginFrame.
        */
-      CODI_INLINE void endFrame(TapeId id) {
+      CODI_INLINE bool endFrame(TapeId id, bool discardIfEmpty = true) {
         ReadLock lock(this->tapeDataMutex);
         codiAssert(this->hasTape(id));
         codiAssert(this->tapeData.at(id).frames.front().end == Position()); // frame already closed
 
         SyncEvent event = this->nextEvent++;
 
-        #if CODI_EnableParallelHelperDebugOutput
-          debugOutput("thread", threadId, "tape", id, "ends frame at", this->tapeData.at(id).tape->getPosition(), event);
+        #if CODI_EnableParallelHelperDebugOutput & 1
+          std::string spaces;
+          for (int i = 0; i < id; ++i)
+            spaces.push_back(' ');
+          debugOutput(spaces, this->tapeData.at(id).name, "ends frame at", this->tapeData.at(id).tape->getPosition(), event);
         #endif
 
         Position end = this->tapeData.at(id).tape->getPosition();
 
-        if (this->tapeData.at(id).frames.front().start == end) { // automatically skip empty frames
+        if (this->tapeData.at(id).frames.front().start == end && discardIfEmpty) { // automatically skip empty frames
           this->tapeData.at(id).frames.pop_front();
+          return true;
         }
         else {
           this->tapeData.at(id).frames.front().end = end;
           this->tapeData.at(id).frames.front().endEvent = event;
+          return false;
         }
       }
 
       /**
        * @brief Ends a frame on the thread-local tape of the calling thread.
+       * @param discardIfEmpty Control whether empty frames are kept or discarded.
+       * @return true if the frame was discarded, false otherwise.
        *
        * Assumes that this tape is known to the parallel helper.
        *
        * The counterpart is beginFrame.
        */
-      CODI_INLINE void endFrame() {
+      CODI_INLINE bool endFrame(bool discardIfEmpty = true) {
         Tape* tape = ActiveReal<Tape>::getGlobalTapePtr();
-        this->endFrame(this->getTapeId(tape));
+        return this->endFrame(this->getTapeId(tape), discardIfEmpty);
       }
 
       /**
@@ -780,6 +809,34 @@ namespace codi {
         return this->lastFrameValid(this->getTapeId(tape));
       }
 
+      /**
+       * @brief Export the timeline indicated by the frame boundaries.
+       * @param filename Name of the file to write to.
+       *
+       * Creates or truncates the specified file and exports the timeline. Each line contains
+       *
+       * tapeName startEvent endEvent startEvent endEvent ...
+       */
+      CODI_INLINE void exportTimeline(const std::string& filename) {
+        ReadLock lock(this->tapeDataMutex);
+
+        std::ofstream out(filename);
+        codiAssert(out.is_open());
+
+        for (auto& tapeDataPair : this->tapeData) {
+
+          out << tapeDataPair.second.name;
+
+          for (auto& frame : tapeDataPair.second.frames) {
+            out << " " << frame.startEvent << " " << frame.endEvent;
+          }
+
+          out << std::endl;
+        }
+
+        out.close();
+      }
+
       /*************** management of thread-local tapes ****************/
 
       /**
@@ -790,8 +847,8 @@ namespace codi {
         ReadLock lock(this->tapeDataMutex);
         codiAssert(this->hasTape(id));
 
-        #if CODI_EnableParallelHelperDebugOutput
-          debugOutput("thread", threadId, "uses now tape", id);
+        #if CODI_EnableParallelHelperDebugOutput & 2
+          debugOutput("thread", threadId, "uses now tape", id, this->tapeData.at(id).name);
         #endif
 
         ActiveReal<Tape>::setGlobalTapePtr(this->tapeData.at(id).tape);
@@ -801,7 +858,7 @@ namespace codi {
        * @brief Set the thread-local tape of the calling thread to nullptr.
        */
       CODI_INLINE void clearThisThreadsTape() {
-        #if CODI_EnableParallelHelperDebugOutput
+        #if CODI_EnableParallelHelperDebugOutput & 2
           debugOutput("thread", threadId, "cleared its thread-local tape");
         #endif
 
@@ -846,12 +903,30 @@ namespace codi {
       }
 
       /**
+       * @brief For the thread local tape of the calling thread, returns the number of frames left to evaluate.
+       * @return Number of frames left to evaluate.
+       */
+      CODI_INLINE size_t numberOfFramesLeftToEvaluate() {
+        Tape* tape = ActiveReal<Tape>::getGlobalTapePtr();
+        return this->numberOfFramesLeftToEvaluate(this->getTapeId(tape));
+      }
+
+      /**
        * @brief Checks if all frames of the given tape have been evaluated.
        * @param id Tape id.
        * @return True if all frames are evaluated.
        */
       CODI_INLINE bool evaluationDone(TapeId id) {
         return this->numberOfFramesLeftToEvaluate(id) == 0;
+      }
+
+      /**
+       * @brief Checks if all frames of the thread local tape of the calling thread have been evaluated.
+       * @return True if all frames are evaluated.
+       */
+      CODI_INLINE bool evaluationDone() {
+        Tape* tape = ActiveReal<Tape>::getGlobalTapePtr();
+        return this->evaluationDone(this->getTapeId(tape));
       }
 
       /**
@@ -865,17 +940,29 @@ namespace codi {
         codiAssert(this->hasTape(id));
         codiAssert(!this->evaluationDone(id));
 
-        #if CODI_EnableParallelHelperDebugOutput
-          debugOutput("thread", threadId, "asks to evaluate tape", id, "from", this->tapeData.at(id).frameIterator->end, "to", this->tapeData.at(id).frameIterator->start);
+        #if CODI_EnableParallelHelperDebugOutput & 4
+          std::string spaces;
+          for (int i = 0; i < id; ++i)
+            spaces.push_back(' ');
+          debugOutput(spaces, "thread", threadId, "evaluates", this->tapeData.at(id).name, "from", this->tapeData.at(id).frameIterator->end, "to", this->tapeData.at(id).frameIterator->start, "from", this->tapeData.at(id).frameIterator->endEvent, "to", this->tapeData.at(id).frameIterator->startEvent);
         #endif
 
-        this->tapeData.at(id).tape->evaluate(this->tapeData.at(id).frameIterator->end, this->tapeData.at(id).frameIterator->start);
+        auto oldIter = this->tapeData.at(id).frameIterator++;
+        this->tapeData.at(id).tape->evaluate(oldIter->end, oldIter->start);
 
-        #if CODI_EnableParallelHelperDebugOutput
-          debugOutput("thread", threadId, "evaluated tape", id, "from", this->tapeData.at(id).frameIterator->end, "to", this->tapeData.at(id).frameIterator->start);
+        #if CODI_EnableParallelHelperDebugOutput & 4
+          debugOutput(spaces, "thread", threadId, "finished evaluating", this->tapeData.at(id).name, "from", oldIter->end, "to", oldIter->start, "from", oldIter->endEvent, "to", oldIter->startEvent);
         #endif
+      }
 
-        ++this->tapeData.at(id).frameIterator;
+      /**
+       * @brief Evaluates the next frame of the thread local tape of the calling thread.
+       *
+       * Retrieves the tape id and forwards the call to evaluateNextFrame(TapeId).
+       */
+      CODI_INLINE void evaluateNextFrame() {
+        Tape* tape = ActiveReal<Tape>::getGlobalTapePtr();
+        this->evaluateNextFrame(this->getTapeId(tape));
       }
 
       /**
@@ -981,16 +1068,16 @@ namespace codi {
             }
           }
 
-          // launch it if its end event is not ordered before the earliest start event among running jobs
-          if (foundJob && (runningStartEvents.empty() || endEvent >= *(runningStartEvents.begin()))) {
+          // launch it if its end event is ordered after the latest start event among running jobs
+          if (foundJob && (runningStartEvents.empty() || endEvent > *(--runningStartEvents.end()))) {
             auto startEvent = this->tapeData[candidate].frameIterator->startEvent;
 
             while (queueFlag.test_and_set()) {}
             reverseEvalQueue.push(std::make_pair(candidate, startEvent));
             queueFlag.clear();
 
-            #if CODI_EnableParallelHelperDebugOutput
-              debugOutput("scheduler submitted frame on tape", candidate, "with events", startEvent, endEvent);
+            #if CODI_EnableParallelHelperDebugOutput & 8
+              debugOutput("scheduler submitted frame on tape", candidate, this->tapeData.at(candidate).name, "with events", startEvent, endEvent);
             #endif
 
             queueBlocked[candidate] = true;
@@ -1008,8 +1095,8 @@ namespace codi {
 
             runningStartEvents.erase(runningStartEvents.find(job.second));
 
-            #if CODI_EnableParallelHelperDebugOutput
-              debugOutput("evaluation on tape", job.first, "of a frame with start event", job.second, "done");
+            #if CODI_EnableParallelHelperDebugOutput & 8
+              debugOutput("evaluation on tape", job.first, this->tapeData.at(job.first).name, "of a frame with start event", job.second, "done");
             #endif
           }
           else {
