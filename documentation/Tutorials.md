@@ -13,7 +13,7 @@ the required memory and the runtime of the tape evaluations.
 The beginner CoDiPack tutorials:
   - \subpage TutorialB1 "Tutorial B1": Evaluation helper introduction: Compute Jacbioans and Hessians of functions
    - \subpage TutorialB1_1 "Tutorial B1.1": Function objects for the the evaluation helper: How more generalized function objects can be defined.
-   - \subpage TutorialB1_2 "Tutorial B1.2": Handle creation and advanced use of the evaluation helper: How to evaluated a function object at several different points.
+   - \subpage TutorialB1_2 "Tutorial B1.2": Run time optimization for the evaluation helper: How to evaluated a function object at several different points.
   - \subpage TutorialB2 "Tutorial B2": Tape helper introduction
     - Simple tape management and algorithms for computation of gradients, Jacobians and Hessians
 

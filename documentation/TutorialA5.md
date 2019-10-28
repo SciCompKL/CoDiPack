@@ -1,8 +1,8 @@
 Tutorial A5: Custom Jacobian and Hessian storage {#TutorialA5}
 ============
 
-In this tutorial we want to show how custom data structures can be used in the codi::EvaluationHelper for the Jacobian
-and Hessian. It will create a small wrapper structure that can be used to map the data of the user to the CoDiPack
+In this tutorial we want to show how custom data structures can be used in the codi::EvaluationHelper for Jacobians
+and Hessians. It will create a small wrapper structure that can be used to map user data to the CoDiPack
 interface.
 
 The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper computes the angle between two vectors \f$a\f$
@@ -32,11 +32,11 @@ void dotWithNorms(Real const* a, Real const* b, size_t n, Real& alpha, Real& aNo
 ~~~~
 For the implementation of the function wrapper please see tutorial [B1.1](@ref TutorialB1_1).
 
-In the B1 tutorials we used the function [createJacobian](@ref codi::EvaluationHelper::createJacobian) and
+In the B1 tutorials we use the functions [createJacobian](@ref codi::EvaluationHelper::createJacobian) and
 [createHessian](@ref codi::EvaluationHelper::createHessian) to create the data storage for the derivatives. These functions
 return instances of the default CoDiPack implementations codi::Jacobian and codi::Hessian. The interfaces of these two
 implementations are already quite small but the algorithms behind the codi::EvaluationHelper require only the functional
-call operator, that is `operator ()`, as they are define in [JacobianInterface](@ref codi::JacobianInterface) and
+call operator (`operator ()`), like they are defined in [JacobianInterface](@ref codi::JacobianInterface) and
 [HessianInterface](@ref codi::HessianInterface). The reference access of both interfaces looks like:
 ~~~~{.cpp}
 // struct JacobianInterface
@@ -45,12 +45,12 @@ call operator, that is `operator ()`, as they are define in [JacobianInterface](
 // struct HessianInterface
   T& operator()(const size_t i, const size_t j, const size_t k);
 ~~~~
-For both interfaces the parameter `i` iterates over the output variables and j iterates over the input variables. In the
-Hessian version of the operator, the parameter `k` iterates over the input variables from the second order derivation.
+For both interfaces, the parameter `i` iterates over the output variables and j iterates over the input variables. In the
+Hessian version of the operator, the parameter `k` iterates over the input variables corresponding to the second order derivation.
 
 In order to demonstrate how a simple wrapper for the data structure can be written, we will create a wrapper for a
 Hessian. Our underlying data will be an array which is organized such that all values for one output are stored in a
-column major matrix, that is `j` is the fastest running index, `k` the second one and `i` is the slowest running index.
+column major matrix, that is, `j` is the fastest running index, `k` the second one and `i` is the slowest running index.
 The implementation of the wrapper is then:
 ~~~~{.cpp}
 struct HessianPointer {
@@ -76,8 +76,8 @@ struct HessianPointer {
 };
 ~~~~
 We store the data pointer and the sizes as member variables which are initialized in the constructor. The function
-`computeIndex` calculates from `i`, `j` and `k` the offset into the data pointer. The two `operator()` functions provide
-the implementation of the interface.
+`computeIndex` calculates the offset into the data pointer from `i`, `j` and `k`. The two `operator()` functions provide
+the interface implementation.
 
 This wrapper can now be used in the algorithms of the codi::EvaluationHelper. After creating the data manually, we create
 the wrapper and provide the wrapper to the eval function call:
@@ -91,7 +91,7 @@ WrapperDotWithNorms wrapDotWithNorms(n);
 EH::evalHessian(wrapDotWithNorms, hDef2nd, x, 3, hes);
 ~~~~
 
-For the codi::JacobianInterface the implementation is nearly the same. With the wrapper a user can directly store the
+For the codi::JacobianInterface the implementation is nearly the same. With such a wrapper a user can directly store the
 computed Jacobians and Hessians in its own data structures.
 
 

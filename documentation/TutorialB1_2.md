@@ -1,12 +1,12 @@
-Tutorial B1.2: Handle creation and advanced uses of the evaluation helper {#TutorialB1_2}
+Tutorial B1.2: Run time optimization for the evaluation helper {#TutorialB1_2}
 ============
 
 This tutorial explains in more detail than tutorial [B1](@ref TutorialB1) how other CoDiPack types than the default ones
 in the codi::EvaluationHelper can be used and how the performance can be improved if a function object needs to be
 evaluated multiple times.
 
-The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper computes the angle between two vectors \f$a\f$
-and \f$b\f$. The equation is:
+The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper uses the computation of the angle between two vectors \f$a\f$
+and \f$b\f$ as an example. The equation is:
 \f[
   \alpha = f(a, b) = \arccos\left(\frac{\scalar{a}{b}}{\norm{a} \norm{b}}\right)
 \f]
@@ -48,8 +48,8 @@ struct WrapperDotWithNorms {
 ~~~~
 
 Every time an `eval...` function is called, the codi::EvaluationHelper creates a default handle internally. With each
-handle creation the internal data structures of the handle are also created. They are required to
-convert the user provided evaluation points into the CoDiPack data structures. For single calls to an `eval...` function
+handle creation also comes the creation of the internal data structures. They are required to
+convert the user provided evaluation points to the CoDiPack data structures. For single calls to an `eval...` function
 this is fine but if the function is called millions of times, the overhead will be noticeable. Therefore it is possible
 to create the handle up front and then reuse the same data structures for all evaluation points. A second advantage of
 the handle creation is that the user can choose the CoDiPack type for the handle. Since the default handle uses the
@@ -62,13 +62,13 @@ The general functions for the default handle creation are
 [createHandleDefault2nd](@ref codi::EvaluationHelper::createHandleDefault2nd) and
 [createHandleDefaultFixed2nd](@ref codi::EvaluationHelper::createHandleDefaultFixed2nd).
 The [createHandleDefault](@ref codi::EvaluationHelper::createHandleDefault) will create a handle with `std::vector` as
-storage containers and a first order foward CoDiPack vector type with the vector size 4. The same handle is created with
-[createHandleDefaultFixed](@ref codi::EvaluationHelper::createHandleDefaultFixed), but instead `std::array` containers are
-used for the storage. This function requires the size of the inputs and outputs as template arguments. The other two
+storage containers and a first order forward CoDiPack vector type with vector size 4. The same handle is created by
+[createHandleDefaultFixed](@ref codi::EvaluationHelper::createHandleDefaultFixed), but `std::array` containers are
+used for the storage instead. This function requires the size of the inputs and outputs as template arguments. The other two
 functions [createHandleDefault2nd](@ref codi::EvaluationHelper::createHandleDefault2nd) and
-[createHandleDefaultFixed2nd](@ref codi::EvaluationHelper::createHandleDefaultFixed2nd) do the same as there first order
-counter parts but they use a second order forward CoDiPack vector type, where both vector dimensions have the size 4.
-An example call of all four methods is:
+[createHandleDefaultFixed2nd](@ref codi::EvaluationHelper::createHandleDefaultFixed2nd) do the same like their first order
+counter parts but they use a second order forward CoDiPack vector type, where both vector dimensions have size 4.
+An exemplary call for all four methods is:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
 
@@ -83,10 +83,10 @@ auto hDefFixed2nd = EH::createHandleDefaultFixed2nd<3, xSize>(wrapDotWithNorms);
 For the `fixed` versions of the methods, it is necessary that the arguments for the sizes are known at compile time.
 Otherwise they behave in the same way.
 
-As we have now the handles available, they can be used in the `evalHandle...` function of the codi::EvaluationHelper.
-These are the same functions as in the tutorial [B1](@ref TutorialB1) and have nearly the same argument structure. Instead
-of the function object, the handle needs to be provided. For all functions that did not perform a primal evaluation (e.g.
-`evalHandleJacobian`) it is no longer necessary to provide the number of output arguments. An example use of the handles
+As we now have the handles available, they can be used in the `evalHandle...` function of the codi::EvaluationHelper.
+These are the same functions as in the tutorial [B1](@ref TutorialB1) and they nearly have the same argument structure. Instead
+of the function object, the handle needs to be provided. For all functions that do not perform a primal evaluation (e.g.
+`evalHandleJacobian`) it is no longer necessary to provide the number of output arguments. An example use of such handles
 is:
 ~~~~{.cpp}
 EH::evalHandleJacobian(hDef, x, jac);
@@ -109,7 +109,7 @@ The other `eval...` functions from tutorial [B1](@ref TutorialB1) can be called 
 other handle creation functions that provide more flexibility in terms of the used CoDiPack type and of the underlying data
 structure.
 
-The next two functions are [createHandle](@ref codi::EvaluationHelper::createHandle) and
+The next two functions that we discuss are the not default ones, [createHandle](@ref codi::EvaluationHelper::createHandle) and
 [createHandleFixed](@ref codi::EvaluationHelper::createHandleFixed). The first one creates a handle with `std::vector`
 as the underlying container type. The second one uses `std::array`. In both functions the used CoDiPack type is given as
 a template parameter. All `Real...` type definitions in [codi.hpp](@ref codi.hpp) can be used here. Since the definition
@@ -117,7 +117,7 @@ of higher order types can be quite involved there are two additional definitions
 [JacobianComputationType](@ref codi::JacobianComputationType) and [HessianComputationType](@ref codi::HessianComputationType)
 in this file in the global `codi` namespace. They represent a Jacobian index management taping approach  with a vector
 mode of 4 for the first one. The second one uses a primal value index management tape with a vector mode of 4 and the
-inner AD type is a forward type with a vector dimension of 4. Some example custom handle creations are now:
+inner AD type is a forward type with a vector dimension of 4. Some exemplary custom handle creations are now:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
 

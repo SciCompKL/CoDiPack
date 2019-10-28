@@ -2,16 +2,19 @@ Tutorial B1: Evaluation helper {#TutorialB1}
 ============
 
 This tutorial describes the basic use of the codi::EvaluationHelper which can be used to compute Jacobians and Hessians
-of an arbitrary function in an automatic fashion.
+of an arbitrary function in an automatic fashion. The advantage of the codi::EvaluationHelper is the nearly no knowledge 
+about Algorithmic Differentiation or CoDiPack is required. The helper hides all implementational details and provides an
+interface where only the function needs to be presented to the codi::EvaluationHelper. With this function it can then
+compute the Hessian and Jacobian of that function.
 
 We want to differentiate a function that computes the angle between two vectors \f$a\f$ and \f$b\f$.
-Mathematical this is done by computing the dot product of the normalized vectors and taking the arcus cosine function of
+Mathematically this is done by computing the dot product of their normalized vectors and taking the arcus cosine function of
 the result:
 \f[
   \alpha = f(a, b) = \arccos\left(\frac{\scalar{a}{b}}{\norm{a} \norm{b}}\right)
 \f]
 
-This function is implemented such that the angle and the two norms of the vectors are returned:
+This function is implemented in such a way that the angle and both vector norms are returned:
 ~~~~{.cpp}
 const size_t n = 10;
 
@@ -34,14 +37,14 @@ void dotWithNorms(double const* a, double const* b, size_t n, double& alpha, dou
 
 Since this function has \f$ 2 \cdot n \f$ input values and 3 output values, we would like to compute the Hessian and the
 Jacobian with the codi::EvaluationHelper. This class provides several helper functions for the evaluation of Jacobians
-and Hessians of functions object. Which kind of function objects are accepted by the codi::EvaluationHelper is
+and Hessians of function objects. Which kind of function objects are accepted by the codi::EvaluationHelper is
 discussed in the sub tutorial [B1.1](@ref TutorialB1_1). Here, we assume the simplest default case where the function declaration is:
 ~~~~{.cpp}
 void func(std::vector<CoDiType> const &x, std::vector<CoDiType> &y);
 ~~~~
-The function uses the standard vectors as the array containers and consists of an input vector `x` and an output vector
-`y`. The `CoDiType` can be an arbitrary type of CoDiPack, but in this first tutorial we will use the default types
-provided by the codi::EvaluationHelper, which are codi::EvaluationHelper::JacobianComputationType for the Jacobian
+The function uses standard vectors as the array containers and consists of an input vector `x` and an output vector
+`y`. The `CoDiType` can be an arbitrary CoDiPack type, but in this first tutorial we will use the default types
+provided by the codi::EvaluationHelper, these are codi::EvaluationHelper::JacobianComputationType for the Jacobian
 evaluation and codi::EvaluationHelper::HessianComputationType for the Hessian computation. Since we need to be able to
 use these two types in the evaluation of `dotWithNorms` a template parameter is added to this function:
 ~~~~{.cpp}
@@ -64,7 +67,7 @@ void dotWithNorms(Real const* a, Real const* b, size_t n, Real& alpha, Real& aNo
 ~~~~
 Now we can instantiate a version of `dotWithNorms` for each of the two evaluation types. In order to provide this
 function to the codi::EvaluationHelper we need to bring it into the form `func(x,y)`. We could rewrite `dotWithNorms` a
-second time such that this interface is met but in this tutorial we decide to write a wrapper function, that will call
+second time such that this interface is met but in this tutorial we decide to write a wrapper function that will call
 `dotWithNorms` and provides the required interface for the codi::EvaluationHelper. The wrapper function is:
 ~~~~{.cpp}
 template<typename Real>
@@ -73,11 +76,11 @@ void codiDotWithNormsWrap(std::vector<Real> const &x, std::vector<Real> &y) {
   dotWithNorms(&x[0], &x[n], n, y[0], y[1], y[2]);
 }
 ~~~~
-The wrapper assumes that the two vectors `a` and `b` have been packed into the `x` vector. The same assumption is done
-for the output values. Here, the first output value is the angle between the vectors. The other two variables are the
+The wrapper assumes that the two vectors `a` and `b` have been packed into the `x` vector. The same assumption is made
+for the output values. Here, the first output value is the angle between the vectors. The other two output variables are the
 norms of the vectors.
 
-The codi::EvaluationHelper needs now to know where the function should be evaluated. For this we create a vector and fill
+We now have to fix a point at which we want to evaluate the Jacobian or Hessian. For this we create a vector and fill
 it with the data for the vectors `a` and `b`:
 ~~~~{.cpp}
 std::vector<double> x(xSize);
@@ -101,25 +104,25 @@ EH::evalJacobian(codiDotWithNormsWrap<EH::JacobianComputationType>, x, 3, jac);
 EH::evalHessian(codiDotWithNormsWrap<EH::HessianComputationType>, x, 3, hes);
 ~~~~
 The first line creates a shortcut such that `codi::EvaluationHelper` can be accessed via the `EH` abbreviation.
-Afterwards the storage for the Jacobian and Hessian are created. The computation of these two objects is then triggered
-with the calls to `evalJacobian` and `evalHessian`. Since both calls are quite similar, we will only explain the one for
+Then the storage for the Jacobian and Hessian is created. The computation of these two objects is then triggered
+with calls to `evalJacobian` and `evalHessian`. Since both calls are quite similar, we will only explain the one for
 the Jacobian.
 
-The call expects the function object for which the Jacobian should be computed, the point at which the evaluation should
+The call expects the function object for which the Jacobian shall be computed, the point at which the evaluation shall
 be done, the number of output values and the actual storage for the Jacobian. In our case the function object is just
 the pointer to the `codiDotWithNormsWrap` wrapper function instantiated with the template parameter for the
 [default Jacobian computation type](@ref codi::EvaluationHelper::JacobianComputationType). Because of the template
 parameter it is now quite easy to use the function for both evaluations. The vector `x` contains the two packed vectors
 `a` and `b`. This packing of the input and output variables is necessary since we needed to fix an interface for the
 implementation of all the helpers in CoDiPack. The implementation in CoDiPack provides still a lot of flexibility that
-we will show in the other sub tutorials. The number of output variables needs to be provided for this function since
+we will show in the sub tutorials. The number of output variables needs to be provided for this function since
 the result `y` is not requested with the call. Otherwise, the function call would not know the size for the internal structures.
 The final argument needs to be the storage space for the Jacobian. A default value can be generated through the
 codi::EvaluationHelper function [createJacobian](@ref codi::EvaluationHelper::createJacobian).
 
 As already stated, the call for the Hessian is nearly the same and is not explained. The EvaluationHelper contains
-several other functions which provide also the functionality for to compute e.g. the Hessian and Jacobian in one call.
-All functions are:
+several other functions which also provide functionality to e.g. compute the Hessian and Jacobian in one call.
+The set of all functions is:
 [evalPrimal](@ref codi::EvaluationHelper::evalPrimal),
 [evalPrimalAndJacobian](@ref codi::EvaluationHelper::evalPrimalAndJacobian),
 [evalPrimalAndHessian](@ref codi::EvaluationHelper::evalPrimalAndHessian),
@@ -140,8 +143,8 @@ EH::evalJacobianAndHessian(codiDotWithNormsWrap<EH::HessianComputationType>, x, 
 
 This concludes the basic introduction to the codi::EvaluationHelper class. The tutorial [B1.1](@ref TutorialB1_1) will
 go into more details how function objects can be defined in a more general way and which kind of function objects are
-possible. Tutorial [B1.2](@ref TutorialB1_2) will introduce the creation of handles for the codi::EvaluationHelper which
-provide a speedup if a function object needs to evaluated at several different positions. The handles also enable the
+admissible. Tutorial [B1.2](@ref TutorialB1_2) will introduce the creation of handles for the codi::EvaluationHelper which
+provide a speedup if a function object needs to evaluated at several different points. The handles also enable the
 use of all CoDiPack types.
 
 The full code for the tutorial is:

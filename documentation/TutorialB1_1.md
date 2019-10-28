@@ -2,10 +2,10 @@ Tutorial B1.1: Function objects for the evaluation helper {#TutorialB1_1}
 ============
 
 This tutorial explains in more detail than tutorial [B1](@ref TutorialB1) how function objects can be implemented
-such that they can be used together with the codi::EvaluationHelper.
+in such a way that they can be used together with the codi::EvaluationHelper.
 
-The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper computes the angle between two vectors \f$a\f$
-and \f$b\f$. The equation is:
+The basic [tutorial](@ref TutorialB1) for the codi::EvaluationHelper uses the computation of the angle between two vectors \f$a\f$
+and \f$b\f$ as an example. The equation is:
 \f[
   \alpha = f(a, b) = \arccos\left(\frac{\scalar{a}{b}}{\norm{a} \norm{b}}\right)
 \f]
@@ -30,27 +30,26 @@ void dotWithNorms(Real const* a, Real const* b, size_t n, Real& alpha, Real& aNo
 }
 ~~~~
 
-As in the basic tutorial we need to wrap this function now such that the codi::EvaluationHelper can call it from its
-routines. As always there are multiple choices available, which are a function pointer, a function object and a lambda
-function. But before we present the different ways of implementing the functions objects we need to have a look which
-interface is expected from the codi::EvaluationHelper.
+As in the basic tutorial we now need to wrap this function such that the codi::EvaluationHelper can call it from its own
+routines. As always there are multiple choices available, being a function pointer, a function object or a lambda
+function. Before we present the different ways of implementing the functions objects we need to have a look at which
+interface the codi::EvaluationHelper expects.
 
-In tutorial [B1](@ref TutorialB1) the expected interface is presented as:
+In tutorial [B1](@ref TutorialB1) the presented interface is:
 ~~~~{.cpp}
 template<typename Real>
 void func(std::vector<Real> const &x, std::vector<Real> &y);
 ~~~~
 which is already generalized for the computation type. The codi::EvaluationHelper will call the function object
-as `func(x,y)` where the type of `x` and `y` are vectors of CoDiPack types. The vector type can be specified by the
-user in the more generalized `evalHandle` versions of the codi::EvaluationHelper. The expected function interface can
-then be generalized for the vectors:
+as `func(x,y)` where the types of `x` and `y` are vectors of CoDiPack types. The vector type can be specified by the
+user in the more generalized `evalHandle` versions of the codi::EvaluationHelper. The fully generalized function interface is:
 ~~~~{.cpp}
 template<template<typename> class VecX, template<typename> class VecY, typename Real>
 void func(VecX<Real> const &x, VecY<Real> &y);
 ~~~~
 `VecX` and `VecY` are the types of the vectors the user can provide for the storage of the data. `Real` is the CoDiPack
 type used for the evaluation. Since the instantiation of such templates is quite cumbersome and also the auto deduction
-of the template parameters might have some problems, the template template parameters can be left out and be replaced
+of the template parameters might be problematic, the template template parameters can be left out and be replaced
 with regular template parameters:
 ~~~~{.cpp}
 template<typename VecX, typename VecY>
@@ -67,7 +66,7 @@ implementation of function objects.
 Structures as function objects
 ------------------------------
 
-Structures can act as function objects if their functional call operator, that is `operator()`, is overloaded. Since
+Structures can act as function objects if their functional call operator, that is the `operator()`, is overloaded. Since
 this operator can have template parameters the user no longer needs to know which kind of vectors or CoDiPack types are
 used. In addition, the structure can have members which provide additional information for the call operator. The wrapper
 object for the function `dotWithNorms` could then be implemented like:
@@ -83,7 +82,7 @@ struct WrapperDotWithNorms {
   }
 };
 ~~~~
-The member `n` stores now the size of the vectors and does no longer need to be deduced from the input vector `x`.
+The member `n` now stores the size of the vectors and does no longer need to be deduced from the input vector `x`.
 The instantiation and use of the wrapper object is now quite simple:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
@@ -93,7 +92,7 @@ WrapperDotWithNorms wrapDotWithNorms(n);
 EH::evalJacobian(wrapDotWithNorms, x, 3, jac);
 EH::evalHessian(wrapDotWithNorms, x, 3, hes);
 ~~~~
-The advantage is now that in the `evalJacobian` and `evalHessian` calls the user does not need to specify the used
+The advantage is that in the `evalJacobian` and `evalHessian` calls the user does not need to specify the used
 CoDiPack type. Everything is auto deduced by the compiler during the instantiation of the functions. The structure
 function object makes it also simpler to handle arguments that are not active types.
 
@@ -115,11 +114,11 @@ auto lambdaWrapDotWithNorms = [n](std::vector<EH::HessianComputationType> const 
 
 EH::evalJacobianAndHessian(lambdaWrapDotWithNorms, x, 3, jac, hes);
 ~~~~
-With the lambda functions in C++11 it is not possible to add a template parameter for the CoDiPack evaluation type.
-Therefore the Hessian type is used and the combined evaluation procedure. Otherwise two separate lambda functions would
+For lambda functions in C++11 it is not possible to add a template parameter for the CoDiPack evaluation type.
+Therefore the Hessian type is used in the example as well as the combined evaluation procedure. Otherwise two separate lambda functions would
 need to be specified.
 
-For C++14 the situation is much simpler. Here the introduction of generic lambdas provides us with the generalization such
+In C++14 the situation is much simpler. Here the introduction of generic lambdas provides us with the generalization such
 that we can define the function parameters with the auto variable:
 ~~~~{.cpp}
 using EH = codi::EvaluationHelper;
