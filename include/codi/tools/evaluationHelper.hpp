@@ -195,7 +195,7 @@ namespace codi {
       void getAllPrimals(VecY& locY) {
         codiAssert(locY.size() <= this->y.size());
         for(size_t i = 0; i < locY.size(); i += 1) {
-          locY[i] = this->y[i];
+          locY[i] = this->y[i].getValue();
         }
       }
 
