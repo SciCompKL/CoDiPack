@@ -1,7 +1,7 @@
 Changelog      {#Changelog}
 ===========================
 
-### v 1.9.0 - 2019-10-09
+### v 1.9.0 - 2019-10-30
  - Helper structures:
    * EvaluationHelper:
      + Simplifies the computation of Jacobian and Hessian matrices for functions, function objects and lambda functions.
