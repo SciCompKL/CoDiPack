@@ -270,6 +270,9 @@ namespace codi {
        */
       typedef const UnaryOp<RealType, A, Impl> StoreType;
 
+      /** @brief The maximum derivative order that the active type contains. */
+      static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;
+
       /**
        * @brief Get the primal value of the origin of this type.
        * @param[in] t The value from which the primal is extracted.
