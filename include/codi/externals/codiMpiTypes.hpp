@@ -49,6 +49,7 @@ template<typename CoDiType,
 struct CoDiMpiTypes {
 
     using MPIType = medi::MpiTypeDefault<ToolImpl>;
+    using Tool = ToolImpl;
 
   private:
 
