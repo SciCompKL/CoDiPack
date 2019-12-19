@@ -638,6 +638,28 @@ namespace codi {
         return InvalidTapeId;
       }
 
+      /**
+       * @brief Tape name accessor.
+       * @param id Tape id.
+       * @return Name of the tape with the given id.
+       */
+      std::string getTapeName(TapeId id) {
+        codiAssert(this->hasTape(id));
+        ReadLock lock(this->tapeDataMutex);
+        return this->tapeData.at(id).name;
+      }
+
+      /**
+       * @brief Access tape name of the thread-local tape of the calling thread.
+       * @return Name of the tape.
+       *
+       * Assumes that this tape is known to the parallel helper.
+       */
+      std::string getTapeName() {
+        Tape* tape = ActiveReal<Tape>::getGlobalTapePtr();
+        return this->getTapeName(this->getTapeId(tape));
+      }
+
       /*************** broadcasts to all tapes ****************/
 
       /**
@@ -825,7 +847,12 @@ namespace codi {
 
         for (auto& tapeDataPair : this->tapeData) {
 
-          out << tapeDataPair.second.name;
+          if (tapeDataPair.second.name.empty()) {
+            out << "tape_" << tapeDataPair.first;
+          }
+          else {
+            out << tapeDataPair.second.name;
+          }
 
           for (auto& frame : tapeDataPair.second.frames) {
             out << " " << frame.startEvent << " " << frame.endEvent;
