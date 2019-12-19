@@ -1176,6 +1176,7 @@ namespace codi {
       CODI_UNUSED(a);
       CODI_UNUSED(b);
       CODI_UNUSED(result);
+      CODI_UNUSED(multiplier);
       b.calcGradient(data, 0.0);
     }
   };
