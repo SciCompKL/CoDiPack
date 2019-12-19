@@ -82,11 +82,6 @@ namespace codi {
     typedef typename Tape::Real Real;
 
     /**
-     * @brief Defines that the active real's are stored as references in the expression templates.
-     */
-    static const bool storeAsReference = true;
-
-    /**
      * @brief The tape used for the derivative calculations.
      */
     typedef Tape TapeType;
@@ -357,18 +352,6 @@ namespace codi {
     CODI_INLINE const Real& getValue() const {
       return primalValue;
     }
-
-#if CODI_EnableImplicitConversion
-    /**
-     * @brief Get the primal value of this instance via implicit cast.
-     * @return The primal value.
-     */
-    CODI_INLINE operator Real() const {
-      Warning::implicitCast<CODI_DisableImplicitConversionWarning>();
-
-      return primalValue;
-    }
-#endif
 
     /**
      * @brief Set the primal value of this instance.
@@ -705,6 +688,9 @@ namespace codi {
 
       /** @brief The passive type is the passive type of Real. */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
+
+      /** @brief Variables of active type are stored by reference. */
+      typedef const ActiveReal<Tape>& StoreType;
 
       /** @brief The maximum derivative order that the active type contains. */
       static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -49,7 +49,7 @@ namespace codi {
     private:
 
       /** @brief The argument of the function. */
-      CODI_CREATE_STORE_TYPE(A) a_;
+      typename TypeTraits<A>::StoreType a_;
 
       /** @brief The result of the function. It is always precomputed. */
       Real result_;
@@ -61,9 +61,6 @@ namespace codi {
        * otherwise the PassiveValue from Real is used.
        */
       typedef typename TypeTraits<Real>::PassiveReal PassiveReal;
-
-      /** @brief Because these are temporary objects they need to be stored as values. */
-      static const bool storeAsReference = false;
 
       /**
        * @brief Stores the argument of the expression.
@@ -267,6 +264,14 @@ namespace codi {
        * @brief The definition of the Real type for other classes.
        */
       typedef RealType Real;
+
+      /**
+       * @brief Expressions are temporary and therefore stored by value.
+       */
+      typedef const UnaryOp<RealType, A, Impl> StoreType;
+
+      /** @brief The maximum derivative order that the active type contains. */
+      static const size_t MaxDerivativeOrder = 1 + TypeTraits<Real>::MaxDerivativeOrder;
 
       /**
        * @brief Get the primal value of the origin of this type.

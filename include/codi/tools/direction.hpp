@@ -62,17 +62,6 @@ namespace codi {
         vector() {}
 
       /**
-       * @brief Copy constructor.
-       *
-       * Creates a new direction from a given one.
-       */
-      CODI_INLINE Direction(const Direction& v) {
-        for(size_t i = 0; i < dim; ++i) {
-          vector[i] = v.vector[i];
-        }
-      }
-
-      /**
        * @brief Creates a direction with the same value in every component.
        *
        * @param[in] s  The value that is set to all components.
@@ -82,6 +71,19 @@ namespace codi {
       {
         for(size_t i = 0; i < dim; ++i) {
           vector[i] = s;
+        }
+      }
+
+      /**
+       * @brief Copy constructor.
+       *
+       * @param[in] d  The other direction.
+       */
+      CODI_INLINE Direction(const Direction<Real, dim>& d) :
+        vector()
+      {
+        for(size_t i = 0; i < dim; ++i) {
+          vector[i] = d.vector[i];
         }
       }
 

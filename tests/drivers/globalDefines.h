@@ -39,6 +39,26 @@
 #define OUT(number) \
   int getOutputCount() {return number;}
 
+#ifndef SECOND_ORDER
+# define SECOND_ORDER 0
+#endif
+
+#ifndef PRIMAL
+# define PRIMAL 0
+#endif
+
+#ifndef REVERSE_TAPE
+# define REVERSE_TAPE 0
+#endif
+
+#if !defined(DOUBLE)
+  using Real = NUMBER::Real;
+  using Gradient = NUMBER::GradientValue;
+#else
+  using Real = double;
+  using Gradient = double;
+#endif
+
 int getEvalPointsCount();
 double getEvalPoint(int point, int col);
 int getInputCount();

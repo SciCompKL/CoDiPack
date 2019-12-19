@@ -326,7 +326,7 @@ namespace codi {
     private:
       CODI_NO_INLINE void generateNewIndices() {
         // method is only called when unused indices are empty
-        // initialy it holds a number of unused indices which is
+        // initially it holds a number of unused indices which is
         // the same amount as we now generate, therefore we do not
         // check for size
 

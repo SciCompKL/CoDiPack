@@ -112,19 +112,21 @@ namespace codi {
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
    *
-   * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
+   * @tparam TapeTypes_t  All the types for the tape. Including the calculation type and the vector types.
    */
-  template <typename TapeTypes>
+  template <typename TapeTypes_t>
   class JacobiTape final :
-      public TapeBaseModule<TapeTypes, JacobiTape<TapeTypes>>,
-      public JacobiModule<TapeTypes, JacobiTape<TapeTypes>>,
-      public StatementModule<TapeTypes, JacobiTape<TapeTypes>>,
-      public ExternalFunctionModule<TapeTypes, JacobiTape<TapeTypes>>,
-      public IOModule<TapeTypes, JacobiTape<TapeTypes>>,
-      public TapeTypes::template AdjointsModule<TapeTypes, JacobiTape<TapeTypes>>,
-      public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, JacobiTape<TapeTypes>, typename TapeTypes::Position >
+      public TapeBaseModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
+      public JacobiModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
+      public StatementModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
+      public ExternalFunctionModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
+      public IOModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
+      public TapeTypes_t::template AdjointsModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
+      public virtual ReverseTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, JacobiTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
+
+    using TapeTypes = TapeTypes_t; /**< All types used to define the tape */
 
     friend TapeBaseModule<TapeTypes, JacobiTape>;  /**< No doc */
     friend StatementModule<TapeTypes, JacobiTape>;  /**< No doc */

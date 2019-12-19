@@ -34,10 +34,13 @@ IN(2)
 OUT(1)
 POINTS(1) = {{2.0, 3.0}};
 
-void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v) {
+void funcCall(NUMBER& z, const NUMBER& w, const NUMBER& v) {
   z = w*v;
 }
 
+const int ITER = 5;
+
+#if REVERSE_TAPE
 void func_reverse(const NUMBER::Real* x, NUMBER::Real* x_b, size_t m, const NUMBER::Real* y, const NUMBER::Real* y_b, size_t n, codi::DataStore* d) {
   CODI_UNUSED(m);
   CODI_UNUSED(n);
@@ -48,7 +51,23 @@ void func_reverse(const NUMBER::Real* x, NUMBER::Real* x_b, size_t m, const NUMB
   x_b[1] = x[0] * y_b[0];
 }
 
-const int ITER = 5;
+void func_primal(const Real* x, size_t m, Real* y, size_t n, codi::DataStore* d) {
+  CODI_UNUSED(m);
+  CODI_UNUSED(n);
+  CODI_UNUSED(d);
+
+  y[0] = x[0] * x[1];
+}
+
+void func_forward(const Real* x, const Real* x_d, size_t m, Real* y, Real* y_d, size_t n, codi::DataStore* d) {
+  CODI_UNUSED(m);
+  CODI_UNUSED(n);
+  CODI_UNUSED(y);
+  CODI_UNUSED(d);
+
+  y[0] = x[0] * x[1];
+  y_d[0] = x[1] * x_d[0] + x_d[1] * x[0];
+}
 
 void func(NUMBER* x, NUMBER* y) {
   NUMBER w[ITER];
@@ -61,11 +80,24 @@ void func(NUMBER* x, NUMBER* y) {
     eh.addInput(x[1]);
     eh.addInput(w[i-1]);
 
-    eh.callPassiveFunc(func_forward, w[i], w[i-1], x[1]);
+    eh.callPassiveFunc(funcCall, w[i], w[i-1], x[1]);
     eh.addOutput(w[i]);
 
-    eh.addToTape(func_reverse);
+    eh.addToTape(func_reverse, func_forward, func_primal);
   }
 
   y[0] = w[ITER - 1]*w[ITER - 1];
 }
+#else
+void func(NUMBER* x, NUMBER* y) {
+  NUMBER w[ITER];
+
+  w[0] = x[0];
+  for(int i = 1; i < ITER; ++i) {
+
+    funcCall(w[i], w[i-1], x[1]);
+  }
+
+  y[0] = w[ITER - 1]*w[ITER - 1];
+}
+#endif

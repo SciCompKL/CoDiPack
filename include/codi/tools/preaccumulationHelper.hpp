@@ -31,8 +31,12 @@
 
 #include <vector>
 
+#include "algorithms.hpp"
+#include "data/jacobian.hpp"
 #include "../configure.h"
 #include "../exceptions.hpp"
+#include "../gradientTraits.hpp"
+#include "../tapes/tapeTraits.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -79,7 +83,7 @@ namespace codi {
    *
    * @tparam CoDiType  This needs to be one of the CoDiPack types defined through an ActiveReal
    */
-  template<typename CoDiType>
+  template<typename CoDiType, typename = void>
   struct PreaccumulationHelper {
 
       typedef typename CoDiType::Real Real; /**< The floating point calculation type in the CoDiPack types. */
@@ -90,13 +94,16 @@ namespace codi {
       typedef typename Tape::Position Position; /**< The type for the position in the tape */
 
       std::vector<GradientData> inputData; /**< The identifiers for the input data of the preaccumulation section. */
-      std::vector<CoDiType*> outputData; /**< The pointers to the output values of the preaccumulation section. */
+      std::vector<GradientData> outputData; /**< The identifiers for the output data of the preaccumulation section. */
+      std::vector<CoDiType*> outputValues; /**< The pointers to the output values of the preaccumulation section. */
       Position startPos; /**< The starting point for the preaccumulation. */
 
       std::vector<GradientValue> storedAdjoints; /**< The old values of the adjoints for the values of the preaccumulation */
 
-      std::vector<Real> jacobie; /**< The Jacobi matrix used to hold the result of the preaccumulation. */
-      std::vector<int> nonZeros; /**< The number of nonzero values for each output value in the Jacobi matrix. */
+      JacobianCountNonZerosRow<std::vector<Real>> jacobie; /**< The Jacobi matrix used to hold the result of the preaccumulation. */
+
+      /** Default constructor with empty Jacobian. */
+      PreaccumulationHelper() :inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobie(0,0) {}
 
       /**
        * @brief Add extra inputs to the preaccumulated section.
@@ -134,6 +141,7 @@ namespace codi {
         if(tape.isActive()) {
           inputData.clear();
           outputData.clear();
+          outputValues.clear();
 
           startPos = tape.getPosition();
 
@@ -231,7 +239,8 @@ namespace codi {
       void addOutputLogic(CoDiType& output) {
         const GradientData& gradData = output.getGradientData();
         if(0 != gradData) {
-          outputData.push_back(&output);
+          outputData.push_back(gradData);
+          outputValues.push_back(&output);
         }
       }
 
@@ -304,86 +313,30 @@ namespace codi {
         Tape& tape = CoDiType::getGlobalTape();
 
         Position endPos = tape.getPosition();
-        size_t jacobiSize = inputData.size() * outputData.size();
-        if(jacobie.size() < jacobiSize) {
-          jacobie.resize(jacobiSize);
-        }
-        if(nonZeros.size() < outputData.size()) {
-          nonZeros.resize(outputData.size());
+        if(jacobie.size() < inputData.size() * outputData.size()) {
+          jacobie.resize(outputData.size(), inputData.size());
         }
 
-
-        if(inputData.size() < outputData.size()) {
-          // forward accumulation of Jacobi
-
-          for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
-            nonZeros[curOut] = 0;
-          }
-
-          for (size_t curIn = 0; curIn < inputData.size(); ++curIn) {
-
-            GradientData indexIn = inputData[curIn];
-            tape.setGradient(indexIn, 1.0);
-            tape.evaluateForwardPreacc(startPos, endPos);
-
-            for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
-
-              GradientData indexOut = outputData[curOut]->getGradientData();
-              GradientValue& adj = tape.gradient(indexOut);
-              jacobie[curIn + curOut * inputData.size()] = adj;
-
-              if(0.0 != adj) {
-                nonZeros[curOut] += 1;
-              }
-            }
-
-            tape.setGradient(indexIn, 0.0);
-
-            tape.clearAdjoints(endPos, startPos);
-          }
-        } else {
-          // reverse accumulation of Jacobi
-
-          for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
-
-            nonZeros[curOut] = 0;
-            size_t jacobiOffset = curOut * inputData.size();
-
-            GradientData indexOut = outputData[curOut]->getGradientData();
-            tape.setGradient(indexOut, 1.0);
-            tape.evaluatePreacc(endPos, startPos);
-
-            for (size_t curIn = 0; curIn < inputData.size(); ++curIn) {
-
-              GradientData indexIn = inputData[curIn];
-              GradientValue& adj = tape.gradient(indexIn);
-              jacobie[curIn + jacobiOffset] = adj;
-
-              if(0.0 != adj) {
-                nonZeros[curOut] += 1;
-              }
-
-              adj = 0.0;
-            }
-
-            tape.clearAdjoints(endPos, startPos);
-          }
-        }
+        Algorithms<CoDiType, false>::computeJacobian(startPos, endPos,
+                                              inputData.data(), inputData.size(),
+                                              outputData.data(), outputData.size(),
+                                              jacobie);
 
         // store the Jacobi matrix
         tape.reset(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
 
-          CoDiType& value = *outputData[curOut];
-          if(0 != nonZeros[curOut]) {
+          CoDiType& value = *outputValues[curOut];
+          if(0 != jacobie.nonZeroRow(curOut)) {
 
-            int nonZerosLeft = nonZeros[curOut];
+            int nonZerosLeft = jacobie.nonZeroRow(curOut);
+            jacobie.nonZeroRow(curOut) = 0;
+
             // we need to use here the value of the gradient data such that it is correctly deleted.
             GradientData lastGradientData = value.getGradientData();
             bool staggeringActive = false;
             int curIn = 0;
-            size_t jacobiOffset = curOut * inputData.size();
 
             // push statements as long as there are non zeros left
             // if there are more than MaxStatementIntValue non zeros, then we need to stagger the
@@ -409,8 +362,8 @@ namespace codi {
 
               // push the rest of the Jacobies for the statement
               while(jacobiesForStatement > 0) {
-                if(0.0 != jacobie[curIn + jacobiOffset]) {
-                  tape.pushJacobiManual(jacobie[curIn + jacobiOffset], 0.0, inputData[curIn]);
+                if(Real() != (Real)jacobie(curOut, curIn)) {
+                  tape.pushJacobiManual(jacobie(curOut, curIn), 0.0, inputData[curIn]);
                   jacobiesForStatement -= 1;
                 }
                 curIn += 1;
@@ -434,8 +387,7 @@ namespace codi {
    * This implementation does nothing in all methods.
    * @tparam CoDiType
    */
-  template<typename CoDiType>
-  struct ForwardPreaccumulationHelper {
+  struct PreaccumulationHelperNoOpBase {
 
       /**
        * @brief Does nothing
@@ -484,4 +436,23 @@ namespace codi {
         // do nothing
       }
   };
+
+  /**
+   * Helper implementation of the same interface as the PreaccumulationHelper for forward AD tapes.
+   *
+   * This implementation does nothing in all methods.
+   * @tparam CoDiType
+   */
+  template<typename CoDiType>
+  struct PreaccumulationHelper<CoDiType, enableIfForwardTape<typename CoDiType::TapeType>>
+      : public PreaccumulationHelperNoOpBase {};
+
+  /**
+   * Helper implementation of the same interface as the PreaccumulationHelper for double types.
+   *
+   * This implementation does nothing in all methods.
+   */
+  template<>
+  struct PreaccumulationHelper<double, void>
+      : public PreaccumulationHelperNoOpBase {};
 }

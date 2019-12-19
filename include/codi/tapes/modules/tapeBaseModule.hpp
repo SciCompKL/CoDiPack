@@ -60,7 +60,7 @@ namespace codi {
 
     private:
   // ----------------------------------------------------------------------
-  // All definitons of the module
+  // All definitions of the module
   // ----------------------------------------------------------------------
 
       CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
@@ -76,7 +76,7 @@ namespace codi {
        *
        * The full type is able to access all functions from the tape and other modules.
        *
-       * @return  The full tape implemenation.
+       * @return  The full tape implementation.
        */
       Tape& cast() {
         return *static_cast<Tape*>(this);
@@ -87,7 +87,7 @@ namespace codi {
        *
        * The full type is able to access all functions from the tape and other modules.
        *
-       * @return  The full tape implemenation.
+       * @return  The full tape implementation.
        */
       const Tape& cast() const {
         return *static_cast<const Tape*>(this);
@@ -95,7 +95,7 @@ namespace codi {
 
     public:
 
-      /** @brief True if the index handler of the tape provied linear indices. */
+      /** @brief True if the index handler of the tape provided linear indices. */
       static const bool LinearIndexHandler = TapeTypes::IndexHandler::IsLinear;
 
     protected:
@@ -225,7 +225,7 @@ namespace codi {
       /**
        * @brief Clear the derivative information from a value.
        *
-       * The value is considered afterswards as not dependent on any input variables.
+       * The value is considered afterwards as not dependent on any input variables.
        *
        * @param[in,out] value The cleared variable.
        */
@@ -261,25 +261,6 @@ namespace codi {
       }
 
       /**
-       * @brief Perform the primal evaluation from start to end.
-       *
-       * It has to hold start <= end.
-       *
-       * @param[in] start  The starting position for the forward evaluation.
-       * @param[in]   end  The ending position for the forward evaluation.
-       */
-      CODI_NO_INLINE void evaluatePrimal(const Position& start, const Position& end) {
-        cast().evaluatePrimalInternal(start, end);
-      }
-
-      /**
-       * @brief Perform the primal evaluation from the initial position to the current position.
-       */
-      void evaluatePrimal() {
-        evaluatePrimal(cast().getZeroPosition(), cast().getPosition());
-      }
-
-            /**
        * @brief Perform the adjoint evaluation from start to end with a custom adjoint vector.
        *
        * It has to hold start >= end.
@@ -296,13 +277,6 @@ namespace codi {
       }
 
       /**
-       * @brief Perform the adjoint evaluation from the current position to the initial position.
-       */
-      void evaluate() {
-        evaluate(cast().getPosition(), cast().getZeroPosition());
-      }
-
-      /**
        * @brief Perform the adjoint evaluation from start to end.
        *
        * It has to hold start >= end.
@@ -314,6 +288,13 @@ namespace codi {
         cast().resizeAdjointsToIndexSize();
 
         evaluate(start, end, cast().getAdjoints());
+      }
+
+      /**
+       * @brief Perform the adjoint evaluation from the current position to the initial position.
+       */
+      void evaluate() {
+        evaluate(cast().getPosition(), cast().getZeroPosition());
       }
 
       /**
@@ -333,13 +314,6 @@ namespace codi {
       }
 
       /**
-       * @brief Perform the foward evaluation from the initial position to the current position.
-       */
-      void evaluateForward() {
-        evaluateForward(cast().getZeroPosition(), cast().getPosition());
-      }
-
-      /**
        * @brief Perform the forward evaluation from start to end.
        *
        * It has to hold start <= end.
@@ -351,6 +325,32 @@ namespace codi {
         cast().resizeAdjointsToIndexSize();
 
         evaluateForward(start, end, cast().getAdjoints());
+      }
+
+      /**
+       * @brief Perform the forward evaluation from the initial position to the current position.
+       */
+      void evaluateForward() {
+        evaluateForward(cast().getZeroPosition(), cast().getPosition());
+      }
+
+      /**
+       * @brief Perform the primal evaluation from start to end.
+       *
+       * It has to hold start <= end.
+       *
+       * @param[in] start  The starting position for the forward evaluation.
+       * @param[in]   end  The ending position for the forward evaluation.
+       */
+      CODI_NO_INLINE void evaluatePrimal(const Position& start, const Position& end) {
+        cast().evaluatePrimalInternal(start, end);
+      }
+
+      /**
+       * @brief Perform the primal evaluation from the initial position to the current position.
+       */
+      void evaluatePrimal() {
+        evaluatePrimal(cast().getZeroPosition(), cast().getPosition());
       }
 
       /**
@@ -414,7 +414,7 @@ namespace codi {
       /**
        * @brief Print the table header for the tape information to the stream.
        *
-       * The data is written in a csv format with semicolons as an seperator.
+       * The data is written in a csv format with semicolons as an separator.
        *
        * @param[in,out] out  The stream which is used for the printing of the table header.
        * @tparam Stream  The type of the stream.
@@ -430,7 +430,7 @@ namespace codi {
       /**
        * @brief Print the table data of the current tape state to the stream.
        *
-       * The data is written in a csv format with semicolons as an seperator.
+       * The data is written in a csv format with semicolons as an separator.
        *
        * @param[in,out] out  The stream which is used for the printing of the table data.
        * @tparam Stream  The type of the stream.

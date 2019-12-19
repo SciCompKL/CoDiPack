@@ -40,9 +40,9 @@
 namespace codi {
 
   #define CODI_MAJOR_VERSION 1
-  #define CODI_MINOR_VERSION 8
+  #define CODI_MINOR_VERSION 9
   #define CODI_BUILD_VERSION 0
-  #define CODI_VERSION "1.8.0"
+  #define CODI_VERSION "1.9.0"
 
   /**
    * @brief Constant for the conversion from byte to megabyte.
@@ -281,7 +281,7 @@ namespace codi {
   #undef CODI_DisableAssignOptimization
 
   /*
-   * This switch enables the implict conversion operator to the primal value in the
+   * This switch enables the implicit conversion operator to the primal value in the
    * active types.
    *
    * This will give a warning every time an implicit conversion is instantiated. This
@@ -494,8 +494,13 @@ namespace codi {
   #endif
 
   #ifndef CODI_OverflowCheck
-    #define CODI_OverflowCheck 1
+    #define CODI_OverflowCheck true
   #endif
+    /**
+     * @brief Checks for index overflow in the linear index manager.
+     *
+     * Throws an exception if an overflow occurs.
+     */
   const bool IsOverflowCheck = CODI_OverflowCheck;
   #undef CODI_OverflowCheck
 

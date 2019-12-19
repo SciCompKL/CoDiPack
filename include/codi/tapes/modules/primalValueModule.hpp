@@ -172,24 +172,6 @@ namespace codi {
        */
       void addPrimalValueValues(TapeValues& values) const {
 
-        size_t nChunksIndex  = indexVector.getNumChunks();
-        size_t totalIndex    = indexVector.getDataSize();
-        size_t sizeIndexEntry = IndexChunk::EntrySize;
-        double memoryUsedIndex = (double)totalIndex*(double)sizeIndexEntry* BYTE_TO_MB;
-        double memoryAllocIndex= (double)nChunksIndex*(double)indexVector.getChunkSize()*(double)sizeIndexEntry* BYTE_TO_MB;
-
-        size_t nChunksStmt  = stmtVector.getNumChunks();
-        size_t totalStmt    = stmtVector.getDataSize();
-        size_t sizeStmtEntry = StatementChunk::EntrySize;
-        double memoryUsedStmt = (double)totalStmt*(double)sizeStmtEntry* BYTE_TO_MB;
-        double memoryAllocStmt= (double)nChunksStmt*(double)stmtVector.getChunkSize()*(double)sizeStmtEntry* BYTE_TO_MB;
-
-        size_t nChunksPassive  = constantValueVector.getNumChunks();
-        size_t totalPassive    = constantValueVector.getDataSize();
-        size_t sizePassiveEntry = ConstantValueChunk::EntrySize;
-        double memoryUsedPassive = (double)totalPassive*(double)sizePassiveEntry* BYTE_TO_MB;
-        double memoryAllocPassive= (double)nChunksPassive*(double)constantValueVector.getChunkSize()*(double)sizePassiveEntry* BYTE_TO_MB;
-
         size_t totalPrimal   = primalsSize;
         size_t sizePrimalEntry = sizeof(Real);
         double memoryAllocPrimal = (double)totalPrimal*(double)sizePrimalEntry* BYTE_TO_MB;
@@ -199,22 +181,13 @@ namespace codi {
         values.addData("Memory allocated", memoryAllocPrimal, true, true);
 
         values.addSection("Statements");
-        values.addData("Total number", totalStmt);
-        values.addData("Number of chunks", nChunksStmt);
-        values.addData("Memory used", memoryUsedStmt, true, false);
-        values.addData("Memory allocated", memoryAllocStmt, false, true);
+        values.addStreamData(stmtVector);
 
         values.addSection("Index entries");
-        values.addData("Total number", totalIndex);
-        values.addData("Number of chunks", nChunksIndex);
-        values.addData("Memory used", memoryUsedIndex, true, false);
-        values.addData("Memory allocated", memoryAllocIndex, false, true);
+        values.addStreamData(indexVector);
 
         values.addSection("Passive data entries");
-        values.addData("Total number", totalPassive);
-        values.addData("Number of chunks", nChunksPassive);
-        values.addData("Memory used", memoryUsedPassive, true, false);
-        values.addData("Memory allocated", memoryAllocPassive, false, true);
+        values.addStreamData(constantValueVector);
       }
 
       /**

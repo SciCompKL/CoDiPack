@@ -43,6 +43,7 @@
 #include "modules/tapeBaseModule.hpp"
 #include "primalTapeExpressions.hpp"
 #include "reverseTapeInterface.hpp"
+#include "reversePrimalValueTapeInterface.hpp"
 #include "singleChunkVector.hpp"
 #include "../tapeTypes.hpp"
 #include "../tools/tapeValues.hpp"
@@ -124,18 +125,20 @@ namespace codi {
    * The size of the tape can be set with the resize function,
    * the tape will allocate enough chunks such that the given data requirements will fit into the chunks.
    *
-   * @tparam TapeTypes  All the types for the tape. Including the calculation type and the vector types.
+   * @tparam TapeTypes_t  All the types for the tape. Including the calculation type and the vector types.
    */
-  template <typename TapeTypes>
+  template <typename TapeTypes_t>
   class PrimalValueTape :
-      public TapeBaseModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public PrimalValueModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public ExternalFunctionModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public IOModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public TapeTypes::template AdjointsModule<TapeTypes, PrimalValueTape<TapeTypes>>,
-      public virtual ReverseTapeInterface<typename TapeTypes::Real, typename TapeTypes::Index, typename TapeTypes::GradientValue, PrimalValueTape<TapeTypes>, typename TapeTypes::Position >
+      public TapeBaseModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public PrimalValueModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public ExternalFunctionModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public IOModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public TapeTypes_t::template AdjointsModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public virtual ReversePrimalValueTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, PrimalValueTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
+
+    using TapeTypes = TapeTypes_t; /**< All types used to define the tape */
 
     friend TapeBaseModule<TapeTypes, PrimalValueTape>;  /**< No doc */
     friend PrimalValueModule<TapeTypes, PrimalValueTape>;  /**< No doc */
@@ -425,7 +428,7 @@ namespace codi {
 
         if(StatementIntInputTag != passiveActiveReal[stmtPos]) {
           // primal return value is currently not updated here (would be the same)
-          HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalData, adjointData);
+          primalData[adjPos] = HandleFactory::template callForwardHandle<PrimalValueTape<TapeTypes> >(statements[stmtPos], 1.0, lhsAdj, passiveActiveReal[stmtPos], indexPos, indices, passivePos, passives, constantPos, constants, primalData, adjointData);
 
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
           adjointData->setLhsTangent(adjPos); /* Resets the lhs tangent, too */
@@ -629,6 +632,17 @@ namespace codi {
 
         this->pushCopyHandle(value.getValue(), value.getGradientData(), rhsIndex);
       }
+    }
+
+    /**
+     * @brief For this tape primal values do not need to be reset.
+     *
+     * @param[in] pos  Unused.
+     */
+    void revertPrimals(Position const& pos) {
+      CODI_UNUSED(pos);
+
+      // primal values do not need to be reset
     }
 
     /**

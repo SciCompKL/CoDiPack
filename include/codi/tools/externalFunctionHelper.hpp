@@ -30,6 +30,7 @@
 
 #include "dataStore.hpp"
 #include "../adjointInterface.hpp"
+#include "../tapes/tapeTraits.hpp"
 
 #include <vector>
 
@@ -61,11 +62,29 @@ namespace codi {
        * @brief The function for the reverse evaluation.
        *
        * If the primal function evaluates y = f(x), then this function evaluates
-       * \f[\bar x = \frac{d f}{d x}(x) \bar y\f]
+       * \f[\bar x = \frac{d f}{d x}(x)^T \bar y\f]
        *
        * If the user disabled the storing of the primal values. Then the corresponding vectors are null pointers.
        */
       typedef void (*ReverseFunc)(const Real* x, Real* x_b, size_t m, const Real* y, const Real* y_b, size_t n, DataStore* d);
+
+      /**
+       * @brief The function for the forward evaluation.
+       *
+       * If the primal function evaluates y = f(x), then this function evaluates
+       * \f[\dot y = \frac{d f}{d x}(x) \dot x\f]
+       *
+       * If the user disabled the storing of the primal values. Then the corresponding vectors are null pointers.
+       */
+      typedef void (*ForwardFunc)(const Real* x, const Real* x_d, size_t m, Real* y, Real* y_d, size_t n, DataStore* d);
+
+      /**
+       * @brief The function for the primal evaluation.
+       *
+       * This function needs to be provided if use case one is used from the class documentation.
+       */
+      typedef void (*PrimalFunc)(const Real* x, size_t m, Real* y, size_t n, DataStore* d);
+
 
       std::vector<GradientData> inputIndices; /**< The storage for the identifiers of the input values. */
       std::vector<GradientData> outputIndices; /**< The storage for the identifiers of the output values. */
@@ -75,6 +94,8 @@ namespace codi {
       std::vector<Real> oldPrimals; /**< The old value in a primal value tape, that are overwritten by the output values. */
 
       ReverseFunc revFunc; /**< The reverse function provided by the user. */
+      ForwardFunc forwFunc; /**< The forward function provided by the user. */
+      PrimalFunc primFunc; /**< The primal function provided by the user. */
 
       DataStore userData; /**< The data manager for the user data. */
 
@@ -95,6 +116,117 @@ namespace codi {
       }
 
       /**
+      * @brief Forward evaluation function that is registered on the tape.
+      *
+      * The method casts the data object to an instance of this class and calls the evalForwFunc.
+      *
+      * @param[in,out]  t  The tape which evaluates this function.
+      * @param[in,out]  d  An instance of this class.
+      * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
+      */
+      static void evalForwFuncStatic(void* t, void* d, void* ra) {
+        ExternalFunctionData<CoDiType>* data = (ExternalFunctionData<CoDiType>*)d;
+
+        if(nullptr != data->forwFunc) {
+          data->evalForwFunc((Tape*)t, (AdjointInterface<Real, GradientData>*)ra);
+        } else {
+          CODI_EXCEPTION("Calling forward evaluation in external function helper without a forward function pointer.");
+        }
+      }
+
+      /**
+       * @brief The forward evaluation function.
+       *
+       * This function retrieves the primal values and tangent values of the input. Afterwards the user defined
+       * evaluation function is called. The output values are then used for the update of the tape primal and the
+       * tangent values of the primal.
+       *
+       * @param[in,out]  t  The tape which evaluates this function.
+       * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
+       */
+      void evalForwFunc(Tape* t, AdjointInterface<Real, GradientData>* ra) {
+        CODI_UNUSED(t);
+
+        Real* x_d = new Real[inputIndices.size()];
+        Real* y_d = new Real[outputIndices.size()];
+
+        if(isPrimalValueTape<Tape>::value) {
+          for(size_t i = 0; i < inputIndices.size(); ++i) {
+            inputValues[i] = ra->getPrimal(inputIndices[i]);
+          }
+        }
+
+        for(size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
+
+          for(size_t i = 0; i < inputIndices.size(); ++i) {
+            x_d[i] = ra->getAdjoint(inputIndices[i], dim);
+          }
+
+          forwFunc(inputValues.data(), x_d, inputIndices.size(), outputValues.data(), y_d, outputIndices.size(), &userData);
+
+          for(size_t i = 0; i < outputIndices.size(); ++i) {
+            ra->resetAdjoint(outputIndices[i], dim);
+            ra->updateAdjoint(outputIndices[i], dim, y_d[i]);
+          }
+        }
+
+        if(isPrimalValueTape<Tape>::value) {
+          for(size_t i = 0; i < outputIndices.size(); ++i) {
+            ra->setPrimal(outputIndices[i], outputValues[i]);
+          }
+        }
+
+        delete [] x_d;
+        delete [] y_d;
+      }
+
+      /**
+      * @brief Primal evaluation function that is registered on the tape.
+      *
+      * The method casts the data object to an instance of this class and calls the evalPrimFunc.
+      *
+      * @param[in,out]  t  The tape which evaluates this function.
+      * @param[in,out]  d  An instance of this class.
+      * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
+      */
+      static void evalPrimFuncStatic(void* t, void* d, void* ra) {
+        ExternalFunctionData<CoDiType>* data = (ExternalFunctionData<CoDiType>*)d;
+
+        if(nullptr != data->primFunc) {
+          data->evalPrimFunc((Tape*)t, (AdjointInterface<Real, GradientData>*)ra);
+        } else {
+          CODI_EXCEPTION("Calling primal evaluation in external function helper without a primal function pointer.");
+        }
+      }
+
+      /**
+       * @brief The primal evaluation function.
+       *
+       * This function retrieves the primal values of the input. Afterwards the user defined evaluation function is
+       * called. The output values are then used for the update of the tape primal.
+       *
+       * @param[in,out]  t  The tape which evaluates this function.
+       * @param[in,out] ra  The helper structure for the access to the adjoint and primal vector.
+       */
+      void evalPrimFunc(Tape* t, AdjointInterface<Real, GradientData>* ra) {
+        CODI_UNUSED(t);
+
+        if(isPrimalValueTape<Tape>::value) {
+          for(size_t i = 0; i < inputIndices.size(); ++i) {
+            inputValues[i] = ra->getPrimal(inputIndices[i]);
+          }
+        }
+
+        primFunc(inputValues.data(), inputIndices.size(), outputValues.data(), outputIndices.size(), &userData);
+
+        if(isPrimalValueTape<Tape>::value) {
+          for(size_t i = 0; i < outputIndices.size(); ++i) {
+            ra->setPrimal(outputIndices[i], outputValues[i]);
+          }
+        }
+      }
+
+      /**
        * @brief Reverse evaluation function that is registered on the tape.
        *
        * The method casts the data object to an instance of this class and calls the evalRevFunc.
@@ -106,7 +238,11 @@ namespace codi {
       static void evalRevFuncStatic(void* t, void* d, void* ra) {
         ExternalFunctionData<CoDiType>* data = (ExternalFunctionData<CoDiType>*)d;
 
-        data->evalRevFunc((Tape*)t, (AdjointInterface<Real, GradientData>*)ra);
+        if(nullptr != data->revFunc) {
+          data->evalRevFunc((Tape*)t, (AdjointInterface<Real, GradientData>*)ra);
+        } else {
+          CODI_EXCEPTION("Calling reverse evaluation in external function helper without a reverse function pointer.");
+        }
       }
 
       /**
@@ -237,15 +373,14 @@ namespace codi {
       /** The type of the tape implementation. */
       typedef typename CoDiType::TapeType Tape;
 
-      /**
-       * @brief The function for the primal evaluation.
-       *
-       * This function needs to be provided if use case one is used from the class documentation.
-       */
-      typedef void (*PrimalFunc)(const Real* x, size_t m, Real* y, size_t n, DataStore* d);
-
       /** @brief Forward definition of the reverse evaluation function. */
       typedef typename ExternalFunctionData<CoDiType>::ReverseFunc ReverseFunc;
+
+      /** @brief Forward definition of the forward evaluation function. */
+      typedef typename ExternalFunctionData<CoDiType>::ForwardFunc ForwardFunc;
+
+      /** @brief Forward definition of the primal evaluation function. */
+      typedef typename ExternalFunctionData<CoDiType>::PrimalFunc PrimalFunc;
 
       /**
        * @brief Pointer array to the output values.
@@ -359,12 +494,10 @@ namespace codi {
        * @param[in,out] output  The output value which is added to the output set.
        */
       void addOutput(CoDiType& output) {
-        if(isTapeActive) {
-          if(isPassiveExtFunc) {
-            addOutputToData(output);
-          } else {
-            outputValues.push_back(&output);
-          }
+        if(isTapeActive && isPassiveExtFunc) {
+          addOutputToData(output);
+        } else {
+          outputValues.push_back(&output);
         }
       }
 
@@ -432,6 +565,9 @@ namespace codi {
        */
       void callPrimalFunc(PrimalFunc func) {
         if (!isPassiveExtFunc){
+          // First set the function here in the external function data so that it can be used for primal evaluation of the tape.
+          data->primFunc = func;
+
           Real* y = new Real[outputValues.size()];
 
           func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
@@ -440,13 +576,15 @@ namespace codi {
           for(size_t i = 0; i < outputValues.size(); ++i) {
             outputValues[i]->setValue(y[i]);
 
-            addOutputToData(*outputValues[i]);
+            if(isTapeActive) {
+              addOutputToData(*outputValues[i]);
+            }
           }
 
           delete [] y;
+
         } else {
-          std::cerr << "callPrimalFunc() not available if external function helper is initialized with passive function mode enabled. Use callPassiveFunc() instead." << std::endl;
-          exit(-1);
+          CODI_EXCEPTION("callPrimalFunc() not available if external function helper is initialized with passive function mode enabled. Use callPassiveFunc() instead.");
         }
       }
 
@@ -454,19 +592,27 @@ namespace codi {
        * @brief This function needs to be called as the last function. It will finally add the external function to the
        * tape such that the specialized reverse implementation is called during the reverse interpretation.
        *
-       * @param[in] func  The logic for the reverse implementation.
+       * @param[in]    revFunc  The logic for the reverse implementation. Can be NULL.
+       * @param[in]   forwFunc  The logic for the forward implementation. Can be NULL.
+       * @param[in] primalFunc  The logic for the primal implementation. Can be NULL.
        */
-      void addToTape(ReverseFunc func) {
+      void addToTape(ReverseFunc revFunc, ForwardFunc forwFunc = nullptr, PrimalFunc primalFunc = nullptr) {
         if(isTapeActive) {
 
-          data->revFunc = func;
+          data->revFunc = revFunc;
+          data->forwFunc = forwFunc;
+
+          if(nullptr != primalFunc) {
+            // Only overwrite if the user provides one. Otherwise it is set in the callPrimalFunc method
+            data->primFunc = primalFunc;
+          }
 
           // clear now the primal values if they are not required
           if(!storeInputPrimals) {
             data->inputValues.clear();
           }
 
-          CoDiType::getGlobalTape().pushExternalFunctionHandle(ExternalFunctionData<CoDiType>::evalRevFuncStatic, data, ExternalFunctionData<CoDiType>::delFunc);
+          CoDiType::getGlobalTape().pushExternalFunctionHandle(ExternalFunctionData<CoDiType>::evalRevFuncStatic, data, ExternalFunctionData<CoDiType>::delFunc, ExternalFunctionData<CoDiType>::evalForwFuncStatic, ExternalFunctionData<CoDiType>::evalPrimFuncStatic);
         }
       }
   };

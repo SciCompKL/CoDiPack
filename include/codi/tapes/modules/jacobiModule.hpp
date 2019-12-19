@@ -192,19 +192,8 @@ namespace codi {
        * @param[in,out] values  The information is added to the values
        */
       void addJacobiValues(TapeValues& values) const {
-        size_t nChunksData   = jacobiVector.getNumChunks();
-        size_t totalData     = jacobiVector.getDataSize();
-        size_t sizeDataEntry = JacobiChunk::EntrySize;
-
-        double  memoryUsedData = (double)totalData*(double)(sizeDataEntry)* BYTE_TO_MB;
-        double  memoryAllocData= (double)nChunksData*(double)jacobiVector.getChunkSize()
-                                  *(double)(sizeDataEntry)* BYTE_TO_MB;
-
         values.addSection("Jacobi entries");
-        values.addData("Total Number", totalData);
-        values.addData("Number of Chunks", nChunksData);
-        values.addData("Memory used", memoryUsedData, true, false);
-        values.addData("Memory allocated", memoryAllocData, false, true);
+        values.addStreamData(jacobiVector);
       }
 
     public:

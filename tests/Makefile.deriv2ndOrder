@@ -1,0 +1,93 @@
+# All tests in this files are first order derivatives
+DRIVER_MODE := deriv2ndOrder
+
+# Complete list of second order test files
+TESTS_2ND_ORDER = $(patsubst $(TEST_DIR)/%.cpp,$(RESULT_DIR)/$(DRIVER_MODE)/%.test,$(TEST_FILES))
+
+#Currently testing only subset of tests
+#TESTS_2ND_ORDER := $(RESULT_DIR)/$(DRIVER_MODE)/basic/TestOutput.test
+
+# The first 3 lines of each driver define the basic parameters for this driver.
+# DRIVER_NAME:    The short name for the driver. This used to create the specific files for the driver
+# DRIVER_TESTS:   The full list of tests which are run for this driver. See the general test list for details.
+# DRIVER:         The special flags for this driver. It needs to be defined inside the build rule.
+# The eval line creates the rules and dependencies for the driver
+
+DEFINES_2ND_ORDER_REVERSE=-DREVERSE_TAPE -DEVAL_HELPER -DSECOND_ORDER
+
+# Driver for RealForward
+DRIVER_NAME  := D2_FWD
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/forwardCoDi/forwardDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = $(CODI_INCLUDE) -I$(DRIVER_DIR)/forwardCoDi -DFWD2nd
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with forward type
+DRIVER_NAME  := D2_EH_fwd
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER=codi::RealForwardGen\<codi::RealForward\>
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with forward vector type
+DRIVER_NAME  := D2_EH_fwdVec
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS) $(REVERSE_VALUE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealForwardGen<codi::RealForwardVec<4>, codi::Direction<codi::RealForwardVec<4>, 4>>"
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse type
+DRIVER_NAME  := D2_EH_rwsJac
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReverseGen<codi::RealForward>" $(DEFINES_2ND_ORDER_REVERSE)
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse vector type
+DRIVER_NAME  := D2_EH_rwsJacVec
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReverseGen<codi::RealForwardVec<4>, codi::Direction<codi::RealForwardVec<4>, 4>>" $(DEFINES_2ND_ORDER_REVERSE)
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse index type
+DRIVER_NAME  := D2_EH_rwsJacInd
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReverseIndexGen<codi::RealForward>" $(DEFINES_2ND_ORDER_REVERSE)
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse index vector type
+DRIVER_NAME  := D2_EH_rwsJacIndVec
+DRIVER_TESTS := $(BASIC_TESTS) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReverseIndexGen<codi::RealForwardVec<4>, codi::Direction<codi::RealForwardVec<4>, 4>>" $(DEFINES_2ND_ORDER_REVERSE)
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse primal type
+DRIVER_NAME  := D2_EH_rwsPrimal
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReversePrimalGen<codi::RealForward>" $(DEFINES_2ND_ORDER_REVERSE)
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse primal vector type
+DRIVER_NAME  := D2_EH_rwsPrimalVec
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReversePrimalGen<codi::RealForwardVec<4>, codi::Direction<codi::RealForwardVec<4>, 4>>" $(DEFINES_2ND_ORDER_REVERSE)
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse primal index type
+DRIVER_NAME  := D2_EH_rwsPrimalInd
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReversePrimalIndexGen<codi::RealForward>" $(DEFINES_2ND_ORDER_REVERSE)
+$(eval $(value DRIVER_INST))
+
+# Driver for evaluation helper test with reverse primal index vector type
+DRIVER_NAME  := D2_EH_rwsPrimalIndVec
+DRIVER_TESTS := $(BASIC_TESTS_EH) $(REVERSE_TESTS)
+DRIVER_SRC = $(DRIVER_DIR)/evaluationHelper/evalHelperDriver2ndOrder.cpp
+$(BUILD_DIR)/$(DRIVER_MODE)/%_$(DRIVER_NAME).exe : DRIVER_INC = -I$(CODI_DIR)/include -I$(DRIVER_DIR)/evaluationHelper -DEVAL_HELPER_NUMBER="codi::RealReversePrimalIndexGen<codi::RealForwardVec<4>, codi::Direction<codi::RealForwardVec<4>, 4>>" $(DEFINES_2ND_ORDER_REVERSE)
+$(eval $(value DRIVER_INST))

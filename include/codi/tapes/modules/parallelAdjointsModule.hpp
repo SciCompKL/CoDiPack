@@ -345,7 +345,7 @@ namespace codi {
        * @param[in] index The index of the active type.
        * @return The reference to the gradient data.
        */
-      CODI_INLINE GradientValue& gradient(Index& index) {
+      CODI_INLINE GradientValue& gradient(const Index& index) {
         codiAssert(0 != index);
         codiAssert(index <= cast().indexHandler.getMaximumGlobalIndex());
 
@@ -355,6 +355,19 @@ namespace codi {
         }
 
         return adjointsWrapper.adjoints[index];
+      }
+
+      /**
+       * @brief Get a reference to the gradient value of the corresponding index.
+       *
+       * An index of 0 will raise an codiAssert exception.
+       *
+       * @param[in] index The index of the active type.
+       * @return The reference to the gradient data.
+       */
+      CODI_INLINE GradientValue& gradient(Index& index) {
+        Index const& indexConst = index;
+        return gradient(indexConst);
       }
 
       /**

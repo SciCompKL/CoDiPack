@@ -38,8 +38,13 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/*.d)
 
 CODI_DIR := .
 
-FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
+FLAGS = -Wall -pedantic -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
 
+ifeq ($(CPP14), yes)
+  FLAGS += -std=c++14
+else
+  FLAGS += -std=c++11
+endif
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
 else
@@ -65,6 +70,10 @@ $(BUILD_DIR)/%.exe : $(DOC_DIR)/%.cpp
 
 tutorials: $(TUTORIALS)
 	@mkdir -p $(BUILD_DIR)
+
+doc:
+	@mkdir -p $(BUILD_DIR)
+	doxygen
 
 .PHONY: clean
 clean:

@@ -39,18 +39,20 @@ failure="$(tput setaf 1)FAILURE$(tput sgr 0)"
 
 Usage () {
     echo >&2 "$0 - compare files with a base file and print out if they match
-usage: $0 [-n name] -b baseFile files ..."
+usage: $0 [-u] [-n name] -b baseFile files ..."
 
     exit 0
 }
 
 baseFileName=
 testName=
-while getopts n:b: opt
+updateResult=
+while getopts n:b:u opt
 do
     case "$opt" in
       n)  testName=" $OPTARG";;
       b)  baseFileName="$OPTARG";;
+      u)  updateResult=1;;
       \?)   # unknown flag
           Usage;;
     esac
@@ -61,29 +63,44 @@ if [ -z $baseFileName ];
 then Usage;
 fi;
 
-# arguments have been read now iterate over the files and compare them
 fail=0
-res=
-if [[ 0 == $# ]];
+if [ -z $updateResult ];
 then
-    res+=" $failure no drivers run this test."
-    fail=-1
+  # arguments have been read now iterate over the files and compare them
+  res=
+  if [[ 0 == $# ]];
+  then
+      res+=" $failure no drivers run this test."
+      fail=-1
+  else
+      while [ $# -gt 0 ]
+      do
+          res+=" "
+          [[ $1 =~ _([^/]+)\.out ]] &&
+              res+=${BASH_REMATCH[1]}:
+          build/compare.exe -t 1e-14 $baseFileName $1
+          if [ $? -eq 0 ];
+          then res+=$ok;
+          else
+              res+=$failure
+              fail=-1
+          fi;
+          shift
+      done
+  fi;
+  echo Test$testName:$res
 else
-    while [ $# -gt 0 ]
-    do
-        res+=" "
-        [[ $1 =~ _([^/]+)\.out ]] &&
-            res+=${BASH_REMATCH[1]}:
-        cmp $baseFileName $1
-        if [ $? -eq 0 ];
-        then res+=$ok;
-        else
-            res+=$failure
-            fail=-1
-        fi;
-        shift
-    done
+
+  if [[ 0 == $# ]];
+  then
+      res+=" $failure No file for update."
+      fail=-1
+  else
+      # just update the results file
+      echo "Test$testName: updating $1 --> $baseFileName"
+      mkdir -p $(dirname $baseFileName)
+      cp $1 $baseFileName
+  fi;
 fi;
-echo Test$testName:$res
 
 exit $fail

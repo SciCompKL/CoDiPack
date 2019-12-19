@@ -470,6 +470,15 @@ namespace codi {
         // no primal handling required for the tape
         return Real();
       }
+
+      /**
+       * @brief False for this interface.
+       *
+       * @return false
+       */
+      bool hasPrimals() {
+        return false;
+      }
   };
 
   /**
@@ -521,6 +530,15 @@ namespace codi {
        */
       Real getPrimal(const GradientData index) {
         return primalVector[index];
+      }
+
+      /**
+       * @brief True for this interface.
+       *
+       * @return true
+       */
+      bool hasPrimals() {
+        return true;
       }
   };
 }
