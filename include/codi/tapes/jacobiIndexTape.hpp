@@ -274,7 +274,7 @@ namespace codi {
       }
     }
 
-    using typename TapeTypes::template AdjointsModule<TapeTypes, JacobiIndexTape>::clearAdjoints;
+    using TapeTypes::template AdjointsModule<TapeTypes, JacobiIndexTape>::clearAdjoints;
 
   private:
 

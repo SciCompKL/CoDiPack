@@ -225,7 +225,7 @@ namespace codi {
       }
     }
 
-    using typename TapeTypes::template AdjointsModule<TapeTypes, JacobiTape>::clearAdjoints;
+    using TapeTypes::template AdjointsModule<TapeTypes, JacobiTape>::clearAdjoints;
 
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.

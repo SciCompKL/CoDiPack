@@ -207,13 +207,11 @@ namespace codi {
        * @param[in] size The new size for the adjoint vector.
        */
       static CODI_NO_INLINE void resizeAdjoints(const Index& size) {
-        //fprintf(stderr, "Request resizing adjoints to %d\n", size);
 
         while (std::atomic_flag_test_and_set(&adjointsFlag));
         Index oldSize = getAdjointsSize();
 
         if (size > oldSize) {
-          //fprintf(stderr, "Actually resizing from %d\n", oldSize);
           setAdjointsSize(size);
 
           for(Index i = size; i < oldSize; ++i) {
@@ -231,7 +229,6 @@ namespace codi {
           }
         }
         std::atomic_flag_clear(&adjointsFlag);
-        //fprintf(stderr, "Resizing done.\n", oldSize);
       }
 
     protected:
@@ -271,11 +268,8 @@ namespace codi {
        */
       void swapAdjointsModule(Tape& other) {
         // makes no longer sense as the adjoint vector is a static member
-        //std::swap(adjoints, other.adjoints);
-        //std::swap(getAdjointsSize(), other.getAdjointsSize());
 
-        // the index handler is not swaped because it is either swaped in the recursive call to of the data vectors
-        // or it is handled by the including class
+        CODI_UNUSED(other);
       }
 
     public:

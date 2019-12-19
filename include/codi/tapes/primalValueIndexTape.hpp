@@ -265,7 +265,8 @@ namespace codi {
         this->stmtVector.forEachReverse(start.inner.inner.inner.inner, end.inner.inner.inner.inner, clearFunc);
       }
     }
-    using typename TapeTypes::template AdjointsModule<TapeTypes, PrimalValueIndexTape>::clearAdjoints;
+
+    using TapeTypes::template AdjointsModule<TapeTypes, PrimalValueIndexTape>::clearAdjoints;
 
     /**
      * @brief Set the size of the index and statement data and the primal vector.

@@ -235,7 +235,8 @@ namespace codi {
         this->clearAdjoint(i);
       }
     }
-    using typename TapeTypes::template AdjointsModule<TapeTypes, PrimalValueTape>::clearAdjoints;
+
+    using TapeTypes::template AdjointsModule<TapeTypes, PrimalValueTape>::clearAdjoints;
 
     /**
      * @brief Set the size of the index and statement data and the primal vector.
