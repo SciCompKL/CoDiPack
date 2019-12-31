@@ -1,8 +1,7 @@
-#!/bin/bash
 #
 # CoDiPack, a Code Differentiation Package
 #
-# Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+# Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
 # Homepage: http://www.scicomp.uni-kl.de
 # Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
 #
@@ -24,7 +23,11 @@
 # General Public License along with CoDiPack.
 # If not, see <http://www.gnu.org/licenses/>.
 #
-# Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+# Authors:
+#  - SciComp, TU Kaiserslautern:
+#     Max Sagebaum
+#     Tim Albring
+#     Johannes Blühdorn
 #
 
 # compare.sh - compare files and dsiplays if they match
