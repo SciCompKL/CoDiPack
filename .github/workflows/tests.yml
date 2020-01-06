@@ -1,0 +1,26 @@
+name: Test Suite
+
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'master'
+  pull_request:
+    branches: 
+      - 'develop'
+      - 'master'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install clang
+      run: |
+        apt update
+        apt install clang
+    - name: Start Tests
+      run: |
+        cd tests/ 
+        make CXX=clang++
+
