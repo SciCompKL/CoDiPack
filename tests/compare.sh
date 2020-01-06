@@ -78,8 +78,9 @@ then
   else
       while [ $# -gt 0 ]
       do
+          TEST_NAME_PATTERN='_([^/]+)\.out'
           res+=" "
-          [[ $1 =~ _([^/]+)\.out ]] &&
+          [[ $1 =~ $TEST_NAME_PATTERN ]] &&
               res+=${BASH_REMATCH[1]}:
           build/compare.exe -t 1e-14 $baseFileName $1
           if [ $? -eq 0 ];
