@@ -11,14 +11,14 @@ on:
       - 'master'
 
 jobs:
-  tests:
+  Tests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: Install clang
       run: |
-        apt update
-        apt install clang
+        sudo apt update
+        sudo apt install -y clang
     - name: Start Tests
       run: |
         cd tests/ 
