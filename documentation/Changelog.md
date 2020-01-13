@@ -1,6 +1,10 @@
 Changelog      {#Changelog}
 ===========================
 
+### v 1.9.1 - 2020-01-13
+ - Bugfix:
+   * Missing declaration of MaxDerivativeOrder in UnaryOp type traits.
+
 ### v 1.9.0 - 2019-10-30
  - Helper structures:
    * EvaluationHelper:
