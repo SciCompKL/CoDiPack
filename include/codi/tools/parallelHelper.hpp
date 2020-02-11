@@ -700,13 +700,34 @@ namespace codi {
       }
 
       /**
-       * @brief Prints statistics of all tape, together with tape id and address.
+       * @brief Prints statistics of all tapes, together with tape id, name and address.
        */
-      CODI_INLINE void printStatistics() {
+      template<typename Stream = std::ostream>
+      CODI_INLINE void printStatistics(Stream& out = std::cout) const {
         ReadLock lock(this->tapeDataMutex);
         for (auto& tapeDataPair : this->tapeData) {
-          std::cout << "------------- Statistics of tape " << tapeDataPair.first << " (" << tapeDataPair.second.name << ", " << tapeDataPair.second.tape << ") -------------" << std::endl;
-          tapeDataPair.second.tape->printStatistics();
+          out << "------------- Statistics of tape " << tapeDataPair.first << " (" << tapeDataPair.second.name << ", " << tapeDataPair.second.tape << ") -------------" << std::endl;
+          tapeDataPair.second.tape->printStatistics(out);
+        }
+      }
+
+      /**
+       * @brief Tabular representation of tape statistics including tape id, name and address.
+       */
+      template<typename Stream = std::ostream>
+      CODI_INLINE void printTable(Stream& out = std::cout) {
+        ReadLock lock(this->tapeDataMutex);
+
+        // generate table header
+        if (!this->tapeData.empty()) {
+          out << "id; name; address; ";
+          this->tapeData.begin()->second.tape->printTableHeader(out);
+        }
+
+        // generate table rows
+        for (auto& tapeDataPair : this->tapeData) {
+          out << tapeDataPair.first << "; " << tapeDataPair.second.name << "; " << tapeDataPair.second.tape << "; ";
+          tapeDataPair.second.tape->printTableRow(out);
         }
       }
 
