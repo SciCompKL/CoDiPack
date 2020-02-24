@@ -5,10 +5,13 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /*
-   * Expand template types in preprocessor macros.
+
+  /*******************************************************************************
+   * Section: Default type declarations
+   *
+   * Description: TODO
+   *
    */
-  #define TEMPLATE(...) __VA_ARGS__
 
   /*
    * IDE can be define to use the default declaration of typenames. This enables autocompletion in the IDEs.
@@ -21,4 +24,19 @@ namespace codi {
   #else
     #define DECLARE_DEFAULT(Type, Default) Type
   #endif
+
+  /*
+   * Used in default declarations of expression templates.
+   */
+  #define ANY void
+
+  /*
+   * Used in interface declarations for types that have to be defined in the specializations.
+   */
+  #define UNDEFINED void
+
+  /*
+   * Expand template types in preprocessor macros.
+   */
+  #define TEMPLATE(...) __VA_ARGS__
 }
