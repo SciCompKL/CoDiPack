@@ -3,7 +3,9 @@
 #include "../aux/macros.h"
 #include "../config.h"
 #include "expressionInterface.hpp"
+#include "logic/compileTimeTraversalLogic.hpp"
 #include "logic/nodeInterface.hpp"
+#include "logic/traversalLogic.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -32,6 +34,8 @@ namespace codi {
       using ArgA = DECLARE_DEFAULT(_ArgA, TEMPLATE(ExpressionInterface<double, ANY>));
       using ArgB = DECLARE_DEFAULT(_ArgB, TEMPLATE(ExpressionInterface<double, ANY>));
       using Operation = DECLARE_DEFAULT(_Operation, BinaryOperation);
+
+      static bool constexpr EndPoint = false;
 
     private:
 
@@ -62,6 +66,23 @@ namespace codi {
         } else {
           return Operation<Real>::gradientB(argA.getValue(), argB.getValue(), result);
         }
+      }
+
+      /****************************************************************************
+       * Section: Implementation of NodeInterface functions
+       */
+
+      template<typename Logic, typename ... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+        logic.template link<ArgA, BinaryOperation, 0>(argA, *this, std::forward<Args>(args)...);
+        logic.template link<ArgB, BinaryOperation, 1>(argB, *this, std::forward<Args>(args)...);
+      }
+
+      template<typename CompileTimeLogic, typename ... Args>
+      CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConst(Args&& ... args) {
+        return CompileTimeLogic::reduce(
+              CompileTimeLogic::template link<ArgA, BinaryExpression, 0>(std::forward<Args>(args)...),
+              CompileTimeLogic::template link<ArgB, BinaryExpression, 1>(std::forward<Args>(args)...));
       }
   };
 }

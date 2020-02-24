@@ -3,7 +3,9 @@
 #include "../aux/macros.h"
 #include "../config.h"
 #include "expressionInterface.hpp"
+#include "logic/compileTimeTraversalLogic.hpp"
 #include "logic/nodeInterface.hpp"
+#include "logic/traversalLogic.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -29,6 +31,8 @@ namespace codi {
       using Arg = DECLARE_DEFAULT(_Arg, TEMPLATE(ExpressionInterface<double, ANY>));
       using Operation = DECLARE_DEFAULT(_Operation, UnaryOperation);
 
+      static bool constexpr EndPoint = false;
+
     private:
 
       typename Arg::StoreAs arg;
@@ -52,6 +56,20 @@ namespace codi {
       template<size_t argNumber>
       CODI_INLINE Real getJacobian() const {
         return Operation<Real>::gradient(arg.getValue(), result);
+      }
+
+      /****************************************************************************
+       * Section: Implementation of NodeInterface functions
+       */
+
+      template<typename Logic, typename ... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+        logic.template link<Arg, UnaryExpression, 0>(arg, *this, std::forward<Args>(args)...);
+      }
+
+      template<typename CompileTimeLogic, typename ... Args>
+      CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConst(Args&& ... args) {
+        return CompileTimeLogic::template link<Arg, UnaryExpression, 0>(std::forward<Args>(args)...);
       }
   };
 }
