@@ -1,0 +1,12 @@
+*.autosave
+*.exe
+*.swp
+CoDiPack.cflags
+CoDiPack.config
+CoDiPack.creator
+CoDiPack.creator.user
+CoDiPack.creator.user.*
+CoDiPack.cxxflags
+CoDiPack.files
+CoDiPack.includes
+build
