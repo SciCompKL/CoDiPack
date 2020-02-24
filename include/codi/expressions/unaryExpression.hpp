@@ -10,14 +10,15 @@ namespace codi {
 
   template<typename _Real>
   struct UnaryOperation {
+    public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
 
       template<typename Arg>
-      static CODI_INLINE Real primal(const Arg& arg);
+      static CODI_INLINE Real primal(Arg const& arg);
 
       template<typename Arg>
-      static CODI_INLINE Real gradient(const Arg& arg, const Real& result);
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result);
   };
 
 
@@ -44,7 +45,7 @@ namespace codi {
        * Section: Implementation of ExpressionInterface functions
        */
 
-      CODI_INLINE const Real& getValue() const {
+      CODI_INLINE Real const& getValue() const {
         return result;
       }
 

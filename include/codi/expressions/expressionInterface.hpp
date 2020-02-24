@@ -16,16 +16,16 @@ namespace codi {
 
       using StoreAs = ExpressionInterface;
 
-      CODI_INLINE const Impl& cast() const {
-        return static_cast<const Impl&>(*this);
+      CODI_INLINE Impl const& cast() const {
+        return static_cast<Impl const&>(*this);
       }
 
-      CODI_INLINE const Real getValue() const;
+      CODI_INLINE Real const getValue() const;
 
       template<size_t argNumber>
       CODI_INLINE Real getJacobian() const;
 
     private:
-      ExpressionInterface& operator=(const ExpressionInterface&) = delete;
+      ExpressionInterface& operator=(ExpressionInterface const&) = delete;
   };
 }

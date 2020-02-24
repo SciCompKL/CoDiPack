@@ -10,17 +10,18 @@ namespace codi {
 
   template<typename _Real>
   struct BinaryOperation {
+    public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real primal(const ArgA& argA, const ArgB& argB);
+      static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB);
 
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientA(const ArgA& argA, const ArgB& argB, const Real& result);
+      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result);
 
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientB(const ArgA& argA, const ArgB& argB, const Real& result);
+      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result);
   };
 
 
@@ -40,7 +41,7 @@ namespace codi {
 
     public:
 
-      explicit BinaryExpression(const ExpressionInterface<Real, ArgA>& argA, const ExpressionInterface<Real, ArgB>& argB) :
+      explicit BinaryExpression(ExpressionInterface<Real, ArgA> const& argA, ExpressionInterface<Real, ArgB> const& argB) :
         argA(argA.cast()),
         argB(argB.cast()),
         result(Operation<Real>::primal(this->argA.getValue(), this->argB.getValue())) {}
@@ -50,7 +51,7 @@ namespace codi {
        * Section: Implementation of ExpressionInterface functions
        */
 
-      CODI_INLINE const Real& getValue() const {
+      CODI_INLINE Real const& getValue() const {
         return result;
       }
 
