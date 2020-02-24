@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../configure.h"
+#include "../config.h"
 
+/** \copydoc codi::Namespace */
 namespace codi {
 
   /*
    * Expand template types in preprocessor macros.
    */
   #define TEMPLATE(...) __VA_ARGS__
-
 
   /*
    * IDE can be define to use the default declaration of typenames. This enables autocompletion in the IDEs.
