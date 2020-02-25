@@ -13,6 +13,8 @@ namespace codi {
 
       using PassiveReal = Type;
 
+      static int constexpr MaxDerivativeOrder = 0;
+
       PassiveReal const& getPassiveValue(Type const& v) {
         return v;
       }
@@ -22,7 +24,10 @@ namespace codi {
   using PassiveRealType = typename RealTraits<Type>::PassiveReal;
 
   template<typename Type>
+  inline int constexpr MaxDerivativeOrderValue = RealTraits<Type>::MaxDerivativeOrder;
+
+  template<typename Type>
   PassiveRealType<Type> const& getPassiveValue(Type const& v) {
-    return RealTraits<Type>::getOriginalValue(v);
+    return RealTraits<Type>::getPassiveValue(v);
   }
 }
