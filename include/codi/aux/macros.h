@@ -8,6 +8,7 @@ namespace codi {
   template<typename ...Args>
   void CODI_UNUSED(Args const& ... ) {}
 
+  #define ENABLE_CHECK(option, condition) if(!(option) || (condition))
 
   /*******************************************************************************
    * Section: Default type declarations
@@ -37,6 +38,11 @@ namespace codi {
    * Used in interface declarations for types that have to be defined in the specializations.
    */
   #define UNDEFINED void
+
+  /*
+   * Used in interface declarations for variables that have to be defined in the specializations.
+   */
+  #define UNDEFINED_VALUE false
 
   /*
    * Expand template types in preprocessor macros.

@@ -18,8 +18,15 @@ namespace codi {
       #ifndef CODI_CheckExpressionArguments
         #define CODI_CheckExpressionArguments false
       #endif
-      const bool CheckExpressionArguments = CODI_CheckExpressionArguments;
+      static bool constexpr CheckExpressionArguments = CODI_CheckExpressionArguments;
       #undef CODI_CheckExpressionArguments
+
+      #ifndef CODI_IgnoreInvalidJacobies
+        #define CODI_IgnoreInvalidJacobies false
+      #endif
+      static bool constexpr IgnoreInvalidJacobies = CODI_IgnoreInvalidJacobies;
+      #undef CODI_OptIgnoreInvalidJacobies
+
 
       #ifndef CODI_UseForcedInlines
         #define CODI_UseForcedInlines 0
@@ -36,7 +43,7 @@ namespace codi {
       #else
         #define CODI_INLINE inline
       #endif
-      static constexpr bool IsForcedInlines = CODI_UseForcedInlines;
+      static bool constexpr IsForcedInlines = CODI_UseForcedInlines;
       #undef CODI_UseForcedInlines
 
   };
