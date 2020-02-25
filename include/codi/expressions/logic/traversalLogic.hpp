@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../config.h"
-#include "../aux/macros.h"
+#include "../../config.h"
+#include "../../aux/macros.h"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -28,14 +28,14 @@ namespace codi {
         // Default logic does nothing
       }
 
-      template<typename Leaf, typename Root, size_t LeafNumber, typename ... Args>
+      template<size_t LeafNumber, typename Leaf, typename Root, typename ... Args>
       CODI_INLINE void link(Leaf const& leaf, Root const& root, Args&& ... args) {
-        // Default logic forwards to all links
+        // Default logic forwards to node evaluation
         toNode(leaf, std::forward<Args>(args)...);
       }
 
       template<typename Node, typename ... Args>
-      CODI_INLINE void eval(NodeInterface<Real, Node> const& node, Args&& ... args) {
+      CODI_INLINE void eval(NodeInterface<Node> const& node, Args&& ... args) {
         toNode(node.cast(), std::forward<Args>(args)...);
       }
 
@@ -57,9 +57,9 @@ namespace codi {
           }
       };
 
-      template<typename Impl, typename ... Args>
-      CODI_INLINE void toNode(NodeInterface<Impl> const& node, Args&& ... args) {
-        CallSwitch<Impl, Impl::EndPoint>::call(cast(), node, std::forward<Args>(args)...);
+      template<typename Node, typename ... Args>
+      CODI_INLINE void toNode(Node const& node, Args&& ... args) {
+        CallSwitch<Impl, Node::EndPoint>::call(cast(), node, std::forward<Args>(args)...);
       }
 
       template<typename Node, typename ... Args>

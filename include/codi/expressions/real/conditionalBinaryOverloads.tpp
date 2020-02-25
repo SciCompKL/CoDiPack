@@ -23,7 +23,7 @@
 
   template<typename Real, typename ArgA, typename ArgB>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, ArgA> const& argA, ExpressionInterface<Real, ArgB> const& argB) {
-    return getPassiveValue(argA) OPERATOR getPassiveValue(argB);
+    return getPassiveValue(argA.cast()) OPERATOR getPassiveValue(argB.cast());
   }
 
   #define PASSIVE_TYPE PassiveRealType<Real>
@@ -39,6 +39,7 @@
   #include "conditionalBinaryPassiveOverloads.tpp"
 
   #define PASSIVE_TYPE unsigned long
+  #include "conditionalBinaryPassiveOverloads.tpp"
 
   #define PASSIVE_TYPE long long
   #include "conditionalBinaryPassiveOverloads.tpp"

@@ -1,11 +1,13 @@
 #pragma once
 
+#include <cmath>
+
 #include "../../aux/exceptions.hpp"
 #include "../../aux/macros.h"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
 #include "../binaryExpression.hpp"
-
+#include "../constantExpression.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -18,7 +20,7 @@ namespace codi {
    */
 
   template<typename _Real>
-  struct Add : public BinaryOperation<Real> {
+  struct Add : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -45,7 +47,7 @@ namespace codi {
   #include "binaryOverloads.tpp"
 
   template<typename _Real>
-  struct Substract : public BinaryOperation<Real> {
+  struct Substract : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -72,7 +74,7 @@ namespace codi {
   #include "binaryOverloads.tpp"
 
   template<typename _Real>
-  struct Multiply : public BinaryOperation<Real> {
+  struct Multiply : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -99,7 +101,7 @@ namespace codi {
   #include "binaryOverloads.tpp"
 
   template<typename _Real>
-  struct Divide : public BinaryOperation<Real> {
+  struct Divide : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -153,7 +155,7 @@ namespace codi {
   using std::pow;
 
   template<typename _Real>
-  struct Atan2 : public BinaryOperation<Real> {
+  struct Atan2 : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -198,7 +200,7 @@ namespace codi {
   #include "binaryOverloads.tpp"
 
   template<typename _Real>
-  struct Copysign : public BinaryOperation<Real> {
+  struct Copysign : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -246,7 +248,7 @@ namespace codi {
   #include "binaryOverloads.tpp"
 
   template<typename _Real>
-  struct Max : public BinaryOperation<Real> {
+  struct Max : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -288,7 +290,7 @@ namespace codi {
   #include "binaryOverloads.tpp"
 
   template<typename _Real>
-  struct Min : public BinaryOperation<Real> {
+  struct Min : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -329,7 +331,7 @@ namespace codi {
   #include "binaryOverloads.tpp"
 
   template<typename _Real>
-  struct Pow : public BinaryOperation<Real> {
+  struct Pow : public BinaryOperation<_Real> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
@@ -344,7 +346,7 @@ namespace codi {
         CODI_UNUSED(result);
 
         checkArguments(argA);
-        if (getPassiveValue(argA) <= 0.0 && 1 <= MaxDerivativeOrderValue<ArgB>) {
+        if (getPassiveValue(argA) <= 0.0 && 1 <= RealTraits<ArgB>::MaxDerivativeOrder) {
           // Special case for higher order derivatives. Derivative will be wrong since the argB part is not evaluated.
           return getPassiveValue(argB) * pow(argA, argB - 1.0);
         } else {

@@ -29,7 +29,7 @@ namespace codi {
     public:
       using Real = DECLARE_DEFAULT(_Real, double);
       using Arg = DECLARE_DEFAULT(_Arg, TEMPLATE(ExpressionInterface<double, ANY>));
-      using Operation = DECLARE_DEFAULT(_Operation, UnaryOperation);
+      using Operation = DECLARE_DEFAULT(TEMPLATE(_Operation<Real>), TEMPLATE(UnaryOperation<Real>));
 
       static bool constexpr EndPoint = false;
 
@@ -42,7 +42,7 @@ namespace codi {
 
       explicit UnaryExpression(const ExpressionInterface<Real, Arg>& arg) :
         arg(arg.cast()),
-        result(Operation<Real>::primal(this->arg.getValue())) {}
+        result(Operation::primal(this->arg.getValue())) {}
 
 
       /****************************************************************************
@@ -55,7 +55,7 @@ namespace codi {
 
       template<size_t argNumber>
       CODI_INLINE Real getJacobian() const {
-        return Operation<Real>::gradient(arg.getValue(), result);
+        return Operation::gradient(arg.getValue(), result);
       }
 
       /****************************************************************************
@@ -64,12 +64,12 @@ namespace codi {
 
       template<typename Logic, typename ... Args>
       CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
-        logic.template link<Arg, UnaryExpression, 0>(arg, *this, std::forward<Args>(args)...);
+        logic.cast().template link<0>(arg, *this, std::forward<Args>(args)...);
       }
 
       template<typename CompileTimeLogic, typename ... Args>
       CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConst(Args&& ... args) {
-        return CompileTimeLogic::template link<Arg, UnaryExpression, 0>(std::forward<Args>(args)...);
+        return CompileTimeLogic::template link<0, Arg, UnaryExpression>(std::forward<Args>(args)...);
       }
   };
 }

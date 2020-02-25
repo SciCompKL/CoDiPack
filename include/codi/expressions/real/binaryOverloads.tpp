@@ -19,7 +19,7 @@
 #ifndef FUNCTION
   #include "../../aux/macros.h"
   #include "../../config.h"
-  #include "../../traits/typeTraits.hpp"
+  #include "../../traits/realTraits.hpp"
   #include "../binaryExpression.hpp"
   #include "../constantExpression.hpp"
   #include "../expressionInterface.hpp"
@@ -39,8 +39,8 @@
         ExpressionInterface<Real, ArgA> const& argA,
         PassiveRealType<Real> const& argB) {
       return BinaryExpression<Real, ArgA, ConstantExpression<PassiveRealType<Real>>, OPERATION_LOGIC>(
-            ConstantExpression<PassiveRealType<Real>>(argA),
-            argB);
+            argA,
+            ConstantExpression<PassiveRealType<Real>>(argB));
     }
 
     template <typename Real, class ArgB>
@@ -48,8 +48,8 @@
         PassiveRealType<Real> const& argA,
         ExpressionInterface<Real, ArgB> const& argB) {
       return BinaryExpression<Real, ConstantExpression<PassiveRealType<Real>>, ArgB, OPERATION_LOGIC>(
-            argA,
-            ConstantExpression<PassiveRealType<Real>>(argB));
+            ConstantExpression<PassiveRealType<Real>>(argA),
+            argB);
     }
 
 // Create a correct include environment for viewing and programming in an IDE

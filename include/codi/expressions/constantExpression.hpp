@@ -3,7 +3,6 @@
 #include "../aux/macros.h"
 #include "../config.h"
 #include "expressionInterface.hpp"
-#include "logic/compileTimeTraversalLogic.hpp"
 #include "logic/nodeInterface.hpp"
 #include "logic/traversalLogic.hpp"
 
@@ -15,6 +14,10 @@ namespace codi {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
+
+      using StoreAs = ConstantExpression;
+
+      static bool constexpr EndPoint = true;
 
     private:
       Real primalValue;

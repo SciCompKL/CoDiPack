@@ -8,6 +8,7 @@ namespace codi {
 
   template<typename _Type, typename = void>
   struct RealTraits {
+    public:
 
       using Type = DECLARE_DEFAULT(_Type, double);
 
@@ -15,7 +16,7 @@ namespace codi {
 
       static int constexpr MaxDerivativeOrder = 0;
 
-      PassiveReal const& getPassiveValue(Type const& v) {
+      static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
         return v;
       }
   };
@@ -24,10 +25,7 @@ namespace codi {
   using PassiveRealType = typename RealTraits<Type>::PassiveReal;
 
   template<typename Type>
-  inline int constexpr MaxDerivativeOrderValue = RealTraits<Type>::MaxDerivativeOrder;
-
-  template<typename Type>
-  PassiveRealType<Type> const& getPassiveValue(Type const& v) {
+  CODI_INLINE PassiveRealType<Type> const& getPassiveValue(Type const& v) {
     return RealTraits<Type>::getPassiveValue(v);
   }
 }

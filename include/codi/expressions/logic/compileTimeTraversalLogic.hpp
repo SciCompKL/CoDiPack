@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../config.h"
-#include "../aux/macros.h"
+#include "../../config.h"
+#include "../../aux/macros.h"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -32,7 +32,7 @@ namespace codi {
         return Impl::NeutralElement;
       }
 
-      template<typename Leaf, typename Root, size_t LeafNumber, typename ... Args>
+      template<size_t LeafNumber, typename Leaf, typename Root, typename ... Args>
       CODI_INLINE static constexpr ResultType link(Args&& ... args) {
         // Default logic forwards to node evaluation
         return toNode<Leaf>(std::forward<Args>(args)...);
@@ -63,7 +63,7 @@ namespace codi {
 
       template<typename Node, typename ... Args>
       CODI_INLINE static constexpr ResultType toNode(Args&& ... args) {
-        return CallSwitch<ResultType, Impl, Node::EndPoint>::template call<Node>(std::forward<Args>(args)...);
+        return CallSwitch<Impl, Node::EndPoint>::template call<Node>(std::forward<Args>(args)...);
       }
 
       template<typename Node, typename ... Args>

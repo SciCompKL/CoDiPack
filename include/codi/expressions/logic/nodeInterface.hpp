@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../config.h"
-#include "../aux/macros.h"
+#include "../../config.h"
+#include "../../aux/macros.h"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  template<typename Logic>
   struct TraversalLogic;
 
   template<typename _Impl>
@@ -14,7 +15,7 @@ namespace codi {
 
       using Impl = DECLARE_DEFAULT(_Impl, NodeInterface);
 
-      static bool constexpr EndPoint;
+      static bool constexpr EndPoint = UNDEFINED_VALUE;
 
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);

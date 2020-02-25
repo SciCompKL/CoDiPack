@@ -21,8 +21,8 @@
 #endif
 
   template<typename Real, typename Arg>
-  CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, ArgA> const& arg) {
-    return OPERATOR getPassiveValue(argA);
+  CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, Arg> const& arg) {
+    return OPERATOR getPassiveValue(arg.cast());
   }
 
 // Create argA correct include environment for viewing and programming in an IDE

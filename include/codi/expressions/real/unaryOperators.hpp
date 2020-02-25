@@ -30,7 +30,7 @@ namespace codi {
 
       /** \copydoc UnaryOperation::gradient */
       template<typename Arg>
-      static CODI_INLINE typename TypeTraits<Real>::PassiveReal gradient(Arg const& arg, Real const& result) {
+      static CODI_INLINE PassiveRealType<Real> gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         CODI_UNUSED(result);
         return -1.0;
@@ -40,7 +40,7 @@ namespace codi {
   #define FUNCTION operator -
   #include "unaryOverloads.tpp"
 
-  template<typename Real, class Arg>
+  template<typename Real, typename Arg>
   CODI_INLINE ExpressionInterface<Real, Arg> const& operator+(ExpressionInterface<Real, Arg> const& arg) {
     return arg;
   }
@@ -59,11 +59,15 @@ namespace codi {
   using std::atan;
   using std::atanh;
   using std::cbrt;
+  using std::ceil;
   using std::cos;
   using std::cosh;
   using std::erf;
   using std::erfc;
   using std::exp;
+  using std::floor;
+  using std::isinf;
+  using std::isnan;
   using std::log;
   using std::log10;
   using std::sin;
@@ -244,6 +248,11 @@ namespace codi {
   #define FUNCTION cbrt
   #include "unaryOverloads.tpp"
 
+  template<typename Real, typename Arg>
+  CODI_INLINE PassiveRealType<Real> ceil(ExpressionInterface<Real, Arg> const& arg) {
+    return ceil(getPassiveValue(arg.cast()));
+  }
+
   template<typename _Real>
   struct Cos : public UnaryOperation<_Real> {
     public:
@@ -358,6 +367,21 @@ namespace codi {
   #define OPERATION_LOGIC Exp
   #define FUNCTION exp
   #include "unaryOverloads.tpp"
+
+  template<typename Real, typename Arg>
+  CODI_INLINE PassiveRealType<Real> floor(ExpressionInterface<Real, Arg> const& arg) {
+    return floor(getPassiveValue(arg.cast()));
+  }
+
+  template<typename Real, typename Arg>
+  CODI_INLINE bool isnan(ExpressionInterface<Real, Arg> const& arg) {
+    return isnan(getPassiveValue(arg.cast()));
+  }
+
+  template<typename Real, typename Arg>
+  CODI_INLINE bool isinf(ExpressionInterface<Real, Arg> const& arg) {
+    return isinf(getPassiveValue(arg.cast()));
+  }
 
   template<typename _Real>
   struct Log : public UnaryOperation<_Real> {
@@ -611,11 +635,15 @@ namespace std {
   using codi::atan;
   using codi::atanh;
   using codi::cbrt;
+  using codi::ceil;
   using codi::cos;
   using codi::cosh;
   using codi::erf;
   using codi::erfc;
   using codi::exp;
+  using codi::floor;
+  using codi::isinf;
+  using codi::isnan;
   using codi::log;
   using codi::log10;
   using codi::sin;
