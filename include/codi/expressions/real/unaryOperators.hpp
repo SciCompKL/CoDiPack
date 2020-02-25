@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../aux/exceptions.hpp"
 #include "../../aux/macros.h"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
@@ -22,12 +23,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return -arg;
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE typename TypeTraits<Real>::PassiveReal gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE typename TypeTraits<Real>::PassiveReal gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         CODI_UNUSED(result);
         return -1.0;
@@ -77,12 +80,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return abs(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if(arg < 0.0) {
           return (Real)-1.0;
@@ -97,10 +102,9 @@ namespace codi {
   #define FUNCTION abs
   #include "unaryOverloads.tpp"
 
-  template<typename Real, class Arg>
-  CODI_INLINE UnaryOperation<Real, Arg, Abs> fabs(codi::ExpressionInterface<Real, A> const& arg) {
-    return UnaryOperation<Real, Arg, Abs>(arg);
-  }
+  #define OPERATION_LOGIC Abs
+  #define FUNCTION fabs
+  #include "unaryOverloads.tpp"
 
   template<typename _Real>
   struct Acos : public UnaryOperation<_Real> {
@@ -109,14 +113,16 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return acos(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(CheckExpressionArguments) {
+        if(Config::CheckExpressionArguments) {
           if(getPassiveValue(arg) <= -1.0 || 1.0 <= getPassiveValue(arg)) {
             CODI_EXCEPTION("acos outside of (-1, 1).(Value: %0.15e)", getPassiveValue(arg));
           }
@@ -135,14 +141,16 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return asin(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(CheckExpressionArguments) {
+        if(Config::CheckExpressionArguments) {
           if(getPassiveValue(arg) <= -1.0 || 1.0 <= getPassiveValue(arg)) {
             CODI_EXCEPTION("asin outside of (-1, 1).(Value: %0.15e)", getPassiveValue(arg));
           }
@@ -161,12 +169,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return atan(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return 1.0 / (1 + arg * arg);
       }
@@ -182,14 +192,16 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return atanh(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(CheckExpressionArguments) {
+        if(Config::CheckExpressionArguments) {
           if(getPassiveValue(arg) <= -1.0 || 1.0 <= getPassiveValue(arg)) {
             CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", getPassiveValue(arg));
           }
@@ -208,13 +220,15 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return cbrt(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
-        if(CheckExpressionArguments) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        if(Config::CheckExpressionArguments) {
           if(0.0 == getPassiveValue(arg)) {
             CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", getPassiveValue(arg));
           }
@@ -237,12 +251,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return cos(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return -sin(arg);
       }
@@ -258,12 +274,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return cosh(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return sinh(arg);
       }
@@ -279,12 +297,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return erf(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return 1.128379167095513 * exp( -(arg * arg) ); // erf'(arg) = 2.0 / sqrt(pi) * exp(-arg^2)
       }
@@ -300,12 +320,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return erfc(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return -1.128379167095513 * exp( -(arg * arg) ); // erfc'(arg) = - 2.0 / sqrt(pi) * exp(-arg^2)
       }
@@ -321,12 +343,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return exp(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         return result;
       }
@@ -342,14 +366,16 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return log(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(CheckExpressionArguments) {
+        if(Config::CheckExpressionArguments) {
           if(0.0 > getPassiveValue(arg)) {
             CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", getPassiveValue(arg));
           }
@@ -368,14 +394,16 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return log10(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(CheckExpressionArguments) {
+        if(Config::CheckExpressionArguments) {
           if(0.0 > getPassiveValue(arg)) {
             CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", getPassiveValue(arg));
           }
@@ -394,12 +422,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return sin(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return cos(arg);
       }
@@ -415,12 +445,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return sinh(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return cosh(arg);
       }
@@ -436,13 +468,15 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return sqrt(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
-        if(CheckExpressionArguments) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        if(Config::CheckExpressionArguments) {
           if(0.0 > getPassiveValue(arg)) {
             CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", getPassiveValue(arg));
           }
@@ -465,14 +499,16 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return tan(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(CheckExpressionArguments) {
+        if(Config::CheckExpressionArguments) {
           if(0.0 == cos(getPassiveValue(arg))) {
             CODI_EXCEPTION("Tan evaluated at (0.5  + i) * PI.(Value: %0.15e)", getPassiveValue(arg));
           }
@@ -492,12 +528,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return tanh(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         return 1 - result * result;
       }
@@ -513,12 +551,14 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
-      static CODI_INLINE Real primal(Real const& arg) {
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
         return tgamma(arg);
       }
 
       /** \copydoc UnaryOperation::gradient */
-      static CODI_INLINE Real gradient(Real const& arg, Real const& result) {
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         if(arg <= 0.0) {
           std::cout << "Derivative for gamma function only for positive arguments at the moment" << std::endl;
           std::exit(1);
