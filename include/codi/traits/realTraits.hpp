@@ -12,9 +12,17 @@ namespace codi {
       using Type = DECLARE_DEFAULT(_Type, double);
 
       using PassiveReal = Type;
+
+      PassiveReal const& getPassiveValue(Type const& v) {
+        return v;
+      }
   };
 
   template<typename Type>
   using PassiveRealType = typename RealTraits<Type>::PassiveReal;
 
+  template<typename Type>
+  PassiveRealType<Type> const& getPassiveValue(Type const& v) {
+    return RealTraits<Type>::getOriginalValue(v);
+  }
 }

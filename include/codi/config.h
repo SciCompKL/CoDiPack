@@ -15,6 +15,12 @@ namespace codi {
   struct Config {
     public:
 
+      #ifndef CODI_CheckExpressionArguments
+        #define CODI_CheckExpressionArguments false
+      #endif
+      const bool CheckExpressionArguments = CODI_CheckExpressionArguments;
+      #undef CODI_CheckExpressionArguments
+
       #ifndef CODI_UseForcedInlines
         #define CODI_UseForcedInlines 0
       #endif
@@ -30,8 +36,8 @@ namespace codi {
       #else
         #define CODI_INLINE inline
       #endif
-      #undef CODI_UseForcedInlines
       static constexpr bool IsForcedInlines = CODI_UseForcedInlines;
+      #undef CODI_UseForcedInlines
 
   };
 }
