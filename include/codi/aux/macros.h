@@ -5,6 +5,9 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  template<typename ...Args>
+  void CODI_UNUSED(Args const& ... ) {}
+
 
   /*******************************************************************************
    * Section: Default type declarations

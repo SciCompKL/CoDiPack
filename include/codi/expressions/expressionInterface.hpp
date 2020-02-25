@@ -8,7 +8,7 @@
 namespace codi {
 
   template<typename _Real, typename _Impl>
-  struct ExpressionInterface {
+  struct ExpressionInterface : public NodeInterface<_Impl> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);

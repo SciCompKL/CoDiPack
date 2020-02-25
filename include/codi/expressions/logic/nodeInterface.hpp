@@ -24,6 +24,6 @@ namespace codi {
       CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const;
 
       template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::T constexpr forEachLinkConst(Args&& ... args);
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConst(Args&& ... args);
   };
 }
