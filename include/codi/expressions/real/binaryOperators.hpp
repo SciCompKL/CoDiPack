@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../aux/exceptions.hpp"
-#include "../aux/macros.h"
-#include "../config.h"
-#include "../binaryExpression.hpp"
+#include "../../aux/exceptions.hpp"
+#include "../../aux/macros.h"
+#include "../../config.h"
 #include "../../traits/realTraits.hpp"
+#include "../binaryExpression.hpp"
 
 
 /** \copydoc codi::Namespace */
