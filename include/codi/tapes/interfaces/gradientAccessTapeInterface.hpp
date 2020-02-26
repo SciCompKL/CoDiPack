@@ -13,6 +13,11 @@ namespace codi {
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
       using Identifier = DECLARE_DEFAULT(_Identifier, int);
 
+      /*******************************************************************************
+       * Section: Start of interface definition
+       *
+       */
+
       void setGradient(Identifier const& identifier, Gradient const& gradient);
       Gradient const& getGradient(Identifier const& identifier) const;
 

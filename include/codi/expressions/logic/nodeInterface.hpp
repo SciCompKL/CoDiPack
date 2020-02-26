@@ -15,11 +15,16 @@ namespace codi {
 
       using Impl = DECLARE_DEFAULT(_Impl, NodeInterface);
 
-      static bool constexpr EndPoint = UNDEFINED_VALUE;
-
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);
       }
+
+      /*******************************************************************************
+       * Section: Start of interface definition
+       *
+       */
+
+      static bool constexpr EndPoint = UNDEFINED_VALUE;
 
       template<typename Logic, typename ... Args>
       CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const;

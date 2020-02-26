@@ -12,6 +12,11 @@ namespace codi {
 
       using Identifier = DECLARE_DEFAULT(_Identifier, int);
 
+      /*******************************************************************************
+       * Section: Start of interface definition
+       *
+       */
+
       static bool constexpr AllowJacobianOptimization = UNDEFINED_VALUE;
 
       template<typename Real>

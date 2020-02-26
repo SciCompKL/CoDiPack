@@ -14,11 +14,16 @@ namespace codi {
       using Real = DECLARE_DEFAULT(_Real, double);
       using Impl = DECLARE_DEFAULT(_Impl, ExpressionInterface);
 
-      using StoreAs = ExpressionInterface;
-
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);
       }
+
+      /*******************************************************************************
+       * Section: Start of interface definition
+       *
+       */
+
+      using StoreAs = ExpressionInterface;
 
       CODI_INLINE Real const getValue() const;
 

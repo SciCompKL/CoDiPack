@@ -3,6 +3,7 @@
 #include "../aux/macros.h"
 #include "../config.h"
 #include "../tapes/interfaces/internalExpressionTapeInterface.hpp"
+#include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
 #include "expressionInterface.hpp"
 
@@ -23,28 +24,43 @@ namespace codi {
 
       static bool constexpr EndPoint = true;
 
-      static Tape& getGlobalTape() {
-        return Impl::getGlobalTape();
-      }
+      /*******************************************************************************
+       * Section: Start of interface definition
+       *
+       */
 
       Real const& value() const;
       Real& value();
 
-      Gradient const& gradient() const;
-      Gradient& gradient();
+      Identifier& getIdentifier();
+      Identifier const& getIdentifier() const;
 
+      static Tape& getGlobalTape();
+
+      /*******************************************************************************
+       * Section: Start of general implementation
+       *
+       */
 
       CODI_INLINE void initBase() {
-        getGlobalTape().initIdentifier(cast().value(), cast().getIdentifier());
+        Impl::getGlobalTape().initIdentifier(cast().value(), cast().getIdentifier());
       }
 
       CODI_INLINE ~LhsExpressionInterface() {
-        getGlobalTape().destroyIdentifier(cast().value(), cast().getIdentifier());
+        Impl::getGlobalTape().destroyIdentifier(cast().value(), cast().getIdentifier());
       }
 
       using ExpressionInterface<Real, Impl>::cast;
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
+      }
+
+      CODI_INLINE Gradient& gradient() {
+        return Impl::getGlobalTape().gradient(cast().getIdentifier());
+      }
+
+      CODI_INLINE Gradient const& gradient() const {
+        return const_cast<Tape const&>(Impl::getGlobalTape()).gradient(cast().getIdentifier());
       }
 
       CODI_INLINE Gradient getGradient() const {
@@ -53,14 +69,6 @@ namespace codi {
 
       CODI_INLINE void setGradient(Gradient const& g) {
         cast().gradient() = g;
-      }
-
-      CODI_INLINE Identifier& getIdentifier() {
-        return cast().getIdentifier();
-      }
-
-      CODI_INLINE Identifier const& getIdentifier() const {
-        return cast().getIdentifier();
       }
 
       CODI_INLINE Real const& getValue() const {
@@ -72,18 +80,18 @@ namespace codi {
       }
 
       CODI_INLINE Impl& operator=(PassiveReal const& rhs){
-        getGlobalTape().store(cast(), rhs);
+        Impl::getGlobalTape().store(cast(), rhs);
         return cast();
       }
 
       template<typename Rhs>
       CODI_INLINE Impl& operator=(ExpressionInterface<Real, Rhs> const& rhs){
-        getGlobalTape().store(cast(), rhs.cast());
+        Impl::getGlobalTape().store(cast(), rhs.cast());
         return cast();
       }
 
       CODI_INLINE Impl& operator=(LhsExpressionInterface const& rhs) {
-        getGlobalTape().store(cast(), rhs);
+        Impl::getGlobalTape().store(cast(), rhs);
         return cast();
       }
 
@@ -98,4 +106,22 @@ namespace codi {
       }
   };
 
+  template<typename _Type>
+  struct RealTraits<_Type, enableIfLhsExpression<typename _Type::Real, typename _Type::Gradient, typename _Type::Tape, _Type>> {
+    public:
+
+      using Type = DECLARE_DEFAULT(
+                      _Type,
+                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
+                    );
+      using Real = typename Type::Real;
+
+      using PassiveReal = PassiveRealType<Real>;
+
+      static int constexpr MaxDerivativeOrder = 1 + RealTraits<Real>::MaxDerivativeOrder;
+
+      static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
+        return RealTraits<Real>::getPassiveValue(v.getValue());
+      }
+  };
 }

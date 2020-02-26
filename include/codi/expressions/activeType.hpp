@@ -68,14 +68,6 @@ namespace codi {
       return identifier;
     }
 
-    CODI_INLINE Gradient& gradient() {
-      return globalTape.gradient(identifier);
-    }
-
-    CODI_INLINE Gradient const& gradient() const {
-      return const_cast<Tape const&>(globalTape).gradient(identifier);
-    }
-
     CODI_INLINE Real& value() {
       return primalValue;
     }
@@ -91,20 +83,4 @@ namespace codi {
 
   template<typename Tape>
   Tape ActiveType<Tape>::globalTape = Tape();
-
-  template<typename Tape>
-  struct RealTraits<ActiveType<Tape>> {
-    public:
-
-      using Type = ActiveType<Tape>;
-      using Real = typename Type::Real;
-
-      using PassiveReal = PassiveRealType<Real>;
-
-      static int constexpr MaxDerivativeOrder = 1 + RealTraits<Real>::MaxDerivativeOrder;
-
-      static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
-        return RealTraits<Real>::getPassiveValue(v.getValue());
-      }
-  };
 }

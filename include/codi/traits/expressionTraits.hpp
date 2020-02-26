@@ -4,10 +4,13 @@
 
 #include "../aux/macros.h"
 #include "../config.h"
-#include "../expressions/lhsExpresssionInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  template<typename _Real, typename _Gradient, typename _Tape, typename _Impl>
+  struct LhsExpressionInterface;
+
   template<typename Real, typename Gradient, typename Tape, typename Impl>
   using isLhsExpression = std::is_base_of<LhsExpressionInterface<Real, Gradient, Tape, Impl>, Impl>;
 
