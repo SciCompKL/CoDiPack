@@ -27,11 +27,11 @@ namespace codi {
         return Impl::getGlobalTape();
       }
 
-//      virtual Real const& value() const = 0;
-//      virtual Real& value() = 0;
+      Real const& value() const;
+      Real& value();
 
-//      virtual Gradient const& gradient() const = 0;
-//      virtual Gradient& gradient() = 0;
+      Gradient const& gradient() const;
+      Gradient& gradient();
 
 
       CODI_INLINE void initBase() {

@@ -32,6 +32,7 @@ namespace codi {
       using Operation = DECLARE_DEFAULT(TEMPLATE(_Operation<Real>), TEMPLATE(UnaryOperation<Real>));
 
       static bool constexpr EndPoint = false;
+      using StoreAs = UnaryExpression;
 
     private:
 

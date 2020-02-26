@@ -25,11 +25,13 @@ namespace codi {
 
       template<typename Node, typename ... Args>
       CODI_INLINE void term(Node const& node, Args&& ... args) {
+        CODI_UNUSED(node, args...);
         // Default logic does nothing
       }
 
       template<size_t LeafNumber, typename Leaf, typename Root, typename ... Args>
       CODI_INLINE void link(Leaf const& leaf, Root const& root, Args&& ... args) {
+        CODI_UNUSED(root, args...);
         // Default logic forwards to node evaluation
         toNode(leaf, std::forward<Args>(args)...);
       }

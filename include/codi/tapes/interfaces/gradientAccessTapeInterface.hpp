@@ -13,10 +13,10 @@ namespace codi {
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
       using Identifier = DECLARE_DEFAULT(_Identifier, int);
 
-      virtual void setGradient(Identifier const& identifier, Gradient const& gradient) = 0;
-      virtual Gradient const& getGradient(Identifier const& identifier) const = 0;
+      void setGradient(Identifier const& identifier, Gradient const& gradient);
+      Gradient const& getGradient(Identifier const& identifier) const;
 
-      virtual Gradient& gradient(Identifier const& identifier) = 0;
-      virtual Gradient const& gradient(Identifier const& identifier) const = 0;
+      Gradient& gradient(Identifier const& identifier);
+      Gradient const& gradient(Identifier const& identifier) const;
   };
 }

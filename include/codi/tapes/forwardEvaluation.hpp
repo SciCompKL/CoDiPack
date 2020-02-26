@@ -92,7 +92,7 @@ namespace codi {
         return identifier;
       }
 
-    //private:
+    private:
 
       void setGradient(Identifier const& identifier, Gradient const& gradient) {
         CODI_UNUSED(identifier, gradient);

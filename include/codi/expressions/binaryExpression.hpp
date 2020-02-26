@@ -36,6 +36,7 @@ namespace codi {
       using Operation = DECLARE_DEFAULT(TEMPLATE(_Operation<Real>), TEMPLATE(BinaryOperation<Real>));
 
       static bool constexpr EndPoint = false;
+      using StoreAs = BinaryExpression;
 
     private:
 
