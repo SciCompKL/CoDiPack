@@ -2,8 +2,8 @@
 
 #include <type_traits>
 
-#include "../config.h"
 #include "../aux/macros.h"
+#include "../config.h"
 #include "../expressions/lhsExpresssionInterface.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../traits/expressionTraits.hpp"
