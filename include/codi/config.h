@@ -15,6 +15,12 @@ namespace codi {
   struct Config {
     public:
 
+      #ifndef CODI_AssignOptimization
+        #define CODI_AssignOptimization true
+      #endif
+      const bool AssignOptimization = CODI_AssignOptimization;
+      #undef CODI_AssignOptimization
+
       #ifndef CODI_CheckExpressionArguments
         #define CODI_CheckExpressionArguments false
       #endif
@@ -26,6 +32,24 @@ namespace codi {
       #endif
       static bool constexpr IgnoreInvalidJacobies = CODI_IgnoreInvalidJacobies;
       #undef CODI_OptIgnoreInvalidJacobies
+
+      #ifndef CODI_OverflowCheck
+        #define CODI_OverflowCheck true
+      #endif
+      const bool OverflowCheck = CODI_OverflowCheck;
+      #undef CODI_OverflowCheck
+
+      #ifndef CODI_SmallChunkSize
+        #define CODI_SmallChunkSize 32768
+      #endif
+      static size_t SmallChunkSize = CODI_SmallChunkSize;
+      #undef CODI_SmallChunkSize
+
+      #ifndef CODI_SortIndicesOnReset
+        #define CODI_SortIndicesOnReset true
+      #endif
+      const bool SortIndicesOnReset = CODI_SortIndicesOnReset;
+      #undef CODI_SortIndicesOnReset
 
       #ifndef CODI_UseAvoidedInlines
         #define CODI_UseAvoidedInlines 1

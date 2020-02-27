@@ -1,0 +1,160 @@
+#pragma once
+
+#include <vector>
+
+#include "../../aux/macros.h"
+#include "../../config.h"
+#include "indexManagerInterface.hpp"
+
+/** \copydoc codi::Namespace */
+namespace codi {
+
+  template<typename _Index>
+  struct ReuseIndexManager : public IndexManagerInterface<_Index> {
+    public:
+
+      using Index = DECLARE_DEFAULT(_Index, int);
+
+      static bool const AssignNeedsStatement = true;
+      static bool const IsLinear = false;
+
+    private:
+
+      Index globalMaximumIndex;
+
+      std::vector<Index> usedIndices;
+      size_t usedIndicesPos;
+
+      std::vector<Index> unusedIndices;
+      size_t unusedIndicesPos;
+
+      size_t indexSizeIncrement;
+
+      bool valid;
+
+    public:
+
+      ReuseIndexManager(Index const& reserveIndices) :
+        globalMaximumIndex(reserveIndices + 1),
+        usedIndices(),
+        usedIndicesPos(0),
+        unusedIndices(),
+        unusedIndicesPos(0),
+        indexSizeIncrement(Config::SmallChunkSize),
+        valid(true)
+      {
+        increaseIndicesSize(unusedIndices);
+        generateNewIndices();
+      }
+
+      ~ReuseIndexManager() {
+        valid = false;
+      }
+
+      CODI_INLINE void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
+        generatedNewIndex = false;
+
+        if (0 == index) {
+          if (0 == usedIndicesPos) {
+            if (0 == unusedIndicesPos) {
+              generateNewIndices();
+              generatedNewIndex = true;
+            }
+
+            unusedIndicesPos -= 1;
+            index = unusedIndices[unusedIndicesPos];
+          } else {
+            usedIndicesPos -= 1;
+            index = usedIndices[usedIndicesPos];
+          }
+        }
+      }
+
+      CODI_INLINE void assignUnusedIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
+        freeIndex(index); // zero check is performed inside
+
+        if(0 == unusedIndicesPos) {
+          generateNewIndices();
+          generatedNewIndex = true;
+        } else {
+          generatedNewIndex = false;
+        }
+
+        unusedIndicesPos -= 1;
+        index = unusedIndices[unusedIndicesPos];
+      }
+
+      CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
+        CODI_UNUSED(rhs);
+        assignIndex(lhs);
+      }
+
+      CODI_INLINE void freeIndex(Index& index) {
+        if(valid && 0 != index) { // do not free the zero index
+
+          if(usedIndicesPos == usedIndices.size()) {
+            increaseIndicesSize(usedIndices);
+          }
+
+          usedIndices[usedIndicesPos] = index;
+          usedIndicesPos += 1;
+
+          index = 0;
+        }
+      }
+
+      CODI_INLINE Index getLargestAssignedIndex() const {
+        return globalMaximumIndex;
+      }
+
+      CODI_INLINE void reset() {
+        size_t totalSize = usedIndicesPos + unusedIndicesPos;
+        if(totalSize > unusedIndices.size()) {
+          increaseIndicesSizeTo(unusedIndices, totalSize);
+        }
+
+        for(size_t pos = 0; pos < usedIndicesPos; ++pos) {
+          unusedIndices[unusedIndicesPos + pos] = usedIndices[pos];
+        }
+        unusedIndicesPos = totalSize;
+        usedIndicesPos = 0;
+
+        if(Config::SortIndicesOnReset) {
+          if(totalSize == unusedIndices.size()) {
+            std::sort(unusedIndices.begin(), unusedIndices.end());
+          } else {
+            std::sort(&unusedIndices[0], &unusedIndices[unusedIndicesPos]);
+          }
+        }
+      }
+
+    private:
+
+      CODI_NO_INLINE void generateNewIndices() {
+        // method is only called when unused indices are empty
+        // initially it holds a number of unused indices which is
+        // the same amount as we now generate, therefore we do not
+        // check for size
+
+        codiAssert(unusedIndices.size() >= indexSizeIncrement);
+
+        for(size_t pos = 0; pos < indexSizeIncrement; ++pos) {
+          unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + Index(pos);
+        }
+
+        unusedIndicesPos = indexSizeIncrement;
+        globalMaximumIndex += indexSizeIncrement;
+      }
+
+      CODI_NO_INLINE void increaseIndicesSize(std::vector<Index>& v) {
+        v.resize(v.size() + indexSizeIncrement);
+      }
+
+      CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
+        codiAssert(v.size() < minimalSize);
+
+        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1; // +1 rounds always up
+        v.resize(v.size() + increaseMul * indexSizeIncrement);
+      }
+  };
+}
