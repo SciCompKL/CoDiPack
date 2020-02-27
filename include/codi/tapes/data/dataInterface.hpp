@@ -1,0 +1,73 @@
+#pragma once
+
+#include <vector>
+
+#include "../../aux/macros.h"
+#include "../../config.h"
+#include "chunk.hpp"
+
+/** \copydoc codi::Namespace */
+namespace codi {
+
+
+  template<typename _NestedVector = void>
+  struct DataInterface {
+
+      using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
+
+      using Position = ANY;
+
+      /*******************************************************************************
+       * Section: Misc functions
+       *
+       * Description: TODO
+       *
+       */
+
+      template<typename TargetPosition>
+      CODI_INLINE TargetPosition extractPosition(typename Position const& pos) const;
+
+      CODI_INLINE size_t getDataSize() const;
+      CODI_INLINE Position getPosition() const;
+      CODI_INLINE Position getZeroPosition() const;
+
+      template<typename ... Data>
+      CODI_INLINE void pushData(Data const& ... data);
+      CODI_INLINE void reserveItems(size_t const& items);
+      void resize(size_t const& totalSize);
+
+      void reset();
+      void resetHard();
+      void resetTo(Position const& pos);
+
+      void setNested(NestedVector* v);
+
+      void swap(DataInterface& other);
+
+      /*******************************************************************************
+       * Section: Iterator functions
+       *
+       * Description: TODO
+       *
+       */
+
+      template<typename Function, typename ... Args>
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end,Function const& function,
+                                       Args&&... args);
+
+      template<typename Function, typename ... Args>
+      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,Function const& function,
+                                       Args&&... args);
+
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args);
+
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject& function,
+                                      Args&&... args);
+
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject& function,
+                                      Args&&... args);
+  };
+}
