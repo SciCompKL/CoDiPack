@@ -18,12 +18,15 @@ namespace codi {
       static bool const AssignNeedsStatement = UNDEFINED_VALUE;
       static bool const IsLinear = UNDEFINED_VALUE;
 
+      static Index constexpr UnusedIndex = 0;
+      static Index constexpr InvalidIndex = -1;
+
       void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value);
       void assignUnusedIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value);
       void copyIndex(Index& lhs, Index const& rhs);
       void freeIndex(Index& index);
 
-      Index getLargestAssignedIndexIndex() const;
+      Index getLargestAssignedIndex() const;
 
       void reset();
   };

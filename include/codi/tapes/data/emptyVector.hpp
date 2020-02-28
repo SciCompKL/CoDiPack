@@ -11,7 +11,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  struct EmptyVector : public DataInterface {
+  struct EmptyVector : public DataInterface<> {
 
       using NestedVector = void;
 
@@ -24,7 +24,7 @@ namespace codi {
        *
        */
 
-      CODI_INLINE Position extractPosition(typename Position const& pos) const {
+      CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }
 

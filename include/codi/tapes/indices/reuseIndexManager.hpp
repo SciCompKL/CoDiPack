@@ -14,6 +14,7 @@ namespace codi {
     public:
 
       using Index = DECLARE_DEFAULT(_Index, int);
+      using Base = IndexManagerInterface<Index>;
 
       static bool const AssignNeedsStatement = true;
       static bool const IsLinear = false;
@@ -29,6 +30,8 @@ namespace codi {
       size_t unusedIndicesPos;
 
       size_t indexSizeIncrement;
+
+    protected:
 
       bool valid;
 
@@ -54,7 +57,7 @@ namespace codi {
       CODI_INLINE void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
         generatedNewIndex = false;
 
-        if (0 == index) {
+        if (Base::UnusedIndex == index) {
           if (0 == usedIndicesPos) {
             if (0 == unusedIndicesPos) {
               generateNewIndices();
@@ -85,12 +88,15 @@ namespace codi {
       }
 
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
-        CODI_UNUSED(rhs);
-        assignIndex(lhs);
+        if(Base::UnusedIndex == rhs) {
+          freeIndex(lhs);
+        } else {
+          assignIndex(lhs);
+        }
       }
 
       CODI_INLINE void freeIndex(Index& index) {
-        if(valid && 0 != index) { // do not free the zero index
+        if(valid && Base::UnusedIndex != index) { // do not free the zero index
 
           if(usedIndicesPos == usedIndices.size()) {
             increaseIndicesSize(usedIndices);
@@ -99,7 +105,7 @@ namespace codi {
           usedIndices[usedIndicesPos] = index;
           usedIndicesPos += 1;
 
-          index = 0;
+          index = Base::UnusedIndex;
         }
       }
 

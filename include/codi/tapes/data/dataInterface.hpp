@@ -25,7 +25,7 @@ namespace codi {
        */
 
       template<typename TargetPosition>
-      CODI_INLINE TargetPosition extractPosition(typename Position const& pos) const;
+      CODI_INLINE TargetPosition extractPosition(Position const& pos) const;
 
       CODI_INLINE size_t getDataSize() const;
       CODI_INLINE Position getPosition() const;

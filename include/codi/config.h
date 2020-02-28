@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdint.h>
+#include <stddef.h>
+
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -12,8 +15,36 @@ namespace codi {
    */
   struct Namespace {};
 
-  struct Config {
-    public:
+  namespace Config {
+
+      /*******************************************************************************
+       * Section: Type and compile time value declarations
+       *
+       * Description: TODO
+       *
+       */
+
+      #ifndef CODI_ChunkSize
+        #define CODI_ChunkSize 2097152
+      #endif
+      static size_t ChunkSize = CODI_ChunkSize;
+      #undef CODI_ChunkSize
+
+      using ArgumentSize = uint8_t;
+      size_t constexpr MaxArgumentSize = 255;
+
+      #ifndef CODI_SmallChunkSize
+        #define CODI_SmallChunkSize 32768
+      #endif
+      size_t constexpr SmallChunkSize = CODI_SmallChunkSize;
+      #undef CODI_SmallChunkSize
+
+      /*******************************************************************************
+       * Section: Compile time flags
+       *
+       * Description: TODO
+       *
+       */
 
       #ifndef CODI_AssignOptimization
         #define CODI_AssignOptimization true
@@ -24,14 +55,26 @@ namespace codi {
       #ifndef CODI_CheckExpressionArguments
         #define CODI_CheckExpressionArguments false
       #endif
-      static bool constexpr CheckExpressionArguments = CODI_CheckExpressionArguments;
+      bool constexpr CheckExpressionArguments = CODI_CheckExpressionArguments;
       #undef CODI_CheckExpressionArguments
+
+      #ifndef CODI_CheckJacobiIsZero
+        #define CODI_CheckJacobiIsZero true
+      #endif
+      const bool CheckJacobiIsZero = CODI_CheckJacobiIsZero;
+      #undef CODI_CheckJacobiIsZero
+
+      #ifndef CODI_CheckZeroIndex
+        #define CODI_CheckZeroIndex true
+      #endif
+      const bool CheckZeroIndex = CODI_CheckZeroIndex;
+      #undef CODI_CheckZeroIndex
 
       #ifndef CODI_IgnoreInvalidJacobies
         #define CODI_IgnoreInvalidJacobies false
       #endif
-      static bool constexpr IgnoreInvalidJacobies = CODI_IgnoreInvalidJacobies;
-      #undef CODI_OptIgnoreInvalidJacobies
+      bool constexpr IgnoreInvalidJacobies = CODI_IgnoreInvalidJacobies;
+      #undef CODI_IgnoreInvalidJacobies
 
       #ifndef CODI_OverflowCheck
         #define CODI_OverflowCheck true
@@ -39,11 +82,11 @@ namespace codi {
       const bool OverflowCheck = CODI_OverflowCheck;
       #undef CODI_OverflowCheck
 
-      #ifndef CODI_SmallChunkSize
-        #define CODI_SmallChunkSize 32768
+      #ifndef CODI_SkipZeroAdjointEvaluation
+        #define CODI_SkipZeroAdjointEvaluation true
       #endif
-      static size_t SmallChunkSize = CODI_SmallChunkSize;
-      #undef CODI_SmallChunkSize
+      const bool SkipZeroAdjointEvaluation = CODI_SkipZeroAdjointEvaluation;
+      #undef CODI_SkipZeroAdjointEvaluation
 
       #ifndef CODI_SortIndicesOnReset
         #define CODI_SortIndicesOnReset true
@@ -51,10 +94,17 @@ namespace codi {
       const bool SortIndicesOnReset = CODI_SortIndicesOnReset;
       #undef CODI_SortIndicesOnReset
 
-      #ifndef CODI_UseAvoidedInlines
-        #define CODI_UseAvoidedInlines 1
+      /*******************************************************************************
+       * Section: Macro definitions
+       *
+       * Description: TODO
+       *
+       */
+
+      #ifndef CODI_AvoidedInlines
+        #define CODI_AvoidedInlines 1
       #endif
-      #if CODI_UseAvoidedInlines
+      #if CODI_AvoidedInlines
         #if defined(_MSC_VER)
           #define CODI_NO_INLINE __declspec(noinline)
         #else
@@ -63,12 +113,26 @@ namespace codi {
       #else
         #define CODI_NO_INLINE /* no avoiding of inline defined */
       #endif
-      #undef CODI_UseAvoidedInlines
+      bool constexpr AvoidedInlines = CODI_AvoidedInlines;
+      #undef CODI_AvoidedInlines
 
-      #ifndef CODI_UseForcedInlines
-        #define CODI_UseForcedInlines 0
+      #ifndef CODI_EnableAssert
+        #define CODI_EnableAssert false
       #endif
-      #if CODI_UseForcedInlines
+      #ifndef codiAssert // Can also be defined by the user before including codi.hpp
+        #if CODI_EnableAssert
+          #define codiAssert(x) ::codi::checkAndOutputAssert(x, CODI_TO_STRING(x), __PRETTY_FUNCTION__, __FILE__, __LINE__)
+        #else
+          #define codiAssert(x) /* disabled by CODI_EnableAssert */
+        #endif
+      #endif
+      bool constexpr EnableAssert = CODI_EnableAssert;
+      #undef CODI_EnableAssert
+
+      #ifndef CODI_ForcedInlines
+        #define CODI_ForcedInlines 0
+      #endif
+      #if CODI_ForcedInlines
         #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
           #define CODI_INLINE __forceinline
         #elif defined(__GNUC__)
@@ -80,18 +144,7 @@ namespace codi {
       #else
         #define CODI_INLINE inline
       #endif
-      static bool constexpr IsForcedInlines = CODI_UseForcedInlines;
-      #undef CODI_UseForcedInlines
-  };
-
-  #ifndef CODI_EnableAssert
-    #define CODI_EnableAssert false
-  #endif
-  #ifndef codiAssert // Can also be defined by the user before including codi.hpp
-    #if CODI_EnableAssert
-      #define codiAssert(x) codi::checkAndOutputAssert(x, CODI_TO_STRING(x), __PRETTY_FUNCTION__, __FILE__, __LINE__)
-    #else
-      #define codiAssert(x) /* disabled by CODI_EnableAssert */
-    #endif
-  #endif
+      bool constexpr ForcedInlines = CODI_ForcedInlines;
+      #undef CODI_ForcedInlines
+  }
 }

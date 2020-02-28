@@ -123,5 +123,10 @@ namespace codi {
       static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
         return RealTraits<Real>::getPassiveValue(v.getValue());
       }
+
+      static CODI_INLINE bool isTotalZero(Type const& v) {
+        // TODO: Specialize for forward and reverse tapes.
+        return Real() == v.getValue() && Type::Gradient() == v.getGradient();
+      }
   };
 }

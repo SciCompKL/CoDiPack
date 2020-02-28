@@ -3,7 +3,7 @@
 #include "../config.h"
 #include "../aux/macros.h"
 #include "../tapes/interfaces/internalExpressionTapeInterface.hpp"
-#include "lhsExpresssionInterface.hpp"
+#include "lhsExpressionInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

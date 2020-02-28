@@ -117,7 +117,7 @@ namespace codi {
         usedSize += 1;
       }
 
-      void swap(Chunk4<Data1>& other) {
+      void swap(Chunk1<Data1>& other) {
         this->swapBase(other);
 
         std::swap(data1, other.data1);
@@ -179,7 +179,7 @@ namespace codi {
         usedSize += 1;
       }
 
-      void swap(Chunk4<Data1, Data2>& other) {
+      void swap(Chunk2<Data1, Data2>& other) {
         this->swapBase(other);
 
         std::swap(data1, other.data1);
@@ -255,7 +255,7 @@ namespace codi {
         usedSize += 1;
       }
 
-      void swap(Chunk4<Data1, Data2, Data3>& other) {
+      void swap(Chunk3<Data1, Data2, Data3>& other) {
         this->swapBase(other);
 
         std::swap(data1, other.data1);

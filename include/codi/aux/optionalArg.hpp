@@ -9,4 +9,7 @@ namespace codi {
   struct OptionalArg {
       static T value;
   };
+
+  template<typename T>
+  T OptionalArg<T>::value = {};
 }

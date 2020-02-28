@@ -19,6 +19,10 @@ namespace codi {
       static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
         return v;
       }
+
+      static CODI_INLINE bool isTotalZero(Type const& v) {
+        return Type() == v;
+      }
   };
 
   template<typename Type>
@@ -27,5 +31,10 @@ namespace codi {
   template<typename Type>
   CODI_INLINE PassiveRealType<Type> const& getPassiveValue(Type const& v) {
     return RealTraits<Type>::getPassiveValue(v);
+  }
+
+  template<typename Type>
+  CODI_INLINE bool isTotalZero(Type const& v) {
+    return RealTraits<Type>::isTotalZero(v);
   }
 }

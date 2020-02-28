@@ -6,7 +6,7 @@
 #include "../traits/realTraits.hpp"
 #include "assignmentOperators.hpp"
 #include "incerementOperators.hpp"
-#include "lhsExpresssionInterface.hpp"
+#include "lhsExpressionInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

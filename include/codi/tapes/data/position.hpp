@@ -105,40 +105,41 @@ namespace codi {
 
       size_t chunk;
 
-    ChunkPosition() :
-      Base(),
-      chunk(0) {}
+      ChunkPosition() :
+        Base(),
+        chunk(0) {}
 
-    ChunkPosition(size_t const& chunk, size_t const& data, NestedPosition const& inner) :
-      Base(data, inner),
-      chunk(chunk) {}
+      ChunkPosition(size_t const& chunk, size_t const& data, NestedPosition const& inner) :
+        Base(data, inner),
+        chunk(chunk) {}
 
-    bool operator != (ChunkPosition const& o) const {
-      return chunk != o.chunk || Base::operator !=(static_cast<Base const&>(o));
-    }
+      bool operator != (ChunkPosition const& o) const {
+        return chunk != o.chunk || Base::operator !=(static_cast<Base const&>(o));
+      }
 
-    bool operator == (ChunkPosition const& o) const {
-      return chunk == o.chunk && Base::operator ==(static_cast<Base const&>(o));
-    }
+      bool operator == (ChunkPosition const& o) const {
+        return chunk == o.chunk && Base::operator ==(static_cast<Base const&>(o));
+      }
 
-    bool operator < (ChunkPosition const& o) const {
-      return chunk < o.chunk || (chunk == o.chunk && Base::operator <(static_cast<Base const&>(o)));
-    }
+      bool operator < (ChunkPosition const& o) const {
+        return chunk < o.chunk || (chunk == o.chunk && Base::operator <(static_cast<Base const&>(o)));
+      }
 
-    bool operator <= (ChunkPosition const& o) const {
-      return chunk < o.chunk || (chunk == o.chunk && Base::operator <=(static_cast<Base const&>(o)));
-    }
+      bool operator <= (ChunkPosition const& o) const {
+        return chunk < o.chunk || (chunk == o.chunk && Base::operator <=(static_cast<Base const&>(o)));
+      }
 
-    bool operator > (ChunkPosition const& o) const {
-      return o < *this;
-    }
+      bool operator > (ChunkPosition const& o) const {
+        return o < *this;
+      }
 
-    bool operator >= (ChunkPosition const& o) const {
-      return o <= *this;
-    }
+      bool operator >= (ChunkPosition const& o) const {
+        return o <= *this;
+      }
 
-    friend std::ostream& operator<<(std::ostream& stream, ChunkPosition const& pos) {
-      stream << "[" << pos.chunk << ", " << pos.data << ", " << pos.inner << "]";
-      return stream;
-    }
-};
+      friend std::ostream& operator<<(std::ostream& stream, ChunkPosition const& pos) {
+        stream << "[" << pos.chunk << ", " << pos.data << ", " << pos.inner << "]";
+        return stream;
+      }
+  };
+}

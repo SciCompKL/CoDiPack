@@ -10,8 +10,12 @@ namespace codi {
 
   #define ENABLE_CHECK(option, condition) if(!(option) || (condition))
 
+  #define CODI_TO_STRING2(expression) #expression
+
+  #define CODI_TO_STRING(expression) CODI_TO_STRING2(expression)
+
   /*******************************************************************************
-   * Section: Default type declarations
+   * Section: Default template type declarations
    *
    * Description: TODO
    *
@@ -32,7 +36,7 @@ namespace codi {
   /*
    * Used in default declarations of expression templates.
    */
-  #define ANY void
+  #define ANY int
 
   /*
    * Used in interface declarations for types that have to be defined in the specializations.

@@ -4,7 +4,7 @@
 
 #include "../aux/macros.h"
 #include "../config.h"
-#include "../expressions/lhsExpresssionInterface.hpp"
+#include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "interfaces/internalExpressionTapeInterface.hpp"

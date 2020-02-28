@@ -5,6 +5,7 @@
 #include "../../aux/macros.h"
 #include "../../config.h"
 #include "chunk.hpp"
+#include "emptyVector.hpp"
 #include "dataInterface.hpp"
 #include "pointerStore.hpp"
 #include "position.hpp"
@@ -12,21 +13,14 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  struct EmptyChunkVector;
-  struct DataInterface {
-
-      using Position = ANY;
-
-  };
-
-  template<typename _Chunk, typename _NestedVector = EmptyChunkVector>
-  struct ChunkVector : public DataInterface<NestedVector> {
+  template<typename _Chunk, typename _NestedVector = EmptyVector>
+  struct ChunkVector : public DataInterface<_NestedVector> {
     public:
 
       using Chunk = DECLARE_DEFAULT(_Chunk, ChunkBase);
       using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
 
-      using NestedPosition = NestedVector::Position;
+      using NestedPosition = typename NestedVector::Position;
 
       using Position = ChunkPosition<NestedPosition>;
 
@@ -77,11 +71,11 @@ namespace codi {
        */
 
       template<typename TargetPosition>
-      CODI_INLINE TargetPosition extractPosition(typename Position const& pos) const {
+      CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
         return nested->template extractPosition<TargetPosition>(pos.inner);
       }
 
-      CODI_INLINE Position extractPosition(typename Position const& pos) const {
+      CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }
 
@@ -196,7 +190,7 @@ namespace codi {
       template<typename Function, typename ... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end,Function const& function,
                                        Args&&... args) {
-        PointerStore<ChunkType> pHandle;
+        PointerStore<Chunk> pHandle;
 
         size_t dataPos = start.data;
         NestedPosition curInnerPos = start.inner;
@@ -233,7 +227,7 @@ namespace codi {
       template<typename Function, typename ... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end,Function const& function,
                                        Args&&... args) {
-        PointerStore<ChunkType> pHandle;
+        PointerStore<Chunk> pHandle;
 
         size_t dataPos = start.data;
         NestedPosition curInnerPos = start.inner;
@@ -321,7 +315,7 @@ namespace codi {
         codiAssert(start <= end);
         codiAssert(chunkPos < chunks.size());
 
-        PointerStore<ChunkType> pHandle;
+        PointerStore<Chunk> pHandle;
 
         for(size_t dataPos = start; dataPos < end; dataPos += 1) {
           pHandle.setPointers(dataPos, chunks[chunkPos]);
@@ -335,7 +329,7 @@ namespace codi {
         codiAssert(start >= end);
         codiAssert(chunkPos < chunks.size());
 
-        PointerStore<ChunkType> pHandle;
+        PointerStore<Chunk> pHandle;
 
         // we do not initialize dataPos with start - 1 since the type can be unsigned
         for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
