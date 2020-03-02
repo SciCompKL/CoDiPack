@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include "../aux/macros.h"
+#include "../aux/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
@@ -18,32 +19,59 @@
 namespace codi {
 
   template<typename _Real, typename _Gradient, typename _IndexManager>
-  struct JacobianTape : ReverseTapeInterface<_Real, _Gradient, typename _IndexManager::Index> {
+  struct JacobianTapeTypes {
     public:
-
 
       using Real = DECLARE_DEFAULT(_Real, double);
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
       using IndexManager = DECLARE_DEFAULT(_IndexManager, TEMPLATE(IndexManagerInterface<int>));
 
       using Identifier = typename IndexManager::Index;
-      using PassiveReal = PassiveRealType<Real>;
 
-      using StatementChunk = Chunk2<Identifier, Config::ArgumentSize>;
-      using StatementVector = ChunkVector<StatementChunk>;
+      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;
+      constexpr static bool IsStaticIndexHandler = !IsLinearIndexHandler;
+
+      using StatementChunk = typename std::conditional<
+                                 IsLinearIndexHandler,
+                                 Chunk1<Config::ArgumentSize>,
+                                 Chunk2<Identifier, Config::ArgumentSize>
+                               >::type;
+      using StatementVector = ChunkVector<StatementChunk, IndexManager>;
 
       using JacobianChunk = Chunk2<Real, Identifier>;
       using JacobianVector = ChunkVector<JacobianChunk, StatementVector>;
 
+  };
+
+  template<typename _TapeTypes, typename _Impl>
+  struct JacobianBaseTape :
+      public ReverseTapeInterface<
+          typename _TapeTypes::Real,
+          typename _TapeTypes::Gradient,
+          typename _TapeTypes::Identifier>
+  {
+    public:
+
+      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>));
+      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(ReverseTapeInterface<double, double, int>));
+
+      using Real = typename TapeTypes::Real;
+      using Gradient = typename TapeTypes::Gradient;
+      using IndexManager = typename TapeTypes::IndexManager;
+      using Identifier = typename TapeTypes::Identifier;
+
+      using StatementVector = typename TapeTypes::StatementVector;
+      using JacobianVector = typename TapeTypes::JacobianVector;
+
+      using PassiveReal = PassiveRealType<Real>;
+
       static bool constexpr AllowJacobianOptimization = true;
 
-    private:
+    protected:
 
-      EmptyVector emptyVector;
+      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
       StatementVector statementVector;
       JacobianVector jacobianVector;
-
-      static IndexManager indexManager;
 
       bool active;
 
@@ -51,14 +79,42 @@ namespace codi {
 
     public:
 
-      JacobianTape() :
-        emptyVector(),
+      CODI_INLINE Impl const& cast() const {
+        return static_cast<Impl const&>(*this);
+      }
+
+      CODI_INLINE Impl& cast() {
+        return static_cast<Impl&>(*this);
+      }
+
+      /*******************************************************************************
+       * Section: Methods expected in the child class.
+       *
+       * Description: TODO
+       *
+       */
+
+    public:
+      template<typename Lhs>
+      void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value);
+
+    protected:
+
+      void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
+
+      template<typename ... Args>
+      static void internalEvaluateRevere(Args&& ... args);
+
+    public:
+
+      JacobianBaseTape() :
+        indexManager(0),
         statementVector(Config::SmallChunkSize),
         jacobianVector(Config::ChunkSize),
         active(false),
         adjoints(1)
       {
-        statementVector.setNested(&emptyVector);
+        statementVector.setNested(&indexManager.get());
         jacobianVector.setNested(&statementVector);
       }
 
@@ -94,13 +150,13 @@ namespace codi {
       void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        indexManager.freeIndex(identifier);
+        indexManager.get().freeIndex(identifier);
       }
 
       struct PushJacobianLogic : public TraversalLogic<PushJacobianLogic> {
         public:
           template<typename Node>
-          CODI_INLINE enableIfLhsExpression<Real, Gradient, JacobianTape, Node> term(Node const& node, Real jacobian, JacobianVector& jacobianVector, size_t& numberOfArguments) {
+          CODI_INLINE enableIfLhsExpression<Real, Gradient, Impl, Node> term(Node const& node, Real jacobian, JacobianVector& jacobianVector, size_t& numberOfArguments) {
             using std::isfinite;
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
               ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
@@ -125,7 +181,7 @@ namespace codi {
 
       struct MaxNumberOfArguments : public CompileTimeTraversalLogic<size_t, MaxNumberOfArguments> {
         public:
-          template<typename Node, typename = enableIfLhsExpression<Real, Gradient, JacobianTape, Node>>
+          template<typename Node, typename = enableIfLhsExpression<Real, Gradient, Impl, Node>>
           CODI_INLINE static constexpr size_t term() {
             return 1;
           }
@@ -133,7 +189,7 @@ namespace codi {
       };
 
       template<typename Lhs, typename Rhs>
-      void store(LhsExpressionInterface<Real, Gradient, JacobianTape, Lhs>& lhs,
+      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                  ExpressionInterface<Real, Rhs> const& rhs) {
 
         if(active) {
@@ -147,84 +203,70 @@ namespace codi {
           pushJacobianLogic.eval(rhs.cast(), 1.0, jacobianVector, numberOfArguments);
 
           if(0 != numberOfArguments) {
-            indexManager.assignIndex(lhs.cast().getIdentifier());
-            statementVector.pushData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
+            indexManager.get().assignIndex(lhs.cast().getIdentifier());
+            cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
           } else {
-            indexManager.freeIndex(lhs.cast().getIdentifier());
+            indexManager.get().freeIndex(lhs.cast().getIdentifier());
           }
         } else {
-          indexManager.freeIndex(lhs.cast().getIdentifier());
+          indexManager.get().freeIndex(lhs.cast().getIdentifier());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
       }
 
       template<typename Lhs, typename Rhs>
-      void store(LhsExpressionInterface<Real, Gradient, JacobianTape, Lhs>& lhs,
-                 LhsExpressionInterface<Real, Gradient, JacobianTape, Rhs> const& rhs) {
+      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
+                 LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
 
         if(active) {
           if(IndexManager::AssignNeedsStatement || !Config::AssignOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
           } else {
-            indexManager.copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
+            indexManager.get().copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
           }
         } else {
-          indexManager.freeIndex(lhs.cast().getIdentifier());
+          indexManager.get().freeIndex(lhs.cast().getIdentifier());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
       }
 
       template<typename Lhs>
-      void store(LhsExpressionInterface<Real, Gradient, JacobianTape, Lhs>& lhs, PassiveReal const& rhs) {
-        indexManager.freeIndex(lhs.cast().getIdentifier());
+      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, PassiveReal const& rhs) {
+        indexManager.get().freeIndex(lhs.cast().getIdentifier());
 
         lhs.cast().value() = rhs;
       }
 
-      void evaluate() {
-        checkAdjointSize(indexManager.getLargestAssignedIndex());
+      static void incrementAdjoints(
+          Gradient* adjointVector,
+          Gradient const& lhsAdjoint,
+          Config::ArgumentSize const& numberOfArguments,
+          size_t& curJacobianPos,
+          Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers) {
 
-        auto evalReverse = [](
-              /* data from call */
-              Gradient* adjointVector,
-              /* data from jacobian vector */
-              size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
-              /* data from statement vector */
-              size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers, Config::ArgumentSize const* const numberOfJacobians
-            ) {
+        curJacobianPos -= numberOfArguments;
 
-          CODI_UNUSED(endJacobianPos);
-
-          while(curStmtPos > endStmtPos) {
-            curStmtPos -= 1;
-
-            Gradient const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
-            adjointVector[lhsIdentifiers[curStmtPos]] = Gradient();
-
-            curJacobianPos -= numberOfJacobians[curStmtPos];
-
-            ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !isTotalZero(lhsAdjoint)){
-              for(Config::ArgumentSize argPos = 0; argPos < numberOfJacobians[curStmtPos]; argPos += 1) {
-                size_t curOffset = curJacobianPos + argPos;
-                adjointVector[rhsIdentifiers[curOffset]] += rhsJacobians[curOffset] * lhsAdjoint;
-              }
-            }
+        ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !isTotalZero(lhsAdjoint)){
+          for(Config::ArgumentSize argPos = 0; argPos < numberOfArguments; argPos += 1) {
+            size_t curOffset = curJacobianPos + argPos;
+            adjointVector[rhsIdentifiers[curOffset]] += rhsJacobians[curOffset] * lhsAdjoint;
           }
-        };
+        }
+      }
+
+      void evaluate() {
+        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
         jacobianVector.evaluateReverse(jacobianVector.getPosition(),
                                        jacobianVector.getZeroPosition(),
-                                       evalReverse,
+                                       Impl::internalEvaluateRevere,
                                        adjoints.data());
       }
 
-      template<typename Lhs> void registerInput(LhsExpressionInterface<Real, Gradient, JacobianTape, Lhs>& value) {
-        indexManager.assignUnusedIndex(value.cast().getIdentifier());
-      }
-
-      template<typename Lhs> void registerOutput(LhsExpressionInterface<Real, Gradient, JacobianTape, Lhs>& value) {
+      template<typename Lhs> void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
       }
 
@@ -268,11 +310,8 @@ namespace codi {
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
-        adjoints.resize(indexManager.getLargestAssignedIndex() + 1);
+        adjoints.resize(indexManager.get().getLargestAssignedIndex() + 1);
       }
   };
-
-  template<typename Real, typename Gradient, typename IndexManager>
-  IndexManager JacobianTape<Real, Gradient, IndexManager>::indexManager(0);
 }
 

@@ -1,16 +1,18 @@
 #pragma once
 
+#include <algorithm>
 #include <vector>
 
 #include "../../aux/macros.h"
 #include "../../config.h"
+#include "../data/emptyVector.hpp"
 #include "indexManagerInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   template<typename _Index>
-  struct ReuseIndexManager : public IndexManagerInterface<_Index> {
+  struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyVector {
     public:
 
       using Index = DECLARE_DEFAULT(_Index, int);
