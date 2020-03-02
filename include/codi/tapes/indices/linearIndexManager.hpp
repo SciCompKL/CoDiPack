@@ -11,7 +11,7 @@
 namespace codi {
 
   template<typename _Index>
-  struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface {
+  struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
     public:
 
       using Index = DECLARE_DEFAULT(_Index, int);
@@ -90,7 +90,7 @@ namespace codi {
       CODI_INLINE void reserveItems(size_t const& items) { CODI_UNUSED(items); }
       void resize(size_t const& totalSize) { CODI_UNUSED(totalSize); }
 
-      CODI_INLINE void reset(Position const& pos) {
+      CODI_INLINE void resetTo(Position const& pos) {
         codiAssert(pos >= zeroState);
 
         count = pos;
@@ -115,22 +115,19 @@ namespace codi {
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, Function const& function,
                                        Args&&... args) {
 
-        function(start, end, std::forward<Args>(args)...);
+        function(std::forward<Args>(args)..., start, end);
       }
 
       template<typename Function, typename ... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, Function const& function,
                                        Args&&... args) {
 
-        function(start, end, std::forward<Args>(args)...);
+        function(std::forward<Args>(args)..., start, end);
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args &... args) {
-        CODI_UNUSED(function);
-        CODI_UNUSED(recursive);
-        CODI_UNUSED_VAR(args...);
-
+      CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
+        CODI_UNUSED(function, recursive, args...);
         // Do nothing
       }
 

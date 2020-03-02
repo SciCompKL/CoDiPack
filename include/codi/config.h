@@ -31,7 +31,9 @@ namespace codi {
       #undef CODI_ChunkSize
 
       using ArgumentSize = uint8_t;
-      size_t constexpr MaxArgumentSize = 255;
+      size_t constexpr MaxArgumentSize = 254;
+
+      size_t constexpr StatementInputTag = 255;
 
       #ifndef CODI_SmallChunkSize
         #define CODI_SmallChunkSize 32768

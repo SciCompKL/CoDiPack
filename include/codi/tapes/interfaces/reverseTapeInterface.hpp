@@ -23,6 +23,11 @@ namespace codi {
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
       using Identifier = DECLARE_DEFAULT(_Identifier, int);
 
+      /*******************************************************************************
+       * Section: Start of interface definition
+       *
+       */
+
       void evaluate();
 
       template<typename Lhs> void registerInput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);

@@ -32,7 +32,7 @@ namespace codi {
       using PassiveReal = PassiveRealType<Real>;
 
       using StatementChunk = Chunk1<Config::ArgumentSize>;
-      using StatementVector = ChunkVector<StatementChunk>;
+      using StatementVector = ChunkVector<StatementChunk, IndexManager>;
 
       using JacobianChunk = Chunk2<Real, Identifier>;
       using JacobianVector = ChunkVector<JacobianChunk, StatementVector>;
@@ -41,10 +41,10 @@ namespace codi {
 
     private:
 
+      IndexManager indexManager;
+
       StatementVector statementVector;
       JacobianVector jacobianVector;
-
-      static IndexManager indexManager;
 
       bool active;
 
@@ -53,6 +53,7 @@ namespace codi {
     public:
 
       JacobianTape() :
+        indexManager(0),
         statementVector(Config::SmallChunkSize),
         jacobianVector(Config::ChunkSize),
         active(false),
@@ -192,25 +193,37 @@ namespace codi {
               /* data from jacobian vector */
               size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
               /* data from statement vector */
-              size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians
+              size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
+              /* data from index handler */
+              size_t const& startAdjointPos, size_t const& endAdjointPos
             ) {
 
-          CODI_UNUSED(endJacobianPos);
+          CODI_UNUSED(endJacobianPos, endStmtPos);
 
-          while(curStmtPos > endStmtPos) {
+          size_t curAdjointPos = startAdjointPos;
+
+          while(curAdjointPos > endAdjointPos) {
+
             curStmtPos -= 1;
+            Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-            Gradient const lhsAdjoint = adjointVector[curStmtPos + 1];
-            adjointVector[curStmtPos + 1] = Gradient();
+            Gradient const lhsAdjoint = adjointVector[curAdjointPos]; // Adjoint positions are shifted since we do not use the zero index
 
-            curJacobianPos -= numberOfJacobians[curStmtPos];
+            if(Config::StatementInputTag != argsSize) {
+              // No input value, perform regular statement evaluation
+              adjointVector[curAdjointPos] = Gradient();
 
-            ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !isTotalZero(lhsAdjoint)){
-              for(Config::ArgumentSize argPos = 0; argPos < numberOfJacobians[curStmtPos]; argPos += 1) {
-                size_t curOffset = curJacobianPos + argPos;
-                adjointVector[rhsIdentifiers[curOffset]] += rhsJacobians[curOffset] * lhsAdjoint;
+              curJacobianPos -= argsSize;
+
+              ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !isTotalZero(lhsAdjoint)){
+                for(Config::ArgumentSize argPos = 0; argPos < argsSize; argPos += 1) {
+                  size_t curOffset = curJacobianPos + argPos;
+                  adjointVector[rhsIdentifiers[curOffset]] += rhsJacobians[curOffset] * lhsAdjoint;
+                }
               }
             }
+
+            curAdjointPos -= 1;
           }
         };
 
@@ -222,6 +235,8 @@ namespace codi {
 
       template<typename Lhs> void registerInput(LhsExpressionInterface<Real, Gradient, JacobianTape, Lhs>& value) {
         indexManager.assignUnusedIndex(value.cast().getIdentifier());
+        statementVector.reserveItems(1);
+        statementVector.pushData(Config::StatementInputTag);
       }
 
       template<typename Lhs> void registerOutput(LhsExpressionInterface<Real, Gradient, JacobianTape, Lhs>& value) {
@@ -271,8 +286,5 @@ namespace codi {
         adjoints.resize(indexManager.getLargestAssignedIndex() + 1);
       }
   };
-
-  template<typename Real, typename Gradient, typename IndexManager>
-  IndexManager JacobianTape<Real, Gradient, IndexManager>::indexManager(0);
 }
 
