@@ -6,6 +6,8 @@
 #include "codi/expressions/activeType.hpp"
 #include "codi/tapes/forwardEvaluation.hpp"
 #include "codi/tapes/jacobianTape.hpp"
+#include "codi/tapes/jacobianLinearTape.hpp"
+#include "codi/tapes/indices/linearIndexManager.hpp"
 #include "codi/tapes/indices/multiUseIndexManager.hpp"
 
 /** \copydoc codi::Namespace */
@@ -20,4 +22,9 @@ namespace codi {
   using RealReverseIndexGen = ActiveType<JacobianTape<Real, Gradient, IndexManager>>;
 
   using RealReverseIndex = RealReverseIndexGen<double, MultiUseIndexManager<int>, double>;
+
+  template<typename Real, typename Index, typename Gradient = Real>
+  using RealReverseGen = ActiveType<JacobianTape<Real, Gradient, LinearIndexManager<Index>>>;
+
+  using RealReverse = RealReverseGen<double, int, double>;
 }
