@@ -109,7 +109,7 @@ namespace codi {
 
       JacobianBaseTape() :
         indexManager(0),
-        statementVector(Config::SmallChunkSize),
+        statementVector(Config::ChunkSize),
         jacobianVector(Config::ChunkSize),
         active(false),
         adjoints(1)
@@ -296,6 +296,9 @@ namespace codi {
         }
 
         jacobianVector.reset();
+
+        // Requires extra reset since the default vector implementation forwards to resetTo
+        indexManager.get().reset();
       }
 
       template<typename Stream = std::ostream> void printStatistics(Stream& out = std::cout) const {
