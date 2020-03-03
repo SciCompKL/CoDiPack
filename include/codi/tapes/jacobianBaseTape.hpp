@@ -298,10 +298,44 @@ namespace codi {
         jacobianVector.reset();
       }
 
-      template<typename Stream = std::ostream> void printStatistics(Stream& out = std::cout) const { /*TODO: Implement */}
-      template<typename Stream = std::ostream> void printTableHeader(Stream& out = std::cout) const { /*TODO: Implement */}
-      template<typename Stream = std::ostream> void printTableRow(Stream& out = std::cout) const { /*TODO: Implement */}
-      TapeValues getTapeValues() const { return TapeValues(); /*TODO: Implement */}
+      template<typename Stream = std::ostream> void printStatistics(Stream& out = std::cout) const {
+        getTapeValues().formatDefault(out);
+      }
+
+      template<typename Stream = std::ostream> void printTableHeader(Stream& out = std::cout) const {
+        getTapeValues().formatHeader(out);
+      }
+
+      template<typename Stream = std::ostream> void printTableRow(Stream& out = std::cout) const {
+        getTapeValues().formatRow(out);
+      }
+
+      TapeValues getTapeValues() const {
+        std::string name;
+        if(TapeTypes::IsLinearIndexHandler) {
+          name = "CoDi Tape Statistics ( JacobiLinearTape )";
+        } else {
+          name = "CoDi Tape Statistics ( JacobiReuseTape )";
+        }
+        TapeValues values = TapeValues(name);
+
+        size_t nAdjoints      = indexManager.get().getLargestAssignedIndex();
+        double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient)) * TapeValues::BYTE_TO_MB;
+
+        values.addSection("Adjoint vector");
+        values.addUnsignedLongEntry("Number of adjoints", nAdjoints);
+        values.addDoubleEntry("Memory allocated", memoryAdjoints, true, true);
+
+        values.addSection("Index manager");
+        indexManager.get().addToTapeValues(values);
+
+        values.addSection("Statement entries");
+        statementVector.addToTapeValues(values);
+        values.addSection("Jacobian entries");
+        jacobianVector.addToTapeValues(values);
+
+        return values;
+      }
 
     private:
 

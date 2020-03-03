@@ -33,6 +33,15 @@ namespace codi {
         resizeUseVector();
       }
 
+      void addToTapeValues(TapeValues& values) const {
+
+        Base::addToTapeValues(values);
+
+        double memoryindexUseVector = (double)indexUse.size()*(double)(sizeof(Index)) * TapeValues::BYTE_TO_MB;
+
+        values.addDoubleEntry("Memory index use vector", memoryindexUseVector, true, true);
+      }
+
       CODI_INLINE void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
         generatedNewIndex = false;
 

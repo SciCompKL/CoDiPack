@@ -42,6 +42,10 @@ namespace codi {
        *
        */
 
+      void addToTapeValues(TapeValues& values) const {
+        values.addLongEntry("Max. live indices", getLargestAssignedIndex());
+      }
+
       CODI_INLINE void freeIndex(Index& index) const {
         index = 0;
       }

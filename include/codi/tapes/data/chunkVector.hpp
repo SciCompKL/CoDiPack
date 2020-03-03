@@ -70,6 +70,20 @@ namespace codi {
        *
        */
 
+      void addToTapeValues(TapeValues& values) const {
+        size_t numberOfChunks = chunks.size();
+        size_t dataEntries    = getDataSize();
+        size_t entrySize      = Chunk::EntrySize;
+
+        double  memoryUsed  = (double)dataEntries*(double)entrySize* TapeValues::BYTE_TO_MB;
+        double  memoryAlloc = (double)numberOfChunks*(double)chunkSize*(double)entrySize* TapeValues::BYTE_TO_MB;
+
+        values.addUnsignedLongEntry("Total number", dataEntries);
+        values.addUnsignedLongEntry("Number of chunks", numberOfChunks);
+        values.addDoubleEntry("Memory used", memoryUsed, true, false);
+        values.addDoubleEntry("Memory allocated", memoryAlloc, false, true);
+      }
+
       template<typename TargetPosition>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
         return nested->template extractPosition<TargetPosition>(pos.inner);

@@ -4,6 +4,7 @@
 
 #include "../../aux/macros.h"
 #include "../../config.h"
+#include "../aux/tapeValues.hpp"
 #include "chunk.hpp"
 
 /** \copydoc codi::Namespace */
@@ -23,6 +24,8 @@ namespace codi {
        * Description: TODO
        *
        */
+
+      void addToTapeValues(TapeValues& values) const;
 
       template<typename TargetPosition>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const;

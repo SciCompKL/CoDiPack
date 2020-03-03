@@ -5,6 +5,7 @@
 #include "../../aux/macros.h"
 #include "../../aux/optionalArg.hpp"
 #include "../../config.h"
+#include "../aux/tapeValues.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -20,6 +21,8 @@ namespace codi {
 
       static Index constexpr UnusedIndex = 0;
       static Index constexpr InvalidIndex = -1;
+
+      void addToTapeValue(TapeValues& values) const;
 
       void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value);
       void assignUnusedIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value);

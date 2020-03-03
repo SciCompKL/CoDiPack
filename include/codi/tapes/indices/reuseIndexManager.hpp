@@ -56,6 +56,24 @@ namespace codi {
         valid = false;
       }
 
+      void addToTapeValues(TapeValues& values) const {
+
+        unsigned long maximumGlobalIndex = globalMaximumIndex;
+        unsigned long storedIndices      = usedIndicesPos + unusedIndicesPos;
+        unsigned long allocatedIndices   = usedIndices.size() + unusedIndices.size();
+        long currentLiveIndices          = maximumGlobalIndex - storedIndices;
+
+        double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * TapeValues::BYTE_TO_MB;
+        double memoryAllocatedIndices = (double)allocatedIndices*(double)(sizeof(Index)) * TapeValues::BYTE_TO_MB;
+
+        values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex);
+        values.addLongEntry("Cur. live indices", currentLiveIndices);
+        values.addUnsignedLongEntry("Indices stored", storedIndices);
+        values.addDoubleEntry("Memory used", memoryStoredIndices, true, false);
+        values.addDoubleEntry("Memory allocated", memoryAllocatedIndices, false, true);
+      }
+
+
       CODI_INLINE void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
         generatedNewIndex = false;
 

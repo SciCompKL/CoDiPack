@@ -24,6 +24,10 @@ namespace codi {
        *
        */
 
+      void addToTapeValues(TapeValues& values) const {
+        CODI_UNUSED(values);
+      }
+
       CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }
