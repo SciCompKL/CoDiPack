@@ -248,13 +248,14 @@ namespace codi {
           Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers) {
 
-        curJacobianPos -= numberOfArguments;
 
         ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !isTotalZero(lhsAdjoint)){
           for(Config::ArgumentSize argPos = 0; argPos < numberOfArguments; argPos += 1) {
-            size_t curOffset = curJacobianPos + argPos;
-            adjointVector[rhsIdentifiers[curOffset]] += rhsJacobians[curOffset] * lhsAdjoint;
+            curJacobianPos -= 1;
+            adjointVector[rhsIdentifiers[curJacobianPos]] += rhsJacobians[curJacobianPos] * lhsAdjoint;
           }
+        } else {
+          curJacobianPos -= numberOfArguments;
         }
       }
 
