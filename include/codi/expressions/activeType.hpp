@@ -35,11 +35,11 @@ namespace codi {
 
   public:
 
-    ActiveType() : primalValue(), identifier() {
+    CODI_INLINE ActiveType() : primalValue(), identifier() {
       this->initBase();
     }
 
-    ActiveType(ActiveType<Tape> const& v) : primalValue(), identifier() {
+    CODI_INLINE ActiveType(ActiveType<Tape> const& v) : primalValue(), identifier() {
       this->initBase();
       this->getGlobalTape().store(*this, v);
     }
@@ -48,13 +48,17 @@ namespace codi {
       this->initBase();
     }
 
+    CODI_INLINE ~ActiveType() {
+      this->destroyBase();
+    }
+
     template<class Rhs>
     CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
       this->initBase();
       this->getGlobalTape().store(*this, rhs.cast());
     }
 
-    ActiveType<Tape>& operator=(ActiveType<Tape > const& v) {
+    CODI_INLINE ActiveType<Tape>& operator=(ActiveType<Tape > const& v) {
       static_cast<LhsExpressionInterface<Real, Gradient, Tape, ActiveType>&>(*this) = v;
       return *this;
     }

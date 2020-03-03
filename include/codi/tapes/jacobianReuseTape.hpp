@@ -37,7 +37,7 @@ namespace codi {
       JacobianReuseTape() : Base() {}
 
       template<typename Lhs>
-      void registerInput(LhsExpressionInterface<Real, Gradient, JacobianReuseTape, Lhs>& value) {
+      CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, JacobianReuseTape, Lhs>& value) {
         Base::indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
       }
 
@@ -47,7 +47,7 @@ namespace codi {
         this->statementVector.pushData(index, numberOfArguments);
       }
 
-      static void internalEvaluateRevere(
+      CODI_INLINE static void internalEvaluateRevere(
           /* data from call */
           Gradient* adjointVector,
           /* data from jacobian vector */

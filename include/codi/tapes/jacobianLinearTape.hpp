@@ -39,7 +39,7 @@ namespace codi {
       JacobianLinearTape() : Base() {}
 
       template<typename Lhs>
-      void registerInput(LhsExpressionInterface<Real, Gradient, JacobianLinearTape, Lhs>& value) {
+      CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, JacobianLinearTape, Lhs>& value) {
         Base::indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
         Base::statementVector.reserveItems(1);
         Base::statementVector.pushData(Config::StatementInputTag);
@@ -53,7 +53,7 @@ namespace codi {
         this->statementVector.pushData(numberOfArguments);
       }
 
-      static void internalEvaluateRevere(
+      CODI_INLINE static void internalEvaluateRevere(
           /* data from call */
           Gradient* adjointVector,
           /* data from jacobian vector */

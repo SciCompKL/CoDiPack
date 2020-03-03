@@ -118,20 +118,21 @@ namespace codi {
         jacobianVector.setNested(&statementVector);
       }
 
-      void setGradient(Identifier const& identifier, Gradient const& gradient) {
+      CODI_INLINE void setGradient(Identifier const& identifier, Gradient const& gradient) {
         gradient(identifier) = gradient;
       }
 
-      Gradient const& getGradient(Identifier const& identifier) const {
+      CODI_INLINE Gradient const& getGradient(Identifier const& identifier) const {
         return gradient(identifier);
       }
 
-      Gradient& gradient(Identifier const& identifier) {
+      CODI_INLINE Gradient& gradient(Identifier const& identifier) {
         checkAdjointSize(identifier);
 
         return adjoints[identifier];
       }
-      Gradient const& gradient(Identifier const& identifier) const {
+
+      CODI_INLINE Gradient const& gradient(Identifier const& identifier) const {
         if(identifier > (Identifier)adjoints.size()) {
           return adjoints[0];
         } else {
@@ -140,14 +141,14 @@ namespace codi {
       }
 
       template<typename Real>
-      void initIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
         identifier = IndexManager::UnusedIndex;
       }
 
       template<typename Real>
-      void destroyIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
         indexManager.get().freeIndex(identifier);
@@ -189,7 +190,7 @@ namespace codi {
       };
 
       template<typename Lhs, typename Rhs>
-      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
+      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                  ExpressionInterface<Real, Rhs> const& rhs) {
 
         if(active) {
@@ -216,7 +217,7 @@ namespace codi {
       }
 
       template<typename Lhs, typename Rhs>
-      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
+      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                  LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
 
         if(active) {
@@ -233,13 +234,13 @@ namespace codi {
       }
 
       template<typename Lhs>
-      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, PassiveReal const& rhs) {
+      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, PassiveReal const& rhs) {
         indexManager.get().freeIndex(lhs.cast().getIdentifier());
 
         lhs.cast().value() = rhs;
       }
 
-      static void incrementAdjoints(
+      CODI_INLINE static void incrementAdjoints(
           Gradient* adjointVector,
           Gradient const& lhsAdjoint,
           Config::ArgumentSize const& numberOfArguments,
@@ -257,7 +258,7 @@ namespace codi {
         }
       }
 
-      void evaluate() {
+      CODI_NO_INLINE void evaluate() {
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
         jacobianVector.evaluateReverse(jacobianVector.getPosition(),
@@ -266,19 +267,20 @@ namespace codi {
                                        adjoints.data());
       }
 
-      template<typename Lhs> void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
+      template<typename Lhs>
+      CODI_INLINE void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
       }
 
-      void setActive() {
+      CODI_INLINE void setActive() {
         active = true;
       }
 
-      void setPassive() {
+      CODI_INLINE void setPassive() {
         active = false;
       }
 
-      bool isActive() const {
+      CODI_INLINE bool isActive() const {
         return active;
       }
 

@@ -46,7 +46,7 @@ namespace codi {
         Impl::getGlobalTape().initIdentifier(cast().value(), cast().getIdentifier());
       }
 
-      CODI_INLINE ~LhsExpressionInterface() {
+      CODI_INLINE void destroyBase() {
         Impl::getGlobalTape().destroyIdentifier(cast().value(), cast().getIdentifier());
       }
 
