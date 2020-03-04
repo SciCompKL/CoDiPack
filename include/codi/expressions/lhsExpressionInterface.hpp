@@ -107,7 +107,7 @@ namespace codi {
   };
 
   template<typename _Type>
-  struct RealTraits<_Type, enableIfLhsExpression<typename _Type::Real, typename _Type::Gradient, typename _Type::Tape, _Type>> {
+  struct RealTraits<_Type, enableIfLhsExpression<_Type>> {
     public:
 
       using Type = DECLARE_DEFAULT(

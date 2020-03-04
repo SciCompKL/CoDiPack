@@ -157,7 +157,7 @@ namespace codi {
       struct PushJacobianLogic : public TraversalLogic<PushJacobianLogic> {
         public:
           template<typename Node>
-          CODI_INLINE enableIfLhsExpression<Real, Gradient, Impl, Node> term(Node const& node, Real jacobian, JacobianVector& jacobianVector, size_t& numberOfArguments) {
+          CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, JacobianVector& jacobianVector, size_t& numberOfArguments) {
             using std::isfinite;
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
               ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
@@ -180,22 +180,13 @@ namespace codi {
           }
       };
 
-      struct MaxNumberOfArguments : public CompileTimeTraversalLogic<size_t, MaxNumberOfArguments> {
-        public:
-          template<typename Node, typename = enableIfLhsExpression<Real, Gradient, Impl, Node>>
-          CODI_INLINE static constexpr size_t term() {
-            return 1;
-          }
-          using CompileTimeTraversalLogic<size_t, MaxNumberOfArguments>::term;
-      };
-
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                  ExpressionInterface<Real, Rhs> const& rhs) {
 
         if(active) {
           PushJacobianLogic pushJacobianLogic;
-          size_t constexpr MaxArgs = MaxNumberOfArguments::template eval<Rhs>();
+          size_t constexpr MaxArgs = MaxNumberOfActiveArguments<Rhs>::value;
 
           statementVector.reserveItems(1);
           jacobianVector.reserveItems(MaxArgs);

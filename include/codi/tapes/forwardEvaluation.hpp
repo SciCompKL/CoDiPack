@@ -39,7 +39,7 @@ namespace codi {
 
       struct LocalReverseLogic : public TraversalLogic<LocalReverseLogic> {
           template<typename Node>
-          CODI_INLINE enableIfLhsExpression<Real, Gradient, ForwardEvaluation, Node> term(Node const& node, Real jacobian, Gradient& lhsGradient) {
+          CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, Gradient& lhsGradient) {
             using std::isfinite;
             ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
               lhsGradient += node.gradient() * jacobian;
