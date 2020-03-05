@@ -15,6 +15,9 @@ namespace codi {
   template<typename _Real>
   struct ConstantExpression;
 
+  template<typename _Tape, size_t _offset>
+  struct StaticContextActiveType;
+
   /*******************************************************************************
    * Section: Detection of specific node types
    *
@@ -55,6 +58,18 @@ namespace codi {
   template<typename Impl>
   using enableIfConstantExpression = typename std::enable_if<isConstantExpression<Impl>::value>::type;
 
+  template<typename Impl>
+  struct IsStaticContextActiveType : std::false_type {};
+
+  template<typename Tape, size_t offset>
+  struct IsStaticContextActiveType<StaticContextActiveType<Tape, offset>> : std::true_type {};
+
+  template<typename Impl>
+  using isStaticContextActiveType = IsStaticContextActiveType<Impl>;
+
+  template<typename Impl>
+  using enableIfStaticContextActiveType = typename std::enable_if<isStaticContextActiveType<Impl>::value>::type;
+
   /*******************************************************************************
    * Section: Static values on expressions
    *
@@ -63,16 +78,16 @@ namespace codi {
    */
 
   template<typename Expr>
-  struct MaxNumberOfActiveArguments : public CompileTimeTraversalLogic<size_t, MaxNumberOfActiveArguments<Expr>> {
+  struct MaxNumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, MaxNumberOfActiveTypeArguments<Expr>> {
     public:
 
-      static size_t constexpr value = MaxNumberOfActiveArguments::template eval<Expr>();
+      static size_t constexpr value = MaxNumberOfActiveTypeArguments::template eval<Expr>();
 
       template<typename Node, typename = enableIfLhsExpression<Node>>
       CODI_INLINE static constexpr size_t term() {
         return 1;
       }
-      using CompileTimeTraversalLogic<size_t, MaxNumberOfActiveArguments>::term;
+      using CompileTimeTraversalLogic<size_t, MaxNumberOfActiveTypeArguments>::term;
   };
 
   template<typename Expr>

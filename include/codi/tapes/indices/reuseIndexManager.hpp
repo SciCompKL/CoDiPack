@@ -157,6 +157,17 @@ namespace codi {
         }
       }
 
+      /*******************************************************************************
+       * Section: Function overwrite of EmptyChunkVector
+       *
+       */
+
+      void resetTo(Position const& pos) {
+        if(pos == getZeroPosition()) {
+          reset();
+        }
+      }
+
     private:
 
       CODI_NO_INLINE void generateNewIndices() {

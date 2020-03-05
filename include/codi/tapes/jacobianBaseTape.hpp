@@ -186,7 +186,7 @@ namespace codi {
 
         if(active) {
           PushJacobianLogic pushJacobianLogic;
-          size_t constexpr MaxArgs = MaxNumberOfActiveArguments<Rhs>::value;
+          size_t constexpr MaxArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
 
           statementVector.reserveItems(1);
           jacobianVector.reserveItems(MaxArgs);
@@ -288,9 +288,6 @@ namespace codi {
         }
 
         jacobianVector.reset();
-
-        // Requires extra reset since the default vector implementation forwards to resetTo
-        indexManager.get().reset();
       }
 
       template<typename Stream = std::ostream> void printStatistics(Stream& out = std::cout) const {

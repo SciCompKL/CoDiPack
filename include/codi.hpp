@@ -9,6 +9,7 @@
 #include "codi/tapes/indices/multiUseIndexManager.hpp"
 #include "codi/tapes/jacobianLinearTape.hpp"
 #include "codi/tapes/jacobianReuseTape.hpp"
+#include "codi/tapes/primalValueReuseTape.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -18,13 +19,20 @@ namespace codi {
 
   using RealForward = RealForwardGen<double, double>;
 
-  template<typename Real, typename IndexManager, typename Gradient = Real>
-  using RealReverseIndexGen = ActiveType<JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager>>>;
-
-  using RealReverseIndex = RealReverseIndexGen<double, MultiUseIndexManager<int>, double>;
 
   template<typename Real, typename Index, typename Gradient = Real>
   using RealReverseGen = ActiveType<JacobianLinearTape<JacobianTapeTypes<Real, Gradient, LinearIndexManager<Index>>>>;
 
   using RealReverse = RealReverseGen<double, int, double>;
+
+  template<typename Real, typename IndexManager, typename Gradient = Real>
+  using RealReverseIndexGen = ActiveType<JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager>>>;
+
+  using RealReverseIndex = RealReverseIndexGen<double, MultiUseIndexManager<int>, double>;
+
+  template<typename Real, typename IndexManager, typename Gradient = Real>
+  using RealReversePrimalIndexGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager>>>;
+
+  using RealReversePrimalIndex = RealReversePrimalIndexGen<double, MultiUseIndexManager<int>, double>;
+
 }
