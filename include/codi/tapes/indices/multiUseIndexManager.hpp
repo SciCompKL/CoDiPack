@@ -42,8 +42,8 @@ namespace codi {
         values.addDoubleEntry("Memory index use vector", memoryindexUseVector, true, true);
       }
 
-      CODI_INLINE void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
-        generatedNewIndex = false;
+      CODI_INLINE bool assignIndex(Index& index) {
+        bool generatedNewIndex = false;
 
         if(Base::UnusedIndex != index) {
           indexUse[index] -= 1;
@@ -55,31 +55,28 @@ namespace codi {
         } else {
 
           index = Base::UnusedIndex; // Reset index here such that the base class will return a new one
-          bool resized = false;
-          Base::assignIndex(index, resized);
-          if(resized) {
+          generatedNewIndex = Base::assignIndex(index);
+          if(generatedNewIndex) {
             resizeUseVector();
-            generatedNewIndex = true;
           }
 
           indexUse[index] = 1;
         }
+
+        return generatedNewIndex;
       }
 
-      CODI_INLINE void assignUnusedIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
-        generatedNewIndex = false;
-
+      CODI_INLINE bool assignUnusedIndex(Index& index) {
         freeIndex(index); // zero check is performed inside
 
-        bool resized = false;
-        Base::assignUnusedIndex(index, resized);
-
-        if (resized) {
+        bool generatedNewIndex = Base::assignUnusedIndex(index);
+        if (generatedNewIndex) {
           resizeUseVector();
-          generatedNewIndex = true;
         }
 
         indexUse[index] = 1;
+
+        return generatedNewIndex;
       }
 
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {

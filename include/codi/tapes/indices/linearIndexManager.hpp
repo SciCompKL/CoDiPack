@@ -50,17 +50,17 @@ namespace codi {
         index = 0;
       }
 
-      CODI_INLINE void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
+      CODI_INLINE bool assignIndex(Index& index) {
         ENABLE_CHECK(Config::OverflowCheck, count > count + 1) {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
         }
         count += 1;
         index = count;
-        generatedNewIndex = false;
+        return true;
       }
 
-      CODI_INLINE void assignUnusedIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
-        assignIndex(index, generatedNewIndex);
+      CODI_INLINE bool assignUnusedIndex(Index& index) {
+        return assignIndex(index);
       }
 
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {

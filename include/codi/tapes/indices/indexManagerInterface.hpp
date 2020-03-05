@@ -24,8 +24,8 @@ namespace codi {
 
       void addToTapeValue(TapeValues& values) const;
 
-      void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value);
-      void assignUnusedIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value);
+      bool assignIndex(Index& index);
+      bool assignUnusedIndex(Index& index);
       void copyIndex(Index& lhs, Index const& rhs);
       void freeIndex(Index& index);
 

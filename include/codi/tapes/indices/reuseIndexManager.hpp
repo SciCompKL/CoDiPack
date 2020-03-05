@@ -74,8 +74,8 @@ namespace codi {
       }
 
 
-      CODI_INLINE void assignIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
-        generatedNewIndex = false;
+      CODI_INLINE bool assignIndex(Index& index) {
+        bool generatedNewIndex = false;
 
         if (Base::UnusedIndex == index) {
           if (0 == usedIndicesPos) {
@@ -91,20 +91,23 @@ namespace codi {
             index = usedIndices[usedIndicesPos];
           }
         }
+
+        return generatedNewIndex;
       }
 
-      CODI_INLINE void assignUnusedIndex(Index& index, bool& generatedNewIndex = OptionalArg<bool>::value) {
+      CODI_INLINE bool assignUnusedIndex(Index& index) {
         freeIndex(index); // zero check is performed inside
 
+        bool generatedNewIndex = false;
         if(0 == unusedIndicesPos) {
           generateNewIndices();
           generatedNewIndex = true;
-        } else {
-          generatedNewIndex = false;
         }
 
         unusedIndicesPos -= 1;
         index = unusedIndices[unusedIndicesPos];
+
+        return generatedNewIndex;
       }
 
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
