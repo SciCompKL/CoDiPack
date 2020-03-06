@@ -36,11 +36,6 @@ namespace codi {
 
       JacobianReuseTape() : Base() {}
 
-      template<typename Lhs>
-      CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, JacobianReuseTape, Lhs>& value) {
-        Base::indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
-      }
-
     protected:
 
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {

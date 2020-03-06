@@ -94,10 +94,6 @@ namespace codi {
        *
        */
 
-    public:
-      template<typename Lhs>
-      void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value);
-
     protected:
 
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
@@ -184,7 +180,7 @@ namespace codi {
 
         if(active) {
           PushJacobianLogic pushJacobianLogic;
-          size_t constexpr MaxArgs = MaxNumberOfActiveArguments<Rhs>::value;
+          size_t constexpr MaxArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
 
           statementVector.reserveItems(1);
           typename JacobianVector::InternalPosHandle jacobianStart = jacobianVector.reserveItems(MaxArgs);
@@ -259,6 +255,16 @@ namespace codi {
       }
 
       template<typename Lhs>
+      CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
+        indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
+
+        if(TapeTypes::IsLinearIndexHandler) {
+          statementVector.reserveItems(1);
+          cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
+        }
+      }
+
+      template<typename Lhs>
       CODI_INLINE void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
       }
@@ -287,9 +293,6 @@ namespace codi {
         }
 
         jacobianVector.reset();
-
-        // Requires extra reset since the default vector implementation forwards to resetTo
-        indexManager.get().reset();
       }
 
       template<typename Stream = std::ostream> void printStatistics(Stream& out = std::cout) const {

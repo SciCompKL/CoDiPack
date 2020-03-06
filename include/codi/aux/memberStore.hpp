@@ -12,7 +12,7 @@ namespace codi {
   template<typename _Type, typename _Parent, bool _storeStatic = false>
   struct MemberStore {
 
-      using Type = DECLARE_DEFAULT(_Type, ANY);
+      using Type = _Type; // default declaration breaks auto completion
       using Parent = DECLARE_DEFAULT(_Parent, ANY);
 
       static bool constexpr storeStatic = _storeStatic;
