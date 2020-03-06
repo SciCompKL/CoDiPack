@@ -94,10 +94,6 @@ namespace codi {
        *
        */
 
-    public:
-      template<typename Lhs>
-      void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value);
-
     protected:
 
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
@@ -257,6 +253,16 @@ namespace codi {
                                        jacobianVector.getZeroPosition(),
                                        Impl::internalEvaluateRevere,
                                        adjoints.data());
+      }
+
+      template<typename Lhs>
+      CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
+        indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
+
+        if(TapeTypes::IsLinearIndexHandler) {
+          statementVector.reserveItems(1);
+          cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
+        }
       }
 
       template<typename Lhs>

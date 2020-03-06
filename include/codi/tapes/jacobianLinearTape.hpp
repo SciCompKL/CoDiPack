@@ -38,13 +38,6 @@ namespace codi {
 
       JacobianLinearTape() : Base() {}
 
-      template<typename Lhs>
-      CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, JacobianLinearTape, Lhs>& value) {
-        Base::indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
-        Base::statementVector.reserveItems(1);
-        Base::statementVector.pushData(Config::StatementInputTag);
-      }
-
     protected:
 
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
