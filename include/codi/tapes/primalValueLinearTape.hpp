@@ -21,11 +21,11 @@
 namespace codi {
 
   template<typename _TapeTypes>
-  struct PrimalValueReuseTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>> {
+  struct PrimalValueLinearTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueLinearTape<_TapeTypes>> {
     public:
 
       using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>));
-      using Base = PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>>;
+      using Base = PrimalValueBaseTape<_TapeTypes, PrimalValueLinearTape<_TapeTypes>>;
       friend Base;
 
       using Real = typename TapeTypes::Real;
@@ -34,9 +34,10 @@ namespace codi {
       using PassiveReal = PassiveRealType<Real>;
       using EvalPointer = typename TapeTypes::EvalPointer;
 
-      PrimalValueReuseTape() : Base() {}
+      PrimalValueLinearTape() : Base() {}
 
     protected:
+
       static void internalEvaluateReverse(
           /* data from call */
           Real* primalVector, Gradient* adjointVector,
@@ -48,27 +49,32 @@ namespace codi {
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
           /* data statement vector */
           size_t& curStatementPos, size_t const& endStatementPos,
-              Identifier const* const lhsIdentifiers,
               Config::ArgumentSize const* const numberOfPassiveArguments,
-              Real const * const oldPrimalValues,
-              EvalPointer const * const stmtEvalFunc
+              EvalPointer const * const stmtEvalFunc,
+          /* data from index handler */
+          size_t const& startAdjointPos, size_t const& endAdjointPos
           ) {
 
-        CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
+        CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos, endStatementPos);
 
-        while(curStatementPos > endStatementPos) {
+        size_t curAdjointPos = startAdjointPos;
+
+        while(curAdjointPos > endAdjointPos) {
           curStatementPos -= 1;
 
-          Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
+          Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
-          Gradient const lhsAdjoint = adjointVector[lhsIdentifier];
-          adjointVector[lhsIdentifier] = Gradient();
+          Gradient const lhsAdjoint = adjointVector[curAdjointPos];
 
-          primalVector[lhsIdentifier] = oldPrimalValues[curStatementPos];
+          if(Config::StatementInputTag != nPassiveValues) {
+            adjointVector[curAdjointPos] = Gradient();
 
-          stmtEvalFunc[curStatementPos](primalVector, adjointVector, lhsAdjoint,
-              numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
-              curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
+            stmtEvalFunc[curStatementPos](primalVector, adjointVector, lhsAdjoint,
+                nPassiveValues, curConstantPos, constantValues,
+                curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
+          }
+
+          curAdjointPos -= 1;
         }
       }
 
@@ -78,7 +84,9 @@ namespace codi {
           Real const& oldPrimalValue,
           EvalPointer evalFunc)
       {
-        Base::statementVector.pushData(index, numberOfPassiveArguments, oldPrimalValue, evalFunc);
+        CODI_UNUSED(index, oldPrimalValue);
+
+        Base::statementVector.pushData(numberOfPassiveArguments, evalFunc);
       }
   };
 }
