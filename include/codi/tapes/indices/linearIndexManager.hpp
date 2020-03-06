@@ -21,6 +21,7 @@ namespace codi {
 
       using Position = Index;
       using NestedVector = void;
+      using InternalPosHandle = size_t;
 
     private:
 
@@ -86,12 +87,22 @@ namespace codi {
         return count;
       }
 
+      CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos) {
+        return count - startPos;
+      }
+
       CODI_INLINE Position getZeroPosition() const {
         return zeroState;
       }
 
       CODI_INLINE void pushData() {}
-      CODI_INLINE void reserveItems(size_t const& items) { CODI_UNUSED(items); }
+
+      CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
+        CODI_UNUSED(items);
+
+        return count;
+      }
+
       void resize(size_t const& totalSize) { CODI_UNUSED(totalSize); }
 
       CODI_INLINE void resetTo(Position const& pos) {

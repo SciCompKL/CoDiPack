@@ -11,10 +11,11 @@
 namespace codi {
 
 
-  template<typename _NestedVector = void>
+  template<typename _NestedVector = void, typename _InternalPosHandle = size_t>
   struct DataInterface {
 
       using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
+      using InternalPosHandle = DECLARE_DEFAULT(_InternalPosHandle, size_t);
 
       using Position = ANY;
 
@@ -32,11 +33,13 @@ namespace codi {
 
       CODI_INLINE size_t getDataSize() const;
       CODI_INLINE Position getPosition() const;
+      CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos);
       CODI_INLINE Position getZeroPosition() const;
+
 
       template<typename ... Data>
       CODI_INLINE void pushData(Data const& ... data);
-      CODI_INLINE void reserveItems(size_t const& items);
+      CODI_INLINE InternalPosHandle reserveItems(size_t const& items);
       void resize(size_t const& totalSize);
 
       void reset();

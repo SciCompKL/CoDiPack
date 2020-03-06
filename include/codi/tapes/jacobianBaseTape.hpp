@@ -157,14 +157,12 @@ namespace codi {
       struct PushJacobianLogic : public TraversalLogic<PushJacobianLogic> {
         public:
           template<typename Node>
-          CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, JacobianVector& jacobianVector, size_t& numberOfArguments) {
+          CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, JacobianVector& jacobianVector) {
             using std::isfinite;
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
               ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
                 ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
                   jacobianVector.pushData(jacobian, node.getIdentifier());
-
-                  numberOfArguments += 1;
                 }
               }
             }
@@ -172,11 +170,11 @@ namespace codi {
           using TraversalLogic<PushJacobianLogic>::term;
 
           template<size_t LeafNumber, typename Leaf, typename Root>
-          CODI_INLINE void link(Leaf const& leaf, Root const& root, Real jacobian, JacobianVector& jacobianVector, size_t& numberOfArguments) {
+          CODI_INLINE void link(Leaf const& leaf, Root const& root, Real jacobian, JacobianVector& jacobianVector) {
 
             Real curJacobian = root.template getJacobian<LeafNumber>() * jacobian;
 
-            this->toNode(leaf, curJacobian, jacobianVector, numberOfArguments);
+            this->toNode(leaf, curJacobian, jacobianVector);
           }
       };
 
@@ -189,10 +187,10 @@ namespace codi {
           size_t constexpr MaxArgs = MaxNumberOfActiveArguments<Rhs>::value;
 
           statementVector.reserveItems(1);
-          jacobianVector.reserveItems(MaxArgs);
+          typename JacobianVector::InternalPosHandle jacobianStart = jacobianVector.reserveItems(MaxArgs);
 
-          size_t numberOfArguments = 0;
-          pushJacobianLogic.eval(rhs.cast(), 1.0, jacobianVector, numberOfArguments);
+          pushJacobianLogic.eval(rhs.cast(), 1.0, jacobianVector);
+          size_t numberOfArguments = jacobianVector.getPushedDataCount(jacobianStart);
 
           if(0 != numberOfArguments) {
             indexManager.get().assignIndex(lhs.cast().getIdentifier());

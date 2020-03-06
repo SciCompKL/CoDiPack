@@ -16,6 +16,7 @@ namespace codi {
       using NestedVector = void;
 
       using Position = EmptyPosition;
+      using InternalPosHandle = size_t;
 
       /*******************************************************************************
        * Section: Misc functions
@@ -39,12 +40,23 @@ namespace codi {
       CODI_INLINE Position getPosition() const {
         return Position();
       }
+
+      CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos) {
+        CODI_UNUSED(startPos);
+
+        return 0;
+      }
+
       CODI_INLINE Position getZeroPosition() const {
         return Position();
       }
 
       CODI_INLINE void pushData() {}
-      CODI_INLINE void reserveItems(size_t const& items) { CODI_UNUSED(items); }
+      CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
+        CODI_UNUSED(items);
+
+        return 0;
+      }
       void resize(size_t const& totalSize) { CODI_UNUSED(totalSize); }
 
       void reset() {}

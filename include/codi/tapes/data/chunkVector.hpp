@@ -19,6 +19,7 @@ namespace codi {
 
       using Chunk = DECLARE_DEFAULT(_Chunk, ChunkBase);
       using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
+      using InternalPosHandle = size_t;
 
       using NestedPosition = typename NestedVector::Position;
 
@@ -106,6 +107,10 @@ namespace codi {
         return Position(curChunkIndex, curChunk->getUsedSize(), nested->getPosition());
       }
 
+      CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos) {
+        return curChunk->getUsedSize() - startPos;
+      }
+
       CODI_INLINE Position getZeroPosition() const {
         return Position(0, 0, nested->getZeroPosition());
       }
@@ -116,12 +121,14 @@ namespace codi {
         curChunk->pushData(data...);
       }
 
-      CODI_INLINE void reserveItems(size_t const& items) {
+      CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
         codiAssert(items <= chunkSize);
 
         if(chunkSize < curChunk->getUsedSize() + items) {
           nextChunk();
         }
+
+        return curChunk->getUsedSize();
       }
 
       void resize(size_t const& totalSize) {
