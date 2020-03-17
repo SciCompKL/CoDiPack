@@ -23,17 +23,17 @@ namespace codi {
 
   private:
 
-      Real* primalVector;
-      Identifier const* const identifiers;
+      Real const primal;
+      Identifier const identifier;
   public:
 
     CODI_INLINE StaticContextActiveType(Real* primalVector, Identifier const* const identifiers) :
-      primalVector(primalVector),
-      identifiers(identifiers)
+      primal(primalVector[identifiers[offset]]),
+      identifier(identifiers[offset])
     {}
 
     CODI_INLINE Identifier const& getIdentifier() const {
-      return identifiers[offset];
+      return identifier;
     }
 
     /*******************************************************************************
@@ -43,7 +43,7 @@ namespace codi {
     using StoreAs = StaticContextActiveType;
 
     CODI_INLINE Real const getValue() const {
-      return primalVector[getIdentifier()];
+      return primal;
     }
 
     template<size_t argNumber>

@@ -20,11 +20,11 @@ namespace codi {
 
   private:
 
-      Real const* const primalVector;
+      Real const primal;
   public:
 
     CODI_INLINE StaticContextConstantExpression(Real const* const primalVector) :
-      primalVector(primalVector)
+      primal(primalVector[offset])
     {}
 
     /*******************************************************************************
@@ -34,7 +34,7 @@ namespace codi {
     using StoreAs = StaticContextConstantExpression;
 
     CODI_INLINE Real const getValue() const {
-      return primalVector[offset];
+      return primal;
     }
 
     template<size_t argNumber>

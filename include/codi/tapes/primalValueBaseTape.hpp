@@ -301,12 +301,8 @@ namespace codi {
           template<typename Node>
           CODI_INLINE enableIfStaticContextActiveType<Node> term(Node const& node, Real jacobian, Gradient const& lhsAdjoint, Gradient* adjointVector) {
             using std::isfinite;
-            ENABLE_CHECK(Config::CheckZeroIndex, (Identifier)Config::MaxArgumentSize <= node.getIdentifier()) {
-              ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
-                ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
-                  adjointVector[node.getIdentifier()] += jacobian * lhsAdjoint;
-                }
-              }
+            ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
+              adjointVector[node.getIdentifier()] += jacobian * lhsAdjoint;
             }
           }
           using TraversalLogic<IncrementReversalLogic>::term;
