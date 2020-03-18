@@ -31,10 +31,31 @@ namespace codi {
       using Gradient = typename TapeTypes::Gradient;
       using IndexManager = typename TapeTypes::IndexManager;
       using Identifier = typename TapeTypes::Identifier;
+      using Position = typename Base::Position;
+      using StatementVector = typename TapeTypes::StatementVector;
 
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
       JacobianReuseTape() : Base() {}
+
+      using Base::clearAdjoints;
+      void clearAdjoints(Position const& start, Position const& end) {
+
+        // clear adjoints
+        auto clearFunc = [this] (Config::ArgumentSize* stmtSize, Identifier* index) {
+          CODI_UNUSED(stmtSize);
+
+          if(*index < this->adjoints.size()) {
+            this->adjoints[*index] = Gradient();
+          }
+        };
+
+        using StmtPosition = typename StatementVector::Position;
+        StmtPosition startStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(end);
+
+        this->statementVector.forEachReverse(startStmt, endStmt, clearFunc);
+      }
 
     protected:
 
@@ -42,9 +63,32 @@ namespace codi {
         this->statementVector.pushData(index, numberOfArguments);
       }
 
-      CODI_INLINE static void internalEvaluateRevere(
+      template<typename Adjoint>
+      CODI_INLINE static void internalEvaluateForward(
           /* data from call */
-          Gradient* adjointVector,
+          Adjoint* adjointVector,
+          /* data from jacobian vector */
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
+          /* data from statement vector */
+          size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers, Config::ArgumentSize const* const numberOfJacobians) {
+
+        CODI_UNUSED(endJacobianPos);
+
+        while(curStmtPos < endStmtPos) {
+
+          Adjoint lhsAdjoint = Adjoint();
+          Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos, rhsJacobians, rhsIdentifiers);
+
+          adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
+
+          curStmtPos += 1;
+        }
+      }
+
+      template<typename Adjoint>
+      CODI_INLINE static void internalEvaluateReverse(
+          /* data from call */
+          Adjoint* adjointVector,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
           /* data from statement vector */
@@ -55,8 +99,8 @@ namespace codi {
         while(curStmtPos > endStmtPos) {
           curStmtPos -= 1;
 
-          Gradient const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
-          adjointVector[lhsIdentifiers[curStmtPos]] = Gradient();
+          Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
+          adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
 
           Base::incrementAdjoints(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos, rhsJacobians, rhsIdentifiers);
         }

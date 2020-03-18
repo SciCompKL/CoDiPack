@@ -22,7 +22,7 @@ namespace codi {
        */
 
       template<typename Lhs>
-      Real registerExternalFunctionOutput(LhsExpressionInterface<Real, Gradient, CustomVectorEvaluationTapeInterface, Lhs>& value);
+      Real registerExternalFunctionOutput(LhsExpressionInterface<Real, Gradient, ExternalFunctionTapeInterface, Lhs>& value);
 
       void pushExternalFunction(ExternalFunction const& extFunc);
       // TODO: add typed function push

@@ -41,8 +41,8 @@ namespace codi {
     }
 
     void deleteData(void* tape) {
-      if (deleteCheckpoint != NULL){
-        deleteCheckpoint(tape, data);
+      if (funcDelete != NULL){
+        funcDelete(tape, data);
         data = NULL;
       }
     }

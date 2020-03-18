@@ -24,6 +24,6 @@ namespace codi {
       Position getPosition() const;
       Position getZeroPosition() const;
 
-      void reset(Position const& pos);
+      void resetTo(Position const& pos);
   };
 }

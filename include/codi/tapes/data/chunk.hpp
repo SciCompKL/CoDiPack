@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include "../../aux/fileIo.hpp"
 #include "../../aux/macros.h"
 #include "../../config.h"
 
@@ -28,7 +29,10 @@ namespace codi {
       template<typename ... Pointers>
       CODI_INLINE void dataPointer(size_t const& index, Pointers*& ... pointers);
 
-      //TODO: Add IO interface
+      virtual void allocateData() = 0;
+      virtual void deleteData() = 0;
+      virtual void readData(FileIo& handle) = 0;
+      virtual void writeData(FileIo& handle) const = 0;
 
       /*******************************************************************************
        * Section: Implementation of common functionality
@@ -117,10 +121,20 @@ namespace codi {
         usedSize += 1;
       }
 
+      void readData(FileIo& handle) {
+        allocateData();
+
+        handle.readData(data1, size);
+      }
+
       void swap(Chunk1<Data1>& other) {
         this->swapBase(other);
 
         std::swap(data1, other.data1);
+      }
+
+      void writeData(FileIo& handle) const {
+        handle.writeData(data1, size);
       }
   };
 
@@ -179,11 +193,23 @@ namespace codi {
         usedSize += 1;
       }
 
+      void readData(FileIo& handle) {
+        allocateData();
+
+        handle.readData(data1, size);
+        handle.readData(data2, size);
+      }
+
       void swap(Chunk2<Data1, Data2>& other) {
         this->swapBase(other);
 
         std::swap(data1, other.data1);
         std::swap(data2, other.data2);
+      }
+
+      void writeData(FileIo& handle) const {
+        handle.writeData(data1, size);
+        handle.writeData(data2, size);
       }
   };
 
@@ -255,12 +281,26 @@ namespace codi {
         usedSize += 1;
       }
 
+      void readData(FileIo& handle) {
+        allocateData();
+
+        handle.readData(data1, size);
+        handle.readData(data2, size);
+        handle.readData(data3, size);
+      }
+
       void swap(Chunk3<Data1, Data2, Data3>& other) {
         this->swapBase(other);
 
         std::swap(data1, other.data1);
         std::swap(data2, other.data2);
         std::swap(data3, other.data3);
+      }
+
+      void writeData(FileIo& handle) const {
+        handle.writeData(data1, size);
+        handle.writeData(data2, size);
+        handle.writeData(data3, size);
       }
   };
 
@@ -346,6 +386,15 @@ namespace codi {
         usedSize += 1;
       }
 
+      void readData(FileIo& handle) {
+        allocateData();
+
+        handle.readData(data1, size);
+        handle.readData(data2, size);
+        handle.readData(data3, size);
+        handle.readData(data4, size);
+      }
+
       void swap(Chunk4<Data1, Data2, Data3, Data4>& other) {
         this->swapBase(other);
 
@@ -354,6 +403,14 @@ namespace codi {
         std::swap(data3, other.data3);
         std::swap(data4, other.data4);
       }
+
+      void writeData(FileIo& handle) const {
+        handle.writeData(data1, size);
+        handle.writeData(data2, size);
+        handle.writeData(data3, size);
+        handle.writeData(data4, size);
+      }
   };
+
 
 }

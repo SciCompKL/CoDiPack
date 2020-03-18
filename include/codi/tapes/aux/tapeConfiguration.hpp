@@ -13,5 +13,6 @@ namespace codi {
     PassiveValuesSize,
     ConstantValuesSize,
     RhsIdentifiersSize,
+    ExternalFunctionsSize
   };
 }

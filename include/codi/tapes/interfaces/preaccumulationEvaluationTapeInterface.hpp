@@ -29,9 +29,8 @@ namespace codi {
        *
        */
 
-      // TODO: Rename e.g. keep tape state
-      void evaluatePreacc(Position const& start, Position const& end);
-      void evaluateForwardPreacc(Position const& start, Position const& end);
+      void evaluateKeepState(Position const& start, Position const& end);
+      void evaluateForwardKeepState(Position const& start, Position const& end);
 
   };
 }
