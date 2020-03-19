@@ -4,6 +4,7 @@
 
 #include "../../aux/macros.h"
 #include "../../config.h"
+#include "../../traits/realTraits.hpp"
 #include "vectorAccessInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -61,6 +62,7 @@ namespace codi {
 
       void setLhsAdjoint(Identifier const& index) {
         lhs = adjointVector[index];
+        adjointVector[index] = Gradient();
       }
 
       void updateAdjointWithLhs(Identifier const& index, Real const& jacobi) {
@@ -70,6 +72,10 @@ namespace codi {
       void setLhsTangent(Identifier const& index) {
         adjointVector[index] = lhs;
         lhs = Gradient();
+      }
+
+      bool isLhsZero() {
+        return isTotalZero(lhs);
       }
 
       void updateTangentWithLhs(Identifier const& index, Real const& jacobi) {

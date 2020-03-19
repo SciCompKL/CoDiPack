@@ -33,6 +33,8 @@ namespace codi {
       virtual void setLhsTangent(Identifier const& index) = 0;
       virtual void updateTangentWithLhs(Identifier const& index, Real const& jacobi) = 0;
 
+      virtual bool isLhsZero() = 0;
+
       virtual void setPrimal(Identifier const& index, Real const& primal) = 0;
       virtual Real getPrimal(Identifier const& index) = 0;
 

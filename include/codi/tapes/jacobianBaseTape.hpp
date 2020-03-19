@@ -14,7 +14,6 @@
 #include "data/chunk.hpp"
 #include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
-#include "interfaces/reverseTapeInterface.hpp"
 #include "commonTapeImplementation.hpp"
 
 /** \copydoc codi::Namespace */
@@ -262,6 +261,35 @@ namespace codi {
         }
       }
 
+    protected:
+
+      CODI_INLINE TapeValues internalGetTapeValues() const {
+        std::string name;
+        if(TapeTypes::IsLinearIndexHandler) {
+          name = "CoDi Tape Statistics ( JacobiLinearTape )";
+        } else {
+          name = "CoDi Tape Statistics ( JacobiReuseTape )";
+        }
+        TapeValues values = TapeValues(name);
+
+        size_t nAdjoints      = indexManager.get().getLargestAssignedIndex();
+        double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient)) * TapeValues::BYTE_TO_MB;
+
+        values.addSection("Adjoint vector");
+        values.addUnsignedLongEntry("Number of adjoints", nAdjoints);
+        values.addDoubleEntry("Memory allocated", memoryAdjoints, true, true);
+
+        values.addSection("Index manager");
+        indexManager.get().addToTapeValues(values);
+
+        values.addSection("Statement entries");
+        statementVector.addToTapeValues(values);
+        values.addSection("Jacobian entries");
+        jacobianVector.addToTapeValues(values);
+
+        return values;
+      }
+
       using Base::evaluate;
 
       /*******************************************************************************
@@ -292,7 +320,7 @@ namespace codi {
       }
 
       template<typename Adjoint>
-      CODI_INLINE static void evaluateJacobian(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianVector& jacobianVector) {
+      CODI_INLINE static void internalEvaluateData(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianVector& jacobianVector) {
         jacobianVector.evaluateReverse(start, end, Impl::template internalEvaluateReverse<Adjoint>, data);
       }
 
@@ -301,7 +329,7 @@ namespace codi {
       CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template evaluateJacobian<Adjoint>, &adjointWrapper, data, jacobianVector);
+        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template internalEvaluateData<Adjoint>, &adjointWrapper, data, jacobianVector);
       }
 
     protected:
@@ -324,7 +352,7 @@ namespace codi {
       }
 
       template<typename Adjoint>
-      CODI_INLINE static void evaluateForwardJacobian(Position const& start, Position const& end, Adjoint* data, JacobianVector& jacobianVector) {
+      CODI_INLINE static void internalEvaluateData(Position const& start, Position const& end, Adjoint* data, JacobianVector& jacobianVector) {
         jacobianVector.evaluateForward(start, end, Impl::template internalEvaluateForward<Adjoint>, data);
       }
 
@@ -333,7 +361,7 @@ namespace codi {
       CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::evaluateForwardJacobian<Adjoint>, &adjointWrapper, data, jacobianVector);
+        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::internalEvaluateData<Adjoint>, &adjointWrapper, data, jacobianVector);
 
       }
 
@@ -432,35 +460,6 @@ namespace codi {
 
         indexManager.get().assignIndex(lhsIndex);
         cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);
-      }
-
-    protected:
-
-      CODI_INLINE TapeValues internalGetTapeValues() const {
-        std::string name;
-        if(TapeTypes::IsLinearIndexHandler) {
-          name = "CoDi Tape Statistics ( JacobiLinearTape )";
-        } else {
-          name = "CoDi Tape Statistics ( JacobiReuseTape )";
-        }
-        TapeValues values = TapeValues(name);
-
-        size_t nAdjoints      = indexManager.get().getLargestAssignedIndex();
-        double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient)) * TapeValues::BYTE_TO_MB;
-
-        values.addSection("Adjoint vector");
-        values.addUnsignedLongEntry("Number of adjoints", nAdjoints);
-        values.addDoubleEntry("Memory allocated", memoryAdjoints, true, true);
-
-        values.addSection("Index manager");
-        indexManager.get().addToTapeValues(values);
-
-        values.addSection("Statement entries");
-        statementVector.addToTapeValues(values);
-        values.addSection("Jacobian entries");
-        jacobianVector.addToTapeValues(values);
-
-        return values;
       }
 
     public:

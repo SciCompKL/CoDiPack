@@ -96,6 +96,15 @@ namespace codi {
       const bool SortIndicesOnReset = CODI_SortIndicesOnReset;
       #undef CODI_SortIndicesOnReset
 
+      #ifndef CODI_VariableAdjointInterfaceInPrimalTapes
+        #define CODI_VariableAdjointInterfaceInPrimalTapes 0
+      #endif
+      #if CODI_VariableAdjointInterfaceInPrimalTapes
+        #define ADJOINT_VECTOR_TYPE VectorAccessInterface<Real, Identifier>
+      #else
+        #define ADJOINT_VECTOR_TYPE Gradient
+      #endif
+
       /*******************************************************************************
        * Section: Macro definitions
        *
