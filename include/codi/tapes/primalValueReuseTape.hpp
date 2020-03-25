@@ -60,7 +60,7 @@ namespace codi {
 
     protected:
 
-      static void internalEvaluateForward(
+      CODI_INLINE static void internalEvaluateForwardStack(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data constant value vector */
@@ -86,9 +86,10 @@ namespace codi {
 
           Gradient lhsAdjoint = Gradient();
 
-          primalVector[lhsIdentifier] = stmtEvalFunc[curStatementPos](primalVector, adjointVector, lhsAdjoint,
-              numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
-              curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
+// TODO: Implement handles
+//          primalVector[lhsIdentifier] = stmtEvalFunc[curStatementPos](primalVector, adjointVector, lhsAdjoint,
+//              numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
+//              curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
 
           #if CODI_VariableAdjointInterfaceInPrimalTapes
             adjointVector->setLhsTangent(lhsIdentifier);
@@ -100,7 +101,40 @@ namespace codi {
         curStatementPos += 1;
       }
 
-      static void internalEvaluateReverse(
+      CODI_INLINE static void internalEvaluatePrimalStack(
+          /* data from call */
+          Real* primalVector,
+          /* data constant value vector */
+          size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
+          /* data passive value vector */
+          size_t& curPassivePos, size_t const& endPassivePos, Real const* const passiveValues,
+          /* data rhs identifiers vector */
+          size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
+          /* data statement vector */
+          size_t& curStatementPos, size_t const& endStatementPos,
+              Identifier const* const lhsIdentifiers,
+              Config::ArgumentSize const* const numberOfPassiveArguments,
+              Real const * const oldPrimalValues,
+              EvalPointer const * const stmtEvalFunc
+          ) {
+
+        CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
+
+        while(curStatementPos < endStatementPos) {
+
+          Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
+
+
+// TODO: Implement handles
+//          primalVector[lhsIdentifier] = stmtEvalFunc[curStatementPos](primalVector, adjointVector, lhsAdjoint,
+//              numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
+//              curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
+        }
+
+        curStatementPos += 1;
+      }
+
+      CODI_INLINE static void internalEvaluateReverseStack(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data constant value vector */
@@ -141,7 +175,7 @@ namespace codi {
         }
       }
 
-      void internalResetPrimalValues(Position const& pos) {
+      CODI_INLINE void internalResetPrimalValues(Position const& pos) {
 
         // reset primals
         auto clearFunc = [this] (Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal, EvalPointer* evalFunc) {

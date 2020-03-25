@@ -69,6 +69,7 @@ namespace codi {
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(ReverseTapeInterface<double, double, int>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;
+      friend Base;
 
       using Real = typename TapeTypes::Real;
       using Gradient = typename TapeTypes::Gradient;
@@ -99,6 +100,7 @@ namespace codi {
 
       std::vector<Gradient> adjoints;
       std::vector<Real> primals;
+      std::vector<Real> primalsCopy;
 
     public:
 
@@ -119,13 +121,13 @@ namespace codi {
     protected:
 
       template<typename ... Args>
-      static void internalEvaluateForward(Args&& ... args);
+      static void internalEvaluateForwardStack(Args&& ... args);
 
       template<typename ... Args>
       static void internalEvaluatePrimal(Args&& ... args);
 
       template<typename ... Args>
-      static void internalEvaluateRevere(Args&& ... args);
+      static void internalEvaluateReverseStack(Args&& ... args);
 
       void internalResetPrimalValues(Position const& pos);
 
@@ -145,7 +147,8 @@ namespace codi {
         passiveValueVector(Config::ChunkSize),
         constantValueVector(Config::ChunkSize),
         adjoints(1),
-        primals()
+        primals(0),
+        primalsCopy(0)
       {
         checkPrimalSize(true);
 
@@ -500,18 +503,21 @@ namespace codi {
         }
       }
 
-      CODI_INLINE static void internalEvaluateData(NestedPosition const& start, NestedPosition const& end,
-                                                     Real* primalData,
-                                                     ADJOINT_VECTOR_TYPE* data,
-                                                     ConstantValueVector& constantValueVector) {
-        constantValueVector.evaluateReverse(start, end, Impl::internalEvaluateReverse,
-                                            primalData, data);
+      WRAP_FUNCTION(Wrap_internalEvaluateReverseStack, Impl::internalEvaluateReverseStack);
+
+      CODI_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end,
+                                                   Real* primalData,
+                                                   ADJOINT_VECTOR_TYPE* data,
+                                                   ConstantValueVector& constantValueVector) {
+        Wrap_internalEvaluateReverseStack evalFunc;
+        constantValueVector.evaluateReverse(start, end, evalFunc, primalData, data);
       }
 
-      template<typename Adjoint>
-      CODI_NO_INLINE void internalEvaluate(Position const& start, Position const& end, Adjoint* data, bool copyPrimal) {
+      WRAP_FUNCTION(Wrap_internalEvaluateReverseVector, internalEvaluateReverseVector);
 
-        std::vector<Real> primalsCopy(0);
+      template<bool copyPrimal, typename Adjoint>
+      CODI_INLINE void internalEvaluateReverse(Position const& start, Position const& end, Adjoint* data) {
+
         Real* primalData = primals.data();
 
         if(copyPrimal) {
@@ -532,15 +538,21 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
 
-        Base::internalEvaluateExtFunc(start, end, PrimalValueBaseTape::internalEvaluateData, vectorAccess,
+        if(TapeTypes::IsLinearIndexHandler) {
+          Wrap_internalEvaluateReverseVector evalFunc{};
+          Base::internalEvaluateExtFunc(start, end, evalFunc, vectorAccess,
                                       primalData, dataVector, constantValueVector);
+        } else {
+          Base::internalEvaluateExtFunc(start, end, internalEvaluateReverseVector, vectorAccess,
+                                        primalData, dataVector, constantValueVector);
+        }
       }
 
     public:
 
       template<typename Adjoint>
-      CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
-        internalEvaluate(start, end, data, !TapeTypes::IsLinearIndexHandler);
+      CODI_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
+        internalEvaluateReverse<!TapeTypes::IsLinearIndexHandler>(start, end, data);
       }
 
     protected:
@@ -607,17 +619,22 @@ namespace codi {
         return staticsRhs.getValue();
       }
 
-      CODI_INLINE static void internalEvaluateForwardData(NestedPosition const& start, NestedPosition const& end,
+      WRAP_FUNCTION(Wrap_internalEvaluateForwardStack, Impl::internalEvaluateForwardStack);
+
+      CODI_INLINE static void internalEvaluateForwardVector(NestedPosition const& start, NestedPosition const& end,
                                                      Real* primalData,
                                                      ADJOINT_VECTOR_TYPE* data,
                                                      ConstantValueVector& constantValueVector) {
-        constantValueVector.evaluateForward(start, end, Impl::internalEvaluateForward,
-                                            primalData, data);
+
+
+        Wrap_internalEvaluateForwardStack evalFunc{};
+        constantValueVector.evaluateForward(start, end, evalFunc, primalData, data);
       }
 
+      WRAP_FUNCTION(Wrap_internalEvaluateForwardVector, internalEvaluateForwardVector);
 
-      template<typename Adjoint>
-      CODI_NO_INLINE void internalEvaluateForward(Position const& start, Position const& end, Adjoint* data, bool copyPrimal) {
+      template<bool copyPrimal, typename Adjoint>
+      CODI_NO_INLINE void internalEvaluateForward(Position const& start, Position const& end, Adjoint* data) {
 
         std::vector<Real> primalsCopy(0);
         Real* primalData = primals.data();
@@ -640,14 +657,21 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
 
-        Base::internalEvaluateExtFuncForward(start, end, PrimalValueBaseTape::internalEvaluateForwardData, vectorAccess,
-                                             primalData, dataVector, constantValueVector);
+        if(TapeTypes::IsLinearIndexHandler) {
+          Wrap_internalEvaluateForwardVector evalFunc{};
+          Base::internalEvaluateExtFuncForward(start, end, evalFunc, vectorAccess,
+                                               primalData, dataVector, constantValueVector);
+        } else {
+          Base::internalEvaluateExtFuncForward(start, end, internalEvaluateForwardVector, vectorAccess,
+                                               primalData, dataVector, constantValueVector);
+        }
+
       }
     public:
 
       template<typename Adjoint>
-      CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
-        internalEvaluateForward(start, end, data, !TapeTypes::IsLinearIndexHandler);
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
+        internalEvaluateForward<!TapeTypes::IsLinearIndexHandler>(start, end, data);
       }
 
       /*******************************************************************************
@@ -836,7 +860,7 @@ namespace codi {
       void evaluateKeepState(Position const& start, Position const& end) {
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
-        internalEvaluate(start, end, adjoints.data(), false);
+        internalEvaluateReverse<false>(start, end, adjoints.data());
 
         if(!TapeTypes::IsLinearIndexHandler) {
 
@@ -851,7 +875,7 @@ namespace codi {
           internalResetPrimalValues(end);
         }
 
-        internalEvaluateForward(start, end, adjoints.data(), false);
+        internalEvaluateForward<false>(start, end, adjoints.data());
       }
 
       /*******************************************************************************
@@ -891,12 +915,16 @@ namespace codi {
         return staticsRhs.getValue();
       }
 
-      CODI_INLINE static void internalEvaluatePrimalData(NestedPosition const& start, NestedPosition const& end,
+      WRAP_FUNCTION(Wrap_internalEvaluatePrimalStack, Impl::internalEvaluatePrimalStack);
+
+      CODI_INLINE static void internalEvaluatePrimalVector(NestedPosition const& start, NestedPosition const& end,
                                                          Real* primalData,
                                                          ConstantValueVector& constantValueVector) {
-        constantValueVector.evaluateForward(start, end, Impl::internalEvaluatePrimal,
-                                            primalData);
+        Wrap_internalEvaluatePrimalStack evalFunc{};
+        constantValueVector.evaluateForward(start, end, evalFunc, primalData);
       }
+
+      WRAP_FUNCTION(Wrap_internalEvaluatePrimalVector, internalEvaluatePrimalVector);
 
     public:
 
@@ -906,8 +934,15 @@ namespace codi {
         // TODO: implement primal value only accessor
         PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals);
 
-        Base::internalEvaluateExtFuncPrimal(start, end, PrimalValueBaseTape::internalEvaluatePrimalData, &primalAdjointAccess,
-                                             primals.data(), constantValueVector);
+        if(TapeTypes::IsLinearIndexHandler) {
+
+          Wrap_internalEvaluatePrimalVector evalFunc{};
+          Base::internalEvaluateExtFuncPrimal(start, end, evalFunc,
+                                              &primalAdjointAccess, primals.data(), constantValueVector);
+        } else {
+          Base::internalEvaluateExtFuncPrimal(start, end, PrimalValueBaseTape::internalEvaluatePrimalVector,
+                                              &primalAdjointAccess, primals.data(), constantValueVector);
+        }
       }
 
       Real& primal(Identifier const& identifier) {

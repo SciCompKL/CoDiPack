@@ -52,4 +52,12 @@ namespace codi {
    * Expand template types in preprocessor macros.
    */
   #define TEMPLATE(...) __VA_ARGS__
+
+  #define WRAP_FUNCTION(NAME, FUNC) \
+    struct NAME { \
+      template<typename ... Args> \
+      void operator()(Args&& ... args) const { \
+        FUNC(std::forward<Args>(args)...); \
+      } \
+    }
 }
