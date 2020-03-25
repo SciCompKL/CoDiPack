@@ -11,6 +11,7 @@
 #include "codi/tapes/jacobianReuseTape.hpp"
 #include "codi/tapes/primalValueLinearTape.hpp"
 #include "codi/tapes/primalValueReuseTape.hpp"
+#include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -31,14 +32,14 @@ namespace codi {
 
   using RealReverseIndex = RealReverseIndexGen<double, MultiUseIndexManager<int>, double>;
 
-  template<typename Real, typename IndexManager, typename Gradient = Real>
-  using RealReversePrimalGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, IndexManager>>>;
+  template<typename Real, typename IndexManager, template <typename> class StatementEvaluator, typename Gradient = Real>
+  using RealReversePrimalGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator>>>;
 
-  using RealReversePrimal = RealReversePrimalGen<double, LinearIndexManager<int>, double>;
+  using RealReversePrimal = RealReversePrimalGen<double, LinearIndexManager<int>, ReverseStatementEvaluator, double>;
 
-  template<typename Real, typename IndexManager, typename Gradient = Real>
-  using RealReversePrimalIndexGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager>>>;
+  template<typename Real, typename IndexManager, template <typename> class StatementEvaluator, typename Gradient = Real>
+  using RealReversePrimalIndexGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator>>>;
 
-  using RealReversePrimalIndex = RealReversePrimalIndexGen<double, MultiUseIndexManager<int>, double>;
+  using RealReversePrimalIndex = RealReversePrimalIndexGen<double, MultiUseIndexManager<int>, ReverseStatementEvaluator, double>;
 
 }
