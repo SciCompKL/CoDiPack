@@ -368,7 +368,7 @@ namespace codi {
        */
 
       template<typename Function, typename Obj, typename ... Args>
-      void internalEvaluateExtFuncPrimal(const Position& start, const Position &end,
+      CODI_INLINE void internalEvaluateExtFuncPrimal(const Position& start, const Position &end,
                                  const Function& func, Obj& obj,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){
@@ -390,7 +390,7 @@ namespace codi {
       }
 
       template<typename Function, typename ... Args>
-      void internalEvaluateExtFunc(const Position& start, const Position &end,
+      CODI_INLINE void internalEvaluateExtFunc(const Position& start, const Position &end,
                                  Function func,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){
@@ -412,7 +412,7 @@ namespace codi {
       }
 
       template<typename Function, typename Obj, typename ... Args>
-      void internalEvaluateExtFuncForward(const Position& start, const Position &end,
+      CODI_INLINE void internalEvaluateExtFuncForward(const Position& start, const Position &end,
                                  const Function& func, Obj& obj,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){

@@ -53,6 +53,7 @@ namespace codi {
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;
+      friend Base;
 
       using Real = typename TapeTypes::Real;
       using Gradient = typename TapeTypes::Gradient;
@@ -290,6 +291,8 @@ namespace codi {
         return values;
       }
 
+    public:
+
       using Base::evaluate;
 
       /*******************************************************************************
@@ -319,17 +322,16 @@ namespace codi {
         }
       }
 
-      template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateData(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianVector& jacobianVector) {
-        jacobianVector.evaluateReverse(start, end, Impl::template internalEvaluateReverse<Adjoint>, data);
-      }
-
     public:
       template<typename Adjoint>
       CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template internalEvaluateData<Adjoint>, &adjointWrapper, data, jacobianVector);
+        auto evalFunc = [this] (NestedPosition const& start, NestedPosition const& end,
+                                Adjoint* data) {
+            jacobianVector.evaluateReverse(start, end, Impl::template internalEvaluateReverse<Adjoint>, data);
+        };
+        Base::internalEvaluateExtFunc(start, end, evalFunc, &adjointWrapper, data);
       }
 
     protected:
@@ -351,17 +353,15 @@ namespace codi {
         }
       }
 
-      template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateData(Position const& start, Position const& end, Adjoint* data, JacobianVector& jacobianVector) {
-        jacobianVector.evaluateForward(start, end, Impl::template internalEvaluateForward<Adjoint>, data);
-      }
-
     public:
       template<typename Adjoint>
       CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::internalEvaluateData<Adjoint>, &adjointWrapper, data, jacobianVector);
+        auto evalFunc = [this] (NestedPosition const& start, NestedPosition const& end, Adjoint* data) {
+          jacobianVector.evaluateForward(start, end, Impl::template internalEvaluateForward<Adjoint>, data);
+        };
+        Base::internalEvaluateExtFunc(start, end, evalFunc, &adjointWrapper, data, jacobianVector);
 
       }
 

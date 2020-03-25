@@ -312,7 +312,7 @@ namespace codi {
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject& function, Args&&... args) {
+      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject const& function, Args&&... args) {
         codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
         codiAssert(start.chunk < chunks.size());
 

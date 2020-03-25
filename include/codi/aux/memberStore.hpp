@@ -50,11 +50,11 @@ namespace codi {
         }
       }
 
-      Type& get() {
+      CODI_INLINE Type& get() {
         return *((Type*)MemberStore::member);
       }
 
-      Type const& get() const {
+      CODI_INLINE Type const& get() const {
         return *((Type const*)MemberStore::member);
       }
   };
