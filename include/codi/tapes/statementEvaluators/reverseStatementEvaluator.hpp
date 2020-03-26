@@ -26,18 +26,6 @@ namespace codi {
        */
       using Handle = void*;
 
-      template<typename Tape, typename Expr>
-      static Handle createHandle() {
-        return (Handle*)Tape::template statementEvaluateReverse<Expr>;
-      }
-
-      template<typename Tape, typename ... Args>
-      static void callReverse(Handle const& h, Args&& ... args) {
-        HandleTyped<Tape> func = (HandleTyped<Tape>)h;
-
-        func(std::forward<Args>(args)...);
-      }
-
       template<typename Tape, typename ... Args>
       static Real callForward(Handle const& h, Args&& ... args) {
         CODI_UNUSED(h, args...);
@@ -54,6 +42,18 @@ namespace codi {
         CODI_EXCEPTION("ReverseFunctionEvaluator does not support forward evaluation calls.");
 
         return Real();
+      }
+
+      template<typename Tape, typename ... Args>
+      static void callReverse(Handle const& h, Args&& ... args) {
+        HandleTyped<Tape> func = (HandleTyped<Tape>)h;
+
+        func(std::forward<Args>(args)...);
+      }
+
+      template<typename Tape, typename Expr>
+      static Handle createHandle() {
+        return (Handle*)Tape::template statementEvaluateReverse<Expr>;
       }
 
     protected:

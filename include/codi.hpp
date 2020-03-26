@@ -12,6 +12,8 @@
 #include "codi/tapes/primalValueLinearTape.hpp"
 #include "codi/tapes/primalValueReuseTape.hpp"
 #include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
+#include "codi/tapes/statementEvaluators/directStatementEvaluator.hpp"
+#include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

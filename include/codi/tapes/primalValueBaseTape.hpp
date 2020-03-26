@@ -62,7 +62,8 @@ namespace codi {
   template<typename _TapeTypes, typename _Impl>
   struct PrimalValueBaseTape :
       public CommonTapeImplementation<_TapeTypes, _Impl>,
-      public StatementEvaluatorTapeInterface<typename _TapeTypes::Real>
+      public StatementEvaluatorTapeInterface<typename _TapeTypes::Real>,
+      public StatementEvaluatorInnerTapeInterface<typename _TapeTypes::Real>
   {
     public:
 
@@ -864,22 +865,14 @@ namespace codi {
        */
 
       template<typename Rhs>
-      static Real statementEvaluateForward(
+      static Real statementEvaluateForwardInner(
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
-          Gradient& lhsTangent, Config::ArgumentSize numberOfPassiveArguments,
+          Gradient& lhsTangent,
           size_t& curConstantPos, PassiveReal const* const constantValues,
-          size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
         using Construtor = ConstructStaticContextlLogic<Rhs, Impl, 0, 0>;
         using StaticRhs = typename Construtor::ResultType;
-
-        size_t constexpr MaxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
-        size_t constexpr MaxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
-
-        for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
-          primalVector[curPos] = passiveValues[curPassivePos + curPos];
-        }
 
         StaticRhs staticsRhs = Construtor::construct(
               primalVector,
@@ -889,13 +882,91 @@ namespace codi {
         IncrementForwardLogic incrementForward;
 
         incrementForward.eval(staticsRhs, 1.0, lhsTangent, adjointVector);
+        return staticsRhs.getValue();
+
+      }
+
+      template<typename Func>
+      static Real statementEvaluateForwardFull(
+          Func const& evalInner, size_t const& maxActiveArgs, size_t const& maxConstantArgs,
+          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          Gradient& lhsTangent, Config::ArgumentSize numberOfPassiveArguments,
+          size_t& curConstantPos, PassiveReal const* const constantValues,
+          size_t& curPassivePos, Real const* const passiveValues,
+          size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
+
+        for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
+          primalVector[curPos] = passiveValues[curPassivePos + curPos];
+
+        }
+
+        Real ret = evalInner(primalVector, adjointVector, lhsTangent,
+                             curConstantPos, constantValues,
+                             curRhsIdentifiersPos, rhsIdentifiers);
 
         // Adapt vector positions
-        curConstantPos += MaxConstantArgs;
+        curConstantPos += maxConstantArgs;
         curPassivePos += numberOfPassiveArguments;
-        curRhsIdentifiersPos += MaxActiveArgs;
+        curRhsIdentifiersPos += maxActiveArgs;
+
+        return ret;
+      }
+
+      template<typename Rhs>
+      static Real statementEvaluateForward(
+          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          Gradient& lhsTangent, Config::ArgumentSize numberOfPassiveArguments,
+          size_t& curConstantPos, PassiveReal const* const constantValues,
+          size_t& curPassivePos, Real const* const passiveValues,
+          size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
+
+        size_t constexpr MaxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
+        size_t constexpr MaxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
+
+        return statementEvaluateForwardFull(statementEvaluateForwardInner<Rhs>, MaxActiveArgs, MaxConstantArgs,
+                                            primalVector, adjointVector, lhsTangent, numberOfPassiveArguments,
+                                            curConstantPos, constantValues,
+                                            curPassivePos, passiveValues,
+                                            curRhsIdentifiersPos, rhsIdentifiers);
+      }
+
+      template<typename Rhs>
+      static Real statementEvaluatePrimalInner(
+          Real* primalVector,
+          size_t& curConstantPos, PassiveReal const* const constantValues,
+          size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
+
+        using Construtor = ConstructStaticContextlLogic<Rhs, Impl, 0, 0>;
+        using StaticRhs = typename Construtor::ResultType;
+
+        StaticRhs staticsRhs = Construtor::construct(
+              primalVector,
+              &rhsIdentifiers[curRhsIdentifiersPos],
+              &constantValues[curConstantPos]);
 
         return staticsRhs.getValue();
+      }
+
+      template<typename Func>
+      static Real statementEvaluatePrimalFull(
+          Func const& evalInner, size_t const& maxActiveArgs, size_t const& maxConstantArgs,
+          Real* primalVector, Config::ArgumentSize numberOfPassiveArguments,
+          size_t& curConstantPos, PassiveReal const* const constantValues,
+          size_t& curPassivePos, Real const* const passiveValues,
+          size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
+
+        for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
+          primalVector[curPos] = passiveValues[curPassivePos + curPos];
+        }
+
+        Real ret = evalInner(primalVector, curConstantPos, constantValues, curRhsIdentifiersPos, rhsIdentifiers);
+
+        // Adapt vector positions
+        curConstantPos += maxConstantArgs;
+        curPassivePos += numberOfPassiveArguments;
+        curRhsIdentifiersPos += maxActiveArgs;
+
+        return ret;
       }
 
       template<typename Rhs>
@@ -905,62 +976,77 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        using Construtor = ConstructStaticContextlLogic<Rhs, Impl, 0, 0>;
-        using StaticRhs = typename Construtor::ResultType;
-
         size_t constexpr MaxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
         size_t constexpr MaxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
 
-        for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
-          primalVector[curPos] = passiveValues[curPassivePos + curPos];
-        }
+        return statementEvaluatePrimalFull(statementEvaluatePrimalInner<Rhs>, MaxActiveArgs, MaxConstantArgs,
+                                    primalVector, numberOfPassiveArguments,
+                                    curConstantPos, constantValues,
+                                    curPassivePos, passiveValues,
+                                    curRhsIdentifiersPos, rhsIdentifiers);
+      }
+
+      template<typename Rhs>
+      CODI_INLINE static void statementEvaluateReverseInner(
+          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          Gradient lhsAdjoint,
+          size_t& curConstantPos, PassiveReal const* const constantValues,
+          size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
+
+        using Construtor = ConstructStaticContextlLogic<Rhs, Impl, 0, 0>;
+        using StaticRhs = typename Construtor::ResultType;
 
         StaticRhs staticsRhs = Construtor::construct(
               primalVector,
               &rhsIdentifiers[curRhsIdentifiersPos],
               &constantValues[curConstantPos]);
 
-        // Adapt vector positions
-        curConstantPos += MaxConstantArgs;
-        curPassivePos += numberOfPassiveArguments;
-        curRhsIdentifiersPos += MaxActiveArgs;
+        IncrementReversalLogic incrementReverse;
 
-        return staticsRhs.getValue();
+        incrementReverse.eval(staticsRhs, 1.0, const_cast<Gradient const&>(lhsAdjoint), adjointVector);
       }
 
-      template<typename Rhs>
-      static void statementEvaluateReverse(
+
+      template<typename Func>
+      CODI_INLINE static void statementEvaluateReverseFull(
+          Func const& evalInner, size_t const& maxActiveArgs, size_t const& maxConstantArgs,
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           Gradient lhsAdjoint, Config::ArgumentSize numberOfPassiveArguments,
           size_t& curConstantPos, PassiveReal const* const constantValues,
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        using Construtor = ConstructStaticContextlLogic<Rhs, Impl, 0, 0>;
-        using StaticRhs = typename Construtor::ResultType;
-
-        size_t constexpr MaxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
-        size_t constexpr MaxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
-
         // Adapt vector positions
-        curConstantPos -= MaxConstantArgs;
+        curConstantPos -= maxConstantArgs;
         curPassivePos -= numberOfPassiveArguments;
-        curRhsIdentifiersPos -= MaxActiveArgs;
+        curRhsIdentifiersPos -= maxActiveArgs;
 
         ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !isTotalZero(lhsAdjoint)) {
           for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
             primalVector[curPos] = passiveValues[curPassivePos + curPos];
           }
 
-          StaticRhs staticsRhs = Construtor::construct(
-                primalVector,
-                &rhsIdentifiers[curRhsIdentifiersPos],
-                &constantValues[curConstantPos]);
-
-          IncrementReversalLogic incrementReverse;
-
-          incrementReverse.eval(staticsRhs, 1.0, const_cast<Gradient const&>(lhsAdjoint), adjointVector);
+          evalInner(primalVector, adjointVector, lhsAdjoint, curConstantPos, constantValues,
+                                        curRhsIdentifiersPos, rhsIdentifiers);
         }
+      }
+
+      template<typename Rhs>
+      CODI_INLINE static void statementEvaluateReverse(
+          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          Gradient lhsAdjoint, Config::ArgumentSize numberOfPassiveArguments,
+          size_t& curConstantPos, PassiveReal const* const constantValues,
+          size_t& curPassivePos, Real const* const passiveValues,
+          size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
+
+        size_t constexpr maxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
+        size_t constexpr maxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
+        statementEvaluateReverseFull(
+              statementEvaluateReverseInner<Rhs>, maxActiveArgs, maxConstantArgs,
+              primalVector, adjointVector, lhsAdjoint, numberOfPassiveArguments,
+              curConstantPos, constantValues,
+              curPassivePos, passiveValues,
+              curRhsIdentifiersPos, rhsIdentifiers);
       }
 
     private:

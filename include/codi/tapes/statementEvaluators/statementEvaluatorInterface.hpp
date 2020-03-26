@@ -18,16 +18,17 @@ namespace codi {
        */
       using Handle = ANY;
 
-      template<typename Tape, typename Expr>
-      static Handle createHandle();
-
-      template<typename Tape, typename ... Args>
-      static void callReverse(Handle const& h, Args&& ... args);
-
       template<typename Tape, typename ... Args>
       static Real callForward(Handle const& h, Args&& ... args);
 
       template<typename Tape, typename ... Args>
       static Real callPrimal(Handle const& h, Args&& ... args);
+
+      template<typename Tape, typename ... Args>
+      static void callReverse(Handle const& h, Args&& ... args);
+
+      template<typename Tape, typename Expr>
+      static Handle createHandle();
+
   };
 }
