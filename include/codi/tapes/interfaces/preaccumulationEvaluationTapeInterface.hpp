@@ -13,9 +13,9 @@ namespace codi {
 
   template<typename _Real, typename _Gradient, typename _Identifier, typename _Position>
   struct PreaccumulationEvaluationTapeInterface :
-      public PositionalEvaluationTapeInterface<_Position>,
-      public ForwardEvaluationTapeInterface<_Position>,
-      public ManualStatementPushTapeInterface<_Real, _Gradient, _Identifier>
+      public virtual PositionalEvaluationTapeInterface<_Position>,
+      public virtual ForwardEvaluationTapeInterface<_Position>,
+      public virtual ManualStatementPushTapeInterface<_Real, _Gradient, _Identifier>
   {
     public:
 

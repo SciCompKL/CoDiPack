@@ -9,7 +9,7 @@
 namespace codi {
 
   template<typename _Real, typename _Identifier, typename _Position>
-  struct PrimalEvaluationTapeInterface : public PositionalEvaluationTapeInterface<_Position> {
+  struct PrimalEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<_Position> {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);

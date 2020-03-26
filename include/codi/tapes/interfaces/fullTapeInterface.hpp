@@ -21,18 +21,18 @@ namespace codi {
 
   template<typename _Real, typename _Gradient, typename _Identifier, typename _Position>
   struct FullTapeInterface :
-      public CustomVectorEvaluationTapeInterface<_Position>,
-      public DataManagementTapeInterface,
-      public ExternalFunctionTapeInterface<_Real, _Gradient, _Identifier>,
-      public ForwardEvaluationTapeInterface<_Position>,
-      public GradientAccessTapeInterface<_Gradient, _Identifier>,
-      public IdentifierInformationTapeInterface<_Real, _Gradient, _Identifier>,
-      public InternalExpressionTapeInterface<_Identifier>,
-      public ManualStatementPushTapeInterface<_Real, _Gradient, _Identifier>,
-      public PositionalEvaluationTapeInterface<_Position>,
-      public PreaccumulationEvaluationTapeInterface<_Real, _Gradient, _Identifier, _Position>,
-      public PrimalEvaluationTapeInterface<_Real, _Identifier, _Position>,
-      public ReverseTapeInterface<_Real, _Gradient, _Identifier>
+      public virtual CustomVectorEvaluationTapeInterface<_Position>,
+      public virtual DataManagementTapeInterface,
+      public virtual ExternalFunctionTapeInterface<_Real, _Gradient, _Identifier>,
+      public virtual ForwardEvaluationTapeInterface<_Position>,
+      public virtual GradientAccessTapeInterface<_Gradient, _Identifier>,
+      public virtual IdentifierInformationTapeInterface<_Real, _Gradient, _Identifier>,
+      public virtual InternalExpressionTapeInterface<_Identifier>,
+      public virtual ManualStatementPushTapeInterface<_Real, _Gradient, _Identifier>,
+      public virtual PositionalEvaluationTapeInterface<_Position>,
+      public virtual PreaccumulationEvaluationTapeInterface<_Real, _Gradient, _Identifier, _Position>,
+      public virtual PrimalEvaluationTapeInterface<_Real, _Identifier, _Position>,
+      public virtual ReverseTapeInterface<_Real, _Gradient, _Identifier>
   {
     public:
 

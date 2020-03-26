@@ -15,8 +15,8 @@
 namespace codi {
 
   template<typename _Real, typename _Gradient, typename _Identifier>
-  struct ReverseTapeInterface : public InternalExpressionTapeInterface<_Identifier>,
-                                public GradientAccessTapeInterface<_Gradient, _Gradient> {
+  struct ReverseTapeInterface : public virtual InternalExpressionTapeInterface<_Identifier>,
+                                public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
 
 
       using Real = DECLARE_DEFAULT(_Real, double);
