@@ -9,6 +9,8 @@
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
+#include "../expressions/logic/helpers/forEachTermLogic.hpp"
+#include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../expressions/logic/constructStaticContext.hpp"
 #include "../traits/expressionTraits.hpp"
@@ -210,22 +212,21 @@ namespace codi {
 
     protected:
 
-      struct CountActiveArguments : public TraversalLogic<CountActiveArguments> {
+      struct CountActiveArguments : public ForEachTermLogic<CountActiveArguments> {
         public:
           template<typename Node>
-          CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, size_t& numberOfActiveArguments) {
+          CODI_INLINE void handleActive(Node const& node, size_t& numberOfActiveArguments) {
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
 
               numberOfActiveArguments += 1;
             }
           }
-          using TraversalLogic<CountActiveArguments>::term;
       };
 
-      struct PushIdentfierPassiveAndConstant : public TraversalLogic<PushIdentfierPassiveAndConstant> {
+      struct PushIdentfierPassiveAndConstant : public ForEachTermLogic<PushIdentfierPassiveAndConstant> {
         public:
           template<typename Node>
-          CODI_INLINE enableIfLhsExpression<Node> term(
+          CODI_INLINE void handleActive(
               Node const& node,
               RhsIdentifierVector& rhsIdentiferVector,
               PassiveValueVector& passiveValueVector,
@@ -246,7 +247,7 @@ namespace codi {
           }
 
           template<typename Node>
-          CODI_INLINE enableIfConstantExpression<Node> term(
+          CODI_INLINE void handleConstant(
               Node const& node,
               RhsIdentifierVector& rhsIdentiferVector,
               PassiveValueVector& passiveValueVector,
@@ -257,8 +258,6 @@ namespace codi {
 
             constantValueVector.pushData(node.getValue());
           }
-
-          using TraversalLogic<PushIdentfierPassiveAndConstant>::term;
       };
 
     public:
@@ -447,10 +446,10 @@ namespace codi {
 
 
 
-      struct IncrementReversalLogic : public TraversalLogic<IncrementReversalLogic> {
+      struct IncrementReversalLogic : public JacobianComputationLogic<Real, IncrementReversalLogic> {
         public:
           template<typename Node>
-          CODI_INLINE enableIfStaticContextActiveType<Node> term(Node const& node, Real jacobian, Gradient const& lhsAdjoint, ADJOINT_VECTOR_TYPE* adjointVector) {
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient const& lhsAdjoint, ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsAdjoint);
 
             using std::isfinite;
@@ -461,15 +460,6 @@ namespace codi {
               adjointVector[node.getIdentifier()] += jacobian * lhsAdjoint;
 #endif
             }
-          }
-          using TraversalLogic<IncrementReversalLogic>::term;
-
-          template<size_t LeafNumber, typename Leaf, typename Root>
-          CODI_INLINE void link(Leaf const& leaf, Root const& root, Real jacobian, Gradient const& lhsAdjoint, Gradient* adjointVector) {
-
-            Real curJacobian = root.template getJacobian<LeafNumber>() * jacobian;
-
-            this->toNode(leaf, curJacobian, lhsAdjoint, adjointVector);
           }
       };
 
@@ -527,10 +517,10 @@ namespace codi {
 
     protected:
 
-      struct IncrementForwardLogic : public TraversalLogic<IncrementForwardLogic> {
+      struct IncrementForwardLogic : public JacobianComputationLogic<Real, IncrementForwardLogic> {
         public:
           template<typename Node>
-          CODI_INLINE enableIfStaticContextActiveType<Node> term(Node const& node, Real jacobian, Gradient& lhsTangent, ADJOINT_VECTOR_TYPE* adjointVector) {
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsTangent, ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsTangent);
 
             using std::isfinite;
@@ -541,15 +531,6 @@ namespace codi {
               lhsTangent += jacobian * adjointVector[node.getIdentifier()];
 #endif
             }
-          }
-          using TraversalLogic<IncrementForwardLogic>::term;
-
-          template<size_t LeafNumber, typename Leaf, typename Root>
-          CODI_INLINE void link(Leaf const& leaf, Root const& root, Real jacobian, Gradient const& lhsTangent, Gradient* adjointVector) {
-
-            Real curJacobian = root.template getJacobian<LeafNumber>() * jacobian;
-
-            this->toNode(leaf, curJacobian, lhsTangent, adjointVector);
           }
       };
 

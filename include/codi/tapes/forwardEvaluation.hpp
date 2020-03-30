@@ -5,7 +5,7 @@
 #include "../aux/macros.h"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
-#include "../expressions/logic/traversalLogic.hpp"
+#include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "interfaces/internalExpressionTapeInterface.hpp"
 #include "interfaces/gradientAccessTapeInterface.hpp"
@@ -37,24 +37,14 @@ namespace codi {
         CODI_UNUSED(value, identifier);
       }
 
-      struct LocalReverseLogic : public TraversalLogic<LocalReverseLogic> {
+      struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
           template<typename Node>
-          CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, Gradient& lhsGradient) {
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
             using std::isfinite;
             ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
               lhsGradient += node.gradient() * jacobian;
             }
           }
-          using TraversalLogic<LocalReverseLogic>::term;
-
-          template<size_t LeafNumber, typename Leaf, typename Root>
-          CODI_INLINE void link(Leaf const& leaf, Root const& root, Real const& jacobian, Gradient& lhsGradient) {
-
-            Real curJacobian = root.template getJacobian<LeafNumber>() * jacobian;
-
-            this->toNode(leaf, curJacobian, lhsGradient);
-          }
-
       };
 
       template<typename Lhs, typename Rhs>

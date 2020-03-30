@@ -9,6 +9,7 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "aux/adjointVectorAccess.hpp"
 #include "data/chunk.hpp"
@@ -164,10 +165,10 @@ namespace codi {
 
     protected:
 
-      struct PushJacobianLogic : public TraversalLogic<PushJacobianLogic> {
+      struct PushJacobianLogic : public JacobianComputationLogic<Real, PushJacobianLogic> {
         public:
           template<typename Node>
-          CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, JacobianVector& jacobianVector) {
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, JacobianVector& jacobianVector) {
             using std::isfinite;
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
               ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
@@ -176,15 +177,6 @@ namespace codi {
                 }
               }
             }
-          }
-          using TraversalLogic<PushJacobianLogic>::term;
-
-          template<size_t LeafNumber, typename Leaf, typename Root>
-          CODI_INLINE void link(Leaf const& leaf, Root const& root, Real jacobian, JacobianVector& jacobianVector) {
-
-            Real curJacobian = root.template getJacobian<LeafNumber>() * jacobian;
-
-            this->toNode(leaf, curJacobian, jacobianVector);
           }
       };
 
