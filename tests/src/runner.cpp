@@ -37,14 +37,14 @@ struct Runner {
     }
 
     void run() {
-      TestVector<Number> tests = driver.getTests();
+      TestVector<Number> testInfos = driver.getTestInfos();
 
-      for(auto& curTest : tests) {
-        std::string outFile = generateOutputFile(curTest);
+      for(auto& curInfo : testInfos) {
+        std::string outFile = generateOutputFile(curInfo.test);
 
         FILE* out = fopen(outFile.c_str(), "w");
-        std::cout << "Running Driver: " << driver.getName() << " Test: " << curTest->getName() << std::endl;
-        driver.runTest(curTest, out);
+        std::cout << "Running Driver: " << driver.getName() << " Test: " << curInfo.test->getName() << std::endl;
+        driver.runTest(curInfo, out);
         fclose(out);
       }
     }
@@ -64,7 +64,7 @@ struct Runner {
         return mkdir(dir, mode);
     }
 
-    std::string generateOutputFile(TestInterface<Number>* test) {
+    std::string generateOutputFile(TestInterface* test) {
       std::string file = "build/results";
       file += "/" + driver.getName();
 

@@ -6,9 +6,20 @@
 #include <codi/tools/data/jacobian.hpp>
 
 #include "../driverInterface.hpp"
-#include "../../tests/listsTests.hpp"
+#include "../../tests/allTests.hpp"
 #include "../../output.hpp"
 
+#include DRIVER_TESTS_INC
+
+template<typename Number>
+void createTests(TestVector<Number>& tests) {}
+
+template<typename Number, typename Test, typename ... Args>
+void createTests(TestVector<Number>& tests) {
+  tests.push_back(TestInfo<Number>(new Test(), Test::template func<Number>));
+
+  createTests<Number, Args...>(tests);
+}
 
 struct CoDiReverse1stOrder : public DriverInterface<CODI_TYPE> {
   public:
@@ -23,15 +34,17 @@ struct CoDiReverse1stOrder : public DriverInterface<CODI_TYPE> {
       return DriverOrder::Deriv1st;
     }
 
-    TestVector<Number> getTests() {
-      TestVector<Number> tests;
+    TestVector<Number> getTestInfos() {
+      TestVector<Number> testInfos;
 
-      listTestAll(tests);
+      createTests<Number, DRIVER_TESTS>(testInfos);
 
-      return tests;
+      return testInfos;
     }
 
-    void runTest(TestInterface<Number>* test, FILE* out) {
+    void runTest(TestInfo<Number>& info, FILE* out) {
+
+      TestInterface* test = info.test;
 
       //using GT = codi::GradientValueTraits<Gradient>;
       constexpr size_t gradDim = 1; //GT::getVectorSize();
@@ -80,13 +93,11 @@ struct CoDiReverse1stOrder : public DriverInterface<CODI_TYPE> {
             tape.registerInput(x[i]);
           }
 
-          test->func(x, y);
+          info.func(x, y);
 
           for(int i = 0; i < outputs; ++i) {
             tape.registerOutput(y[i]);
           }
-
-          tape.setPassive();
 
           for(size_t curDim = 0; curDim < curSize; ++curDim) {
             if(tape.isIdentifierActive(y[curOut * gradDim + curDim].getIdentifier())) {

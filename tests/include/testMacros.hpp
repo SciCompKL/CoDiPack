@@ -17,4 +17,3 @@
   int getEvalPointsCount() {return number;} \
   double getEvalPoint(int point, int col) { return points[point][col]; } \
   double points[number][in_count]
-
