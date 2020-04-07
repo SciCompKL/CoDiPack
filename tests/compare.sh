@@ -1,8 +1,7 @@
-#!/bin/bash
 #
 # CoDiPack, a Code Differentiation Package
 #
-# Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+# Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
 # Homepage: http://www.scicomp.uni-kl.de
 # Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
 #
@@ -24,7 +23,11 @@
 # General Public License along with CoDiPack.
 # If not, see <http://www.gnu.org/licenses/>.
 #
-# Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+# Authors:
+#  - SciComp, TU Kaiserslautern:
+#     Max Sagebaum
+#     Tim Albring
+#     Johannes Blühdorn
 #
 
 # compare.sh - compare files and dsiplays if they match
@@ -75,8 +78,9 @@ then
   else
       while [ $# -gt 0 ]
       do
+          TEST_NAME_PATTERN='_([^/]+)\.out'
           res+=" "
-          [[ $1 =~ _([^/]+)\.out ]] &&
+          [[ $1 =~ $TEST_NAME_PATTERN ]] &&
               res+=${BASH_REMATCH[1]}:
           build/compare.exe -t 1e-14 $baseFileName $1
           if [ $? -eq 0 ];
