@@ -9,22 +9,52 @@
 #include "../include/testInterface.hpp"
 
 struct CompareOutput {
+
+    enum struct Color {
+      Red = 31,
+      Green = 32,
+      Yellow = 33
+    };
+
+    std::string OK;
+    std::string FAILURE;
+    std::string NOT_AVAILABLE;
+
+    size_t minFieldSize;
+
     double threshold;
 
     std::vector<std::string> drivers;
+    TestNames testNames;
+
+    bool testInHeader;
 
     CompareOutput() :
+      OK("OK"),
+      FAILURE("Failure"),
+      NOT_AVAILABLE("n/a"),
+      minFieldSize(0),
       threshold(1e-16),
-      drivers() {}
+      drivers(),
+      testNames(),
+      testInHeader(true)
+    {
+      listAllNames(testNames);
+      minFieldSize = std::max(OK.size(), std::max(FAILURE.size(), NOT_AVAILABLE.size()));
+
+    }
 
     bool parse(int nargs, char* args[]) {
       double allOk = true;
 
       std::string const THRESHOLD_OPTION("-t");
       std::string const DRIVER_OPTION("-d");
+      std::string const TRANSPOSE_OPTION("--trans");
 
       for(int curArg = 1; curArg < nargs; curArg += 1) {
-        if(THRESHOLD_OPTION == std::string(args[curArg])) {
+        if(TRANSPOSE_OPTION == std::string(args[curArg])) {
+          testInHeader = false;
+        } else if(THRESHOLD_OPTION == std::string(args[curArg])) {
           curArg += 1;
           if(curArg >= nargs) {
             std::cerr << "Error: Missing value for -t option." << std::endl;
@@ -49,10 +79,12 @@ struct CompareOutput {
       return allOk;
     }
 
-    void formatHeader(size_t const maxDriverSize, TestNames& testNames) {
+    template<typename List>
+    void formatHeader(size_t const maxDriverSize, List& list) {
       printf("%*s", (int)maxDriverSize, " ");
-      for(std::string const& curTest : testNames) {
-        printf(" %s", curTest.c_str());
+      for(std::string const& item : list) {
+        int maxEntrySize = (int)std::max(item.size(), minFieldSize);
+        printf(" %s", formatCenter(item, maxEntrySize, item.size()).c_str());
       }
       printf("\n");
     }
@@ -78,51 +110,101 @@ struct CompareOutput {
       return allOk;
     }
 
-    bool run() {
+    bool formatEntry(std::string const& driver, std::string const& test, int maxCellSize, std::string& cell) {
       bool allOk = true;
-      TestNames testNames;
-      listAllNames(testNames);
-
-      size_t maxDriverSize = getMaxDriverSize();
-
-      formatHeader(maxDriverSize + 1, testNames);
-
-      std::string curLine;
-      for(std::string const& curDriver : drivers) {
-        curLine = "";
-        curLine += format("%*s:", (int)maxDriverSize, curDriver.c_str());
-
-        std::string modeName;
-        if(!getLongModeName(curDriver, modeName)) {
-          break;
-        }
-
-        for(std::string const& curTest : testNames) {
-          std::string baseFile = generateTestComparetFile(curTest, modeName);
-          std::string resultFile = generateDriverOutputFile(curTest, curDriver);
-
-          if(isTestAvail(resultFile)) {
-            bool same = compareFiles(baseFile, resultFile, threshold);
-            if(same) {
-              curLine += format(" %*s", (int)curTest.size(), "OK");
-            } else {
-              curLine += format(" %*s", (int)curTest.size(), "Failure");
-              allOk = false;
-            }
-          } else {
-            curLine += format(" %*s", (int)curTest.size(), "n/a");
-          }
-        }
-        std::cout << curLine << std::endl;
+      std::string modeName;
+      if(!getLongModeName(driver, modeName)) {
+        return false;
       }
+
+      std::string baseFile = generateTestComparetFile(test, modeName);
+      std::string resultFile = generateDriverOutputFile(test, driver);
+
+      int contentSize = 0;
+      std::string result = "";
+
+      if(isTestAvail(resultFile)) {
+        bool same = compareFiles(baseFile, resultFile, threshold);
+        if(same) {
+          contentSize = OK.size();
+          result = formatColor(OK, Color::Green);
+        } else {
+          contentSize = FAILURE.size();
+          result = formatColor(FAILURE, Color::Red);
+          allOk = false;
+        }
+      } else {
+        contentSize = NOT_AVAILABLE.size();
+        result = formatColor(NOT_AVAILABLE, Color::Yellow);
+      }
+
+      int targetSize = std::max((int)minFieldSize, maxCellSize);
+      cell = " " +formatCenter(result, targetSize, contentSize);
 
       return allOk;
     }
 
-    size_t getMaxDriverSize() {
+    bool run() {
+      bool allOk = true;
+
+      size_t maxDriverSize = getMaxSize(drivers);
+      size_t maxTestSize = getMaxSize(testNames);
+
+
+      std::string curLine;
+      if(testInHeader) {
+        formatHeader(maxDriverSize + 1, testNames);
+
+        for(std::string const& curDriver : drivers) {
+          curLine = "";
+          curLine += format("%*s:", (int)maxDriverSize, curDriver.c_str());
+
+          for(std::string const& curTest : testNames) {
+
+            std::string cell;
+            allOk &= formatEntry(curDriver, curTest, (int)curTest.size(), cell);
+            curLine += cell;
+          }
+          std::cout << curLine << std::endl;
+        }
+      } else {
+        formatHeader(maxTestSize + 1, drivers);
+
+        for(std::string const& curTest : testNames) {
+          curLine = "";
+          curLine += format("%*s:", (int)maxTestSize, curTest.c_str());
+
+          for(std::string const& curDriver : drivers) {
+
+            std::string cell;
+            allOk &= formatEntry(curDriver, curTest, (int)curDriver.size(), cell);
+            curLine += cell;
+          }
+          std::cout << curLine << std::endl;
+        }
+      }
+
+
+      return allOk;
+    }
+
+    std::string formatCenter(std::string const& text, int size, int contentSize) {
+      int pad = size - contentSize;
+      int leftPad = pad / 2 + pad % 2;
+      int rightPad = pad / 2;
+
+      return format("%*s%s%*s", leftPad, "", text.c_str(), rightPad, "");
+    }
+
+    std::string formatColor(std::string const& text, Color color) {
+      return format("\033[%dm%s\033[0m", (int)color, text.c_str());
+    }
+
+    template<typename List>
+    size_t getMaxSize(List const& list) {
       size_t maxSize = 0;
-      for(std::string const& curDriver : drivers) {
-        maxSize = std::max(maxSize, curDriver.size());
+      for(std::string const& item: list) {
+        maxSize = std::max(maxSize, item.size());
       }
 
       return maxSize;
