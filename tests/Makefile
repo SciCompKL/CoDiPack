@@ -39,8 +39,10 @@ DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/**/**.d)
 # Test selection by user
 ALL_TESTS = $(patsubst test%.hpp,Test%,$(notdir $(TEST_FILES)))
 ifeq ($(TESTS),)
+  CONFID = $(BUILD_DIR)/allTests.conf
   SELECTED_TESTS = $(ALL_TESTS)
 else
+  CONFID = $(BUILD_DIR)/$(subst $(SPACE),_,$(strip $(SELECTED_TESTS))).conf
   SELECTED_TESTS = $(patsubst %,Test%,$(TESTS))
 endif
 
@@ -80,7 +82,6 @@ $(BUILD_DIR)/%.exe :
 	$(CXX) $(CXX_FLAGS) $^ -o $@
 
 # Update rule for dependency on TESTS parameter
-CONFID = $(BUILD_DIR)/$(subst $(SPACE),_,$(strip $(SELECTED_TESTS))).conf
 CREATE_CONFID := $(shell mkdir -p $(BUILD_DIR) && touch -a $(CONFID))
 
 $(BUILD_DIR)/conf.d: $(CONFID)
