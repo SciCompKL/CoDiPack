@@ -101,13 +101,13 @@ struct CompareOutput {
           if(isTestAvail(resultFile)) {
             bool same = compareFiles(baseFile, resultFile, threshold);
             if(same) {
-              printf("%*s", (int)curTest.size(), "OK");
+              printf(" %*s", (int)curTest.size(), "OK");
             } else {
-              printf("%*s", (int)curTest.size(), "Failure");
+              printf(" %*s", (int)curTest.size(), "Failure");
               allOk = false;
             }
           } else {
-            printf("%*s", (int)curTest.size(), "n/a");
+            printf(" %*s", (int)curTest.size(), "n/a");
           }
         }
         printf("\n");
@@ -164,13 +164,5 @@ int main(int nargs, char* args[]) {
   } else {
     return -1;
   }
-}
-
-#include "../include/testInterface.hpp"
-
-// TODO: needs to be generated
-void listAllNames(TestNames& names) {
-  names.insert("Copy");
-  names.insert("Expr");
 }
 

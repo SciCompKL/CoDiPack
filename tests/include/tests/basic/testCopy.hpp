@@ -1,7 +1,7 @@
 #include "../../testInterface.hpp"
 
 struct TestCopy : public TestInterface {
-
+  public:
     NAME("Copy")
     IN(1)
     OUT(1)

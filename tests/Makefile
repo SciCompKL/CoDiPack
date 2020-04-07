@@ -109,12 +109,18 @@ $(BUILD_DIR)/%.run : $(BUILD_DIR)/%.runner.exe
 	@mkdir -p $(@D)
 	$< | tee $@
 
+# rule for all tests file generation
+$(BUILD_DIR)/allTests.hpp: $(INCLUDE_DIR)/tests/allTests.hpp
+	echo "#define ALL_TESTS $(call createTests,$(ALL_TESTS))" > $@
+
 # output dependencies and rule
-build/compare.exe : build/compare.o build/compareFiles.o
+$(BUILD_DIR)/listAllNames.o : $(BUILD_DIR)/allTests.hpp
+$(BUILD_DIR)/compare.exe : $(BUILD_DIR)/compare.o $(BUILD_DIR)/compareFiles.o $(BUILD_DIR)/listAllNames.o
+
 
 .PHONY: output
-output: build/compare.exe $(DRIVER_RUNS)
-	build/compare.exe -t 1e-16 $(patsubst %, -d %, $(SELECTED_DRIVERS))
+output: $(BUILD_DIR)/compare.exe $(DRIVER_RUNS)
+	$(BUILD_DIR)/compare.exe -t 1e-16 $(patsubst %, -d %, $(SELECTED_DRIVERS))
 
 .PHONY: all
 all: output
