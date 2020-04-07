@@ -4,6 +4,8 @@
 #include "basic/testExpr.hpp"
 #include "basic/testIndices.hpp"
 #include "basic/testOutput.hpp"
+#include "exceptions/testOneArgumentExceptions.hpp"
+#include "exceptions/testTwoArgumentExceptions.hpp"
 #include "expressions/testAssignOperators1.hpp"
 #include "expressions/testAssignOperators2.hpp"
 #include "expressions/testBigExpressions.hpp"
