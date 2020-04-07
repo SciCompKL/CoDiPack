@@ -1,0 +1,16 @@
+
+# Function for driver generation
+define define_codi_driver
+#  $(1) DRIVER_NAME
+#  $(2) DRIVER_INCLUDE
+#  $(3) DRIVER_CLASS
+#  $(4) CODI_TYPE
+  ALL_DRIVERS := $(ALL_DRIVERS) $(1)
+  $(BUILD_DIR)/$(1).runner.o : DRIVER_INC = -I$(CODI_DIR)/include -DDRIVER='$(2)' -DDRIVER_NAME=$(3) -DCODI_TYPE=$(4) -DCODI_TYPE_NAME=$(1)
+  $(BUILD_DIR)/$(1).runner.o : DRIVER_TESTS = $(ALL_TESTS)
+endef
+
+# driver definitions
+$(eval $(call define_codi_driver,D1_fwd,"drivers/codi/forward1stOrder.hpp",CoDiForward1stOrder,codi::RealForward))
+$(eval $(call define_codi_driver,D1_rwsJacLin,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverse))
+$(eval $(call define_codi_driver,D1_rwsJacInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseIndex))

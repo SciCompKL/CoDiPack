@@ -1,0 +1,126 @@
+NOOP=
+SPACE = $(NOOP) $(NOOP)
+KOMMA = $(NOOP),$(NOOP)
+
+# names of the basic directories
+INCLUDE_DIR = include
+SRC_DIR = src
+BUILD_DIR = build
+TEST_DIR = $(INCLUDE_DIR)/tests
+DRIVER_DIR = $(INCLUDE_DIR)/drivers
+CODI_DIR := ..
+CODI_INCLUDE = -I$(CODI_DIR)/include
+
+FLAGS = -Wall -Wextra -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -DCODI_EnableCombineJacobianArguments -I$(INCLUDE_DIR)
+
+ifeq ($(OPT), yes)
+  CXX_FLAGS := -O3 $(FLAGS)
+else
+  CXX_FLAGS := -O0 -g $(FLAGS)
+endif
+
+ifeq ($(CXX), )
+	CXX := g++
+else
+	CXX := $(CXX)
+endif
+
+#list all source files in TEST_DIR
+TEST_FILES   = $(wildcard $(TEST_DIR)/test**.hpp)
+TEST_FILES  += $(wildcard $(TEST_DIR)/**/test**.hpp)
+TEST_FILES  += $(wildcard $(TEST_DIR)/**/**/test**.hpp)
+
+#list all dependency files in BUILD_DIR
+DEP_FILES   = $(wildcard $(BUILD_DIR)/**.d)
+DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**.d)
+DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/**.d)
+DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/**/**.d)
+
+# Test selection by user
+ALL_TESTS = $(patsubst test%.hpp,Test%,$(notdir $(TEST_FILES)))
+ifeq ($(TESTS),)
+  SELECTED_TESTS = $(ALL_TESTS)
+else
+  SELECTED_TESTS = $(patsubst %,Test%,$(TESTS))
+endif
+
+ifeq ($(UPDATE), yes)
+  UPDATE_FLAG=-u
+endif
+
+# ALL_DRIVERS will contain the complete list of all drivers
+ALL_DRIVERS =
+
+# set default rule
+all:
+
+# disable the deletion of secondary targets
+.SECONDARY:
+
+#include drivers
+include Makefile.drivers
+
+# selection of drivers to run
+ifeq ($(DRIVERS),)
+  SELECTED_DRIVERS = $(ALL_DRIVERS)
+else
+  SELECTED_DRIVERS = $(DRIVERS)
+endif
+
+DRIVER_RUNS = $(patsubst %,$(BUILD_DIR)/%.run, $(SELECTED_DRIVERS))
+
+# regular build rules
+$(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $< -c -o $@
+	@$(CXX) $(CXX_FLAGS) $< -MM -MP -MT $@ -MF $@.d
+
+$(BUILD_DIR)/%.exe :
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $^ -o $@
+
+# Update rule for dependency on TESTS parameter
+CONFID = $(BUILD_DIR)/$(subst $(SPACE),_,$(strip $(SELECTED_TESTS))).conf
+CREATE_CONFID := $(shell mkdir -p $(BUILD_DIR) && touch -a $(CONFID))
+
+$(BUILD_DIR)/conf.d: $(CONFID)
+	mkdir -p $(BUILD_DIR)
+	rm -f $(BUILD_DIR)/*.conf
+	rm -rf $(BUILD_DIR)/results
+	touch $(CONFID)
+	touch $@
+
+# build rules for test runners
+define createTests
+	$(subst $(SPACE),$(KOMMA),$(filter $1,$(SELECTED_TESTS)))
+endef
+
+$(BUILD_DIR)/%.runner.o : $(SRC_DIR)/runner.cpp $(BUILD_DIR)/conf.d
+	@mkdir -p $(@D)
+	echo "#define DRIVER_TESTS $(call createTests,$(DRIVER_TESTS))" > $@.tests.hpp
+	$(CXX) $(CXX_FLAGS) $(DRIVER_INC) -I. -DDRIVER_TESTS_INC='"$@.tests.hpp"' $< -c -o $@
+	@$(CXX) $(CXX_FLAGS) $(DRIVER_INC) -I. -DDRIVER_TESTS_INC='"$@.tests.hpp"' $< -MM -MP -MT $@ -MF $@.d
+
+$(BUILD_DIR)/%.runner.exe : $(BUILD_DIR)/%.runner.o
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $(DRIVER_LIB) $^ -o $@
+
+$(BUILD_DIR)/%.run : $(BUILD_DIR)/%.runner.exe
+	@mkdir -p $(@D)
+	$< | tee $@
+
+# output dependencies and rule
+build/compare.exe : build/compare.o build/compareFiles.o
+
+.PHONY: output
+output: build/compare.exe $(DRIVER_RUNS)
+	build/compare.exe -t 1e-16 $(patsubst %, -d %, $(SELECTED_DRIVERS))
+
+.PHONY: all
+all: output
+
+.PHONY: clean
+clean:
+	rm -fr $(BUILD_DIR)
+
+-include $(DEP_FILES)
