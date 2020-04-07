@@ -379,6 +379,37 @@ namespace codi {
   #define OPERATION_LOGIC Pow
   #define FUNCTION pow
   #include "binaryOverloads.tpp"
+
+  template<typename _Real>
+  struct Remainder : public BinaryOperation<_Real> {
+    public:
+
+      using Real = DECLARE_DEFAULT(_Real, double);
+
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
+        using std::remainder;
+        return remainder(argA, argB);
+      }
+
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+        CODI_UNUSED(argA, argB, result);
+
+        return (Real)1.0;
+      }
+
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+        CODI_UNUSED(result);
+
+        using std::round;
+        return -round(argA/argB);
+      }
+  };
+  #define OPERATION_LOGIC Remainder
+  #define FUNCTION remainder
+  #include "binaryOverloads.tpp"
 }
 
 namespace std {
@@ -390,4 +421,5 @@ namespace std {
   using codi::max;
   using codi::min;
   using codi::pow;
+  using codi::remainder;
 }

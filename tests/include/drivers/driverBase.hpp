@@ -56,7 +56,7 @@ struct DriverBase : public DriverInterface<_Number> {
             fprintf(out, ", ");
           }
           double val = test->getEvalPoint(curPoint, i);
-          fprintf(out, "%0.0f", val);
+          fprintf(out, "%f", val);
 
           x[i] = (Number)(val);
         }

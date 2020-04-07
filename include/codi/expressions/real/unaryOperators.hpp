@@ -439,6 +439,12 @@ namespace codi {
   #define FUNCTION log10
   #include "unaryOverloads.tpp"
 
+  template<typename Real, typename Arg>
+  CODI_INLINE PassiveRealType<Real> round(ExpressionInterface<Real, Arg> const& arg) {
+    using std::round;
+    return round(arg.getValue());
+  }
+
   template<typename _Real>
   struct Sin : public UnaryOperation<_Real> {
     public:
@@ -646,6 +652,7 @@ namespace std {
   using codi::isnan;
   using codi::log;
   using codi::log10;
+  using codi::round;
   using codi::sin;
   using codi::sinh;
   using codi::sqrt;
