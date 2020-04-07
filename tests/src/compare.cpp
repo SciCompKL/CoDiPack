@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../include/compareFiles.h"
+#include "../include/output.hpp"
 #include "../include/testInterface.hpp"
 
 struct CompareOutput {
@@ -86,8 +87,10 @@ struct CompareOutput {
 
       formatHeader(maxDriverSize + 1, testNames);
 
+      std::string curLine;
       for(std::string const& curDriver : drivers) {
-        printf("%*s:", (int)maxDriverSize, curDriver.c_str());
+        curLine = "";
+        curLine += format("%*s:", (int)maxDriverSize, curDriver.c_str());
 
         std::string modeName;
         if(!getLongModeName(curDriver, modeName)) {
@@ -101,16 +104,16 @@ struct CompareOutput {
           if(isTestAvail(resultFile)) {
             bool same = compareFiles(baseFile, resultFile, threshold);
             if(same) {
-              printf(" %*s", (int)curTest.size(), "OK");
+              curLine += format(" %*s", (int)curTest.size(), "OK");
             } else {
-              printf(" %*s", (int)curTest.size(), "Failure");
+              curLine += format(" %*s", (int)curTest.size(), "Failure");
               allOk = false;
             }
           } else {
-            printf(" %*s", (int)curTest.size(), "n/a");
+            curLine += format(" %*s", (int)curTest.size(), "n/a");
           }
         }
-        printf("\n");
+        std::cout << curLine << std::endl;
       }
 
       return allOk;

@@ -1,16 +1,57 @@
 #pragma once
 
+#include <stdarg.h>
 #include <stdio.h>
+#include <string>
 #include <vector>
 
-#include <codi/tools/data/jacobian.hpp>
-//#include <codi/tools/data/hessian.hpp>
+#include "../../include/codi/tools/data/jacobian.hpp"
+//#include ../../include/codi/tools/data/hessian.hpp"
 
 char const *const HEADER_FORMAT = "%6s_%03zd";
 char const *const VALUE_FORMAT  = "%10g";
 char const *const COL_SEPERATOR = " ";
 char const *const LINE_END      = "\n";
 char const *const BLANK         = "          ";
+
+
+inline std::string vformat(const char* format, va_list list) {
+    const int bufferSize = 200;
+    char buffer[bufferSize];
+
+    // copy the list if we need to iterate through the variables again
+    va_list listCpy;
+    va_copy(listCpy, list);
+
+    int outSize = vsnprintf(buffer, bufferSize, format, list);
+
+    std::string result;
+    if(outSize + 1 > bufferSize) {
+        char* newBuffer = new char[outSize + 1];
+
+        outSize = vsnprintf(newBuffer, outSize + 1, format, listCpy);
+
+        result = newBuffer;
+
+        delete [] newBuffer;
+    } else {
+        result = buffer;
+    }
+
+    // cleanup the copied list
+    va_end (listCpy);
+
+    return result;
+}
+
+inline std::string format(const char* format, ...) {
+    va_list list;
+    va_start(list, format);
+    std::string result = vformat(format, list);
+    va_end(list);
+
+    return result;
+}
 
 template<typename T>
 void writeOutputPrimal(FILE* out, std::vector<T> const& primal) {
