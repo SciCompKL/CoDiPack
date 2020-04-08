@@ -15,5 +15,7 @@
 #include "expressions/testOneArgumentExpr3.hpp"
 #include "expressions/testTwoArgumentExpr1.hpp"
 #include "expressions/testTwoArgumentExpr2.hpp"
+#include "externalFunctions/testExtFunctionCall.hpp"
+#include "externalFunctions/testExtFunctionCallMultiple.hpp"
 #include "io/testIO.hpp"
 #include "io/testSwap.hpp"
