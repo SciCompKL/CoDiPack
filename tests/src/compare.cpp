@@ -99,7 +99,9 @@ struct CompareOutput {
 
       if(allOk) {
         std::string mode = driverName.substr(0, modePos);
-        if("D1" == mode) {
+        if("D0" == mode) {
+          modeName = "primal";
+        } else if("D1" == mode) {
           modeName = "deriv1st";
         } else {
           std::cerr << "Error: No long mode name available for: " << mode << std::endl;

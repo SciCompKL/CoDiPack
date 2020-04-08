@@ -3,16 +3,16 @@
 #include <codi.hpp>
 #include <codi/tools/data/jacobian.hpp>
 
-#include "../driverBase.hpp"
+#include "../driver1stOrderBase.hpp"
 
 #include DRIVER_TESTS_INC
 
-struct CoDiForward1stOrder : public DriverBase<CODI_TYPE> {
+struct CoDiForward1stOrder : public Driver1stOrderBase<CODI_TYPE> {
   public:
 
     using Number = CODI_TYPE;
 
-    using Base = DriverBase<Number>;
+    using Base = Driver1stOrderBase<Number>;
 
     CoDiForward1stOrder() : Base(CODI_TO_STRING(CODI_TYPE_NAME)) {}
 

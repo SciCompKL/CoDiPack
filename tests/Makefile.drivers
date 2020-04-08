@@ -13,8 +13,16 @@ define define_codi_driver
 endef
 
 # driver definitions
+# First order drivers
 $(eval $(call define_codi_driver,D1_fwd,"drivers/codi/forward1stOrder.hpp",CoDiForward1stOrder,codi::RealForward,$(ALL_TESTS),))
 $(eval $(call define_codi_driver,D1_rwsJacLin,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverse,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D1_rwsJacInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseIndex,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D1_rwsPrimLin,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimal,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D1_rwsPrimInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimalIndex,$(ALL_TESTS),-DREVERSE_TAPE))
+
+# Primal drivers
+$(eval $(call define_codi_driver,D0_fwd,"drivers/codi/primal.hpp",CoDiPrimal,codi::RealForward,$(ALL_TESTS),))
+$(eval $(call define_codi_driver,D0_rwsJacLin,"drivers/codi/primal.hpp",CoDiPrimal,codi::RealReverse,$(ALL_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D0_rwsJacInd,"drivers/codi/primal.hpp",CoDiPrimal,codi::RealReverseIndex,$(ALL_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D0_rwsPrimLin,"drivers/codi/primal.hpp",CoDiPrimal,codi::RealReversePrimal,$(ALL_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D0_rwsPrimInd,"drivers/codi/primal.hpp",CoDiPrimal,codi::RealReversePrimalIndex,$(ALL_TESTS),-DREVERSE_TAPE))
