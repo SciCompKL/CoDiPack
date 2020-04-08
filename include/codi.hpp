@@ -14,6 +14,8 @@
 #include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/directStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
+#include "codi/tools/data/externalFunctionData.hpp"
+#include "codi/traits/tapeTraits.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
