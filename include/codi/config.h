@@ -72,6 +72,11 @@ namespace codi {
       const bool CheckZeroIndex = CODI_CheckZeroIndex;
       #undef CODI_CheckZeroIndex
 
+      #ifndef CODI_CombineJacobianArguments
+        #define CODI_CombineJacobianArguments 0
+      #endif
+      bool constexpr CombineJacobianArguments = CODI_CombineJacobianArguments;
+
       #ifndef CODI_IgnoreInvalidJacobies
         #define CODI_IgnoreInvalidJacobies false
       #endif

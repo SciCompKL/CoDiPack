@@ -14,6 +14,7 @@
 #include "../expressions/referenceActiveType.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "aux/adjointVectorAccess.hpp"
+#include "aux/jacobianSorter.hpp"
 #include "data/chunk.hpp"
 #include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
@@ -75,6 +76,11 @@ namespace codi {
 
     protected:
 
+
+#if CODI_CombineJacobianArguments
+      JacobianSorter<Real, Identifier> jacobianSorter;
+#endif
+
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
       StatementVector statementVector;
       JacobianVector jacobianVector;
@@ -112,6 +118,9 @@ namespace codi {
 
       JacobianBaseTape() :
         Base(),
+  #if CODI_CombineJacobianArguments
+        jacobianSorter(),
+  #endif
         indexManager(0),
         statementVector(Config::ChunkSize),
         jacobianVector(Config::ChunkSize),
@@ -169,21 +178,21 @@ namespace codi {
 
       struct PushJacobianLogic : public JacobianComputationLogic<Real, PushJacobianLogic> {
         public:
-          template<typename Node>
-          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, JacobianVector& jacobianVector) {
+          template<typename Node, typename DataVector>
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
             using std::isfinite;
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
               ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
                 ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
-                  jacobianVector.pushData(jacobian, node.getIdentifier());
+                  dataVector.pushData(jacobian, node.getIdentifier());
                 }
               }
             }
           }
 
-          template<typename Type>
-          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian, JacobianVector& jacobianVector) {
-            CODI_UNUSED(jacobianVector);
+          template<typename Type, typename DataVector>
+          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian, DataVector& dataVector) {
+            CODI_UNUSED(dataVector);
 
             using std::isfinite;
             ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
@@ -195,12 +204,12 @@ namespace codi {
 
       struct PushDelayedJacobianLogic : public ForEachTermLogic<PushDelayedJacobianLogic> {
         public:
-          template<typename Type>
-          CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, JacobianVector& jacobianVector) {
+          template<typename Type, typename DataVector>
+          CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, DataVector& dataVector) {
             using std::isfinite;
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
               ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(node.jacobian)) {
-                jacobianVector.pushData(node.jacobian, node.getIdentifier());
+                dataVector.pushData(node.jacobian, node.getIdentifier());
 
                 // Reset the jacobian here such that it is not pushed multiple times and ready for the next store
                 node.jacobian = Real();
@@ -211,6 +220,25 @@ namespace codi {
           using ForEachTermLogic<PushDelayedJacobianLogic>::handleActive;
       };
 
+      template<typename Rhs>
+      CODI_INLINE void pushJacobians(ExpressionInterface<Real, Rhs> const& rhs) {
+        PushJacobianLogic pushJacobianLogic;
+        PushDelayedJacobianLogic pushDelayedJacobianLogic;
+
+#if CODI_CombineJacobianArguments
+        auto& insertVector = jacobianSorter;
+#else
+        auto& insertVector = jacobianVector;
+#endif
+
+        pushJacobianLogic.eval(rhs.cast(), 1.0, insertVector);
+        pushDelayedJacobianLogic.eval(rhs.cast(), insertVector);
+
+#if CODI_CombineJacobianArguments
+        jacobianSorter.storeData(jacobianVector);
+#endif
+      }
+
     public:
 
       template<typename Lhs, typename Rhs>
@@ -218,17 +246,14 @@ namespace codi {
                  ExpressionInterface<Real, Rhs> const& rhs) {
 
         if(cast().isActive()) {
-          PushJacobianLogic pushJacobianLogic;
-          PushDelayedJacobianLogic pushDelayedJacobianLogic;
           size_t constexpr MaxArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
 
           statementVector.reserveItems(1);
           typename JacobianVector::InternalPosHandle jacobianStart = jacobianVector.reserveItems(MaxArgs);
 
-          pushJacobianLogic.eval(rhs.cast(), 1.0, jacobianVector);
-          pushDelayedJacobianLogic.eval(rhs.cast(), jacobianVector);
-          size_t numberOfArguments = jacobianVector.getPushedDataCount(jacobianStart);
+          pushJacobians(rhs);
 
+          size_t numberOfArguments = jacobianVector.getPushedDataCount(jacobianStart);
           if(0 != numberOfArguments) {
             indexManager.get().assignIndex(lhs.cast().getIdentifier());
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
