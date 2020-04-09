@@ -19,3 +19,4 @@
 #include "externalFunctions/testExtFunctionCallMultiple.hpp"
 #include "io/testIO.hpp"
 #include "io/testSwap.hpp"
+#include "tools/testReferenceActiveType.hpp"

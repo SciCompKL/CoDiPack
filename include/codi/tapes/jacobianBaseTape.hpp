@@ -9,7 +9,9 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../expressions/logic/helpers/forEachTermLogic.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
+#include "../expressions/referenceActiveType.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "aux/adjointVectorAccess.hpp"
 #include "data/chunk.hpp"
@@ -178,6 +180,35 @@ namespace codi {
               }
             }
           }
+
+          template<typename Type>
+          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian, JacobianVector& jacobianVector) {
+            CODI_UNUSED(jacobianVector);
+
+            using std::isfinite;
+            ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
+              // Do a delayed push for these termination nodes, accumulate the jacobian in the local member
+              node.jacobian += jacobian;
+            }
+          }
+      };
+
+      struct PushDelayedJacobianLogic : public ForEachTermLogic<PushDelayedJacobianLogic> {
+        public:
+          template<typename Type>
+          CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, JacobianVector& jacobianVector) {
+            using std::isfinite;
+            ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
+              ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(node.jacobian)) {
+                jacobianVector.pushData(node.jacobian, node.getIdentifier());
+
+                // Reset the jacobian here such that it is not pushed multiple times and ready for the next store
+                node.jacobian = Real();
+              }
+            }
+          }
+
+          using ForEachTermLogic<PushDelayedJacobianLogic>::handleActive;
       };
 
     public:
@@ -188,12 +219,14 @@ namespace codi {
 
         if(cast().isActive()) {
           PushJacobianLogic pushJacobianLogic;
+          PushDelayedJacobianLogic pushDelayedJacobianLogic;
           size_t constexpr MaxArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
 
           statementVector.reserveItems(1);
           typename JacobianVector::InternalPosHandle jacobianStart = jacobianVector.reserveItems(MaxArgs);
 
           pushJacobianLogic.eval(rhs.cast(), 1.0, jacobianVector);
+          pushDelayedJacobianLogic.eval(rhs.cast(), jacobianVector);
           size_t numberOfArguments = jacobianVector.getPushedDataCount(jacobianStart);
 
           if(0 != numberOfArguments) {

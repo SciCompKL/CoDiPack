@@ -4,6 +4,7 @@
 
 #include "codi/expressions/real/allOperators.hpp"
 #include "codi/expressions/activeType.hpp"
+#include "codi/expressions/referenceActiveType.hpp"
 #include "codi/tapes/forwardEvaluation.hpp"
 #include "codi/tapes/indices/linearIndexManager.hpp"
 #include "codi/tapes/indices/multiUseIndexManager.hpp"
