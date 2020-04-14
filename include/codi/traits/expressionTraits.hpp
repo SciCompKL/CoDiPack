@@ -81,25 +81,25 @@ namespace codi {
   struct MaxNumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, MaxNumberOfActiveTypeArguments<Expr>> {
     public:
 
-      static size_t constexpr value = MaxNumberOfActiveTypeArguments::template eval<Expr>();
-
       template<typename Node, typename = enableIfLhsExpression<Node>>
       CODI_INLINE static constexpr size_t term() {
         return 1;
       }
       using CompileTimeTraversalLogic<size_t, MaxNumberOfActiveTypeArguments>::term;
+
+      static size_t constexpr value = MaxNumberOfActiveTypeArguments::template eval<Expr>();
   };
 
   template<typename Expr>
   struct MaxNumberOfConstantArguments : public CompileTimeTraversalLogic<size_t, MaxNumberOfConstantArguments<Expr>> {
     public:
 
-      static size_t constexpr value = MaxNumberOfConstantArguments::template eval<Expr>();
-
       template<typename Node, typename = enableIfConstantExpression<Node>>
       CODI_INLINE static constexpr size_t term() {
         return 1;
       }
       using CompileTimeTraversalLogic<size_t, MaxNumberOfConstantArguments>::term;
+
+      static size_t constexpr value = MaxNumberOfConstantArguments::template eval<Expr>();
   };
 }
