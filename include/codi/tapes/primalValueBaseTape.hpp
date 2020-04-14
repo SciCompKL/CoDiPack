@@ -16,7 +16,6 @@
 #include "../traits/expressionTraits.hpp"
 #include "aux/primalAdjointVectorAccess.hpp"
 #include "data/chunk.hpp"
-#include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "commonTapeImplementation.hpp"
 #include "statementEvaluators/statementEvaluatorTapeInterface.hpp"
@@ -25,7 +24,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Real, typename _Gradient, typename _IndexManager, template <typename> class _StatementEvaluator>
+  template<typename _Real, typename _Gradient, typename _IndexManager, template <typename> class _StatementEvaluator, template<typename, typename> class _Vector>
   struct PrimalValueTapeTypes : public TapeTypesInterface {
     public:
 
@@ -33,6 +32,8 @@ namespace codi {
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
       using IndexManager = DECLARE_DEFAULT(_IndexManager, TEMPLATE(IndexManagerInterface<int>));
       using StatementEvaluator = DECLARE_DEFAULT(TEMPLATE(_StatementEvaluator<Real>), TEMPLATE(StatementEvaluatorInterface<double>));
+      template<typename Chunk, typename Nested>
+      using Vector = DECLARE_DEFAULT(TEMPLATE(_Vector<Chunk, Nested>), TEMPLATE(DataInterface<Nested>));
 
       using Identifier = typename IndexManager::Index;
       using PassiveReal = PassiveRealType<Real>;
@@ -47,16 +48,16 @@ namespace codi {
                                 Chunk2<Config::ArgumentSize, EvalHandle>,
                                 Chunk4<Identifier, Config::ArgumentSize, Real, EvalHandle>
                               >::type;
-      using StatementVector = ChunkVector<StatementChunk, IndexManager>;
+      using StatementVector = Vector<StatementChunk, IndexManager>;
 
       using IdentifierChunk = Chunk1<Identifier>;
-      using RhsIdentifierVector = ChunkVector<IdentifierChunk, StatementVector>;
+      using RhsIdentifierVector = Vector<IdentifierChunk, StatementVector>;
 
       using PassiveValueChunk = Chunk1<Real>;
-      using PassiveValueVector = ChunkVector<PassiveValueChunk, RhsIdentifierVector>;
+      using PassiveValueVector = Vector<PassiveValueChunk, RhsIdentifierVector>;
 
       using ConstantValueChunk = Chunk1<PassiveReal>;
-      using ConstantValueVector = ChunkVector<ConstantValueChunk, PassiveValueVector>;
+      using ConstantValueVector = Vector<ConstantValueChunk, PassiveValueVector>;
 
       using NestedVector = ConstantValueVector;
   };

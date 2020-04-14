@@ -8,7 +8,6 @@
 #include "../config.h"
 #include "aux/vectorAccessInterface.hpp"
 #include "data/dataInterface.hpp"
-#include "data/chunkVector.hpp"
 #include "data/position.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "interfaces/fullTapeInterface.hpp"
@@ -23,18 +22,26 @@ namespace codi {
       using Gradient = ANY;
       using Identifier = ANY;
 
+      template<typename Chunk, typename Nested>
+      using Vector = DataInterface<Nested>;
+
       using NestedVector = DataInterface<>;
   };
 
-  template<typename _NestedVector>
+  template<typename _TapeTypes>
   struct BaseTapeTypes {
     public:
 
-      using NestedVector = DECLARE_DEFAULT(_NestedVector, TEMPLATE(DataInterface<>));
+      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);
+
+      using NestedVector = typename TapeTypes::NestedVector;
+      template<typename Chunk, typename Nested>
+      using Vector = typename TapeTypes::template Vector<Chunk, Nested>;
+
 
       using NestedPosition = typename NestedVector::Position;
       using ExternalFunctionChunk = Chunk2<ExternalFunction, NestedPosition>;
-      using ExternalFunctionVector = ChunkVector<ExternalFunctionChunk, NestedVector>;
+      using ExternalFunctionVector = Vector<ExternalFunctionChunk, NestedVector>;
       using Position = typename ExternalFunctionVector::Position;
   };
 
@@ -44,7 +51,7 @@ namespace codi {
           typename _TapeTypes::Real,
           typename _TapeTypes::Gradient,
           typename _TapeTypes::Identifier,
-          typename BaseTapeTypes<typename _TapeTypes::NestedVector>::Position>
+          typename BaseTapeTypes<_TapeTypes>::Position>
   {
     public:
 
@@ -57,7 +64,7 @@ namespace codi {
       using NestedVector = typename TapeTypes::NestedVector;
       using NestedPosition = typename NestedVector::Position;
 
-      using ExternalFunctionVector = typename BaseTapeTypes<NestedVector>::ExternalFunctionVector;
+      using ExternalFunctionVector = typename BaseTapeTypes<TapeTypes>::ExternalFunctionVector;
       using Position = typename ExternalFunctionVector::Position;
 
     protected:

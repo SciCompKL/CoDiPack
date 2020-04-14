@@ -10,7 +10,6 @@
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
-#include "data/chunkVector.hpp"
 #include "indices/linearIndexManager.hpp"
 #include "interfaces/reverseTapeInterface.hpp"
 #include "jacobianBaseTape.hpp"

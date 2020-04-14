@@ -27,6 +27,17 @@ struct CoDiReverse1stOrder : public Driver1stOrderBase<CODI_TYPE> {
 
       Number::Tape& tape = Number::getGlobalTape();
 
+      // Set sizes for Jacobian tapes
+      if(tape.hasOption(codi::ConfigurationOption::JacobianSize)) {
+        tape.setOption(codi::ConfigurationOption::JacobianSize, 1000);
+      }
+      if(tape.hasOption(codi::ConfigurationOption::StatementSize)) {
+        tape.setOption(codi::ConfigurationOption::StatementSize, 1000);
+      }
+      if(tape.hasOption(codi::ConfigurationOption::ExternalFunctionsSize)) {
+        tape.setOption(codi::ConfigurationOption::ExternalFunctionsSize, 1000);
+      }
+
       size_t runs = outputs / gradDim;
       if(outputs % gradDim != 0) {
         runs += 1;

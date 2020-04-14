@@ -13,7 +13,6 @@
 #include "../expressions/logic/constructStaticContext.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
-#include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "primalValueBaseTape.hpp"
 

@@ -67,6 +67,13 @@ namespace codi {
         usedSize = 0;
       }
 
+      CODI_INLINE void resize(size_t newSize) {
+        deleteData();
+        size = newSize;
+        usedSize = 0;
+        allocateData();
+      }
+
       CODI_INLINE void setUsedSize(size_t const& usage) {
         usedSize = usage;
       }

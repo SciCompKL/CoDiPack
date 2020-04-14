@@ -16,20 +16,21 @@
 #include "aux/adjointVectorAccess.hpp"
 #include "aux/jacobianSorter.hpp"
 #include "data/chunk.hpp"
-#include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "commonTapeImplementation.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Real, typename _Gradient, typename _IndexManager>
+  template<typename _Real, typename _Gradient, typename _IndexManager, template<typename, typename> class _Vector>
   struct JacobianTapeTypes : public TapeTypesInterface {
     public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
       using IndexManager = DECLARE_DEFAULT(_IndexManager, TEMPLATE(IndexManagerInterface<int>));
+      template<typename Chunk, typename Nested>
+      using Vector = DECLARE_DEFAULT(TEMPLATE(_Vector<Chunk, Nested>), TEMPLATE(DataInterface<Nested>));
 
       using Identifier = typename IndexManager::Index;
 
@@ -41,10 +42,10 @@ namespace codi {
                                  Chunk1<Config::ArgumentSize>,
                                  Chunk2<Identifier, Config::ArgumentSize>
                                >::type;
-      using StatementVector = ChunkVector<StatementChunk, IndexManager>;
+      using StatementVector = Vector<StatementChunk, IndexManager>;
 
       using JacobianChunk = Chunk2<Real, Identifier>;
-      using JacobianVector = ChunkVector<JacobianChunk, StatementVector>;
+      using JacobianVector = Vector<JacobianChunk, StatementVector>;
 
       using NestedVector = JacobianVector;
   };
