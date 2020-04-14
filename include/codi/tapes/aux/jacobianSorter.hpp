@@ -15,16 +15,17 @@ namespace codi {
 
       using Real = DECLARE_DEFAULT(_Real, double);
       using Identifier = DECLARE_DEFAULT(_Identifier, int);
+      using ArgumentSize = Config::ArgumentSize;
 
       std::array<Identifier, Config::MaxArgumentSize> indices;
       std::array<Real, Config::MaxArgumentSize> jacobies;
-      size_t size;
+      ArgumentSize size;
 
       JacobianSorter() = default;
 
       CODI_INLINE void pushData(Real const& jacobi, Identifier const& index) {
         bool found = false;
-        size_t pos;
+        ArgumentSize pos;
         for(pos = 0; pos < size; pos += 1) {
           if(indices[pos] == index) {
             found = true;
@@ -44,7 +45,7 @@ namespace codi {
 
       template<typename Vec>
       CODI_INLINE void storeData(Vec& vec) {
-        for(size_t pos = 0; pos < size; pos += 1) {
+        for(ArgumentSize pos = 0; pos < size; pos += 1) {
           vec.pushData(jacobies[pos], indices[pos]);
         }
 
