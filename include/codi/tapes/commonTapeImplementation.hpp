@@ -261,7 +261,7 @@ namespace codi {
        */
 
       void pushExternalFunction(ExternalFunction const& extFunc) {
-        if(cast().isActive()) {
+        ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           externalFunctionVector.reserveItems(1);
           externalFunctionVector.pushData(extFunc, externalFunctionVector.getPosition().inner); // TODO: Add getInner zum Interface?
         }

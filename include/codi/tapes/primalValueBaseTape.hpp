@@ -267,7 +267,7 @@ namespace codi {
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                  ExpressionInterface<Real, Rhs> const& rhs) {
 
-        if(cast().isActive()) {
+        ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           CountActiveArguments countActiveArguments;
           PushIdentfierPassiveAndConstant pushAll;
           size_t constexpr MaxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
@@ -308,7 +308,7 @@ namespace codi {
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                  LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
 
-        if(cast().isActive()) {
+        ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           if(IndexManager::AssignNeedsStatement || !Config::AssignOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
           } else {

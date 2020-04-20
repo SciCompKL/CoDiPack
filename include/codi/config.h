@@ -66,6 +66,12 @@ namespace codi {
       const bool CheckJacobiIsZero = CODI_CheckJacobiIsZero;
       #undef CODI_CheckJacobiIsZero
 
+      #ifndef CODI_CheckTapeActivity
+        #define CODI_CheckTapeActivity true
+      #endif
+      const bool CheckTapeActivity = CODI_CheckTapeActivity;
+      #undef CODI_CheckTapeActivity
+
       #ifndef CODI_CheckZeroIndex
         #define CODI_CheckZeroIndex true
       #endif
