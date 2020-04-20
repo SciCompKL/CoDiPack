@@ -9,14 +9,11 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Tape, size_t _offset>
-  struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape, _offset>> {
-    public:
-
+  template<typename _Tape>
+  struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape>> {
     public:
 
       using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(GradientAccessTapeInterface<double, int>));
-      static size_t constexpr offset = DECLARE_DEFAULT(_offset, 0);
 
       using Real = typename Tape::Real;
       using Identifier = typename Tape::Identifier;
@@ -27,9 +24,9 @@ namespace codi {
       Identifier const identifier;
   public:
 
-    CODI_INLINE StaticContextActiveType(Real* primalVector, Identifier const* const identifiers) :
-      primal(primalVector[identifiers[offset]]),
-      identifier(identifiers[offset])
+    CODI_INLINE StaticContextActiveType(Real const& primal, Identifier const& identifier) :
+      primal(primal),
+      identifier(identifier)
     {}
 
     CODI_INLINE Identifier const& getIdentifier() const {

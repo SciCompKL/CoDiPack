@@ -44,12 +44,15 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      using ResultType = StaticContextActiveType<Tape, primalValueOffset>;
+      using ResultType = StaticContextActiveType<Tape>;
 
       static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantVector) {
         CODI_UNUSED(constantVector);
 
-        return ResultType(primalVector, identifiers);
+        Identifier const identifier = identifiers[primalValueOffset];
+        Real const primal = primalVector[identifier];
+
+        return ResultType(primal, identifier);
       }
   };
 

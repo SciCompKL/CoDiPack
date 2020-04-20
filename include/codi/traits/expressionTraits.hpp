@@ -15,7 +15,7 @@ namespace codi {
   template<typename _Real>
   struct ConstantExpression;
 
-  template<typename _Tape, size_t _offset>
+  template<typename _Tape>
   struct StaticContextActiveType;
 
   /*******************************************************************************
@@ -61,8 +61,8 @@ namespace codi {
   template<typename Impl>
   struct IsStaticContextActiveType : std::false_type {};
 
-  template<typename Tape, size_t offset>
-  struct IsStaticContextActiveType<StaticContextActiveType<Tape, offset>> : std::true_type {};
+  template<typename Tape>
+  struct IsStaticContextActiveType<StaticContextActiveType<Tape>> : std::true_type {};
 
   template<typename Impl>
   using isStaticContextActiveType = IsStaticContextActiveType<Impl>;
