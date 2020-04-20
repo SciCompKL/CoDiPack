@@ -376,9 +376,9 @@ namespace codi {
       Wrap_evaluateStackReverse<AdjointData> evalFunc{};
       auto reverseFunc = &TapeTypes::JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 
-      AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
+      AdjointInterfaceImpl<Real, Index, AdjointData> inter(adjointData);
 
-      this->evaluateExtFunc(start, end, reverseFunc, this->jacobiVector, &interface, evalFunc, adjointData);
+      this->evaluateExtFunc(start, end, reverseFunc, this->jacobiVector, &inter, evalFunc, adjointData);
     }
 
     /**
@@ -435,9 +435,9 @@ namespace codi {
       Wrap_evaluateStackForward<AdjointData> evalFunc{};
       auto forwardFunc = &TapeTypes::JacobiVector::template evaluateForward<decltype(evalFunc), AdjointData*&>;
 
-      AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
+      AdjointInterfaceImpl<Real, Index, AdjointData> inter(adjointData);
 
-      this->evaluateExtFuncForward(start, end, forwardFunc, this->jacobiVector, &interface, evalFunc, adjointData);
+      this->evaluateExtFuncForward(start, end, forwardFunc, this->jacobiVector, &inter, evalFunc, adjointData);
     }
 
   public:

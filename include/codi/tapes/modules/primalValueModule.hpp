@@ -247,12 +247,12 @@ namespace codi {
        * @tparam AdjointData  The actual type of the adjoint data.
        */
       template<typename AdjointData>
-      AdjVecType<AdjointData>* wrapAdjointVector(AdjVecInterface<AdjointData>& interface, AdjointData* adjointData) {
-         CODI_UNUSED(interface);   // To avoid unused warnings
+      AdjVecType<AdjointData>* wrapAdjointVector(AdjVecInterface<AdjointData>& inter, AdjointData* adjointData) {
+         CODI_UNUSED(inter);   // To avoid unused warnings
          CODI_UNUSED(adjointData); // To avoid unused warnings
 
   #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        return &interface;
+        return &inter;
   #else
         static_assert(std::is_same<AdjointData, GradientValue>::value,
           "Please enable 'CODI_EnableVariableAdjointInterfacePrimalInPrimalTapes' in order"
