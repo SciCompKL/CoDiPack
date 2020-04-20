@@ -51,9 +51,9 @@ namespace codi {
         func(std::forward<Args>(args)...);
       }
 
-      template<typename Tape, typename Expr>
+      template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle() {
-        return (Handle*)Tape::template statementEvaluateReverse<Expr>;
+        return (Handle*)Generator::template statementEvaluateReverse<Expr>;
       }
 
     protected:

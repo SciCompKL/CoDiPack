@@ -27,7 +27,7 @@ namespace codi {
       template<typename Tape, typename ... Args>
       static void callReverse(Handle const& h, Args&& ... args);
 
-      template<typename Tape, typename Expr>
+      template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle();
 
   };

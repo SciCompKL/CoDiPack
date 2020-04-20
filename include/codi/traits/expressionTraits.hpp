@@ -18,6 +18,9 @@ namespace codi {
   template<typename _Tape>
   struct StaticContextActiveType;
 
+  template<typename _Real, size_t _offset>
+  struct StaticContextConstantExpression;
+
   /*******************************************************************************
    * Section: Detection of specific node types
    *
@@ -39,6 +42,8 @@ namespace codi {
     >::type
   > : std::true_type {};
 
+  template<typename Tape>
+  struct IsLhsExpression<StaticContextActiveType<Tape>> : std::true_type {};
 
   template<typename Impl>
   using isLhsExpression = IsLhsExpression<Impl>;
@@ -51,6 +56,9 @@ namespace codi {
 
   template<typename Real>
   struct IsConstantExpression<ConstantExpression<Real>> : std::true_type {};
+
+  template<typename Real, size_t offset>
+  struct IsConstantExpression<StaticContextConstantExpression<Real, offset>> : std::true_type {};
 
   template<typename Impl>
   using isConstantExpression = IsConstantExpression<Impl>;

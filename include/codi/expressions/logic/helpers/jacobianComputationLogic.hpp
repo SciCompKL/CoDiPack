@@ -36,10 +36,6 @@ namespace codi {
       CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, Args&& ... args) {
         cast().handleJacobianOnActive(node, jacobian, std::forward<Args>(args)...);
       }
-      template<typename Node, typename ... Args>
-      CODI_INLINE enableIfStaticContextActiveType<Node> term(Node const& node, Real jacobian, Args&& ... args) {
-        cast().handleJacobianOnActive(node, jacobian, std::forward<Args>(args)...);
-      }
       using TraversalLogic<Impl>::term;
 
       template<size_t LeafNumber, typename Leaf, typename Root, typename ... Args>

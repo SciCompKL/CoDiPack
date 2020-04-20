@@ -503,7 +503,7 @@ namespace codi {
         jacobianVector.pushData(jacobi, index);
       }
 
-      void storeManual(Real const& lhsValue, Gradient& lhsIndex, Config::ArgumentSize const& size) {
+      void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
 
         statementVector.reserveItems(1);

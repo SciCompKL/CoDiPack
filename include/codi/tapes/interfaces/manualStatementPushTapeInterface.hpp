@@ -19,8 +19,8 @@ namespace codi {
        *
        */
 
-      void pushJacobiManual(Real const& jacobi, Real const& value, Gradient const& index);
-      void storeManual(Real const& lhsValue, Gradient& lhsIndex, Config::ArgumentSize const& size);
+      void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index);
+      void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size);
 
   };
 }

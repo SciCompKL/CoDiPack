@@ -24,17 +24,17 @@ namespace codi {
         reverse(reverse) {}
   };
 
-  template<typename Tape, typename Expr>
+  template<typename Generator, typename Expr>
   struct DirectStatementEvaluatorStaticStore {
 
       static PrimalTapeStatementFunctions const staticStore;
   };
 
-  template<typename Tape, typename Expr>
-  PrimalTapeStatementFunctions const DirectStatementEvaluatorStaticStore<Tape, Expr>::staticStore(
-      (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluateForward<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluatePrimal<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluateReverse<Expr>);
+  template<typename Generator, typename Expr>
+  PrimalTapeStatementFunctions const DirectStatementEvaluatorStaticStore<Generator, Expr>::staticStore(
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateForward<Expr>,
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluatePrimal<Expr>,
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverse<Expr>);
 
   template<typename _Real>
   struct DirectStatementEvaluator : public StatementEvaluatorInterface<_Real> {
@@ -64,9 +64,9 @@ namespace codi {
         ((FunctionReverse<Tape>)h->reverse)(std::forward<Args>(args)...);
       }
 
-      template<typename Tape, typename Expr>
+      template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle() {
-        return &DirectStatementEvaluatorStaticStore<Tape, Expr>::staticStore;
+        return &DirectStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
       }
 
     protected:
