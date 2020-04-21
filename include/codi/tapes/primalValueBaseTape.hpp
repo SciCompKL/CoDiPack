@@ -95,6 +95,7 @@ namespace codi {
       using Position = typename Base::Position;
 
       static bool constexpr AllowJacobianOptimization = false;
+      static bool constexpr RequiresPrimalRestore = !TapeTypes::IsLinearIndexHandler;
 
     protected:
 

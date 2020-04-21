@@ -74,6 +74,7 @@ namespace codi {
       using Position = typename Base::Position;
 
       static bool constexpr AllowJacobianOptimization = true;
+      static bool constexpr RequiresPrimalRestore = false;
 
     protected:
 
