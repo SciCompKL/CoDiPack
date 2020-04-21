@@ -413,7 +413,7 @@ namespace codi {
         auto evalFunc = [this] (NestedPosition const& start, NestedPosition const& end, Adjoint* data) {
           jacobianVector.evaluateForward(start, end, Impl::template internalEvaluateForward<Adjoint>, data);
         };
-        Base::internalEvaluateExtFunc(start, end, evalFunc, &adjointWrapper, data, jacobianVector);
+        Base::internalEvaluateExtFunc(start, end, evalFunc, &adjointWrapper, data);
 
       }
 

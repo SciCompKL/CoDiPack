@@ -19,6 +19,7 @@
 #include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
 #include "codi/tools/data/externalFunctionData.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
+#include "codi/tools/helpers/customGradientVectorHelper.hpp"
 #include "codi/traits/tapeTraits.hpp"
 
 /** \copydoc codi::Namespace */
