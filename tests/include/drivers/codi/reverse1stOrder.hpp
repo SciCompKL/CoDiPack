@@ -1,81 +1,25 @@
 #pragma once
 
-#include <codi.hpp>
-#include <codi/tools/data/jacobian.hpp>
+#include "reverse1stOrderBase.hpp"
 
-#include "../driver1stOrderBase.hpp"
-
-#include DRIVER_TESTS_INC
-
-struct CoDiReverse1stOrder : public Driver1stOrderBase<CODI_TYPE> {
+struct CoDiReverse1stOrder : public CoDiReverse1stOrderBase {
   public:
 
     using Number = CODI_TYPE;
 
-    using Base = Driver1stOrderBase<Number>;
+    using Base = CoDiReverse1stOrderBase;
 
-    CoDiReverse1stOrder() : Base(CODI_TO_STRING(CODI_TYPE_NAME)) {}
+    using Gradient = Number::Gradient;
 
-    void createAllTests(TestVector<Number>& tests) {
-      createTests<Number, DRIVER_TESTS>(tests);
+    Gradient& accessGradient(Number &value) {
+      return value.gradient();
     }
 
-    void evaluateJacobian(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs, codi::Jacobian<double>& jac) {
+    void cleanup() {}
 
-      //using GT = codi::GradientValueTraits<Gradient>;
-      constexpr size_t gradDim = 1; //GT::getVectorSize();
-
-      Number::Tape& tape = Number::getGlobalTape();
-
-      // Set sizes for Jacobian tapes
-      if(tape.hasOption(codi::ConfigurationOption::JacobianSize)) {
-        tape.setOption(codi::ConfigurationOption::JacobianSize, 1000);
-      }
-      if(tape.hasOption(codi::ConfigurationOption::StatementSize)) {
-        tape.setOption(codi::ConfigurationOption::StatementSize, 1000);
-      }
-      if(tape.hasOption(codi::ConfigurationOption::ExternalFunctionsSize)) {
-        tape.setOption(codi::ConfigurationOption::ExternalFunctionsSize, 1000);
-      }
-
-      size_t runs = outputs / gradDim;
-      if(outputs % gradDim != 0) {
-        runs += 1;
-      }
-      for(size_t curOut = 0; curOut < runs; ++curOut) {
-        size_t curSize = gradDim;
-        if((curOut + 1) * gradDim  > (size_t)outputs) {
-          curSize = outputs % gradDim;
-        }
-
-        tape.setActive();
-
-        for(size_t i = 0; i < inputs; ++i) {
-          tape.registerInput(x[i]);
-        }
-
-        info.func(x, y);
-
-        for(size_t i = 0; i < outputs; ++i) {
-          tape.registerOutput(y[i]);
-        }
-
-        for(size_t curDim = 0; curDim < curSize; ++curDim) {
-          if(tape.isIdentifierActive(y[curOut * gradDim + curDim].getIdentifier())) {
-            y[curOut * gradDim + curDim].gradient() = 1.0;
-          }
-        }
-
-        tape.evaluate();
-
-        for(size_t curDim = 0; curDim < curSize; ++curDim) {
-          for(size_t curIn = 0; curIn < inputs; ++curIn) {
-            //jac(curOut * gradDim + curDim, curIn) = GT::at(getGradient(x[curIn]), curDim);
-            jac(curOut * gradDim + curDim, curIn) = x[curIn].getGradient();
-          }
-        }
-
-        tape.reset();
-      }
+    void evaluate() {
+      Number::getGlobalTape().evaluate();
     }
+
+    void prepare() {}
 };
