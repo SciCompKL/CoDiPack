@@ -73,7 +73,7 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos,
               Identifier const* const lhsIdentifiers,
               Config::ArgumentSize const* const numberOfPassiveArguments,
-              Real const * const oldPrimalValues,
+              Real * const oldPrimalValues,
               EvalHandle const * const stmtEvalhandle
           ) {
 
@@ -86,6 +86,7 @@ namespace codi {
 
           Gradient lhsTangent = Gradient();
 
+          oldPrimalValues[curStatementPos] = primalVector[lhsIdentifier];
           primalVector[lhsIdentifier] = StatementEvaluator::template callForward<PrimalValueReuseTape>(
                 stmtEvalhandle[curStatementPos], primalVector, adjointVector, lhsTangent,
                 numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
@@ -114,7 +115,7 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos,
               Identifier const* const lhsIdentifiers,
               Config::ArgumentSize const* const numberOfPassiveArguments,
-              Real const * const oldPrimalValues,
+              Real * const oldPrimalValues,
               EvalHandle const * const stmtEvalhandle
           ) {
 
@@ -125,6 +126,7 @@ namespace codi {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
 
+          oldPrimalValues[curStatementPos] = primalVector[lhsIdentifier];
           primalVector[lhsIdentifier] = StatementEvaluator::template callPrimal<PrimalValueReuseTape>(
                 stmtEvalhandle[curStatementPos], primalVector,
                 numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
