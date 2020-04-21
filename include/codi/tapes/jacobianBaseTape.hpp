@@ -134,6 +134,7 @@ namespace codi {
 
         Base::options.insert(ConfigurationOption::AdjointSize);
         Base::options.insert(ConfigurationOption::JacobianSize);
+        Base::options.insert(ConfigurationOption::LargestIdentifier);
         Base::options.insert(ConfigurationOption::StatementSize);
       }
 
@@ -443,6 +444,9 @@ namespace codi {
           case ConfigurationOption::JacobianSize:
             return jacobianVector.getDataSize();
             break;
+          case ConfigurationOption::LargestIdentifier:
+            return indexManager.get().getLargestAssignedIndex();
+            break;
           case ConfigurationOption::StatementSize:
             return statementVector.getDataSize();
           default:
@@ -454,15 +458,19 @@ namespace codi {
       void setOption(ConfigurationOption option, size_t value) {
         switch (option) {
           case ConfigurationOption::AdjointSize:
-            return adjoints.resize(value);
+            adjoints.resize(value);
             break;
           case ConfigurationOption::JacobianSize:
-            return jacobianVector.resize(value);
+            jacobianVector.resize(value);
+            break;
+          case ConfigurationOption::LargestIdentifier:
+            CODI_EXCEPTION("Tried to set a get only option.");
             break;
           case ConfigurationOption::StatementSize:
-            return statementVector.resize(value);
+            statementVector.resize(value);
+            break;
           default:
-            return Base::setOption(option, value);
+            Base::setOption(option, value);
             break;
         }
       }

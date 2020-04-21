@@ -169,6 +169,7 @@ namespace codi {
 
         Base::options.insert(ConfigurationOption::AdjointSize);
         Base::options.insert(ConfigurationOption::ConstantValuesSize);
+        Base::options.insert(ConfigurationOption::LargestIdentifier);
         Base::options.insert(ConfigurationOption::PassiveValuesSize);
         Base::options.insert(ConfigurationOption::RhsIdentifiersSize);
         Base::options.insert(ConfigurationOption::PrimalSize);
@@ -620,6 +621,9 @@ namespace codi {
           case ConfigurationOption::ConstantValuesSize:
             return constantValueVector.getDataSize();
             break;
+          case ConfigurationOption::LargestIdentifier:
+            return indexManager.get().getLargestAssignedIndex();
+            break;
           case ConfigurationOption::PassiveValuesSize:
             return passiveValueVector.getDataSize();
             break;
@@ -640,24 +644,27 @@ namespace codi {
       void setOption(ConfigurationOption option, size_t value) {
         switch (option) {
           case ConfigurationOption::AdjointSize:
-            return adjoints.resize(value);
+            adjoints.resize(value);
             break;
           case ConfigurationOption::ConstantValuesSize:
-            return constantValueVector.resize(value);
+            constantValueVector.resize(value);
+            break;
+          case ConfigurationOption::LargestIdentifier:
+            CODI_EXCEPTION("Tried to set a get only option.");
             break;
           case ConfigurationOption::PassiveValuesSize:
-            return passiveValueVector.resize(value);
+            passiveValueVector.resize(value);
             break;
           case ConfigurationOption::RhsIdentifiersSize:
-            return rhsIdentiferVector.resize(value);
+            rhsIdentiferVector.resize(value);
             break;
           case ConfigurationOption::PrimalSize:
-            return primals.resize(value);
+            primals.resize(value);
             break;
           case ConfigurationOption::StatementSize:
             return statementVector.resize(value);
           default:
-            return Base::setOption(option, value);
+            Base::setOption(option, value);
             break;
         }
       }

@@ -233,6 +233,7 @@ namespace codi {
             break;
           default:
             CODI_EXCEPTION("Tried to get undefined option for tape.");
+            return 0;
             break;
         }
       }
