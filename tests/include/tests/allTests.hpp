@@ -21,3 +21,4 @@
 #include "io/testSwap.hpp"
 #include "tools/testReferenceActiveType.hpp"
 #include "tools/helpers/testStatementPushHelper.hpp"
+#include "traits/testNumericLimits.hpp"
