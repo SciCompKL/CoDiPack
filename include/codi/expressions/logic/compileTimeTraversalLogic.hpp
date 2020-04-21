@@ -27,7 +27,7 @@ namespace codi {
       }
 
       template<typename Node, typename ... Args>
-      CODI_INLINE static constexpr ResultType term(Args&& ... args) {
+      CODI_INLINE static constexpr ResultType term(Args&& ... CODI_UNUSED_ARG(args)) {
         // Default logic does nothing
         return Impl::NeutralElement;
       }

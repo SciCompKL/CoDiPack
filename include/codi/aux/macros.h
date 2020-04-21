@@ -8,6 +8,8 @@ namespace codi {
   template<typename ...Args>
   void CODI_UNUSED(Args const& ... ) {}
 
+  #define CODI_UNUSED_ARG(arg) /* arg */
+
   #define ENABLE_CHECK(option, condition) if(!(option) || (condition))
 
   #define CODI_TO_STRING2(expression) #expression
