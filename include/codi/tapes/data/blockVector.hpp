@@ -14,12 +14,13 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Chunk, typename _NestedVector = EmptyVector>
-  struct BlockVector : public DataInterface<_NestedVector> {
+  template<typename _Chunk, typename _NestedVector = EmptyVector, typename _PointerInserter = PointerStore<_Chunk>>
+  struct BlockVectorImpl : public DataInterface<_NestedVector> {
     public:
 
-      using Chunk = DECLARE_DEFAULT(_Chunk, ChunkBase);
+      using Chunk = DECLARE_DEFAULT(_Chunk, TEMPLATE(Chunk1<ANY>));
       using NestedVector = DECLARE_DEFAULT(_NestedVector, TEMPLATE(DataInterface<ANY>));
+      using PointerInserter = DECLARE_DEFAULT(_PointerInserter, TEMPLATE(PointerStore<Chunk>));
       using InternalPosHandle = size_t;
 
       using NestedPosition = typename NestedVector::Position;
@@ -33,14 +34,14 @@ namespace codi {
 
     public:
 
-      BlockVector(size_t const& chunkSize, NestedVector* nested) :
+      BlockVectorImpl(size_t const& chunkSize, NestedVector* nested) :
         chunk(chunkSize),
         nested(NULL)
       {
         setNested(nested);
       }
 
-      BlockVector(size_t const& chunkSize) :
+      BlockVectorImpl(size_t const& chunkSize) :
         chunk(chunkSize),
         nested(NULL)
       {}
@@ -132,7 +133,7 @@ namespace codi {
         this->nested = v;
       }
 
-      void swap(BlockVector<Chunk, NestedVector>& other) {
+      void swap(BlockVectorImpl<Chunk, NestedVector>& other) {
         chunk.swap(other.chunk);
 
         nested->swap(*other.nested);
@@ -148,7 +149,7 @@ namespace codi {
       template<typename Function, typename ... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end,Function const& function,
                                        Args&&... args) {
-        PointerStore<Chunk> pHandle;
+        PointerInserter pHandle;
         pHandle.setPointers(0, &chunk);
 
         size_t dataPos = start.data;
@@ -164,7 +165,7 @@ namespace codi {
       template<typename Function, typename ... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end,Function const& function,
                                        Args&&... args) {
-        PointerStore<Chunk> pHandle;
+        PointerInserter pHandle;
 
         size_t dataPos = start.data;
         pHandle.setPointers(0, &chunk);
@@ -192,7 +193,7 @@ namespace codi {
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject& function, Args&&... args) {
         codiAssert(start.data <= end.data);
 
-        PointerStore<Chunk> pHandle;
+        PointerInserter pHandle;
 
         for(size_t dataPos = start.data; dataPos < end.data; dataPos += 1) {
           pHandle.setPointers(dataPos, &chunk);
@@ -204,7 +205,7 @@ namespace codi {
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject const& function, Args&&... args) {
         codiAssert(start.data >= end.data);
 
-        PointerStore<Chunk> pHandle;
+        PointerInserter pHandle;
 
         // we do not initialize dataPos with start - 1 since the type can be unsigned
         for(size_t dataPos = start.data; dataPos > end.data; /* decrement is done inside the loop */) {
@@ -215,4 +216,7 @@ namespace codi {
         }
       }
   };
+
+  template<typename Chunk, typename NestedVector = EmptyVector>
+  using BlockVector = BlockVectorImpl<Chunk, NestedVector>;
 }
