@@ -894,7 +894,7 @@ namespace codi {
       CODI_NO_INLINE void evaluatePrimal(Position const& start, Position const& end) {
 
         // TODO: implement primal value only accessor
-        PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals);
+        PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals.data());
 
         if(TapeTypes::IsLinearIndexHandler) {
 

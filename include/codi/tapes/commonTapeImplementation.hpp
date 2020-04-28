@@ -375,16 +375,16 @@ namespace codi {
        *
        */
 
-      template<typename Function, typename Obj, typename ... Args>
+      template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFuncPrimal(const Position& start, const Position &end,
-                                 const Function& func, Obj& obj,
+                                 const Function& func,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){
 
         NestedPosition curInnerPos = start.inner;
         auto evalFunc = [&] (ExternalFunction* extFunc, const NestedPosition* endInnerPos) {
 
-          (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+          func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
           extFunc->evaluatePrimal(&cast(), vectorAccess);
 
@@ -394,7 +394,7 @@ namespace codi {
         externalFunctionVector.forEachForward(start, end, evalFunc);
 
         // Iterate over the remainder also covers the case if there have been no external functions.
-        (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
+        func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
       template<typename Function, typename ... Args>
@@ -419,16 +419,16 @@ namespace codi {
         func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
-      template<typename Function, typename Obj, typename ... Args>
+      template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFuncForward(const Position& start, const Position &end,
-                                 const Function& func, Obj& obj,
+                                 const Function& func,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){
 
         NestedPosition curInnerPos = start.inner;
         auto evalFunc = [&] (ExternalFunction* extFunc, const NestedPosition* endInnerPos) {
 
-          (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+          func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
           extFunc->evaluateForward(&cast(), vectorAccess);
 
@@ -438,7 +438,7 @@ namespace codi {
         externalFunctionVector.forEachForward(start, end, evalFunc);
 
         // Iterate over the remainder also covers the case if there have been no external functions.
-        (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
+        func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
   };
 }

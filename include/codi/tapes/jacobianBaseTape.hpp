@@ -401,8 +401,8 @@ namespace codi {
         size_t endJacobianPos = curJacobianPos + numberOfArguments;
 
         while(curJacobianPos < endJacobianPos) {
-          curJacobianPos += 1;
           lhsAdjoint += rhsJacobians[curJacobianPos] * adjointVector[rhsIdentifiers[curJacobianPos]];
+          curJacobianPos += 1;
         }
       }
 
@@ -414,7 +414,7 @@ namespace codi {
         auto evalFunc = [this] (NestedPosition const& start, NestedPosition const& end, Adjoint* data) {
           jacobianVector.evaluateForward(start, end, Impl::template internalEvaluateForward<Adjoint>, data);
         };
-        Base::internalEvaluateExtFunc(start, end, evalFunc, &adjointWrapper, data);
+        Base::internalEvaluateExtFuncForward(start, end, evalFunc, &adjointWrapper, data);
 
       }
 

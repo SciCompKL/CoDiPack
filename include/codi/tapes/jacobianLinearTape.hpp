@@ -82,13 +82,14 @@ namespace codi {
 
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          Adjoint lhsAdjoint = Adjoint();
 
           if(Config::StatementInputTag != argsSize) {
+            Adjoint lhsAdjoint = Adjoint();
+
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
+            adjointVector[curAdjointPos] = lhsAdjoint;
           }
 
-          adjointVector[curAdjointPos] = lhsAdjoint;
 
           curStmtPos += 1;
         }
