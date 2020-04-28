@@ -17,7 +17,7 @@ namespace codi {
        *
        */
 
-      static bool constexpr AllowJacobianOptimization = UNDEFINED_VALUE;
+      static bool constexpr AllowJacobianOptimization = CODI_UNDEFINED_VALUE;
 
       template<typename Real>
       void initIdentifier(Real& value, Identifier& identifier);

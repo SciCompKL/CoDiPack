@@ -24,7 +24,7 @@ namespace codi {
        *
        */
 
-      static bool constexpr EndPoint = UNDEFINED_VALUE;
+      static bool constexpr EndPoint = CODI_UNDEFINED_VALUE;
 
       template<typename Logic, typename ... Args>
       CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const;

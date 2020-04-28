@@ -21,7 +21,7 @@ namespace codi {
        *
        */
 
-      static bool constexpr RequiresPrimalRestore = UNDEFINED_VALUE;
+      static bool constexpr RequiresPrimalRestore = CODI_UNDEFINED_VALUE;
 
       void evaluatePrimal(Position const& start, Position const& end);
       void evaluatePrimal();

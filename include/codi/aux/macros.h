@@ -43,12 +43,12 @@ namespace codi {
   /*
    * Used in interface declarations for types that have to be defined in the specializations.
    */
-  #define UNDEFINED void
+  #define CODI_UNDEFINED void
 
   /*
    * Used in interface declarations for variables that have to be defined in the specializations.
    */
-  #define UNDEFINED_VALUE false
+  #define CODI_UNDEFINED_VALUE false
 
   /*
    * Expand template types in preprocessor macros.

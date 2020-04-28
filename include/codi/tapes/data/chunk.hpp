@@ -19,7 +19,7 @@ namespace codi {
        *
        */
 
-      static size_t constexpr EntrySize = UNDEFINED_VALUE;
+      static size_t constexpr EntrySize = CODI_UNDEFINED_VALUE;
 
       void swap(ChunkBase& other);
 
