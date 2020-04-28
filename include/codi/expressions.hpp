@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,11 +23,11 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
- *          Prof. Robin Hogan, (Univ. of Reading).
- *
- * Originally based on Adept 1.0 (http://www.met.rdg.ac.uk/clouds/adept/)
- * released under GPL 3.0 (Copyright (C) 2012-2013 Robin Hogan and the University of Reading).
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #pragma once
@@ -1233,6 +1233,76 @@ namespace codi {
     return BinaryOp01<Real, B, Copysign>(a, b.cast());
   }
 
+  /**
+   * @brief Operation logic for f(a,b) = a * b
+   */
+  template<typename Real>
+  struct Remainder : public BinaryOpInterface<Real> {
+    /** \copydoc BinaryOpInterface::primal */
+    static CODI_INLINE Real primal(const Real& a, const Real& b) {
+      using std::remainder;
+      return remainder(a, b);
+    }
+
+    /** \copydoc BinaryOpInterface::gradientA */
+    template<typename A, typename B>
+    static CODI_INLINE  Real gradientA(const A& a, const B& b, const Real& result) {
+      CODI_UNUSED(a);
+      CODI_UNUSED(b);
+      CODI_UNUSED(result);
+      return (Real)1.0;
+    }
+
+    /** \copydoc BinaryOpInterface::gradientB */
+    template<typename A, typename B>
+    static CODI_INLINE  Real gradientB(const A& a, const B& b, const Real& result) {
+      CODI_UNUSED(result);
+      using std::round;
+      return -round(a/b);
+    }
+
+    /** \copydoc BinaryOpInterface::derv11 */
+    template<typename Data, typename A, typename B>
+    static CODI_INLINE void derv11(Data& data, const A& a, const B& b, const Real& result) {
+      a.calcGradient(data, gradientA(a.getValue(), b.getValue(), result));
+      b.calcGradient(data, gradientB(a.getValue(), b.getValue(), result));
+    }
+
+    /** \copydoc BinaryOpInterface::derv11M */
+    template<typename Data, typename A, typename B>
+    static CODI_INLINE void derv11M(Data& data, const A& a, const B& b, const Real& result, const Real& multiplier) {
+      a.calcGradient(data, gradientA(a.getValue(), b.getValue(), result) * multiplier);
+      b.calcGradient(data, gradientB(a.getValue(), b.getValue(), result) * multiplier);
+    }
+
+    /** \copydoc BinaryOpInterface::derv10 */
+    template<typename Data, typename A>
+    static CODI_INLINE void derv10(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result) {
+      a.calcGradient(data, gradientA(a.getValue(), b, result));
+    }
+
+    /** \copydoc BinaryOpInterface::derv10M */
+    template<typename Data, typename A>
+    static CODI_INLINE void derv10M(Data& data, const A& a, const typename TypeTraits<Real>::PassiveReal& b, const Real& result, const Real& multiplier) {
+      a.calcGradient(data, gradientA(a.getValue(), b, result) * multiplier);
+    }
+
+    /** \copydoc BinaryOpInterface::derv01 */
+    template<typename Data, typename B>
+    static CODI_INLINE void derv01(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result) {
+      b.calcGradient(data, gradientB(a, b.getValue(), result));
+    }
+
+    /** \copydoc BinaryOpInterface::derv01M */
+    template<typename Data, typename B>
+    static CODI_INLINE void derv01M(Data& data, const typename TypeTraits<Real>::PassiveReal& a, const B& b, const Real& result, const Real& multiplier) {
+      b.calcGradient(data, gradientB(a, b.getValue(), result) * multiplier);
+    }
+  };
+  #define OPERATION_LOGIC Remainder
+  #define FUNCTION remainder
+  #include "binaryOverloads.tpp"
+
   /*
    * Conditional operators should behave exactly the same as with
    * non-active arguments so in each of the cases below the getValue()
@@ -2006,6 +2076,22 @@ namespace codi {
   template<typename Real, class A>
   CODI_INLINE typename codi::TypeTraits<Real>::PassiveReal ceil(const codi::Expression<Real, A>& a) {
     return ceil(a.getValue());
+  }
+
+  /**
+   * @brief Overload for the round function with expressions.
+   *
+   * @param[in] a The argument of the function.
+   *
+   * @return The result of round on the primal value.
+   *
+   * @tparam Real The real type used in the active types.
+   * @tparam A The expression for the argument of the function
+   */
+  template<typename Real, class A>
+  CODI_INLINE typename codi::TypeTraits<Real>::PassiveReal round(const codi::Expression<Real, A>& a) {
+    using std::round;
+    return round(a.getValue());
   }
 
 }

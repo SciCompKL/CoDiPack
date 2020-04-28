@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,7 +23,11 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #pragma once
@@ -372,9 +376,9 @@ namespace codi {
       Wrap_evaluateStackReverse<AdjointData> evalFunc{};
       auto reverseFunc = &TapeTypes::JacobiVector::template evaluateReverse<decltype(evalFunc), AdjointData*&>;
 
-      AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
+      AdjointInterfaceImpl<Real, Index, AdjointData> inter(adjointData);
 
-      this->evaluateExtFunc(start, end, reverseFunc, this->jacobiVector, &interface, evalFunc, adjointData);
+      this->evaluateExtFunc(start, end, reverseFunc, this->jacobiVector, &inter, evalFunc, adjointData);
     }
 
     /**
@@ -431,9 +435,9 @@ namespace codi {
       Wrap_evaluateStackForward<AdjointData> evalFunc{};
       auto forwardFunc = &TapeTypes::JacobiVector::template evaluateForward<decltype(evalFunc), AdjointData*&>;
 
-      AdjointInterfaceImpl<Real, Index, AdjointData> interface(adjointData);
+      AdjointInterfaceImpl<Real, Index, AdjointData> inter(adjointData);
 
-      this->evaluateExtFuncForward(start, end, forwardFunc, this->jacobiVector, &interface, evalFunc, adjointData);
+      this->evaluateExtFuncForward(start, end, forwardFunc, this->jacobiVector, &inter, evalFunc, adjointData);
     }
 
   public:

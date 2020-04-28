@@ -20,6 +20,9 @@ Point 0 : {-10, -10}
    out_018        -10
    out_019          5
    out_020          5
+   out_021         -0
+   out_022          5
+   out_023         -0
 Point 1 : {-10, -5}
    out_000        -15
    out_001          0
@@ -42,6 +45,9 @@ Point 1 : {-10, -5}
    out_018         -5
    out_019          5
    out_020          5
+   out_021         -0
+   out_022          0
+   out_023         -0
 Point 2 : {-10, 0}
    out_000        -10
    out_001          5
@@ -64,6 +70,9 @@ Point 2 : {-10, 0}
    out_018          0
    out_019          5
    out_020          5
+   out_021       -nan
+   out_022       -nan
+   out_023         -0
 Point 3 : {-10, 5}
    out_000         -5
    out_001         10
@@ -86,6 +95,9 @@ Point 3 : {-10, 5}
    out_018          5
    out_019          5
    out_020          5
+   out_021         -0
+   out_022          0
+   out_023         -0
 Point 4 : {-10, 10}
    out_000          0
    out_001         15
@@ -108,6 +120,9 @@ Point 4 : {-10, 10}
    out_018         10
    out_019         10
    out_020          5
+   out_021         -0
+   out_022          5
+   out_023         -0
 Point 5 : {-5, -10}
    out_000        -15
    out_001         -5
@@ -130,6 +145,9 @@ Point 5 : {-5, -10}
    out_018         -5
    out_019          5
    out_020          5
+   out_021         -5
+   out_022          5
+   out_023         -0
 Point 6 : {-5, -5}
    out_000        -10
    out_001          0
@@ -152,6 +170,9 @@ Point 6 : {-5, -5}
    out_018         -5
    out_019          5
    out_020          5
+   out_021         -0
+   out_022          0
+   out_023         -0
 Point 7 : {-5, 0}
    out_000         -5
    out_001          5
@@ -174,6 +195,9 @@ Point 7 : {-5, 0}
    out_018          0
    out_019          5
    out_020          5
+   out_021       -nan
+   out_022       -nan
+   out_023         -0
 Point 8 : {-5, 5}
    out_000          0
    out_001         10
@@ -196,6 +220,9 @@ Point 8 : {-5, 5}
    out_018          5
    out_019          5
    out_020          5
+   out_021         -0
+   out_022          0
+   out_023         -0
 Point 9 : {-5, 10}
    out_000          5
    out_001         15
@@ -218,6 +245,9 @@ Point 9 : {-5, 10}
    out_018         10
    out_019         10
    out_020          5
+   out_021         -5
+   out_022          5
+   out_023         -0
 Point 10 : {0, -10}
    out_000        -10
    out_001         -5
@@ -240,6 +270,9 @@ Point 10 : {0, -10}
    out_018          0
    out_019          5
    out_020          5
+   out_021          0
+   out_022          5
+   out_023          0
 Point 11 : {0, -5}
    out_000         -5
    out_001          0
@@ -262,6 +295,9 @@ Point 11 : {0, -5}
    out_018          0
    out_019          5
    out_020          5
+   out_021          0
+   out_022          0
+   out_023          0
 Point 12 : {0, 0}
    out_000          0
    out_001          5
@@ -284,6 +320,9 @@ Point 12 : {0, 0}
    out_018          0
    out_019          5
    out_020          5
+   out_021       -nan
+   out_022       -nan
+   out_023          0
 Point 13 : {0, 5}
    out_000          5
    out_001         10
@@ -306,6 +345,9 @@ Point 13 : {0, 5}
    out_018          5
    out_019          5
    out_020          5
+   out_021          0
+   out_022          0
+   out_023          0
 Point 14 : {0, 10}
    out_000         10
    out_001         15
@@ -328,6 +370,9 @@ Point 14 : {0, 10}
    out_018         10
    out_019         10
    out_020          5
+   out_021          0
+   out_022          5
+   out_023          0
 Point 15 : {5, -10}
    out_000         -5
    out_001         -5
@@ -350,6 +395,9 @@ Point 15 : {5, -10}
    out_018          5
    out_019          5
    out_020          5
+   out_021          5
+   out_022          5
+   out_023          0
 Point 16 : {5, -5}
    out_000          0
    out_001          0
@@ -372,6 +420,9 @@ Point 16 : {5, -5}
    out_018          5
    out_019          5
    out_020          5
+   out_021          0
+   out_022          0
+   out_023          0
 Point 17 : {5, 0}
    out_000          5
    out_001          5
@@ -394,6 +445,9 @@ Point 17 : {5, 0}
    out_018          5
    out_019          5
    out_020          5
+   out_021       -nan
+   out_022       -nan
+   out_023          0
 Point 18 : {5, 5}
    out_000         10
    out_001         10
@@ -416,6 +470,9 @@ Point 18 : {5, 5}
    out_018          5
    out_019          5
    out_020          5
+   out_021          0
+   out_022          0
+   out_023          0
 Point 19 : {5, 10}
    out_000         15
    out_001         15
@@ -438,6 +495,9 @@ Point 19 : {5, 10}
    out_018         10
    out_019         10
    out_020          5
+   out_021          5
+   out_022          5
+   out_023          0
 Point 20 : {10, -10}
    out_000          0
    out_001         -5
@@ -460,6 +520,9 @@ Point 20 : {10, -10}
    out_018         10
    out_019          5
    out_020         10
+   out_021          0
+   out_022          5
+   out_023          0
 Point 21 : {10, -5}
    out_000          5
    out_001          0
@@ -482,6 +545,9 @@ Point 21 : {10, -5}
    out_018         10
    out_019          5
    out_020         10
+   out_021          0
+   out_022          0
+   out_023          0
 Point 22 : {10, 0}
    out_000         10
    out_001          5
@@ -504,6 +570,9 @@ Point 22 : {10, 0}
    out_018         10
    out_019          5
    out_020         10
+   out_021       -nan
+   out_022       -nan
+   out_023          0
 Point 23 : {10, 5}
    out_000         15
    out_001         10
@@ -526,6 +595,9 @@ Point 23 : {10, 5}
    out_018         10
    out_019          5
    out_020         10
+   out_021          0
+   out_022          0
+   out_023          0
 Point 24 : {10, 10}
    out_000         20
    out_001         15
@@ -548,3 +620,6 @@ Point 24 : {10, 10}
    out_018         10
    out_019         10
    out_020         10
+   out_021          0
+   out_022          5
+   out_023          0

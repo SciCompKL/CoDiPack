@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,7 +23,11 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 
@@ -498,12 +502,12 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateInternal(const Position& start, const Position& end, AdjointData* adjointData) {
 
-      AdjVecInterface<AdjointData> interface(adjointData, this->primals);
-      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(interface, adjointData);
+      AdjVecInterface<AdjointData> inter(adjointData, this->primals);
+      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(inter, adjointData);
 
       Wrap_evaluateStackReverse<AdjVecType<AdjointData>> evalFunc{};
       auto reverseFunc = &TapeTypes::ConstantValueVector::template evaluateReverse<decltype(evalFunc), Real*&, AdjVecType<AdjointData>*&>;
-      this->evaluateExtFunc(start, end, reverseFunc, this->constantValueVector, &interface, evalFunc, this->primals, adjVec);
+      this->evaluateExtFunc(start, end, reverseFunc, this->constantValueVector, &inter, evalFunc, this->primals, adjVec);
     }
 
     /**
@@ -522,12 +526,12 @@ namespace codi {
     template<typename AdjointData>
     CODI_INLINE void evaluateForwardInternal(const Position& start, const Position& end, AdjointData* adjointData) {
 
-      AdjVecInterface<AdjointData> interface(adjointData, this->primals);
-      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(interface, adjointData);
+      AdjVecInterface<AdjointData> inter(adjointData, this->primals);
+      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(inter, adjointData);
 
       Wrap_evaluateStackForward<AdjVecType<AdjointData>> evalFunc{};
       auto forwardFunc = &TapeTypes::ConstantValueVector::template evaluateForward<decltype(evalFunc), Real*&, AdjVecType<AdjointData>*&>;
-      this->evaluateExtFuncForward(start, end, forwardFunc, this->constantValueVector, &interface, evalFunc, this->primals, adjVec);
+      this->evaluateExtFuncForward(start, end, forwardFunc, this->constantValueVector, &inter, evalFunc, this->primals, adjVec);
     }
 
     /**
@@ -545,11 +549,11 @@ namespace codi {
      */
     CODI_INLINE void evaluatePrimalInternal(const Position& start, const Position& end) {
 
-      AdjVecInterface<GradientValue> interface(this->adjoints, this->primals);
+      AdjVecInterface<GradientValue> inter(this->adjoints, this->primals);
 
       Wrap_evaluateStackPrimal evalFunc{};
       auto primalFunc = &TapeTypes::ConstantValueVector::template evaluateForward<decltype(evalFunc), Real*&>;
-      this->evaluateExtFuncPrimal(start, end, primalFunc, this->constantValueVector, &interface, evalFunc, this->primals);
+      this->evaluateExtFuncPrimal(start, end, primalFunc, this->constantValueVector, &inter, evalFunc, this->primals);
     }
 
   public:

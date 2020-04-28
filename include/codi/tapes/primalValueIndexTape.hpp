@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,7 +23,11 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 
@@ -563,12 +567,12 @@ namespace codi {
         std::swap(this->primals, primalsCopy);
       }
 
-      AdjVecInterface<AdjointData> interface(adjointData, primalsCopy);
-      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(interface, adjointData);
+      AdjVecInterface<AdjointData> inter(adjointData, primalsCopy);
+      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(inter, adjointData);
 
       Wrap_evaluateStackReverse<AdjVecType<AdjointData>> evalFunc{};
       auto reverseFunc = &TapeTypes::ConstantValueVector::template evaluateReverse<decltype(evalFunc), AdjVecType<AdjointData>*&, Real*&>;
-      this->evaluateExtFunc(start, end, reverseFunc, this->constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
+      this->evaluateExtFunc(start, end, reverseFunc, this->constantValueVector, &inter, evalFunc, adjVec, primalsCopy);
 
       if(!useCopy) {
         std::swap(this->primals, primalsCopy);
@@ -619,12 +623,12 @@ namespace codi {
         std::swap(this->primals, primalsCopy);
       }
 
-      AdjVecInterface<AdjointData> interface(adjointData, primalsCopy);
-      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(interface, adjointData);
+      AdjVecInterface<AdjointData> inter(adjointData, primalsCopy);
+      AdjVecType<AdjointData>* adjVec = this->wrapAdjointVector(inter, adjointData);
 
       Wrap_evaluateStackForward<AdjVecType<AdjointData>> evalFunc{};
       auto forwardFunc = &TapeTypes::ConstantValueVector::template evaluateForward<decltype(evalFunc), AdjVecType<AdjointData>*&, Real*&>;
-      this->evaluateExtFuncForward(start, end, forwardFunc, this->constantValueVector, &interface, evalFunc, adjVec, primalsCopy);
+      this->evaluateExtFuncForward(start, end, forwardFunc, this->constantValueVector, &inter, evalFunc, adjVec, primalsCopy);
 
       if(!useCopy) {
         std::swap(this->primals, primalsCopy);
@@ -668,11 +672,11 @@ namespace codi {
 
       std::swap(this->primals, primalsCopy);
 
-      AdjVecInterface<GradientValue> interface(this->adjoints, primalsCopy);
+      AdjVecInterface<GradientValue> inter(this->adjoints, primalsCopy);
 
       Wrap_evaluateStackPrimal primalFunc{};
       auto primalIter = &TapeTypes::ConstantValueVector::template evaluateForward<decltype(primalFunc), Real*&>;
-      this->evaluateExtFuncPrimal(start, end, primalIter, this->constantValueVector, &interface, primalFunc, primalsCopy);
+      this->evaluateExtFuncPrimal(start, end, primalIter, this->constantValueVector, &inter, primalFunc, primalsCopy);
 
       std::swap(this->primals, primalsCopy);
     }

@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2019 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,7 +23,11 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #pragma once
@@ -243,12 +247,12 @@ namespace codi {
        * @tparam AdjointData  The actual type of the adjoint data.
        */
       template<typename AdjointData>
-      AdjVecType<AdjointData>* wrapAdjointVector(AdjVecInterface<AdjointData>& interface, AdjointData* adjointData) {
-         CODI_UNUSED(interface);   // To avoid unused warnings
+      AdjVecType<AdjointData>* wrapAdjointVector(AdjVecInterface<AdjointData>& inter, AdjointData* adjointData) {
+         CODI_UNUSED(inter);   // To avoid unused warnings
          CODI_UNUSED(adjointData); // To avoid unused warnings
 
   #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
-        return &interface;
+        return &inter;
   #else
         static_assert(std::is_same<AdjointData, GradientValue>::value,
           "Please enable 'CODI_EnableVariableAdjointInterfacePrimalInPrimalTapes' in order"
