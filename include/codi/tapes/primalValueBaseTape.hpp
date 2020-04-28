@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <functional>
 #include <type_traits>
 
@@ -16,6 +17,7 @@
 #include "../traits/expressionTraits.hpp"
 #include "aux/primalAdjointVectorAccess.hpp"
 #include "data/chunk.hpp"
+#include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "commonTapeImplementation.hpp"
 #include "statementEvaluators/statementEvaluatorTapeInterface.hpp"
@@ -70,7 +72,7 @@ namespace codi {
   {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>));
+      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, ChunkVector>));
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(ReverseTapeInterface<double, double, int>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;

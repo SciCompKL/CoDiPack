@@ -23,7 +23,7 @@ namespace codi {
   struct PrimalValueReuseTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>));
+      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, ChunkVector>));
       using Base = PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>>;
       friend Base;
 

@@ -17,10 +17,14 @@
 
 // Create a correct include environment for viewing and programming in an IDE
 #ifndef FUNCTION
+  #define PROXY
+
   #include "../../aux/macros.h"
   #include "../../config.h"
   #include "../expressionInterface.hpp"
   #include "../unaryExpression.hpp"
+  #define FUNCTION func
+  #define OPERATION_LOGIC UnaryOperation
 
   namespace codi {
 #endif
@@ -31,7 +35,8 @@
     }
 
 // Create a correct include environment for viewing and programming in an IDE
-#ifndef FUNCTION
+#ifdef PROXY
+  #undef PROXY
   }
 #endif
 

@@ -6,6 +6,7 @@
 #include "../../../aux/macros.h"
 #include "../../../config.h"
 #include "../traversalLogic.hpp"
+#include "../../../traits/expressionTraits.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

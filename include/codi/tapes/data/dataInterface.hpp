@@ -6,6 +6,7 @@
 #include "../../config.h"
 #include "../aux/tapeValues.hpp"
 #include "chunk.hpp"
+#include "position.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -17,7 +18,7 @@ namespace codi {
       using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
       using InternalPosHandle = DECLARE_DEFAULT(_InternalPosHandle, size_t);
 
-      using Position = ANY;
+      using Position = EmptyPosition;
 
       /*******************************************************************************
        * Section: Misc functions

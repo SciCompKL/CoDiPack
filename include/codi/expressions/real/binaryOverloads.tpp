@@ -17,24 +17,28 @@
 
 // Create a correct include environment for viewing and programming in an IDE
 #ifndef FUNCTION
+  #define PROXY
+
   #include "../../aux/macros.h"
   #include "../../config.h"
   #include "../../traits/realTraits.hpp"
   #include "../binaryExpression.hpp"
   #include "../constantExpression.hpp"
   #include "../expressionInterface.hpp"
+  #define OPERATION_LOGIC BinaryOperation
+  #define FUNCTION func
 
   namespace codi {
 #endif
 
-    template <typename Real, class ArgA, class ArgB>
+    template <typename Real, typename ArgA, typename ArgB>
     CODI_INLINE BinaryExpression<Real, ArgA, ArgB, OPERATION_LOGIC> FUNCTION(
         ExpressionInterface<Real, ArgA> const& argA,
         ExpressionInterface<Real, ArgB> const& argB) {
       return BinaryExpression<Real, ArgA, ArgB, OPERATION_LOGIC>(argA, argB);
     }
 
-    template <typename Real, class ArgA>
+    template <typename Real, typename ArgA>
     CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<PassiveRealType<Real>>, OPERATION_LOGIC> FUNCTION(
         ExpressionInterface<Real, ArgA> const& argA,
         PassiveRealType<Real> const& argB) {
@@ -43,7 +47,7 @@
             ConstantExpression<PassiveRealType<Real>>(argB));
     }
 
-    template <typename Real, class ArgB>
+    template <typename Real, typename ArgB>
     CODI_INLINE BinaryExpression<Real, ConstantExpression<PassiveRealType<Real>>, ArgB, OPERATION_LOGIC> FUNCTION(
         PassiveRealType<Real> const& argA,
         ExpressionInterface<Real, ArgB> const& argB) {
@@ -53,7 +57,8 @@
     }
 
 // Create a correct include environment for viewing and programming in an IDE
-#ifndef FUNCTION
+#ifdef PROXY
+  #undef PROXY
   }
 #endif
 

@@ -15,7 +15,7 @@ namespace codi {
       using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(InternalExpressionTapeInterface<int>));
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(LhsExpressionInterface<double, int, Tape, _Impl>));
 
-      using Real = typename Tape::Real;
+      using Real = DECLARE_DEFAULT(typename Tape::Real, double);
       using PassiveReal = PassiveRealType<Real>;
 
       CODI_INLINE Impl& cast() {

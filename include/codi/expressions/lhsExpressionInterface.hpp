@@ -2,7 +2,7 @@
 
 #include "../aux/macros.h"
 #include "../config.h"
-#include "../tapes/interfaces/internalExpressionTapeInterface.hpp"
+#include "../tapes/interfaces/fullTapeInterface.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
 #include "expressionInterface.hpp"
@@ -16,7 +16,7 @@ namespace codi {
 
       using Real = DECLARE_DEFAULT(_Real, double);
       using Gradient = DECLARE_DEFAULT(_Gradient, Real);
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(InternalExpressionTapeInterface<ANY>));
+      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
       using Impl = DECLARE_DEFAULT(_Impl, LhsExpressionInterface);
 
       using Identifier = typename Tape::Identifier;

@@ -19,7 +19,7 @@ namespace codi {
     public:
 
       using Chunk = DECLARE_DEFAULT(_Chunk, ChunkBase);
-      using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
+      using NestedVector = DECLARE_DEFAULT(_NestedVector, TEMPLATE(DataInterface<ANY>));
       using InternalPosHandle = size_t;
 
       using NestedPosition = typename NestedVector::Position;

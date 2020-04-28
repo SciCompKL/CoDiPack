@@ -23,7 +23,7 @@ namespace codi {
   struct JacobianLinearTape : public JacobianBaseTape<_TapeTypes, JacobianLinearTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>));
+      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, ChunkVector>));
 
       using Base = JacobianBaseTape<_TapeTypes, JacobianLinearTape>;
       friend Base;

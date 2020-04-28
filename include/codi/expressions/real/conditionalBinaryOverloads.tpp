@@ -12,10 +12,12 @@
 
 // Create argA correct include environment for viewing and programming in an IDE
 #ifndef OPERATOR
-  #define OPERATOR ==
+  #define PROXY
+
   #include "../../aux/macros.h"
   #include "../../config.h"
   #include "../expressionInterface.hpp"
+  #define OPERATOR ==
 
   namespace codi {
 #endif
@@ -47,8 +49,9 @@
   #define PASSIVE_TYPE unsigned long long
   #include "conditionalBinaryPassiveOverloads.tpp"
 
-// Create argA correct include environment for viewing and programming in an IDE
-#ifndef OPERATOR
+// Create a correct include environment for viewing and programming in an IDE
+#ifdef PROXY
+  #undef PROXY
   }
 #endif
 

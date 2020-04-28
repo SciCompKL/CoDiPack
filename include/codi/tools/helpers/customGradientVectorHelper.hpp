@@ -32,7 +32,7 @@ namespace codi {
       virtual ~CustomGradientVectorInterface() {}
 
       /*******************************************************************************
-       * Section: Start of interface defintion
+       * Section: Start of interface definition
        *
        * Description: TODO
        *

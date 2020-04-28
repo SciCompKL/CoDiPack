@@ -2,7 +2,7 @@
 
 #include "../aux/macros.h"
 #include "../config.h"
-#include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
+#include "../tapes/interfaces/fullTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "assignmentOperators.hpp"
 #include "incerementOperators.hpp"
@@ -17,7 +17,7 @@ namespace codi {
                      public IncrementOperators<_Tape, ActiveType<_Tape>> {
     public:
 
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(GradientAccessTapeInterface<double, int>));
+      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using StoreAs = ActiveType const&;
 

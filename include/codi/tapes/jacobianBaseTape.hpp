@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <type_traits>
 
 #include "../aux/macros.h"
@@ -16,6 +17,7 @@
 #include "aux/adjointVectorAccess.hpp"
 #include "aux/jacobianSorter.hpp"
 #include "data/chunk.hpp"
+#include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "commonTapeImplementation.hpp"
 
@@ -30,7 +32,7 @@ namespace codi {
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
       using IndexManager = DECLARE_DEFAULT(_IndexManager, TEMPLATE(IndexManagerInterface<int>));
       template<typename Chunk, typename Nested>
-      using Vector = DECLARE_DEFAULT(TEMPLATE(_Vector<Chunk, Nested>), TEMPLATE(DataInterface<Nested>));
+      using Vector = DECLARE_DEFAULT(TEMPLATE(_Vector<Chunk, Nested>), TEMPLATE(ChunkVector<ANY, Nested>));
 
       using Identifier = typename IndexManager::Index;
 
@@ -54,7 +56,7 @@ namespace codi {
   struct JacobianBaseTape : public CommonTapeImplementation<_TapeTypes, _Impl> {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>));
+      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, ChunkVector>));
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;
@@ -571,7 +573,7 @@ namespace codi {
         return temp;
       }
 
-      Real const& primal(Identifier const& identifier) const {
+      Real primal(Identifier const& identifier) const {
         CODI_UNUSED(identifier);
 
         CODI_EXCEPTION("Accessing primal vector of an Jacobian tape.");

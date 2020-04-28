@@ -12,10 +12,12 @@
 
 // Create argA correct include environment for viewing and programming in an IDE
 #ifndef OPERATOR
-  #define OPERATOR !
+  #define PROXY
+
   #include "../../aux/macros.h"
   #include "../../config.h"
   #include "../expressionInterface.hpp"
+  #define OPERATOR !
 
   namespace codi {
 #endif
@@ -26,7 +28,8 @@
   }
 
 // Create argA correct include environment for viewing and programming in an IDE
-#ifndef OPERATOR
+#ifdef PROXY
+  #undef PROXY
   }
 #endif
 

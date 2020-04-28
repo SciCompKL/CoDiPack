@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "../../aux/exceptions.hpp"
 #include "../../aux/macros.h"
 #include "../../config.h"

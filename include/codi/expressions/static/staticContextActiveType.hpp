@@ -2,7 +2,7 @@
 
 #include "../../aux/macros.h"
 #include "../../config.h"
-#include "../../tapes/interfaces/gradientAccessTapeInterface.hpp"
+#include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../traits/realTraits.hpp"
 #include "../expressionInterface.hpp"
 
@@ -13,7 +13,7 @@ namespace codi {
   struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape>> {
     public:
 
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(GradientAccessTapeInterface<double, int>));
+      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Real = typename Tape::Real;
       using Identifier = typename Tape::Identifier;
