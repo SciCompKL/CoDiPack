@@ -56,21 +56,21 @@ namespace codi {
   template<typename Real, typename IndexManager, template <typename> class StatementEvaluator, typename Gradient = Real>
   using RealReversePrimalGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, ChunkVector>>>;
 
-  using RealReversePrimal = RealReversePrimalGen<double, LinearIndexManager<int>, ReverseStatementEvaluator, double>;
+  using RealReversePrimal = RealReversePrimalGen<double, LinearIndexManager<int>, InnerStatementEvaluator, double>;
 
   template<typename Real, typename IndexManager, template <typename> class StatementEvaluator, typename Gradient = Real>
   using RealReversePrimalUncheckedGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, ChunkVector>>>;
 
-  using RealReversePrimalUnchecked = RealReversePrimalUncheckedGen<double, LinearIndexManager<int>, ReverseStatementEvaluator, double>;
+  using RealReversePrimalUnchecked = RealReversePrimalUncheckedGen<double, LinearIndexManager<int>, InnerStatementEvaluator, double>;
 
   template<typename Real, typename IndexManager, template <typename> class StatementEvaluator, typename Gradient = Real>
   using RealReversePrimalIndexGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, ChunkVector>>>;
 
-  using RealReversePrimalIndex = RealReversePrimalIndexGen<double, MultiUseIndexManager<int>, ReverseStatementEvaluator, double>;
+  using RealReversePrimalIndex = RealReversePrimalIndexGen<double, MultiUseIndexManager<int>, InnerStatementEvaluator, double>;
 
   template<typename Real, typename IndexManager, template <typename> class StatementEvaluator, typename Gradient = Real>
   using RealReversePrimalIndexUncheckedGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, ChunkVector>>>;
 
-  using RealReversePrimalIndexUnchecked = RealReversePrimalIndexUncheckedGen<double, MultiUseIndexManager<int>, ReverseStatementEvaluator, double>;
+  using RealReversePrimalIndexUnchecked = RealReversePrimalIndexUncheckedGen<double, MultiUseIndexManager<int>, InnerStatementEvaluator, double>;
 
 }
