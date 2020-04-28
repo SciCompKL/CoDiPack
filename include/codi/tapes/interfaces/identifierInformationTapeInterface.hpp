@@ -21,6 +21,8 @@ namespace codi {
        *
        */
 
+      static bool constexpr LinearIndexHandling = CODI_UNDEFINED_VALUE;
+
       Identifier getPassiveIndex() const;
       Identifier getInvalidIndex() const;
       bool isIdentifierActive(Identifier const& index) const;

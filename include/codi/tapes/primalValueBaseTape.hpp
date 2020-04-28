@@ -95,6 +95,8 @@ namespace codi {
       using Position = typename Base::Position;
 
       static bool constexpr AllowJacobianOptimization = false;
+      static bool constexpr HasPrimalValues = true;
+      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler;
       static bool constexpr RequiresPrimalRestore = !TapeTypes::IsLinearIndexHandler;
 
     protected:
