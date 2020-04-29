@@ -89,12 +89,16 @@ Please visit the [tutorial page](http://www.scicomp.uni-kl.de/codi/db/d3c/tutori
 ## Citation
 
 If you use CoDiPack in one of your applications and write a paper it would be nice if you could cite the paper
-[High-Performance Derivative Computations using CoDiPack](https://arxiv.org/abs/1709.07229) (submitted to ACM TOMS).
+[High-Performance Derivative Computations using CoDiPack](https://dl.acm.org/doi/abs/10.1145/3356900).
 ~~~~{.txt}
-@article{sagebaum2017high,
-  title={{High-Performance Derivative Computations using CoDiPack}},
-  author={Sagebaum, Max and Albring, Tim and Gauger, Nicolas R.},
-  journal={arXiv preprint arXiv:1709.07229},
-  year={2017}
+@article{SaAlGauTOMS2019,
+  title = {High-Performance Derivative Computations using CoDiPack},
+  author = {M. Sagebaum, T. Albring, N.R. Gauger},
+  url = {https://dl.acm.org/doi/abs/10.1145/3356900},
+  year = {2019},
+  date = {2019-12-01},
+  journal = {ACM Transactions on Mathematical Software (TOMS)},
+  volume = {45},
+  number = {4},
 }
 ~~~~
