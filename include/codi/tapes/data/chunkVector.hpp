@@ -213,36 +213,40 @@ namespace codi {
                                        Args&&... args) {
         PointerStore<Chunk> pHandle;
 
-        size_t dataPos = start.data;
+        size_t curDataPos = start.data;
+        size_t endDataPos;
         NestedPosition curInnerPos = start.inner;
-        for(size_t curChunk = start.chunk; curChunk < end.chunk; curChunk += 1) {
+        NestedPosition endInnerPos;
+
+        size_t curChunk = start.chunk;
+        for(;;) {
+          // Update of end conditions
+          if(curChunk != end.chunk) {
+            endInnerPos = positions[curChunk + 1];
+            endDataPos = chunks[curChunk]->getUsedSize();
+          } else {
+            endInnerPos = end.inner;
+            endDataPos = end.data;
+          }
 
           pHandle.setPointers(0, chunks[curChunk]);
-
-          NestedPosition endInnerPos = positions[curChunk + 1];
           pHandle.callNestedForward(
                 /* arguments for callNestedForward */
-                nested, dataPos, chunks[curChunk]->getUsedSize(),
+                nested, curDataPos, endDataPos,
                 /* arguments for nested->evaluateForward */
                 curInnerPos, endInnerPos, function, std::forward<Args>(args)...);
 
-          // After a full chunk is evaluated, the data position needs to be at the end of the chunk
-          codiAssert(dataPos == chunks[curChunk]->getUsedSize());
+          // After a full chunk is evaluated, the data position needs to be at the end data position
+          codiAssert(curDataPos == endDataPos);
 
-          curInnerPos = endInnerPos;
-
-          dataPos = 0;
+          if(curChunk != end.chunk) {
+            curChunk += 1;
+            curInnerPos = endInnerPos;
+            curDataPos = 0;
+          } else {
+            break;
+          }
         }
-
-        // Iterate over the remainder also covers the case if the start chunk and end chunk are the same
-        pHandle.setPointers(0, chunks[end.chunk]);
-        pHandle.callNestedForward(
-              /* arguments for callNestedForward */
-              nested, dataPos, end.data,
-              /* arguments for nested->evaluateReverse */
-              curInnerPos, end.inner, function, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == end.data); // after the last chunk is evaluated, the data position needs to be at the end position
       }
 
       template<typename Function, typename ... Args>
@@ -250,35 +254,41 @@ namespace codi {
                                        Args&&... args) {
         PointerStore<Chunk> pHandle;
 
-        size_t dataPos = start.data;
+        size_t curDataPos = start.data;
+        size_t endDataPos;
         NestedPosition curInnerPos = start.inner;
-        for(size_t curChunk = start.chunk; curChunk > end.chunk; curChunk -= 1) {
+        NestedPosition endInnerPos;
+
+        size_t curChunk = start.chunk;
+        for(;;) {
+          // Update of end conditions
+          if(curChunk != end.chunk) {
+            endInnerPos = positions[curChunk];
+            endDataPos = 0;
+          } else {
+            endInnerPos = end.inner;
+            endDataPos = end.data;
+          }
 
           pHandle.setPointers(0, chunks[curChunk]);
-
-          NestedPosition endInnerPos = positions[curChunk];
           pHandle.callNestedReverse(
                 /* arguments for callNestedReverse */
-                nested, dataPos, 0,
+                nested, curDataPos, endDataPos,
                 /* arguments for nested->evaluateReverse */
                 curInnerPos, endInnerPos, function, std::forward<Args>(args)...);
 
-          codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
+          // After a full chunk is evaluated, the data position needs to be at the end data position
+          codiAssert(curDataPos == endDataPos);
 
-          curInnerPos = endInnerPos;
-
-          dataPos = chunks[curChunk - 1]->getUsedSize();
+          if(curChunk != end.chunk){
+            // Update of loop variables
+            curChunk -= 1;
+            curInnerPos = endInnerPos;
+            curDataPos = chunks[curChunk]->getUsedSize();
+          } else {
+            break;
+          }
         }
-
-        // Iterate over the remainder also covers the case if the start chunk and end chunk are the same
-        pHandle.setPointers(0, chunks[end.chunk]);
-        pHandle.callNestedReverse(
-              /* arguments for callNestedReverse */
-              nested, dataPos, end.data,
-              /* arguments for nested->evaluateReverse */
-              curInnerPos, end.inner, function, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == end.data); // after the last chunk is evaluated, the data position needs to be at the end position
       }
 
       template<typename FunctionObject, typename ... Args>
