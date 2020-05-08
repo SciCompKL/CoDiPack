@@ -62,4 +62,13 @@ namespace codi {
         FUNC(std::forward<Args>(args)...); \
       } \
     }
+
+#define WRAP_FUNCTION_TEMPLATE(NAME, FUNC) \
+  template<typename ... TT> \
+  struct NAME { \
+    template<typename ... Args> \
+    void operator()(Args&& ... args) const { \
+      FUNC<TT...>(std::forward<Args>(args)...); \
+    } \
+  }
 }

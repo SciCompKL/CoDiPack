@@ -379,16 +379,20 @@ namespace codi {
         }
       }
 
+      WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverse, Impl::template internalEvaluateReverse);
+
+      template<typename Adjoint>
+      CODI_NO_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianVector& jacobianVector) {
+          Wrap_internalEvaluateReverse<Adjoint> evalFunc;
+          jacobianVector.evaluateReverse(start, end, evalFunc, data);
+      }
+
     public:
       template<typename Adjoint>
       CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        auto evalFunc = [this] (NestedPosition const& start, NestedPosition const& end,
-                                Adjoint* data) {
-            jacobianVector.evaluateReverse(start, end, Impl::template internalEvaluateReverse<Adjoint>, data);
-        };
-        Base::internalEvaluateExtFunc(start, end, evalFunc, &adjointWrapper, data);
+        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template internalEvaluateReverseVector<Adjoint>, &adjointWrapper, data, jacobianVector);
       }
 
     protected:

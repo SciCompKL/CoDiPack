@@ -507,14 +507,8 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
 
-        if(TapeTypes::IsLinearIndexHandler) {
-          Wrap_internalEvaluateReverseVector evalFunc{};
-          Base::internalEvaluateExtFunc(start, end, evalFunc, vectorAccess,
+        Base::internalEvaluateExtFunc(start, end, internalEvaluateReverseVector, vectorAccess,
                                       primalData, dataVector, constantValueVector);
-        } else {
-          Base::internalEvaluateExtFunc(start, end, internalEvaluateReverseVector, vectorAccess,
-                                        primalData, dataVector, constantValueVector);
-        }
       }
 
     public:
