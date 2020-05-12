@@ -131,7 +131,7 @@ namespace codi {
       template<typename ArgB>
       static CODI_INLINE void checkArguments(ArgB const& argB) {
         if(Config::CheckExpressionArguments) {
-          if( 0.0 == getPassiveValue(argB)) {
+          if( isTotalZero(getPassiveValue(argB))) {
             CODI_EXCEPTION("Division called with divisor of zero.");
           }
         }

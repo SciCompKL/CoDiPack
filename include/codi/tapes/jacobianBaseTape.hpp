@@ -187,9 +187,8 @@ namespace codi {
         public:
           template<typename Node, typename DataVector>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
-            using std::isfinite;
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
-              ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
+              ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
                 ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
                   dataVector.pushData(jacobian, node.getIdentifier());
                 }
@@ -201,8 +200,7 @@ namespace codi {
           CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian, DataVector& dataVector) {
             CODI_UNUSED(dataVector);
 
-            using std::isfinite;
-            ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
+            ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
               // Do a delayed push for these termination nodes, accumulate the jacobian in the local member
               node.jacobian += jacobian;
             }
@@ -213,7 +211,6 @@ namespace codi {
         public:
           template<typename Type, typename DataVector>
           CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, DataVector& dataVector) {
-            using std::isfinite;
             ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
               ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(node.jacobian)) {
                 dataVector.pushData(node.jacobian, node.getIdentifier());

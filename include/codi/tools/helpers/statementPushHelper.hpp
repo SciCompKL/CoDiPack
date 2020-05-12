@@ -103,7 +103,7 @@ namespace codi {
 
         ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
           ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier()) {
-            ENABLE_CHECK(Config::IgnoreInvalidJacobies, std::isfinite(jacobian)) {
+            ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
               ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
 
                 indexVector[vectorPos] = arg.getIdentifier();
@@ -150,7 +150,7 @@ namespace codi {
       }
 
       void pushArgument(Type const& arg, Real const& jacobian) {
-        ENABLE_CHECK(Config::IgnoreInvalidJacobies, std::isfinite(jacobian)) {
+        ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
           lhsTangent += jacobian * arg.getGradient();
         }
       }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "../aux/macros.h"
 #include "../config.h"
 
@@ -25,6 +27,17 @@ namespace codi {
       }
   };
 
+  template<typename _Type, typename = void>
+  struct IsTotalFinite {
+    public:
+
+      using Type = DECLARE_DEFAULT(_Type, double);
+
+      static CODI_INLINE bool isTotalFinite(Type const& v) {
+        return std::isfinite(v);
+      }
+  };
+
   template<typename Type>
   using PassiveRealType = typename RealTraits<Type>::PassiveReal;
 
@@ -36,5 +49,10 @@ namespace codi {
   template<typename Type>
   CODI_INLINE bool isTotalZero(Type const& v) {
     return RealTraits<Type>::isTotalZero(v);
+  }
+
+  template<typename Type>
+  CODI_INLINE bool isTotalFinite(Type const& v) {
+    return IsTotalFinite<Type>::isTotalFinite(v);
   }
 }
