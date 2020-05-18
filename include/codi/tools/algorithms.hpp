@@ -166,6 +166,9 @@ namespace codi {
 
             setGradientOnGradientData(tape, j, input, inputSize, typename GT::Data());
           }
+
+          tape.clearAdjoints(end, start);
+
         } else if(EvaluationType::Reverse == evalType) {
 
           for(size_t i = 0; i < outputSize; i += gradDim) {
