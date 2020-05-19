@@ -444,7 +444,7 @@ namespace codi {
   template<typename Real, typename Arg>
   CODI_INLINE PassiveRealType<Real> round(ExpressionInterface<Real, Arg> const& arg) {
     using std::round;
-    return round(arg.getValue());
+    return round(arg.cast().getValue());
   }
 
   template<typename _Real>

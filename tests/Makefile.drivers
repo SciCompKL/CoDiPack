@@ -8,7 +8,7 @@ define define_codi_driver
 #  $(5) DRIVER_TESTS
 #  $(6) ADDITIONAL_FLAGS
   ALL_DRIVERS := $(ALL_DRIVERS) $(1)
-  $(BUILD_DIR)/$(1).runner.o : DRIVER_INC = -I$(CODI_DIR)/include -DDRIVER='$(2)' -DDRIVER_NAME=$(3) -DCODI_TYPE=$(4) -DCODI_TYPE_NAME=$(1) $(6)
+  $(BUILD_DIR)/$(1).runner.o : DRIVER_INC = -I$(CODI_DIR)/include -DDRIVER='$(2)' -DDRIVER_NAME=$(3) -DCODI_TYPE='$(4)' -DCODI_TYPE_NAME=$(1) $(6)
   $(BUILD_DIR)/$(1).runner.o : DRIVER_TESTS = $(5)
 endef
 
@@ -23,6 +23,9 @@ $(eval $(call define_codi_driver,D1_rwsPrimInd,"drivers/codi/reverse1stOrder.hpp
 $(eval $(call define_codi_driver,D1_rwsJacLinCombined,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverse,$(ALL_TESTS),-DREVERSE_TAPE -DCODI_CombineJacobianArguments))
 $(eval $(call define_codi_driver,D1_rwsJacLinUnchecked,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseUnchecked,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D1_rwsJacLinCustomVector,"drivers/codi/reverse1stOrderVectorHelper.hpp",CoDiReverse1stOrderVectorHelper,codi::RealReverse,$(ALL_TESTS),-DREVERSE_TAPE))
+
+$(eval $(call define_codi_driver,D1_fwdOFwd,"drivers/codi/forward1stOrder.hpp",CoDiForward1stOrder,codi::RealForwardGen<codi::RealForward>,$(ALL_TESTS),-DSECOND_ORDER))
+$(eval $(call define_codi_driver,D1_rwsOFwd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseGen<codi::RealForward>,$(ALL_TESTS),-DSECOND_ORDER))
 
 # Primal drivers
 $(eval $(call define_codi_driver,D0_fwd,"drivers/codi/primal.hpp",CoDiPrimal,codi::RealForward,$(ALL_TESTS),))

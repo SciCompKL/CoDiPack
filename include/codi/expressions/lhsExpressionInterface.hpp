@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "../aux/macros.h"
 #include "../config.h"
 #include "../tapes/interfaces/fullTapeInterface.hpp"
@@ -106,6 +108,11 @@ namespace codi {
       }
   };
 
+  template<typename Real, typename Gradient, typename Tape, typename Impl>
+  std::ostream& operator<<(std::ostream& out, LhsExpressionInterface<Real, Gradient, Tape, Impl> const& v) {
+    return out << v.cast().value();
+  }
+
   template<typename _Type>
   struct RealTraits<_Type, enableIfLhsExpression<_Type>> {
     public:
@@ -126,7 +133,7 @@ namespace codi {
 
       static CODI_INLINE bool isTotalZero(Type const& v) {
         // TODO: Specialize for forward and reverse tapes.
-        return Real() == v.getValue() && Type::Gradient() == v.getGradient();
+        return Real() == v.getValue() && typename Type::Gradient() == v.getGradient();
       }
   };
 }

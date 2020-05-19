@@ -46,7 +46,8 @@ namespace codi {
 
     public:
 
-      explicit BinaryExpression(ExpressionInterface<Real, ArgA> const& argA, ExpressionInterface<Real, ArgB> const& argB) :
+      template<typename RealA, typename RealB>
+      explicit BinaryExpression(ExpressionInterface<RealA, ArgA> const& argA, ExpressionInterface<RealB, ArgB> const& argB) :
         argA(argA.cast()),
         argB(argB.cast()),
         result(Operation::primal(this->argA.getValue(), this->argB.getValue())) {}

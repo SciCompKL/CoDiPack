@@ -27,10 +27,9 @@
     return OPERATOR getPassiveValue(arg.cast());
   }
 
-// Create argA correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE
 #ifdef PROXY
   #undef PROXY
-  }
 #endif
 
 #undef OPERATOR

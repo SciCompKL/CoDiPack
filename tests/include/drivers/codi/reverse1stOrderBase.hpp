@@ -80,7 +80,11 @@ struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
         for(size_t curDim = 0; curDim < curSize; ++curDim) {
           for(size_t curIn = 0; curIn < inputs; ++curIn) {
             //jac(curOut * gradDim + curDim, curIn) = GT::at(getGradient(x[curIn]), curDim);
+#ifdef SECOND_ORDER
+            jac(curOut * gradDim + curDim, curIn) = accessGradient(x[curIn]).value();
+#else
             jac(curOut * gradDim + curDim, curIn) = accessGradient(x[curIn]);
+#endif
           }
         }
 

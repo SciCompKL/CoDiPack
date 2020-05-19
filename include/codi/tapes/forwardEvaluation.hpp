@@ -61,6 +61,14 @@ namespace codi {
         lhs.cast().gradient() = newGradient;
       }
 
+      template<typename Lhs, typename Rhs>
+      void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
+                 LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Rhs> const& rhs) {
+
+        lhs.cast().value() = rhs.cast().getValue();
+        lhs.cast().gradient() = rhs.cast().getGradient();
+      }
+
       template<typename Lhs>
       void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs, PassiveReal const& rhs) {
         lhs.cast().value() = rhs;

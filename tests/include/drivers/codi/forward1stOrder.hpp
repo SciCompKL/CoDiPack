@@ -50,7 +50,11 @@ struct CoDiForward1stOrder : public Driver1stOrderBase<CODI_TYPE> {
         for(size_t curDim = 0; curDim < curSize; ++curDim) {
           for(size_t curOut = 0; curOut < outputs; ++curOut) {
             //jac(curOut, curIn * gradDim + curDim) = GT::at(y[curOut].getGradient(), curDim);
+#ifdef SECOND_ORDER
+            jac(curOut, curIn * gradDim + curDim) = y[curOut].getGradient().value();
+#else
             jac(curOut, curIn * gradDim + curDim) = y[curOut].getGradient();
+#endif
           }
         }
 

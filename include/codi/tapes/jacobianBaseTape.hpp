@@ -238,7 +238,7 @@ namespace codi {
         auto& insertVector = jacobianVector;
 #endif
 
-        pushJacobianLogic.eval(rhs.cast(), 1.0, insertVector);
+        pushJacobianLogic.eval(rhs.cast(), Real(1.0), insertVector);
         pushDelayedJacobianLogic.eval(rhs.cast(), insertVector);
 
 #if CODI_CombineJacobianArguments
@@ -514,7 +514,7 @@ namespace codi {
        *
        */
 
-      void pushJacobiManual(Real const& jacobi, Real const& value, Gradient const& index) {
+      void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
         jacobianVector.pushData(jacobi, index);
