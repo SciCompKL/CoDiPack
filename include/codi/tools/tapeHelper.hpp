@@ -707,6 +707,7 @@ namespace codi {
       template<typename Jac = DummyJacobian>
       void evalHessian(typename TapeHelperBase<CoDiType, Impl>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         CODI_UNUSED(hes);
+        CODI_UNUSED(jac);
 
         CODI_EXCEPTION(
           "No direct hessian evaluation for Jacobian tapes. "

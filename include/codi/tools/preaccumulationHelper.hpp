@@ -317,8 +317,8 @@ namespace codi {
         Tape& tape = CoDiType::getGlobalTape();
 
         Position endPos = tape.getPosition();
-        if(jacobie.size() < inputData.size() * outputData.size()) {
-          jacobie.resize(outputData.size(), inputData.size());
+        if(jacobie.getM() != outputData.size() || jacobie.getN() != inputData.size()) {
+          jacobie.reshape(outputData.size(), inputData.size());
         }
 
         Algorithms<CoDiType, false>::computeJacobian(startPos, endPos,
@@ -356,7 +356,7 @@ namespace codi {
                   jacobiesForStatement -= 1;
                 }
               }
-              nonZerosLeft -= jacobiesForStatement; /* update non zeros so that we now if it is the last round */
+              nonZerosLeft -= jacobiesForStatement; /* update non zeros so that we know if it is the last round */
 
               GradientData storedGradientData = lastGradientData;
               tape.storeManual(value.getValue(), lastGradientData, jacobiesForStatement + (int)staggeringActive);

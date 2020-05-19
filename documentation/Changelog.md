@@ -1,6 +1,20 @@
 Changelog      {#Changelog}
 ===========================
 
+### v 1.9.3 - 2020-05-18
+ - Bufix:
+   * PreaccumulationHelper with changing sizes could give a segmentation fault
+   * PreaccumulationHelper with changing zero patterns gave wrong results
+   * Dirty adjoint vector after computeJacobian call in Algorithms with a forward evaluation
+
+### v 1.9.2 - 2020-04-28
+ - Core functionality:
+    * Support for remainder and round function.
+ - MeDiPack bindings:
+    * Updated MeDiPack bindings to MeDiPack 1.2 (not backwards compatible).
+ - MSVC compatibility:
+    * Renaming interface -> inter.
+
 ### v 1.9.1 - 2020-01-13
  - Bugfix:
    * Missing declaration of MaxDerivativeOrder in UnaryOp type traits.

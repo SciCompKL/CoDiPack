@@ -52,9 +52,9 @@ struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
 
     int vecSize;
 
-    CoDiMeDiAdjointInterfaceWrapper(codi::AdjointInterface<Real, IndexType>* interface) :
-      codiInterface(interface),
-      vecSize((int)interface->getVectorSize()) {}
+    CoDiMeDiAdjointInterfaceWrapper(codi::AdjointInterface<Real, IndexType>* inter) :
+      codiInterface(inter),
+      vecSize((int)inter->getVectorSize()) {}
 
     int computeElements(int elements) const {
       return elements * vecSize;
