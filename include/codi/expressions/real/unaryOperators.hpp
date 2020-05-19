@@ -68,8 +68,10 @@ namespace codi {
   using std::erfc;
   using std::exp;
   using std::floor;
+  using std::isfinite;
   using std::isinf;
   using std::isnan;
+  using std::isnormal;
   using std::log;
   using std::log10;
   using std::sin;
@@ -376,13 +378,23 @@ namespace codi {
   }
 
   template<typename Real, typename Arg>
-  CODI_INLINE bool isnan(ExpressionInterface<Real, Arg> const& arg) {
-    return isnan(getPassiveValue(arg.cast()));
+  CODI_INLINE bool isfinite(ExpressionInterface<Real, Arg> const& arg) {
+    return isfinite(getPassiveValue(arg.cast()));
   }
 
   template<typename Real, typename Arg>
   CODI_INLINE bool isinf(ExpressionInterface<Real, Arg> const& arg) {
     return isinf(getPassiveValue(arg.cast()));
+  }
+
+  template<typename Real, typename Arg>
+  CODI_INLINE bool isnan(ExpressionInterface<Real, Arg> const& arg) {
+    return isnan(getPassiveValue(arg.cast()));
+  }
+
+  template<typename Real, typename Arg>
+  CODI_INLINE bool isnormal(ExpressionInterface<Real, Arg> const& arg) {
+    return isnormal(getPassiveValue(arg.cast()));
   }
 
   template<typename _Real>
@@ -650,8 +662,10 @@ namespace std {
   using codi::erfc;
   using codi::exp;
   using codi::floor;
+  using codi::isfinite;
   using codi::isinf;
   using codi::isnan;
+  using codi::isnormal;
   using codi::log;
   using codi::log10;
   using codi::round;
