@@ -34,7 +34,8 @@ namespace codi {
       using Type = DECLARE_DEFAULT(_Type, double);
 
       static CODI_INLINE bool isTotalFinite(Type const& v) {
-        return std::isfinite(v);
+        using std::isfinite;
+        return isfinite(v);
       }
   };
 

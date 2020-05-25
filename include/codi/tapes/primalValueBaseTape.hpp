@@ -73,7 +73,7 @@ namespace codi {
     public:
 
       using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, ChunkVector>));
-      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(ReverseTapeInterface<double, double, int>));
+      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;
       friend Base;
@@ -723,28 +723,11 @@ namespace codi {
 
             CODI_UNUSED(primalVector, curConstantPos, constantValues);
 
-            size_t endPos = curPassivePos - numberOfPassiveArguments;
+            size_t endPos = curRhsIdentifiersPos - numberOfPassiveArguments;
 
-            #if CODI_VariableAdjointInterfaceInPrimalTapes
-              bool const lhsZero = adjointVector->isLhsZero();
-            #else
-              bool const lhsZero = isTotalZero(lhsAdjoint);
-            #endif
-
-            ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !lhsZero) {
-              while(curPassivePos > endPos) {
-                curPassivePos -= 1;
-                curRhsIdentifiersPos -= 1;
-
-                Real const& jacobian = passiveValues[curPassivePos];
-                #if CODI_VariableAdjointInterfaceInPrimalTapes
-                  adjointVector->updateAdjointWithLhs(rhsIdentifiers[curRhsIdentifiersPos], jacobian);
-                #else
-                  adjointVector[rhsIdentifiers[curRhsIdentifiersPos]] += jacobian * lhsAdjoint;
-                #endif
-
-              }
-            } else {
+            bool const lhsZero = evalPreaccReverse(adjointVector, lhsAdjoint, curPassivePos, passiveValues,
+                                                   curRhsIdentifiersPos, rhsIdentifiers, endPos);
+            if(lhsZero) {
               curPassivePos -= numberOfPassiveArguments;
               curRhsIdentifiersPos -= numberOfPassiveArguments;
             }
@@ -753,11 +736,15 @@ namespace codi {
           template<typename Expr, typename ... Args>
           static Real statementEvaluateForwardInner(Args&& ... args) {
             CODI_EXCEPTION("Forward evaluation of jacobian statement not possible.");
+
+            return Real();
           }
 
           template<typename Expr, typename ... Args>
           static Real statementEvaluatePrimalInner(Args&& ... args) {
             CODI_EXCEPTION("Primal evaluation of jacobian statement not possible.");
+
+            return Real();
           }
 
           template<typename Expr>
@@ -769,8 +756,21 @@ namespace codi {
 
             CODI_UNUSED(primalVector, curConstantPos, constantValues);
 
-            size_t curPrimalPos = size;
-            size_t endPos = curRhsIdentifiersPos - size;
+            size_t passivePos = size;
+            size_t rhsPos = curRhsIdentifiersPos + size;
+            size_t endPos = curRhsIdentifiersPos;
+
+            evalPreaccReverse(adjointVector, lhsAdjoint, passivePos, primalVector, rhsPos, rhsIdentifiers, endPos);
+          }
+
+        private:
+
+          static bool evalPreaccReverse(
+              ADJOINT_VECTOR_TYPE* adjointVector,
+              Gradient lhsAdjoint,
+              size_t& curPassivePos, Real const* const passiveValues,
+              size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
+              size_t endRhsIdentifiersPos) {
 
             #if CODI_VariableAdjointInterfaceInPrimalTapes
               bool const lhsZero = adjointVector->isLhsZero();
@@ -779,11 +779,11 @@ namespace codi {
             #endif
 
             ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !lhsZero) {
-              while(curRhsIdentifiersPos > endPos) {
+              while(curRhsIdentifiersPos > endRhsIdentifiersPos) {
+                curPassivePos -= 1;
                 curRhsIdentifiersPos -= 1;
-                curPrimalPos -= 1;
 
-                Real const& jacobian = primalVector[curPrimalPos];
+                Real const& jacobian = passiveValues[curPassivePos];
                 #if CODI_VariableAdjointInterfaceInPrimalTapes
                   adjointVector->updateAdjointWithLhs(rhsIdentifiers[curRhsIdentifiersPos], jacobian);
                 #else
@@ -791,10 +791,9 @@ namespace codi {
                 #endif
 
               }
-            } else {
-              curRhsIdentifiersPos -= size;
             }
 
+            return lhsZero;
           }
       };
 
@@ -1132,8 +1131,21 @@ namespace codi {
       }
   };
 
+  template<size_t size>
+  struct PreaccumulationExpression {};
+
+  template<size_t size>
+  struct MaxNumberOfActiveTypeArguments<PreaccumulationExpression<size>> {
+      static size_t constexpr value = size;
+  };
+
+  template<size_t size>
+  struct MaxNumberOfConstantArguments<PreaccumulationExpression<size>> {
+      static size_t constexpr value = 0;
+  };
+
   #define CREATE_EXPRESSION(size) \
-      TapeTypes::StatementEvaluator::template createHandle<Impl, typename Impl::template JacobianStatementGenerator<size>, void>()
+      TapeTypes::StatementEvaluator::template createHandle<Impl, typename Impl::template JacobianStatementGenerator<size>, PreaccumulationExpression<size>>()
 
   template <typename TapeTypes, typename Impl>
   const typename TapeTypes::EvalHandle PrimalValueBaseTape<TapeTypes, Impl>::jacobianExpressions[Config::MaxArgumentSize] = {

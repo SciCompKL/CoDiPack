@@ -54,13 +54,13 @@ namespace codi {
 
   using RealReverseIndexUnchecked = RealReverseIndexUncheckedGen<double>;
 
-  template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>, template <typename> class StatementEvaluator = InnerStatementEvaluator>
-  using RealReversePrimalGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, ChunkVector>>>;
+  template<typename Real, typename Gradient = Real, typename Index = int, template <typename> class StatementEvaluator = InnerStatementEvaluator>
+  using RealReversePrimalGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, ChunkVector>>>;
 
   using RealReversePrimal = RealReversePrimalGen<double>;
 
-  template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>, template <typename> class StatementEvaluator = InnerStatementEvaluator>
-  using RealReversePrimalUncheckedGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, ChunkVector>>>;
+  template<typename Real, typename Gradient = Real, typename Index = int, template <typename> class StatementEvaluator = InnerStatementEvaluator>
+  using RealReversePrimalUncheckedGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, ChunkVector>>>;
 
   using RealReversePrimalUnchecked = RealReversePrimalUncheckedGen<double>;
 
