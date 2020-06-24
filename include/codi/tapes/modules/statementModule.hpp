@@ -161,10 +161,10 @@ namespace codi {
 #endif
 
         // Push the regular Jacobian arguments
-        rhs.template calcGradient(insertData);
+        rhs.calcGradient(insertData);
 
         // Push Jacobians from ReferencReal arguments
-        rhs.template pushLazyJacobies(insertData);
+        rhs.pushLazyJacobies(insertData);
 
         // Store the Jacobians if the cobine optimization is enabled
 #if CODI_EnableCombineJacobianArguments

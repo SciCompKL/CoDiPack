@@ -1070,6 +1070,18 @@ namespace codi {
     template<typename Real, class B>            \
     CODI_INLINE bool OPERATOR(const unsigned long long& a, const Expression<Real, B>& b) { \
       return a OP b.getValue(); \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam A The expression for the first argument of the function */ \
+    template<typename Real, class A> \
+    CODI_INLINE bool OPERATOR(const Expression<Real, A>& a, const long double& b) { \
+      return a.getValue() OP b; \
+    } \
+    \
+    /** @brief Overload for OP with the CoDiPack expressions. @param[in] a The first argument of the operation. @param[in] b The second argument of the operation. @return The operation returns the same value the same version with double arguments. @tparam Real The real type used in the active types. @tparam B The expression for the second argument of the function*/ \
+    template<typename Real, class B>            \
+    CODI_INLINE bool OPERATOR(const long double& a, const Expression<Real, B>& b) { \
+      return a OP b.getValue(); \
     }
 
   CODI_DEFINE_CONDITIONAL(operator==, ==)
