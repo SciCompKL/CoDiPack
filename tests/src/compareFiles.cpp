@@ -13,7 +13,6 @@
 struct Settings {
   double threshold;
 
-  std::vector<std::string> drivers;
   std::vector<std::string> fileNames;
 };
 

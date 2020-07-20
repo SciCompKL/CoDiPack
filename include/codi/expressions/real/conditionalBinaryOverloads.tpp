@@ -10,7 +10,7 @@
   #error Please define the name of the operator.
 #endif
 
-// Create argA correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE
 #ifndef OPERATOR
   #define OPERATOR ==
   #include "../../aux/macros.h"
@@ -47,7 +47,7 @@
   #define PASSIVE_TYPE unsigned long long
   #include "conditionalBinaryPassiveOverloads.tpp"
 
-// Create argA correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE
 #ifndef OPERATOR
   }
 #endif

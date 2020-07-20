@@ -8,10 +8,10 @@ namespace codi {
 
   template<typename _Real>
   struct StatementEvaluatorInterface {
+    public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
 
-    public:
       /*******************************************************************************
        * Section: Start of interface definition
        *

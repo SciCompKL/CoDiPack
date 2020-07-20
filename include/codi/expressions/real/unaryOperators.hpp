@@ -70,6 +70,7 @@ namespace codi {
   using std::isnan;
   using std::log;
   using std::log10;
+  using std::round;
   using std::sin;
   using std::sinh;
   using std::sqrt;
@@ -441,8 +442,7 @@ namespace codi {
 
   template<typename Real, typename Arg>
   CODI_INLINE PassiveRealType<Real> round(ExpressionInterface<Real, Arg> const& arg) {
-    using std::round;
-    return round(arg.getValue());
+    return round(getPassiveValue(arg.cast()));
   }
 
   template<typename _Real>

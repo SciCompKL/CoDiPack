@@ -6,8 +6,9 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-template<typename _T>
+  template<typename _T>
   struct JacobianInterface {
+    public:
 
       using T = DECLARE_DEFAULT(_T, double);
 

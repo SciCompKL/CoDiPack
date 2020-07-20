@@ -41,7 +41,7 @@ namespace codi {
       }
 
       template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConst(Args&& ... args) {
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
         CODI_UNUSED(args...);
       }
   };

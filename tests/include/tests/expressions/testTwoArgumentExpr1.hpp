@@ -4,7 +4,7 @@ struct TestTwoArgumentExpr1 : public TestInterface {
   public:
     NAME("TwoArgumentExpr1")
     IN(2)
-    OUT(24)
+    OUT(30)
     POINTS(25) =
     {
       {-10.0,   -10},
@@ -57,8 +57,14 @@ struct TestTwoArgumentExpr1 : public TestInterface {
       y[18] = fmax(x[0], x[1]); // R x R the results for the points with the same values are reversed here because the other one uses the standard template.
       y[19] = fmax(5.00, x[1]); // R x R
       y[20] = fmax(x[0], 5.00); // R x R
-      y[21] = remainder(x[0], x[1]); // R x R
-      y[22] = remainder(5.0, x[1]); // R x R
-      y[23] = remainder(x[0], 5.0); // R x R
+      y[21] = pow(x[0], x[1]);  // R x R
+      y[22] = pow(5.00, x[1]);  // R x R
+      y[23] = pow(x[0], 5.00);  // R x R
+      y[24] = copysign(x[0], x[1]); // R x R
+      y[25] = copysign(5.00, x[1]); // R x R
+      y[26] = copysign(x[0], 5.00); // R x R
+      y[27] = copysignf(x[0], x[1]); // R x R
+      y[28] = copysignf(5.00, x[1]); // R x R
+      y[29] = copysignf(x[0], 5.00); // R x R
     }
 };

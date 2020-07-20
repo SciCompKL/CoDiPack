@@ -7,7 +7,7 @@
 namespace codi {
 
   template<typename _Identifier>
-  struct InternalExpressionTapeInterface {
+  struct InternalStatementRecordingInterface {
     public:
 
       using Identifier = DECLARE_DEFAULT(_Identifier, int);

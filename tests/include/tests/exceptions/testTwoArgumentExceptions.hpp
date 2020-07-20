@@ -18,11 +18,11 @@ struct TestTwoArgumentExceptions : public TestInterface {
       y[0] = x[0] / x[1];  // R x (R \ {0})
       y[1] = 5.00 / x[1];  // R x (R \ {0})
       y[2] = x[0] / 5.00;  // R x (R \ {0})
-      y[3] =   pow(x[0], x[1]);  // R x R
-      y[4] =   pow(5.00, x[1]);  // R x R
-      y[5] =   pow(x[0], 5.00);  // R x R
-      y[6] = atan2(x[0], x[1]);  // R x R \ {0, 0}
-      y[7] = atan2(5.00, x[1]);  // R x R \ {0, 0}
-      y[8] = atan2(x[0], 5.00);  // R x R \ {0, 0}
+      y[3] = atan2(x[0], x[1]);  // R x R \ {0, 0}
+      y[4] = atan2(5.00, x[1]);  // R x R \ {0, 0}
+      y[5] = atan2(x[0], 5.00);  // R x R \ {0, 0}
+      y[6] = remainder(x[0], x[1]);  // R x (R \ {0})
+      y[7] = remainder(5.00, x[1]);  // R x (R \ {0})
+      y[8] = remainder(x[0], 5.00);  // R x (R \ {0})
     }
 };

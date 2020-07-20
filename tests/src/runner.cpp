@@ -24,17 +24,12 @@ using Driver = DECLARE_DEFAULT(DRIVER_NAME, TEMPLATE(DriverInterface<double>));
 
 
 struct Runner {
+  public:
 
     using Number = typename Driver::Number;
     Driver driver;
 
-    std::map<DriverOrder, std::string> orderName;
-
-    Runner() : driver(), orderName() {
-      orderName[DriverOrder::Primal] = "primal";
-      orderName[DriverOrder::Deriv1st] = "deriv1st";
-      orderName[DriverOrder::Deriv2nd] = "deriv2nd";
-    }
+    Runner() : driver() {}
 
     void run() {
       TestVector<Number> testInfos = driver.getTestInfos();
@@ -73,16 +68,6 @@ struct Runner {
       file += "/" + test->getName() + ".out";
 
       return file;
-    }
-
-    std::string getOrderName(DriverOrder const order) {
-      auto pos = orderName.find(order);
-
-      if(pos == orderName.end()) {
-        codi::CODI_EXCEPTION("Missing name for driver order.");
-      }
-
-      return pos->second;
     }
 };
 

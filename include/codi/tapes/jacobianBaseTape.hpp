@@ -50,19 +50,19 @@ namespace codi {
   struct JacobianBaseTape : public CommonTapeImplementation<_TapeTypes, _Impl> {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>));
+      using ImplTapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>));
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>;
+      using Base = CommonTapeImplementation<ImplTapeTypes, Impl>;
       friend Base;
 
-      using Real = typename TapeTypes::Real;
-      using Gradient = typename TapeTypes::Gradient;
-      using IndexManager = typename TapeTypes::IndexManager;
-      using Identifier = typename TapeTypes::Identifier;
+      using Real = typename ImplTapeTypes::Real;
+      using Gradient = typename ImplTapeTypes::Gradient;
+      using IndexManager = typename ImplTapeTypes::IndexManager;
+      using Identifier = typename ImplTapeTypes::Identifier;
 
-      using StatementVector = typename TapeTypes::StatementVector;
-      using JacobianVector = typename TapeTypes::JacobianVector;
+      using StatementVector = typename ImplTapeTypes::StatementVector;
+      using JacobianVector = typename ImplTapeTypes::JacobianVector;
 
       using PassiveReal = PassiveRealType<Real>;
 
@@ -73,7 +73,7 @@ namespace codi {
 
     protected:
 
-      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
+      MemberStore<IndexManager, Impl, ImplTapeTypes::IsStaticIndexHandler> indexManager;
       StatementVector statementVector;
       JacobianVector jacobianVector;
 
@@ -120,9 +120,9 @@ namespace codi {
 
         Base::init(&jacobianVector);
 
-        Base::options.insert(ConfigurationOption::AdjointSize);
-        Base::options.insert(ConfigurationOption::JacobianSize);
-        Base::options.insert(ConfigurationOption::StatementSize);
+        Base::options.insert(TapeParameters::AdjointSize);
+        Base::options.insert(TapeParameters::JacobianSize);
+        Base::options.insert(TapeParameters::StatementSize);
       }
 
       /*******************************************************************************
@@ -188,7 +188,7 @@ namespace codi {
 
         if(cast().isActive()) {
           PushJacobianLogic pushJacobianLogic;
-          size_t constexpr MaxArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
+          size_t constexpr MaxArgs = NumberOfActiveTypeArguments<Rhs>::value;
 
           statementVector.reserveItems(1);
           typename JacobianVector::InternalPosHandle jacobianStart = jacobianVector.reserveItems(MaxArgs);
@@ -242,7 +242,7 @@ namespace codi {
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           statementVector.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
         }
@@ -258,7 +258,7 @@ namespace codi {
 
       CODI_INLINE TapeValues internalGetTapeValues() const {
         std::string name;
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           name = "CoDi Tape Statistics ( JacobiLinearTape )";
         } else {
           name = "CoDi Tape Statistics ( JacobiReuseTape )";
@@ -376,34 +376,34 @@ namespace codi {
         adjoints.resize(1);
       }
 
-      size_t getOption(ConfigurationOption option) const {
-        switch (option) {
-          case ConfigurationOption::AdjointSize:
+      size_t getParameter(TapeParameters parameter) const {
+        switch (parameter) {
+          case TapeParameters::AdjointSize:
             return adjoints.size();
             break;
-          case ConfigurationOption::JacobianSize:
+          case TapeParameters::JacobianSize:
             return jacobianVector.getDataSize();
             break;
-          case ConfigurationOption::StatementSize:
+          case TapeParameters::StatementSize:
             return statementVector.getDataSize();
           default:
-            return Base::getOption(option);
+            return Base::getParameter(parameter);
             break;
         }
       }
 
-      void setOption(ConfigurationOption option, size_t value) {
-        switch (option) {
-          case ConfigurationOption::AdjointSize:
+      void setParameter(TapeParameters parameter, size_t value) {
+        switch (parameter) {
+          case TapeParameters::AdjointSize:
             return adjoints.resize(value);
             break;
-          case ConfigurationOption::JacobianSize:
+          case TapeParameters::JacobianSize:
             return jacobianVector.resize(value);
             break;
-          case ConfigurationOption::StatementSize:
+          case TapeParameters::StatementSize:
             return statementVector.resize(value);
           default:
-            return Base::setOption(option, value);
+            return Base::setParameter(parameter, value);
             break;
         }
       }

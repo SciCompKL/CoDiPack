@@ -5,7 +5,7 @@
 #include "../testInterface.hpp"
 
 enum class DriverOrder {
-  Primal,
+  Deriv0th,
   Deriv1st,
   Deriv2nd
 };

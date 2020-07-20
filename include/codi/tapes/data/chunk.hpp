@@ -21,7 +21,7 @@ namespace codi {
 
       static size_t constexpr EntrySize = UNDEFINED_VALUE;
 
-      void swap(ChunkBase& other);
+      void swap(IMPLEMENTATION& other);
 
       template<typename ... Data>
       CODI_INLINE void pushData(Data&& ... dataEntries);
@@ -73,7 +73,7 @@ namespace codi {
 
     protected:
 
-      void swapBase(ChunkBase& other) {
+      void swap(ChunkBase& other) {
         std::swap(size, other.size);
         std::swap(usedSize, other.usedSize);
       }
@@ -82,6 +82,8 @@ namespace codi {
   template<typename Data1>
   struct Chunk1 final : public ChunkBase {
     public:
+
+      using Base = ChunkBase;
 
       static size_t constexpr EntrySize = sizeof(Data1);
 
@@ -128,7 +130,7 @@ namespace codi {
       }
 
       void swap(Chunk1<Data1>& other) {
-        this->swapBase(other);
+        Base::swap(other);
 
         std::swap(data1, other.data1);
       }
@@ -141,6 +143,8 @@ namespace codi {
   template<typename Data1, typename Data2>
   struct Chunk2 final : public ChunkBase {
     public:
+
+      using Base = ChunkBase;
 
       static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2);
 
@@ -201,7 +205,7 @@ namespace codi {
       }
 
       void swap(Chunk2<Data1, Data2>& other) {
-        this->swapBase(other);
+        Base::swap(other);
 
         std::swap(data1, other.data1);
         std::swap(data2, other.data2);
@@ -216,6 +220,8 @@ namespace codi {
   template<typename Data1, typename Data2, typename Data3>
   struct Chunk3 final : public ChunkBase {
     public:
+
+      using Base = ChunkBase;
 
       static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3);
 
@@ -290,7 +296,7 @@ namespace codi {
       }
 
       void swap(Chunk3<Data1, Data2, Data3>& other) {
-        this->swapBase(other);
+        Base::swap(other);
 
         std::swap(data1, other.data1);
         std::swap(data2, other.data2);
@@ -308,6 +314,8 @@ namespace codi {
   template<typename Data1, typename Data2, typename Data3, typename Data4>
   struct Chunk4 final : public ChunkBase {
     public:
+
+      using Base = ChunkBase;
 
       static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3) + sizeof(Data4);
 
@@ -396,7 +404,7 @@ namespace codi {
       }
 
       void swap(Chunk4<Data1, Data2, Data3, Data4>& other) {
-        this->swapBase(other);
+        Base::swap(other);
 
         std::swap(data1, other.data1);
         std::swap(data2, other.data2);

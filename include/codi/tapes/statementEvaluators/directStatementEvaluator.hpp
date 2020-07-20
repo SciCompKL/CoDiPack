@@ -12,6 +12,8 @@
 namespace codi {
 
   struct PrimalTapeStatementFunctions {
+    public:
+
       using Handle = void*;
 
       Handle forward;
@@ -26,6 +28,7 @@ namespace codi {
 
   template<typename Tape, typename Expr>
   struct DirectStatementEvaluatorStaticStore {
+    public:
 
       static PrimalTapeStatementFunctions const staticStore;
   };
@@ -38,10 +41,10 @@ namespace codi {
 
   template<typename _Real>
   struct DirectStatementEvaluator : public StatementEvaluatorInterface<_Real> {
+    public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
 
-    public:
 
       /*******************************************************************************
        * Section: Start of interface definition

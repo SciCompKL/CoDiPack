@@ -3,7 +3,7 @@
 #include <set>
 
 #include "../../config.h"
-#include "../aux/tapeConfiguration.hpp"
+#include "../aux/tapeParameters.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -20,13 +20,13 @@ namespace codi {
       void resetHard();
       void deleteAdjointVector();
 
-      void writeToFile(const std::string& filename) const ;
-      void readFromFile(const std::string& filename);
+      void writeToFile(std::string const& filename) const ;
+      void readFromFile(std::string const& filename);
       void deleteData();
 
-      std::set<ConfigurationOption> const& getAvailableOptions() const;
-      size_t getOption(ConfigurationOption option) const;
-      bool hasOption(ConfigurationOption option) const;
-      void setOption(ConfigurationOption option, size_t value);
+      std::set<TapeParameters> const& getAvailableOptions() const;
+      size_t getParameter(TapeParameters parameter) const;
+      bool hasParameter(TapeParameters parameter) const;
+      void setParameter(TapeParameters parameter, size_t value);
   };
 }

@@ -27,7 +27,7 @@ namespace codi {
   };
 
   template<typename _NestedVector>
-  struct BaseTapeTypes {
+  struct CommonTapeTypes {
     public:
 
       using NestedVector = DECLARE_DEFAULT(_NestedVector, TEMPLATE(DataInterface<>));
@@ -38,32 +38,32 @@ namespace codi {
       using Position = typename ExternalFunctionVector::Position;
   };
 
-  template<typename _TapeTypes, typename _Impl>
+  template<typename _ImplTapeTypes, typename _Impl>
   struct CommonTapeImplementation :
       public FullTapeInterface<
-          typename _TapeTypes::Real,
-          typename _TapeTypes::Gradient,
-          typename _TapeTypes::Identifier,
-          typename BaseTapeTypes<typename _TapeTypes::NestedVector>::Position>
+          typename _ImplTapeTypes::Real,
+          typename _ImplTapeTypes::Gradient,
+          typename _ImplTapeTypes::Identifier,
+          typename CommonTapeTypes<typename _ImplTapeTypes::NestedVector>::Position>
   {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);
+      using ImplTapeTypes = DECLARE_DEFAULT(_ImplTapeTypes, TapeTypesInterface);
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Real = typename TapeTypes::Real;
-      using Gradient = typename TapeTypes::Gradient;
-      using Identifier = typename TapeTypes::Identifier;
-      using NestedVector = typename TapeTypes::NestedVector;
+      using Real = typename ImplTapeTypes::Real;
+      using Gradient = typename ImplTapeTypes::Gradient;
+      using Identifier = typename ImplTapeTypes::Identifier;
+      using NestedVector = typename ImplTapeTypes::NestedVector;
       using NestedPosition = typename NestedVector::Position;
 
-      using ExternalFunctionVector = typename BaseTapeTypes<NestedVector>::ExternalFunctionVector;
+      using ExternalFunctionVector = typename CommonTapeTypes<NestedVector>::ExternalFunctionVector;
       using Position = typename ExternalFunctionVector::Position;
 
     protected:
 
       bool active;
-      std::set<ConfigurationOption> options;
+      std::set<TapeParameters> options;
 
       ExternalFunctionVector externalFunctionVector;
 
@@ -93,7 +93,7 @@ namespace codi {
         options(),
         externalFunctionVector(Config::SmallChunkSize)
       {
-        options.insert(ConfigurationOption::ExternalFunctionsSize);
+        options.insert(TapeParameters::ExternalFunctionsSize);
       }
 
 
@@ -162,7 +162,7 @@ namespace codi {
         externalFunctionVector.reset();
       }
 
-      // clearAdjoints and reset are not implemented
+      // clearAdjoints and reset(Position) are not implemented
 
       /*******************************************************************************
        * Section: Function from DataManagementTapeInterface
@@ -215,32 +215,32 @@ namespace codi {
         externalFunctionVector.forEachChunk(deleteFunction, true);
       }
 
-      std::set<ConfigurationOption> const& getAvailableOptions() const {
+      std::set<TapeParameters> const& getAvailableOptions() const {
         return options;
       }
 
-      size_t getOption(ConfigurationOption option) const {
-        switch (option) {
-          case ConfigurationOption::ExternalFunctionsSize:
+      size_t getParameter(TapeParameters parameter) const {
+        switch (parameter) {
+          case TapeParameters::ExternalFunctionsSize:
             return externalFunctionVector.getDataSize();
             break;
           default:
-            CODI_EXCEPTION("Tried to get undefined option for tape.");
+            CODI_EXCEPTION("Tried to get undefined parameter for tape.");
             break;
         }
       }
 
-      bool hasOption(ConfigurationOption option) const {
-        return options.cend() != options.find(option);
+      bool hasParameter(TapeParameters parameter) const {
+        return options.cend() != options.find(parameter);
       }
 
-      void setOption(ConfigurationOption option, size_t value) {
-        switch (option) {
-          case ConfigurationOption::ExternalFunctionsSize:
+      void setParameter(TapeParameters parameter, size_t value) {
+        switch (parameter) {
+          case TapeParameters::ExternalFunctionsSize:
             externalFunctionVector.resize(value);
             break;
           default:
-            CODI_EXCEPTION("Tried to set undefined option for tape.");
+            CODI_EXCEPTION("Tried to set undefined parameter for tape.");
             break;
         }
       }

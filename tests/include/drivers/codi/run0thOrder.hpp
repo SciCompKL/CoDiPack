@@ -2,18 +2,18 @@
 
 #include <codi.hpp>
 
-#include "../driverPrimalBase.hpp"
+#include "../driver0thOrderBase.hpp"
 
 #include DRIVER_TESTS_INC
 
-struct CoDiPrimal : public DriverPrimalBase<CODI_TYPE> {
+struct CoDi0thOrder : public Driver0thOrderBase<CODI_TYPE> {
   public:
 
     using Number = CODI_TYPE;
 
-    using Base = DriverPrimalBase<Number>;
+    using Base = Driver0thOrderBase<Number>;
 
-    CoDiPrimal() : Base(CODI_TO_STRING(CODI_TYPE_NAME)) {}
+    CoDi0thOrder() : Base(CODI_TO_STRING(CODI_TYPE_NAME)) {}
 
     void createAllTests(TestVector<Number>& tests) {
       createTests<Number, DRIVER_TESTS>(tests);

@@ -16,8 +16,8 @@ namespace codi {
 
       using Index = DECLARE_DEFAULT(_Index, int);
 
-      static bool const AssignNeedsStatement = false;
-      static bool const IsLinear = true;
+      static bool constexpr AssignNeedsStatement = false;
+      static bool constexpr IsLinear = true;
 
       using Position = Index;
       using NestedVector = void;

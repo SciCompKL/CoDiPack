@@ -13,6 +13,7 @@ namespace codi {
 
   template<typename _NestedVector = void, typename _InternalPosHandle = size_t>
   struct DataInterface {
+    public:
 
       using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
       using InternalPosHandle = DECLARE_DEFAULT(_InternalPosHandle, size_t);

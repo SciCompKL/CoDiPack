@@ -9,13 +9,13 @@
 #include "../../traits/expressionTraits.hpp"
 #include "../aux/tapeValues.hpp"
 #include "gradientAccessTapeInterface.hpp"
-#include "internalExpressionTapeInterface.hpp"
+#include "internalStatementRecordingInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   template<typename _Real, typename _Gradient, typename _Identifier>
-  struct ReverseTapeInterface : public virtual InternalExpressionTapeInterface<_Identifier>,
+  struct ReverseTapeInterface : public virtual InternalStatementRecordingInterface<_Identifier>,
                                 public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
 
 

@@ -11,65 +11,66 @@
 namespace codi {
 
   struct ExternalFunction {
+    public:
 
-    typedef void (*CallFunction)(void* tape, void* data, void* adjointInterface);
-    typedef void (*DeleteFunction)(void* tape, void* data);
+      typedef void (*CallFunction)(void* tape, void* data, void* adjointInterface);
+      typedef void (*DeleteFunction)(void* tape, void* data);
 
-  private:
-    CallFunction funcReverse;
-    CallFunction funcForward;
-    CallFunction funcPrimal;
-    DeleteFunction funcDelete;
+    private:
+      CallFunction funcReverse;
+      CallFunction funcForward;
+      CallFunction funcPrimal;
+      DeleteFunction funcDelete;
 
-    void* data;
+      void* data;
 
-  public:
-    ExternalFunction() {}
-    ExternalFunction(CallFunction funcReverse, CallFunction funcForward, CallFunction funcPrimal, void* data, DeleteFunction funcDelete) :
-      funcReverse(funcReverse),
-      funcForward(funcForward),
-      funcPrimal(funcPrimal),
-      funcDelete(funcDelete),
-      data(data){}
+    public:
+      ExternalFunction() {}
+      ExternalFunction(CallFunction funcReverse, CallFunction funcForward, CallFunction funcPrimal, void* data, DeleteFunction funcDelete) :
+        funcReverse(funcReverse),
+        funcForward(funcForward),
+        funcPrimal(funcPrimal),
+        funcDelete(funcDelete),
+        data(data){}
 
-    static ExternalFunction create(CallFunction funcReverse,
-                                   void* data,
-                                   DeleteFunction funcDelete,
-                                   CallFunction funcForward = nullptr,
-                                   CallFunction funcPrimal = nullptr) {
-      return ExternalFunction(funcReverse, funcForward, funcPrimal, data, funcDelete);
-    }
-
-    void deleteData(void* tape) {
-      if (funcDelete != NULL){
-        funcDelete(tape, data);
-        data = NULL;
+      static ExternalFunction create(CallFunction funcReverse,
+                                     void* data,
+                                     DeleteFunction funcDelete,
+                                     CallFunction funcForward = nullptr,
+                                     CallFunction funcPrimal = nullptr) {
+        return ExternalFunction(funcReverse, funcForward, funcPrimal, data, funcDelete);
       }
-    }
 
-    void evaluateReverse(void* tape, void* adjointInterface) {
-      if(NULL != funcReverse) {
-        funcReverse(tape, data, adjointInterface);
-      } else {
-        CODI_EXCEPTION("Calling an external function in reverse mode without providing a reverse evaluation function.");
+      void deleteData(void* tape) {
+        if (funcDelete != NULL){
+          funcDelete(tape, data);
+          data = NULL;
+        }
       }
-    }
 
-    void evaluateForward(void* tape, void* adjointInterface) {
-      if(NULL != funcForward) {
-        funcForward(tape, data, adjointInterface);
-      } else {
-        CODI_EXCEPTION("Calling an external function in forward mode without providing a forward evaluation function.");
+      void evaluateReverse(void* tape, void* adjointInterface) {
+        if(NULL != funcReverse) {
+          funcReverse(tape, data, adjointInterface);
+        } else {
+          CODI_EXCEPTION("Calling an external function in reverse mode without providing a reverse evaluation function.");
+        }
       }
-    }
 
-    void evaluatePrimal(void* tape, void* adjointInterface) {
-      if(NULL != funcPrimal) {
-        funcPrimal(tape, data, adjointInterface);
-      } else {
-        CODI_EXCEPTION("Calling an external function in primal mode without providing a primal evaluation function.");
+      void evaluateForward(void* tape, void* adjointInterface) {
+        if(NULL != funcForward) {
+          funcForward(tape, data, adjointInterface);
+        } else {
+          CODI_EXCEPTION("Calling an external function in forward mode without providing a forward evaluation function.");
+        }
       }
-    }
+
+      void evaluatePrimal(void* tape, void* adjointInterface) {
+        if(NULL != funcPrimal) {
+          funcPrimal(tape, data, adjointInterface);
+        } else {
+          CODI_EXCEPTION("Calling an external function in primal mode without providing a primal evaluation function.");
+        }
+      }
   };
 
   // TODO: Add typed interface

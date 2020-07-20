@@ -13,62 +13,61 @@ namespace codi {
   struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape, _offset>> {
     public:
 
-    public:
-
       using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(GradientAccessTapeInterface<double, int>));
       static size_t constexpr offset = DECLARE_DEFAULT(_offset, 0);
 
       using Real = typename Tape::Real;
       using Identifier = typename Tape::Identifier;
 
-  private:
+    private:
 
       Real const primal;
       Identifier const identifier;
-  public:
 
-    CODI_INLINE StaticContextActiveType(Real* primalVector, Identifier const* const identifiers) :
-      primal(primalVector[identifiers[offset]]),
-      identifier(identifiers[offset])
-    {}
+    public:
 
-    CODI_INLINE Identifier const& getIdentifier() const {
-      return identifier;
-    }
+      CODI_INLINE StaticContextActiveType(Real* primalVector, Identifier const* const identifiers) :
+        primal(primalVector[identifiers[offset]]),
+        identifier(identifiers[offset])
+      {}
 
-    /*******************************************************************************
-     * Section: ExpressionInterface implementation
-     */
+      CODI_INLINE Identifier const& getIdentifier() const {
+        return identifier;
+      }
 
-    using StoreAs = StaticContextActiveType;
+      /*******************************************************************************
+       * Section: ExpressionInterface implementation
+       */
 
-    CODI_INLINE Real const getValue() const {
-      return primal;
-    }
+      using StoreAs = StaticContextActiveType;
 
-    template<size_t argNumber>
-    CODI_INLINE Real getJacobian() const {
-      return Real();
-    }
+      CODI_INLINE Real const getValue() const {
+        return primal;
+      }
 
-    /*******************************************************************************
-     * Section: NodeInterface implementation
-     *
-     */
+      template<size_t argNumber>
+      CODI_INLINE Real getJacobian() const {
+        return Real();
+      }
 
-    static bool constexpr EndPoint = true;
+      /*******************************************************************************
+       * Section: NodeInterface implementation
+       *
+       */
 
-    template<typename Logic, typename ... Args>
-    CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
-      CODI_UNUSED(logic, args...);
-    }
+      static bool constexpr EndPoint = true;
 
-    template<typename Logic, typename ... Args>
-    CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConst(Args&& ... args) {
-      CODI_UNUSED(args...);
-    }
+      template<typename Logic, typename ... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+        CODI_UNUSED(logic, args...);
+      }
 
-    private:
-      StaticContextActiveType& operator=(StaticContextActiveType const&) = delete;
+      template<typename Logic, typename ... Args>
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
+        CODI_UNUSED(args...);
+      }
+
+      private:
+        StaticContextActiveType& operator=(StaticContextActiveType const&) = delete;
   };
 }

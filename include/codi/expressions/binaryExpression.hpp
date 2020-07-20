@@ -80,7 +80,7 @@ namespace codi {
       }
 
       template<typename CompileTimeLogic, typename ... Args>
-      CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConst(Args&& ... args) {
+      CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
         return CompileTimeLogic::reduce(
               CompileTimeLogic::template link<0, ArgA, BinaryExpression>(std::forward<Args>(args)...),
               CompileTimeLogic::template link<1, ArgB, BinaryExpression>(std::forward<Args>(args)...));

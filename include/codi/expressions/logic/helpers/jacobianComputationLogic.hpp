@@ -12,6 +12,7 @@ namespace codi {
 
   template<typename _Real, typename _Impl>
   struct JacobianComputationLogic : public TraversalLogic<_Impl> {
+    public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(TraversalLogic<ANY>));

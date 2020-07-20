@@ -6,6 +6,7 @@ Point 0 : {1.570796}
    out_004       -nan
    out_005        nan
    out_006        nan
+   out_007    1.16245
 Point 1 : {0.000000}
    out_000          0
    out_001       -inf
@@ -14,6 +15,7 @@ Point 1 : {0.000000}
    out_004          0
    out_005          0
    out_006     1.5708
+   out_007          0
 Point 2 : {1.000000}
    out_000    1.55741
    out_001          0
@@ -22,6 +24,7 @@ Point 2 : {1.000000}
    out_004        inf
    out_005     1.5708
    out_006          0
+   out_007          1
 Point 3 : {-1.000000}
    out_000   -1.55741
    out_001       -nan
@@ -30,6 +33,7 @@ Point 3 : {-1.000000}
    out_004       -inf
    out_005    -1.5708
    out_006    3.14159
+   out_007         -1
 Point 4 : {2.000000}
    out_000   -2.18504
    out_001   0.693147
@@ -38,6 +42,7 @@ Point 4 : {2.000000}
    out_004       -nan
    out_005        nan
    out_006        nan
+   out_007    1.25992
 Point 5 : {-2.000000}
    out_000    2.18504
    out_001       -nan
@@ -46,3 +51,4 @@ Point 5 : {-2.000000}
    out_004       -nan
    out_005        nan
    out_006        nan
+   out_007   -1.25992

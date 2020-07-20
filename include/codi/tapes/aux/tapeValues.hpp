@@ -60,7 +60,7 @@ namespace codi {
 
       static double constexpr BYTE_TO_MB = 1.0 / 1024.0 / 1024.0;
 
-      TapeValues(const std::string& tapeName) :
+      TapeValues(std::string const& tapeName) :
         sections(),
         doubleData(),
         longData(),
@@ -109,7 +109,7 @@ namespace codi {
       template<typename Stream = std::ostream>
       void formatDefault(Stream& out = std::cout) const {
 
-        const std::string hLine = "-------------------------------------\n";
+        std::string const hLine = "-------------------------------------\n";
 
         size_t maxNameSize = getMaximumNameLength();
         size_t maxValueSize = std::max((size_t)10, getMaximumValueLength());
@@ -196,11 +196,11 @@ namespace codi {
       }
 
 
-      std::string formatEntry(const Entry &entry, int maximumFieldSize) const {
+      std::string formatEntry(Entry const& entry, int maximumFieldSize) const {
         return formatEntryFull(entry, true, maximumFieldSize);
       }
 
-      std::string formatEntryFull(const Entry& entry, bool outputType, int maximumFieldSize) const {
+      std::string formatEntryFull(Entry const& entry, bool outputType, int maximumFieldSize) const {
         std::stringstream ss;
 
         switch (entry.type) {
@@ -224,7 +224,7 @@ namespace codi {
         return ss.str();
       }
 
-      size_t formatEntryLength(const Entry& entry) const {
+      size_t formatEntryLength(Entry const& entry) const {
         return formatEntryFull(entry, false, 0).size();
       }
 

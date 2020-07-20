@@ -69,24 +69,24 @@ namespace codi {
   {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>));
+      using ImplTapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>));
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(ReverseTapeInterface<double, double, int>));
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>;
+      using Base = CommonTapeImplementation<ImplTapeTypes, Impl>;
       friend Base;
 
-      using Real = typename TapeTypes::Real;
-      using Gradient = typename TapeTypes::Gradient;
-      using IndexManager = typename TapeTypes::IndexManager;
-      using StatementEvaluator = typename TapeTypes::StatementEvaluator;
-      using Identifier = typename TapeTypes::Identifier;
+      using Real = typename ImplTapeTypes::Real;
+      using Gradient = typename ImplTapeTypes::Gradient;
+      using IndexManager = typename ImplTapeTypes::IndexManager;
+      using StatementEvaluator = typename ImplTapeTypes::StatementEvaluator;
+      using Identifier = typename ImplTapeTypes::Identifier;
 
-      using EvalHandle = typename TapeTypes::EvalHandle;
+      using EvalHandle = typename ImplTapeTypes::EvalHandle;
 
-      using StatementVector = typename TapeTypes::StatementVector;
-      using RhsIdentifierVector = typename TapeTypes::RhsIdentifierVector;
-      using PassiveValueVector = typename TapeTypes::PassiveValueVector;
-      using ConstantValueVector = typename TapeTypes::ConstantValueVector;
+      using StatementVector = typename ImplTapeTypes::StatementVector;
+      using RhsIdentifierVector = typename ImplTapeTypes::RhsIdentifierVector;
+      using PassiveValueVector = typename ImplTapeTypes::PassiveValueVector;
+      using ConstantValueVector = typename ImplTapeTypes::ConstantValueVector;
 
       using PassiveReal = PassiveRealType<Real>;
 
@@ -97,7 +97,7 @@ namespace codi {
 
     protected:
 
-      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
+      MemberStore<IndexManager, Impl, ImplTapeTypes::IsStaticIndexHandler> indexManager;
       StatementVector statementVector;
       RhsIdentifierVector rhsIdentiferVector;
       PassiveValueVector passiveValueVector;
@@ -164,12 +164,12 @@ namespace codi {
 
         Base::init(&constantValueVector);
 
-        Base::options.insert(ConfigurationOption::AdjointSize);
-        Base::options.insert(ConfigurationOption::ConstantValuesSize);
-        Base::options.insert(ConfigurationOption::PassiveValuesSize);
-        Base::options.insert(ConfigurationOption::RhsIdentifiersSize);
-        Base::options.insert(ConfigurationOption::PrimalSize);
-        Base::options.insert(ConfigurationOption::StatementSize);
+        Base::options.insert(TapeParameters::AdjointSize);
+        Base::options.insert(TapeParameters::ConstantValuesSize);
+        Base::options.insert(TapeParameters::PassiveValuesSize);
+        Base::options.insert(TapeParameters::RhsIdentifiersSize);
+        Base::options.insert(TapeParameters::PrimalSize);
+        Base::options.insert(TapeParameters::StatementSize);
       }
 
       /*******************************************************************************
@@ -269,8 +269,8 @@ namespace codi {
         if(cast().isActive()) {
           CountActiveArguments countActiveArguments;
           PushIdentfierPassiveAndConstant pushAll;
-          size_t constexpr MaxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
-          size_t constexpr MaxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
+          size_t constexpr MaxActiveArgs = NumberOfActiveTypeArguments<Rhs>::value;
+          size_t constexpr MaxConstantArgs = NumberOfConstantTypeArguments<Rhs>::value;
 
           size_t activeArguments = 0;
           countActiveArguments.eval(rhs.cast(), activeArguments);
@@ -345,7 +345,7 @@ namespace codi {
         checkPrimalSize(generatedNewIndex);
 
         Real& primalEntry = primals[value.cast().getIdentifier()];
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           statementVector.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag, primalEntry,
                               StatementEvaluator::template createHandle<Impl, Lhs>());
@@ -382,7 +382,7 @@ namespace codi {
 
       TapeValues internalGetTapeValues() const {
         std::string name;
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           name = "CoDi Tape Statistics ( PrimalValueLinearTape )";
         } else {
           name = "CoDi Tape Statistics ( PrimalValueReuseTape )";
@@ -490,7 +490,7 @@ namespace codi {
 
         VectorAccessInterface<Real, Identifier>* vectorAccess;
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           vectorAccess = &adjointAccess;
         } else {
           vectorAccess = &primalAdjointAccess;
@@ -498,7 +498,7 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           Wrap_internalEvaluateReverseVector evalFunc{};
           Base::internalEvaluateExtFunc(start, end, evalFunc, vectorAccess,
                                       primalData, dataVector, constantValueVector);
@@ -512,7 +512,7 @@ namespace codi {
 
       template<typename Adjoint>
       CODI_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
-        internalEvaluateReverse<!TapeTypes::IsLinearIndexHandler>(start, end, data);
+        internalEvaluateReverse<!ImplTapeTypes::IsLinearIndexHandler>(start, end, data);
       }
 
     protected:
@@ -564,7 +564,7 @@ namespace codi {
 
         VectorAccessInterface<Real, Identifier>* vectorAccess;
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           vectorAccess = &adjointAccess;
         } else {
           vectorAccess = &primalAdjointAccess;
@@ -572,7 +572,7 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           Wrap_internalEvaluateForwardVector evalFunc{};
           Base::internalEvaluateExtFuncForward(start, end, evalFunc, vectorAccess,
                                                primalData, dataVector, constantValueVector);
@@ -586,7 +586,7 @@ namespace codi {
 
       template<typename Adjoint>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
-        internalEvaluateForward<!TapeTypes::IsLinearIndexHandler>(start, end, data);
+        internalEvaluateForward<!ImplTapeTypes::IsLinearIndexHandler>(start, end, data);
       }
 
       /*******************************************************************************
@@ -609,52 +609,52 @@ namespace codi {
         adjoints.resize(1);
       }
 
-      size_t getOption(ConfigurationOption option) const {
-        switch (option) {
-          case ConfigurationOption::AdjointSize:
+      size_t getParameter(TapeParameters parameter) const {
+        switch (parameter) {
+          case TapeParameters::AdjointSize:
             return adjoints.size();
             break;
-          case ConfigurationOption::ConstantValuesSize:
+          case TapeParameters::ConstantValuesSize:
             return constantValueVector.getDataSize();
             break;
-          case ConfigurationOption::PassiveValuesSize:
+          case TapeParameters::PassiveValuesSize:
             return passiveValueVector.getDataSize();
             break;
-          case ConfigurationOption::RhsIdentifiersSize:
+          case TapeParameters::RhsIdentifiersSize:
             return rhsIdentiferVector.getDataSize();
             break;
-        case ConfigurationOption::PrimalSize:
+        case TapeParameters::PrimalSize:
           return primals.size();
           break;
-          case ConfigurationOption::StatementSize:
+          case TapeParameters::StatementSize:
             return statementVector.getDataSize();
           default:
-            return Base::getOption(option);
+            return Base::getParameter(parameter);
             break;
         }
       }
 
-      void setOption(ConfigurationOption option, size_t value) {
-        switch (option) {
-          case ConfigurationOption::AdjointSize:
+      void setParameter(TapeParameters parameter, size_t value) {
+        switch (parameter) {
+          case TapeParameters::AdjointSize:
             return adjoints.resize(value);
             break;
-          case ConfigurationOption::ConstantValuesSize:
+          case TapeParameters::ConstantValuesSize:
             return constantValueVector.resize(value);
             break;
-          case ConfigurationOption::PassiveValuesSize:
+          case TapeParameters::PassiveValuesSize:
             return passiveValueVector.resize(value);
             break;
-          case ConfigurationOption::RhsIdentifiersSize:
+          case TapeParameters::RhsIdentifiersSize:
             return rhsIdentiferVector.resize(value);
             break;
-          case ConfigurationOption::PrimalSize:
+          case TapeParameters::PrimalSize:
             return primals.resize(value);
             break;
-          case ConfigurationOption::StatementSize:
+          case TapeParameters::StatementSize:
             return statementVector.resize(value);
           default:
-            return Base::setOption(option, value);
+            return Base::setParameter(parameter, value);
             break;
         }
       }
@@ -777,7 +777,7 @@ namespace codi {
 
         internalEvaluateReverse<false>(start, end, adjoints.data());
 
-        if(!TapeTypes::IsLinearIndexHandler) {
+        if(!ImplTapeTypes::IsLinearIndexHandler) {
 
           internalEvaluatePrimal(end, start);
         }
@@ -786,7 +786,7 @@ namespace codi {
       void evaluateForwardKeepState(Position const& start, Position const& end) {
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
-        if(!TapeTypes::IsLinearIndexHandler) {
+        if(!ImplTapeTypes::IsLinearIndexHandler) {
           internalResetPrimalValues(end);
         }
 
@@ -819,7 +819,7 @@ namespace codi {
         // TODO: implement primal value only accessor
         PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals);
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
 
           Wrap_internalEvaluatePrimalVector evalFunc{};
           Base::internalEvaluateExtFuncPrimal(start, end, evalFunc,
@@ -852,10 +852,10 @@ namespace codi {
           size_t& curConstantPos, PassiveReal const* const constantValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        using Construtor = ConstructStaticContextlLogic<Rhs, Impl, 0, 0>;
-        using StaticRhs = typename Construtor::ResultType;
+        using Constructor = ConstructStaticContextLogic<Rhs, Impl, 0, 0>;
+        using StaticRhs = typename Constructor::ResultType;
 
-        StaticRhs staticsRhs = Construtor::construct(
+        StaticRhs staticsRhs = Constructor::construct(
               primalVector,
               &rhsIdentifiers[curRhsIdentifiersPos],
               &constantValues[curConstantPos]);
@@ -901,8 +901,8 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        size_t constexpr MaxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
-        size_t constexpr MaxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
+        size_t constexpr MaxActiveArgs = NumberOfActiveTypeArguments<Rhs>::value;
+        size_t constexpr MaxConstantArgs = NumberOfConstantTypeArguments<Rhs>::value;
 
         return statementEvaluateForwardFull(statementEvaluateForwardInner<Rhs>, MaxActiveArgs, MaxConstantArgs,
                                             primalVector, adjointVector, lhsTangent, numberOfPassiveArguments,
@@ -917,10 +917,10 @@ namespace codi {
           size_t& curConstantPos, PassiveReal const* const constantValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        using Construtor = ConstructStaticContextlLogic<Rhs, Impl, 0, 0>;
-        using StaticRhs = typename Construtor::ResultType;
+        using Constructor = ConstructStaticContextLogic<Rhs, Impl, 0, 0>;
+        using StaticRhs = typename Constructor::ResultType;
 
-        StaticRhs staticsRhs = Construtor::construct(
+        StaticRhs staticsRhs = Constructor::construct(
               primalVector,
               &rhsIdentifiers[curRhsIdentifiersPos],
               &constantValues[curConstantPos]);
@@ -957,8 +957,8 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        size_t constexpr MaxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
-        size_t constexpr MaxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
+        size_t constexpr MaxActiveArgs = NumberOfActiveTypeArguments<Rhs>::value;
+        size_t constexpr MaxConstantArgs = NumberOfConstantTypeArguments<Rhs>::value;
 
         return statementEvaluatePrimalFull(statementEvaluatePrimalInner<Rhs>, MaxActiveArgs, MaxConstantArgs,
                                     primalVector, numberOfPassiveArguments,
@@ -974,10 +974,10 @@ namespace codi {
           size_t& curConstantPos, PassiveReal const* const constantValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        using Construtor = ConstructStaticContextlLogic<Rhs, Impl, 0, 0>;
-        using StaticRhs = typename Construtor::ResultType;
+        using Constructor = ConstructStaticContextLogic<Rhs, Impl, 0, 0>;
+        using StaticRhs = typename Constructor::ResultType;
 
-        StaticRhs staticsRhs = Construtor::construct(
+        StaticRhs staticsRhs = Constructor::construct(
               primalVector,
               &rhsIdentifiers[curRhsIdentifiersPos],
               &constantValues[curConstantPos]);
@@ -1020,8 +1020,8 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        size_t constexpr maxActiveArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
-        size_t constexpr maxConstantArgs = MaxNumberOfConstantArguments<Rhs>::value;
+        size_t constexpr maxActiveArgs = NumberOfActiveTypeArguments<Rhs>::value;
+        size_t constexpr maxConstantArgs = NumberOfConstantTypeArguments<Rhs>::value;
         statementEvaluateReverseFull(
               statementEvaluateReverseInner<Rhs>, maxActiveArgs, maxConstantArgs,
               primalVector, adjointVector, lhsAdjoint, numberOfPassiveArguments,
@@ -1039,7 +1039,7 @@ namespace codi {
       }
 
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
-        if(TapeTypes::IsLinearIndexHandler) {
+        if(ImplTapeTypes::IsLinearIndexHandler) {
           if(indexManager.get().getLargestAssignedIndex() >= (Identifier)primals.size()) {
             resizePrimalVector(primals.size() + Config::ChunkSize);
           }

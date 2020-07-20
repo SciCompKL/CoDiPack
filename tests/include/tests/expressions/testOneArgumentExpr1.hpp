@@ -4,7 +4,7 @@ struct TestOneArgumentExpr1 : public TestInterface {
   public:
     NAME("OneArgumentExpr1")
     IN(1)
-    OUT(16)
+    OUT(18)
     POINTS(41) =
     {
       {-10.0000},
@@ -68,5 +68,7 @@ struct TestOneArgumentExpr1 : public TestInterface {
       y[13] =   erf(x[0]);  // R
       y[14] =  erfc(x[0]);  // R
       y[15] =  cbrt(x[0]);  // R \ {0}
+      y[16] = round(x[0]);  // R
+      y[17] =  ceil(x[0]);  // R
     }
 };

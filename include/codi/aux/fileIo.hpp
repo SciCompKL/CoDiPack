@@ -21,11 +21,12 @@ namespace codi {
   };
 
   struct IoException {
+    public:
 
       std::string text;
       IoError id;
 
-      IoException(IoError id, const std::string& text, bool appendErrno) :
+      IoException(IoError id, std::string const& text, bool appendErrno) :
         text(text),
         id(id)
       {
@@ -38,13 +39,14 @@ namespace codi {
   };
 
   struct FileIo {
+    private:
 
       FILE* fileHandle;
       bool writeMode;
 
     public:
 
-      FileIo(const std::string& file, bool write) {
+      FileIo(std::string const& file, bool write) {
         writeMode = write;
         fileHandle = NULL;
 
@@ -66,7 +68,7 @@ namespace codi {
       }
 
       template<typename Data>
-      void writeData(const Data* data, const size_t length) {
+      void writeData(Data const* data, size_t const length) {
         if(writeMode) {
           size_t s = fwrite(data, sizeof(Data), length, fileHandle);
 
@@ -79,7 +81,7 @@ namespace codi {
       }
 
       template<typename Data>
-      void readData(Data* data, const size_t length) {
+      void readData(Data* data, size_t const length) {
         if(!writeMode) {
           size_t s = fread(data, sizeof(Data), length, fileHandle);
 

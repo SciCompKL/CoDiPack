@@ -18,8 +18,8 @@ namespace codi {
       using Index = DECLARE_DEFAULT(_Index, int);
       using Base = IndexManagerInterface<Index>;
 
-      static bool const AssignNeedsStatement = true;
-      static bool const IsLinear = false;
+      static bool constexpr AssignNeedsStatement = true;
+      static bool constexpr IsLinear = false;
 
     private:
 

@@ -23,7 +23,7 @@ struct TestInterface {
 };
 
 template<typename Number>
-using TestFunc = void(*)(Number* x, Number* u);
+using TestFunc = void(*)(Number* x, Number* y);
 
 template<typename Number>
 struct TestInfo {

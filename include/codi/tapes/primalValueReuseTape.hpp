@@ -24,19 +24,19 @@ namespace codi {
   struct PrimalValueReuseTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>));
+      using ImplTapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>));
       using Base = PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>>;
       friend Base;
 
-      using Real = typename TapeTypes::Real;
-      using Gradient = typename TapeTypes::Gradient;
-      using Identifier = typename TapeTypes::Identifier;
+      using Real = typename ImplTapeTypes::Real;
+      using Gradient = typename ImplTapeTypes::Gradient;
+      using Identifier = typename ImplTapeTypes::Identifier;
       using PassiveReal = PassiveRealType<Real>;
-      using StatementEvaluator = typename TapeTypes::StatementEvaluator;
-      using EvalHandle = typename TapeTypes::EvalHandle;
+      using StatementEvaluator = typename ImplTapeTypes::StatementEvaluator;
+      using EvalHandle = typename ImplTapeTypes::EvalHandle;
       using Position = typename Base::Position;
 
-      using StatementVector = typename TapeTypes::StatementVector;
+      using StatementVector = typename ImplTapeTypes::StatementVector;
 
       PrimalValueReuseTape() : Base() {}
 

@@ -9,6 +9,7 @@
 #include "../include/testInterface.hpp"
 
 struct CompareOutput {
+  public:
 
     enum struct Color {
       Red = 31,
@@ -18,7 +19,7 @@ struct CompareOutput {
 
     std::string OK;
     std::string FAILURE;
-    std::string NOT_AVAILABLE;
+    std::string FILE_MISSING;
 
     size_t minFieldSize;
 
@@ -32,7 +33,7 @@ struct CompareOutput {
     CompareOutput() :
       OK("OK"),
       FAILURE("Failure"),
-      NOT_AVAILABLE("n/a"),
+      FILE_MISSING("Missing"),
       minFieldSize(0),
       threshold(1e-16),
       drivers(),
@@ -40,7 +41,7 @@ struct CompareOutput {
       testInHeader(true)
     {
       listAllNames(testNames);
-      minFieldSize = std::max(OK.size(), std::max(FAILURE.size(), NOT_AVAILABLE.size()));
+      minFieldSize = std::max(OK.size(), std::max(FAILURE.size(), FILE_MISSING.size()));
 
     }
 
@@ -100,7 +101,7 @@ struct CompareOutput {
       if(allOk) {
         std::string mode = driverName.substr(0, modePos);
         if("D0" == mode) {
-          modeName = "primal";
+          modeName = "deriv0th";
         } else if("D1" == mode) {
           modeName = "deriv1st";
         } else {
@@ -119,8 +120,8 @@ struct CompareOutput {
         return false;
       }
 
-      std::string baseFile = generateTestComparetFile(test, modeName);
-      std::string resultFile = generateDriverOutputFile(test, driver);
+      std::string baseFile = generateTestCompareFileName(test, modeName);
+      std::string resultFile = generateDriverOutputFileName(test, driver);
 
       int contentSize = 0;
       std::string result = "";
@@ -136,8 +137,8 @@ struct CompareOutput {
           allOk = false;
         }
       } else {
-        contentSize = NOT_AVAILABLE.size();
-        result = formatColor(NOT_AVAILABLE, Color::Yellow);
+        contentSize = FILE_MISSING.size();
+        result = formatColor(FILE_MISSING, Color::Yellow);
       }
 
       int targetSize = std::max((int)minFieldSize, maxCellSize);
@@ -212,7 +213,7 @@ struct CompareOutput {
       return maxSize;
     }
 
-    std::string generateDriverOutputFile(std::string const& test, std::string const& driver) {
+    std::string generateDriverOutputFileName(std::string const& test, std::string const& driver) {
       std::string file = "build/results";
       file += "/" + driver;
       file += "/" + test + ".out";
@@ -220,7 +221,7 @@ struct CompareOutput {
       return file;
     }
 
-    std::string generateTestComparetFile(std::string const& test, std::string const& mode) {
+    std::string generateTestCompareFileName(std::string const& test, std::string const& mode) {
       std::string file = "results";
       file += "/" + mode;
       file += "/" + test + ".out";

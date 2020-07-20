@@ -11,6 +11,7 @@ namespace codi {
 
   struct EmptyPosition {
     public:
+
       bool operator != (EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return false;

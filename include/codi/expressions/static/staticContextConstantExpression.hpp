@@ -13,51 +13,49 @@ namespace codi {
   struct StaticContextConstantExpression : public ExpressionInterface<_Real, StaticContextConstantExpression<_Real, _offset>> {
     public:
 
-    public:
-
       using Real = DECLARE_DEFAULT(_Real, double);
       static size_t constexpr offset = DECLARE_DEFAULT(_offset, 0);
 
-  private:
+    private:
 
-      Real const primal;
-  public:
+        Real const primal;
+    public:
 
-    CODI_INLINE StaticContextConstantExpression(Real const* const primalVector) :
-      primal(primalVector[offset])
-    {}
+      CODI_INLINE StaticContextConstantExpression(Real const* const primalVector) :
+        primal(primalVector[offset])
+      {}
 
-    /*******************************************************************************
-     * Section: ExpressionInterface implementation
-     */
+      /*******************************************************************************
+       * Section: ExpressionInterface implementation
+       */
 
-    using StoreAs = StaticContextConstantExpression;
+      using StoreAs = StaticContextConstantExpression;
 
-    CODI_INLINE Real const getValue() const {
-      return primal;
-    }
+      CODI_INLINE Real const getValue() const {
+        return primal;
+      }
 
-    template<size_t argNumber>
-    CODI_INLINE Real getJacobian() const {
-      return Real();
-    }
+      template<size_t argNumber>
+      CODI_INLINE Real getJacobian() const {
+        return Real();
+      }
 
-    /*******************************************************************************
-     * Section: NodeInterface implementation
-     *
-     */
+      /*******************************************************************************
+       * Section: NodeInterface implementation
+       *
+       */
 
-    static bool constexpr EndPoint = true;
+      static bool constexpr EndPoint = true;
 
-    template<typename Logic, typename ... Args>
-    CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
-      CODI_UNUSED(logic, args...);
-    }
+      template<typename Logic, typename ... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+        CODI_UNUSED(logic, args...);
+      }
 
-    template<typename Logic, typename ... Args>
-    CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConst(Args&& ... args) {
-      CODI_UNUSED(args...);
-    }
+      template<typename Logic, typename ... Args>
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
+        CODI_UNUSED(args...);
+      }
 
     private:
       StaticContextConstantExpression& operator=(StaticContextConstantExpression const&) = delete;

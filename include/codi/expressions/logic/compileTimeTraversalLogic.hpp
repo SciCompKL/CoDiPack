@@ -68,7 +68,7 @@ namespace codi {
 
       template<typename Node, typename ... Args>
       CODI_INLINE static constexpr ResultType toLinks(Args&& ... args) {
-        return Node::template forEachLinkConst<Impl>(std::forward<Args>(args)...);
+        return Node::template forEachLinkConstExpr<Impl>(std::forward<Args>(args)...);
       }
   };
 }

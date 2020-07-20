@@ -13,7 +13,7 @@
   #error Please define the passive type for the overloads.
 #endif
 
-// Create argA correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE
 #ifndef OPERATOR
   #define OPERATOR ==
   #include "../../aux/macros.h"
@@ -34,7 +34,7 @@
     return argA OPERATOR getPassiveValue(argB.cast());
   }
 
-// Create argA correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE
 #ifndef OPERATOR
   }
 #endif

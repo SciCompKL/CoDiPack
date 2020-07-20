@@ -3,13 +3,13 @@
 #include "../../aux/macros.h"
 #include "../../config.h"
 
-#include "customVectorEvaluationTapeInterface.hpp"
+#include "customAdjointVectorEvaluationTapeInterface.hpp"
 #include "dataManagementTapeInterface.hpp"
 #include "externalFunctionTapeInterface.hpp"
 #include "forwardEvaluationTapeInterface.hpp"
 #include "gradientAccessTapeInterface.hpp"
 #include "identifierInformationTapeInterface.hpp"
-#include "internalExpressionTapeInterface.hpp"
+#include "internalStatementRecordingInterface.hpp"
 #include "manualStatementPushTapeInterface.hpp"
 #include "positionalEvaluationTapeInterface.hpp"
 #include "preaccumulationEvaluationTapeInterface.hpp"
@@ -21,13 +21,13 @@ namespace codi {
 
   template<typename _Real, typename _Gradient, typename _Identifier, typename _Position>
   struct FullTapeInterface :
-      public virtual CustomVectorEvaluationTapeInterface<_Position>,
+      public virtual CustomAdjointVectorEvaluationTapeInterface<_Position>,
       public virtual DataManagementTapeInterface,
       public virtual ExternalFunctionTapeInterface<_Real, _Gradient, _Identifier>,
       public virtual ForwardEvaluationTapeInterface<_Position>,
       public virtual GradientAccessTapeInterface<_Gradient, _Identifier>,
       public virtual IdentifierInformationTapeInterface<_Real, _Gradient, _Identifier>,
-      public virtual InternalExpressionTapeInterface<_Identifier>,
+      public virtual InternalStatementRecordingInterface<_Identifier>,
       public virtual ManualStatementPushTapeInterface<_Real, _Gradient, _Identifier>,
       public virtual PositionalEvaluationTapeInterface<_Position>,
       public virtual PreaccumulationEvaluationTapeInterface<_Real, _Gradient, _Identifier, _Position>,

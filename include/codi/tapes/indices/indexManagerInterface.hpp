@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "../../aux/macros.h"
-#include "../../aux/optionalArg.hpp"
 #include "../../config.h"
 #include "../aux/tapeValues.hpp"
 
@@ -16,13 +15,13 @@ namespace codi {
 
       using Index = DECLARE_DEFAULT(_Index, int);
 
-      static bool const AssignNeedsStatement = UNDEFINED_VALUE;
-      static bool const IsLinear = UNDEFINED_VALUE;
+      static bool constexpr AssignNeedsStatement = UNDEFINED_VALUE;
+      static bool constexpr IsLinear = UNDEFINED_VALUE;
 
       static Index constexpr UnusedIndex = 0;
       static Index constexpr InvalidIndex = -1;
 
-      void addToTapeValue(TapeValues& values) const;
+      void addToTapeValues(TapeValues& values) const;
 
       bool assignIndex(Index& index);
       bool assignUnusedIndex(Index& index);

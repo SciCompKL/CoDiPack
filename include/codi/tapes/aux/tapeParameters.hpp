@@ -5,7 +5,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  enum class ConfigurationOption {
+  enum class TapeParameters {
     AdjointSize,
     PrimalSize,
     StatementSize,

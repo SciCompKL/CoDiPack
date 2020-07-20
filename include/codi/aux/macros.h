@@ -39,6 +39,11 @@ namespace codi {
   #define ANY int
 
   /*
+   * Used in interface declarations to indicate the type of the implementing class.
+   */
+  #define IMPLEMENTATION int
+
+  /*
    * Used in interface declarations for types that have to be defined in the specializations.
    */
   #define UNDEFINED void

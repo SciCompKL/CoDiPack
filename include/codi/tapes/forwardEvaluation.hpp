@@ -7,22 +7,29 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../traits/expressionTraits.hpp"
-#include "interfaces/internalExpressionTapeInterface.hpp"
+#include "interfaces/internalStatementRecordingInterface.hpp"
 #include "interfaces/gradientAccessTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   template<typename _Real, typename _Gradient>
-  struct ForwardEvaluation : public InternalExpressionTapeInterface<_Gradient>,
+  struct ForwardEvaluation : public InternalStatementRecordingInterface<_Gradient>,
                              public GradientAccessTapeInterface<_Gradient, _Gradient> {
-
+    public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
 
       using PassiveReal = PassiveRealType<Real>;
       using Identifier = Gradient;
+
+      /*******************************************************************************
+       * Section: Implementation of InternalExpressionTapeInterface
+       *
+       * Description: TODO
+       *
+       */
 
       static bool constexpr AllowJacobianOptimization = true;
 
@@ -65,6 +72,13 @@ namespace codi {
         lhs.cast().value() = rhs;
         lhs.cast().gradient() = Gradient();
       }
+
+      /*******************************************************************************
+       * Section: Implementation of GradientAccessTapeInterface
+       *
+       * Description: TODO
+       *
+       */
 
       void setGradient(Identifier& identifier, Gradient const& gradient) {
         identifier = gradient;

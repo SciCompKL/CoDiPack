@@ -78,28 +78,28 @@ namespace codi {
    */
 
   template<typename Expr>
-  struct MaxNumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, MaxNumberOfActiveTypeArguments<Expr>> {
+  struct NumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>> {
     public:
 
-      static size_t constexpr value = MaxNumberOfActiveTypeArguments::template eval<Expr>();
+      static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
 
       template<typename Node, typename = enableIfLhsExpression<Node>>
-      CODI_INLINE static constexpr size_t term() {
+      CODI_INLINE static size_t constexpr term() {
         return 1;
       }
-      using CompileTimeTraversalLogic<size_t, MaxNumberOfActiveTypeArguments>::term;
+      using CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments>::term;
   };
 
   template<typename Expr>
-  struct MaxNumberOfConstantArguments : public CompileTimeTraversalLogic<size_t, MaxNumberOfConstantArguments<Expr>> {
+  struct NumberOfConstantTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
     public:
 
-      static size_t constexpr value = MaxNumberOfConstantArguments::template eval<Expr>();
+      static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
 
       template<typename Node, typename = enableIfConstantExpression<Node>>
-      CODI_INLINE static constexpr size_t term() {
+      CODI_INLINE static size_t constexpr term() {
         return 1;
       }
-      using CompileTimeTraversalLogic<size_t, MaxNumberOfConstantArguments>::term;
+      using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::term;
   };
 }

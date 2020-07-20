@@ -15,42 +15,42 @@ char const *const LINE_END      = "\n";
 char const *const BLANK         = "          ";
 
 
-inline std::string vformat(const char* format, va_list list) {
-    const int bufferSize = 200;
-    char buffer[bufferSize];
+inline std::string vformat(char const* format, va_list list) {
+  int const bufferSize = 200;
+  char buffer[bufferSize];
 
-    // copy the list if we need to iterate through the variables again
-    va_list listCpy;
-    va_copy(listCpy, list);
+  // copy the list if we need to iterate through the variables again
+  va_list listCpy;
+  va_copy(listCpy, list);
 
-    int outSize = vsnprintf(buffer, bufferSize, format, list);
+  int outSize = vsnprintf(buffer, bufferSize, format, list);
 
-    std::string result;
-    if(outSize + 1 > bufferSize) {
-        char* newBuffer = new char[outSize + 1];
+  std::string result;
+  if(outSize + 1 > bufferSize) {
+      char* newBuffer = new char[outSize + 1];
 
-        outSize = vsnprintf(newBuffer, outSize + 1, format, listCpy);
+      outSize = vsnprintf(newBuffer, outSize + 1, format, listCpy);
 
-        result = newBuffer;
+      result = newBuffer;
 
-        delete [] newBuffer;
-    } else {
-        result = buffer;
-    }
+      delete [] newBuffer;
+  } else {
+      result = buffer;
+  }
 
-    // cleanup the copied list
-    va_end (listCpy);
+  // cleanup the copied list
+  va_end (listCpy);
 
-    return result;
+  return result;
 }
 
-inline std::string format(const char* format, ...) {
-    va_list list;
-    va_start(list, format);
-    std::string result = vformat(format, list);
-    va_end(list);
+inline std::string format(char const* format, ...) {
+  va_list list;
+  va_start(list, format);
+  std::string result = vformat(format, list);
+  va_end(list);
 
-    return result;
+  return result;
 }
 
 template<typename T>

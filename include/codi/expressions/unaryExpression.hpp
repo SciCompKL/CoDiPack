@@ -41,7 +41,7 @@ namespace codi {
 
     public:
 
-      explicit UnaryExpression(const ExpressionInterface<Real, Arg>& arg) :
+      explicit UnaryExpression(ExpressionInterface<Real, Arg> const& arg) :
         arg(arg.cast()),
         result(Operation::primal(this->arg.getValue())) {}
 
@@ -69,7 +69,7 @@ namespace codi {
       }
 
       template<typename CompileTimeLogic, typename ... Args>
-      CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConst(Args&& ... args) {
+      CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
         return CompileTimeLogic::template link<0, Arg, UnaryExpression>(std::forward<Args>(args)...);
       }
   };

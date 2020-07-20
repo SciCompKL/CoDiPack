@@ -2,7 +2,7 @@
 
 #include "../aux/macros.h"
 #include "../config.h"
-#include "../tapes/interfaces/internalExpressionTapeInterface.hpp"
+#include "../tapes/interfaces/internalStatementRecordingInterface.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
 #include "expressionInterface.hpp"
@@ -16,7 +16,7 @@ namespace codi {
 
       using Real = DECLARE_DEFAULT(_Real, double);
       using Gradient = DECLARE_DEFAULT(_Gradient, Real);
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(InternalExpressionTapeInterface<ANY>));
+      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(InternalStatementRecordingInterface<ANY>));
       using Impl = DECLARE_DEFAULT(_Impl, LhsExpressionInterface);
 
       using Identifier = typename Tape::Identifier;
@@ -41,14 +41,6 @@ namespace codi {
        * Section: Start of general implementation
        *
        */
-
-      CODI_INLINE void initBase() {
-        Impl::getGlobalTape().initIdentifier(cast().value(), cast().getIdentifier());
-      }
-
-      CODI_INLINE void destroyBase() {
-        Impl::getGlobalTape().destroyIdentifier(cast().value(), cast().getIdentifier());
-      }
 
       using ExpressionInterface<Real, Impl>::cast;
       CODI_INLINE Impl& cast() {
@@ -101,8 +93,18 @@ namespace codi {
       }
 
       template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConst(Args&& ... args) {
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
         CODI_UNUSED(args...);
+      }
+
+    protected:
+
+      CODI_INLINE void init() {
+        Impl::getGlobalTape().initIdentifier(cast().value(), cast().getIdentifier());
+      }
+
+      CODI_INLINE void destroy() {
+        Impl::getGlobalTape().destroyIdentifier(cast().value(), cast().getIdentifier());
       }
   };
 
@@ -112,7 +114,7 @@ namespace codi {
 
       using Type = DECLARE_DEFAULT(
                       _Type,
-                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
+                      TEMPLATE(LhsExpressionInterface<double, double, InternalStatementRecordingInterface<ANY>, _Type>)
                     );
       using Real = typename Type::Real;
 

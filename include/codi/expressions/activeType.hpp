@@ -5,7 +5,7 @@
 #include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "assignmentOperators.hpp"
-#include "incerementOperators.hpp"
+#include "incrementOperators.hpp"
 #include "lhsExpressionInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -26,6 +26,8 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using Gradient = typename Tape::Gradient;
 
+      using Base = LhsExpressionInterface<Real, Gradient, Tape, ActiveType>;
+
   private:
 
       Real primalValue;
@@ -36,25 +38,25 @@ namespace codi {
   public:
 
     CODI_INLINE ActiveType() : primalValue(), identifier() {
-      this->initBase();
+      Base::init();
     }
 
     CODI_INLINE ActiveType(ActiveType<Tape> const& v) : primalValue(), identifier() {
-      this->initBase();
+      Base::init();
       this->getGlobalTape().store(*this, v);
     }
 
     CODI_INLINE ActiveType(PassiveReal const& value) : primalValue(value), identifier() {
-      this->initBase();
+      Base::init();
     }
 
     CODI_INLINE ~ActiveType() {
-      this->destroyBase();
+      Base::destroy();
     }
 
     template<class Rhs>
     CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
-      this->initBase();
+      Base::init();
       this->getGlobalTape().store(*this, rhs.cast());
     }
 

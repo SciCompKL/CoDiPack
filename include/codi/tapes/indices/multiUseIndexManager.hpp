@@ -15,8 +15,8 @@ namespace codi {
 
       using Index = DECLARE_DEFAULT(_Index, int);
 
-      static bool const AssignNeedsStatement = !Config::AssignOptimization;
-      static bool const IsLinear = false;
+      static bool constexpr AssignNeedsStatement = !Config::AssignOptimization;
+      static bool constexpr IsLinear = false;
 
       using Base = ReuseIndexManager<Index>;
 

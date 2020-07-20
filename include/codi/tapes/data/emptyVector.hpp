@@ -12,6 +12,7 @@
 namespace codi {
 
   struct EmptyVector : public DataInterface<> {
+    public:
 
       using NestedVector = void;
 

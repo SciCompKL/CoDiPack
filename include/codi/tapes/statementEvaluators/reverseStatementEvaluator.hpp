@@ -30,7 +30,7 @@ namespace codi {
       static Real callForward(Handle const& h, Args&& ... args) {
         CODI_UNUSED(h, args...);
 
-        CODI_EXCEPTION("ReverseFunctionEvaluator does not support forward evaluation calls.");
+        CODI_EXCEPTION("ReverseStatementEvaluator does not support forward evaluation calls.");
 
         return Real();
       }
@@ -39,7 +39,7 @@ namespace codi {
       static Real callPrimal(Handle const& h, Args&& ... args) {
         CODI_UNUSED(h, args...);
 
-        CODI_EXCEPTION("ReverseFunctionEvaluator does not support forward evaluation calls.");
+        CODI_EXCEPTION("ReverseStatementEvaluator does not support primal evaluation calls.");
 
         return Real();
       }

@@ -14,7 +14,7 @@
 namespace codi {
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset, typename = void>
-  struct ConstructStaticContextlLogic {
+  struct ConstructStaticContextLogic {
     public:
 
       using Rhs = _Rhs;
@@ -32,7 +32,7 @@ namespace codi {
   };
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
-  struct ConstructStaticContextlLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, enableIfLhsExpression<_Rhs>> {
+  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, enableIfLhsExpression<_Rhs>> {
     public:
 
       using Rhs = _Rhs;
@@ -54,7 +54,7 @@ namespace codi {
   };
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
-  struct ConstructStaticContextlLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, enableIfConstantExpression<_Rhs>> {
+  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, enableIfConstantExpression<_Rhs>> {
     public:
 
       using Rhs = _Rhs;
@@ -76,7 +76,7 @@ namespace codi {
   };
 
   template<typename _Real, typename _ArgA, typename _ArgB, template<typename> class _Operation, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
-  struct ConstructStaticContextlLogic< BinaryExpression<_Real, _ArgA, _ArgB, _Operation>, _Tape, _primalValueOffset, _constantValueOffset> {
+  struct ConstructStaticContextLogic< BinaryExpression<_Real, _ArgA, _ArgB, _Operation>, _Tape, _primalValueOffset, _constantValueOffset> {
     public:
 
       using OpReal = _Real;
@@ -91,12 +91,12 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      using ArgAConstructor = ConstructStaticContextlLogic<ArgA, Tape, primalValueOffset, constantValueOffset>;
+      using ArgAConstructor = ConstructStaticContextLogic<ArgA, Tape, primalValueOffset, constantValueOffset>;
       using ArgAMod = typename ArgAConstructor::ResultType;
 
-      static size_t constexpr primalValueOffsetArgB = primalValueOffset + MaxNumberOfActiveTypeArguments<ArgA>::value;
-      static size_t constexpr constantValueOffsetArgB = constantValueOffset + MaxNumberOfConstantArguments<ArgA>::value;
-      using ArgBConstructor = ConstructStaticContextlLogic<ArgB, Tape, primalValueOffsetArgB, constantValueOffsetArgB>;
+      static size_t constexpr primalValueOffsetArgB = primalValueOffset + NumberOfActiveTypeArguments<ArgA>::value;
+      static size_t constexpr constantValueOffsetArgB = constantValueOffset + NumberOfConstantTypeArguments<ArgA>::value;
+      using ArgBConstructor = ConstructStaticContextLogic<ArgB, Tape, primalValueOffsetArgB, constantValueOffsetArgB>;
       using ArgBMod = typename ArgBConstructor::ResultType;
 
       using ResultType = BinaryExpression<OpReal, ArgAMod, ArgBMod, Operation>;
@@ -109,7 +109,7 @@ namespace codi {
   };
 
   template<typename _Real, typename _Arg, template<typename> class _Operation, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
-  struct ConstructStaticContextlLogic< UnaryExpression<_Real, _Arg, _Operation>, _Tape, _primalValueOffset, _constantValueOffset> {
+  struct ConstructStaticContextLogic< UnaryExpression<_Real, _Arg, _Operation>, _Tape, _primalValueOffset, _constantValueOffset> {
     public:
 
       using OpReal = _Real;
@@ -123,7 +123,7 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      using ArgConstructor = ConstructStaticContextlLogic<Arg, Tape, primalValueOffset, constantValueOffset>;
+      using ArgConstructor = ConstructStaticContextLogic<Arg, Tape, primalValueOffset, constantValueOffset>;
       using ArgMod = typename ArgConstructor::ResultType;
 
       using ResultType = UnaryExpression<OpReal, ArgMod, Operation>;

@@ -42,7 +42,7 @@ namespace codi {
         private:
           int size;
         public:
-          DataArray(const Type* value, int size) {
+          DataArray(Type const* value, int size) {
             data = (void*) new Type[size];
             this->size = size;
             std::copy(value, &value[size], (Type*) data);

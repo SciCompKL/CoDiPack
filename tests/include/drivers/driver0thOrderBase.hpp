@@ -6,7 +6,7 @@
 #include "driverBase.hpp"
 
 template<typename _Number>
-struct DriverPrimalBase : public DriverBase<_Number> {
+struct Driver0thOrderBase : public DriverBase<_Number> {
   public:
 
     using Number = DECLARE_DEFAULT(_Number, double);
@@ -16,7 +16,7 @@ struct DriverPrimalBase : public DriverBase<_Number> {
 
   public:
 
-    DriverPrimalBase(std::string const& name) : Base(name) {}
+    Driver0thOrderBase(std::string const& name) : Base(name) {}
 
     void runTest(TestInfo<Number>& info, FILE* out) {
 

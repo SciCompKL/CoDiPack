@@ -14,6 +14,7 @@
 namespace codi {
 
   struct InnerPrimalTapeStatementData : public PrimalTapeStatementFunctions {
+    public:
 
       using Base = PrimalTapeStatementFunctions;
 
@@ -30,24 +31,25 @@ namespace codi {
 
   template<typename Tape, typename Expr>
   struct InnerStatementEvaluatorStaticStore {
+    public:
 
       static InnerPrimalTapeStatementData const staticStore;
   };
 
   template<typename Tape, typename Expr>
   InnerPrimalTapeStatementData const InnerStatementEvaluatorStaticStore<Tape, Expr>::staticStore(
-      MaxNumberOfActiveTypeArguments<Expr>::value,
-      MaxNumberOfConstantArguments<Expr>::value,
+      NumberOfActiveTypeArguments<Expr>::value,
+      NumberOfConstantTypeArguments<Expr>::value,
       (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluateForwardInner<Expr>,
       (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluatePrimalInner<Expr>,
       (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluateReverseInner<Expr>);
 
   template<typename _Real>
   struct InnerStatementEvaluator : public StatementEvaluatorInterface<_Real> {
+    public:
 
       using Real = DECLARE_DEFAULT(_Real, double);
 
-    public:
 
       /*******************************************************************************
        * Section: Start of interface definition

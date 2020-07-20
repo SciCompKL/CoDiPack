@@ -11,6 +11,7 @@ namespace codi {
 
   template<typename _Type, typename _Parent, bool _storeStatic = false>
   struct MemberStore {
+    public:
 
       using Type = _Type; // default declaration breaks auto completion
       using Parent = DECLARE_DEFAULT(_Parent, ANY);
@@ -33,6 +34,7 @@ namespace codi {
 
   template<typename _Type, typename _Parent>
   struct MemberStore<_Type, _Parent, true> {
+    public:
 
       using Type = DECLARE_DEFAULT(_Type, ANY);
       using Parent = DECLARE_DEFAULT(_Parent, ANY);

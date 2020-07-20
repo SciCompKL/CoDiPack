@@ -7,7 +7,7 @@ struct TestOneArgumentExceptions : public TestInterface {
   public:
     NAME("OneArgumentExceptions")
     IN(1)
-    OUT(7)
+    OUT(8)
     POINTS(6) =
     {
       {0.5 * M_PI},
@@ -27,5 +27,6 @@ struct TestOneArgumentExceptions : public TestInterface {
       y[4] = atanh(x[0]);  // (-1, 1)
       y[5] =  asin(x[0]);  // [-1, 1]
       y[6] =  acos(x[0]);  // [-1, 1]
+      y[7] =  cbrt(x[0]); // R \ {0}
     }
 };

@@ -13,6 +13,7 @@ namespace codi {
 
   template<typename _Impl>
   struct ForEachTermLogic : public TraversalLogic<_Impl> {
+    public:
 
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(TraversalLogic<ANY>));
 

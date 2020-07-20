@@ -9,7 +9,7 @@
 namespace codi {
 
   template<typename _Position>
-  struct CustomVectorEvaluationTapeInterface : public virtual ForwardEvaluationTapeInterface<_Position> {
+  struct CustomAdjointVectorEvaluationTapeInterface : public virtual ForwardEvaluationTapeInterface<_Position> {
     public:
 
       using Position = DECLARE_DEFAULT(_Position, EmptyPosition);

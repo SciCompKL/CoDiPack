@@ -33,7 +33,7 @@ struct TestOneArgumentExpr2 : public TestInterface {
     static void func(Number* x, Number* y) {
       y[0] =    log(x[0]);  // (0, inf)
       y[1] =  log10(x[0]);  // (0, inf)
-      y[2] =   sqrt(x[0]);  // [0 , inf)
+      y[2] =   sqrt(x[0]);  // [0, inf)
       y[3] = tgamma(x[0]);  // R currently only defined for positive arguments
     }
 };

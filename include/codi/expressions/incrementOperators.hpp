@@ -2,7 +2,7 @@
 
 #include "../config.h"
 #include "../aux/macros.h"
-#include "../tapes/interfaces/internalExpressionTapeInterface.hpp"
+#include "../tapes/interfaces/internalStatementRecordingInterface.hpp"
 #include "lhsExpressionInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -12,7 +12,7 @@ namespace codi {
   struct IncrementOperators {
     public:
 
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(InternalExpressionTapeInterface<int>));
+      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(InternalStatementRecordingInterface<int>));
       using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(LhsExpressionInterface<double, int, Tape, _Impl>));
 
       using Real = typename Tape::Real;

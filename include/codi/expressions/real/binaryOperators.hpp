@@ -153,6 +153,7 @@ namespace codi {
   using std::max;
   using std::min;
   using std::pow;
+  using std::remainder;
 
   template<typename _Real>
   struct Atan2 : public BinaryOperation<_Real> {
@@ -380,6 +381,9 @@ namespace codi {
   #define FUNCTION pow
   #include "binaryOverloads.tpp"
 
+  /* TODO: Refer to underlying IEEE remainder operation.
+   * Denote primal formula.
+   */
   template<typename _Real>
   struct Remainder : public BinaryOperation<_Real> {
     public:
@@ -388,7 +392,6 @@ namespace codi {
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
-        using std::remainder;
         return remainder(argA, argB);
       }
 
@@ -403,8 +406,20 @@ namespace codi {
       static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
 
+        checkArguments(argB);
+
         using std::round;
         return -round(argA/argB);
+      }
+
+    private:
+      template<typename ArgB>
+      static CODI_INLINE void checkArguments(ArgB const& argB) {
+        if (Config::CheckExpressionArguments) {
+          if (0.0 == getPassiveValue(argB)) {
+            CODI_EXCEPTION("Remainder called with divisor of zero.");
+          }
+        }
       }
   };
   #define OPERATION_LOGIC Remainder
