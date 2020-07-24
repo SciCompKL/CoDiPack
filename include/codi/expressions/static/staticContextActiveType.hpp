@@ -67,7 +67,7 @@ namespace codi {
         CODI_UNUSED(args...);
       }
 
-      private:
-        StaticContextActiveType& operator=(StaticContextActiveType const&) = delete;
+    private:
+      StaticContextActiveType& operator=(StaticContextActiveType const&) = delete;
   };
 }

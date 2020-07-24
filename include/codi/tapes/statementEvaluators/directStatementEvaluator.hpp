@@ -45,7 +45,6 @@ namespace codi {
 
       using Real = DECLARE_DEFAULT(_Real, double);
 
-
       /*******************************************************************************
        * Section: Start of interface definition
        *
