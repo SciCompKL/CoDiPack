@@ -16,7 +16,7 @@ namespace codi {
 
       using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
-      static size_t const dim = _dim;
+      static size_t constexpr dim = _dim;
 
     private:
       Real vector[dim];
@@ -253,7 +253,7 @@ namespace codi {
         using Gradient = CODI_DECLARE_DEFAULT(_Gradient, TEMPLATE(Direction<double, 1>));
         using Real = typename Gradient::Real;
 
-        static const size_t dim = Gradient::dim;
+        static size_t constexpr dim = Gradient::dim;
 
         CODI_INLINE static Real& at(Gradient& gradient, size_t dim) {
           return gradient[dim];
