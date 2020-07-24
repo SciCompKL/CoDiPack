@@ -3,6 +3,7 @@
 #include <type_traits>
 
 #include "../aux/macros.hpp"
+#include "aux/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -56,11 +57,9 @@ namespace codi {
     template<typename Gradient>
     struct IsDirection<
       Gradient,
-      typename std::enable_if<
-        std::is_same<
-          Gradient,
-          Direction<typename Gradient::Real, Gradient::dim>
-        >::value
+      typename enable_if_same<
+        Gradient,
+        Direction<typename Gradient::Real, Gradient::dim>
       >::type
     > : std::true_type {};
 

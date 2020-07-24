@@ -5,6 +5,7 @@
 #include "../aux/macros.hpp"
 #include "../config.h"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
+#include "aux/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -34,11 +35,9 @@ namespace codi {
   template<typename Impl>
   struct IsLhsExpression<
     Impl,
-    typename std::enable_if<
-      std::is_base_of<
-        LhsExpressionInterface<typename Impl::Real, typename Impl::Gradient, typename Impl::Tape, Impl>,
-        Impl
-      >::value
+    typename enable_if_base_of<
+      LhsExpressionInterface<typename Impl::Real, typename Impl::Gradient, typename Impl::Tape, Impl>,
+      Impl
     >::type
   > : std::true_type {};
 
