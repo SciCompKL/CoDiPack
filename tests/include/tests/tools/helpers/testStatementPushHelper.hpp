@@ -1,7 +1,7 @@
 #include "../../../testInterface.hpp"
 
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 #include "../../../../../include/codi.hpp"
 

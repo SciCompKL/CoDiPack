@@ -3,8 +3,8 @@
 #include <medi/adjointInterface.hpp>
 #include <medi/adToolImplCommon.hpp>
 #include <medi/adToolInterface.h>
-#include <medi/ampi/op.hpp>
 #include <medi/ampi/ampiMisc.h>
+#include <medi/ampi/op.hpp>
 #include <medi/ampi/typeDefault.hpp>
 #include <medi/ampi/types/indexTypeHelper.hpp>
 
@@ -19,6 +19,7 @@ namespace codi {
 
   template<typename _Type>
   struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
+    public:
 
       using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
 

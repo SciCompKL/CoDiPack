@@ -11,7 +11,7 @@ struct TestExternalFunctionHelperPassive : public TestInterface {
     OUT(1)
     POINTS(1) = {{2.0, 3.0}};
 
-    static int const ITER = 5;
+    static int constexpr ITER = 5;
 
     template<typename Number>
     static void func(Number* x, Number* y) {

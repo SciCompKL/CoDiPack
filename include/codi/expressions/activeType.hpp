@@ -13,8 +13,8 @@ namespace codi {
 
   template<typename _Tape>
   struct ActiveType : public LhsExpressionInterface<typename _Tape::Real, typename _Tape::Gradient, _Tape, ActiveType<_Tape> >,
-                     public AssignmentOperators<_Tape, ActiveType<_Tape>>,
-                     public IncrementOperators<_Tape, ActiveType<_Tape>> {
+                      public AssignmentOperators<_Tape, ActiveType<_Tape>>,
+                      public IncrementOperators<_Tape, ActiveType<_Tape>> {
     public:
 
       using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
@@ -58,7 +58,7 @@ namespace codi {
         this->getGlobalTape().store(*this, rhs.cast());
       }
 
-      CODI_INLINE ActiveType<Tape>& operator=(ActiveType<Tape > const& v) {
+      CODI_INLINE ActiveType<Tape>& operator=(ActiveType<Tape> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ActiveType>&>(*this) = v;
         return *this;
       }

@@ -15,7 +15,7 @@
 namespace codi {
 
   template<typename _Type>
-  class ExtFuncEvaluationData {
+  struct ExtFuncEvaluationData {
     public:
 
       using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
@@ -176,7 +176,7 @@ namespace codi {
   };
 
   template<typename _Type>
-  class ExternalFunctionHelper {
+  struct ExternalFunctionHelper {
     public:
 
       using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
@@ -196,7 +196,7 @@ namespace codi {
       bool isPassiveExtFunc;
       bool isTapeActive;
 
-      ExtFuncEvaluationData<Type> *data;
+      ExtFuncEvaluationData<Type>* data;
 
       ExternalFunctionHelper(bool passiveExtFunc = false) :
         outputValues(),

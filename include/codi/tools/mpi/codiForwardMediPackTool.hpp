@@ -16,6 +16,7 @@ namespace codi {
   template<typename _Type>
   struct CoDiPackForwardTool final : public medi::ADToolBase<CoDiPackForwardTool<_Type>, typename _Type::Gradient, typename _Type::PassiveReal, int> {
     public:
+
       using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
 
       using PrimalType = typename Type::Real;

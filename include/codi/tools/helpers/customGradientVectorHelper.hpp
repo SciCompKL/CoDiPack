@@ -3,10 +3,10 @@
 #include "../../aux/macros.h"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
-#include "../../traits/tapeTraits.hpp"
 #include "../../tapes/aux/adjointVectorAccess.hpp"
 #include "../../tapes/aux/vectorAccessInterface.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
+#include "../../traits/tapeTraits.hpp"
 
 
 /** \copydoc codi::Namespace */
@@ -20,7 +20,7 @@ namespace codi {
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
-      using Tape = DECLARE_DEFAULT(typename Type::Tape,TEMPLATE(FullTapeInterface<double, double, int, ANY>));
+      using Tape = DECLARE_DEFAULT(typename Type::Tape, TEMPLATE(FullTapeInterface<double, double, int, ANY>));
       using Position = typename Tape::Position;
 
       Tape& tape;
@@ -68,6 +68,7 @@ namespace codi {
 
   template<typename _Type, typename _Gradient>
   struct CustomGradientVectorHelper : public CustomGradientVectorInterface<_Type> {
+    public:
 
       using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
       using Gradient = DECLARE_DEFAULT(_Gradient, double);
@@ -76,7 +77,7 @@ namespace codi {
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
-      using Tape = DECLARE_DEFAULT(typename Type::Tape,TEMPLATE(FullTapeInterface<double, double, int, ANY>));
+      using Tape = DECLARE_DEFAULT(typename Type::Tape, TEMPLATE(FullTapeInterface<double, double, int, ANY>));
       using Position = typename Tape::Position;
 
       std::vector<Gradient> gradientVector;
@@ -138,7 +139,7 @@ namespace codi {
         }
 
         checkAdjointVectorSize();
-        adjointInterface = new AdjointVectorAccess<Real, Identifier, Gradient> (gradientVector.data());
+        adjointInterface = new AdjointVectorAccess<Real, Identifier, Gradient>(gradientVector.data());
         return adjointInterface;
       }
 

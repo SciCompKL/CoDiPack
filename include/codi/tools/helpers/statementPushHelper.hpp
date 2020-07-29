@@ -3,8 +3,8 @@
 #include "../../aux/macros.h"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
-#include "../../traits/tapeTraits.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
+#include "../../traits/tapeTraits.hpp"
 
 
 /** \copydoc codi::Namespace */

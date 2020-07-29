@@ -12,9 +12,9 @@
 namespace codi {
 
   template<typename _Type>
-  class ReferenceActiveType : public LhsExpressionInterface<typename _Type::Real, typename _Type::Gradient, typename _Type::Tape, ReferenceActiveType<_Type> >,
-                     public AssignmentOperators<_Type, ReferenceActiveType<_Type>>,
-                     public IncrementOperators<_Type, ReferenceActiveType<_Type>> {
+  struct ReferenceActiveType : public LhsExpressionInterface<typename _Type::Real, typename _Type::Gradient, typename _Type::Tape, ReferenceActiveType<_Type> >,
+                               public AssignmentOperators<_Type, ReferenceActiveType<_Type>>,
+                               public IncrementOperators<_Type, ReferenceActiveType<_Type>> {
     public:
 
       using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));

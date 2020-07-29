@@ -147,7 +147,7 @@ namespace codi {
        */
 
       template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateForward(Position const& start, Position const& end,Function const& function,
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end, Function const& function,
                                        Args&&... args) {
         PointerInserter pHandle;
         pHandle.setPointers(0, &chunk);
@@ -163,7 +163,7 @@ namespace codi {
       }
 
       template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,Function const& function,
+      CODI_INLINE void evaluateReverse(Position const& start, Position const& end, Function const& function,
                                        Args&&... args) {
         PointerInserter pHandle;
 

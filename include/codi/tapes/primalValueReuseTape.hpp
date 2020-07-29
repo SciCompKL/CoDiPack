@@ -73,8 +73,8 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos,
               Identifier const* const lhsIdentifiers,
               Config::ArgumentSize const* const numberOfPassiveArguments,
-              Real * const oldPrimalValues,
-              EvalHandle const * const stmtEvalhandle
+              Real* const oldPrimalValues,
+              EvalHandle const* const stmtEvalhandle
           ) {
 
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
@@ -115,8 +115,8 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos,
               Identifier const* const lhsIdentifiers,
               Config::ArgumentSize const* const numberOfPassiveArguments,
-              Real * const oldPrimalValues,
-              EvalHandle const * const stmtEvalhandle
+              Real* const oldPrimalValues,
+              EvalHandle const* const stmtEvalhandle
           ) {
 
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);

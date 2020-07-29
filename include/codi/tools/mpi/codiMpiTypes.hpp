@@ -11,6 +11,7 @@
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
   template<typename _Type,
            typename _Tool =
               typename std::conditional<
@@ -20,6 +21,7 @@ namespace codi {
              >::type
            >
   struct CoDiMpiTypes {
+    public:
 
       using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
       using Tool = DECLARE_DEFAULT(_Tool, medi::ADToolInterface);
