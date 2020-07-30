@@ -2,7 +2,7 @@
 
 #include <limits>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "realTraits.hpp"
 

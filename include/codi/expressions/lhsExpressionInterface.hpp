@@ -2,9 +2,10 @@
 
 #include <iostream>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
-#include "../tapes/interfaces/fullTapeInterface.hpp"
+#include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
+#include "../tapes/interfaces/internalExpressionTapeInterface.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
 #include "expressionInterface.hpp"
@@ -16,10 +17,10 @@ namespace codi {
   struct LhsExpressionInterface : public ExpressionInterface<_Real, _Impl> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Gradient = DECLARE_DEFAULT(_Gradient, Real);
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
-      using Impl = DECLARE_DEFAULT(_Impl, LhsExpressionInterface);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, Real);
+      using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(CODI_UNION<InternalExpressionTapeInterface<int>, GradientAccessTapeInterface<double, int>>));
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, LhsExpressionInterface);
 
       using Identifier = typename Tape::Identifier;
       using PassiveReal = PassiveRealType<Real>;
@@ -117,9 +118,9 @@ namespace codi {
   struct RealTraits<_Type, enableIfLhsExpression<_Type>> {
     public:
 
-      using Type = DECLARE_DEFAULT(
+      using Type = CODI_DECLARE_DEFAULT(
                       _Type,
-                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
+                      CODI_TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<CODI_ANY>, _Type>)
                     );
       using Real = typename Type::Real;
 

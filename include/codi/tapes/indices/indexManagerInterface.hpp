@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../aux/optionalArg.hpp"
 #include "../../config.h"
 #include "../aux/tapeValues.hpp"
@@ -14,7 +14,7 @@ namespace codi {
   struct IndexManagerInterface {
     public:
 
-      using Index = DECLARE_DEFAULT(_Index, int);
+      using Index = CODI_DECLARE_DEFAULT(_Index, int);
 
       static bool constexpr AssignNeedsStatement = CODI_UNDEFINED_VALUE;
       static bool constexpr IsLinear = CODI_UNDEFINED_VALUE;

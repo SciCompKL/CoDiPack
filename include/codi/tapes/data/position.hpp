@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */
@@ -52,7 +52,7 @@ namespace codi {
   struct ArrayPosition {
     public:
 
-      using NestedPosition = DECLARE_DEFAULT(_NestedPosition, EmptyPosition);
+      using NestedPosition = CODI_DECLARE_DEFAULT(_NestedPosition, EmptyPosition);
 
       size_t data;
 
@@ -100,7 +100,7 @@ namespace codi {
   struct ChunkPosition : public ArrayPosition<_NestedPosition> {
     public:
 
-      using NestedPosition = DECLARE_DEFAULT(_NestedPosition, EmptyPosition);
+      using NestedPosition = CODI_DECLARE_DEFAULT(_NestedPosition, EmptyPosition);
       using Base = ArrayPosition<NestedPosition>;
 
       size_t chunk;

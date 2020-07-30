@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */
@@ -10,7 +10,7 @@ namespace codi {
   struct InternalExpressionTapeInterface {
     public:
 
-      using Identifier = DECLARE_DEFAULT(_Identifier, int);
+      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int);
 
       /*******************************************************************************
        * Section: Start of interface definition

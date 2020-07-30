@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../config.h"
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../tapes/interfaces/internalExpressionTapeInterface.hpp"
 #include "lhsExpressionInterface.hpp"
 
@@ -12,10 +12,10 @@ namespace codi {
   struct AssignmentOperators {
     public:
 
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(InternalExpressionTapeInterface<int>));
-      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(LhsExpressionInterface<double, int, Tape, _Impl>));
+      using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(InternalExpressionTapeInterface<int>));
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(LhsExpressionInterface<double, int, Tape, _Impl>));
 
-      using Real = DECLARE_DEFAULT(typename Tape::Real, double);
+      using Real = CODI_DECLARE_DEFAULT(typename Tape::Real, double);
       using PassiveReal = PassiveRealType<Real>;
 
       CODI_INLINE Impl& cast() {

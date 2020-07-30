@@ -1,15 +1,12 @@
 #pragma once
 
-#include <cmath>
-#include <type_traits>
-
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../traits/expressionTraits.hpp"
-#include "interfaces/internalExpressionTapeInterface.hpp"
 #include "interfaces/gradientAccessTapeInterface.hpp"
+#include "interfaces/internalExpressionTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -19,8 +16,8 @@ namespace codi {
                              public GradientAccessTapeInterface<_Gradient, _Gradient> {
 
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Gradient = DECLARE_DEFAULT(_Gradient, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);
 
       using PassiveReal = PassiveRealType<Real>;
       using Identifier = Gradient;
@@ -41,7 +38,7 @@ namespace codi {
       struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
-            ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
               lhsGradient += node.gradient() * jacobian;
             }
           }

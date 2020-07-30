@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 
 /** \copydoc codi::Namespace */
@@ -12,7 +12,7 @@ namespace codi {
   struct RealTraits {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, double);
+      using Type = CODI_DECLARE_DEFAULT(_Type, double);
 
       using PassiveReal = Type;
 
@@ -31,7 +31,7 @@ namespace codi {
   struct IsTotalFinite {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, double);
+      using Type = CODI_DECLARE_DEFAULT(_Type, double);
 
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         using std::isfinite;

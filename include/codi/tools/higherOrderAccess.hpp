@@ -5,7 +5,7 @@
 #include "../aux/binomial.hpp"
 #include "../aux/compileTimeLoop.hpp"
 #include "../aux/exceptions.hpp"
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../traits/realTraits.hpp"
@@ -23,7 +23,7 @@ namespace codi {
       return binomial(selectionDepth - 1, order);
     }
 
-    CODI_INLINE size_t constexpr isLowerBranch(size_t selectionDepth, size_t order, size_t l) {
+    CODI_INLINE size_t constexpr isPrimalBranch(size_t selectionDepth, size_t order, size_t l) {
       return l < maximumDerivativesPrimalBranch(selectionDepth, order);
     }
 
@@ -42,13 +42,13 @@ namespace codi {
 
     };
 
-    template<typename Type, bool constant, size_t selectionDepth, size_t order, size_t l, bool primalBranch = isLowerBranch(selectionDepth, order, l)>
+    template<typename Type, bool constant, size_t selectionDepth, size_t order, size_t l, bool primalBranch = isPrimalBranch(selectionDepth, order, l)>
     struct SelectCompileTime;
 
     template<typename _Type, bool constant, size_t selectionDepth, size_t order, size_t l>
     struct SelectCompileTime<_Type, constant, selectionDepth, order, l, true> {
       public:
-        using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+        using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
         using Inner = SelectCompileTime<typename Type::Real, constant, selectionDepth - 1, order, l>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
@@ -64,11 +64,13 @@ namespace codi {
     template<typename _Type, bool constant, size_t selectionDepth, size_t order, size_t l>
     struct SelectCompileTime<_Type, constant, selectionDepth, order, l, false> {
       public:
-        using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+        using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
         using Inner = SelectCompileTime<typename Type::Real, constant, selectionDepth - 1, order - 1, l - maximumDerivativesPrimalBranch(selectionDepth, order)>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
         using RType = typename Inner::RType;
+
+        static_assert (CheckCompileTimeValues<Type, selectionDepth, order, l>::isValid, "Checks inside of type.");
 
         static RType& select(ArgType& value) {
            return Inner::select(value.gradient());
@@ -89,8 +91,8 @@ namespace codi {
     template<typename _Type, bool constant, size_t _selectionDepth>
     struct SelectRunTime {
 
-        using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
-        static size_t constexpr selectionDepth = DECLARE_DEFAULT(_selectionDepth, /*TODO*/ 0);
+        using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        static size_t constexpr selectionDepth = CODI_DECLARE_DEFAULT(_selectionDepth, /*TODO*/ 0);
 
         static_assert (std::is_same<typename Type::Real, typename Type::Gradient>::value, "CoDiPack type needs to have the same real and gradient value for run time derivative selection.");
         static_assert (selectionDepth <= RealTraits<Type>::MaxDerivativeOrder, "Selection depth can not be higher than the maximum derivative order" );
@@ -112,7 +114,7 @@ namespace codi {
     template<typename _Type, bool constant>
     struct SelectRunTime<_Type, constant, 0> {
 
-        using Type = DECLARE_DEFAULT(_Type, double);
+        using Type = CODI_DECLARE_DEFAULT(_Type, double);
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
         using RType = ArgType;
 
@@ -127,7 +129,7 @@ namespace codi {
   struct HigherOrderAccess {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       template<bool constant, size_t selectionDepth>
       using SelectRunTime = HigherOrderAccessImpl::SelectRunTime<Type, constant, selectionDepth>;

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */
@@ -23,7 +23,7 @@ namespace codi {
       template<typename _Type>
       struct DataItem : public DataItemBase {
         public:
-          using Type = DECLARE_DEFAULT(_Type, ANY);
+          using Type = CODI_DECLARE_DEFAULT(_Type, CODI_ANY);
 
           explicit DataItem(Type const& value) {
             data = (void*) new Type(value);

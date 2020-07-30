@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "chunk.hpp"
 #include "emptyVector.hpp"
@@ -18,9 +18,9 @@ namespace codi {
   struct BlockVectorImpl : public DataInterface<_NestedVector> {
     public:
 
-      using Chunk = DECLARE_DEFAULT(_Chunk, TEMPLATE(Chunk1<ANY>));
-      using NestedVector = DECLARE_DEFAULT(_NestedVector, TEMPLATE(DataInterface<ANY>));
-      using PointerInserter = DECLARE_DEFAULT(_PointerInserter, TEMPLATE(PointerStore<Chunk>));
+      using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>));
+      using NestedVector = CODI_DECLARE_DEFAULT(_NestedVector, CODI_TEMPLATE(DataInterface<CODI_ANY>));
+      using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>));
       using InternalPosHandle = size_t;
 
       using NestedPosition = typename NestedVector::Position;
@@ -216,7 +216,4 @@ namespace codi {
         }
       }
   };
-
-  template<typename Chunk, typename NestedVector = EmptyVector>
-  using BlockVector = BlockVectorImpl<Chunk, NestedVector>;
 }

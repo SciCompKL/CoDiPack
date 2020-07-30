@@ -4,7 +4,7 @@
 #include <type_traits>
 
 #include "../aux/fileIo.hpp"
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "aux/vectorAccessInterface.hpp"
 #include "data/dataInterface.hpp"
@@ -18,9 +18,9 @@ namespace codi {
   struct TapeTypesInterface {
     public:
 
-      using Real = ANY;
-      using Gradient = ANY;
-      using Identifier = ANY;
+      using Real = CODI_ANY;
+      using Gradient = CODI_ANY;
+      using Identifier = CODI_ANY;
 
       template<typename Chunk, typename Nested>
       using Vector = DataInterface<Nested>;
@@ -32,7 +32,7 @@ namespace codi {
   struct BaseTapeTypes {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);
 
       using NestedVector = typename TapeTypes::NestedVector;
       template<typename Chunk, typename Nested>
@@ -55,8 +55,8 @@ namespace codi {
   {
     public:
 
-      using TapeTypes = DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);
-      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Real = typename TapeTypes::Real;
       using Gradient = typename TapeTypes::Gradient;
@@ -262,7 +262,7 @@ namespace codi {
        */
 
       void pushExternalFunction(ExternalFunction const& extFunc) {
-        ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
+        CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           externalFunctionVector.reserveItems(1);
           externalFunctionVector.pushData(extFunc, externalFunctionVector.getPosition().inner); // TODO: Add getInner zum Interface?
         }
@@ -377,7 +377,7 @@ namespace codi {
 
       template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFuncPrimal(const Position& start, const Position &end,
-                                 const Function& func,
+                                 Function func,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){
 
@@ -421,7 +421,7 @@ namespace codi {
 
       template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFuncForward(const Position& start, const Position &end,
-                                 const Function& func,
+                                 Function func,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){
 

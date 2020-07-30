@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../aux/tapeValues.hpp"
 #include "chunk.hpp"
@@ -15,8 +15,8 @@ namespace codi {
   template<typename _NestedVector = void, typename _InternalPosHandle = size_t>
   struct DataInterface {
 
-      using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
-      using InternalPosHandle = DECLARE_DEFAULT(_InternalPosHandle, size_t);
+      using NestedVector = CODI_DECLARE_DEFAULT(_NestedVector, DataInterface);
+      using InternalPosHandle = CODI_DECLARE_DEFAULT(_InternalPosHandle, size_t);
 
       using Position = EmptyPosition;
 

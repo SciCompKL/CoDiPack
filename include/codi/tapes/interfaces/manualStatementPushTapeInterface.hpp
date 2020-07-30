@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */
@@ -10,9 +10,9 @@ namespace codi {
   struct ManualStatementPushTapeInterface {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Gradient = DECLARE_DEFAULT(_Gradient, double);
-      using Identifier = DECLARE_DEFAULT(_Identifier, int);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);
+      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int);
 
       /*******************************************************************************
        * Section: Start of interface definition

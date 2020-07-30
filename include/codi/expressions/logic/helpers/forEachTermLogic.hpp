@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "../../../aux/macros.h"
+#include "../../../aux/macros.hpp"
 #include "../../../config.h"
 #include "../../../traits/expressionTraits.hpp"
 #include "../traversalLogic.hpp"
@@ -14,7 +14,7 @@ namespace codi {
   template<typename _Impl>
   struct ForEachTermLogic : public TraversalLogic<_Impl> {
 
-      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(TraversalLogic<ANY>));
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(TraversalLogic<CODI_ANY>));
 
       /*******************************************************************************
        * Section: Methods the child class can overwrite

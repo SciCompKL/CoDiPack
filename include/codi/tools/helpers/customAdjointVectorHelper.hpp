@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../tapes/aux/adjointVectorAccess.hpp"
@@ -13,23 +13,23 @@
 namespace codi {
 
   template<typename _Type>
-  struct CustomGradientVectorInterface {
+  struct CustomAdjointVectorInterface {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
-      using Tape = DECLARE_DEFAULT(typename Type::Tape, TEMPLATE(FullTapeInterface<double, double, int, ANY>));
+      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
       using Position = typename Tape::Position;
 
       Tape& tape;
 
-      CustomGradientVectorInterface() :
+      CustomAdjointVectorInterface() :
         tape(Type::getGlobalTape()) {
       }
 
-      virtual ~CustomGradientVectorInterface() {}
+      virtual ~CustomAdjointVectorInterface() {}
 
       /*******************************************************************************
        * Section: Start of interface definition
@@ -67,29 +67,29 @@ namespace codi {
   };
 
   template<typename _Type, typename _Gradient>
-  struct CustomGradientVectorHelper : public CustomGradientVectorInterface<_Type> {
+  struct CustomAdjointVectorHelper : public CustomAdjointVectorInterface<_Type> {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
-      using Gradient = DECLARE_DEFAULT(_Gradient, double);
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);
 
-      using Base = CustomGradientVectorInterface<Type>;
+      using Base = CustomAdjointVectorInterface<Type>;
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
-      using Tape = DECLARE_DEFAULT(typename Type::Tape, TEMPLATE(FullTapeInterface<double, double, int, ANY>));
+      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
       using Position = typename Tape::Position;
 
-      std::vector<Gradient> gradientVector;
+      std::vector<Gradient> adjointVector;
 
       Gradient zeroValue;
       Gradient const constZeroValue;
 
       AdjointVectorAccess<Real, Identifier, Gradient>* adjointInterface;
 
-      CustomGradientVectorHelper() :
+      CustomAdjointVectorHelper() :
         Base(),
-        gradientVector(0),
+        adjointVector(0),
         zeroValue(),
         constZeroValue(),
         adjointInterface(nullptr) {
@@ -98,39 +98,39 @@ namespace codi {
       /**
        * @brief Destructor
        */
-      ~CustomGradientVectorHelper() {
+      ~CustomAdjointVectorHelper() {
         if(nullptr != adjointInterface) {
           delete adjointInterface;
         }
       }
 
       void clearAdjoints() {
-        for(size_t i = 0; i < gradientVector.size(); i += 1) {
-          gradientVector[i] = Gradient();
+        for(size_t i = 0; i < adjointVector.size(); i += 1) {
+          adjointVector[i] = Gradient();
         }
       }
 
       void deleteAdjointVector() {
-        gradientVector.resize(0);
-        gradientVector.shrink_to_fit();
+        adjointVector.resize(0);
+        adjointVector.shrink_to_fit();
       }
 
       void evaluate(Position const& start, Position const& end) {
         checkAdjointVectorSize();
 
-        Base::tape.evaluate(start, end, gradientVector.data());
+        Base::tape.evaluate(start, end, adjointVector.data());
       }
       using Base::evaluate;
 
       void evaluateForward(Position const& start, Position const& end) {
         checkAdjointVectorSize();
 
-        Base::tape.evaluateForward(start, end, gradientVector.data());
+        Base::tape.evaluateForward(start, end, adjointVector.data());
       }
       using Base::evaluateForward;
 
-      Gradient const& getGradient(Identifier const& value) const {
-        return gradient(value);
+      Gradient const& getGradient(Identifier const& identifier) const {
+        return gradient(identifier);
       }
 
       VectorAccessInterface<Real, Identifier>* getVectorInterface() {
@@ -139,46 +139,46 @@ namespace codi {
         }
 
         checkAdjointVectorSize();
-        adjointInterface = new AdjointVectorAccess<Real, Identifier, Gradient>(gradientVector.data());
+        adjointInterface = new AdjointVectorAccess<Real, Identifier, Gradient>(adjointVector.data());
         return adjointInterface;
       }
 
-      Gradient& gradientAt(Identifier const& value) {
-        return gradientVector[value];
+      Gradient& gradientAt(Identifier const& identifier) {
+        return adjointVector[identifier];
       }
 
-      Gradient const& gradientAt(Identifier const& value) const {
-        return gradientVector[value];
+      Gradient const& gradientAt(Identifier const& identifier) const {
+        return adjointVector[identifier];
       }
 
-      Gradient& gradient(Identifier const& value) {
+      Gradient& gradient(Identifier const& identifier) {
         checkAdjointVectorSize();
 
-        if(0 != value && value < (Identifier)gradientVector.size()) {
-          return gradientVector[value];
+        if(0 != identifier && identifier < (Identifier)adjointVector.size()) {
+          return adjointVector[identifier];
         } else {
           zeroValue = Gradient();
           return zeroValue;
         }
       }
 
-      Gradient const& gradient(Identifier const& value) const {
-        if(0 != value && value < (Identifier)gradientVector.size()) {
-          return gradientVector[value];
+      Gradient const& gradient(Identifier const& identifier) const {
+        if(0 != identifier && identifier < (Identifier)adjointVector.size()) {
+          return adjointVector[identifier];
         } else {
           return constZeroValue;
         }
       }
 
-      void setGradient(Identifier& value, Gradient const& gradientValue) {
-        gradient(value) = gradientValue;
+      void setGradient(Identifier& identifier, Gradient const& gradientValue) {
+        gradient(identifier) = gradientValue;
       }
 
     private:
 
       void checkAdjointVectorSize() {
-        if(gradientVector.size() <= Base::tape.getOption(ConfigurationOption::LargestIdentifier)) {
-          gradientVector.resize(Base::tape.getOption(ConfigurationOption::LargestIdentifier) + 1);
+        if(adjointVector.size() <= Base::tape.getOption(ConfigurationOption::LargestIdentifier)) {
+          adjointVector.resize(Base::tape.getOption(ConfigurationOption::LargestIdentifier) + 1);
         }
       }
   };

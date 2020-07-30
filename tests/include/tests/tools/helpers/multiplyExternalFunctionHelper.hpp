@@ -5,7 +5,7 @@
 template<typename _Number, typename = void>
 struct MultiplyExternalFunctionHelper {
   public:
-    using Number = DECLARE_DEFAULT(_Number, codi::ActiveType<ANY>);
+    using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
 
     static Number create(Number const& x1, Number const& x2, bool passive) {
       codi::CODI_UNUSED(passive);
@@ -18,7 +18,7 @@ struct MultiplyExternalFunctionHelper {
 template<typename _Number>
 struct MultiplyExternalFunctionHelper<_Number, codi::enableIfReverseTape<typename _Number::Tape>> {
   public:
-    using Number = DECLARE_DEFAULT(_Number, codi::ActiveType<ANY>);
+    using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
 
     using Real = typename Number::Real;
 
@@ -47,16 +47,16 @@ struct MultiplyExternalFunctionHelper<_Number, codi::enableIfReverseTape<typenam
       y_d[0] = x[1] * x_d[0] + x_d[1] * x[0];
     }
 
-    static Number create(Number const& x1, Number const& x2, bool passive) {
-      codi::ExternalFunctionHelper<Number> eh(passive);
+    static Number create(Number const& x1, Number const& x2, bool primalFuncUsesADType) {
+      codi::ExternalFunctionHelper<Number> eh(primalFuncUsesADType);
 
       Number w;
 
       eh.addInput(x1);
       eh.addInput(x2);
 
-      if(passive) {
-        eh.callPassiveFunc(MultiplyExternalFunctionHelper::funcCall, w, x1, x2);
+      if(primalFuncUsesADType) {
+        eh.callPrimalFuncWithADType(MultiplyExternalFunctionHelper::funcCall, w, x1, x2);
 
         eh.addOutput(w);
       } else {

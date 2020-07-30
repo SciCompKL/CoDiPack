@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../config.h"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -13,7 +13,7 @@ namespace codi {
   struct NodeInterface {
     public:
 
-      using Impl = DECLARE_DEFAULT(_Impl, NodeInterface);
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, NodeInterface);
 
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);

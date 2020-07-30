@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "../config.h"
-#include "macros.h"
+#include "macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

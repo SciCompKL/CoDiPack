@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "expressionInterface.hpp"
 #include "logic/nodeInterface.hpp"
@@ -13,7 +13,7 @@ namespace codi {
   struct ConstantExpression : public ExpressionInterface<_Real, ConstantExpression<_Real>> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       using StoreAs = ConstantExpression;
 

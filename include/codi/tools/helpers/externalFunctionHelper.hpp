@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
@@ -18,11 +18,11 @@ namespace codi {
   struct ExtFuncEvaluationData {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
-      using Tape = DECLARE_DEFAULT(typename Type::Tape,TEMPLATE(FullTapeInterface<double, double, int, ANY>));
+      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
 
       using ReverseFunc = void (*)(Real const* x, Real* x_b, size_t m, Real const* y, Real const* y_b, size_t n, ExternalFunctionData* d);
       using ForwardFunc = void (*)(Real const* x, Real const* x_d, size_t m, Real* y, Real* y_d, size_t n, ExternalFunctionData* d);
@@ -179,11 +179,11 @@ namespace codi {
   struct ExternalFunctionHelper {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
-      using Tape = DECLARE_DEFAULT(typename Type::Tape,TEMPLATE(FullTapeInterface<double, double, int, ANY>));
+      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape,CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
 
       using ForwardFunc = typename ExtFuncEvaluationData<Type>::ForwardFunc;
       using PrimalFunc = typename ExtFuncEvaluationData<Type>::PrimalFunc;
@@ -193,16 +193,16 @@ namespace codi {
 
       bool storeInputPrimals;
       bool storeOutputPrimals;
-      bool isPassiveExtFunc;
+      bool primalFuncUsesADType;
       bool isTapeActive;
 
       ExtFuncEvaluationData<Type>* data;
 
-      ExternalFunctionHelper(bool passiveExtFunc = false) :
+      ExternalFunctionHelper(bool primalFuncUsesADType = false) :
         outputValues(),
         storeInputPrimals(true),
         storeOutputPrimals(true),
-        isPassiveExtFunc(passiveExtFunc),
+        primalFuncUsesADType(primalFuncUsesADType),
         isTapeActive(Type::getGlobalTape().isActive()),
         data(nullptr) {
         data = new ExtFuncEvaluationData<Type>();
@@ -229,7 +229,7 @@ namespace codi {
 
         // ignore the setting at this place and the active check
         // We might need the values for the evaluation.
-        if (!isPassiveExtFunc || storeInputPrimals){
+        if (!primalFuncUsesADType || storeInputPrimals){
           data->inputValues.push_back(input.getValue());
         }
       }
@@ -251,7 +251,7 @@ namespace codi {
     public:
 
       void addOutput(Type& output) {
-        if(isTapeActive && isPassiveExtFunc) {
+        if(isTapeActive && primalFuncUsesADType) {
           addOutputToData(output);
         } else {
           outputValues.push_back(&output);
@@ -268,7 +268,7 @@ namespace codi {
       }
 
       template<typename FuncObj, typename ... Args>
-      void callPassiveFunc(FuncObj& func, Args&& ... args) {
+      void callPrimalFuncWithADType(FuncObj& func, Args&& ... args) {
 
         if(isTapeActive) {
           Type::getGlobalTape().setPassive();
@@ -282,7 +282,7 @@ namespace codi {
       }
 
       void callPrimalFunc(PrimalFunc func) {
-        if (!isPassiveExtFunc){
+        if (!primalFuncUsesADType){
           // First set the function here in the external function data so that it can be used for primal evaluation of the tape.
           data->primalFunc = func;
 
@@ -302,7 +302,7 @@ namespace codi {
           delete [] y;
 
         } else {
-          CODI_EXCEPTION("callPrimalFunc() not available if external function helper is initialized with passive function mode enabled. Use callPassiveFunc() instead.");
+          CODI_EXCEPTION("callPrimalFunc() not available if external function helper is initialized with passive function mode enabled. Use callPrimalFuncWithADType() instead.");
         }
       }
 

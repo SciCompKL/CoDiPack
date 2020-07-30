@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */
@@ -11,8 +11,8 @@ namespace codi {
   template<typename _Real, typename _Identifier>
   struct VectorAccessInterface {
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Identifier = DECLARE_DEFAULT(_Identifier, int);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int);
 
       virtual ~VectorAccessInterface() {}
 

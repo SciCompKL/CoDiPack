@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../data/emptyVector.hpp"
 #include "indexManagerInterface.hpp"
@@ -15,7 +15,7 @@ namespace codi {
   struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyVector {
     public:
 
-      using Index = DECLARE_DEFAULT(_Index, int);
+      using Index = CODI_DECLARE_DEFAULT(_Index, int);
       using Base = IndexManagerInterface<Index>;
 
       static bool const AssignNeedsStatement = true;

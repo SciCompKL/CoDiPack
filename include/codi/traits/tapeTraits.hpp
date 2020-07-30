@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 
 #include "../tapes/forwardEvaluation.hpp"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
@@ -14,8 +14,8 @@ namespace codi {
   struct StatementPushHelperBase {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
-      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(StatementPushHelperBase<ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(StatementPushHelperBase<CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
 
@@ -80,11 +80,11 @@ namespace codi {
   struct StatementPushHelper : public StatementPushHelperBase<_Type, StatementPushHelper<_Type>> {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
-      using Tape = DECLARE_DEFAULT(typename Type::Tape, TEMPLATE(FullTapeInterface<double, double, int, ANY>));
+      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
 
       Identifier indexVector[Config::MaxArgumentSize];
       Real jacobianVector[Config::MaxArgumentSize];
@@ -101,10 +101,10 @@ namespace codi {
           CODI_EXCEPTION("Adding more than %zu arguments to a statement.", Config::MaxArgumentSize);
         }
 
-        ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
-          ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier()) {
-            ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
-              ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
+        CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
+          CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier()) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
+              CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
 
                 indexVector[vectorPos] = arg.getIdentifier();
                 jacobianVector[vectorPos] = jacobian;
@@ -118,7 +118,7 @@ namespace codi {
       void endPushStatement(Type& lhs, Real const& primal) {
         Tape& tape = Type::getGlobalTape();
 
-        ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
+        CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
           if(0 != vectorPos) {
             tape.storeManual(primal, lhs.getIdentifier(), vectorPos);
 
@@ -138,7 +138,7 @@ namespace codi {
   {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
       using Gradient = typename Type::Gradient;
@@ -150,7 +150,7 @@ namespace codi {
       }
 
       void pushArgument(Type const& arg, Real const& jacobian) {
-        ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
+        CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
           lhsTangent += jacobian * arg.getGradient();
         }
       }
@@ -185,7 +185,7 @@ namespace codi {
                          JacobiIter const startJac) {
         CODI_UNUSED(startArg, endArg, startJac);
 
-        lhs = primal;
+        endPushStatement(lhs, primal);
       }
 
       template<typename ArgVector, typename JacobiVector>
@@ -194,7 +194,7 @@ namespace codi {
                          size_t const size) {
         CODI_UNUSED(arguments, jacobians, size);
 
-        lhs = primal;
+        endPushStatement(lhs, primal);
       }
   };
 }

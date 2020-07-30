@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
-#include "../tapes/interfaces/fullTapeInterface.hpp"
+#include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
+#include "../tapes/interfaces/internalExpressionTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "assignmentOperators.hpp"
 #include "incerementOperators.hpp"
@@ -17,7 +18,7 @@ namespace codi {
                       public IncrementOperators<_Tape, ActiveType<_Tape>> {
     public:
 
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(CODI_UNION<InternalExpressionTapeInterface<int>, GradientAccessTapeInterface<double, int>>));
 
       using StoreAs = ActiveType const&;
 

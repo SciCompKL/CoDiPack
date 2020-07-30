@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "logic/nodeInterface.hpp"
 
@@ -11,8 +11,8 @@ namespace codi {
   struct ExpressionInterface : public NodeInterface<_Impl> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Impl = DECLARE_DEFAULT(_Impl, ExpressionInterface);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, ExpressionInterface);
 
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);

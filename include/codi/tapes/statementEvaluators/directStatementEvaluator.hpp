@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../expressions/activeType.hpp"
 #include "statementEvaluatorInterface.hpp"
 
@@ -39,7 +39,7 @@ namespace codi {
   template<typename _Real>
   struct DirectStatementEvaluator : public StatementEvaluatorInterface<_Real> {
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
     public:
 

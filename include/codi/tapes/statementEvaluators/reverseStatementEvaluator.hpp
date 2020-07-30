@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../aux/memberStore.hpp"
 #include "../../aux/exceptions.hpp"
 #include "../../expressions/activeType.hpp"
@@ -16,7 +16,7 @@ namespace codi {
   template<typename _Real>
   struct ReverseStatementEvaluator : public StatementEvaluatorInterface<_Real> {
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
     public:
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../config.h"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "../binaryExpression.hpp"
 #include "../expressionInterface.hpp"
@@ -26,7 +26,7 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      using ResultType = DECLARE_DEFAULT(_Rhs, TEMPLATE(ExpressionInterface<double, ANY>));
+      using ResultType = CODI_DECLARE_DEFAULT(_Rhs, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>));
 
       static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantVector);
   };

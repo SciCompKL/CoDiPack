@@ -5,7 +5,7 @@
 #include <medi/ampi/typeDefault.hpp>
 #include <medi/ampi/types/indexTypeHelper.hpp>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 
@@ -14,10 +14,10 @@ namespace codi {
 
 
   template<typename _Type>
-  struct CoDiPackForwardTool final : public medi::ADToolBase<CoDiPackForwardTool<_Type>, typename _Type::Gradient, typename _Type::PassiveReal, int> {
+  struct CoDiPackForwardTool : public medi::ADToolBase<CoDiPackForwardTool<_Type>, typename _Type::Gradient, typename _Type::PassiveReal, int> {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using PrimalType = typename Type::Real;
       using AdjointType = void;

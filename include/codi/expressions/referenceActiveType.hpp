@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
@@ -17,7 +17,7 @@ namespace codi {
                                public IncrementOperators<_Type, ReferenceActiveType<_Type>> {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Tape = typename Type::Tape;
 
       using StoreAs = ReferenceActiveType const&;

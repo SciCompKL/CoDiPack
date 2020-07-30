@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "adjointVectorAccess.hpp"
 
@@ -12,9 +12,9 @@ namespace codi {
   template<typename _Real, typename _Identifier, typename _Gradient>
   struct PrimalAdjointVectorAccess : public AdjointVectorAccess<_Real, _Identifier, _Gradient>  {
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Identifier = DECLARE_DEFAULT(_Identifier, int);
-      using Gradient = DECLARE_DEFAULT(_Gradient, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int);
+      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);
 
       using Base = AdjointVectorAccess<Real, Identifier, Gradient>;
 

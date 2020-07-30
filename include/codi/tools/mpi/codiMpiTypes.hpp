@@ -3,7 +3,7 @@
 #include <medi/ampi/types/indexTypeHelper.hpp>
 #include <medi/ampi/typeDefault.hpp>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../traits/tapeTraits.hpp"
 #include "codiForwardMediPackTool.hpp"
@@ -23,8 +23,8 @@ namespace codi {
   struct CoDiMpiTypes {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
-      using Tool = DECLARE_DEFAULT(_Tool, medi::ADToolInterface);
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Tool = CODI_DECLARE_DEFAULT(_Tool, medi::ADToolInterface);
 
       using MPIType = medi::MpiTypeDefault<Tool>;
 

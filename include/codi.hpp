@@ -18,7 +18,7 @@
 #include "codi/tapes/statementEvaluators/directStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
 #include "codi/tools/data/externalFunctionData.hpp"
-#include "codi/tools/helpers/customGradientVectorHelper.hpp"
+#include "codi/tools/helpers/customAdjointVectorHelper.hpp"
 #include "codi/tools/helpers/externalFunctionHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
 #include "codi/tools/higherOrderAccess.hpp"
@@ -27,6 +27,13 @@
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  /* TODO names */
+  template<typename Chunk, typename NestedVector = EmptyVector>
+  using BlockVector = BlockVectorImpl<Chunk, NestedVector>;
+
+  template<typename Chunk, typename NestedVector = EmptyVector>
+  using ChunkVector = ChunkVectorImpl<Chunk, NestedVector>;
 
   template<typename Real, typename Gradient = Real>
   using RealForwardGen = ActiveType<ForwardEvaluation<Real, Gradient>>;

@@ -8,7 +8,7 @@
 #include <medi/ampi/typeDefault.hpp>
 #include <medi/ampi/types/indexTypeHelper.hpp>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../tapes/aux/adjointVectorAccess.hpp"
@@ -21,7 +21,7 @@ namespace codi {
   struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
@@ -122,8 +122,9 @@ namespace codi {
   template<typename _Type>
   struct CoDiPackReverseTool : public medi::ADToolImplCommon<CoDiPackReverseTool<_Type>, _Type::Tape::RequiresPrimalRestore, false, _Type, typename _Type::Gradient, typename _Type::Real, typename _Type::Identifier> {
     public:
+
       // All type definitions for the interface
-      using Type = DECLARE_DEFAULT(_Type, TEMPLATE(LhsExpressionInterface<double, double, ANY, ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using PrimalType = typename Type::Real;
       using AdjointType = void;
       using ModifiedType = Type;
@@ -131,7 +132,7 @@ namespace codi {
 
 
       // Helper definition for CoDiPack
-      using Tape = DECLARE_DEFAULT(typename Type::Tape, TEMPLATE(FullTapeInterface<double, double, int, ANY>));
+      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
 
       using OpHelper = medi::OperatorHelper<
                 medi::FunctionHelper<

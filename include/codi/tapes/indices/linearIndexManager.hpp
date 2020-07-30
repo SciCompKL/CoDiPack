@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../data/dataInterface.hpp"
 #include "indexManagerInterface.hpp"
@@ -14,7 +14,7 @@ namespace codi {
   struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
     public:
 
-      using Index = DECLARE_DEFAULT(_Index, int);
+      using Index = CODI_DECLARE_DEFAULT(_Index, int);
 
       static bool const AssignNeedsStatement = false;
       static bool const IsLinear = true;
@@ -52,7 +52,7 @@ namespace codi {
       }
 
       CODI_INLINE bool assignIndex(Index& index) {
-        ENABLE_CHECK(Config::OverflowCheck, count > count + 1) {
+        CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1) {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
         }
         count += 1;

@@ -12,7 +12,7 @@ struct CoDiReverse1stOrderVectorHelper : public CoDiReverse1stOrderBase {
     using Gradient = Number::Gradient;
 
 
-    codi::CustomGradientVectorHelper<Number, Gradient> helper;
+    codi::CustomAdjointVectorHelper<Number, Gradient> helper;
 
     CoDiReverse1stOrderVectorHelper() : Base(), helper() {}
 

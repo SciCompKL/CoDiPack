@@ -3,7 +3,7 @@
 #include <cstddef>
 
 #include "../../aux/fileIo.hpp"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../data/position.hpp"
 #include "forwardEvaluationTapeInterface.hpp"
@@ -12,7 +12,7 @@ namespace codi {
   struct CustomVectorEvaluationTapeInterface : public virtual ForwardEvaluationTapeInterface<_Position> {
     public:
 
-      using Position = DECLARE_DEFAULT(_Position, EmptyPosition);
+      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition);
 
       /*******************************************************************************
        * Section: Start of interface definition

@@ -3,7 +3,7 @@
 #include <utility>
 
 #include "../../config.h"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -13,8 +13,8 @@ namespace codi {
   struct CompileTimeTraversalLogic {
     public:
 
-      using ResultType = DECLARE_DEFAULT(_ResultType, size_t);
-      using Impl = DECLARE_DEFAULT(_Impl, CompileTimeTraversalLogic);
+      using ResultType = CODI_DECLARE_DEFAULT(_ResultType, size_t);
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CompileTimeTraversalLogic);
 
       static constexpr ResultType NeutralElement = {};
 

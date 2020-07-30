@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "chunk.hpp"
 
@@ -27,7 +27,7 @@ namespace codi {
   struct PointerStore<Chunk1<_Data1> > {
     public:
 
-      using Data1 = DECLARE_DEFAULT(_Data1, int);
+      using Data1 = CODI_DECLARE_DEFAULT(_Data1, int);
 
       using Chunk = Chunk1<Data1>;
 
@@ -57,8 +57,8 @@ namespace codi {
   struct PointerStore<Chunk2<_Data1, _Data2> > {
     public:
 
-      using Data1 = DECLARE_DEFAULT(_Data1, int);
-      using Data2 = DECLARE_DEFAULT(_Data2, int);
+      using Data1 = CODI_DECLARE_DEFAULT(_Data1, int);
+      using Data2 = CODI_DECLARE_DEFAULT(_Data2, int);
 
       using Chunk = Chunk2<Data1, Data2>;
 
@@ -89,9 +89,9 @@ namespace codi {
   struct PointerStore<Chunk3<_Data1, _Data2, _Data3> > {
     public:
 
-      using Data1 = DECLARE_DEFAULT(_Data1, int);
-      using Data2 = DECLARE_DEFAULT(_Data2, int);
-      using Data3 = DECLARE_DEFAULT(_Data3, int);
+      using Data1 = CODI_DECLARE_DEFAULT(_Data1, int);
+      using Data2 = CODI_DECLARE_DEFAULT(_Data2, int);
+      using Data3 = CODI_DECLARE_DEFAULT(_Data3, int);
 
       using Chunk = Chunk3<Data1, Data2, Data3>;
 
@@ -123,10 +123,10 @@ namespace codi {
   struct PointerStore<Chunk4<_Data1, _Data2, _Data3, _Data4> > {
     public:
 
-      using Data1 = DECLARE_DEFAULT(_Data1, int);
-      using Data2 = DECLARE_DEFAULT(_Data2, int);
-      using Data3 = DECLARE_DEFAULT(_Data3, int);
-      using Data4 = DECLARE_DEFAULT(_Data4, int);
+      using Data1 = CODI_DECLARE_DEFAULT(_Data1, int);
+      using Data2 = CODI_DECLARE_DEFAULT(_Data2, int);
+      using Data3 = CODI_DECLARE_DEFAULT(_Data3, int);
+      using Data4 = CODI_DECLARE_DEFAULT(_Data4, int);
 
       using Chunk = Chunk4<Data1, Data2, Data3, Data4>;
 
