@@ -11,9 +11,9 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  struct EmptyVector : public DataInterface<> {
+  struct EmptyData : public DataInterface<> {
 
-      using NestedVector = void;
+      using NestedData = void;
 
       using Position = EmptyPosition;
       using InternalPosHandle = size_t;
@@ -63,7 +63,7 @@ namespace codi {
       void resetHard() {}
       void resetTo(Position const& pos) { CODI_UNUSED(pos); }
 
-      void setNested(NestedVector* v) { CODI_UNUSED(v); }
+      void setNested(NestedData* v) { CODI_UNUSED(v); }
 
       void swap(DataInterface& other) { CODI_UNUSED(other); }
 

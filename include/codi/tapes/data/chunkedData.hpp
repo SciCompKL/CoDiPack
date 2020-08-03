@@ -5,7 +5,7 @@
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "chunk.hpp"
-#include "emptyVector.hpp"
+#include "emptyData.hpp"
 #include "dataInterface.hpp"
 #include "pointerStore.hpp"
 #include "position.hpp"
@@ -13,16 +13,16 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Chunk, typename _NestedVector = EmptyVector, typename _PointerInserter = PointerStore<_Chunk>>
-  struct ChunkVectorImpl : public DataInterface<_NestedVector> {
+  template<typename _Chunk, typename _NestedData = EmptyData, typename _PointerInserter = PointerStore<_Chunk>>
+  struct ChunkedData : public DataInterface<_NestedData> {
     public:
 
       using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>));
-      using NestedVector = CODI_DECLARE_DEFAULT(_NestedVector, CODI_TEMPLATE(DataInterface<CODI_ANY>));
+      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, CODI_TEMPLATE(DataInterface<CODI_ANY>));
       using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>));
       using InternalPosHandle = size_t;
 
-      using NestedPosition = typename NestedVector::Position;
+      using NestedPosition = typename NestedData::Position;
 
       using Position = ChunkPosition<NestedPosition>;
 
@@ -35,11 +35,11 @@ namespace codi {
 
       size_t chunkSize;
 
-      NestedVector* nested;
+      NestedData* nested;
 
     public:
 
-      ChunkVectorImpl(size_t const& chunkSize, NestedVector* nested) :
+      ChunkedData(size_t const& chunkSize, NestedData* nested) :
         chunks(),
         positions(),
         curChunk(NULL),
@@ -50,7 +50,7 @@ namespace codi {
         setNested(nested);
       }
 
-      ChunkVectorImpl(size_t const& chunkSize) :
+      ChunkedData(size_t const& chunkSize) :
         chunks(),
         positions(),
         curChunk(NULL),
@@ -59,7 +59,7 @@ namespace codi {
         nested(NULL)
       {}
 
-      ~ChunkVectorImpl() {
+      ~ChunkedData() {
         for(size_t i = 0; i < chunks.size(); ++i) {
           delete chunks[i];
         }
@@ -178,7 +178,7 @@ namespace codi {
         nested->resetTo(pos.inner);
       }
 
-      void setNested(NestedVector* v) {
+      void setNested(NestedData* v) {
         // Set nested is only called once during the initialization.
         codiAssert(NULL == this->nested);
         codiAssert(v->getZeroPosition() == v->getPosition());
@@ -190,7 +190,7 @@ namespace codi {
         positions.push_back(nested->getZeroPosition());
       }
 
-      void swap(ChunkVectorImpl<Chunk, NestedVector>& other) {
+      void swap(ChunkedData<Chunk, NestedData>& other) {
         std::swap(chunks, other.chunks);
         std::swap(positions, other.positions);
         std::swap(curChunkIndex, other.curChunkIndex);

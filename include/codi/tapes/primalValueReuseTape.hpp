@@ -23,7 +23,7 @@ namespace codi {
   struct PrimalValueReuseTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, ChunkVector>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
       using Base = PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>>;
       friend Base;
 
@@ -35,7 +35,7 @@ namespace codi {
       using EvalHandle = typename TapeTypes::EvalHandle;
       using Position = typename Base::Position;
 
-      using StatementVector = typename TapeTypes::StatementVector;
+      using StatementData = typename TapeTypes::StatementData;
 
       PrimalValueReuseTape() : Base() {}
 
@@ -51,11 +51,11 @@ namespace codi {
           }
         };
 
-        using StmtPosition = typename StatementVector::Position;
-        StmtPosition startStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(start);
-        StmtPosition endStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(end);
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(end);
 
-        this->statementVector.forEachReverse(startStmt, endStmt, clearFunc);
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }
 
     protected:
@@ -187,11 +187,11 @@ namespace codi {
           this->primals[*lhsIndex] = *oldPrimal;
         };
 
-        using StmtPosition = typename StatementVector::Position;
-        StmtPosition startStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(this->getPosition());
-        StmtPosition endStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(pos);
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(this->getPosition());
+        StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(pos);
 
-        this->statementVector.forEachReverse(startStmt, endStmt, clearFunc);
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
 
       }
 
@@ -201,7 +201,7 @@ namespace codi {
           Real const& oldPrimalValue,
           EvalHandle evalHandle)
       {
-        Base::statementVector.pushData(index, numberOfPassiveArguments, oldPrimalValue, evalHandle);
+        Base::statementData.pushData(index, numberOfPassiveArguments, oldPrimalValue, evalHandle);
       }
   };
 }

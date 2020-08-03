@@ -23,7 +23,7 @@ namespace codi {
   struct PrimalValueLinearTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueLinearTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, ChunkVector>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
       using Base = PrimalValueBaseTape<_TapeTypes, PrimalValueLinearTape<_TapeTypes>>;
       friend Base;
 
@@ -42,8 +42,8 @@ namespace codi {
       void clearAdjoints(Position const& start, Position const& end) {
 
         using IndexPosition = typename IndexManager::Position;
-        IndexPosition startIndex = this->externalFunctionVector.template extractPosition<IndexPosition>(start);
-        IndexPosition endIndex = this->externalFunctionVector.template extractPosition<IndexPosition>(end);
+        IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
+        IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
 
         startIndex = std::min(startIndex, (IndexPosition)this->adjoints.size() - 1);
         endIndex = std::min(endIndex, (IndexPosition)this->adjoints.size() - 1);
@@ -200,7 +200,7 @@ namespace codi {
       {
         CODI_UNUSED(index, oldPrimalValue);
 
-        Base::statementVector.pushData(numberOfPassiveArguments, evalHandle);
+        Base::statementData.pushData(numberOfPassiveArguments, evalHandle);
       }
   };
 }

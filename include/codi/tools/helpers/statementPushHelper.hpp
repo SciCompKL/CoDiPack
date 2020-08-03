@@ -86,18 +86,18 @@ namespace codi {
       using Identifier = typename Type::Identifier;
       using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
 
-      Identifier indexVector[Config::MaxArgumentSize];
-      Real jacobianVector[Config::MaxArgumentSize];
-      size_t vectorPos;
+      Identifier indexData[Config::MaxArgumentSize];
+      Real jacobianData[Config::MaxArgumentSize];
+      size_t dataPos;
 
       void startPushStatement() {
-        vectorPos = 0;
+        dataPos = 0;
       }
 
       void pushArgument(Type const& arg, Real const& jacobian) {
         Tape& tape = Type::getGlobalTape();
 
-        if(Config::MaxArgumentSize < vectorPos ) {
+        if(Config::MaxArgumentSize < dataPos ) {
           CODI_EXCEPTION("Adding more than %zu arguments to a statement.", Config::MaxArgumentSize);
         }
 
@@ -106,9 +106,9 @@ namespace codi {
             CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
               CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
 
-                indexVector[vectorPos] = arg.getIdentifier();
-                jacobianVector[vectorPos] = jacobian;
-                vectorPos += 1;
+                indexData[dataPos] = arg.getIdentifier();
+                jacobianData[dataPos] = jacobian;
+                dataPos += 1;
               }
             }
           }
@@ -119,11 +119,11 @@ namespace codi {
         Tape& tape = Type::getGlobalTape();
 
         CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
-          if(0 != vectorPos) {
-            tape.storeManual(primal, lhs.getIdentifier(), vectorPos);
+          if(0 != dataPos) {
+            tape.storeManual(primal, lhs.getIdentifier(), dataPos);
 
-            for(size_t i = 0; i < vectorPos; ++i) {
-              tape.pushJacobiManual(jacobianVector[i], 0.0, indexVector[i]);
+            for(size_t i = 0; i < dataPos; ++i) {
+              tape.pushJacobiManual(jacobianData[i], 0.0, indexData[i]);
             }
           }
         }

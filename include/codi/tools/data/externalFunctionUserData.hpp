@@ -8,7 +8,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  struct ExternalFunctionData {
+  struct ExternalFunctionUserData {
     private:
 
       struct DataItemBase {
@@ -62,10 +62,10 @@ namespace codi {
 
     public:
 
-      ExternalFunctionData() :
+      ExternalFunctionUserData() :
         storePos(0) { }
 
-      ~ExternalFunctionData() {
+      ~ExternalFunctionUserData() {
         clear();
       }
 
@@ -76,11 +76,11 @@ namespace codi {
         store.clear();
       }
 
-      ExternalFunctionData(ExternalFunctionData const& other) {
+      ExternalFunctionUserData(ExternalFunctionUserData const& other) {
         copyAll(other, *this);
       }
 
-      ExternalFunctionData& operator=(ExternalFunctionData const& other) {
+      ExternalFunctionUserData& operator=(ExternalFunctionUserData const& other) {
         this->clear();
         copyAll(other, *this);
 
@@ -147,7 +147,7 @@ namespace codi {
 
     private:
 
-      static void copyAll(ExternalFunctionData const& from, ExternalFunctionData& to) {
+      static void copyAll(ExternalFunctionUserData const& from, ExternalFunctionUserData& to) {
         for(size_t i = 0; i < from.store.size(); ++i) {
           to.store.push_back(from.store[i]->clone());
         }

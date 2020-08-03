@@ -5,8 +5,8 @@
 #include "codi/expressions/real/allOperators.hpp"
 #include "codi/expressions/activeType.hpp"
 #include "codi/expressions/referenceActiveType.hpp"
-#include "codi/tapes/data/blockVector.hpp"
-#include "codi/tapes/data/chunkVector.hpp"
+#include "codi/tapes/data/blockData.hpp"
+#include "codi/tapes/data/chunkedData.hpp"
 #include "codi/tapes/forwardEvaluation.hpp"
 #include "codi/tapes/indices/linearIndexManager.hpp"
 #include "codi/tapes/indices/multiUseIndexManager.hpp"
@@ -17,7 +17,7 @@
 #include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/directStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
-#include "codi/tools/data/externalFunctionData.hpp"
+#include "codi/tools/data/externalFunctionUserData.hpp"
 #include "codi/tools/helpers/customAdjointVectorHelper.hpp"
 #include "codi/tools/helpers/externalFunctionHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
@@ -29,11 +29,11 @@
 namespace codi {
 
   /* TODO names */
-  template<typename Chunk, typename NestedVector = EmptyVector>
-  using BlockVector = BlockVectorImpl<Chunk, NestedVector>;
+  template<typename Chunk, typename NestedData = EmptyData>
+  using DefaultBlockData = BlockData<Chunk, NestedData>;
 
-  template<typename Chunk, typename NestedVector = EmptyVector>
-  using ChunkVector = ChunkVectorImpl<Chunk, NestedVector>;
+  template<typename Chunk, typename NestedData = EmptyData>
+  using DefaultChunkedData = ChunkedData<Chunk, NestedData>;
 
   template<typename Real, typename Gradient = Real>
   using RealForwardGen = ActiveType<ForwardEvaluation<Real, Gradient>>;
@@ -42,42 +42,42 @@ namespace codi {
 
 
   template<typename Real, typename Gradient = Real, typename Index = int>
-  using RealReverseGen = ActiveType<JacobianLinearTape<JacobianTapeTypes<Real, Gradient, LinearIndexManager<Index>, ChunkVector>>>;
+  using RealReverseGen = ActiveType<JacobianLinearTape<JacobianTapeTypes<Real, Gradient, LinearIndexManager<Index>, DefaultChunkedData>>>;
 
   using RealReverse = RealReverseGen<double>;
 
   template<typename Real, typename Gradient = Real, typename Index = int>
-  using RealReverseUncheckedGen = ActiveType<JacobianLinearTape<JacobianTapeTypes<Real, Gradient, LinearIndexManager<Index>, BlockVector>>>;
+  using RealReverseUncheckedGen = ActiveType<JacobianLinearTape<JacobianTapeTypes<Real, Gradient, LinearIndexManager<Index>, DefaultBlockData>>>;
 
   using RealReverseUnchecked = RealReverseUncheckedGen<double>;
 
   template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>>
-  using RealReverseIndexGen = ActiveType<JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager, ChunkVector>>>;
+  using RealReverseIndexGen = ActiveType<JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager, DefaultChunkedData>>>;
 
   using RealReverseIndex = RealReverseIndexGen<double>;
 
   template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>>
-  using RealReverseIndexUncheckedGen = ActiveType<JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager, ChunkVector>>>;
+  using RealReverseIndexUncheckedGen = ActiveType<JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager, DefaultChunkedData>>>;
 
   using RealReverseIndexUnchecked = RealReverseIndexUncheckedGen<double>;
 
   template<typename Real, typename Gradient = Real, typename Index = int, template <typename> class StatementEvaluator = InnerStatementEvaluator>
-  using RealReversePrimalGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, ChunkVector>>>;
+  using RealReversePrimalGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, DefaultChunkedData>>>;
 
   using RealReversePrimal = RealReversePrimalGen<double>;
 
   template<typename Real, typename Gradient = Real, typename Index = int, template <typename> class StatementEvaluator = InnerStatementEvaluator>
-  using RealReversePrimalUncheckedGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, ChunkVector>>>;
+  using RealReversePrimalUncheckedGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, DefaultChunkedData>>>;
 
   using RealReversePrimalUnchecked = RealReversePrimalUncheckedGen<double>;
 
   template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>, template <typename> class StatementEvaluator = InnerStatementEvaluator>
-  using RealReversePrimalIndexGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, ChunkVector>>>;
+  using RealReversePrimalIndexGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, DefaultChunkedData>>>;
 
   using RealReversePrimalIndex = RealReversePrimalIndexGen<double>;
 
   template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>, template <typename> class StatementEvaluator = InnerStatementEvaluator>
-  using RealReversePrimalIndexUncheckedGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, ChunkVector>>>;
+  using RealReversePrimalIndexUncheckedGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, DefaultChunkedData>>>;
 
   using RealReversePrimalIndexUnchecked = RealReversePrimalIndexUncheckedGen<double>;
 

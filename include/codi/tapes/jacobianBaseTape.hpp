@@ -17,14 +17,14 @@
 #include "aux/adjointVectorAccess.hpp"
 #include "aux/duplicateJacobianRemover.hpp"
 #include "data/chunk.hpp"
-#include "data/chunkVector.hpp"
+#include "data/chunkedData.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "commonTapeImplementation.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Real, typename _Gradient, typename _IndexManager, template<typename, typename> class _Vector>
+  template<typename _Real, typename _Gradient, typename _IndexManager, template<typename, typename> class _Data>
   struct JacobianTapeTypes : public TapeTypesInterface {
     public:
 
@@ -32,7 +32,7 @@ namespace codi {
       using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);
       using IndexManager = CODI_DECLARE_DEFAULT(_IndexManager, CODI_TEMPLATE(IndexManagerInterface<int>));
       template<typename Chunk, typename Nested>
-      using Vector = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Vector<Chunk, Nested>), CODI_TEMPLATE(ChunkVector<CODI_ANY, Nested>));
+      using Data = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Data<Chunk, Nested>), CODI_TEMPLATE(DefaultChunkedData<CODI_ANY, Nested>));
 
       using Identifier = typename IndexManager::Index;
 
@@ -44,19 +44,19 @@ namespace codi {
                                  Chunk1<Config::ArgumentSize>,
                                  Chunk2<Identifier, Config::ArgumentSize>
                                >::type;
-      using StatementVector = Vector<StatementChunk, IndexManager>;
+      using StatementData = Data<StatementChunk, IndexManager>;
 
       using JacobianChunk = Chunk2<Real, Identifier>;
-      using JacobianVector = Vector<JacobianChunk, StatementVector>;
+      using JacobianData = Data<JacobianChunk, StatementData>;
 
-      using NestedVector = JacobianVector;
+      using NestedData = JacobianData;
   };
 
   template<typename _TapeTypes, typename _Impl>
   struct JacobianBaseTape : public CommonTapeImplementation<_TapeTypes, _Impl> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, ChunkVector>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
       using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;
@@ -67,12 +67,12 @@ namespace codi {
       using IndexManager = typename TapeTypes::IndexManager;
       using Identifier = typename TapeTypes::Identifier;
 
-      using StatementVector = typename TapeTypes::StatementVector;
-      using JacobianVector = typename TapeTypes::JacobianVector;
+      using StatementData = typename TapeTypes::StatementData;
+      using JacobianData = typename TapeTypes::JacobianData;
 
       using PassiveReal = PassiveRealType<Real>;
 
-      using NestedPosition = typename JacobianVector::Position;
+      using NestedPosition = typename JacobianData::Position;
       using Position = typename Base::Position;
 
       static bool constexpr AllowJacobianOptimization = true;
@@ -88,8 +88,8 @@ namespace codi {
 #endif
 
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
-      StatementVector statementVector;
-      JacobianVector jacobianVector;
+      StatementData statementData;
+      JacobianData jacobianData;
 
       std::vector<Gradient> adjoints;
 
@@ -128,14 +128,14 @@ namespace codi {
         jacobianSorter(),
   #endif
         indexManager(0),
-        statementVector(Config::ChunkSize),
-        jacobianVector(Config::ChunkSize),
+        statementData(Config::ChunkSize),
+        jacobianData(Config::ChunkSize),
         adjoints(1)
       {
-        statementVector.setNested(&indexManager.get());
-        jacobianVector.setNested(&statementVector);
+        statementData.setNested(&indexManager.get());
+        jacobianData.setNested(&statementData);
 
-        Base::init(&jacobianVector);
+        Base::init(&jacobianData);
 
         Base::options.insert(ConfigurationOption::AdjointSize);
         Base::options.insert(ConfigurationOption::JacobianSize);
@@ -232,14 +232,14 @@ namespace codi {
 #if CODI_RemoveDuplicateJacobianArguments
         auto& insertVector = jacobianSorter;
 #else
-        auto& insertVector = jacobianVector;
+        auto& insertVector = jacobianData;
 #endif
 
         pushJacobianLogic.eval(rhs.cast(), Real(1.0), insertVector);
         pushDelayedJacobianLogic.eval(rhs.cast(), insertVector);
 
 #if CODI_RemoveDuplicateJacobianArguments
-        jacobianSorter.storeData(jacobianVector);
+        jacobianSorter.storeData(jacobianData);
 #endif
       }
 
@@ -252,12 +252,12 @@ namespace codi {
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           size_t constexpr MaxArgs = MaxNumberOfActiveTypeArguments<Rhs>::value;
 
-          statementVector.reserveItems(1);
-          typename JacobianVector::InternalPosHandle jacobianStart = jacobianVector.reserveItems(MaxArgs);
+          statementData.reserveItems(1);
+          typename JacobianData::InternalPosHandle jacobianStart = jacobianData.reserveItems(MaxArgs);
 
           pushJacobians(rhs);
 
-          size_t numberOfArguments = jacobianVector.getPushedDataCount(jacobianStart);
+          size_t numberOfArguments = jacobianData.getPushedDataCount(jacobianStart);
           if(0 != numberOfArguments) {
             indexManager.get().assignIndex(lhs.cast().getIdentifier());
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
@@ -305,7 +305,7 @@ namespace codi {
         indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
 
         if(TapeTypes::IsLinearIndexHandler) {
-          statementVector.reserveItems(1);
+          statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
         }
       }
@@ -338,9 +338,9 @@ namespace codi {
         indexManager.get().addToTapeValues(values);
 
         values.addSection("Statement entries");
-        statementVector.addToTapeValues(values);
+        statementData.addToTapeValues(values);
         values.addSection("Jacobian entries");
-        jacobianVector.addToTapeValues(values);
+        jacobianData.addToTapeValues(values);
 
         return values;
       }
@@ -379,9 +379,9 @@ namespace codi {
       CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverse, Impl::template internalEvaluateReverse);
 
       template<typename Adjoint>
-      CODI_NO_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianVector& jacobianVector) {
+      CODI_NO_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianData& jacobianData) {
           Wrap_internalEvaluateReverse<Adjoint> evalFunc;
-          jacobianVector.evaluateReverse(start, end, evalFunc, data);
+          jacobianData.evaluateReverse(start, end, evalFunc, data);
       }
 
     public:
@@ -389,7 +389,7 @@ namespace codi {
       CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template internalEvaluateReverseVector<Adjoint>, &adjointWrapper, data, jacobianVector);
+        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template internalEvaluateReverseVector<Adjoint>, &adjointWrapper, data, jacobianData);
       }
 
     protected:
@@ -417,7 +417,7 @@ namespace codi {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
         auto evalFunc = [this] (NestedPosition const& start, NestedPosition const& end, Adjoint* data) {
-          jacobianVector.evaluateForward(start, end, Impl::template internalEvaluateForward<Adjoint>, data);
+          jacobianData.evaluateForward(start, end, Impl::template internalEvaluateForward<Adjoint>, data);
         };
         Base::internalEvaluateExtFuncForward(start, end, evalFunc, &adjointWrapper, data);
 
@@ -448,13 +448,13 @@ namespace codi {
             return adjoints.size();
             break;
           case ConfigurationOption::JacobianSize:
-            return jacobianVector.getDataSize();
+            return jacobianData.getDataSize();
             break;
           case ConfigurationOption::LargestIdentifier:
             return indexManager.get().getLargestAssignedIndex();
             break;
           case ConfigurationOption::StatementSize:
-            return statementVector.getDataSize();
+            return statementData.getDataSize();
           default:
             return Base::getOption(option);
             break;
@@ -467,13 +467,13 @@ namespace codi {
             adjoints.resize(value);
             break;
           case ConfigurationOption::JacobianSize:
-            jacobianVector.resize(value);
+            jacobianData.resize(value);
             break;
           case ConfigurationOption::LargestIdentifier:
             CODI_EXCEPTION("Tried to set a get only option.");
             break;
           case ConfigurationOption::StatementSize:
-            statementVector.resize(value);
+            statementData.resize(value);
             break;
           default:
             Base::setOption(option, value);
@@ -514,14 +514,14 @@ namespace codi {
       void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
-        jacobianVector.pushData(jacobi, index);
+        jacobianData.pushData(jacobi, index);
       }
 
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
 
-        statementVector.reserveItems(1);
-        jacobianVector.reserveItems(size);
+        statementData.reserveItems(1);
+        jacobianData.reserveItems(size);
 
         indexManager.get().assignIndex(lhsIndex);
         cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);

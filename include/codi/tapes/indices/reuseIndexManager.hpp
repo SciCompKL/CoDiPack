@@ -5,14 +5,14 @@
 
 #include "../../aux/macros.hpp"
 #include "../../config.h"
-#include "../data/emptyVector.hpp"
+#include "../data/emptyData.hpp"
 #include "indexManagerInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   template<typename _Index>
-  struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyVector {
+  struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
       using Index = CODI_DECLARE_DEFAULT(_Index, int);
@@ -158,7 +158,7 @@ namespace codi {
       }
 
       /*******************************************************************************
-       * Section: Function overwrite of EmptyChunkVector
+       * Section: Function overwrite of EmptyData
        *
        */
 

@@ -27,20 +27,20 @@ struct MultiplyExternalFunctionHelper<_Number, codi::enableIfReverseTape<typenam
       w = x1*x2;
     }
 
-    static void func_primal(Real const* x, size_t m, Real* y, size_t n, codi::ExternalFunctionData* d) {
+    static void func_primal(Real const* x, size_t m, Real* y, size_t n, codi::ExternalFunctionUserData* d) {
       codi::CODI_UNUSED(m, n, d);
 
       y[0] = x[0] * x[1];
     }
 
-    static void func_reverse(Real const* x, Real* x_b, size_t m, Real const* y, Real const* y_b, size_t n, codi::ExternalFunctionData* d) {
+    static void func_reverse(Real const* x, Real* x_b, size_t m, Real const* y, Real const* y_b, size_t n, codi::ExternalFunctionUserData* d) {
       codi::CODI_UNUSED(m, n, y, d);
 
       x_b[0] = x[1] * y_b[0];
       x_b[1] = x[0] * y_b[0];
     }
 
-    static void func_forward(Real const* x, Real const* x_d, size_t m, Real* y, Real* y_d, size_t n, codi::ExternalFunctionData* d) {
+    static void func_forward(Real const* x, Real const* x_d, size_t m, Real* y, Real* y_d, size_t n, codi::ExternalFunctionUserData* d) {
       codi::CODI_UNUSED(m, n, y, d);
 
       y[0] = x[0] * x[1];

@@ -21,7 +21,7 @@ namespace codi {
   struct JacobianReuseTape : public JacobianBaseTape<_TapeTypes, JacobianReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, ChunkVector>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
 
       using Base = JacobianBaseTape<_TapeTypes, JacobianReuseTape>;
       friend Base;
@@ -31,7 +31,7 @@ namespace codi {
       using IndexManager = typename TapeTypes::IndexManager;
       using Identifier = typename TapeTypes::Identifier;
       using Position = typename Base::Position;
-      using StatementVector = typename TapeTypes::StatementVector;
+      using StatementData = typename TapeTypes::StatementData;
 
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
@@ -49,17 +49,17 @@ namespace codi {
           }
         };
 
-        using StmtPosition = typename StatementVector::Position;
-        StmtPosition startStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(start);
-        StmtPosition endStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(end);
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(end);
 
-        this->statementVector.forEachReverse(startStmt, endStmt, clearFunc);
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }
 
     protected:
 
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
-        this->statementVector.pushData(index, numberOfArguments);
+        this->statementData.pushData(index, numberOfArguments);
       }
 
       template<typename Adjoint>

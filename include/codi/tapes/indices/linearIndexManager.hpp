@@ -20,7 +20,7 @@ namespace codi {
       static bool const IsLinear = true;
 
       using Position = Index;
-      using NestedVector = void;
+      using NestedData = void;
       using InternalPosHandle = size_t;
 
     private:
@@ -119,7 +119,7 @@ namespace codi {
         count = zeroState;
       }
 
-      void setNested(NestedVector* v) { CODI_UNUSED(v); }
+      void setNested(NestedData* v) { CODI_UNUSED(v); }
 
       void swap(LinearIndexManager<Index>& other) {
         std::swap(zeroState, other.zeroState);

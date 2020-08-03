@@ -6,7 +6,7 @@
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "chunk.hpp"
-#include "emptyVector.hpp"
+#include "emptyData.hpp"
 #include "dataInterface.hpp"
 #include "pointerStore.hpp"
 #include "position.hpp"
@@ -14,34 +14,34 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Chunk, typename _NestedVector = EmptyVector, typename _PointerInserter = PointerStore<_Chunk>>
-  struct BlockVectorImpl : public DataInterface<_NestedVector> {
+  template<typename _Chunk, typename _NestedData = EmptyData, typename _PointerInserter = PointerStore<_Chunk>>
+  struct BlockData : public DataInterface<_NestedData> {
     public:
 
       using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>));
-      using NestedVector = CODI_DECLARE_DEFAULT(_NestedVector, CODI_TEMPLATE(DataInterface<CODI_ANY>));
+      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, CODI_TEMPLATE(DataInterface<CODI_ANY>));
       using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>));
       using InternalPosHandle = size_t;
 
-      using NestedPosition = typename NestedVector::Position;
+      using NestedPosition = typename NestedData::Position;
 
       using Position = ArrayPosition<NestedPosition>;
 
     private:
       Chunk chunk;
 
-      NestedVector* nested;
+      NestedData* nested;
 
     public:
 
-      BlockVectorImpl(size_t const& chunkSize, NestedVector* nested) :
+      BlockData(size_t const& chunkSize, NestedData* nested) :
         chunk(chunkSize),
         nested(NULL)
       {
         setNested(nested);
       }
 
-      BlockVectorImpl(size_t const& chunkSize) :
+      BlockData(size_t const& chunkSize) :
         chunk(chunkSize),
         nested(NULL)
       {}
@@ -125,7 +125,7 @@ namespace codi {
         nested->resetTo(pos.inner);
       }
 
-      void setNested(NestedVector* v) {
+      void setNested(NestedData* v) {
         // Set nested is only called once during the initialization.
         codiAssert(NULL == this->nested);
         codiAssert(v->getZeroPosition() == v->getPosition());
@@ -133,7 +133,7 @@ namespace codi {
         this->nested = v;
       }
 
-      void swap(BlockVectorImpl<Chunk, NestedVector>& other) {
+      void swap(BlockData<Chunk, NestedData>& other) {
         chunk.swap(other.chunk);
 
         nested->swap(*other.nested);

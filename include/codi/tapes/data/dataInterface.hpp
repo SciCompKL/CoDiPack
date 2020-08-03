@@ -12,10 +12,10 @@
 namespace codi {
 
 
-  template<typename _NestedVector = void, typename _InternalPosHandle = size_t>
+  template<typename _NestedData = void, typename _InternalPosHandle = size_t>
   struct DataInterface {
 
-      using NestedVector = CODI_DECLARE_DEFAULT(_NestedVector, DataInterface);
+      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, DataInterface);
       using InternalPosHandle = CODI_DECLARE_DEFAULT(_InternalPosHandle, size_t);
 
       using Position = EmptyPosition;
@@ -47,7 +47,7 @@ namespace codi {
       void resetHard();
       void resetTo(Position const& pos);
 
-      void setNested(NestedVector* v);
+      void setNested(NestedData* v);
 
       void swap(DataInterface& other);
 

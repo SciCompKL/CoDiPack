@@ -8,7 +8,7 @@
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../tapes/aux/vectorAccessInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
-#include "../data/externalFunctionData.hpp"
+#include "../data/externalFunctionUserData.hpp"
 
 
 /** \copydoc codi::Namespace */
@@ -24,9 +24,9 @@ namespace codi {
       using Identifier = typename Type::Identifier;
       using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
 
-      using ReverseFunc = void (*)(Real const* x, Real* x_b, size_t m, Real const* y, Real const* y_b, size_t n, ExternalFunctionData* d);
-      using ForwardFunc = void (*)(Real const* x, Real const* x_d, size_t m, Real* y, Real* y_d, size_t n, ExternalFunctionData* d);
-      using PrimalFunc = void (*)(Real const* x, size_t m, Real* y, size_t n, ExternalFunctionData* d);
+      using ReverseFunc = void (*)(Real const* x, Real* x_b, size_t m, Real const* y, Real const* y_b, size_t n, ExternalFunctionUserData* d);
+      using ForwardFunc = void (*)(Real const* x, Real const* x_d, size_t m, Real* y, Real* y_d, size_t n, ExternalFunctionUserData* d);
+      using PrimalFunc = void (*)(Real const* x, size_t m, Real* y, size_t n, ExternalFunctionUserData* d);
 
 
       std::vector<Identifier> inputIndices;
@@ -40,7 +40,7 @@ namespace codi {
       ForwardFunc forwardFunc;
       PrimalFunc primalFunc;
 
-      ExternalFunctionData userData;
+      ExternalFunctionUserData userData;
 
       ExtFuncEvaluationData() :
         inputIndices(),
@@ -263,7 +263,7 @@ namespace codi {
         this->data->userData.addData(data);
       }
 
-      ExternalFunctionData& getExternalFunctionData() {
+      ExternalFunctionUserData& getExternalFunctionUserData() {
         return this->data->userData;
       }
 

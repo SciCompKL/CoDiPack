@@ -28,7 +28,7 @@ namespace codi {
 
       using ResultType = CODI_DECLARE_DEFAULT(_Rhs, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>));
 
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantVector);
+      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantData);
   };
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
@@ -46,8 +46,8 @@ namespace codi {
 
       using ResultType = StaticContextActiveType<Tape>;
 
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantVector) {
-        CODI_UNUSED(constantVector);
+      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantData) {
+        CODI_UNUSED(constantData);
 
         Identifier const identifier = identifiers[primalValueOffset];
         Real const primal = primalVector[identifier];
@@ -71,10 +71,10 @@ namespace codi {
 
       using ResultType = StaticContextConstantExpression<PassiveReal, constantValueOffset>;
 
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantVector) {
+      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantData) {
         CODI_UNUSED(primalVector, identifiers);
 
-        return ResultType(constantVector);
+        return ResultType(constantData);
       }
   };
 
@@ -104,10 +104,10 @@ namespace codi {
 
       using ResultType = BinaryExpression<OpReal, ArgAMod, ArgBMod, Operation>;
 
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantVector) {
+      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantData) {
         return ResultType(
-              ArgAConstructor::construct(primalVector, identifiers, constantVector),
-              ArgBConstructor::construct(primalVector, identifiers, constantVector));
+              ArgAConstructor::construct(primalVector, identifiers, constantData),
+              ArgBConstructor::construct(primalVector, identifiers, constantData));
       }
   };
 
@@ -131,8 +131,8 @@ namespace codi {
 
       using ResultType = UnaryExpression<OpReal, ArgMod, Operation>;
 
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantVector) {
-        return ResultType(ArgConstructor::construct(primalVector, identifiers, constantVector));
+      static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantData) {
+        return ResultType(ArgConstructor::construct(primalVector, identifiers, constantData));
       }
   };
 }

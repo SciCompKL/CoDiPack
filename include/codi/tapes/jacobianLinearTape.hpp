@@ -23,7 +23,7 @@ namespace codi {
   struct JacobianLinearTape : public JacobianBaseTape<_TapeTypes, JacobianLinearTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, ChunkVector>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
 
       using Base = JacobianBaseTape<_TapeTypes, JacobianLinearTape>;
       friend Base;
@@ -42,8 +42,8 @@ namespace codi {
       void clearAdjoints(Position const& start, Position const& end) {
 
         using IndexPosition = typename IndexManager::Position;
-        IndexPosition startIndex = this->externalFunctionVector.template extractPosition<IndexPosition>(start);
-        IndexPosition endIndex = this->externalFunctionVector.template extractPosition<IndexPosition>(end);
+        IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
+        IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
 
         startIndex = std::min(startIndex, (IndexPosition)this->adjoints.size() - 1);
         endIndex = std::min(endIndex, (IndexPosition)this->adjoints.size() - 1);
@@ -58,7 +58,7 @@ namespace codi {
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         CODI_UNUSED(index);
 
-        this->statementVector.pushData(numberOfArguments);
+        this->statementData.pushData(numberOfArguments);
       }
 
       template<typename Adjoint>

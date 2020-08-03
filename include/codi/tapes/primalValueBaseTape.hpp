@@ -17,7 +17,7 @@
 #include "../traits/expressionTraits.hpp"
 #include "aux/primalAdjointVectorAccess.hpp"
 #include "data/chunk.hpp"
-#include "data/chunkVector.hpp"
+#include "data/chunkedData.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "commonTapeImplementation.hpp"
 #include "statementEvaluators/statementEvaluatorTapeInterface.hpp"
@@ -26,7 +26,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Real, typename _Gradient, typename _IndexManager, template <typename> class _StatementEvaluator, template<typename, typename> class _Vector>
+  template<typename _Real, typename _Gradient, typename _IndexManager, template <typename> class _StatementEvaluator, template<typename, typename> class _Data>
   struct PrimalValueTapeTypes : public TapeTypesInterface {
     public:
 
@@ -35,7 +35,7 @@ namespace codi {
       using IndexManager = CODI_DECLARE_DEFAULT(_IndexManager, CODI_TEMPLATE(IndexManagerInterface<int>));
       using StatementEvaluator = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_StatementEvaluator<Real>), CODI_TEMPLATE(StatementEvaluatorInterface<double>));
       template<typename Chunk, typename Nested>
-      using Vector = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Vector<Chunk, Nested>), CODI_TEMPLATE(DataInterface<Nested>));
+      using Data = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Data<Chunk, Nested>), CODI_TEMPLATE(DataInterface<Nested>));
 
       using Identifier = typename IndexManager::Index;
       using PassiveReal = PassiveRealType<Real>;
@@ -50,18 +50,18 @@ namespace codi {
                                 Chunk2<Config::ArgumentSize, EvalHandle>,
                                 Chunk4<Identifier, Config::ArgumentSize, Real, EvalHandle>
                               >::type;
-      using StatementVector = Vector<StatementChunk, IndexManager>;
+      using StatementData = Data<StatementChunk, IndexManager>;
 
       using IdentifierChunk = Chunk1<Identifier>;
-      using RhsIdentifierVector = Vector<IdentifierChunk, StatementVector>;
+      using RhsIdentifierData = Data<IdentifierChunk, StatementData>;
 
       using PassiveValueChunk = Chunk1<Real>;
-      using PassiveValueVector = Vector<PassiveValueChunk, RhsIdentifierVector>;
+      using PassiveValueData = Data<PassiveValueChunk, RhsIdentifierData>;
 
       using ConstantValueChunk = Chunk1<PassiveReal>;
-      using ConstantValueVector = Vector<ConstantValueChunk, PassiveValueVector>;
+      using ConstantValueData = Data<ConstantValueChunk, PassiveValueData>;
 
-      using NestedVector = ConstantValueVector;
+      using NestedData = ConstantValueData;
   };
 
   template<typename _TapeTypes, typename _Impl>
@@ -72,7 +72,7 @@ namespace codi {
   {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, ChunkVector>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
       using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;
@@ -86,14 +86,14 @@ namespace codi {
 
       using EvalHandle = typename TapeTypes::EvalHandle;
 
-      using StatementVector = typename TapeTypes::StatementVector;
-      using RhsIdentifierVector = typename TapeTypes::RhsIdentifierVector;
-      using PassiveValueVector = typename TapeTypes::PassiveValueVector;
-      using ConstantValueVector = typename TapeTypes::ConstantValueVector;
+      using StatementData = typename TapeTypes::StatementData;
+      using RhsIdentifierData = typename TapeTypes::RhsIdentifierData;
+      using PassiveValueData = typename TapeTypes::PassiveValueData;
+      using ConstantValueData = typename TapeTypes::ConstantValueData;
 
       using PassiveReal = PassiveRealType<Real>;
 
-      using NestedPosition = typename ConstantValueVector::Position;
+      using NestedPosition = typename ConstantValueData::Position;
       using Position = typename Base::Position;
 
       static bool constexpr AllowJacobianOptimization = false;
@@ -106,10 +106,10 @@ namespace codi {
       static EvalHandle const jacobianExpressions[Config::MaxArgumentSize];
 
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
-      StatementVector statementVector;
-      RhsIdentifierVector rhsIdentiferVector;
-      PassiveValueVector passiveValueVector;
-      ConstantValueVector constantValueVector;
+      StatementData statementData;
+      RhsIdentifierData rhsIdentiferData;
+      PassiveValueData passiveValueData;
+      ConstantValueData constantValueData;
 
       std::vector<Gradient> adjoints;
       std::vector<Real> primals;
@@ -155,22 +155,22 @@ namespace codi {
       PrimalValueBaseTape() :
         Base(),
         indexManager(Config::MaxArgumentSize), // reserve first items for passive values
-        statementVector(Config::ChunkSize),
-        rhsIdentiferVector(Config::ChunkSize),
-        passiveValueVector(Config::ChunkSize),
-        constantValueVector(Config::ChunkSize),
+        statementData(Config::ChunkSize),
+        rhsIdentiferData(Config::ChunkSize),
+        passiveValueData(Config::ChunkSize),
+        constantValueData(Config::ChunkSize),
         adjoints(1), // see gradient() const
         primals(0),
         primalsCopy(0)
       {
         checkPrimalSize(true);
 
-        statementVector.setNested(&indexManager.get());
-        rhsIdentiferVector.setNested(&statementVector);
-        passiveValueVector.setNested(&rhsIdentiferVector);
-        constantValueVector.setNested(&passiveValueVector);
+        statementData.setNested(&indexManager.get());
+        rhsIdentiferData.setNested(&statementData);
+        passiveValueData.setNested(&rhsIdentiferData);
+        constantValueData.setNested(&passiveValueData);
 
-        Base::init(&constantValueVector);
+        Base::init(&constantValueData);
 
         Base::options.insert(ConfigurationOption::AdjointSize);
         Base::options.insert(ConfigurationOption::ConstantValuesSize);
@@ -237,35 +237,35 @@ namespace codi {
           template<typename Node>
           CODI_INLINE void handleActive(
               Node const& node,
-              RhsIdentifierVector& rhsIdentiferVector,
-              PassiveValueVector& passiveValueVector,
-              ConstantValueVector& constantValueVector,
+              RhsIdentifierData& rhsIdentiferData,
+              PassiveValueData& passiveValueData,
+              ConstantValueData& constantValueData,
               size_t& curPassiveArgument) {
 
-            CODI_UNUSED(constantValueVector);
+            CODI_UNUSED(constantValueData);
 
             Identifier rhsIndex = node.getIdentifier();
             CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 == rhsIndex) {
               rhsIndex = curPassiveArgument;
 
               curPassiveArgument += 1;
-              passiveValueVector.pushData(node.getValue());
+              passiveValueData.pushData(node.getValue());
             }
 
-            rhsIdentiferVector.pushData(rhsIndex);
+            rhsIdentiferData.pushData(rhsIndex);
           }
 
           template<typename Node>
           CODI_INLINE void handleConstant(
               Node const& node,
-              RhsIdentifierVector& rhsIdentiferVector,
-              PassiveValueVector& passiveValueVector,
-              ConstantValueVector& constantValueVector,
+              RhsIdentifierData& rhsIdentiferData,
+              PassiveValueData& passiveValueData,
+              ConstantValueData& constantValueData,
               size_t& curPassiveArgument) {
 
-            CODI_UNUSED(rhsIdentiferVector, passiveValueVector, curPassiveArgument);
+            CODI_UNUSED(rhsIdentiferData, passiveValueData, curPassiveArgument);
 
-            constantValueVector.pushData(node.getValue());
+            constantValueData.pushData(node.getValue());
           }
       };
 
@@ -286,13 +286,13 @@ namespace codi {
 
           if(0 != activeArguments) {
 
-            statementVector.reserveItems(1);
-            rhsIdentiferVector.reserveItems(MaxActiveArgs);
-            passiveValueVector.reserveItems(MaxActiveArgs - activeArguments);
-            constantValueVector.reserveItems(MaxConstantArgs);
+            statementData.reserveItems(1);
+            rhsIdentiferData.reserveItems(MaxActiveArgs);
+            passiveValueData.reserveItems(MaxActiveArgs - activeArguments);
+            constantValueData.reserveItems(MaxConstantArgs);
 
             size_t passiveArguments = 0;
-            pushAll.eval(rhs.cast(), rhsIdentiferVector, passiveValueVector, constantValueVector, passiveArguments);
+            pushAll.eval(rhs.cast(), rhsIdentiferData, passiveValueData, constantValueData, passiveArguments);
 
             bool generatedNewIndex = indexManager.get().assignIndex(lhs.cast().getIdentifier());
             checkPrimalSize(generatedNewIndex);
@@ -355,7 +355,7 @@ namespace codi {
 
         Real& primalEntry = primals[value.cast().getIdentifier()];
         if(TapeTypes::IsLinearIndexHandler) {
-          statementVector.reserveItems(1);
+          statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag, primalEntry,
                               StatementEvaluator::template createHandle<Impl, Impl, Lhs>());
         }
@@ -416,13 +416,13 @@ namespace codi {
         indexManager.get().addToTapeValues(values);
 
         values.addSection("Statement entries");
-        statementVector.addToTapeValues(values);
+        statementData.addToTapeValues(values);
         values.addSection("Rhs identifiers entries");
-        rhsIdentiferVector.addToTapeValues(values);
+        rhsIdentiferData.addToTapeValues(values);
         values.addSection("Passive value entries");
-        passiveValueVector.addToTapeValues(values);
+        passiveValueData.addToTapeValues(values);
         values.addSection("Constant value entries");
-        constantValueVector.addToTapeValues(values);
+        constantValueData.addToTapeValues(values);
 
         return values;
       }
@@ -476,9 +476,9 @@ namespace codi {
       CODI_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end,
                                                    Real* primalData,
                                                    ADJOINT_VECTOR_TYPE* data,
-                                                   ConstantValueVector& constantValueVector) {
+                                                   ConstantValueData& constantValueData) {
         Wrap_internalEvaluateReverseStack evalFunc;
-        constantValueVector.evaluateReverse(start, end, evalFunc, primalData, data);
+        constantValueData.evaluateReverse(start, end, evalFunc, primalData, data);
       }
 
       template<bool copyPrimal, typename Adjoint>
@@ -505,7 +505,7 @@ namespace codi {
         ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
 
         Base::internalEvaluateExtFunc(start, end, internalEvaluateReverseVector, vectorAccess,
-                                      primalData, dataVector, constantValueVector);
+                                      primalData, dataVector, constantValueData);
       }
 
     public:
@@ -538,11 +538,11 @@ namespace codi {
       CODI_INLINE static void internalEvaluateForwardVector(NestedPosition const& start, NestedPosition const& end,
                                                      Real* primalData,
                                                      ADJOINT_VECTOR_TYPE* data,
-                                                     ConstantValueVector& constantValueVector) {
+                                                     ConstantValueData& constantValueData) {
 
 
         Wrap_internalEvaluateForwardStack evalFunc{};
-        constantValueVector.evaluateForward(start, end, evalFunc, primalData, data);
+        constantValueData.evaluateForward(start, end, evalFunc, primalData, data);
       }
 
       CODI_WRAP_FUNCTION(Wrap_internalEvaluateForwardVector, internalEvaluateForwardVector);
@@ -574,10 +574,10 @@ namespace codi {
         if(TapeTypes::IsLinearIndexHandler) {
           Wrap_internalEvaluateForwardVector evalFunc{};
           Base::internalEvaluateExtFuncForward(start, end, evalFunc, vectorAccess,
-                                               primalData, dataVector, constantValueVector);
+                                               primalData, dataVector, constantValueData);
         } else {
           Base::internalEvaluateExtFuncForward(start, end, internalEvaluateForwardVector, vectorAccess,
-                                               primalData, dataVector, constantValueVector);
+                                               primalData, dataVector, constantValueData);
         }
 
       }
@@ -614,22 +614,22 @@ namespace codi {
             return adjoints.size();
             break;
           case ConfigurationOption::ConstantValuesSize:
-            return constantValueVector.getDataSize();
+            return constantValueData.getDataSize();
             break;
           case ConfigurationOption::LargestIdentifier:
             return indexManager.get().getLargestAssignedIndex();
             break;
           case ConfigurationOption::PassiveValuesSize:
-            return passiveValueVector.getDataSize();
+            return passiveValueData.getDataSize();
             break;
           case ConfigurationOption::RhsIdentifiersSize:
-            return rhsIdentiferVector.getDataSize();
+            return rhsIdentiferData.getDataSize();
             break;
         case ConfigurationOption::PrimalSize:
           return primals.size();
           break;
           case ConfigurationOption::StatementSize:
-            return statementVector.getDataSize();
+            return statementData.getDataSize();
           default:
             return Base::getOption(option);
             break;
@@ -642,22 +642,22 @@ namespace codi {
             adjoints.resize(value);
             break;
           case ConfigurationOption::ConstantValuesSize:
-            constantValueVector.resize(value);
+            constantValueData.resize(value);
             break;
           case ConfigurationOption::LargestIdentifier:
             CODI_EXCEPTION("Tried to set a get only option.");
             break;
           case ConfigurationOption::PassiveValuesSize:
-            passiveValueVector.resize(value);
+            passiveValueData.resize(value);
             break;
           case ConfigurationOption::RhsIdentifiersSize:
-            rhsIdentiferVector.resize(value);
+            rhsIdentiferData.resize(value);
             break;
           case ConfigurationOption::PrimalSize:
             primals.resize(value);
             break;
           case ConfigurationOption::StatementSize:
-            return statementVector.resize(value);
+            return statementData.resize(value);
           default:
             Base::setOption(option, value);
             break;
@@ -801,16 +801,16 @@ namespace codi {
       void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
-        passiveValueVector.pushData(jacobi);
-        rhsIdentiferVector.pushData(index);
+        passiveValueData.pushData(jacobi);
+        rhsIdentiferData.pushData(index);
       }
 
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
 
-        statementVector.reserveItems(1);
-        rhsIdentiferVector.reserveItems(size);
-        passiveValueVector.reserveItems(size);
+        statementData.reserveItems(1);
+        rhsIdentiferData.reserveItems(size);
+        passiveValueData.reserveItems(size);
 
         indexManager.get().assignIndex(lhsIndex);
         Real& primalEntry = primals[lhsIndex];
@@ -875,9 +875,9 @@ namespace codi {
 
       CODI_INLINE static void internalEvaluatePrimalVector(NestedPosition const& start, NestedPosition const& end,
                                                          Real* primalData,
-                                                         ConstantValueVector& constantValueVector) {
+                                                         ConstantValueData& constantValueData) {
         Wrap_internalEvaluatePrimalStack evalFunc{};
-        constantValueVector.evaluateForward(start, end, evalFunc, primalData);
+        constantValueData.evaluateForward(start, end, evalFunc, primalData);
       }
 
       CODI_WRAP_FUNCTION(Wrap_internalEvaluatePrimalVector, internalEvaluatePrimalVector);
@@ -894,10 +894,10 @@ namespace codi {
 
           Wrap_internalEvaluatePrimalVector evalFunc{};
           Base::internalEvaluateExtFuncPrimal(start, end, evalFunc,
-                                              &primalAdjointAccess, primals.data(), constantValueVector);
+                                              &primalAdjointAccess, primals.data(), constantValueData);
         } else {
           Base::internalEvaluateExtFuncPrimal(start, end, PrimalValueBaseTape::internalEvaluatePrimalVector,
-                                              &primalAdjointAccess, primals.data(), constantValueVector);
+                                              &primalAdjointAccess, primals.data(), constantValueData);
         }
       }
 
