@@ -74,15 +74,15 @@ namespace codi {
        *
        */
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateForward(Position const& start, Position const& end,Function const& function,
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end,FunctionObject function,
                                        Args&&... args) {
         CODI_UNUSED(start, end);
         function(std::forward<Args>(args)...);
       }
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,Function const& function,
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,FunctionObject function,
                                        Args&&... args) {
         CODI_UNUSED(start, end);
         function(std::forward<Args>(args)...);
@@ -94,13 +94,13 @@ namespace codi {
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject& function,
+      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject& function,
+      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);
       }

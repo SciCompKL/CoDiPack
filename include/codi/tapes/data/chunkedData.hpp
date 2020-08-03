@@ -209,8 +209,8 @@ namespace codi {
        *
        */
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateForward(Position const& start, Position const& end,Function const& function,
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end,FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
 
@@ -250,8 +250,8 @@ namespace codi {
         }
       }
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,Function const& function,
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
 
@@ -306,44 +306,62 @@ namespace codi {
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject& function, Args&&... args) {
+      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.chunk < end.chunk || (start.chunk == end.chunk && start.data <= end.data));
         codiAssert(end.chunk < chunks.size());
 
         size_t dataStart = start.data;
-        for(size_t chunkPos = start.chunk; chunkPos < end.chunk; chunkPos += 1) {
+        for(size_t chunkPos = start.chunk; chunkPos <= end.chunk; chunkPos += 1) {
+          size_t dataEnd;
+          if(chunkPos != end.chunk) {
+            dataEnd = chunks[chunkPos]->getUsedSize();
+          } else {
+            dataEnd = end.data;
+          }
 
-          forEachChunkEntryForward(chunkPos, dataStart, chunks[chunkPos]->getUsedSize(), function, std::forward<Args>(args)...);
+          forEachChunkEntryForward(chunkPos, dataStart, dataEnd, function, std::forward<Args>(args)...);
 
           dataStart = 0;
-
         }
-
-        forEachChunkEntryForward(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject const& function, Args&&... args) {
+      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
         codiAssert(start.chunk < chunks.size());
 
         size_t dataStart = start.data;
-        for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
+        size_t chunkPos = start.chunk;
+
+        // For loop break condition is illformed due to unsigned underflow of chunkPos. The condition would be
+        // chunkPos >= end.chunk which only breaks if chunkPos == -1 when end.chunk == 0. The minus one is not possible
+        // for unsigned types.
+        for(;;) {
+          size_t dataEnd;
+          if(chunkPos != end.chunk) {
+            dataEnd = 0;
+          } else {
+            dataEnd = end.data;
+          }
 
           forEachChunkEntryReverse(chunkPos, dataStart, 0, function, std::forward<Args>(args)...);
 
-          chunkPos -= 1;
-          dataStart = chunks[chunkPos]->getUsedSize(); // decrement of loop variable
+          if(chunkPos == end.chunk) {
+            break;
+          } else {
+            // decrement of loop variable
+            chunkPos -= 1;
+            dataStart = chunks[chunkPos]->getUsedSize();
+          }
+          size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */
 
         }
-
-        forEachChunkEntryReverse(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
       }
 
     private:
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachChunkEntryForward(size_t const& chunkPos, size_t const& start, size_t const& end, FunctionObject& function, Args&&... args) {
+      CODI_INLINE void forEachChunkEntryForward(size_t const& chunkPos, size_t const& start, size_t const& end, FunctionObject function, Args&&... args) {
         codiAssert(start <= end);
         codiAssert(chunkPos < chunks.size());
 
@@ -357,13 +375,15 @@ namespace codi {
 
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachChunkEntryReverse(size_t const& chunkPos, size_t const& start, size_t const& end,
-                                          FunctionObject& function, Args&&... args) {
+                                          FunctionObject function, Args&&... args) {
         codiAssert(start >= end);
         codiAssert(chunkPos < chunks.size());
 
         PointerInserter pHandle;
 
-        // we do not initialize dataPos with start - 1 since the type can be unsigned
+        // For loop break condition is illformed due to unsigned underflow of dataPos. The condition would be
+        // dataPos >= end which only breaks if dataPos == -1 when end == 0. The minus one is not possible
+        // for unsigned types.
         for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
           dataPos -= 1; // decrement of loop variable
 

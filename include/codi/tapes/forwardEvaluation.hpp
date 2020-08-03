@@ -5,6 +5,8 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../traits/expressionTraits.hpp"
+#include "../traits/realTraits.hpp"
+#include "../traits/tapeTraits.hpp"
 #include "interfaces/gradientAccessTapeInterface.hpp"
 #include "interfaces/internalExpressionTapeInterface.hpp"
 
@@ -98,8 +100,18 @@ namespace codi {
         static Gradient temp = Gradient();
         return temp;
       }
+  };
 
+  template<typename _Type>
+  struct IsTotalFinite<_Type, enableIfForwardTape<typename _Type::Tape>> {
+    public:
 
+      using Type = CODI_DECLARE_DEFAULT(_Type, double);
+
+      static CODI_INLINE bool isTotalFinite(Type const& v) {
+        using std::isfinite;
+        return isfinite(v.getValue()) && isfinite(v.getGradient());
+      }
   };
 }
 
