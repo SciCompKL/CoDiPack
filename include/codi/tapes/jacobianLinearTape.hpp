@@ -99,9 +99,9 @@ namespace codi {
       CODI_INLINE static void internalEvaluateReverse(
           /* data from call */
           Adjoint* adjointVector,
-          /* data from jacobian vector */
+          /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
-          /* data from statement vector */
+          /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {

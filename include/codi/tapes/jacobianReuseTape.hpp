@@ -88,9 +88,9 @@ namespace codi {
       CODI_INLINE static void internalEvaluateReverse(
           /* data from call */
           Adjoint* adjointVector,
-          /* data from jacobian vector */
+          /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
-          /* data from statement vector */
+          /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers, Config::ArgumentSize const* const numberOfJacobians) {
 
         CODI_UNUSED(endJacobianPos);

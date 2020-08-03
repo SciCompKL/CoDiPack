@@ -58,13 +58,13 @@ namespace codi {
       CODI_INLINE static void internalEvaluateForwardStack(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
-          /* data constant value vector */
+          /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
-          /* data passive value vector */
+          /* data from passiveValueData */
           size_t& curPassivePos, size_t const& endPassivePos, Real const* const passiveValues,
-          /* data rhs identifiers vector */
+          /* data from rhsIdentifiersData */
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
-          /* data statement vector */
+          /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
               Config::ArgumentSize const* const numberOfPassiveArguments,
               EvalHandle const * const stmtEvalhandle,
@@ -104,13 +104,13 @@ namespace codi {
       CODI_INLINE static void internalEvaluatePrimalStack(
           /* data from call */
           Real* primalVector,
-          /* data constant value vector */
+          /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
-          /* data passive value vector */
+          /* data from passiveValueData */
           size_t& curPassivePos, size_t const& endPassivePos, Real const* const passiveValues,
-          /* data rhs identifiers vector */
+          /* data from rhsIdentifiersData */
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
-          /* data statement vector */
+          /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
               Config::ArgumentSize const* const numberOfPassiveArguments,
               EvalHandle const * const stmtEvalhandle,
@@ -144,13 +144,13 @@ namespace codi {
       CODI_INLINE static void internalEvaluateReverseStack(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
-          /* data constant value vector */
+          /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
-          /* data passive value vector */
+          /* data from passiveValueData */
           size_t& curPassivePos, size_t const& endPassivePos, Real const* const passiveValues,
-          /* data rhs identifiers vector */
+          /* data from rhsIdentifiersData */
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
-          /* data statement vector */
+          /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
               Config::ArgumentSize const* const numberOfPassiveArguments,
               EvalHandle const * const stmtEvalhandle,
