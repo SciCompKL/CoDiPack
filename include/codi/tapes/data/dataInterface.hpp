@@ -59,11 +59,11 @@ namespace codi {
        */
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void evaluateForward(Position const& start, Position const& end,FunctionObject function,
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args);
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,FunctionObject function,
+      CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args);
 
       template<typename FunctionObject, typename ... Args>

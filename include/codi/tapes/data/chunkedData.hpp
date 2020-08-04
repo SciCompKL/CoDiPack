@@ -210,7 +210,7 @@ namespace codi {
        */
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void evaluateForward(Position const& start, Position const& end,FunctionObject function,
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
 
@@ -251,7 +251,7 @@ namespace codi {
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,FunctionObject function,
+      CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
 
@@ -344,7 +344,7 @@ namespace codi {
             dataEnd = end.data;
           }
 
-          forEachChunkEntryReverse(chunkPos, dataStart, 0, function, std::forward<Args>(args)...);
+          forEachChunkEntryReverse(chunkPos, dataStart, dataEnd, function, std::forward<Args>(args)...);
 
           if(chunkPos == end.chunk) {
             break;
@@ -353,8 +353,6 @@ namespace codi {
             chunkPos -= 1;
             dataStart = chunks[chunkPos]->getUsedSize();
           }
-          size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */
-
         }
       }
 
