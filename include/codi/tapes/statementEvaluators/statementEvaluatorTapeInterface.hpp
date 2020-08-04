@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../aux/memberStore.hpp"
 
 /** \copydoc codi::Namespace */
@@ -10,7 +10,7 @@ namespace codi {
   struct StatementEvaluatorTapeInterface {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /*******************************************************************************
        * Section: Start of interface definition
@@ -31,7 +31,7 @@ namespace codi {
   struct StatementEvaluatorInnerTapeInterface {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /*******************************************************************************
        * Section: Start of interface definition

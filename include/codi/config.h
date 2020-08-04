@@ -6,8 +6,8 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  #ifndef IDE
-    #define IDE 0
+  #ifndef CODI_IDE
+    #define CODI_IDE 0
   #endif
 
   /**
@@ -31,7 +31,7 @@ namespace codi {
     #undef CODI_ChunkSize
 
     using ArgumentSize = uint8_t;
-    size_t constexpr MaxArgumentSize = 254;
+    size_t constexpr MaxArgumentSize = 255;
 
     size_t constexpr StatementInputTag = 255;
 
@@ -66,11 +66,23 @@ namespace codi {
     bool constexpr CheckJacobiIsZero = CODI_CheckJacobiIsZero;
     #undef CODI_CheckJacobiIsZero
 
+    #ifndef CODI_CheckTapeActivity
+      #define CODI_CheckTapeActivity true
+    #endif
+    bool constexpr CheckTapeActivity = CODI_CheckTapeActivity;
+    #undef CODI_CheckTapeActivity
+
+
     #ifndef CODI_CheckZeroIndex
       #define CODI_CheckZeroIndex true
     #endif
     bool constexpr CheckZeroIndex = CODI_CheckZeroIndex;
     #undef CODI_CheckZeroIndex
+
+    #ifndef CODI_RemoveDuplicateJacobianArguments
+      #define CODI_RemoveDuplicateJacobianArguments 0
+    #endif
+    bool constexpr RemoveDuplicateJacobianArguments = CODI_RemoveDuplicateJacobianArguments;
 
     #ifndef CODI_IgnoreInvalidJacobies
       #define CODI_IgnoreInvalidJacobies false

@@ -7,7 +7,7 @@ template<typename _Number>
 struct DriverBase : public DriverInterface<_Number> {
   public:
 
-    using Number = DECLARE_DEFAULT(_Number, double);
+    using Number = CODI_DECLARE_DEFAULT(_Number, double);
 
     virtual void createAllTests(TestVector<Number>& tests) = 0;
 

@@ -3,7 +3,7 @@
 #include <utility>
 
 #include "../../config.h"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -13,7 +13,7 @@ namespace codi {
   struct TraversalLogic {
     public:
 
-      using Impl = DECLARE_DEFAULT(_Impl, TraversalLogic);
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, TraversalLogic);
 
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);

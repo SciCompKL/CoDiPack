@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cmath>
+
 #include "../../aux/exceptions.hpp"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
 #include "../unaryExpression.hpp"
@@ -20,7 +22,7 @@ namespace codi {
   struct UnaryMinus : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -66,8 +68,10 @@ namespace codi {
   using std::erfc;
   using std::exp;
   using std::floor;
+  using std::isfinite;
   using std::isinf;
   using std::isnan;
+  using std::isnormal;
   using std::log;
   using std::log10;
   using std::round;
@@ -82,7 +86,7 @@ namespace codi {
   struct Abs : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -115,7 +119,7 @@ namespace codi {
   struct Acos : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -143,7 +147,7 @@ namespace codi {
   struct Asin : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -171,7 +175,7 @@ namespace codi {
   struct Atan : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -194,7 +198,7 @@ namespace codi {
   struct Atanh : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -222,7 +226,7 @@ namespace codi {
   struct Cbrt : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -258,7 +262,7 @@ namespace codi {
   struct Cos : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -281,7 +285,7 @@ namespace codi {
   struct Cosh : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -304,7 +308,7 @@ namespace codi {
   struct Erf : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -327,7 +331,7 @@ namespace codi {
   struct Erfc : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -350,7 +354,7 @@ namespace codi {
   struct Exp : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -375,8 +379,8 @@ namespace codi {
   }
 
   template<typename Real, typename Arg>
-  CODI_INLINE bool isnan(ExpressionInterface<Real, Arg> const& arg) {
-    return isnan(getPassiveValue(arg.cast()));
+  CODI_INLINE bool isfinite(ExpressionInterface<Real, Arg> const& arg) {
+    return isfinite(getPassiveValue(arg.cast()));
   }
 
   template<typename Real, typename Arg>
@@ -384,11 +388,21 @@ namespace codi {
     return isinf(getPassiveValue(arg.cast()));
   }
 
+  template<typename Real, typename Arg>
+  CODI_INLINE bool isnan(ExpressionInterface<Real, Arg> const& arg) {
+    return isnan(getPassiveValue(arg.cast()));
+  }
+
+  template<typename Real, typename Arg>
+  CODI_INLINE bool isnormal(ExpressionInterface<Real, Arg> const& arg) {
+    return isnormal(getPassiveValue(arg.cast()));
+  }
+
   template<typename _Real>
   struct Log : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -416,7 +430,7 @@ namespace codi {
   struct Log10 : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -442,14 +456,14 @@ namespace codi {
 
   template<typename Real, typename Arg>
   CODI_INLINE PassiveRealType<Real> round(ExpressionInterface<Real, Arg> const& arg) {
-    return round(getPassiveValue(arg.cast()));
+    return round(arg.cast().getValue());
   }
 
   template<typename _Real>
   struct Sin : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -472,7 +486,7 @@ namespace codi {
   struct Sinh : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -495,7 +509,7 @@ namespace codi {
   struct Sqrt : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -526,7 +540,7 @@ namespace codi {
   struct Tan : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -555,7 +569,7 @@ namespace codi {
   struct Tanh : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -578,7 +592,7 @@ namespace codi {
   struct Tgamma : public UnaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /** \copydoc UnaryOperation::primal */
       template<typename Arg>
@@ -648,8 +662,10 @@ namespace std {
   using codi::erfc;
   using codi::exp;
   using codi::floor;
+  using codi::isfinite;
   using codi::isinf;
   using codi::isnan;
+  using codi::isnormal;
   using codi::log;
   using codi::log10;
   using codi::round;

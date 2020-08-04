@@ -7,12 +7,13 @@ namespace codi {
 
   enum class TapeParameters {
     AdjointSize,
-    PrimalSize,
-    StatementSize,
-    JacobianSize,
-    PassiveValuesSize,
     ConstantValuesSize,
+    ExternalFunctionsSize,
+    JacobianSize,
+    LargestIdentifier,
+    PassiveValuesSize,
+    PrimalSize,
     RhsIdentifiersSize,
-    ExternalFunctionsSize
+    StatementSize
   };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */
@@ -10,7 +10,7 @@ namespace codi {
   struct JacobianInterface {
     public:
 
-      using T = DECLARE_DEFAULT(_T, double);
+      using T = CODI_DECLARE_DEFAULT(_T, double);
 
       size_t getM() const;
       size_t getN() const;

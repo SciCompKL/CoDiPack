@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include "../../aux/exceptions.hpp"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
 #include "../binaryExpression.hpp"
@@ -23,7 +23,7 @@ namespace codi {
   struct Add : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -50,7 +50,7 @@ namespace codi {
   struct Substract : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -77,7 +77,7 @@ namespace codi {
   struct Multiply : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -104,7 +104,7 @@ namespace codi {
   struct Divide : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -131,7 +131,7 @@ namespace codi {
       template<typename ArgB>
       static CODI_INLINE void checkArguments(ArgB const& argB) {
         if(Config::CheckExpressionArguments) {
-          if( 0.0 == getPassiveValue(argB)) {
+          if( isTotalZero(getPassiveValue(argB))) {
             CODI_EXCEPTION("Division called with divisor of zero.");
           }
         }
@@ -159,7 +159,7 @@ namespace codi {
   struct Atan2 : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -204,7 +204,7 @@ namespace codi {
   struct Copysign : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -252,7 +252,7 @@ namespace codi {
   struct Max : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -294,7 +294,7 @@ namespace codi {
   struct Min : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -335,7 +335,7 @@ namespace codi {
   struct Pow : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
@@ -388,7 +388,7 @@ namespace codi {
   struct Remainder : public BinaryOperation<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {

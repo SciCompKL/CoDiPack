@@ -2,15 +2,17 @@
 
 #include <type_traits>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 
-#include "../tapes/forwardEvaluation.hpp"
 #include "../tapes/jacobianBaseTape.hpp"
 #include "../tapes/primalValueBaseTape.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  template<typename _Real, typename _Gradient>
+  struct ForwardEvaluation;
 
   template<typename Tape>
   using isForwardTape = std::is_base_of<ForwardEvaluation<typename Tape::Real, typename Tape::Gradient>, Tape>;

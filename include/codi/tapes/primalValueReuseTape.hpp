@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../aux/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
@@ -13,19 +13,18 @@
 #include "../expressions/logic/constructStaticContext.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
-#include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "primalValueBaseTape.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _TapeTypes>
-  struct PrimalValueReuseTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>> {
+  template<typename _ImplTapeTypes>
+  struct PrimalValueReuseTape : public PrimalValueBaseTape<_ImplTapeTypes, PrimalValueReuseTape<_ImplTapeTypes>> {
     public:
 
-      using ImplTapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>));
-      using Base = PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>>;
+      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
+      using Base = PrimalValueBaseTape<ImplTapeTypes, PrimalValueReuseTape<ImplTapeTypes>>;
       friend Base;
 
       using Real = typename ImplTapeTypes::Real;
@@ -36,7 +35,7 @@ namespace codi {
       using EvalHandle = typename ImplTapeTypes::EvalHandle;
       using Position = typename Base::Position;
 
-      using StatementVector = typename ImplTapeTypes::StatementVector;
+      using StatementData = typename ImplTapeTypes::StatementData;
 
       PrimalValueReuseTape() : Base() {}
 
@@ -52,11 +51,11 @@ namespace codi {
           }
         };
 
-        using StmtPosition = typename StatementVector::Position;
-        StmtPosition startStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(start);
-        StmtPosition endStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(end);
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(end);
 
-        this->statementVector.forEachReverse(startStmt, endStmt, clearFunc);
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }
 
     protected:
@@ -64,18 +63,18 @@ namespace codi {
       CODI_INLINE static void internalEvaluateForwardStack(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
-          /* data constant value vector */
+          /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
-          /* data passive value vector */
+          /* data from passiveValueData */
           size_t& curPassivePos, size_t const& endPassivePos, Real const* const passiveValues,
-          /* data rhs identifiers vector */
+          /* data from rhsIdentifiersData */
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
-          /* data statement vector */
+          /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
               Identifier const* const lhsIdentifiers,
               Config::ArgumentSize const* const numberOfPassiveArguments,
-              Real const * const oldPrimalValues,
-              EvalHandle const * const stmtEvalhandle
+              Real* const oldPrimalValues,
+              EvalHandle const* const stmtEvalhandle
           ) {
 
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
@@ -87,6 +86,7 @@ namespace codi {
 
           Gradient lhsTangent = Gradient();
 
+          oldPrimalValues[curStatementPos] = primalVector[lhsIdentifier];
           primalVector[lhsIdentifier] = StatementEvaluator::template callForward<PrimalValueReuseTape>(
                 stmtEvalhandle[curStatementPos], primalVector, adjointVector, lhsTangent,
                 numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
@@ -105,18 +105,18 @@ namespace codi {
       CODI_INLINE static void internalEvaluatePrimalStack(
           /* data from call */
           Real* primalVector,
-          /* data constant value vector */
+          /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
-          /* data passive value vector */
+          /* data from passiveValueData */
           size_t& curPassivePos, size_t const& endPassivePos, Real const* const passiveValues,
-          /* data rhs identifiers vector */
+          /* data from rhsIdentifiersData */
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
-          /* data statement vector */
+          /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
               Identifier const* const lhsIdentifiers,
               Config::ArgumentSize const* const numberOfPassiveArguments,
-              Real const * const oldPrimalValues,
-              EvalHandle const * const stmtEvalhandle
+              Real* const oldPrimalValues,
+              EvalHandle const* const stmtEvalhandle
           ) {
 
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
@@ -126,6 +126,7 @@ namespace codi {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
 
+          oldPrimalValues[curStatementPos] = primalVector[lhsIdentifier];
           primalVector[lhsIdentifier] = StatementEvaluator::template callPrimal<PrimalValueReuseTape>(
                 stmtEvalhandle[curStatementPos], primalVector,
                 numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
@@ -138,13 +139,13 @@ namespace codi {
       CODI_INLINE static void internalEvaluateReverseStack(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
-          /* data constant value vector */
+          /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
-          /* data passive value vector */
+          /* data from passiveValueData */
           size_t& curPassivePos, size_t const& endPassivePos, Real const* const passiveValues,
-          /* data rhs identifiers vector */
+          /* data from rhsIdentifiersData */
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
-          /* data statement vector */
+          /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
               Identifier const* const lhsIdentifiers,
               Config::ArgumentSize const* const numberOfPassiveArguments,
@@ -186,11 +187,11 @@ namespace codi {
           this->primals[*lhsIndex] = *oldPrimal;
         };
 
-        using StmtPosition = typename StatementVector::Position;
-        StmtPosition startStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(this->getPosition());
-        StmtPosition endStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(pos);
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(this->getPosition());
+        StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(pos);
 
-        this->statementVector.forEachReverse(startStmt, endStmt, clearFunc);
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
 
       }
 
@@ -200,7 +201,7 @@ namespace codi {
           Real const& oldPrimalValue,
           EvalHandle evalHandle)
       {
-        Base::statementVector.pushData(index, numberOfPassiveArguments, oldPrimalValue, evalHandle);
+        Base::statementData.pushData(index, numberOfPassiveArguments, oldPrimalValue, evalHandle);
       }
   };
 }

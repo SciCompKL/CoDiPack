@@ -1,20 +1,20 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../tapes/interfaces/gradientAccessTapeInterface.hpp"
+#include "../../tapes/interfaces/internalStatementRecordingInterface.hpp"
 #include "../../traits/realTraits.hpp"
 #include "../expressionInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Tape, size_t _offset>
-  struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape, _offset>> {
+  template<typename _Tape>
+  struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape>> {
     public:
 
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(GradientAccessTapeInterface<double, int>));
-      static size_t constexpr offset = DECLARE_DEFAULT(_offset, 0);
+      using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(CODI_UNION<InternalStatementRecordingInterface<int>, GradientAccessTapeInterface<double, int>>));
 
       using Real = typename Tape::Real;
       using Identifier = typename Tape::Identifier;
@@ -26,9 +26,9 @@ namespace codi {
 
     public:
 
-      CODI_INLINE StaticContextActiveType(Real* primalVector, Identifier const* const identifiers) :
-        primal(primalVector[identifiers[offset]]),
-        identifier(identifiers[offset])
+      CODI_INLINE StaticContextActiveType(Real const& primal, Identifier const& identifier) :
+        primal(primal),
+        identifier(identifier)
       {}
 
       CODI_INLINE Identifier const& getIdentifier() const {
@@ -63,8 +63,8 @@ namespace codi {
       }
 
       template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
-        CODI_UNUSED(args...);
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... CODI_UNUSED_ARG(args)) {
+        return Logic::NeutralElement;
       }
 
     private:

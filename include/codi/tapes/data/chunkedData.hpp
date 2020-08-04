@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "chunk.hpp"
-#include "emptyVector.hpp"
+#include "emptyData.hpp"
 #include "dataInterface.hpp"
 #include "pointerStore.hpp"
 #include "position.hpp"
@@ -13,15 +13,16 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Chunk, typename _NestedVector = EmptyVector>
-  struct ChunkVector : public DataInterface<_NestedVector> {
+  template<typename _Chunk, typename _NestedData = EmptyData, typename _PointerInserter = PointerStore<_Chunk>>
+  struct ChunkedData : public DataInterface<_NestedData> {
     public:
 
-      using Chunk = DECLARE_DEFAULT(_Chunk, ChunkBase);
-      using NestedVector = DECLARE_DEFAULT(_NestedVector, DataInterface);
+      using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>));
+      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, CODI_TEMPLATE(DataInterface<CODI_ANY>));
+      using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>));
       using InternalPosHandle = size_t;
 
-      using NestedPosition = typename NestedVector::Position;
+      using NestedPosition = typename NestedData::Position;
 
       using Position = ChunkPosition<NestedPosition>;
 
@@ -34,11 +35,11 @@ namespace codi {
 
       size_t chunkSize;
 
-      NestedVector* nested;
+      NestedData* nested;
 
     public:
 
-      ChunkVector(size_t const& chunkSize, NestedVector* nested) :
+      ChunkedData(size_t const& chunkSize, NestedData* nested) :
         chunks(),
         positions(),
         curChunk(NULL),
@@ -49,7 +50,7 @@ namespace codi {
         setNested(nested);
       }
 
-      ChunkVector(size_t const& chunkSize) :
+      ChunkedData(size_t const& chunkSize) :
         chunks(),
         positions(),
         curChunk(NULL),
@@ -58,7 +59,7 @@ namespace codi {
         nested(NULL)
       {}
 
-      ~ChunkVector() {
+      ~ChunkedData() {
         for(size_t i = 0; i < chunks.size(); ++i) {
           delete chunks[i];
         }
@@ -177,7 +178,7 @@ namespace codi {
         nested->resetTo(pos.inner);
       }
 
-      void setNested(NestedVector* v) {
+      void setNested(NestedData* v) {
         // Set nested is only called once during the initialization.
         codiAssert(NULL == this->nested);
         codiAssert(v->getZeroPosition() == v->getPosition());
@@ -189,7 +190,7 @@ namespace codi {
         positions.push_back(nested->getZeroPosition());
       }
 
-      void swap(ChunkVector<Chunk, NestedVector>& other) {
+      void swap(ChunkedData<Chunk, NestedData>& other) {
         std::swap(chunks, other.chunks);
         std::swap(positions, other.positions);
         std::swap(curChunkIndex, other.curChunkIndex);
@@ -208,77 +209,87 @@ namespace codi {
        *
        */
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateForward(Position const& start, Position const& end,Function const& function,
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-        PointerStore<Chunk> pHandle;
+        PointerInserter pHandle;
 
-        size_t dataPos = start.data;
+        size_t curDataPos = start.data;
+        size_t endDataPos;
         NestedPosition curInnerPos = start.inner;
-        for(size_t curChunk = start.chunk; curChunk < end.chunk; curChunk += 1) {
+        NestedPosition endInnerPos;
+
+        size_t curChunk = start.chunk;
+        for(;;) {
+          // Update of end conditions
+          if(curChunk != end.chunk) {
+            endInnerPos = positions[curChunk + 1];
+            endDataPos = chunks[curChunk]->getUsedSize();
+          } else {
+            endInnerPos = end.inner;
+            endDataPos = end.data;
+          }
 
           pHandle.setPointers(0, chunks[curChunk]);
-
-          NestedPosition endInnerPos = positions[curChunk + 1];
           pHandle.callNestedForward(
                 /* arguments for callNestedForward */
-                nested, dataPos, chunks[curChunk]->getUsedSize(),
+                nested, curDataPos, endDataPos,
                 /* arguments for nested->evaluateForward */
                 curInnerPos, endInnerPos, function, std::forward<Args>(args)...);
 
-          // After a full chunk is evaluated, the data position needs to be at the end of the chunk
-          codiAssert(dataPos == chunks[curChunk]->getUsedSize());
+          // After a full chunk is evaluated, the data position needs to be at the end data position
+          codiAssert(curDataPos == endDataPos);
 
-          curInnerPos = endInnerPos;
-
-          dataPos = 0;
+          if(curChunk != end.chunk) {
+            curChunk += 1;
+            curInnerPos = endInnerPos;
+            curDataPos = 0;
+          } else {
+            break;
+          }
         }
-
-        // Iterate over the remainder also covers the case if the start chunk and end chunk are the same
-        pHandle.setPointers(0, chunks[end.chunk]);
-        pHandle.callNestedForward(
-              /* arguments for callNestedForward */
-              nested, dataPos, end.data,
-              /* arguments for nested->evaluateReverse */
-              curInnerPos, end.inner, function, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == end.data); // after the last chunk is evaluated, the data position needs to be at the end position
       }
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateReverse(Position const& start, Position const& end,Function const& function,
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-        PointerStore<Chunk> pHandle;
+        PointerInserter pHandle;
 
-        size_t dataPos = start.data;
+        size_t curDataPos = start.data;
+        size_t endDataPos;
         NestedPosition curInnerPos = start.inner;
-        for(size_t curChunk = start.chunk; curChunk > end.chunk; curChunk -= 1) {
+        NestedPosition endInnerPos;
+
+        size_t curChunk = start.chunk;
+        for(;;) {
+          // Update of end conditions
+          if(curChunk != end.chunk) {
+            endInnerPos = positions[curChunk];
+            endDataPos = 0;
+          } else {
+            endInnerPos = end.inner;
+            endDataPos = end.data;
+          }
 
           pHandle.setPointers(0, chunks[curChunk]);
-
-          NestedPosition endInnerPos = positions[curChunk];
           pHandle.callNestedReverse(
                 /* arguments for callNestedReverse */
-                nested, dataPos, 0,
+                nested, curDataPos, endDataPos,
                 /* arguments for nested->evaluateReverse */
                 curInnerPos, endInnerPos, function, std::forward<Args>(args)...);
 
-          codiAssert(dataPos == 0); // after a full chunk is evaluated, the data position needs to be zero
+          // After a full chunk is evaluated, the data position needs to be at the end data position
+          codiAssert(curDataPos == endDataPos);
 
-          curInnerPos = endInnerPos;
-
-          dataPos = chunks[curChunk - 1]->getUsedSize();
+          if(curChunk != end.chunk){
+            // Update of loop variables
+            curChunk -= 1;
+            curInnerPos = endInnerPos;
+            curDataPos = chunks[curChunk]->getUsedSize();
+          } else {
+            break;
+          }
         }
-
-        // Iterate over the remainder also covers the case if the start chunk and end chunk are the same
-        pHandle.setPointers(0, chunks[end.chunk]);
-        pHandle.callNestedReverse(
-              /* arguments for callNestedReverse */
-              nested, dataPos, end.data,
-              /* arguments for nested->evaluateReverse */
-              curInnerPos, end.inner, function, std::forward<Args>(args)...);
-
-        codiAssert(dataPos == end.data); // after the last chunk is evaluated, the data position needs to be at the end position
       }
 
       template<typename FunctionObject, typename ... Args>
@@ -295,48 +306,64 @@ namespace codi {
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject& function, Args&&... args) {
+      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.chunk < end.chunk || (start.chunk == end.chunk && start.data <= end.data));
         codiAssert(end.chunk < chunks.size());
 
         size_t dataStart = start.data;
-        for(size_t chunkPos = start.chunk; chunkPos < end.chunk; chunkPos += 1) {
+        for(size_t chunkPos = start.chunk; chunkPos <= end.chunk; chunkPos += 1) {
+          size_t dataEnd;
+          if(chunkPos != end.chunk) {
+            dataEnd = chunks[chunkPos]->getUsedSize();
+          } else {
+            dataEnd = end.data;
+          }
 
-          forEachChunkEntryForward(chunkPos, dataStart, chunks[chunkPos]->getUsedSize(), function, std::forward<Args>(args)...);
+          forEachChunkEntryForward(chunkPos, dataStart, dataEnd, function, std::forward<Args>(args)...);
 
           dataStart = 0;
-
         }
-
-        forEachChunkEntryForward(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject const& function, Args&&... args) {
+      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
         codiAssert(start.chunk < chunks.size());
 
         size_t dataStart = start.data;
-        for(size_t chunkPos = start.chunk; chunkPos > end.chunk; /* decrement is done inside the loop */) {
+        size_t chunkPos = start.chunk;
 
-          forEachChunkEntryReverse(chunkPos, dataStart, 0, function, std::forward<Args>(args)...);
+        // For loop break condition is illformed due to unsigned underflow of chunkPos. The condition would be
+        // chunkPos >= end.chunk which only breaks if chunkPos == -1 when end.chunk == 0. The minus one is not possible
+        // for unsigned types.
+        for(;;) {
+          size_t dataEnd;
+          if(chunkPos != end.chunk) {
+            dataEnd = 0;
+          } else {
+            dataEnd = end.data;
+          }
 
-          chunkPos -= 1;
-          dataStart = chunks[chunkPos]->getUsedSize(); // decrement of loop variable
+          forEachChunkEntryReverse(chunkPos, dataStart, dataEnd, function, std::forward<Args>(args)...);
 
+          if(chunkPos == end.chunk) {
+            break;
+          } else {
+            // decrement of loop variable
+            chunkPos -= 1;
+            dataStart = chunks[chunkPos]->getUsedSize();
+          }
         }
-
-        forEachChunkEntryReverse(end.chunk, dataStart, end.data, function, std::forward<Args>(args)...);
       }
 
     private:
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachChunkEntryForward(size_t const& chunkPos, size_t const& start, size_t const& end, FunctionObject& function, Args&&... args) {
+      CODI_INLINE void forEachChunkEntryForward(size_t const& chunkPos, size_t const& start, size_t const& end, FunctionObject function, Args&&... args) {
         codiAssert(start <= end);
         codiAssert(chunkPos < chunks.size());
 
-        PointerStore<Chunk> pHandle;
+        PointerInserter pHandle;
 
         for(size_t dataPos = start; dataPos < end; dataPos += 1) {
           pHandle.setPointers(dataPos, chunks[chunkPos]);
@@ -346,13 +373,15 @@ namespace codi {
 
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachChunkEntryReverse(size_t const& chunkPos, size_t const& start, size_t const& end,
-                                          FunctionObject& function, Args&&... args) {
+                                          FunctionObject function, Args&&... args) {
         codiAssert(start >= end);
         codiAssert(chunkPos < chunks.size());
 
-        PointerStore<Chunk> pHandle;
+        PointerInserter pHandle;
 
-        // we do not initialize dataPos with start - 1 since the type can be unsigned
+        // For loop break condition is illformed due to unsigned underflow of dataPos. The condition would be
+        // dataPos >= end which only breaks if dataPos == -1 when end == 0. The minus one is not possible
+        // for unsigned types.
         for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
           dataPos -= 1; // decrement of loop variable
 

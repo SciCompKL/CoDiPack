@@ -5,7 +5,7 @@
 template<typename _Number, typename = void>
 struct MultiplyExternalFunction {
   public:
-    using Number = DECLARE_DEFAULT(_Number, codi::ActiveType<ANY>);
+    using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
 
     static Number create(Number const& x1, Number const& x2) {
       return x1 * x2;
@@ -16,9 +16,9 @@ struct MultiplyExternalFunction {
 template<typename _Number>
 struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Number::Tape>> {
   public:
-    using Number = DECLARE_DEFAULT(_Number, codi::ActiveType<ANY>);
+    using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
 
-    using Tape = DECLARE_DEFAULT(typename Number::Tape, TEMPLATE(codi::FullTapeInterface<double, double, int, codi::EmptyPosition>));
+    using Tape = CODI_DECLARE_DEFAULT(typename Number::Tape, CODI_TEMPLATE(codi::FullTapeInterface<double, double, int, codi::EmptyPosition>));
     using Real = typename Number::Real;
     using Identifier = typename Number::Identifier;
 
@@ -29,7 +29,7 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
 
       VAI* vai = (VAI*)i;
 
-      codi::ExternalFunctionData *data = static_cast<codi::ExternalFunctionData*>(d);
+      codi::ExternalFunctionUserData *data = static_cast<codi::ExternalFunctionUserData*>(d);
 
       Real x1_v, x2_v;
       Identifier x1_i, x2_i, w_i;
@@ -56,7 +56,7 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
 
       VAI* vai = (VAI*)i;
 
-      codi::ExternalFunctionData *data = static_cast<codi::ExternalFunctionData*>(d);
+      codi::ExternalFunctionUserData *data = static_cast<codi::ExternalFunctionUserData*>(d);
 
       Identifier x1_i, x2_i, w_i;
       Real& x1_v = data->getDataRef<Real>();
@@ -77,7 +77,7 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
 
       VAI* vai = (VAI*)i;
 
-      codi::ExternalFunctionData *data = static_cast<codi::ExternalFunctionData*>(d);
+      codi::ExternalFunctionUserData *data = static_cast<codi::ExternalFunctionUserData*>(d);
 
       Identifier x1_i, x2_i, w_i;
       Real& x1_v = data->getDataRef<Real>();
@@ -110,13 +110,13 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
     static void delFunc(void* tape, void* d){
       codi::CODI_UNUSED(tape);
 
-      codi::ExternalFunctionData *data = static_cast<codi::ExternalFunctionData*>(d);
+      codi::ExternalFunctionUserData *data = static_cast<codi::ExternalFunctionUserData*>(d);
       delete data;
     }
 
     static Number create(Number const& x1, Number const& x2) {
       Tape& tape = Number::getGlobalTape();
-      codi::ExternalFunctionData *data = new codi::ExternalFunctionData;
+      codi::ExternalFunctionUserData *data = new codi::ExternalFunctionUserData;
       Number w;
       tape.setPassive();
       w = x1 * x2;

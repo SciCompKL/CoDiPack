@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "expressionInterface.hpp"
 #include "logic/compileTimeTraversalLogic.hpp"
@@ -14,7 +14,7 @@ namespace codi {
   struct BinaryOperation {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB);
@@ -30,10 +30,10 @@ namespace codi {
   template<typename _Real, typename _ArgA, typename _ArgB, template<typename> class _Operation>
   struct BinaryExpression : public ExpressionInterface<_Real, BinaryExpression<_Real, _ArgA, _ArgB, _Operation> > {
     public:
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using ArgA = DECLARE_DEFAULT(_ArgA, TEMPLATE(ExpressionInterface<double, ANY>));
-      using ArgB = DECLARE_DEFAULT(_ArgB, TEMPLATE(ExpressionInterface<double, ANY>));
-      using Operation = DECLARE_DEFAULT(TEMPLATE(_Operation<Real>), TEMPLATE(BinaryOperation<Real>));
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using ArgA = CODI_DECLARE_DEFAULT(_ArgA, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>));
+      using ArgB = CODI_DECLARE_DEFAULT(_ArgB, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>));
+      using Operation = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Operation<Real>), CODI_TEMPLATE(BinaryOperation<Real>));
 
       static bool constexpr EndPoint = false;
       using StoreAs = BinaryExpression;
@@ -46,7 +46,8 @@ namespace codi {
 
     public:
 
-      explicit BinaryExpression(ExpressionInterface<Real, ArgA> const& argA, ExpressionInterface<Real, ArgB> const& argB) :
+      template<typename RealA, typename RealB>
+      explicit BinaryExpression(ExpressionInterface<RealA, ArgA> const& argA, ExpressionInterface<RealB, ArgB> const& argB) :
         argA(argA.cast()),
         argB(argB.cast()),
         result(Operation::primal(this->argA.getValue(), this->argB.getValue())) {}

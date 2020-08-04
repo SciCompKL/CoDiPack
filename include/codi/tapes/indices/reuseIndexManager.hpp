@@ -3,19 +3,19 @@
 #include <algorithm>
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
-#include "../data/emptyVector.hpp"
+#include "../data/emptyData.hpp"
 #include "indexManagerInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   template<typename _Index>
-  struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyVector {
+  struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
-      using Index = DECLARE_DEFAULT(_Index, int);
+      using Index = CODI_DECLARE_DEFAULT(_Index, int);
       using Base = IndexManagerInterface<Index>;
 
       static bool constexpr AssignNeedsStatement = true;
@@ -158,7 +158,7 @@ namespace codi {
       }
 
       /*******************************************************************************
-       * Section: Function overwrite of EmptyChunkVector
+       * Section: Function overwrite of EmptyData
        *
        */
 

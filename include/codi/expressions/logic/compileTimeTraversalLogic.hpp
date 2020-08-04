@@ -1,7 +1,9 @@
 #pragma once
 
+#include <utility>
+
 #include "../../config.h"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -11,8 +13,8 @@ namespace codi {
   struct CompileTimeTraversalLogic {
     public:
 
-      using ResultType = DECLARE_DEFAULT(_ResultType, size_t);
-      using Impl = DECLARE_DEFAULT(_Impl, CompileTimeTraversalLogic);
+      using ResultType = CODI_DECLARE_DEFAULT(_ResultType, size_t);
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CompileTimeTraversalLogic);
 
       static constexpr ResultType NeutralElement = {};
 
@@ -27,7 +29,7 @@ namespace codi {
       }
 
       template<typename Node, typename ... Args>
-      CODI_INLINE static constexpr ResultType term(Args&& ... args) {
+      CODI_INLINE static constexpr ResultType term(Args&& ... CODI_UNUSED_ARG(args)) {
         // Default logic does nothing
         return Impl::NeutralElement;
       }

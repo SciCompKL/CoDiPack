@@ -9,7 +9,7 @@ template<typename _Number>
 struct Driver1stOrderBase : public DriverBase<_Number> {
   public:
 
-    using Number = DECLARE_DEFAULT(_Number, double);
+    using Number = CODI_DECLARE_DEFAULT(_Number, double);
     using Base = DriverBase<Number>;
 
     virtual void evaluateJacobian(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs, codi::Jacobian<double>& jac) = 0;

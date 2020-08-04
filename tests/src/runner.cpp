@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 
 #include <codi/aux/exceptions.hpp>
-#include <codi/aux/macros.h>
+#include <codi/aux/macros.hpp>
 
 
 #include "../include/testInterface.hpp"
@@ -20,7 +20,7 @@
 
 #include DRIVER
 
-using Driver = DECLARE_DEFAULT(DRIVER_NAME, TEMPLATE(DriverInterface<double>));
+using Driver = CODI_DECLARE_DEFAULT(DRIVER_NAME, CODI_TEMPLATE(DriverInterface<double>));
 
 
 struct Runner {

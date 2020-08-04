@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../aux/memberStore.hpp"
 
 /** \copydoc codi::Namespace */
@@ -10,13 +10,13 @@ namespace codi {
   struct StatementEvaluatorInterface {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /*******************************************************************************
        * Section: Start of interface definition
        *
        */
-      using Handle = ANY;
+      using Handle = CODI_ANY;
 
       template<typename Tape, typename ... Args>
       static Real callForward(Handle const& h, Args&& ... args);
@@ -27,7 +27,7 @@ namespace codi {
       template<typename Tape, typename ... Args>
       static void callReverse(Handle const& h, Args&& ... args);
 
-      template<typename Tape, typename Expr>
+      template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle();
 
   };

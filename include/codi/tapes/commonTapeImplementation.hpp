@@ -4,11 +4,10 @@
 #include <type_traits>
 
 #include "../aux/fileIo.hpp"
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "aux/vectorAccessInterface.hpp"
 #include "data/dataInterface.hpp"
-#include "data/chunkVector.hpp"
 #include "data/position.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "interfaces/fullTapeInterface.hpp"
@@ -19,23 +18,31 @@ namespace codi {
   struct TapeTypesInterface {
     public:
 
-      using Real = ANY;
-      using Gradient = ANY;
-      using Identifier = ANY;
+      using Real = CODI_ANY;
+      using Gradient = CODI_ANY;
+      using Identifier = CODI_ANY;
 
-      using NestedVector = DataInterface<>;
+      template<typename Chunk, typename Nested>
+      using Data = DataInterface<Nested>;
+
+      using NestedData = DataInterface<>;
   };
 
-  template<typename _NestedVector>
+  template<typename _TapeTypes>
   struct CommonTapeTypes {
     public:
 
-      using NestedVector = DECLARE_DEFAULT(_NestedVector, TEMPLATE(DataInterface<>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);
 
-      using NestedPosition = typename NestedVector::Position;
+      using NestedData = typename TapeTypes::NestedData;
+      template<typename Chunk, typename Nested>
+      using Data = typename TapeTypes::template Data<Chunk, Nested>;
+
+
+      using NestedPosition = typename NestedData::Position;
       using ExternalFunctionChunk = Chunk2<ExternalFunction, NestedPosition>;
-      using ExternalFunctionVector = ChunkVector<ExternalFunctionChunk, NestedVector>;
-      using Position = typename ExternalFunctionVector::Position;
+      using ExternalFunctionData = Data<ExternalFunctionChunk, NestedData>;
+      using Position = typename ExternalFunctionData::Position;
   };
 
   template<typename _ImplTapeTypes, typename _Impl>
@@ -44,28 +51,28 @@ namespace codi {
           typename _ImplTapeTypes::Real,
           typename _ImplTapeTypes::Gradient,
           typename _ImplTapeTypes::Identifier,
-          typename CommonTapeTypes<typename _ImplTapeTypes::NestedVector>::Position>
+          typename CommonTapeTypes<_ImplTapeTypes>::Position>
   {
     public:
 
-      using ImplTapeTypes = DECLARE_DEFAULT(_ImplTapeTypes, TapeTypesInterface);
-      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
+      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, TapeTypesInterface);
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Real = typename ImplTapeTypes::Real;
       using Gradient = typename ImplTapeTypes::Gradient;
       using Identifier = typename ImplTapeTypes::Identifier;
-      using NestedVector = typename ImplTapeTypes::NestedVector;
-      using NestedPosition = typename NestedVector::Position;
+      using NestedData = typename ImplTapeTypes::NestedData;
+      using NestedPosition = typename NestedData::Position;
 
-      using ExternalFunctionVector = typename CommonTapeTypes<NestedVector>::ExternalFunctionVector;
-      using Position = typename ExternalFunctionVector::Position;
+      using ExternalFunctionData = typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData;
+      using Position = typename ExternalFunctionData::Position;
 
     protected:
 
       bool active;
       std::set<TapeParameters> options;
 
-      ExternalFunctionVector externalFunctionVector;
+      ExternalFunctionData externalFunctionData;
 
     private:
 
@@ -91,7 +98,7 @@ namespace codi {
       CommonTapeImplementation() :
         active(false),
         options(),
-        externalFunctionVector(Config::SmallChunkSize)
+        externalFunctionData(Config::SmallChunkSize)
       {
         options.insert(TapeParameters::ExternalFunctionsSize);
       }
@@ -147,7 +154,7 @@ namespace codi {
         TapeValues values = cast().internalGetTapeValues();
 
         values.addSection("External function entries");
-        externalFunctionVector.addToTapeValues(values);
+        externalFunctionData.addToTapeValues(values);
 
         return values;
       }
@@ -157,9 +164,9 @@ namespace codi {
           cast().clearAdjoints();
         }
 
-        deleteExternalFunctionData(cast().getZeroPosition());
+        deleteExternalFunctionUserData(cast().getZeroPosition());
 
-        externalFunctionVector.reset();
+        externalFunctionData.reset();
       }
 
       // clearAdjoints and reset(Position) are not implemented
@@ -172,7 +179,7 @@ namespace codi {
       void swap(Impl& other) {
         std::swap(active, other.active);
 
-        externalFunctionVector.swap(other.externalFunctionVector);
+        externalFunctionData.swap(other.externalFunctionData);
       }
 
       void resetHard() {
@@ -181,7 +188,7 @@ namespace codi {
         impl.reset();
         impl.deleteAdjointVector();
 
-        externalFunctionVector.resetHard();
+        externalFunctionData.resetHard();
       }
 
     private:
@@ -202,17 +209,17 @@ namespace codi {
       void writeToFile(const std::string& filename) {
         FileIo io(filename, true);
 
-        externalFunctionVector.forEachChunk(writeFunction, true, io);
+        externalFunctionData.forEachChunk(writeFunction, true, io);
       }
 
       void readFromFile(const std::string& filename) {
         FileIo io(filename, false);
 
-        externalFunctionVector.forEachChunk(readFunction, true, io);
+        externalFunctionData.forEachChunk(readFunction, true, io);
       }
 
       void deleteData() {
-        externalFunctionVector.forEachChunk(deleteFunction, true);
+        externalFunctionData.forEachChunk(deleteFunction, true);
       }
 
       std::set<TapeParameters> const& getAvailableOptions() const {
@@ -222,10 +229,11 @@ namespace codi {
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {
           case TapeParameters::ExternalFunctionsSize:
-            return externalFunctionVector.getDataSize();
+            return externalFunctionData.getDataSize();
             break;
           default:
             CODI_EXCEPTION("Tried to get undefined parameter for tape.");
+            return 0;
             break;
         }
       }
@@ -237,7 +245,7 @@ namespace codi {
       void setParameter(TapeParameters parameter, size_t value) {
         switch (parameter) {
           case TapeParameters::ExternalFunctionsSize:
-            externalFunctionVector.resize(value);
+            externalFunctionData.resize(value);
             break;
           default:
             CODI_EXCEPTION("Tried to set undefined parameter for tape.");
@@ -254,9 +262,9 @@ namespace codi {
        */
 
       void pushExternalFunction(ExternalFunction const& extFunc) {
-        if(cast().isActive()) {
-          externalFunctionVector.reserveItems(1);
-          externalFunctionVector.pushData(extFunc, externalFunctionVector.getPosition().inner); // TODO: Add getInner zum Interface?
+        CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
+          externalFunctionData.reserveItems(1);
+          externalFunctionData.pushData(extFunc, externalFunctionData.getPosition().inner); // TODO: Add getInner zum Interface?
         }
       }
 
@@ -302,16 +310,16 @@ namespace codi {
        */
 
       Position getPosition() const {
-        return externalFunctionVector.getPosition();
+        return externalFunctionData.getPosition();
       }
 
       Position getZeroPosition() const {
-        return externalFunctionVector.getZeroPosition();
+        return externalFunctionData.getZeroPosition();
       }
 
     protected:
 
-      void deleteExternalFunctionData(Position const& pos) {
+      void deleteExternalFunctionUserData(Position const& pos) {
         // clear external function data
         auto deleteFunc = [this] (ExternalFunction* extFunc, NestedPosition const* endInnerPos) {
           CODI_UNUSED(endInnerPos);
@@ -320,7 +328,7 @@ namespace codi {
           extFunc->deleteData(this);
         };
 
-        externalFunctionVector.forEachReverse(cast().getPosition(), pos, deleteFunc);
+        externalFunctionData.forEachReverse(cast().getPosition(), pos, deleteFunc);
       }
 
     public:
@@ -330,9 +338,9 @@ namespace codi {
         Impl& impl = cast();
         impl.clearAdjoints(impl.getPosition(), pos);
 
-        deleteExternalFunctionData(pos);
+        deleteExternalFunctionUserData(pos);
 
-        externalFunctionVector.resetTo(pos);
+        externalFunctionData.resetTo(pos);
       }
 
       // clearAdjoints and evaluate are not implemented
@@ -358,8 +366,8 @@ namespace codi {
 
     protected:
 
-      void init(NestedVector* nested) {
-        externalFunctionVector.setNested(nested);
+      void init(NestedData* nested) {
+        externalFunctionData.setNested(nested);
       }
 
       /*******************************************************************************
@@ -367,26 +375,26 @@ namespace codi {
        *
        */
 
-      template<typename Function, typename Obj, typename ... Args>
+      template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFuncPrimal(const Position& start, const Position &end,
-                                 const Function& func, Obj& obj,
+                                 Function func,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){
 
         NestedPosition curInnerPos = start.inner;
         auto evalFunc = [&] (ExternalFunction* extFunc, const NestedPosition* endInnerPos) {
 
-          (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+          func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
           extFunc->evaluatePrimal(&cast(), vectorAccess);
 
           curInnerPos = *endInnerPos;
 
         };
-        externalFunctionVector.forEachForward(start, end, evalFunc);
+        externalFunctionData.forEachForward(start, end, evalFunc);
 
         // Iterate over the remainder also covers the case if there have been no external functions.
-        (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
+        func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
       template<typename Function, typename ... Args>
@@ -405,32 +413,32 @@ namespace codi {
           curInnerPos = *endInnerPos;
 
         };
-        externalFunctionVector.forEachReverse(start, end, evalFunc);
+        externalFunctionData.forEachReverse(start, end, evalFunc);
 
         // Iterate over the remainder also covers the case if there have been no external functions.
         func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
-      template<typename Function, typename Obj, typename ... Args>
+      template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFuncForward(const Position& start, const Position &end,
-                                 const Function& func, Obj& obj,
+                                 Function func,
                                  VectorAccessInterface<Real, Identifier>* vectorAccess,
                                  Args&&... args){
 
         NestedPosition curInnerPos = start.inner;
         auto evalFunc = [&] (ExternalFunction* extFunc, const NestedPosition* endInnerPos) {
 
-          (obj.*func)(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
+          func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
           extFunc->evaluateForward(&cast(), vectorAccess);
 
           curInnerPos = *endInnerPos;
 
         };
-        externalFunctionVector.forEachForward(start, end, evalFunc);
+        externalFunctionData.forEachForward(start, end, evalFunc);
 
         // Iterate over the remainder also covers the case if there have been no external functions.
-        (obj.*func)(curInnerPos, end.inner, std::forward<Args>(args)...);
+        func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
   };
 }

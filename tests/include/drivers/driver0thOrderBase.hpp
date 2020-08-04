@@ -9,7 +9,7 @@ template<typename _Number>
 struct Driver0thOrderBase : public DriverBase<_Number> {
   public:
 
-    using Number = DECLARE_DEFAULT(_Number, double);
+    using Number = CODI_DECLARE_DEFAULT(_Number, double);
     using Base = DriverBase<Number>;
 
     virtual void evaluatePrimal(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs, std::vector<double>& primals) = 0;

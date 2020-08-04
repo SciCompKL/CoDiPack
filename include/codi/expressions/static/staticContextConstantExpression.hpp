@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../tapes/interfaces/gradientAccessTapeInterface.hpp"
 #include "../../traits/realTraits.hpp"
@@ -13,8 +13,8 @@ namespace codi {
   struct StaticContextConstantExpression : public ExpressionInterface<_Real, StaticContextConstantExpression<_Real, _offset>> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      static size_t constexpr offset = DECLARE_DEFAULT(_offset, 0);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      static size_t constexpr offset = CODI_DECLARE_DEFAULT(_offset, 0);
 
     private:
 
@@ -53,8 +53,8 @@ namespace codi {
       }
 
       template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
-        CODI_UNUSED(args...);
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... CODI_UNUSED_ARG(args)) {
+        return Logic::NeutralElement;
       }
 
     private:

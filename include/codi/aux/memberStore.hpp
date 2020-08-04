@@ -3,7 +3,7 @@
 #include <new>
 #include <utility>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 
 /** \copydoc codi::Namespace */
@@ -14,7 +14,7 @@ namespace codi {
     public:
 
       using Type = _Type; // default declaration breaks auto completion
-      using Parent = DECLARE_DEFAULT(_Parent, ANY);
+      using Parent = CODI_DECLARE_DEFAULT(_Parent, CODI_ANY);
 
       static bool constexpr storeStatic = _storeStatic;
 
@@ -36,8 +36,8 @@ namespace codi {
   struct MemberStore<_Type, _Parent, true> {
     public:
 
-      using Type = DECLARE_DEFAULT(_Type, ANY);
-      using Parent = DECLARE_DEFAULT(_Parent, ANY);
+      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_ANY);
+      using Parent = CODI_DECLARE_DEFAULT(_Parent, CODI_ANY);
 
       static bool constexpr storeStatic = true;
 

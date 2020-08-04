@@ -1,14 +1,14 @@
 #pragma once
 
-#include <type_traits>
-
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../traits/expressionTraits.hpp"
-#include "interfaces/internalStatementRecordingInterface.hpp"
+#include "../traits/realTraits.hpp"
+#include "../traits/tapeTraits.hpp"
 #include "interfaces/gradientAccessTapeInterface.hpp"
+#include "interfaces/internalStatementRecordingInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -18,8 +18,8 @@ namespace codi {
                              public GradientAccessTapeInterface<_Gradient, _Gradient> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Gradient = DECLARE_DEFAULT(_Gradient, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);
 
       using PassiveReal = PassiveRealType<Real>;
       using Identifier = Gradient;
@@ -47,8 +47,7 @@ namespace codi {
       struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
-            using std::isfinite;
-            ENABLE_CHECK(Config::IgnoreInvalidJacobies, isfinite(jacobian)) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
               lhsGradient += node.gradient() * jacobian;
             }
           }
@@ -65,6 +64,14 @@ namespace codi {
 
         lhs.cast().value() = rhs.cast().getValue();
         lhs.cast().gradient() = newGradient;
+      }
+
+      template<typename Lhs, typename Rhs>
+      void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
+                 LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Rhs> const& rhs) {
+
+        lhs.cast().value() = rhs.cast().getValue();
+        lhs.cast().gradient() = rhs.cast().getGradient();
       }
 
       template<typename Lhs>
@@ -107,8 +114,18 @@ namespace codi {
         static Gradient temp = Gradient();
         return temp;
       }
+  };
 
+  template<typename _Type>
+  struct IsTotalFinite<_Type, enableIfForwardTape<typename _Type::Tape>> {
+    public:
 
+      using Type = CODI_DECLARE_DEFAULT(_Type, double);
+
+      static CODI_INLINE bool isTotalFinite(Type const& v) {
+        using std::isfinite;
+        return isfinite(v.getValue()) && isfinite(v.getGradient());
+      }
   };
 }
 

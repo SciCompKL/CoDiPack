@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 
@@ -15,8 +15,11 @@ namespace codi {
   template<typename _Real>
   struct ConstantExpression;
 
-  template<typename _Tape, size_t _offset>
+  template<typename _Tape>
   struct StaticContextActiveType;
+
+  template<typename _Real, size_t _offset>
+  struct StaticContextConstantExpression;
 
   /*******************************************************************************
    * Section: Detection of specific node types
@@ -39,6 +42,8 @@ namespace codi {
     >::type
   > : std::true_type {};
 
+  template<typename Tape>
+  struct IsLhsExpression<StaticContextActiveType<Tape>> : std::true_type {};
 
   template<typename Impl>
   using isLhsExpression = IsLhsExpression<Impl>;
@@ -52,6 +57,9 @@ namespace codi {
   template<typename Real>
   struct IsConstantExpression<ConstantExpression<Real>> : std::true_type {};
 
+  template<typename Real, size_t offset>
+  struct IsConstantExpression<StaticContextConstantExpression<Real, offset>> : std::true_type {};
+
   template<typename Impl>
   using isConstantExpression = IsConstantExpression<Impl>;
 
@@ -61,8 +69,8 @@ namespace codi {
   template<typename Impl>
   struct IsStaticContextActiveType : std::false_type {};
 
-  template<typename Tape, size_t offset>
-  struct IsStaticContextActiveType<StaticContextActiveType<Tape, offset>> : std::true_type {};
+  template<typename Tape>
+  struct IsStaticContextActiveType<StaticContextActiveType<Tape>> : std::true_type {};
 
   template<typename Impl>
   using isStaticContextActiveType = IsStaticContextActiveType<Impl>;
@@ -81,25 +89,25 @@ namespace codi {
   struct NumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>> {
     public:
 
-      static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
-
       template<typename Node, typename = enableIfLhsExpression<Node>>
       CODI_INLINE static size_t constexpr term() {
         return 1;
       }
       using CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments>::term;
+
+      static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
   };
 
   template<typename Expr>
   struct NumberOfConstantTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
     public:
 
-      static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
-
       template<typename Node, typename = enableIfConstantExpression<Node>>
       CODI_INLINE static size_t constexpr term() {
         return 1;
       }
       using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::term;
+
+      static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
   };
 }

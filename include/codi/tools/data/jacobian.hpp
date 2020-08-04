@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "jacobianInterface.hpp"
 
@@ -13,8 +13,8 @@ namespace codi {
   struct Jacobian : public JacobianInterface<_T>{
     public:
 
-      using T = DECLARE_DEFAULT(_T, double);
-      using Store = DECLARE_DEFAULT(_Store, std::vector<double>);
+      using T = CODI_DECLARE_DEFAULT(_T, double);
+      using Store = CODI_DECLARE_DEFAULT(_Store, std::vector<double>);
 
     private:
       Store values;

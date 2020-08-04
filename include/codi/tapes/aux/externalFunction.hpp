@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../aux/exceptions.hpp"
 #include "../../config.h"
 #include "../data/position.hpp"

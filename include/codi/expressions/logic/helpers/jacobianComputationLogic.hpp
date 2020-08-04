@@ -3,9 +3,10 @@
 #include <type_traits>
 #include <utility>
 
-#include "../../../aux/macros.h"
+#include "../../../aux/macros.hpp"
 #include "../../../config.h"
 #include "../traversalLogic.hpp"
+#include "../../../traits/expressionTraits.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -14,8 +15,8 @@ namespace codi {
   struct JacobianComputationLogic : public TraversalLogic<_Impl> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Impl = DECLARE_DEFAULT(_Impl, TEMPLATE(TraversalLogic<ANY>));
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(TraversalLogic<CODI_ANY>));
 
       /*******************************************************************************
        * Section: Methods expected in the child class.
@@ -35,10 +36,6 @@ namespace codi {
 
       template<typename Node, typename ... Args>
       CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, Args&& ... args) {
-        cast().handleJacobianOnActive(node, jacobian, std::forward<Args>(args)...);
-      }
-      template<typename Node, typename ... Args>
-      CODI_INLINE enableIfStaticContextActiveType<Node> term(Node const& node, Real jacobian, Args&& ... args) {
         cast().handleJacobianOnActive(node, jacobian, std::forward<Args>(args)...);
       }
       using TraversalLogic<Impl>::term;

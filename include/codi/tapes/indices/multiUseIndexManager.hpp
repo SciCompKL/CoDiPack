@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "reuseIndexManager.hpp"
 
@@ -13,7 +13,7 @@ namespace codi {
   struct MultiUseIndexManager : public ReuseIndexManager<_Index> {
     public:
 
-      using Index = DECLARE_DEFAULT(_Index, int);
+      using Index = CODI_DECLARE_DEFAULT(_Index, int);
 
       static bool constexpr AssignNeedsStatement = !Config::AssignOptimization;
       static bool constexpr IsLinear = false;

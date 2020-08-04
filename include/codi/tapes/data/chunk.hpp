@@ -3,7 +3,7 @@
 #include <cstddef>
 
 #include "../../aux/fileIo.hpp"
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */
@@ -19,9 +19,9 @@ namespace codi {
        *
        */
 
-      static size_t constexpr EntrySize = UNDEFINED_VALUE;
+      static size_t constexpr EntrySize = CODI_UNDEFINED_VALUE;
 
-      void swap(IMPLEMENTATION& other);
+      void swap(CODI_IMPLEMENTATION& other);
 
       template<typename ... Data>
       CODI_INLINE void pushData(Data&& ... dataEntries);
@@ -65,6 +65,13 @@ namespace codi {
 
       CODI_INLINE void reset() {
         usedSize = 0;
+      }
+
+      CODI_INLINE void resize(size_t newSize) {
+        deleteData();
+        size = newSize;
+        usedSize = 0;
+        allocateData();
       }
 
       CODI_INLINE void setUsedSize(size_t const& usage) {

@@ -1,7 +1,10 @@
 #pragma once
 
-#include "../aux/macros.h"
+#include <iostream>
+
+#include "../aux/macros.hpp"
 #include "../config.h"
+#include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
 #include "../tapes/interfaces/internalStatementRecordingInterface.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
@@ -14,10 +17,10 @@ namespace codi {
   struct LhsExpressionInterface : public ExpressionInterface<_Real, _Impl> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
-      using Gradient = DECLARE_DEFAULT(_Gradient, Real);
-      using Tape = DECLARE_DEFAULT(_Tape, TEMPLATE(InternalStatementRecordingInterface<ANY>));
-      using Impl = DECLARE_DEFAULT(_Impl, LhsExpressionInterface);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, Real);
+      using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(CODI_UNION<InternalStatementRecordingInterface<int>, GradientAccessTapeInterface<double, int>>));
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, LhsExpressionInterface);
 
       using Identifier = typename Tape::Identifier;
       using PassiveReal = PassiveRealType<Real>;
@@ -93,8 +96,8 @@ namespace codi {
       }
 
       template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
-        CODI_UNUSED(args...);
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... CODI_UNUSED_ARG(args)) {
+        return Logic::NeutralElement;
       }
 
     protected:
@@ -108,13 +111,18 @@ namespace codi {
       }
   };
 
+  template<typename Real, typename Gradient, typename Tape, typename Impl>
+  std::ostream& operator<<(std::ostream& out, LhsExpressionInterface<Real, Gradient, Tape, Impl> const& v) {
+    return out << v.cast().value();
+  }
+
   template<typename _Type>
   struct RealTraits<_Type, enableIfLhsExpression<_Type>> {
     public:
 
-      using Type = DECLARE_DEFAULT(
+      using Type = CODI_DECLARE_DEFAULT(
                       _Type,
-                      TEMPLATE(LhsExpressionInterface<double, double, InternalStatementRecordingInterface<ANY>, _Type>)
+                      CODI_TEMPLATE(LhsExpressionInterface<double, double, InternalStatementRecordingInterface<CODI_ANY>, _Type>)
                     );
       using Real = typename Type::Real;
 
@@ -128,7 +136,7 @@ namespace codi {
 
       static CODI_INLINE bool isTotalZero(Type const& v) {
         // TODO: Specialize for forward and reverse tapes.
-        return Real() == v.getValue() && Type::Gradient() == v.getGradient();
+        return Real() == v.getValue() && typename Type::Gradient() == v.getGradient();
       }
   };
 }

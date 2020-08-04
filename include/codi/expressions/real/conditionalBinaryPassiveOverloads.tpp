@@ -15,11 +15,14 @@
 
 // Create a correct include environment for viewing and programming in an IDE
 #ifndef OPERATOR
-  #define OPERATOR ==
+  #define PROXY
+
   #include "../../aux/macros.h"
   #include "../../config.h"
   #include "../../traits/realTraits.hpp"
   #include "../expressionInterface.hpp"
+  #define OPERATOR ==
+  #define PASSIVE_TYPE double
 
   namespace codi {
 #endif
@@ -35,7 +38,8 @@
   }
 
 // Create a correct include environment for viewing and programming in an IDE
-#ifndef OPERATOR
+#ifdef PROXY
+  #undef PROXY
   }
 #endif
 

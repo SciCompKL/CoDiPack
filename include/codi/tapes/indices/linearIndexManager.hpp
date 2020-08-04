@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../data/dataInterface.hpp"
 #include "indexManagerInterface.hpp"
@@ -14,13 +14,13 @@ namespace codi {
   struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
     public:
 
-      using Index = DECLARE_DEFAULT(_Index, int);
+      using Index = CODI_DECLARE_DEFAULT(_Index, int);
 
       static bool constexpr AssignNeedsStatement = false;
       static bool constexpr IsLinear = true;
 
       using Position = Index;
-      using NestedVector = void;
+      using NestedData = void;
       using InternalPosHandle = size_t;
 
     private:
@@ -52,7 +52,7 @@ namespace codi {
       }
 
       CODI_INLINE bool assignIndex(Index& index) {
-        ENABLE_CHECK(Config::OverflowCheck, count > count + 1) {
+        CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1) {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
         }
         count += 1;
@@ -119,22 +119,22 @@ namespace codi {
         count = zeroState;
       }
 
-      void setNested(NestedVector* v) { CODI_UNUSED(v); }
+      void setNested(NestedData* v) { CODI_UNUSED(v); }
 
       void swap(LinearIndexManager<Index>& other) {
         std::swap(zeroState, other.zeroState);
         std::swap(count, other.count);
       }
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateForward(Position const& start, Position const& end, Function const& function,
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
 
         function(std::forward<Args>(args)..., start, end);
       }
 
-      template<typename Function, typename ... Args>
-      CODI_INLINE void evaluateReverse(Position const& start, Position const& end, Function const& function,
+      template<typename FunctionObject, typename ... Args>
+      CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
 
         function(std::forward<Args>(args)..., start, end);
@@ -147,13 +147,13 @@ namespace codi {
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject& function,
+      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);
       }
 
       template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject& function,
+      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);
       }

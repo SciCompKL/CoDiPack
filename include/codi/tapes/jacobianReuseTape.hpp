@@ -3,14 +3,13 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "../aux/macros.h"
+#include "../aux/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
-#include "data/chunkVector.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "interfaces/reverseTapeInterface.hpp"
 #include "jacobianBaseTape.hpp"
@@ -18,13 +17,13 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _TapeTypes>
-  struct JacobianReuseTape : public JacobianBaseTape<_TapeTypes, JacobianReuseTape<_TapeTypes>> {
+  template<typename _ImplTapeTypes>
+  struct JacobianReuseTape : public JacobianBaseTape<_ImplTapeTypes, JacobianReuseTape<_ImplTapeTypes>> {
     public:
 
-      using ImplTapeTypes = DECLARE_DEFAULT(_TapeTypes, TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>));
+      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
 
-      using Base = JacobianBaseTape<_TapeTypes, JacobianReuseTape>;
+      using Base = JacobianBaseTape<ImplTapeTypes, JacobianReuseTape>;
       friend Base;
 
       using Real = typename ImplTapeTypes::Real;
@@ -32,7 +31,7 @@ namespace codi {
       using IndexManager = typename ImplTapeTypes::IndexManager;
       using Identifier = typename ImplTapeTypes::Identifier;
       using Position = typename Base::Position;
-      using StatementVector = typename ImplTapeTypes::StatementVector;
+      using StatementData = typename ImplTapeTypes::StatementData;
 
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
@@ -50,17 +49,17 @@ namespace codi {
           }
         };
 
-        using StmtPosition = typename StatementVector::Position;
-        StmtPosition startStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(start);
-        StmtPosition endStmt = this->externalFunctionVector.template extractPosition<StmtPosition>(end);
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(end);
 
-        this->statementVector.forEachReverse(startStmt, endStmt, clearFunc);
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }
 
     protected:
 
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
-        this->statementVector.pushData(index, numberOfArguments);
+        this->statementData.pushData(index, numberOfArguments);
       }
 
       template<typename Adjoint>
@@ -89,9 +88,9 @@ namespace codi {
       CODI_INLINE static void internalEvaluateReverse(
           /* data from call */
           Adjoint* adjointVector,
-          /* data from jacobian vector */
+          /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
-          /* data from statement vector */
+          /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers, Config::ArgumentSize const* const numberOfJacobians) {
 
         CODI_UNUSED(endJacobianPos);

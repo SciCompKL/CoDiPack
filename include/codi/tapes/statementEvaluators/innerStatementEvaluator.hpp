@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 
-#include "../../aux/macros.h"
+#include "../../aux/macros.hpp"
 #include "../../expressions/activeType.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "statementEvaluatorInterface.hpp"
@@ -36,19 +36,19 @@ namespace codi {
       static InnerPrimalTapeStatementData const staticStore;
   };
 
-  template<typename Tape, typename Expr>
-  InnerPrimalTapeStatementData const InnerStatementEvaluatorStaticStore<Tape, Expr>::staticStore(
+  template<typename Generator, typename Expr>
+  InnerPrimalTapeStatementData const InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore(
       NumberOfActiveTypeArguments<Expr>::value,
       NumberOfConstantTypeArguments<Expr>::value,
-      (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluateForwardInner<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluatePrimalInner<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Tape::template statementEvaluateReverseInner<Expr>);
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateForwardInner<Expr>,
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluatePrimalInner<Expr>,
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverseInner<Expr>);
 
   template<typename _Real>
   struct InnerStatementEvaluator : public StatementEvaluatorInterface<_Real> {
     public:
 
-      using Real = DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double);
 
       /*******************************************************************************
        * Section: Start of interface definition
@@ -77,9 +77,9 @@ namespace codi {
               std::forward<Args>(args)...);
       }
 
-      template<typename Tape, typename Expr>
+      template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle() {
-        return &InnerStatementEvaluatorStaticStore<Tape, Expr>::staticStore;
+        return &InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
       }
 
     protected:
