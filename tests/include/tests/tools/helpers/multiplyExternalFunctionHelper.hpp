@@ -48,21 +48,17 @@ struct MultiplyExternalFunctionHelper<_Number, codi::enableIfReverseTape<typenam
     }
 
     static Number create(Number const& x1, Number const& x2, bool primalFuncUsesADType) {
-      codi::ExternalFunctionHelper<Number> eh(primalFuncUsesADType);
+      static codi::ExternalFunctionHelper<Number> eh(primalFuncUsesADType);
 
       Number w;
 
       eh.addInput(x1);
       eh.addInput(x2);
+      eh.addOutput(w);
 
       if(primalFuncUsesADType) {
         eh.callPrimalFuncWithADType(MultiplyExternalFunctionHelper::funcCall, w, x1, x2);
-
-        eh.addOutput(w);
       } else {
-
-        eh.addOutput(w);
-
         eh.callPrimalFunc(MultiplyExternalFunctionHelper::func_primal);
       }
 
