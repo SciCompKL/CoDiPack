@@ -52,23 +52,23 @@ namespace codi {
       using NestedData = JacobianData;
   };
 
-  template<typename _ImplTapeTypes, typename _Impl>
-  struct JacobianBaseTape : public CommonTapeImplementation<_ImplTapeTypes, _Impl> {
+  template<typename _TapeTypes, typename _Impl>
+  struct JacobianBaseTape : public CommonTapeImplementation<_TapeTypes, _Impl> {
     public:
 
-      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
       using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Base = CommonTapeImplementation<ImplTapeTypes, Impl>;
+      using Base = CommonTapeImplementation<TapeTypes, Impl>;
       friend Base;
 
-      using Real = typename ImplTapeTypes::Real;
-      using Gradient = typename ImplTapeTypes::Gradient;
-      using IndexManager = typename ImplTapeTypes::IndexManager;
-      using Identifier = typename ImplTapeTypes::Identifier;
+      using Real = typename TapeTypes::Real;
+      using Gradient = typename TapeTypes::Gradient;
+      using IndexManager = typename TapeTypes::IndexManager;
+      using Identifier = typename TapeTypes::Identifier;
 
-      using StatementData = typename ImplTapeTypes::StatementData;
-      using JacobianData = typename ImplTapeTypes::JacobianData;
+      using StatementData = typename TapeTypes::StatementData;
+      using JacobianData = typename TapeTypes::JacobianData;
 
       using PassiveReal = PassiveRealType<Real>;
 
@@ -77,7 +77,7 @@ namespace codi {
 
       static bool constexpr AllowJacobianOptimization = true;
       static bool constexpr HasPrimalValues = false;
-      static bool constexpr LinearIndexHandling = ImplTapeTypes::IsLinearIndexHandler;
+      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler;
       static bool constexpr RequiresPrimalRestore = false;
 
     protected:
@@ -86,7 +86,7 @@ namespace codi {
       DuplicateJacobianRemover<Real, Identifier> jacobianSorter;
 #endif
 
-      MemberStore<IndexManager, Impl, ImplTapeTypes::IsStaticIndexHandler> indexManager;
+      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
       StatementData statementData;
       JacobianData jacobianData;
 
@@ -303,7 +303,7 @@ namespace codi {
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
 
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
           statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
         }
@@ -319,7 +319,7 @@ namespace codi {
 
       CODI_INLINE TapeValues internalGetTapeValues() const {
         std::string name;
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
           name = "CoDi Tape Statistics ( JacobiLinearTape )";
         } else {
           name = "CoDi Tape Statistics ( JacobiReuseTape )";

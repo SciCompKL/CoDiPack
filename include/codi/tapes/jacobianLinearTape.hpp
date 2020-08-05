@@ -19,19 +19,19 @@
 namespace codi {
 
 
-  template<typename _ImplTapeTypes>
-  struct JacobianLinearTape : public JacobianBaseTape<_ImplTapeTypes, JacobianLinearTape<_ImplTapeTypes>> {
+  template<typename _TapeTypes>
+  struct JacobianLinearTape : public JacobianBaseTape<_TapeTypes, JacobianLinearTape<_TapeTypes>> {
     public:
 
-      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
 
-      using Base = JacobianBaseTape<ImplTapeTypes, JacobianLinearTape>;
+      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;
       friend Base;
 
-      using Real = typename ImplTapeTypes::Real;
-      using Gradient = typename ImplTapeTypes::Gradient;
-      using IndexManager = typename ImplTapeTypes::IndexManager;
-      using Identifier = typename ImplTapeTypes::Identifier;
+      using Real = typename TapeTypes::Real;
+      using Gradient = typename TapeTypes::Gradient;
+      using IndexManager = typename TapeTypes::IndexManager;
+      using Identifier = typename TapeTypes::Identifier;
       using Position = typename Base::Position;
 
       static_assert(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");

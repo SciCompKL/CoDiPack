@@ -64,32 +64,32 @@ namespace codi {
       using NestedData = ConstantValueData;
   };
 
-  template<typename _ImplTapeTypes, typename _Impl>
+  template<typename _TapeTypes, typename _Impl>
   struct PrimalValueBaseTape :
-      public CommonTapeImplementation<_ImplTapeTypes, _Impl>,
-      public StatementEvaluatorTapeInterface<typename _ImplTapeTypes::Real>,
-      public StatementEvaluatorInnerTapeInterface<typename _ImplTapeTypes::Real>
+      public CommonTapeImplementation<_TapeTypes, _Impl>,
+      public StatementEvaluatorTapeInterface<typename _TapeTypes::Real>,
+      public StatementEvaluatorInnerTapeInterface<typename _TapeTypes::Real>
   {
     public:
 
-      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
       using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Base = CommonTapeImplementation<ImplTapeTypes, Impl>;
+      using Base = CommonTapeImplementation<TapeTypes, Impl>;
       friend Base;
 
-      using Real = typename ImplTapeTypes::Real;
-      using Gradient = typename ImplTapeTypes::Gradient;
-      using IndexManager = typename ImplTapeTypes::IndexManager;
-      using StatementEvaluator = typename ImplTapeTypes::StatementEvaluator;
-      using Identifier = typename ImplTapeTypes::Identifier;
+      using Real = typename TapeTypes::Real;
+      using Gradient = typename TapeTypes::Gradient;
+      using IndexManager = typename TapeTypes::IndexManager;
+      using StatementEvaluator = typename TapeTypes::StatementEvaluator;
+      using Identifier = typename TapeTypes::Identifier;
 
-      using EvalHandle = typename ImplTapeTypes::EvalHandle;
+      using EvalHandle = typename TapeTypes::EvalHandle;
 
-      using StatementData = typename ImplTapeTypes::StatementData;
-      using RhsIdentifierData = typename ImplTapeTypes::RhsIdentifierData;
-      using PassiveValueData = typename ImplTapeTypes::PassiveValueData;
-      using ConstantValueData = typename ImplTapeTypes::ConstantValueData;
+      using StatementData = typename TapeTypes::StatementData;
+      using RhsIdentifierData = typename TapeTypes::RhsIdentifierData;
+      using PassiveValueData = typename TapeTypes::PassiveValueData;
+      using ConstantValueData = typename TapeTypes::ConstantValueData;
 
       using PassiveReal = PassiveRealType<Real>;
 
@@ -98,14 +98,14 @@ namespace codi {
 
       static bool constexpr AllowJacobianOptimization = false;
       static bool constexpr HasPrimalValues = true;
-      static bool constexpr LinearIndexHandling = ImplTapeTypes::IsLinearIndexHandler;
-      static bool constexpr RequiresPrimalRestore = !ImplTapeTypes::IsLinearIndexHandler;
+      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler;
+      static bool constexpr RequiresPrimalRestore = !TapeTypes::IsLinearIndexHandler;
 
     protected:
 
       static EvalHandle const jacobianExpressions[Config::MaxArgumentSize];
 
-      MemberStore<IndexManager, Impl, ImplTapeTypes::IsStaticIndexHandler> indexManager;
+      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
       StatementData statementData;
       RhsIdentifierData rhsIdentiferData;
       PassiveValueData passiveValueData;
@@ -354,7 +354,7 @@ namespace codi {
         checkPrimalSize(generatedNewIndex);
 
         Real& primalEntry = primals[value.cast().getIdentifier()];
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
           statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag, primalEntry,
                               StatementEvaluator::template createHandle<Impl, Impl, Lhs>());
@@ -391,7 +391,7 @@ namespace codi {
 
       TapeValues internalGetTapeValues() const {
         std::string name;
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
           name = "CoDi Tape Statistics ( PrimalValueLinearTape )";
         } else {
           name = "CoDi Tape Statistics ( PrimalValueReuseTape )";
@@ -496,7 +496,7 @@ namespace codi {
 
         VectorAccessInterface<Real, Identifier>* vectorAccess;
 
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
           vectorAccess = &adjointAccess;
         } else {
           vectorAccess = &primalAdjointAccess;
@@ -512,7 +512,7 @@ namespace codi {
 
       template<typename Adjoint>
       CODI_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
-        internalEvaluateReverse<!ImplTapeTypes::IsLinearIndexHandler>(start, end, data);
+        internalEvaluateReverse<!TapeTypes::IsLinearIndexHandler>(start, end, data);
       }
 
     protected:
@@ -563,7 +563,7 @@ namespace codi {
 
         VectorAccessInterface<Real, Identifier>* vectorAccess;
 
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
           vectorAccess = &adjointAccess;
         } else {
           vectorAccess = &primalAdjointAccess;
@@ -571,7 +571,7 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
 
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
           Wrap_internalEvaluateForwardVector evalFunc{};
           Base::internalEvaluateExtFuncForward(start, end, evalFunc, vectorAccess,
                                                primalData, dataVector, constantValueData);
@@ -585,7 +585,7 @@ namespace codi {
 
       template<typename Adjoint>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
-        internalEvaluateForward<!ImplTapeTypes::IsLinearIndexHandler>(start, end, data);
+        internalEvaluateForward<!TapeTypes::IsLinearIndexHandler>(start, end, data);
       }
 
       /*******************************************************************************
@@ -848,7 +848,7 @@ namespace codi {
 
         internalEvaluateReverse<false>(start, end, adjoints.data());
 
-        if(!ImplTapeTypes::IsLinearIndexHandler) {
+        if(!TapeTypes::IsLinearIndexHandler) {
 
           internalEvaluatePrimal(end, start);
         }
@@ -857,7 +857,7 @@ namespace codi {
       void evaluateForwardKeepState(Position const& start, Position const& end) {
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
-        if(!ImplTapeTypes::IsLinearIndexHandler) {
+        if(!TapeTypes::IsLinearIndexHandler) {
           internalResetPrimalValues(end);
         }
 
@@ -890,7 +890,7 @@ namespace codi {
         // TODO: implement primal value only accessor
         PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals.data());
 
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
 
           Wrap_internalEvaluatePrimalVector evalFunc{};
           Base::internalEvaluateExtFuncPrimal(start, end, evalFunc,
@@ -1110,7 +1110,7 @@ namespace codi {
       }
 
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
-        if(ImplTapeTypes::IsLinearIndexHandler) {
+        if(TapeTypes::IsLinearIndexHandler) {
           if(indexManager.get().getLargestAssignedIndex() >= (Identifier)primals.size()) {
             resizePrimalVector(primals.size() + Config::ChunkSize);
           }

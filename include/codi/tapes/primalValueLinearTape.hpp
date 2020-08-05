@@ -19,21 +19,21 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _ImplTapeTypes>
-  struct PrimalValueLinearTape : public PrimalValueBaseTape<_ImplTapeTypes, PrimalValueLinearTape<_ImplTapeTypes>> {
+  template<typename _TapeTypes>
+  struct PrimalValueLinearTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueLinearTape<_TapeTypes>> {
     public:
 
-      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
-      using Base = PrimalValueBaseTape<ImplTapeTypes, PrimalValueLinearTape<ImplTapeTypes>>;
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
+      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>;
       friend Base;
 
-      using Real = typename ImplTapeTypes::Real;
-      using Gradient = typename ImplTapeTypes::Gradient;
-      using IndexManager = typename ImplTapeTypes::IndexManager;
-      using Identifier = typename ImplTapeTypes::Identifier;
+      using Real = typename TapeTypes::Real;
+      using Gradient = typename TapeTypes::Gradient;
+      using IndexManager = typename TapeTypes::IndexManager;
+      using Identifier = typename TapeTypes::Identifier;
       using PassiveReal = PassiveRealType<Real>;
-      using StatementEvaluator = typename ImplTapeTypes::StatementEvaluator;
-      using EvalHandle = typename ImplTapeTypes::EvalHandle;
+      using StatementEvaluator = typename TapeTypes::StatementEvaluator;
+      using EvalHandle = typename TapeTypes::EvalHandle;
       using Position = typename Base::Position;
 
       PrimalValueLinearTape() : Base() {}

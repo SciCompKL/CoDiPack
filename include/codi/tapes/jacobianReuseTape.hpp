@@ -17,21 +17,21 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _ImplTapeTypes>
-  struct JacobianReuseTape : public JacobianBaseTape<_ImplTapeTypes, JacobianReuseTape<_ImplTapeTypes>> {
+  template<typename _TapeTypes>
+  struct JacobianReuseTape : public JacobianBaseTape<_TapeTypes, JacobianReuseTape<_TapeTypes>> {
     public:
 
-      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
 
-      using Base = JacobianBaseTape<ImplTapeTypes, JacobianReuseTape>;
+      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;
       friend Base;
 
-      using Real = typename ImplTapeTypes::Real;
-      using Gradient = typename ImplTapeTypes::Gradient;
-      using IndexManager = typename ImplTapeTypes::IndexManager;
-      using Identifier = typename ImplTapeTypes::Identifier;
+      using Real = typename TapeTypes::Real;
+      using Gradient = typename TapeTypes::Gradient;
+      using IndexManager = typename TapeTypes::IndexManager;
+      using Identifier = typename TapeTypes::Identifier;
       using Position = typename Base::Position;
-      using StatementData = typename ImplTapeTypes::StatementData;
+      using StatementData = typename TapeTypes::StatementData;
 
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
