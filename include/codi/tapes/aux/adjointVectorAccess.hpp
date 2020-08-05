@@ -4,6 +4,7 @@
 
 #include "../../aux/macros.hpp"
 #include "../../config.h"
+#include "../../tools/data/direction.hpp"
 #include "../../traits/realTraits.hpp"
 #include "vectorAccessInterface.hpp"
 
@@ -21,19 +22,16 @@ namespace codi {
 
       Gradient lhs;
 
-
       AdjointVectorAccess(Gradient* adjointVector) :
         adjointVector(adjointVector),
         lhs() {}
 
       size_t getVectorSize() const {
-        return 1;
+        return GradientTraits::dim<Gradient>();
       }
 
       void resetAdjoint(Identifier const& index, size_t dim) {
-        CODI_UNUSED(dim);
-
-        adjointVector[index] = Gradient();
+        GradientTraits::at(adjointVector[index], dim) = typename GradientTraits::Real<Gradient>();
       }
 
       void resetAdjointVec(Identifier const& index) {
@@ -43,21 +41,23 @@ namespace codi {
       Real getAdjoint(Identifier const& index, size_t dim) {
         CODI_UNUSED(dim);
 
-        return (Real) adjointVector[index];
+        return (Real) GradientTraits::at(adjointVector[index], dim);
       }
 
       void getAdjointVec(Identifier const& index, Real* const vec) {
-        *vec = (Real)adjointVector[index];
+        for (size_t i = 0; i < getVectorSize(); ++i) {
+          vec[i] = (Real) GradientTraits::at(adjointVector[index], i);
+        }
       }
 
       void updateAdjoint(Identifier const& index, size_t dim, Real const& adjoint) {
-        CODI_UNUSED(dim);
-
-        adjointVector[index] += adjoint;
+        GradientTraits::at(adjointVector[index], dim) += adjoint;
       }
 
       void updateAdjointVec(Identifier const& index, Real const* const vec) {
-        adjointVector[index] += *vec;
+        for (size_t i = 0; i < getVectorSize(); ++i) {
+          GradientTraits::at(adjointVector[index], i) += vec[i];
+        }
       }
 
       void setLhsAdjoint(Identifier const& index) {
@@ -79,7 +79,7 @@ namespace codi {
       }
 
       void updateTangentWithLhs(Identifier const& index, Real const& jacobi) {
-        lhs +=  jacobi * adjointVector[index];
+        lhs += jacobi * adjointVector[index];
       }
 
       void setPrimal(Identifier const& index, Real const& primal) {
