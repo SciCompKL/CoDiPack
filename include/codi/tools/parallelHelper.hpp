@@ -1002,8 +1002,8 @@ namespace codi {
        *
        * Internally, advances the frame iterator.
        */
-      template<typename AdjointVec>
-      CODI_INLINE void evaluateNextFrame(TapeId id, AdjointVec& adjoints) {
+      template<typename ... AdjointVec>
+      CODI_INLINE void evaluateNextFrame(TapeId id, AdjointVec& ... adjoints) {
         ReadLock lock(this->tapeDataMutex);
         codiAssert(this->hasTape(id));
         codiAssert(!this->evaluationDone(id));
@@ -1015,34 +1015,9 @@ namespace codi {
           debugOutput(spaces, "thread", threadId, "evaluates", this->tapeData.at(id).name, "from", this->tapeData.at(id).frameIterator->end, "to", this->tapeData.at(id).frameIterator->start, "from", this->tapeData.at(id).frameIterator->endEvent, "to", this->tapeData.at(id).frameIterator->startEvent);
         #endif
 
-        auto oldIter = this->tapeData.at(id).frameIterator++;
-        this->tapeData.at(id).tape->evaluate(oldIter->end, oldIter->start, adjoints);
-
-        #if CODI_EnableParallelHelperDebugOutput & 4
-          debugOutput(spaces, "thread", threadId, "finished evaluating", this->tapeData.at(id).name, "from", oldIter->end, "to", oldIter->start, "from", oldIter->endEvent, "to", oldIter->startEvent);
-        #endif
-      }
-
-      /**
-       * @brief Evaluates the next frame of the given tape.
-       * @param id Tape id.
-       *
-       * Internally, advances the frame iterator.
-       */
-      CODI_INLINE void evaluateNextFrame(TapeId id) {
-        ReadLock lock(this->tapeDataMutex);
-        codiAssert(this->hasTape(id));
-        codiAssert(!this->evaluationDone(id));
-
-        #if CODI_EnableParallelHelperDebugOutput & 4
-          std::string spaces;
-          for (int i = 0; i < id; ++i)
-            spaces.push_back(' ');
-          debugOutput(spaces, "thread", threadId, "evaluates", this->tapeData.at(id).name, "from", this->tapeData.at(id).frameIterator->end, "to", this->tapeData.at(id).frameIterator->start, "from", this->tapeData.at(id).frameIterator->endEvent, "to", this->tapeData.at(id).frameIterator->startEvent);
-        #endif
-
-        auto oldIter = this->tapeData.at(id).frameIterator++;
-        this->tapeData.at(id).tape->evaluate(oldIter->end, oldIter->start);
+        TapeData& data = this->tapeData.at(id);
+        auto oldIter = data.frameIterator++;
+        data.tape->evaluate(oldIter->end, oldIter->start, adjoints...);
 
         #if CODI_EnableParallelHelperDebugOutput & 4
           debugOutput(spaces, "thread", threadId, "finished evaluating", this->tapeData.at(id).name, "from", oldIter->end, "to", oldIter->start, "from", oldIter->endEvent, "to", oldIter->startEvent);
