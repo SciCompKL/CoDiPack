@@ -352,12 +352,13 @@ namespace codi {
       std::atomic<SyncEvent> nextEvent;
 
       /**
-       * @brief Stores the default tape of a thread when a specialized tape is set for the tape.
+       * @brief Stores the previous tape of a thread for which a specialized tape is set.
        *
-       * In general this variable will be null if the default thread for the tape is set to the global tape pointer
-       * of CoDiPack.
+       * Since setThisThreadsTape and clearThisThreadsTape calls are expected to be matched,
+       * it is null for a thread that uses its CoDiPack default tape and points to the
+       * CoDiPack default tape otherwise.
        */
-      static thread_local Tape* threadDefaultTape;
+      static thread_local Tape* previousTape;
 
       /*************** members related to debug output ****************/
 
@@ -901,20 +902,20 @@ namespace codi {
 
       /**
        * @brief Set the thread-local tape of the calling thread to the one with the given id.
-       *
-       * The current tape of the thread is stored. A call to clearThisThreadsTape will restore the current tape.
        * @param id Tape id.
+       *
+       * The previous tape of the thread is stored. A call to clearThisThreadsTape restores the previous tape.
        */
       CODI_INLINE void setThisThreadsTape(TapeId id) {
         ReadLock lock(this->tapeDataMutex);
         codiAssert(this->hasTape(id));
-        codiAssert(nullptr == ParallelHelper::threadDefaultTape); // If not null, then clearThisThreadsTape has not been called.
+        codiAssert(nullptr == ParallelHelper::previousTape); // If not null, then clearThisThreadsTape has not been called.
 
         #if CODI_EnableParallelHelperDebugOutput & 2
           debugOutput("thread", threadId, "uses now tape", id, this->tapeData.at(id).name);
         #endif
 
-        ParallelHelper::threadDefaultTape = ActiveReal<Tape>::getGlobalTapePtr();
+        ParallelHelper::previousTape = ActiveReal<Tape>::getGlobalTapePtr();
         ActiveReal<Tape>::setGlobalTapePtr(this->tapeData.at(id).tape);
       }
 
@@ -922,14 +923,14 @@ namespace codi {
        * @brief Set the thread-local tape of the calling thread to the old stored tape.
        */
       CODI_INLINE void clearThisThreadsTape() {
-        codiAssert(nullptr != ParallelHelper::threadDefaultTape); // If null, then setThisThreadsTape has not been called.
+        codiAssert(nullptr != ParallelHelper::previousTape); // If null, then setThisThreadsTape has not been called.
 
         #if CODI_EnableParallelHelperDebugOutput & 2
           debugOutput("thread", threadId, "cleared its thread-local tape");
         #endif
 
-        ActiveReal<Tape>::setGlobalTapePtr(ParallelHelper::threadDefaultTape);
-        ParallelHelper::threadDefaultTape = nullptr;
+        ActiveReal<Tape>::setGlobalTapePtr(ParallelHelper::previousTape);
+        ParallelHelper::previousTape = nullptr;
       }
 
       /*************** reverse pass management ****************/
@@ -997,8 +998,10 @@ namespace codi {
       }
 
       /**
-       * @brief Evaluates the next frame of the given tape with a custom adjoint vector
+       * @brief Evaluates the next frame of the given tape, optionally with a custom adjoint vector.
+       * @tparam AdjointVec Either empty or type of the custom adjoints.
        * @param id Tape id.
+       * @param adjoints Either empty or a custom adjoint vector.
        *
        * Internally, advances the frame iterator.
        */
@@ -1188,7 +1191,7 @@ namespace codi {
   std::atomic<typename ParallelHelper<Tape>::TapeId> ParallelHelper<Tape>::nextTapeId(0);
 
   template<typename Tape>
-  thread_local Tape* ParallelHelper<Tape>::threadDefaultTape = nullptr;
+  thread_local Tape* ParallelHelper<Tape>::previousTape = nullptr;
 
   #if CODI_EnableParallelHelperDebugOutput
     template<typename Tape>
