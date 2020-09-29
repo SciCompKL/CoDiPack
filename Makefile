@@ -47,6 +47,7 @@ tutorials: $(TUTORIALS)
 
 doc:
 	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)/documentation
 	doxygen
 
 .PHONY: clean
