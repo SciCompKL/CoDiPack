@@ -28,6 +28,18 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * \section sec_forwardAD Forward AD Equation
+   *
+   * \f$ \dot w = dphi/du * \dot u \f$
+   *
+   * \section sec_reverseAD Reverse AD Equation
+   *
+   * \f$ \bar u = dphi/du^T * \bar w \f$
+   *
+   */
+  struct Temp {};
+
   /* TODO names */
   template<typename Chunk, typename NestedData = EmptyData>
   using DefaultBlockData = BlockData<Chunk, NestedData>;
