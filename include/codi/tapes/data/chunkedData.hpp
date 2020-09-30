@@ -13,18 +13,30 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Data is stored in chunk wise in this DataInterface implementation. If chunk runs out of space a new chunk
+   * is allocated.
+   *
+   * See DataInterface documentation for details.
+   *
+   * Each chunk has the size provided in the constructor.
+   *
+   * @tparam _Chunk            Type of the data stored in DataInterface. Needs to extend ChunkBase.
+   * @tparam _NestedData       Nested DataInterface.
+   * @tparam _PointerInserter  Defines how data is appended to evaluate* function calls.
+   */
   template<typename _Chunk, typename _NestedData = EmptyData, typename _PointerInserter = PointerStore<_Chunk>>
   struct ChunkedData : public DataInterface<_NestedData> {
     public:
 
-      using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>));
-      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, CODI_TEMPLATE(DataInterface<CODI_ANY>));
-      using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>));
-      using InternalPosHandle = size_t;
+      using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>)); ///< ChunkBase Interface
+      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, CODI_TEMPLATE(DataInterface<CODI_ANY>)); ///< DataInterface Interface
+      using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>)); ///< PointerStore
+      using InternalPosHandle = size_t ;///< Position in the chunk
 
-      using NestedPosition = typename NestedData::Position;
+      using NestedPosition = typename NestedData::Position; ///< Position of NestedData
 
-      using Position = ChunkPosition<NestedPosition>;
+      using Position = ChunkPosition<NestedPosition>; ///< \copydoc DataInterface::Position
 
     private:
       std::vector<Chunk*> chunks;
@@ -39,6 +51,7 @@ namespace codi {
 
     public:
 
+      /// Allocate chunkSize entries and set the nested DataInterface
       ChunkedData(size_t const& chunkSize, NestedData* nested) :
         chunks(),
         positions(),
@@ -50,6 +63,7 @@ namespace codi {
         setNested(nested);
       }
 
+      /// Allocate chunkSize entries. Requires a call to #setNested
       ChunkedData(size_t const& chunkSize) :
         chunks(),
         positions(),
@@ -59,69 +73,25 @@ namespace codi {
         nested(NULL)
       {}
 
+      /// Destructor
       ~ChunkedData() {
         for(size_t i = 0; i < chunks.size(); ++i) {
           delete chunks[i];
         }
       }
 
-      /*******************************************************************************
-       * Section: Misc functions
-       *
-       * Description: TODO
-       *
-       */
+      /*******************************************************************************/
+      /// @name Adding items
 
-      void addToTapeValues(TapeValues& values) const {
-        size_t numberOfChunks = chunks.size();
-        size_t dataEntries    = getDataSize();
-        size_t entrySize      = Chunk::EntrySize;
-
-        double  memoryUsed  = (double)dataEntries*(double)entrySize* TapeValues::BYTE_TO_MB;
-        double  memoryAlloc = (double)numberOfChunks*(double)chunkSize*(double)entrySize* TapeValues::BYTE_TO_MB;
-
-        values.addUnsignedLongEntry("Total number", dataEntries);
-        values.addUnsignedLongEntry("Number of chunks", numberOfChunks);
-        values.addDoubleEntry("Memory used", memoryUsed, true, false);
-        values.addDoubleEntry("Memory allocated", memoryAlloc, false, true);
-      }
-
-      template<typename TargetPosition>
-      CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
-        return nested->template extractPosition<TargetPosition>(pos.inner);
-      }
-
-      CODI_INLINE Position extractPosition(Position const& pos) const {
-        return pos;
-      }
-
-      CODI_INLINE size_t getDataSize() const {
-        size_t size = 0;
-        for(size_t i = 0; i < chunks.size(); ++i) {
-          size += chunks[i]->getUsedSize();
-        }
-
-        return size;
-      }
-
-      CODI_INLINE Position getPosition() const {
-        return Position(curChunkIndex, curChunk->getUsedSize(), nested->getPosition());
-      }
-
-      CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos) {
-        return curChunk->getUsedSize() - startPos;
-      }
-
-      CODI_INLINE Position getZeroPosition() const {
-        return Position(0, 0, nested->getZeroPosition());
-      }
-
+      /// \copydoc DataInterface::pushData
       template<typename ... Data>
       CODI_INLINE void pushData(Data const& ... data) {
         // this method should only be called if reserveItems has been called
         curChunk->pushData(data...);
       }
 
+      /// \copydoc DataInterface::reserveItems <br><br>
+      /// Implementation: Creates a new chunk if not enough space is left.
       CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
         codiAssert(items <= chunkSize);
 
@@ -132,6 +102,10 @@ namespace codi {
         return curChunk->getUsedSize();
       }
 
+      /*******************************************************************************/
+      /// @name Size management
+
+      /// \copydoc DataInterface::resize
       void resize(size_t const& totalSize) {
         size_t noOfChunks = totalSize / chunkSize;
         if(0 != totalSize % chunkSize) {
@@ -144,10 +118,12 @@ namespace codi {
         }
       }
 
+      /// \copydoc DataInterface::reset
       void reset() {
         resetTo(getZeroPosition());
       }
 
+      /// \copydoc DataInterface::resetHard
       void resetHard() {
         for(size_t i = 1; i < chunks.size(); ++i) {
           delete chunks[i];
@@ -163,6 +139,7 @@ namespace codi {
         nested->resetHard();
       }
 
+      /// \copydoc DataInterface::resetTo
       void resetTo(Position const& pos) {
         codiAssert(pos.chunk < chunks.size());
         codiAssert(pos.data <= chunkSize);
@@ -178,6 +155,66 @@ namespace codi {
         nested->resetTo(pos.inner);
       }
 
+      /*******************************************************************************/
+      /// @name Position functions
+
+      /// \copydoc DataInterface::getDataSize
+      CODI_INLINE size_t getDataSize() const {
+        size_t size = 0;
+        for(size_t i = 0; i < chunks.size(); ++i) {
+          size += chunks[i]->getUsedSize();
+        }
+
+        return size;
+      }
+
+      /// \copydoc DataInterface::getPosition
+      CODI_INLINE Position getPosition() const {
+        return Position(curChunkIndex, curChunk->getUsedSize(), nested->getPosition());
+      }
+
+      /// \copydoc DataInterface::getPushedDataCount
+      CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos) {
+        return curChunk->getUsedSize() - startPos;
+      }
+
+      /// \copydoc DataInterface::getZeroPosition
+      CODI_INLINE Position getZeroPosition() const {
+        return Position(0, 0, nested->getZeroPosition());
+      }
+
+      /*******************************************************************************/
+      /// @name Misc functions
+      /// @{
+
+      /// \copydoc DataInterface::addToTapeValues <br><br>
+      /// Implementation: Adds: Total number, NUmber of chunks, Memory used, Memory allocated
+      void addToTapeValues(TapeValues& values) const {
+        size_t numberOfChunks = chunks.size();
+        size_t dataEntries    = getDataSize();
+        size_t entrySize      = Chunk::EntrySize;
+
+        double  memoryUsed  = (double)dataEntries*(double)entrySize* TapeValues::BYTE_TO_MB;
+        double  memoryAlloc = (double)numberOfChunks*(double)chunkSize*(double)entrySize* TapeValues::BYTE_TO_MB;
+
+        values.addUnsignedLongEntry("Total number", dataEntries);
+        values.addUnsignedLongEntry("Number of chunks", numberOfChunks);
+        values.addDoubleEntry("Memory used", memoryUsed, true, false);
+        values.addDoubleEntry("Memory allocated", memoryAlloc, false, true);
+      }
+
+      /// \copydoc DataInterface::extractPosition
+      template<typename TargetPosition>
+      CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
+        return nested->template extractPosition<TargetPosition>(pos.inner);
+      }
+
+      /// \copydoc DataInterface::extractPosition
+      CODI_INLINE Position extractPosition(Position const& pos) const {
+        return pos;
+      }
+
+      /// \copydoc DataInterface::setNested
       void setNested(NestedData* v) {
         // Set nested is only called once during the initialization.
         codiAssert(NULL == this->nested);
@@ -190,6 +227,7 @@ namespace codi {
         positions.push_back(nested->getZeroPosition());
       }
 
+      /// \copydoc DataInterface::swap
       void swap(ChunkedData<Chunk, NestedData>& other) {
         std::swap(chunks, other.chunks);
         std::swap(positions, other.positions);
@@ -202,13 +240,10 @@ namespace codi {
         nested->swap(*other.nested);
       }
 
-      /*******************************************************************************
-       * Section: Iterator functions
-       *
-       * Description: TODO
-       *
-       */
+      /*******************************************************************************/
+      /// @name Iterator functions
 
+      /// \copydoc DataInterface::evaluateForward
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
@@ -250,6 +285,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc DataInterface::evaluateReverse
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
@@ -292,6 +328,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc DataInterface::forEachChunk
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
 
@@ -305,6 +342,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc DataInterface::forEachForward
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.chunk < end.chunk || (start.chunk == end.chunk && start.data <= end.data));
@@ -325,6 +363,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc DataInterface::forEachReverse
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
@@ -355,6 +394,8 @@ namespace codi {
           }
         }
       }
+
+      /// @}
 
     private:
 
@@ -390,6 +431,7 @@ namespace codi {
         }
       }
 
+      /// Loads next chunk or creates a new one if none is available.
       CODI_NO_INLINE void nextChunk() {
         curChunkIndex += 1;
         if(chunks.size() == curChunkIndex) {

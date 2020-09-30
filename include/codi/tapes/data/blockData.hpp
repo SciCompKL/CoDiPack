@@ -35,7 +35,7 @@ namespace codi {
       using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>)); ///< PointerStore
       using InternalPosHandle = size_t; ///< Position in the chunk
 
-      using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
+      using NestedPosition = typename NestedData::Position; ///< Position of NestedData
 
       using Position = ArrayPosition<NestedPosition>; ///< \copydoc DataInterface::Position
 

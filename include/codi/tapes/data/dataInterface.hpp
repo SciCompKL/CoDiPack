@@ -31,6 +31,8 @@ namespace codi {
    * methods that have the Position type as an argument or will modify the position of the DataInterface will work
    * recursively on all nested DataInterfaces.
    *
+   * TODO: Link to general explanation of recursive data management and layout.
+   *
    * Example usage:
    *  \code{.cpp}
    *    ArgDataInterface argVector = ...;
