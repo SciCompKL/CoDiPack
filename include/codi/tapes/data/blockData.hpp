@@ -14,18 +14,30 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Data is stored in one contiguous block in this DataInterface implementation.
+   *
+   * See DataInterface documentation for details.
+   *
+   * This implementation does not check in #reserveItems if enough space is available it needs to be preallocated with
+   * #resize.
+   *
+   * @tparam _Chunk            Type of the data stored in DataInterface. Needs to extend ChunkBase.
+   * @tparam _NestedData       Nested DataInterface.
+   * @tparam _PointerInserter  Defines how data is appended to evaluate* function calls.
+   */
   template<typename _Chunk, typename _NestedData = EmptyData, typename _PointerInserter = PointerStore<_Chunk>>
   struct BlockData : public DataInterface<_NestedData> {
     public:
 
-      using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>));
-      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, CODI_TEMPLATE(DataInterface<CODI_ANY>));
-      using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>));
-      using InternalPosHandle = size_t;
+      using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>)); ///< ChunkBase Interface
+      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, CODI_TEMPLATE(DataInterface<CODI_ANY>)); ///< DataInterface interface
+      using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>)); ///< PointerStore
+      using InternalPosHandle = size_t; ///< Position in the chunk
 
-      using NestedPosition = typename NestedData::Position;
+      using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 
-      using Position = ArrayPosition<NestedPosition>;
+      using Position = ArrayPosition<NestedPosition>; ///< \copydoc DataInterface::Position
 
     private:
       Chunk chunk;
@@ -34,6 +46,7 @@ namespace codi {
 
     public:
 
+      /// Allocate chunkSize entries and set the nested DataInterface
       BlockData(size_t const& chunkSize, NestedData* nested) :
         chunk(chunkSize),
         nested(NULL)
@@ -41,18 +54,87 @@ namespace codi {
         setNested(nested);
       }
 
+      /// Allocate chunkSize entries. Requires a call to #setNested
       BlockData(size_t const& chunkSize) :
         chunk(chunkSize),
         nested(NULL)
       {}
 
-      /*******************************************************************************
-       * Section: Misc functions
-       *
-       * Description: TODO
-       *
-       */
+      /*******************************************************************************/
+      /// @name Adding items
 
+      /// \copydoc DataInterface::pushData
+      template<typename ... Data>
+      CODI_INLINE void pushData(Data const& ... data) {
+        // this method should only be called if reserveItems has been called
+        chunk.pushData(data...);
+      }
+
+      /// \copydoc DataInterface::reserveItems <br><br>
+      /// Implementation: Does not check if enough space is available.
+      CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
+        codiAssert(chunk.getUsedSize() + items <= chunk.getSize());
+
+        return chunk.getUsedSize();
+      }
+
+      /*******************************************************************************/
+      /// @name Size management
+
+      /// \copydoc DataInterface::resize
+      void resize(size_t const& totalSize) {
+        chunk.resize(totalSize);
+      }
+
+      /// \copydoc DataInterface::reset
+      void reset() {
+        resetTo(getZeroPosition());
+      }
+
+      /// \copydoc DataInterface::resetHard
+      void resetHard() {
+        chunk.resize(0);
+
+        nested->resetHard();
+      }
+
+      /// \copydoc DataInterface::resetTo
+      void resetTo(Position const& pos) {
+        codiAssert(pos.data <= chunk.getSize());
+
+        chunk.setUsedSize(pos.data);
+
+        nested->resetTo(pos.inner);
+      }
+
+      /*******************************************************************************/
+      /// @name Position functions
+
+      /// \copydoc DataInterface::getDataSize
+      CODI_INLINE size_t getDataSize() const {
+        return chunk.getUsedSize();
+      }
+
+      /// \copydoc DataInterface::getPosition
+      CODI_INLINE Position getPosition() const {
+        return Position(chunk.getUsedSize(), nested->getPosition());
+      }
+
+      /// \copydoc DataInterface::getPushedDataCount
+      CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos) {
+        return chunk.getUsedSize() - startPos;
+      }
+
+      /// \copydoc DataInterface::getZeroPosition
+      CODI_INLINE Position getZeroPosition() const {
+        return Position(0, nested->getZeroPosition());
+      }
+
+      /*******************************************************************************/
+      /// @name Misc functions
+
+      /// \copydoc DataInterface::addToTapeValues <br><br>
+      /// Implementation: Adds: Total number, Memory used, Memory allocated
       void addToTapeValues(TapeValues& values) const {
         size_t allocedSize    = chunk.getSize();
         size_t dataEntries    = getDataSize();
@@ -66,65 +148,18 @@ namespace codi {
         values.addDoubleEntry("Memory allocated", memoryAlloc, false, true);
       }
 
+      /// \copydoc DataInterface::extractPosition
       template<typename TargetPosition>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
         return nested->template extractPosition<TargetPosition>(pos.inner);
       }
 
+      /// \copydoc DataInterface::extractPosition
       CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }
 
-      CODI_INLINE size_t getDataSize() const {
-        return chunk.getUsedSize();
-      }
-
-      CODI_INLINE Position getPosition() const {
-        return Position(chunk.getUsedSize(), nested->getPosition());
-      }
-
-      CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos) {
-        return chunk.getUsedSize() - startPos;
-      }
-
-      CODI_INLINE Position getZeroPosition() const {
-        return Position(0, nested->getZeroPosition());
-      }
-
-      template<typename ... Data>
-      CODI_INLINE void pushData(Data const& ... data) {
-        // this method should only be called if reserveItems has been called
-        chunk.pushData(data...);
-      }
-
-      CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
-        codiAssert(chunk.getUsedSize() + items <= chunk.getSize());
-
-        return chunk.getUsedSize();
-      }
-
-      void resize(size_t const& totalSize) {
-        chunk.resize(totalSize);
-      }
-
-      void reset() {
-        resetTo(getZeroPosition());
-      }
-
-      void resetHard() {
-        chunk.resize(0);
-
-        nested->resetHard();
-      }
-
-      void resetTo(Position const& pos) {
-        codiAssert(pos.data <= chunk.getSize());
-
-        chunk.setUsedSize(pos.data);
-
-        nested->resetTo(pos.inner);
-      }
-
+      /// \copydoc DataInterface::setNested
       void setNested(NestedData* v) {
         // Set nested is only called once during the initialization.
         codiAssert(NULL == this->nested);
@@ -133,19 +168,17 @@ namespace codi {
         this->nested = v;
       }
 
+      /// \copydoc DataInterface::swap
       void swap(BlockData<Chunk, NestedData>& other) {
         chunk.swap(other.chunk);
 
         nested->swap(*other.nested);
       }
 
-      /*******************************************************************************
-       * Section: Iterator functions
-       *
-       * Description: TODO
-       *
-       */
+      /*******************************************************************************/
+      /// @name Iterator functions
 
+      /// \copydoc DataInterface::evaluateForward
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
@@ -162,6 +195,7 @@ namespace codi {
         codiAssert(dataPos == end.data);
       }
 
+      /// \copydoc DataInterface::evaluateReverse
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
@@ -179,6 +213,7 @@ namespace codi {
         codiAssert(dataPos == end.data);
       }
 
+      /// \copydoc DataInterface::forEachChunk
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
 
@@ -189,6 +224,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc DataInterface::forEachForward
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.data <= end.data);
@@ -201,6 +237,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc DataInterface::forEachReverse
       template<typename FunctionObject, typename ... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.data >= end.data);
