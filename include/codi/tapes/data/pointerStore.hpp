@@ -92,6 +92,11 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Pointer store for Chunk2 data.
+   *
+   * See PointerStore for details.
+   */
   template<typename _Data1, typename _Data2>
   struct PointerStore<Chunk2<_Data1, _Data2> > {
     public:
@@ -131,6 +136,11 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Pointer store for Chunk3 data.
+   *
+   * See PointerStore for details.
+   */
   template<typename _Data1, typename _Data2, typename _Data3>
   struct PointerStore<Chunk3<_Data1, _Data2, _Data3> > {
     public:
@@ -172,6 +182,11 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Pointer store for Chunk4 data.
+   *
+   * See PointerStore for details.
+   */
   template<typename _Data1, typename _Data2, typename _Data3, typename _Data4>
   struct PointerStore<Chunk4<_Data1, _Data2, _Data3, _Data4> > {
     public:
