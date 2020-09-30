@@ -5,6 +5,11 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Possible configuration options for a tape.
+   *
+   * See DataManagementTapeInterface for details.
+   */
   enum class TapeParameters {
     AdjointSize,
     ConstantValuesSize,

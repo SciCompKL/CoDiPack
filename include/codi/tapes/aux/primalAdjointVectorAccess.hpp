@@ -29,7 +29,11 @@ namespace codi {
 
       using Base = AdjointVectorAccess<Real, Identifier, Gradient>; ///< Base class abbreviation
 
+    private:
+
       Real* primalVector; ///< Pointer to the primal vector
+
+    public:
 
       /// Size of both vectors needs to be big enough. No bounds checking is performed.
       PrimalAdjointVectorAccess(Gradient* adjointVector, Real* primalVector) :

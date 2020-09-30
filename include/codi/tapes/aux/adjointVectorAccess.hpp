@@ -26,9 +26,13 @@ namespace codi {
       using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int);  ///< See AdjointVectorAccess
       using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See AdjointVectorAccess
 
+    private:
+
       Gradient* adjointVector; ///< Pointer to the gradient vector
 
       Gradient lhs; ///< Temporary storage for indirect adjoint or tangent updates.
+
+    public:
 
 
       /// Size of adjointVector needs to big enough to. No bounds checking is performed.
