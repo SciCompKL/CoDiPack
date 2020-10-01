@@ -9,16 +9,31 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Extends the ReuseIndexManager with a copy optimization.
+   *
+   * TODO: Add paper ref.
+   *
+   * Performs a reference counting for each index. If the reference count is zero then it is freed and given to
+   * the ReuseIndexManager.
+   *
+   * @tparam _Index   Type for the identifier usually an integer type.
+   */
   template<typename _Index>
   struct MultiUseIndexManager : public ReuseIndexManager<_Index> {
     public:
 
-      using Index = CODI_DECLARE_DEFAULT(_Index, int);
+      using Index = CODI_DECLARE_DEFAULT(_Index, int); ///< See MultiUseIndexManager
+      using Base = ReuseIndexManager<Index>; ///< Base class abbreviation
 
-      static bool constexpr CopyNeedsStatement = !Config::CopyOptimization;
-      static bool constexpr IsLinear = false;
+      /*******************************************************************************/
+      /// @name IndexManagerInterface: Constants
+      /// @{
 
-      using Base = ReuseIndexManager<Index>;
+      static bool constexpr CopyNeedsStatement = !Config::CopyOptimization; ///< Copy optimization only active if configured.
+      static bool constexpr IsLinear = false; ///< Identifiers are not coupled to statements.
+
+      /// @}
 
     private:
 
@@ -26,6 +41,7 @@ namespace codi {
 
     public:
 
+      /// Constructor
       MultiUseIndexManager(Index const& reserveIndices) :
         Base(reserveIndices),
         indexUse(Config::SmallChunkSize)
@@ -33,6 +49,13 @@ namespace codi {
         resizeUseVector();
       }
 
+
+      /*******************************************************************************/
+      /// @name ReuseIndexManager: Overwrites
+      /// @{
+
+      /// \copydoc ReuseIndexManager::addToTapeValues <br><br>
+      /// Implementation: Additionally adds memory index use vector.
       void addToTapeValues(TapeValues& values) const {
 
         Base::addToTapeValues(values);
@@ -42,6 +65,7 @@ namespace codi {
         values.addDoubleEntry("Memory index use vector", memoryindexUseVector, true, true);
       }
 
+      /// \copydoc ReuseIndexManager::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
         bool generatedNewIndex = false;
 
@@ -66,6 +90,7 @@ namespace codi {
         return generatedNewIndex;
       }
 
+      /// \copydoc ReuseIndexManager::assignUnusedIndex
       CODI_INLINE bool assignUnusedIndex(Index& index) {
         freeIndex(index); // zero check is performed inside
 
@@ -79,6 +104,7 @@ namespace codi {
         return generatedNewIndex;
       }
 
+      /// \copydoc ReuseIndexManager::copyIndex
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
         if(Config::CopyOptimization) {
           // skip the logic if the indices are the same.
@@ -98,6 +124,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc ReuseIndexManager::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
         if(Base::valid && Base::UnusedIndex != index) { // do not free the zero index
           indexUse[index] -= 1;
@@ -109,6 +136,8 @@ namespace codi {
           }
         }
       }
+
+      /// @}
 
     private:
       CODI_NO_INLINE void resizeUseVector() {

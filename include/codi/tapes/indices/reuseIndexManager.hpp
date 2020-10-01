@@ -11,15 +11,32 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Identifiers are reused. Freed identifiers are given out to new variables. Variables with an identifier will
+   * keep this one.
+   *
+   * This index manager does not implement a copy optimization. Therefore every copy operation needs a statement, but
+   * variables will keep there identifier if they are always active.
+   *
+   * For generalization reasons it also extends from the EmptyData DataInterface.
+   *
+   * @tparam _Index   Type for the identifier usually an integer type.
+   */
   template<typename _Index>
   struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DECLARE_DEFAULT(_Index, int);
-      using Base = IndexManagerInterface<Index>;
+      using Index = CODI_DECLARE_DEFAULT(_Index, int); ///< See ReuseIndexManager
+      using Base = IndexManagerInterface<Index>; ///< Base class abbreviation
 
-      static bool constexpr CopyNeedsStatement = true;
-      static bool constexpr IsLinear = false;
+      /*******************************************************************************/
+      /// @name IndexManagerInterface: Constants
+      /// @{
+
+      static bool constexpr CopyNeedsStatement = true; ///< No copy optimization implemented.
+      static bool constexpr IsLinear = false; ///< Identifiers are not coupled to statements.
+
+      /// @}
 
     private:
 
@@ -35,10 +52,11 @@ namespace codi {
 
     protected:
 
-      bool valid;
+      bool valid; ///< Prevent index free after destruction.
 
     public:
 
+      /// Constructor
       ReuseIndexManager(Index const& reserveIndices) :
         globalMaximumIndex(reserveIndices + 1),
         usedIndices(),
@@ -52,10 +70,17 @@ namespace codi {
         generateNewIndices();
       }
 
+      /// Destructor
       ~ReuseIndexManager() {
         valid = false;
       }
 
+      /*******************************************************************************/
+      /// @name IndexManagerInterface: Methods
+      /// @{
+
+      /// \copydoc IndexManagerInterface::addToTapeValues <br><br>
+      /// Implementation: Adds max live indices, cur live indices, indices stored, memory used, memory allocated.
       void addToTapeValues(TapeValues& values) const {
 
         unsigned long maximumGlobalIndex = globalMaximumIndex;
@@ -74,6 +99,7 @@ namespace codi {
       }
 
 
+      /// \copydoc IndexManagerInterface::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
         bool generatedNewIndex = false;
 
@@ -95,6 +121,7 @@ namespace codi {
         return generatedNewIndex;
       }
 
+      /// \copydoc IndexManagerInterface::assignUnusedIndex
       CODI_INLINE bool assignUnusedIndex(Index& index) {
         freeIndex(index); // zero check is performed inside
 
@@ -110,6 +137,7 @@ namespace codi {
         return generatedNewIndex;
       }
 
+      /// \copydoc IndexManagerInterface::copyIndex
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
         if(Base::UnusedIndex == rhs) {
           freeIndex(lhs);
@@ -118,6 +146,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc IndexManagerInterface::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
         if(valid && Base::UnusedIndex != index) { // do not free the zero index
 
@@ -132,10 +161,12 @@ namespace codi {
         }
       }
 
+      /// \copydoc IndexManagerInterface::getLargestAssignedIndex
       CODI_INLINE Index getLargestAssignedIndex() const {
         return globalMaximumIndex;
       }
 
+      /// \copydoc IndexManagerInterface::reset
       CODI_INLINE void reset() {
         size_t totalSize = usedIndicesPos + unusedIndicesPos;
         if(totalSize > unusedIndices.size()) {
@@ -157,16 +188,19 @@ namespace codi {
         }
       }
 
-      /*******************************************************************************
-       * Section: Function overwrite of EmptyData
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name EmptyData: Method overwrite
+      /// @{
 
+      /// \copydoc EmptyData::resetTo
       void resetTo(Position const& pos) {
         if(pos == getZeroPosition()) {
           reset();
         }
       }
+
+      /// @}
 
     private:
 
