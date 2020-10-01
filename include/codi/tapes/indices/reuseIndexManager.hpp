@@ -18,7 +18,7 @@ namespace codi {
       using Index = CODI_DECLARE_DEFAULT(_Index, int);
       using Base = IndexManagerInterface<Index>;
 
-      static bool constexpr AssignNeedsStatement = true;
+      static bool constexpr CopyNeedsStatement = true;
       static bool constexpr IsLinear = false;
 
     private:

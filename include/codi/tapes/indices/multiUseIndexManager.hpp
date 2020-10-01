@@ -15,7 +15,7 @@ namespace codi {
 
       using Index = CODI_DECLARE_DEFAULT(_Index, int);
 
-      static bool constexpr AssignNeedsStatement = !Config::AssignOptimization;
+      static bool constexpr CopyNeedsStatement = !Config::CopyOptimization;
       static bool constexpr IsLinear = false;
 
       using Base = ReuseIndexManager<Index>;
@@ -80,7 +80,7 @@ namespace codi {
       }
 
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
-        if(Config::AssignOptimization) {
+        if(Config::CopyOptimization) {
           // skip the logic if the indices are the same.
           // This also prevents the bug, that if &lhs == &rhs the left hand side will always be deactivated.
           if(lhs != rhs) {

@@ -317,7 +317,7 @@ namespace codi {
                  LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
 
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
-          if(IndexManager::AssignNeedsStatement || !Config::AssignOptimization) {
+          if(IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
           } else {
             indexManager.get().copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());

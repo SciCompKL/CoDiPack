@@ -16,7 +16,7 @@ namespace codi {
 
       using Index = CODI_DECLARE_DEFAULT(_Index, int);
 
-      static bool constexpr AssignNeedsStatement = false;
+      static bool constexpr CopyNeedsStatement = false;
       static bool constexpr IsLinear = true;
 
       using Position = Index;

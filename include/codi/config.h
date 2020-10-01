@@ -48,12 +48,6 @@ namespace codi {
      *
      */
 
-    #ifndef CODI_AssignOptimization
-      #define CODI_AssignOptimization true
-    #endif
-    bool constexpr AssignOptimization = CODI_AssignOptimization;
-    #undef CODI_AssignOptimization
-
     #ifndef CODI_CheckExpressionArguments
       #define CODI_CheckExpressionArguments false
     #endif
@@ -72,12 +66,17 @@ namespace codi {
     bool constexpr CheckTapeActivity = CODI_CheckTapeActivity;
     #undef CODI_CheckTapeActivity
 
-
     #ifndef CODI_CheckZeroIndex
       #define CODI_CheckZeroIndex true
     #endif
     bool constexpr CheckZeroIndex = CODI_CheckZeroIndex;
     #undef CODI_CheckZeroIndex
+
+    #ifndef CODI_CopyOptimization
+      #define CODI_CopyOptimization true
+    #endif
+    bool constexpr CopyOptimization = CODI_CopyOptimization;
+    #undef CODI_CopyOptimization
 
     #ifndef CODI_RemoveDuplicateJacobianArguments
       #define CODI_RemoveDuplicateJacobianArguments 0

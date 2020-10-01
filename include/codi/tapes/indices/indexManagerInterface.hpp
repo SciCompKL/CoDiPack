@@ -15,7 +15,7 @@ namespace codi {
 
       using Index = CODI_DECLARE_DEFAULT(_Index, int);
 
-      static bool constexpr AssignNeedsStatement = CODI_UNDEFINED_VALUE;
+      static bool constexpr CopyNeedsStatement = CODI_UNDEFINED_VALUE;
       static bool constexpr IsLinear = CODI_UNDEFINED_VALUE;
 
       static Index constexpr UnusedIndex = 0;
