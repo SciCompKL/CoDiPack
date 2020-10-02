@@ -75,7 +75,7 @@ namespace codi {
       void swap(CODI_IMPLEMENTATION& other); ///< Swap data with other chunk of the same type.
 
       /// @}
-    private:
+    protected:
       size_t size;
       size_t usedSize;
 
