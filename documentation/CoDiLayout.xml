@@ -3,6 +3,9 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
+    <tab type="usergroup" title="Design" url="@ref designPage">
+      <tab type="user" title="Tape interfaces" url="@ref TapeInterfaces"/>
+    </tab>
     <!-- <tab type="pages" visible="yes" title="" intro=""/> -->
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
