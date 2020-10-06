@@ -9,6 +9,8 @@ namespace codi {
   /**
    * @brief Internal tape interface that is used by active types to trigger the storing of an expression.
    *
+   * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
+   *
    * The interface is the callback interface of values in the program to the tape implementation. Each value in the
    * program needs to allocate an identifier and this identifier needs to be initialized with a call to initIdentifier().
    * When the value in the program is destroyed the identifier freed by the tape before it is destroyed by the program.

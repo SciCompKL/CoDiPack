@@ -11,6 +11,8 @@ namespace codi {
   /**
    * @brief General information about the identifiers and checks if variables are active.
    *
+   * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
+   *
    * With this interface the user can check if a variable in the program is active or not. For an explanation of what is
    * an active variable for CoDiPack please see (TODO: ref).
    *

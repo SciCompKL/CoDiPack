@@ -9,6 +9,8 @@ namespace codi {
   /**
    * @brief Allow for a direct access to the gradient information computed by the tape.
    *
+   * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
+   *
    * The gradient information is usually accessed via the helper functions of the ActiveType. For example
    * \code{.cpp}
    *   ActiveType<Tape> w = 1.0;

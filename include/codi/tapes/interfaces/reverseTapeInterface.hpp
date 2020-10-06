@@ -17,6 +17,8 @@ namespace codi {
   /**
    * @brief Minimum tape interface for a working reverse tape implementation.
    *
+   * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
+   *
    * For an example on how to uses this interface to perform an AD reverse mode recording and evaluation of a program
    * pleas see tutorials (TODO: ref).
    *
