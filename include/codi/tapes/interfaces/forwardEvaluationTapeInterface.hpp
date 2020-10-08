@@ -8,21 +8,29 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Forward AD evaluation of recorded tape.
+   *
+   * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
+   *
+   * An example for a forward tape evaluation (documentation/examples/forwardEvaluationTapeInterface.cpp):
+   * \snippet examples/forwardEvaluationTapeInterface.cpp Forward tape evaluation
+   *
+   * @tparam _Position  Global tape position usually defined by Tape::Position.
+   */
   template<typename _Position>
   struct ForwardEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<_Position> {
     public:
 
-      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition);
+      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition); ///< See ForwardEvaluationTapeInterface.
 
-      /*******************************************************************************
-       * Section: Start of interface definition
-       *
-       */
+      /*******************************************************************************/
+      /// @name Interface definition
 
-      /// TODO evaluateForwardPos
+      /// Perform a forward evaluation for a part of the tape. It hast to hold start <= end.
       void evaluateForward(Position const& start, Position const& end);
 
-      /// TODO evaluateForward
+      /// Perform a forward evaluation for the full.
       void evaluateForward();
   };
 }
