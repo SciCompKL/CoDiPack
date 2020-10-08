@@ -107,6 +107,13 @@ namespace codi {
       /// @name DataInterface: Methods
       /// @{
 
+
+      /// \copydoc DataInterface::extractPosition
+      template<typename TargetPosition>
+      CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
+        return pos;  // Last in line needs to be this position.
+      }
+
       /// \copydoc DataInterface::getDataSize
       CODI_INLINE size_t getDataSize() const {
         return 0;

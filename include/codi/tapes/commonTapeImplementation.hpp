@@ -334,10 +334,12 @@ namespace codi {
 
     public:
 
-      CODI_INLINE void resetTo(Position const& pos) {
+      CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true) {
 
-        Impl& impl = cast();
-        impl.clearAdjoints(impl.getPosition(), pos);
+        if(resetAdjoints) {
+          Impl& impl = cast();
+          impl.clearAdjoints(impl.getPosition(), pos);
+        }
 
         deleteExternalFunctionUserData(pos);
 
