@@ -17,6 +17,7 @@
 #include "codi/tapes/statementEvaluators/directStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
+#include "codi/tools/data/direction.hpp"
 #include "codi/tools/data/externalFunctionUserData.hpp"
 #include "codi/tools/helpers/customAdjointVectorHelper.hpp"
 #include "codi/tools/helpers/externalFunctionHelper.hpp"
@@ -52,11 +53,16 @@ namespace codi {
 
   using RealForward = RealForwardGen<double, double>;
 
+  template<size_t dim>
+  using RealForwardVec = RealForwardGen<double, Direction<double, dim>>;
 
   template<typename Real, typename Gradient = Real, typename Index = int>
   using RealReverseGen = ActiveType<JacobianLinearTape<JacobianTapeTypes<Real, Gradient, LinearIndexManager<Index>, DefaultChunkedData>>>;
 
   using RealReverse = RealReverseGen<double>;
+
+  template<size_t dim>
+  using RealReverseVec = RealReverseGen<double, Direction<double, dim>>;
 
   template<typename Real, typename Gradient = Real, typename Index = int>
   using RealReverseUncheckedGen = ActiveType<JacobianLinearTape<JacobianTapeTypes<Real, Gradient, LinearIndexManager<Index>, DefaultBlockData>>>;
@@ -68,6 +74,9 @@ namespace codi {
 
   using RealReverseIndex = RealReverseIndexGen<double>;
 
+  template<size_t dim>
+  using RealReverseIndexVec = RealReverseIndexGen<double, Direction<double, dim>>;
+
   template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>>
   using RealReverseIndexUncheckedGen = ActiveType<JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager, DefaultChunkedData>>>;
 
@@ -78,6 +87,9 @@ namespace codi {
 
   using RealReversePrimal = RealReversePrimalGen<double>;
 
+  template<size_t dim>
+  using RealReversePrimalVec = RealReversePrimalGen<double, Direction<double, dim>>;
+
   template<typename Real, typename Gradient = Real, typename Index = int, template <typename> class StatementEvaluator = InnerStatementEvaluator>
   using RealReversePrimalUncheckedGen = ActiveType<PrimalValueLinearTape<PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, DefaultChunkedData>>>;
 
@@ -87,6 +99,9 @@ namespace codi {
   using RealReversePrimalIndexGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, DefaultChunkedData>>>;
 
   using RealReversePrimalIndex = RealReversePrimalIndexGen<double>;
+
+  template<size_t dim>
+  using RealReversePrimalIndexVec = RealReversePrimalIndexGen<double, Direction<double, dim>>;
 
   template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>, template <typename> class StatementEvaluator = InnerStatementEvaluator>
   using RealReversePrimalIndexUncheckedGen = ActiveType<PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, DefaultChunkedData>>>;

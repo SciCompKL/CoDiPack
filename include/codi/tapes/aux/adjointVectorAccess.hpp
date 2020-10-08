@@ -4,6 +4,7 @@
 
 #include "../../aux/macros.hpp"
 #include "../../config.h"
+#include "../../tools/data/direction.hpp"
 #include "../../traits/realTraits.hpp"
 #include "vectorAccessInterface.hpp"
 
@@ -45,7 +46,7 @@ namespace codi {
 
       /// \copydoc VectorAccessInterface::getVectorSize
       size_t getVectorSize() const {
-        return 1;
+        return GradientTraits::dim<Gradient>();
       }
 
       /// \copydoc VectorAccessInterface::isLhsZero
@@ -88,9 +89,7 @@ namespace codi {
 
       /// \copydoc VectorAccessInterface::resetAdjoint
       void resetAdjoint(Identifier const& index, size_t dim) {
-        CODI_UNUSED(dim);
-
-        adjointVector[index] = Gradient();
+        GradientTraits::at(adjointVector[index], dim) = typename GradientTraits::Real<Gradient>();
       }
 
       /// \copydoc VectorAccessInterface::resetAdjointVec
@@ -102,24 +101,26 @@ namespace codi {
       Real getAdjoint(Identifier const& index, size_t dim) {
         CODI_UNUSED(dim);
 
-        return (Real) adjointVector[index];
+        return (Real) GradientTraits::at(adjointVector[index], dim);
       }
 
       /// \copydoc VectorAccessInterface::getAdjointVec
       void getAdjointVec(Identifier const& index, Real* const vec) {
-        *vec = (Real)adjointVector[index];
+        for (size_t i = 0; i < getVectorSize(); ++i) {
+          vec[i] = (Real) GradientTraits::at(adjointVector[index], i);
+        }
       }
 
       /// \copydoc VectorAccessInterface::updateAdjoint
       void updateAdjoint(Identifier const& index, size_t dim, Real const& adjoint) {
-        CODI_UNUSED(dim);
-
-        adjointVector[index] += adjoint;
+        GradientTraits::at(adjointVector[index], dim) += adjoint;
       }
 
       /// \copydoc VectorAccessInterface::updateAdjointVec
       void updateAdjointVec(Identifier const& index, Real const* const vec) {
-        adjointVector[index] += *vec;
+        for (size_t i = 0; i < getVectorSize(); ++i) {
+          GradientTraits::at(adjointVector[index], i) += vec[i];
+        }
       }
 
       /*******************************************************************************/
