@@ -6,6 +6,7 @@
 #include "../aux/fileIo.hpp"
 #include "../aux/macros.hpp"
 #include "../config.h"
+#include "aux/externalFunction.hpp"
 #include "aux/vectorAccessInterface.hpp"
 #include "data/dataInterface.hpp"
 #include "data/position.hpp"
@@ -40,7 +41,7 @@ namespace codi {
 
 
       using NestedPosition = typename NestedData::Position;
-      using ExternalFunctionChunk = Chunk2<ExternalFunction, NestedPosition>;
+      using ExternalFunctionChunk = Chunk2<ExternalFunctionInternalData, NestedPosition>;
       using ExternalFunctionData = Data<ExternalFunctionChunk, NestedData>;
       using Position = typename ExternalFunctionData::Position;
   };
@@ -261,7 +262,7 @@ namespace codi {
        *
        */
 
-      void pushExternalFunction(ExternalFunction const& extFunc) {
+      void pushExternalFunction(ExternalFunction<Impl> const& extFunc) {
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           externalFunctionData.reserveItems(1);
           externalFunctionData.pushData(extFunc, externalFunctionData.getPosition().inner); // TODO: Add getInner zum Interface?
@@ -321,11 +322,11 @@ namespace codi {
 
       void deleteExternalFunctionUserData(Position const& pos) {
         // clear external function data
-        auto deleteFunc = [this] (ExternalFunction* extFunc, NestedPosition const* endInnerPos) {
+        auto deleteFunc = [this] (ExternalFunctionInternalData* extFunc, NestedPosition const* endInnerPos) {
           CODI_UNUSED(endInnerPos);
 
           /* we just need to call the delete function */
-          extFunc->deleteData(this);
+          ((ExternalFunction<Impl>*)extFunc)->deleteData(&cast());
         };
 
         externalFunctionData.forEachReverse(cast().getPosition(), pos, deleteFunc);
@@ -382,11 +383,11 @@ namespace codi {
                                  Args&&... args){
 
         NestedPosition curInnerPos = start.inner;
-        auto evalFunc = [&] (ExternalFunction* extFunc, const NestedPosition* endInnerPos) {
+        auto evalFunc = [&] (ExternalFunctionInternalData* extFunc, const NestedPosition* endInnerPos) {
 
           func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-          extFunc->evaluatePrimal(&cast(), vectorAccess);
+          ((ExternalFunction<Impl>*)extFunc)->evaluatePrimal(&cast(), vectorAccess);
 
           curInnerPos = *endInnerPos;
 
@@ -404,11 +405,11 @@ namespace codi {
                                  Args&&... args){
 
         NestedPosition curInnerPos = start.inner;
-        auto evalFunc = [&] (ExternalFunction* extFunc, const NestedPosition* endInnerPos) {
+        auto evalFunc = [&] (ExternalFunctionInternalData* extFunc, const NestedPosition* endInnerPos) {
 
           func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-          extFunc->evaluateReverse(&cast(), vectorAccess);
+          ((ExternalFunction<Impl>*)extFunc)->evaluateReverse(&cast(), vectorAccess);
 
           curInnerPos = *endInnerPos;
 
@@ -426,11 +427,11 @@ namespace codi {
                                  Args&&... args){
 
         NestedPosition curInnerPos = start.inner;
-        auto evalFunc = [&] (ExternalFunction* extFunc, const NestedPosition* endInnerPos) {
+        auto evalFunc = [&] (ExternalFunctionInternalData* extFunc, const NestedPosition* endInnerPos) {
 
           func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
 
-          extFunc->evaluateForward(&cast(), vectorAccess);
+          ((ExternalFunction<Impl>*)extFunc)->evaluateForward(&cast(), vectorAccess);
 
           curInnerPos = *endInnerPos;
 

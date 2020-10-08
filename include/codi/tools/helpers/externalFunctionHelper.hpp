@@ -55,7 +55,7 @@ namespace codi {
             forwardFunc(nullptr),
             primalFunc(nullptr) {}
 
-          static void delFunc(void* t, void* d) {
+          static void delFunc(Tape* t, void* d) {
             CODI_UNUSED(t);
 
             EvalData* data = (EvalData*)d;
@@ -63,11 +63,11 @@ namespace codi {
             delete data;
           }
 
-          static void evalForwFuncStatic(void* t, void* d, void* ra) {
+          static void evalForwFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
             EvalData* data = (EvalData*)d;
 
             if(nullptr != data->forwardFunc) {
-              data->evalForwFunc((Tape*)t, (VectorAccessInterface<Real, Identifier>*)ra);
+              data->evalForwFunc(t, ra);
             } else {
               CODI_EXCEPTION("Calling forward evaluation in external function helper without a forward function pointer.");
             }
@@ -109,11 +109,11 @@ namespace codi {
             delete [] y_d;
           }
 
-          static void evalPrimFuncStatic(void* t, void* d, void* ra) {
+          static void evalPrimFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
             EvalData* data = (EvalData*)d;
 
             if(nullptr != data->primalFunc) {
-              data->evalPrimFunc((Tape*)t, (VectorAccessInterface<Real, Identifier>*)ra);
+              data->evalPrimFunc(t, ra);
             } else {
               CODI_EXCEPTION("Calling primal evaluation in external function helper without a primal function pointer.");
             }
@@ -137,11 +137,11 @@ namespace codi {
             }
           }
 
-          static void evalRevFuncStatic(void* t, void* d, void* ra) {
+          static void evalRevFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
             EvalData* data = (EvalData*)d;
 
             if(nullptr != data->reverseFunc) {
-              data->evalRevFunc((Tape*)t, (VectorAccessInterface<Real, Identifier>*)ra);
+              data->evalRevFunc(t, ra);
             } else {
               CODI_EXCEPTION("Calling reverse evaluation in external function helper without a reverse function pointer.");
             }
@@ -313,7 +313,7 @@ namespace codi {
             data->inputValues.clear();
           }
 
-          Type::getGlobalTape().pushExternalFunction(ExternalFunction::create(
+          Type::getGlobalTape().pushExternalFunction(ExternalFunction<Tape>::create(
               EvalData::evalRevFuncStatic,
               data,
               EvalData::delFunc,

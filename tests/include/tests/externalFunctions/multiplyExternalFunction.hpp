@@ -24,10 +24,8 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
 
     using VAI = codi::VectorAccessInterface<Real, Identifier>;
 
-    static void extFuncReverse(void* t, void* d, void* i) {
+    static void extFuncReverse(Tape* t, void* d, VAI* vai) {
       codi::CODI_UNUSED(t);
-
-      VAI* vai = (VAI*)i;
 
       codi::ExternalFunctionUserData *data = static_cast<codi::ExternalFunctionUserData*>(d);
 
@@ -51,10 +49,8 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
       }
     }
 
-    static void extFuncPrimal(void* t, void* d, void* i) {
+    static void extFuncPrimal(Tape* t, void* d, VAI* vai) {
       codi::CODI_UNUSED(t);
-
-      VAI* vai = (VAI*)i;
 
       codi::ExternalFunctionUserData *data = static_cast<codi::ExternalFunctionUserData*>(d);
 
@@ -72,10 +68,8 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
       vai->setPrimal( w_i, z);
     }
 
-    static void extFuncForward(void* t, void* d, void* i) {
+    static void extFuncForward(Tape* t, void* d, VAI* vai) {
       codi::CODI_UNUSED(t);
-
-      VAI* vai = (VAI*)i;
 
       codi::ExternalFunctionUserData *data = static_cast<codi::ExternalFunctionUserData*>(d);
 
@@ -107,7 +101,7 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
       vai->setPrimal( w_i, z);
     }
 
-    static void delFunc(void* tape, void* d){
+    static void delFunc(Tape* tape, void* d){
       codi::CODI_UNUSED(tape);
 
       codi::ExternalFunctionUserData *data = static_cast<codi::ExternalFunctionUserData*>(d);
@@ -128,7 +122,7 @@ struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Num
       data->addData(x2.getValue());
       data->addData(x2.getIdentifier());
       data->addData(w.getIdentifier());
-      tape.pushExternalFunction(codi::ExternalFunction(extFuncReverse, extFuncForward, extFuncPrimal, data, delFunc));
+      tape.pushExternalFunction(codi::ExternalFunction<Tape>(extFuncReverse, extFuncForward, extFuncPrimal, data, delFunc));
 
       return w;
     }

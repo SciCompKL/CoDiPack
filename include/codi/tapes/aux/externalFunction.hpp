@@ -3,12 +3,54 @@
 #include "../../aux/macros.hpp"
 #include "../../aux/exceptions.hpp"
 #include "../../config.h"
-#include "../data/position.hpp"
 #include "../../expressions/lhsExpressionInterface.hpp"
+#include "../data/position.hpp"
+#include "../aux/vectorAccessInterface.hpp"
+#include "../interfaces/externalFunctionTapeInterface.hpp"
+
 
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  /// Internal untyped data for an external function.
+  struct ExternalFunctionInternalData {
+    protected:
+      typedef void (*CallFunctionUntyped)(void* tape, void* data, void* adjointInterface); ///< Call function definition.
+      typedef void (*DeleteFunctionUntyped)(void* tape, void* data); ///< Delete function definition.
+
+      CallFunctionUntyped funcReverse;  ///< Reverse evaluation function pointer
+      CallFunctionUntyped funcForward;  ///< Forward evaluation function pointer
+      CallFunctionUntyped funcPrimal;   ///< Primal evaluation function pointer
+      DeleteFunctionUntyped funcDelete; ///< User data deletion function pointer
+
+      void* data; ///< User data pointer
+
+    public:
+
+      /// Constructor
+      ExternalFunctionInternalData() :
+        funcReverse(NULL),
+        funcForward(NULL),
+        funcPrimal(NULL),
+        funcDelete(NULL),
+        data(NULL){}
+
+    protected:
+
+      /// Constructor
+      ExternalFunctionInternalData(
+          CallFunctionUntyped funcReverse,
+          CallFunctionUntyped funcForward,
+          CallFunctionUntyped funcPrimal,
+          DeleteFunctionUntyped funcDelete,
+          void* data) :
+        funcReverse(funcReverse),
+        funcForward(funcForward),
+        funcPrimal(funcPrimal),
+        funcDelete(funcDelete),
+        data(data){}
+  };
 
   /**
    * @brief User defined evaluation functions for the taping process.
@@ -16,7 +58,7 @@ namespace codi {
    * See ExternalFunctionTapeInterface for details.
    *
    * The user can provide call functions for the reverse, forward and primal evaluation of a tape. These need to be of
-   * the type CallFunction. The user has to cast all arguments to the correct type:
+   * the type CallFunction which has the tree arguments:
    *  - tape: The type of the tape on which this object was registered with `registerExternalFunction`
    *          (ExternalFunctionTapeInterface)
    *  - data: User provided data, type is known by the user.
@@ -28,31 +70,24 @@ namespace codi {
    *
    * The delete function is called when the entry of the tape for the external function is deleted.
    */
-  struct ExternalFunction {
+  template<typename _Tape>
+  struct ExternalFunction : public ExternalFunctionInternalData {
     public:
 
-      typedef void (*CallFunction)(void* tape, void* data, void* adjointInterface); ///< Call function definition.
-      typedef void (*DeleteFunction)(void* tape, void* data); ///< Delete function definition.
+      using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(ExternalFunctionTapeInterface<double, double, int>)); ///< See ExternalFunction
 
-    private:
-      CallFunction funcReverse;
-      CallFunction funcForward;
-      CallFunction funcPrimal;
-      DeleteFunction funcDelete;
-
-      void* data;
-
-    public:
-      /// Constructor
-      ExternalFunction() {}
+      using VectorAccess = VectorAccessInterface<typename Tape::Real, typename Tape::Identifier>; ///< Shortcut for VectorAccessInterface.
+      typedef void (*CallFunction)(Tape* tape, void* data, VectorAccess* adjointInterface); ///< Call function definition.
+      typedef void (*DeleteFunction)(Tape* tape, void* data); ///< Delete function definition.
 
       /// Any arguments can be NULL if not required.
       ExternalFunction(CallFunction funcReverse, CallFunction funcForward, CallFunction funcPrimal, void* data, DeleteFunction funcDelete) :
-        funcReverse(funcReverse),
-        funcForward(funcForward),
-        funcPrimal(funcPrimal),
-        funcDelete(funcDelete),
-        data(data){}
+        ExternalFunctionInternalData(
+          (ExternalFunctionInternalData::CallFunctionUntyped)funcReverse,
+          (ExternalFunctionInternalData::CallFunctionUntyped)funcForward,
+          (ExternalFunctionInternalData::CallFunctionUntyped)funcPrimal,
+          (ExternalFunctionInternalData::DeleteFunctionUntyped)funcDelete,
+          data) {}
 
       /// Helper function for the creation of an ExternalFunction object.
       static ExternalFunction create(CallFunction funcReverse,
@@ -64,7 +99,7 @@ namespace codi {
       }
 
       /// Calls the delete function if not NULL.
-      void deleteData(void* tape) {
+      void deleteData(Tape* tape) {
         if (funcDelete != NULL){
           funcDelete(tape, data);
           data = NULL;
@@ -72,7 +107,7 @@ namespace codi {
       }
 
       /// Calls the reverse function if not NULL, otherwise throws a CODI_EXCEPTION.
-      void evaluateReverse(void* tape, void* adjointInterface) {
+      void evaluateReverse(Tape* tape, VectorAccess* adjointInterface) {
         if(NULL != funcReverse) {
           funcReverse(tape, data, adjointInterface);
         } else {
@@ -81,7 +116,7 @@ namespace codi {
       }
 
       /// Calls the forward function if not NULL, otherwise throws a CODI_EXCEPTION.
-      void evaluateForward(void* tape, void* adjointInterface) {
+      void evaluateForward(Tape* tape, VectorAccess* adjointInterface) {
         if(NULL != funcForward) {
           funcForward(tape, data, adjointInterface);
         } else {
@@ -90,7 +125,7 @@ namespace codi {
       }
 
       /// Calls the primal function if not NULL, otherwise throws a CODI_EXCEPTION.
-      void evaluatePrimal(void* tape, void* adjointInterface) {
+      void evaluatePrimal(Tape* tape, VectorAccess* adjointInterface) {
         if(NULL != funcPrimal) {
           funcPrimal(tape, data, adjointInterface);
         } else {
@@ -98,6 +133,4 @@ namespace codi {
         }
       }
   };
-
-  // TODO: Add typed interface
 }

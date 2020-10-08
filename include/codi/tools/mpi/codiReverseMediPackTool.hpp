@@ -174,7 +174,7 @@ namespace codi {
 
       CODI_INLINE void addToolAction(medi::HandleBase* h) const {
         if(NULL != h) {
-          getTape().pushExternalFunction(ExternalFunction::create(callHandleReverse, h, deleteHandle, callHandleForward, callHandlePrimal));
+          getTape().pushExternalFunction(ExternalFunction<Tape>::create(callHandleReverse, h, deleteHandle, callHandleForward, callHandlePrimal));
         }
       }
 
@@ -277,25 +277,31 @@ namespace codi {
 
     private:
 
-      static void callHandleReverse(void* tape, void* h, void* ah) {
+      static void callHandleReverse(Tape* tape, void* h, VectorAccessInterface<PrimalType, IndexType>* ah) {
+        CODI_UNUSED(tape);
+
         medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
-        CoDiMeDiAdjointInterfaceWrapper<Type> ahWrapper((VectorAccessInterface<PrimalType, IndexType>*)ah);
+        CoDiMeDiAdjointInterfaceWrapper<Type> ahWrapper(ah);
         handle->funcReverse(handle, &ahWrapper);
       }
 
-      static void callHandleForward(void* tape, void* h, void* ah) {
+      static void callHandleForward(Tape* tape, void* h, VectorAccessInterface<PrimalType, IndexType>* ah) {
+        CODI_UNUSED(tape);
+
         medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
-        CoDiMeDiAdjointInterfaceWrapper<Type> ahWrapper((VectorAccessInterface<PrimalType, IndexType>*)ah);
+        CoDiMeDiAdjointInterfaceWrapper<Type> ahWrapper(ah);
         handle->funcForward(handle, &ahWrapper);
       }
 
-      static void callHandlePrimal(void* tape, void* h, void* ah) {
+      static void callHandlePrimal(Tape* tape, void* h, VectorAccessInterface<PrimalType, IndexType>* ah) {
+        CODI_UNUSED(tape);
+
         medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
-        CoDiMeDiAdjointInterfaceWrapper<Type> ahWrapper((VectorAccessInterface<PrimalType, IndexType>*)ah);
+        CoDiMeDiAdjointInterfaceWrapper<Type> ahWrapper(ah);
         handle->funcPrimal(handle, &ahWrapper);
       }
 
-      static void deleteHandle(void* tape, void* h) {
+      static void deleteHandle(Tape* tape, void* h) {
         CODI_UNUSED(tape);
 
         medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
