@@ -24,7 +24,7 @@ namespace codi {
       void readFromFile(std::string const& filename);
       void deleteData();
 
-      std::set<TapeParameters> const& getAvailableOptions() const;
+      std::set<TapeParameters> const& getAvailableParameters() const;
       size_t getParameter(TapeParameters parameter) const;
       bool hasParameter(TapeParameters parameter) const;
       void setParameter(TapeParameters parameter, size_t value);

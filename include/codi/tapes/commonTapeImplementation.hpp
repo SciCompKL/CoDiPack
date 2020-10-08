@@ -222,7 +222,7 @@ namespace codi {
         externalFunctionData.forEachChunk(deleteFunction, true);
       }
 
-      std::set<TapeParameters> const& getAvailableOptions() const {
+      std::set<TapeParameters> const& getAvailableParameters() const {
         return options;
       }
 
