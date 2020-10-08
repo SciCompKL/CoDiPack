@@ -28,8 +28,8 @@ namespace codi {
    * done with a call to reset(). This allows the user to skip unnecessary parts in the application by setting the tape
    * to passive for these regions.
    *
-   * (documentation/examples/identifierInformationTapeInterface.cpp):
-   * \snippet examples/identifierInformationTapeInterface.cpp Identifier Activity
+   * A example use of a tape is(documentation/examples/reverseModeAD.cpp):
+   * \snippet examples/reverseModeAD.cpp Reverse mode AD
    *
    * @tparam _Real        The computation type of a tape usually defined by ActiveType::Real.
    * @tparam _Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.

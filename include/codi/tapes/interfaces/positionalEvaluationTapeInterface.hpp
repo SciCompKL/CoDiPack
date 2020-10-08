@@ -18,6 +18,7 @@ namespace codi {
        *
        */
 
+      /// TODO evaluatePos
       void evaluate(Position const& start, Position const& end);
       void clearAdjoints(Position const& start, Position const& end);
 

@@ -13,6 +13,7 @@ namespace codi {
 
   namespace GradientTraits {
 
+    /// TODO
     template<typename _Gradient, typename = void>
     struct TraitsImplementation {
       public:

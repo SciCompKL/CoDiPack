@@ -19,7 +19,10 @@ namespace codi {
        *
        */
 
+      /// TODO evaluateForwardPos
       void evaluateForward(Position const& start, Position const& end);
+
+      /// TODO evaluateForward
       void evaluateForward();
   };
 }

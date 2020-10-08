@@ -16,7 +16,7 @@ namespace codi {
    * With this interface the user can check if a variable in the program is active or not. For an explanation of what is
    * an active variable for CoDiPack please see (TODO: ref).
    *
-   * (documentation/examples/identifierInformationTapeInterface.cpp):
+   * An example that deactivates an identifier (documentation/examples/identifierInformationTapeInterface.cpp):
    * \snippet examples/identifierInformationTapeInterface.cpp Identifier Activity
    *
    * @tparam _Real        The computation type of a tape usually defined by ActiveType::Real.
