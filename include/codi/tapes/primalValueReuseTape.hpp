@@ -97,9 +97,9 @@ namespace codi {
           #else
             adjointVector[lhsIdentifier] = lhsTangent;
           #endif
-        }
 
-        curStatementPos += 1;
+          curStatementPos += 1;
+        }
       }
 
       CODI_INLINE static void internalEvaluatePrimalStack(
@@ -131,9 +131,9 @@ namespace codi {
                 stmtEvalhandle[curStatementPos], primalVector,
                 numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues,
                 curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
-        }
 
-        curStatementPos += 1;
+          curStatementPos += 1;
+        }
       }
 
       CODI_INLINE static void internalEvaluateReverseStack(
