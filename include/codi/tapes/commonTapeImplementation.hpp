@@ -16,36 +16,63 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Interface definition for required type definitions in the tapes types of a tape.
+   */
   struct TapeTypesInterface {
     public:
 
-      using Real = CODI_ANY;
-      using Gradient = CODI_ANY;
-      using Identifier = CODI_ANY;
+      using Real = CODI_ANY; ///< Primal computation type e.g. double
+      using Gradient = CODI_ANY; ///< Gradient computation type e.g. double or Direction
+      using Identifier = CODI_ANY; ///< Identifier for the internal management e.g. int
 
+      /// Declaration for the data vector that is used for the internal storgae. See DateInterface implementations.
       template<typename Chunk, typename Nested>
       using Data = DataInterface<Nested>;
 
-      using NestedData = DataInterface<>;
+      using NestedData = DataInterface<>; ///< The root vector of the tape implementation on which the CommonTapeImplementation builds.
   };
 
+  /**
+   * @brief Declares all types used in the CommonTapeImplementation.
+   *
+   * @tparam _TapeTypes  Needs to implement to TapeTypesInterface.
+   */
   template<typename _TapeTypes>
   struct CommonTapeTypes {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);  ///< See CommonTapeTypes
 
-      using NestedData = typename TapeTypes::NestedData;
+      using NestedData = typename TapeTypes::NestedData; ///< See TapeTypesInterface.
       template<typename Chunk, typename Nested>
-      using Data = typename TapeTypes::template Data<Chunk, Nested>;
+      using Data = typename TapeTypes::template Data<Chunk, Nested>; ///< See TapeTypesInterface.
 
 
-      using NestedPosition = typename NestedData::Position;
-      using ExternalFunctionChunk = Chunk2<ExternalFunctionInternalData, NestedPosition>;
-      using ExternalFunctionData = Data<ExternalFunctionChunk, NestedData>;
-      using Position = typename ExternalFunctionData::Position;
+      using NestedPosition = typename NestedData::Position; ///< See TapeTypesInterface.
+      using ExternalFunctionChunk = Chunk2<ExternalFunctionInternalData, NestedPosition>;  ///< See Data entries for external functions.
+      using ExternalFunctionData = Data<ExternalFunctionChunk, NestedData>; ///< Data vector for external functions.
+      using Position = typename ExternalFunctionData::Position; ///< Global position of the tape.
   };
 
+  /**
+   * @brief Implementation of all common tape functionality.
+   *
+   * This basic implementation provides following functionality:
+   *  - External function support with the external functions stored in externalFunctionData
+   *  - Tape options gathering
+   *  - Activity tracking
+   *
+   * It also provides functionality that can be implemented with other functions:
+   *  - setter and getter methods
+   *  - no positional evaluation methods.
+   *  - registerOutput
+   *  - TapeValues functions.
+   *  - reset functionality
+   *
+   * @tparam _ImplTapeTypes needs to implement TapeTypesInterface;
+   * @tparam _Impl Type of the full tape implementation.
+   */
   template<typename _ImplTapeTypes, typename _Impl>
   struct CommonTapeImplementation :
       public FullTapeInterface<
@@ -56,24 +83,24 @@ namespace codi {
   {
     public:
 
-      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, TapeTypesInterface);
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
+      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, TapeTypesInterface); ///< See CommonTapeImplementation.
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See CommonTapeImplementation.
 
-      using Real = typename ImplTapeTypes::Real;
-      using Gradient = typename ImplTapeTypes::Gradient;
-      using Identifier = typename ImplTapeTypes::Identifier;
-      using NestedData = typename ImplTapeTypes::NestedData;
-      using NestedPosition = typename NestedData::Position;
+      using Real = typename ImplTapeTypes::Real;             ///< See TapeTypesInterface.
+      using Gradient = typename ImplTapeTypes::Gradient;     ///< See TapeTypesInterface.
+      using Identifier = typename ImplTapeTypes::Identifier; ///< See TapeTypesInterface.
+      using NestedData = typename ImplTapeTypes::NestedData; ///< See TapeTypesInterface.
+      using NestedPosition = typename NestedData::Position;  ///< See DataInterface.
 
-      using ExternalFunctionData = typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData;
-      using Position = typename ExternalFunctionData::Position;
+      using ExternalFunctionData = typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData; ///< See CommonTapeTypes.
+      using Position = typename CommonTapeTypes<ImplTapeTypes>::Position; ///< See TapeTypesInterface.
 
     protected:
 
-      bool active;
-      std::set<TapeParameters> options;
+      bool active; ///< If tape stores statements or not.
+      std::set<TapeParameters> options; ///< All options.
 
-      ExternalFunctionData externalFunctionData;
+      ExternalFunctionData externalFunctionData; ///< Data vector for external function data.
 
     private:
 
@@ -87,15 +114,17 @@ namespace codi {
 
     protected:
 
-      /*******************************************************************************
-       * Section: Functions expected in the child class
-       *
-       */
+      /*******************************************************************************/
+      /// @name Interface definition
+      /// @{
 
-      TapeValues internalGetTapeValues() const;
+      TapeValues internalGetTapeValues() const; ///< Create tape values.
+
+      /// @}
 
     public:
 
+      /// Constructor
       CommonTapeImplementation() :
         active(false),
         options(),
@@ -105,52 +134,59 @@ namespace codi {
       }
 
 
-      /*******************************************************************************
-       * Section: Functions from GradientAccessTapeInterface
-       *
-       */
+      /*******************************************************************************/
+      /// @name Functions from GradientAccessTapeInterface
+      /// @{
 
+      /// \copydoc codi::GradientAccessTapeInterface::setGradient()
       void setGradient(Identifier const& identifier, Gradient const& gradient) {
         cast().gradient(identifier) = gradient;
       }
 
+      /// \copydoc codi::GradientAccessTapeInterface::getGradient()
       Gradient const& getGradient(Identifier const& identifier) const {
         return cast().gradient(identifier);
       }
 
       // gradient functions are not implemented
 
-      /*******************************************************************************
-       * Section: Functions from ReverseTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ReverseTapeInterface
+      /// @{
 
+      /// \copydoc codi::ReverseTapeInterface::evaluate()
       void evaluate() {
         Impl& impl = cast();
 
         impl.evaluate(impl.getPosition(), impl.getZeroPosition());
       }
 
+      /// \copydoc codi::ReverseTapeInterface::registerOutput()
       template<typename Lhs> void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         cast().template store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
       }
 
-      void setActive() {active = true; }
-      void setPassive() {active = false; }
-      bool isActive() const { return active; }
+      void setActive() {active = true; }       ///< \copydoc codi::ReverseTapeInterface::setActive()
+      void setPassive() {active = false; }     ///< \copydoc codi::ReverseTapeInterface::setPassive()
+      bool isActive() const { return active; } ///< \copydoc codi::ReverseTapeInterface::isActive()
 
+      /// \copydoc codi::ReverseTapeInterface::printStatistics()
       template<typename Stream = std::ostream> void printStatistics(Stream& out = std::cout) const {
         cast().getTapeValues().formatDefault(out);
       }
 
+      /// \copydoc codi::ReverseTapeInterface::printTableHeader()
       template<typename Stream = std::ostream> void printTableHeader(Stream& out = std::cout) const {
         cast().getTapeValues().formatHeader(out);
       }
 
+      /// \copydoc codi::ReverseTapeInterface::printTableRow()
       template<typename Stream = std::ostream> void printTableRow(Stream& out = std::cout) const {
         cast().getTapeValues().formatRow(out);
       }
 
+      /// \copydoc codi::ReverseTapeInterface::getTapeValues()
       TapeValues getTapeValues() const {
         TapeValues values = cast().internalGetTapeValues();
 
@@ -160,6 +196,7 @@ namespace codi {
         return values;
       }
 
+      /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
         if(resetAdjoints) {
           cast().clearAdjoints();
@@ -172,17 +209,19 @@ namespace codi {
 
       // clearAdjoints and reset(Position) are not implemented
 
-      /*******************************************************************************
-       * Section: Function from DataManagementTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from DataManagementTapeInterface
+      /// @{
 
+      /// \copydoc codi::DataManagementTapeInterface::swap()
       void swap(Impl& other) {
         std::swap(active, other.active);
 
         externalFunctionData.swap(other.externalFunctionData);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::resetHard()
       void resetHard() {
         Impl& impl = cast();
 
@@ -191,6 +230,8 @@ namespace codi {
 
         externalFunctionData.resetHard();
       }
+
+      /// @}
 
     private:
       static void writeFunction(const ChunkBase* chunk, FileIo& handle) {
@@ -207,26 +248,34 @@ namespace codi {
 
     public:
 
+
+      /// @{
+      /// \copydoc codi::DataManagementTapeInterface::writeToFile()
       void writeToFile(const std::string& filename) {
         FileIo io(filename, true);
 
         externalFunctionData.forEachChunk(writeFunction, true, io);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::readFromFile()
       void readFromFile(const std::string& filename) {
         FileIo io(filename, false);
 
         externalFunctionData.forEachChunk(readFunction, true, io);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::deleteData()
       void deleteData() {
         externalFunctionData.forEachChunk(deleteFunction, true);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::getAvailableParameters()
       std::set<TapeParameters> const& getAvailableParameters() const {
         return options;
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::getParameter()
+      /// <br><br> Implementation: Handles ExternalFunctionsSize
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {
           case TapeParameters::ExternalFunctionsSize:
@@ -239,10 +288,13 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::hasParameter()
       bool hasParameter(TapeParameters parameter) const {
         return options.cend() != options.find(parameter);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::setParameter()
+      /// <br><br> Implementation: Handles ExternalFunctionsSize
       void setParameter(TapeParameters parameter, size_t value) {
         switch (parameter) {
           case TapeParameters::ExternalFunctionsSize:
@@ -256,12 +308,12 @@ namespace codi {
 
       // deleteAdjointVector is not implemented
 
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ExternalFunctionTapeInterface
+      /// @{
 
-      /*******************************************************************************
-       * Section: Function from ExternalFunctionTapeInterface
-       *
-       */
-
+      /// \copydoc codi::ExternalFunctionTapeInterface::pushExternalFunction()
       void pushExternalFunction(ExternalFunction<Impl> const& extFunc) {
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           externalFunctionData.reserveItems(1);
@@ -271,55 +323,64 @@ namespace codi {
 
       // registerExternalFunctionOutput is not implemented
 
-      /*******************************************************************************
-       * Section: Function from ForwardEvaluationTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ForwardEvaluationTapeInterface
+      /// @{
 
+      /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
       void evaluateForward() {
         Impl& impl = cast();
 
         impl.evaluateForward(impl.getZeroPosition(), impl.getPosition());
       }
 
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from IdentifierInformationTapeInterface
+      /// @{
 
-      /*******************************************************************************
-       * Section: Function from IdentifierInformationTapeInterface
-       *
-       */
-
+      /// \copydoc codi::IdentifierInformationTapeInterface::getPassiveIndex()
       Identifier getPassiveIndex() const {
         return IndexManagerInterface<Identifier>::UnusedIndex;
       }
 
+      /// \copydoc codi::IdentifierInformationTapeInterface::getInvalidIndex()
       Identifier getInvalidIndex() const {
         return IndexManagerInterface<Identifier>::InvalidIndex;
       }
 
+      /// \copydoc codi::IdentifierInformationTapeInterface::isIdentifierActive()
       bool isIdentifierActive(Identifier const& index) const {
         return index != cast().getPassiveIndex();
       }
 
+      /// \copydoc codi::IdentifierInformationTapeInterface::deactivateValue()
       template<typename Lhs>
       void deactivateValue(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         value = value.getValue();
       }
 
-      /*******************************************************************************
-       * Section: Function from PositionalEvaluationTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from PositionalEvaluationTapeInterface
+      /// @{
 
+      /// \copydoc codi::PositionalEvaluationTapeInterface::getPosition()
       Position getPosition() const {
         return externalFunctionData.getPosition();
       }
 
+      /// \copydoc codi::PositionalEvaluationTapeInterface::getZeroPosition()
       Position getZeroPosition() const {
         return externalFunctionData.getZeroPosition();
       }
 
+      /// @}
+
     protected:
 
+      /// Delete all external function data up to `pos`.
       void deleteExternalFunctionUserData(Position const& pos) {
         // clear external function data
         auto deleteFunc = [this] (ExternalFunctionInternalData* extFunc, NestedPosition const* endInnerPos) {
@@ -334,6 +395,9 @@ namespace codi {
 
     public:
 
+      /// @{
+
+      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true) {
 
         if(resetAdjoints) {
@@ -348,36 +412,43 @@ namespace codi {
 
       // clearAdjoints and evaluate are not implemented
 
-      /*******************************************************************************
-       * Section: Function from PrimalEvaluationTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from PrimalEvaluationTapeInterface
+      /// @{
 
+      /// \copydoc codi::PrimalEvaluationTapeInterface::evaluatePrimal()
       void evaluatePrimal() {
         Impl& impl = cast();
 
         impl.evaluatePrimal(impl.getZeroPosition(), impl.getPosition());
       }
 
+      /// \copydoc codi::PrimalEvaluationTapeInterface::setPrimal()
       void setPrimal(Identifier const& identifier, Real const& primal) {
         cast().primal(identifier) = primal;
       }
 
+      /// \copydoc codi::PrimalEvaluationTapeInterface::getPrimal()
       Real const& getPrimal(Identifier const& identifier) const {
         return cast().primal(identifier);
       }
 
+      /// @}
+
     protected:
 
+
+      /*******************************************************************************/
+      /// @name Internal helper functions
+      /// @{
+
+      /// Initialize the base class
       void init(NestedData* nested) {
         externalFunctionData.setNested(nested);
       }
 
-      /*******************************************************************************
-       * Section: Helper function for accessing and evaluating the external function vector
-       *
-       */
-
+      /// Evaluate all external functions from start to end and call `func` for the regions in between.
       template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFuncPrimal(const Position& start, const Position &end,
                                  Function func,
@@ -400,6 +471,7 @@ namespace codi {
         func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
+      /// Evaluate all external functions from start to end and call `func` for the regions in between.
       template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFunc(const Position& start, const Position &end,
                                  Function func,
@@ -422,6 +494,7 @@ namespace codi {
         func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
+      /// Evaluate all external functions from start to end and call `func` for the regions in between.
       template<typename Function, typename ... Args>
       CODI_INLINE void internalEvaluateExtFuncForward(const Position& start, const Position &end,
                                  Function func,
@@ -443,6 +516,8 @@ namespace codi {
         // Iterate over the remainder also covers the case if there have been no external functions.
         func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
+
+      /// @}
   };
 }
 
