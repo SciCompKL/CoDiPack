@@ -57,7 +57,7 @@ class ResultDiff {
     size_t fileCount;
     const Settings& settings;
 
-    std::vector<std::ifstream> files;
+    std::vector<std::ifstream*> files;
 
     std::vector<std::string> nextLine;
 
@@ -77,6 +77,14 @@ class ResultDiff {
     {
     }
 
+    ~ResultDiff() {
+      for(size_t i = 0; i < fileCount; ++i) {
+        if(nullptr != files[i]) {
+          delete files[i];
+        }
+      }
+    }
+
     bool openFiles() {
       bool allFilesAvail = true;
       files.resize(fileCount);
@@ -86,7 +94,7 @@ class ResultDiff {
 
         struct stat buffer;
         if(0 == stat(settings.fileNames[i].c_str(), &buffer)) {
-          files[i].open(settings.fileNames[i]);
+          files[i] = new std::ifstream(settings.fileNames[i]);
         } else {
           allFilesAvail = false;
           std::cerr << "Could not find file '" << settings.fileNames[i] << "'." << std::endl;
@@ -122,19 +130,19 @@ class ResultDiff {
     }
 
     template<typename Stream>
-    bool readLines(std::vector<Stream>& stream, std::vector<std::string>& lines, char delim, bool skipEmpty = true) {
+    bool readLines(std::vector<Stream*>& stream, std::vector<std::string>& lines, char delim, bool skipEmpty = true) {
 
       bool allEndOfFile = true;
       for(size_t i = 0; i < fileCount; ++i) {
 
         do {
-          std::getline(stream[i], lines[i], delim);
+          std::getline(*stream[i], lines[i], delim);
           trimString(lines[i]);
 
-          if(stream[i].good()) {
+          if(stream[i]->good()) {
             allEndOfFile = false;
           }
-        } while(skipEmpty && lines[i].empty() && stream[i].good());
+        } while(skipEmpty && lines[i].empty() && stream[i]->good());
       }
 
       return !allEndOfFile;
@@ -152,10 +160,10 @@ class ResultDiff {
     }
 
     bool allValuesSame(int &diffPos, int &fileDiff) {
-      std::vector<std::istringstream> lineStreams(fileCount);
+      std::vector<std::istringstream*> lineStreams(fileCount);
       std::vector<std::string> tokens(fileCount);
       for(size_t curFile = 0; curFile < fileCount; curFile += 1) {
-        lineStreams[curFile].str(nextLine[curFile]);
+        lineStreams[curFile] = new std::istringstream(nextLine[curFile]);
       }
 
       for(int curToken = 0; readLines(lineStreams, tokens, ' '); ++curToken) {
@@ -180,6 +188,9 @@ class ResultDiff {
         }
       }
 
+      for(size_t curFile = 0; curFile < fileCount; curFile += 1) {
+        delete lineStreams[curFile];
+      }
       return true;
     }
 
