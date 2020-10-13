@@ -532,4 +532,13 @@ namespace codi {
       #define codiAssert(x) /* disabled by CODI_EnableAssert */
     #endif
   #endif
+
+  // Disables warnings of the sort:  warning #2196: routine is both "inline" and "noinline"
+  #ifdef DisableIntelNoInlineWarning
+    #if DisableIntelNoInlineWarning
+      #ifdef __INTEL_COMPILER
+        #pragma warning disable 2196
+      #endif
+    #endif
+  #endif
 }

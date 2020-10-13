@@ -48,7 +48,7 @@ DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/Test**.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/**/Test**.d)
 
-FLAGS = -Wall -Wextra -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -DCODI_EnableCombineJacobianArguments
+FLAGS = -Wall -Wextra -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -DCODI_EnableCombineJacobianArguments -DDisableIntelNoInlineWarning
 
 # The default is to run all drives
 DRIVERS?=ALL
