@@ -120,11 +120,29 @@ namespace codi {
   struct IsTotalFinite<_Type, enableIfForwardTape<typename _Type::Tape>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, double);
+      using Type = CODI_DECLARE_DEFAULT(
+                      _Type,
+                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
+                    );
 
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         using std::isfinite;
         return isfinite(v.getValue()) && isfinite(v.getGradient());
+      }
+  };
+
+  template<typename _Type>
+  struct IsTotalZero<_Type, enableIfForwardTape<typename _Type::Tape>> {
+    public:
+
+      using Type = CODI_DECLARE_DEFAULT(
+                      _Type,
+                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
+                    );
+      using Real = typename RealTraits<Type>::Real;
+
+      static CODI_INLINE bool isTotalZero(Type const& v) {
+        return Real() == v.getValue() && typename Type::Gradient() == v.getGradient();
       }
   };
 }

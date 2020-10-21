@@ -22,10 +22,8 @@ struct CoDiForward1stOrder : public Driver1stOrderBase<CODI_TYPE> {
 
     void evaluateJacobian(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs, codi::Jacobian<double>& jac) {
 
-      //using GT = codi::GradientValueTraits<Gradient>;
-      constexpr size_t gradDim = 1; // GT::getVectorSize();
-
       using Gradient = typename Number::Gradient;
+      size_t constexpr gradDim = codi::GradientTraits::dim<Gradient>();
 
       size_t runs = inputs / gradDim;
       if(inputs % gradDim != 0) {
@@ -37,8 +35,7 @@ struct CoDiForward1stOrder : public Driver1stOrderBase<CODI_TYPE> {
           curSize = inputs % gradDim;
         }
         for(size_t curDim = 0; curDim < curSize; ++curDim) {
-          //GT::at(x[curIn * gradDim + curDim].gradient(), curDim) = 1.0;
-          x[curIn * gradDim + curDim].gradient() = 1.0;
+          codi::GradientTraits::at(x[curIn * gradDim + curDim].gradient(), curDim) = 1.0;
         }
 
         for(size_t i = 0; i < outputs; ++i) {
@@ -49,11 +46,10 @@ struct CoDiForward1stOrder : public Driver1stOrderBase<CODI_TYPE> {
 
         for(size_t curDim = 0; curDim < curSize; ++curDim) {
           for(size_t curOut = 0; curOut < outputs; ++curOut) {
-            //jac(curOut, curIn * gradDim + curDim) = GT::at(y[curOut].getGradient(), curDim);
 #ifdef SECOND_ORDER
-            jac(curOut, curIn * gradDim + curDim) = y[curOut].getGradient().value();
+            jac(curOut, curIn * gradDim + curDim) = codi::GradientTraits::at(y[curOut].getGradient(), curDim).value();
 #else
-            jac(curOut, curIn * gradDim + curDim) = y[curOut].getGradient();
+            jac(curOut, curIn * gradDim + curDim) = codi::GradientTraits::at(y[curOut].getGradient(), curDim);
 #endif
           }
         }

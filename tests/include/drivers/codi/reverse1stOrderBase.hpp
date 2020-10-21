@@ -29,8 +29,8 @@ struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
 
     void evaluateJacobian(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs, codi::Jacobian<double>& jac) {
 
-      //using GT = codi::GradientValueTraits<Gradient>;
-      constexpr size_t gradDim = 1; //GT::getVectorSize();
+      using Gradient = typename Number::Gradient;
+      size_t constexpr gradDim = codi::GradientTraits::dim<Gradient>();
 
       Number::Tape& tape = Number::getGlobalTape();
 
@@ -71,7 +71,7 @@ struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
 
         for(size_t curDim = 0; curDim < curSize; ++curDim) {
           if(tape.isIdentifierActive(y[curOut * gradDim + curDim].getIdentifier())) {
-            accessGradient(y[curOut * gradDim + curDim]) = 1.0;
+            codi::GradientTraits::at(accessGradient(y[curOut * gradDim + curDim]), curDim) = 1.0;
           }
         }
 
@@ -79,11 +79,10 @@ struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
 
         for(size_t curDim = 0; curDim < curSize; ++curDim) {
           for(size_t curIn = 0; curIn < inputs; ++curIn) {
-            //jac(curOut * gradDim + curDim, curIn) = GT::at(getGradient(x[curIn]), curDim);
 #ifdef SECOND_ORDER
-            jac(curOut * gradDim + curDim, curIn) = accessGradient(x[curIn]).value();
+            jac(curOut * gradDim + curDim, curIn) = codi::GradientTraits::at(accessGradient(x[curIn]), curDim).value();
 #else
-            jac(curOut * gradDim + curDim, curIn) = accessGradient(x[curIn]);
+            jac(curOut * gradDim + curDim, curIn) = codi::GradientTraits::at(accessGradient(x[curIn]), curDim);
 #endif
           }
         }
