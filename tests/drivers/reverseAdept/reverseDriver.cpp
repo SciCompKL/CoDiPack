@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,12 +23,18 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #include <toolDefines.h>
 
 #include <iostream>
+
+#include "../output.hpp"
 
 int main(int nargs, char** args) {
   (void)nargs;
@@ -39,6 +45,8 @@ int main(int nargs, char** args) {
   int outputs = getOutputCount();
   NUMBER* x = new NUMBER[inputs];
   NUMBER* y = new NUMBER[outputs];
+
+  codi::Jacobian<std::vector<double>> jac(outputs, inputs);
 
   adept::Stack tape(true);
   tape.pause_recording();
@@ -62,7 +70,6 @@ int main(int nargs, char** args) {
     }
 
 
-    std::vector<std::vector<double> > jac(outputs);
     for(int curOut = 0; curOut < outputs; ++curOut) {
       tape.continue_recording();
       for(int i = 0; i < inputs; ++i) {
@@ -76,16 +83,12 @@ int main(int nargs, char** args) {
       tape.compute_adjoint();
 
       for(int curIn = 0; curIn < inputs; ++curIn) {
-        jac[curOut].push_back(x[curIn].get_gradient());
+        jac(curOut, curIn) = x[curIn].get_gradient();
       }
 
       tape.clear_gradients();
     }
 
-    for(int curIn = 0; curIn < inputs; ++curIn) {
-      for(int curOut = 0; curOut < outputs; ++curOut) {
-        std::cout << curIn << " " << curOut << " " << jac[curOut][curIn] << std::endl;
-      }
-    }
+    writeOutputJacobian(jac);
   }
 }

@@ -1,6 +1,61 @@
 Changelog      {#Changelog}
 ===========================
 
+### v 1.9.3 - 2020-05-18
+ - Bufix:
+   * PreaccumulationHelper with changing sizes could give a segmentation fault
+   * PreaccumulationHelper with changing zero patterns gave wrong results
+   * Dirty adjoint vector after computeJacobian call in Algorithms with a forward evaluation
+
+### v 1.9.2 - 2020-04-28
+ - Core functionality:
+    * Support for remainder and round function.
+ - MeDiPack bindings:
+    * Updated MeDiPack bindings to MeDiPack 1.2 (not backwards compatible).
+ - MSVC compatibility:
+    * Renaming interface -> inter.
+
+### v 1.9.1 - 2020-01-13
+ - Bugfix:
+   * Missing declaration of MaxDerivativeOrder in UnaryOp type traits.
+
+### v 1.9.0 - 2019-10-30
+ - Helper structures:
+   * EvaluationHelper:
+     + Simplifies the computation of Jacobian and Hessian matrices for functions, function objects and lambda functions.
+       Only the function needs to be provided and the helper will compute all derivatives.
+     + See Tutorial B1, B1.1 and B1.2.
+   * TapeHelper:
+     + Provides a more convenient handling of the tape recording and derivative computation process. All CoDiPack
+       specifics are hidden and the user can compute the full Jacobian or Hessian matrix with a simple function call.
+     + See Tutorial B2
+ - Expression rework:
+   * Binary and unary expressions are now defined via logic objects that provide the derivative and primal evaluation
+     functions.
+   * Users can now change the derivative logic for custom types by the specialization of these logic objects.
+ - Test suite:
+   * The test suite checks now also primal and second order derivatives.
+ - Bugfix:
+   * Overflow check for linear index handlers
+
+
+### v 1.8.0 - 2019-01-07
+ - Interface:
+    - Added function to disable active variables
+ - Feature: On the fly combination of entries for the same argument in Jacobian tapes.
+   - See CODI_EnableCombineJacobianArguments for details
+ - New tutorials:
+   - Tutorial for recording of several different tapes in one application at different times
+ - Internal:
+   - Removed intermediate lambda functions in tape evaluation functions
+   - Tape modules are now implemented as structures and no longer included as super macros
+
+### v 1.7.0 - 2018-10-30
+ - Support for forward evaluation of tapes finalized
+ - Support for primal evaluation of tapes
+ - MeDiPack interfaces are now provided with CoDiPack
+ - Removed AdjointMPI interfaces
+
 ### v 1.6.0 - 2018-03-15
  - First support for forward evaluation of tapes
    * Used in the preaccumulation helper for code sections

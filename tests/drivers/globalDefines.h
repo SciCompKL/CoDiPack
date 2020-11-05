@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,7 +23,11 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #define POINTS(number) \
@@ -38,6 +42,26 @@
 
 #define OUT(number) \
   int getOutputCount() {return number;}
+
+#ifndef SECOND_ORDER
+# define SECOND_ORDER 0
+#endif
+
+#ifndef PRIMAL
+# define PRIMAL 0
+#endif
+
+#ifndef REVERSE_TAPE
+# define REVERSE_TAPE 0
+#endif
+
+#if !defined(DOUBLE)
+  using Real = NUMBER::Real;
+  using Gradient = NUMBER::GradientValue;
+#else
+  using Real = double;
+  using Gradient = double;
+#endif
 
 int getEvalPointsCount();
 double getEvalPoint(int point, int col);

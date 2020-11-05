@@ -38,7 +38,7 @@ PROJECT_NAME           = "CoDiPack"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = 1.6.0
+PROJECT_NUMBER         = 1.9.3
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = documentation
+OUTPUT_DIRECTORY       = build/documentation
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -475,7 +475,7 @@ HIDE_UNDOC_CLASSES     = NO
 # included in the documentation.
 # The default value is: NO.
 
-HIDE_FRIEND_COMPOUNDS  = NO
+HIDE_FRIEND_COMPOUNDS  = YES
 
 # If the HIDE_IN_BODY_DOCS tag is set to YES, doxygen will hide any
 # documentation blocks found inside the body of a function. If set to NO, these
@@ -820,7 +820,7 @@ EXCLUDE_PATTERNS       =
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories use the pattern */test/*
 
-EXCLUDE_SYMBOLS        = GlobalActiveRealData codi::derv11* codi::derv10* codi::derv01* codi::grad* ExtFuncEvaluator
+EXCLUDE_SYMBOLS        = GlobalActiveRealData derv11* derv10* derv01* gradient_* gradientA_* gradientB_* ExtFuncEvaluator CoDiPackTool CoDiPackForwardTool CoDiMeDiAdjointInterfaceWrapper
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include
@@ -1610,7 +1610,7 @@ PAPER_TYPE             = a4
 # If left blank no extra packages will be included.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-EXTRA_PACKAGES         =  amsmath amssymb ../../documentation/settings
+EXTRA_PACKAGES         =  amsmath amssymb ../../../documentation/settings
 
 # The LATEX_HEADER tag can be used to specify a personal LaTeX header for the
 # generated LaTeX document. The header should contain everything until the first

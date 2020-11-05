@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,7 +23,11 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #include <toolDefines.h>
@@ -37,28 +41,11 @@ POINTS(1) = {
   {  1.0,     0.5}
 };
 
-
-void evalFunc(NUMBER* x, NUMBER* y) {
-  y[0] = x[0];
-  y[1] = x[1];
-  for(int i = 0; i < 5; ++i) {
-    NUMBER xTemp = y[0];
-    NUMBER yTemp = y[1];
-
-    y[0] = xTemp * xTemp - yTemp * yTemp - 0.65;
-    y[1] = 2.0 * yTemp * xTemp;
-  }
-}
-
 void func(NUMBER* x, NUMBER* y) {
 
   NUMBER passiveValue = codi::TypeTraits<NUMBER>::getBaseValue(x[0]);
 
-#ifdef REVERSE_TAPE
   codi::StatementPushHelper<NUMBER> ph;
-#else
-  codi::ForwardStatementPushHelper<NUMBER> ph;
-#endif
 
   // two valid dependencies
   ph.startPushStatement();
@@ -81,26 +68,26 @@ void func(NUMBER* x, NUMBER* y) {
   // one invalid dependencie jac == inf
   ph.startPushStatement();
   ph.pushArgument(x[0], 401.0);
-  ph.pushArgument(x[1], std::numeric_limits<NUMBER::Real>::infinity());
+  ph.pushArgument(x[1], std::numeric_limits<Real>::infinity());
   ph.endPushStatement(y[3], 4.0);
 
   // one invalid dependencie jac == NaN
   ph.startPushStatement();
   ph.pushArgument(x[0], 501.0);
-  ph.pushArgument(x[1], std::numeric_limits<NUMBER::Real>::quiet_NaN());
+  ph.pushArgument(x[1], std::numeric_limits<Real>::quiet_NaN());
   ph.endPushStatement(y[4], 5.0);
 
   // two invalid dependencie jac == 0, jac == NaN
   ph.startPushStatement();
   ph.pushArgument(x[0], 0.0);
-  ph.pushArgument(x[1], std::numeric_limits<NUMBER::Real>::quiet_NaN());
+  ph.pushArgument(x[1], std::numeric_limits<Real>::quiet_NaN());
   ph.endPushStatement(y[5], 6.0);
 
   std::vector<NUMBER> inputData;
   inputData.push_back(x[0]);
   inputData.push_back(x[1]);
 
-  std::vector<NUMBER::Real> jacData;
+  std::vector<Real> jacData;
   jacData.push_back(701.0);
   jacData.push_back(702.0);
 

@@ -1,7 +1,7 @@
 #
 # CoDiPack, a Code Differentiation Package
 #
-# Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+# Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
 # Homepage: http://www.scicomp.uni-kl.de
 # Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
 #
@@ -23,10 +23,14 @@
 # General Public License along with CoDiPack.
 # If not, see <http://www.gnu.org/licenses/>.
 #
-# Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+# Authors:
+#  - SciComp, TU Kaiserslautern:
+#     Max Sagebaum
+#     Tim Albring
+#     Johannes Blühdorn
 #
 
-# names of the basic deriectories
+# names of the basic directories
 BUILD_DIR = build
 DOC_DIR   = documentation
 
@@ -38,8 +42,13 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/*.d)
 
 CODI_DIR := .
 
-FLAGS = -Wall -pedantic -std=c++11 -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
+FLAGS = -Wall -pedantic -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
 
+ifeq ($(CPP14), yes)
+  FLAGS += -std=c++14
+else
+  FLAGS += -std=c++11
+endif
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
 else
@@ -65,6 +74,10 @@ $(BUILD_DIR)/%.exe : $(DOC_DIR)/%.cpp
 
 tutorials: $(TUTORIALS)
 	@mkdir -p $(BUILD_DIR)
+
+doc:
+	@mkdir -p $(BUILD_DIR)
+	doxygen
 
 .PHONY: clean
 clean:

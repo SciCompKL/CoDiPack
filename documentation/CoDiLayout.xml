@@ -5,22 +5,28 @@
     <tab type="mainpage" visible="yes" title=""/>
     <!-- <tab type="pages" visible="yes" title="" intro=""/> -->
     <tab type="usergroup" title="Tutorials" url="@ref tutorialPage">
-      <tab type="user" title="Tutorial 1" url="@ref Tutorial1"/>
-      <tab type="user" title="Tutorial 2" url="@ref Tutorial2"/>
-      <tab type="user" title="Tutorial 3" url="@ref Tutorial3"/>
-      <tab type="user" title="Tutorial 4" url="@ref Tutorial4"/>
-      <tab type="user" title="Tutorial 5" url="@ref Tutorial5"/>
-      <tab type="user" title="Tutorial 6" url="@ref Tutorial6"/>
-      <tab type="usergroup" title="Tutorial 7" url="@ref Tutorial7">
-        <tab type="user" title="Tutorial 7.1" url="@ref Tutorial7_1"/>
-        <tab type="user" title="Tutorial 7.2" url="@ref Tutorial7_2"/>
+      <tab type="usergroup" title="Tutorial B1 - Evaluation helper" url="@ref TutorialB1">
+        <tab type="user" title="Tutorial B1.1 - Function objects" url="@ref TutorialB1_1"/>
+        <tab type="user" title="Tutorial B1.2 - Run time optimization" url="@ref TutorialB1_2"/>
       </tab>
-      <tab type="user" title="Tutorial A1" url="@ref TutorialA1"/>
-      <tab type="user" title="Tutorial A2" url="@ref TutorialA2"/>
-      <tab type="user" title="Tutorial A3" url="@ref TutorialA3"/>
-      <tab type="usergroup" title="Tutorial A4" url="@ref TutorialA4">
-        <tab type="user" title="Tutorial A4.1" url="@ref TutorialA4_1"/>
+      <tab type="user" title="Tutorial B2 - Tape helper" url="@ref TutorialB2"/>
+      <tab type="user" title="Tutorial 1 - Forward mode" url="@ref Tutorial1"/>
+      <tab type="user" title="Tutorial 2 - Reverse mode" url="@ref Tutorial2"/>
+      <tab type="user" title="Tutorial 3 - Jacobi forward mode" url="@ref Tutorial3"/>
+      <tab type="user" title="Tutorial 4 - Jacobi reverse mode" url="@ref Tutorial4"/>
+      <tab type="user" title="Tutorial 5 - ReferenceActiveReal" url="@ref Tutorial5"/>
+      <tab type="user" title="Tutorial 6 - Vector mode" url="@ref Tutorial6"/>
+      <tab type="usergroup" title="Tutorial 7 - Higher order derivatives helper" url="@ref Tutorial7">
+        <tab type="user" title="Tutorial 7.1 - Template interface" url="@ref Tutorial7_1"/>
+        <tab type="user" title="Tutorial 7.2 - No helper" url="@ref Tutorial7_2"/>
       </tab>
+      <tab type="user" title="Tutorial A1 - External functions" url="@ref TutorialA1"/>
+      <tab type="user" title="Tutorial A2 - Preaccumulation" url="@ref TutorialA2"/>
+      <tab type="user" title="Tutorial A3 - Manual statement storing" url="@ref TutorialA3"/>
+      <tab type="usergroup" title="Tutorial A4 - Advanced vector mode" url="@ref TutorialA4">
+        <tab type="user" title="Tutorial A4.1 - OpenMP reverse mode evaluation" url="@ref TutorialA4_1"/>
+      </tab>
+      <tab type="user" title="Tutorial A5 - Jacobian and Hessian interface" url="@ref TutorialA5"/>
     </tab>
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">

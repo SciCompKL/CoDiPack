@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,12 +23,14 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #include <toolDefines.h>
-
-#include <tools/dataStore.hpp>
 
 #include <iostream>
 
@@ -42,10 +44,11 @@ void func_forward(NUMBER& z, const NUMBER& w, const NUMBER& v){
 
 const int ITER = 5;
 
+#if REVERSE_TAPE
 static void extFunc(void* t, void* checkpoint, void* i){
   CODI_UNUSED(t);
 
-  codi::AdjointInterface<typename NUMBER::Real>* ra = (codi::AdjointInterface<typename NUMBER::Real>*)i;
+  codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>* ra = (codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>*)i;
 
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
 
@@ -69,12 +72,67 @@ static void extFunc(void* t, void* checkpoint, void* i){
   }
 }
 
+static void extFuncPrimal(void* t, void* checkpoint, void* i) {
+  CODI_UNUSED(t);
+
+  codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>* ra = (codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>*)i;
+
+  codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
+
+  typename NUMBER::GradientData x1_i, x2_i, w_i;
+  Real& x1_v = check->getDataRef<Real>();
+  check->getData(x1_i);
+  Real& x2_v = check->getDataRef<Real>();
+  check->getData(x2_i);
+  check->getData(w_i);
+
+  x1_v = ra->getPrimal(x1_i); // Data is overwritten here
+  x2_v = ra->getPrimal(x2_i); // Data is overwritten here
+
+  typename NUMBER::Real z = x1_v * x2_v;
+  ra->setPrimal( w_i, z);
+}
+
+static void extFuncForward(void* t, void* checkpoint, void* i) {
+  CODI_UNUSED(t);
+
+  codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>* ra = (codi::AdjointInterface<typename NUMBER::Real, typename NUMBER::GradientData>*)i;
+
+  codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
+
+  typename NUMBER::GradientData x1_i, x2_i, w_i;
+  Real& x1_v = check->getDataRef<Real>();
+  check->getData(x1_i);
+  Real& x2_v = check->getDataRef<Real>();
+  check->getData(x2_i);
+  check->getData(w_i);
+
+  if(ra->hasPrimals()) {
+    x1_v = ra->getPrimal(x1_i); // Data is overwritten here
+    x2_v = ra->getPrimal(x2_i); // Data is overwritten here
+  }
+
+  size_t dim = ra->getVectorSize();
+
+  for(size_t i = 0; i < dim; ++i) {
+
+    Real x1_d = ra->getAdjoint(x1_i, i);
+    Real x2_d = ra->getAdjoint(x2_i, i);
+
+    Real w_d = x1_d * x2_v + x1_v * x2_d;
+    ra->resetAdjoint(w_i, i);
+    ra->updateAdjoint(w_i, i, w_d);
+  }
+
+  typename NUMBER::Real z = x1_v * x2_v;
+  ra->setPrimal( w_i, z);
+}
+
 static void delFunc(void* tape, void* checkpoint){
   (void) tape;
 
   codi::DataStore *check = static_cast<codi::DataStore*>(checkpoint);
   delete check;
-  std::cout << "Delete" << std::endl;
 }
 
 void func(NUMBER* x, NUMBER* y) {
@@ -94,9 +152,22 @@ void func(NUMBER* x, NUMBER* y) {
     checkpoint->addData(w[i-1].getValue());
     checkpoint->addData(w[i-1].getGradientData());
     checkpoint->addData(w[i].getGradientData());
-    tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc);
+    tape.pushExternalFunctionHandle(&extFunc, checkpoint, delFunc, extFuncForward, extFuncPrimal);
   }
 
 
   y[0] = w[ITER - 1]*w[ITER - 1];
 }
+#else
+void func(NUMBER* x, NUMBER* y) {
+  NUMBER w[ITER];
+
+  w[0] = x[0];
+  for(int i = 1; i < ITER; ++i) {
+    func_forward(w[i],w[i - 1],x[1]);
+  }
+
+
+  y[0] = w[ITER - 1]*w[ITER - 1];
+}
+#endif

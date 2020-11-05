@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,7 +23,11 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #include <toolDefines.h>
@@ -40,17 +44,23 @@ POINTS(1) =
 
 void func(NUMBER* x, NUMBER* y) {
 
+#if REVERSE_TAPE
   NUMBER::TapeType& tape = NUMBER::getGlobalTape();
+#endif
 
   NUMBER a = x[0] * x[1];
   NUMBER b = x[0] / sin(x[1]);
   NUMBER c = b * a;
 
+#if REVERSE_TAPE
   NUMBER::TapeType::Position pos = tape.getPosition();
+#endif
 
   b = a * x[0];
 
+#if REVERSE_TAPE
   tape.reset(pos);
+#endif
 
   y[0] = c * a;
 }

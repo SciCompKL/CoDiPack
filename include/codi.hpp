@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2018 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2020 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -23,30 +23,36 @@
  * General Public License along with CoDiPack.
  * If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors: Max Sagebaum, Tim Albring, (SciComp, TU Kaiserslautern)
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *     Max Sagebaum
+ *     Tim Albring
+ *     Johannes Blühdorn
  */
 
 #pragma once
 
-#include "activeReal.hpp"
-#include "numericLimits.hpp"
-#include "referenceActiveReal.hpp"
-#include "tapeTypes.hpp"
-#include "tapes/forwardEvaluation.hpp"
-#include "tapes/jacobiTape.hpp"
-#include "tapes/jacobiIndexTape.hpp"
-#include "tapes/primalValueTape.hpp"
-#include "tapes/primalValueIndexTape.hpp"
-#include "tapes/indices/linearIndexHandler.hpp"
-#include "tapes/indices/reuseIndexHandler.hpp"
-#include "tapes/indices/reuseIndexHandlerUseCount.hpp"
-#include "tools/dataStore.hpp"
-#include "tools/derivativeHelper.hpp"
-#include "tools/direction.hpp"
-#include "tools/externalFunctionHelper.hpp"
-#include "tools/preaccumulationHelper.hpp"
-#include "tools/statementPushHelper.hpp"
-#include "tools/tapeVectorHelper.hpp"
+#include "codi/activeReal.hpp"
+#include "codi/numericLimits.hpp"
+#include "codi/referenceActiveReal.hpp"
+#include "codi/tapeTypes.hpp"
+#include "codi/tapes/forwardEvaluation.hpp"
+#include "codi/tapes/jacobiTape.hpp"
+#include "codi/tapes/jacobiIndexTape.hpp"
+#include "codi/tapes/primalValueTape.hpp"
+#include "codi/tapes/primalValueIndexTape.hpp"
+#include "codi/tapes/indices/linearIndexHandler.hpp"
+#include "codi/tapes/indices/reuseIndexHandler.hpp"
+#include "codi/tapes/indices/reuseIndexHandlerUseCount.hpp"
+#include "codi/tapes/handles/staticFunctionHandleFactory.hpp"
+#include "codi/tapes/handles/staticObjectHandleFactory.hpp"
+#include "codi/tools/dataStore.hpp"
+#include "codi/tools/derivativeHelper.hpp"
+#include "codi/tools/direction.hpp"
+#include "codi/tools/externalFunctionHelper.hpp"
+#include "codi/tools/preaccumulationHelper.hpp"
+#include "codi/tools/statementPushHelper.hpp"
+#include "codi/tools/tapeVectorHelper.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -62,7 +68,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealForwardGen = ActiveReal<ForwardEvaluation<Real, Gradient> >;
+  using RealForwardGen = ActiveReal<ForwardEvaluation<ForwardTapeTypes<Real, Gradient> > >;
 
   /**
    * @brief The default forward type in CoDiPack.
@@ -265,7 +271,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReversePrimalGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, StaticFunctionHandleFactory, ChunkVector> > >;
+  using RealReversePrimalGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, StaticObjectHandleFactory, ChunkVector> > >;
 
   /**
    * @brief A reverse type like the default reverse type in CoDiPack but with primal value taping instead of Jacobian taping.
@@ -298,7 +304,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReversePrimalUncheckedGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, StaticFunctionHandleFactory, SingleChunkVector> > >;
+  using RealReversePrimalUncheckedGen = ActiveReal<PrimalValueTape<PrimalValueTapeTypes<ReverseTapeTypes<Real, Gradient, LinearIndexHandler<int> >, StaticObjectHandleFactory, SingleChunkVector> > >;
 
   /**
    * @brief The primal value reverse type in CoDiPack with an unchecked tape.
@@ -355,4 +361,31 @@ namespace codi {
    * See the documentation of #RealReversePrimal, #RealReverseIndex and #RealReverseUnchecked
    */
   typedef RealReversePrimalIndexUncheckedGen<double, double> RealReversePrimalIndexUnchecked;
+
+  /**
+   * @brief A regular CoDiPack type that can be used for Hessian computations in the TapeHelper.
+   */
+  using HessianComputationType = RealReversePrimalIndexGen<RealForwardVec<4>, Direction< RealForwardVec<4>, 4>>;
+
+  /**
+   * @brief A regular CoDiPack type that can be used for Hessian computations in the TapeHelper.
+   *
+   * This is the scalar version which does not use a vector mode.
+   */
+  using HessianComputationScalarType = RealReversePrimalIndexGen<RealForward>;
+
+
+  /**
+   * @brief A regular CoDiPack type that can be used for Jacobian computations in the TapeHelper.
+   */
+  using JacobianComputationType = RealReverseIndexVec<4>;
+
+  /**
+   * @brief A regular CoDiPack type that can be used for Jacobian computations in the TapeHelper.
+   *
+   * This is the scalar version which does not use a vector mode.
+   */
+  using JacobianComputationScalarType = RealReverseIndex;
 }
+
+#include "codi/tools/evaluationHelper.hpp"
