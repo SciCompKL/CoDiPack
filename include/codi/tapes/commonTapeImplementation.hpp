@@ -26,7 +26,7 @@ namespace codi {
       using Gradient = CODI_ANY; ///< Gradient computation type e.g. double or Direction
       using Identifier = CODI_ANY; ///< Identifier for the internal management e.g. int
 
-      /// Declaration for the data vector that is used for the internal storgae. See DateInterface implementations.
+      /// Declaration for the data vector that is used for the internal storage. See DateInterface implementations.
       template<typename Chunk, typename Nested>
       using Data = DataInterface<Nested>;
 

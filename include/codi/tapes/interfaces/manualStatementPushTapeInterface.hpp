@@ -44,7 +44,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-       /// Push a Jacobian entry to the tape. storeManual() has to be called before and this method needs to be called
+       /// Push a Jacobian entry to the tape. storeManual() has to be called before. This method needs to be called
        /// as often as the size argument.
       void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index);
 

@@ -24,75 +24,103 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+
+  /**
+   * @brief Type definitions for the Jacobian tapes.
+   *
+   * @tparam _Real          See TapeTypesInterface.
+   * @tparam _Gradient      See TapeTypesInterface.
+   * @tparam _IndexManager  Index manager for the tape. Needs to implement IndexManagerInterface.
+   * @tparam _Data          See TapeTypesInterface.
+   */
   template<typename _Real, typename _Gradient, typename _IndexManager, template<typename, typename> class _Data>
   struct JacobianTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);
-      using IndexManager = CODI_DECLARE_DEFAULT(_IndexManager, CODI_TEMPLATE(IndexManagerInterface<int>));
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See JacobianTapeTypes.
+      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See JacobianTapeTypes.
+      using IndexManager = CODI_DECLARE_DEFAULT(_IndexManager, CODI_TEMPLATE(IndexManagerInterface<int>)); ///< See JacobianTapeTypes.
       template<typename Chunk, typename Nested>
-      using Data = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Data<Chunk, Nested>), CODI_TEMPLATE(DefaultChunkedData<CODI_ANY, Nested>));
+      using Data = CODI_DECLARE_DEFAULT(
+                      CODI_TEMPLATE(_Data<Chunk, Nested>),
+                      CODI_TEMPLATE(DefaultChunkedData<CODI_ANY, Nested>)); ///< See JacobianTapeTypes.
 
-      using Identifier = typename IndexManager::Index;
+      using Identifier = typename IndexManager::Index; ///< See IndexManagerInterface.
 
-      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;
-      constexpr static bool IsStaticIndexHandler = !IsLinearIndexHandler;
+      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear; ///< True if the index manager is linear.
+      constexpr static bool IsStaticIndexHandler = !IsLinearIndexHandler;  ///< For reuse index mangers a static instantiation is used.
 
+      /// Statement chunk is either \<argument size\> (linear management) or \<lhs identifier, argument size\>
+      /// (reuse management)
       using StatementChunk = typename std::conditional<
                                  IsLinearIndexHandler,
                                  Chunk1<Config::ArgumentSize>,
                                  Chunk2<Identifier, Config::ArgumentSize>
                                >::type;
-      using StatementData = Data<StatementChunk, IndexManager>;
+      using StatementData = Data<StatementChunk, IndexManager>; ///< Statement data vector.
 
-      using JacobianChunk = Chunk2<Real, Identifier>;
-      using JacobianData = Data<JacobianChunk, StatementData>;
+      using JacobianChunk = Chunk2<Real, Identifier>; ///< Jacobian chunks is \<Jacobian, rhs index\>
+      using JacobianData = Data<JacobianChunk, StatementData>;  ///< Jacobian data vector.
 
-      using NestedData = JacobianData;
+      using NestedData = JacobianData; ///< See TapeTypesInterface.
   };
 
+  /**
+   * @brief Base for all standard Jacobian tape implementations.
+   *
+   * This class provides nearly a full implementation of the FullTapeInterface. There are just a few internal methods
+   * left which need to be implemented by the final classes. These methods are mainly based on the index management
+   * scheme used in the index manager.
+   *
+   * @tparam _TapeTypes needs to implement JacobianTapeTypes.
+   * @tparam _Impl Type of the final implementations
+   */
   template<typename _TapeTypes, typename _Impl>
   struct JacobianBaseTape : public CommonTapeImplementation<_TapeTypes, _Impl> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
+      /// See JacobianBaseTape
+      using TapeTypes = CODI_DECLARE_DEFAULT(
+                          _TapeTypes,
+                          CODI_TEMPLATE(JacobianTapeTypes<double, double,
+                                                          IndexManagerInterface<int>, DefaultChunkedData>));
+      /// See JacobianBaseTape
       using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>;
-      friend Base;
+      using Base = CommonTapeImplementation<TapeTypes, Impl>; ///< Base class abbreviation
+      friend Base; ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;
-      using Gradient = typename TapeTypes::Gradient;
-      using IndexManager = typename TapeTypes::IndexManager;
-      using Identifier = typename TapeTypes::Identifier;
+      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;  ///< See JacobianTapeTypes.
+      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
 
-      using StatementData = typename TapeTypes::StatementData;
-      using JacobianData = typename TapeTypes::JacobianData;
+      using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
+      using JacobianData = typename TapeTypes::JacobianData;    ///< See JacobianTapeTypes.
 
-      using PassiveReal = PassiveRealType<Real>;
+      using PassiveReal = PassiveRealType<Real>;  ///< Basic computation type
 
-      using NestedPosition = typename JacobianData::Position;
-      using Position = typename Base::Position;
+      using NestedPosition = typename JacobianData::Position;    ///< See JacobianTapeTypes.
+      using Position = typename Base::Position;                  ///< See TapeTypesInterface.
 
-      static bool constexpr AllowJacobianOptimization = true;
-      static bool constexpr HasPrimalValues = false;
-      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler;
-      static bool constexpr RequiresPrimalRestore = false;
+      static bool constexpr AllowJacobianOptimization = true;    ///< See InternalStatementRecordingInterface.
+      static bool constexpr HasPrimalValues = false;             ///< See PrimalEvaluationTapeInterface
+      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler; ///< See IdentifierInformationTapeInterface
+      static bool constexpr RequiresPrimalRestore = false;       ///< See PrimalEvaluationTapeInterface
 
     protected:
 
 #if CODI_RemoveDuplicateJacobianArguments
-      DuplicateJacobianRemover<Real, Identifier> jacobianSorter;
+      DuplicateJacobianRemover<Real, Identifier> jacobianSorter;  ///< Replacement for jacobianData to remove duplicated Jacobians.
 #endif
 
-      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;
-      StatementData statementData;
-      JacobianData jacobianData;
+      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager; ///< Index manager.
+      StatementData statementData; ///< Data stream for statement specific data.
+      JacobianData jacobianData;   ///< Data stream for argument specific data.
 
-      std::vector<Gradient> adjoints;
+      std::vector<Gradient> adjoints; ///< Evaluation vector for AD.
 
-    public:
+    private:
 
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);
@@ -104,23 +132,26 @@ namespace codi {
 
     protected:
 
-      /*******************************************************************************
-       * Section: Methods expected in the child class.
-       *
-       * Description: TODO
-       *
-       */
+      /*******************************************************************************/
+      /// @name Interface definition
+      /// @{
 
+      /// Perform a forward evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename ... Args>
       static void internalEvaluateForward(Args&& ... args);
 
+      /// Perform a reverse evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename ... Args>
       static void internalEvaluateReverse(Args&& ... args);
 
+      /// Add statement specific data to the data streams.
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
+
+      /// @}
 
     public:
 
+      /// Constructor
       JacobianBaseTape() :
         Base(),
   #if CODI_RemoveDuplicateJacobianArguments
@@ -142,17 +173,18 @@ namespace codi {
         Base::options.insert(TapeParameters::StatementSize);
       }
 
-      /*******************************************************************************
-       * Section: Functions from GradientAccessInterface
-       *
-       */
+      /*******************************************************************************/
+      /// @name Functions from GradientAccessTapeInterface
+      /// @{
 
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&)
       CODI_INLINE Gradient& gradient(Identifier const& identifier) {
         checkAdjointSize(identifier);
 
         return adjoints[identifier];
       }
 
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&) const
       CODI_INLINE Gradient const& gradient(Identifier const& identifier) const {
         if(identifier > (Identifier)adjoints.size()) {
           return adjoints[0];
@@ -161,11 +193,12 @@ namespace codi {
         }
       }
 
-      /*******************************************************************************
-       * Section: Functions from InternalExpressionTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from InternalStatementRecordingInterface
+      /// @{
 
+      /// \copydoc codi::InternalStatementRecordingInterface::initIdentifier()
       template<typename Real>
       CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
@@ -173,6 +206,7 @@ namespace codi {
         identifier = IndexManager::UnusedIndex;
       }
 
+      /// \copydoc codi::InternalStatementRecordingInterface::destroyIdentifier()
       template<typename Real>
       CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
@@ -180,10 +214,14 @@ namespace codi {
         indexManager.get().freeIndex(identifier);
       }
 
+      /// @}
+
     protected:
 
+      /// Pushes Jacobians and indices to the tape
       struct PushJacobianLogic : public JacobianComputationLogic<Real, PushJacobianLogic> {
         public:
+          /// General implementation. Checks for invalid and passive values/Jacobians.
           template<typename Node, typename DataVector>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
             CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
@@ -195,6 +233,7 @@ namespace codi {
             }
           }
 
+          /// Specialization for ReferenceActiveType nodes. Delays Jacobian push.
           template<typename Type, typename DataVector>
           CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian, DataVector& dataVector) {
             CODI_UNUSED(dataVector);
@@ -206,8 +245,11 @@ namespace codi {
           }
       };
 
+      /// Pushes all delayed Jacobians.
       struct PushDelayedJacobianLogic : public ForEachTermLogic<PushDelayedJacobianLogic> {
         public:
+
+          /// Specialization for ReferenceActiveType nodes. Pushes the delayed Jacobian.
           template<typename Type, typename DataVector>
           CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, DataVector& dataVector) {
             CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
@@ -223,6 +265,7 @@ namespace codi {
           using ForEachTermLogic<PushDelayedJacobianLogic>::handleActive;
       };
 
+      /// Push Jacobians and delayed Jacobians to the tape.
       template<typename Rhs>
       CODI_INLINE void pushJacobians(ExpressionInterface<Real, Rhs> const& rhs) {
         PushJacobianLogic pushJacobianLogic;
@@ -244,6 +287,9 @@ namespace codi {
 
     public:
 
+      /// @{
+
+      /// \copydoc codi::InternalStatementRecordingInterface::store()
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                  ExpressionInterface<Real, Rhs> const& rhs) {
@@ -270,6 +316,8 @@ namespace codi {
         lhs.cast().value() = rhs.cast().getValue();
       }
 
+      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// Optimization for copy statements.
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                  LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
@@ -287,6 +335,8 @@ namespace codi {
         lhs.cast().value() = rhs.cast().getValue();
       }
 
+      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, PassiveReal const& rhs) {
         indexManager.get().freeIndex(lhs.cast().getIdentifier());
@@ -294,11 +344,13 @@ namespace codi {
         lhs.cast().value() = rhs;
       }
 
-      /*******************************************************************************
-       * Section: Functions from ReverseTapeInterface
-       *
-       */
 
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ReverseTapeInterface
+      /// @{
+
+      /// \copydoc codi::ReverseTapeInterface::registerInput()
       template<typename Lhs>
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
@@ -309,14 +361,18 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
       CODI_INLINE void clearAdjoints() {
         for(Gradient& gradient : adjoints) {
           gradient = Gradient();
         }
       }
 
+      /// @}
+
     protected:
 
+      /// Adds data from all streams, the size of the adjoint vector and index manager data.
       CODI_INLINE TapeValues internalGetTapeValues() const {
         std::string name;
         if(TapeTypes::IsLinearIndexHandler) {
@@ -344,16 +400,14 @@ namespace codi {
         return values;
       }
 
-    public:
-
-      using Base::evaluate;
-
-      /*******************************************************************************
-       * Section: Function from CustomVectorEvaluationTapeInterface
-       *
+      /******************************************************************************
+       * Protected helper function for CustomAdjointVectorEvaluationTapeInterface
        */
 
+
     protected:
+
+      /// Performs the AD \ref sec_reverseAD "reverse" equation for a statement.
       template<typename Adjoint>
       CODI_INLINE static void incrementAdjoints(
           Adjoint* adjointVector,
@@ -375,24 +429,17 @@ namespace codi {
         }
       }
 
+      /// Wrapper helper for improved compiler optimizations.
       CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverse, Impl::template internalEvaluateReverse);
 
+      /// Start for reverse evaluation between external function.
       template<typename Adjoint>
       CODI_NO_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianData& jacobianData) {
           Wrap_internalEvaluateReverse<Adjoint> evalFunc;
           jacobianData.evaluateReverse(start, end, evalFunc, data);
       }
 
-    public:
-      template<typename Adjoint>
-      CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
-        AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
-
-        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template internalEvaluateReverseVector<Adjoint>, &adjointWrapper, data, jacobianData);
-      }
-
-    protected:
-
+      /// Performs the AD \ref sec_forwardAD "forward" equation for a statement.
       template<typename Adjoint>
       CODI_INLINE static void incrementTangents (
           Adjoint const* const adjointVector,
@@ -410,23 +457,46 @@ namespace codi {
         }
       }
 
+      /// Wrapper helper for improved compiler optimizations.
+      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateForward, Impl::template internalEvaluateForward);
+
+      /// Start for forward evaluation between external function.
+      template<typename Adjoint>
+      CODI_NO_INLINE static void internalEvaluateForwardVector(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianData& jacobianData) {
+          Wrap_internalEvaluateForward<Adjoint> evalFunc;
+          jacobianData.evaluateForward(start, end, evalFunc, data);
+      }
+
     public:
+
+      /// @name Functions from CustomAdjointVectorEvaluationTapeInterface
+      /// @{
+
+      using Base::evaluate;
+
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::evaluate()
+      template<typename Adjoint>
+      CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
+        AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
+
+        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template internalEvaluateReverseVector<Adjoint>, &adjointWrapper, data, jacobianData);
+      }
+
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::evaluate()
       template<typename Adjoint>
       CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        auto evalFunc = [this] (NestedPosition const& start, NestedPosition const& end, Adjoint* data) {
-          jacobianData.evaluateForward(start, end, Impl::template internalEvaluateForward<Adjoint>, data);
-        };
-        Base::internalEvaluateExtFuncForward(start, end, evalFunc, &adjointWrapper, data);
-
+        Base::internalEvaluateExtFuncForward(start, end, JacobianBaseTape::template internalEvaluateForwardVector<Adjoint>, &adjointWrapper, data, jacobianData);
       }
 
-      /*******************************************************************************
-       * Section: Function from DataManagementTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from DataManagementTapeInterface
+      /// @{
 
+
+      /// \copydoc codi::DataManagementTapeInterface::swap()
       CODI_INLINE void swap(Impl& other) {
 
         // Index manager does not need to be swapped, it is either static or swapped in with the vector data
@@ -437,10 +507,12 @@ namespace codi {
         Base::swap(other);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::deleteAdjointVector()
       void deleteAdjointVector() {
         adjoints.resize(1);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::getParameter()
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {
           case TapeParameters::AdjointSize:
@@ -460,6 +532,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::setParameter()
       void setParameter(TapeParameters parameter, size_t value) {
         switch (parameter) {
           case TapeParameters::AdjointSize:
@@ -480,11 +553,12 @@ namespace codi {
         }
       }
 
-      /*******************************************************************************
-       * Section: Function from ExternalFunctionTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ExternalFunctionTapeInterface
+      /// @{
 
+      /// \copydoc codi::ExternalFunctionTapeInterface::registerExternalFunctionOutput()
       template<typename Lhs>
       Real registerExternalFunctionOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         cast().registerInput(value);
@@ -492,12 +566,14 @@ namespace codi {
         return Real();
       }
 
-      /*******************************************************************************
-       * Section: Function from ForwardEvaluationTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ForwardEvaluationTapeInterface
+      /// @{
 
       using Base::evaluateForward;
+
+      /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
       void evaluateForward(Position const& start, Position const& end) {
 
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
@@ -505,17 +581,20 @@ namespace codi {
         cast().evaluateForward(start, end, adjoints.data());
       }
 
-      /*******************************************************************************
-       * Section: Function from ManualStatementPushTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ManualStatementPushTapeInterface
+      /// @{
 
+
+      /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobiManual()
       void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
         jacobianData.pushData(jacobi, index);
       }
 
+      /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
 
@@ -526,44 +605,49 @@ namespace codi {
         cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);
       }
 
-    public:
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from PositionalEvaluationTapeInterface
+      /// @{
 
-      /*******************************************************************************
-       * Section: Function from PositionalEvaluationTapeInterface
-       *
-       */
 
+      /// \copydoc codi::PositionalEvaluationTapeInterface::evaluate()
       CODI_INLINE void evaluate(Position const& start, Position const& end) {
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
         evaluate(start, end, adjoints.data());
       }
 
-      /*******************************************************************************
-       * Section: Function from PreaccumulationEvaluationTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from PreaccumulationEvaluationTapeInterface
+      /// @{
 
+      /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
       void evaluateKeepState(Position const& start, Position const& end) {
         evaluate(start, end);
       }
 
+      /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
       void evaluateForwardKeepState(Position const& start, Position const& end) {
         evaluateForward(start, end);
       }
 
-      /*******************************************************************************
-       * Section: Function from PrimalEvaluationTapeInterface
-       *
-       */
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from PrimalEvaluationTapeInterface
+      /// @{
 
       using Base::evaluatePrimal;
+
+      /// Not implemented raises exception.
       void evaluatePrimal(Position const& start, Position const& end) {
         CODI_UNUSED(start, end);
 
         CODI_EXCEPTION("Accessing primal evaluation of an Jacobian tape.");
       }
 
+      /// Not implemented raises exception.
       Real& primal(Identifier const& identifier) {
         CODI_UNUSED(identifier);
 
@@ -573,6 +657,7 @@ namespace codi {
         return temp;
       }
 
+      /// Not implemented raises exception.
       Real primal(Identifier const& identifier) const {
         CODI_UNUSED(identifier);
 
@@ -580,6 +665,8 @@ namespace codi {
 
         return Real();
       }
+
+      /// @}
 
     private:
 
@@ -594,4 +681,3 @@ namespace codi {
       }
   };
 }
-

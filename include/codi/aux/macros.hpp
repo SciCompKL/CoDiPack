@@ -69,6 +69,7 @@ namespace codi {
 
   #define CODI_WRAP_FUNCTION(NAME, FUNC) \
     struct NAME { \
+      /** Empty */ \
       template<typename ... Args> \
       void operator()(Args&& ... args) const { \
         FUNC(std::forward<Args>(args)...); \
@@ -78,6 +79,7 @@ namespace codi {
   #define CODI_WRAP_FUNCTION_TEMPLATE(NAME, FUNC) \
     template<typename ... TT> \
     struct NAME { \
+      /** Empty */ \
       template<typename ... Args> \
       void operator()(Args&& ... args) const { \
         FUNC<TT...>(std::forward<Args>(args)...); \

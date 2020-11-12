@@ -76,8 +76,8 @@ namespace codi {
 
       /// @}
     protected:
-      size_t size;
-      size_t usedSize;
+      size_t size;     ///< Maximum size of arrays.
+      size_t usedSize; ///< Currently used size.
 
     public:
 

@@ -16,7 +16,7 @@ namespace codi {
    * in this interface all these operations can be performed on parts of the tape.
    *
    * An example for a positional tape evaluation (documentation/examples/positionalEvaluationTapeInterface.cpp):
-   * \snippet examples/positionalEvaluationTapeInterface.cpp Forward tape evaluation
+   * \snippet examples/positionalEvaluationTapeInterface.cpp Positional evaluation
    *
    * @tparam _Position  Global tape position usually defined by Tape::Position.
    */
@@ -24,7 +24,7 @@ namespace codi {
   struct PositionalEvaluationTapeInterface {
     public:
 
-      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition);
+      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition); ///< See PositionalEvaluationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

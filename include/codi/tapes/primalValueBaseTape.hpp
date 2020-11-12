@@ -432,7 +432,7 @@ namespace codi {
       using Base::evaluate;
 
       /*******************************************************************************
-       * Section: Function from CustomVectorEvaluationTapeInterface
+       * Section: Function from CustomAdjointVectorEvaluationTapeInterface
        *
        */
 

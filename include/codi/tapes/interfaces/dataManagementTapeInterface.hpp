@@ -13,7 +13,7 @@ namespace codi {
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
-   * \subsection fileIO File IO functions
+   * \section fileIO File IO functions
    * This interface offers advanced data management capabilities for the tape. The file IO routines provide
    * the capability to write the internal tape data to the disk. Management data is usually not written and also
    * external function data is not written by the tape. With a call to deleteData() all internal data that is written by
@@ -21,7 +21,7 @@ namespace codi {
    * readFromFile() on the file written by writeToFile(). Since, the management data is not written it would otherwise
    * be impossible to read the file.
    *
-   * \subsection parameters Parameters functions
+   * \section parameters Parameters functions
    * The parameter functions allow the access to the sizes of the internal tape implementations. For most of the
    * parameters they also allow the resizing of these vectors. There are a few parameters, that are read only and a
    * CODI_EXCEPTION is thrown if the user tries to set them. See the documentation of the enumerators in #TapeParameters
