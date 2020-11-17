@@ -17,27 +17,39 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Final implementation for a Jacobian tape with linear index management.
+   *
+   * This class implements the interface methods from the JacobianBaseTape.
+   *
+   * @tparam _TapeTypes  JacobianTapeTypes definition.
+   */
   template<typename _TapeTypes>
   struct JacobianReuseTape : public JacobianBaseTape<_TapeTypes, JacobianReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double,
+                        IndexManagerInterface<int>, DefaultChunkedData>)); ///< See JacobianReuseTape
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;
-      friend Base;
+      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>; ///< Base class abbreviation
+      friend Base; ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;
-      using Gradient = typename TapeTypes::Gradient;
-      using IndexManager = typename TapeTypes::IndexManager;
-      using Identifier = typename TapeTypes::Identifier;
-      using Position = typename Base::Position;
-      using StatementData = typename TapeTypes::StatementData;
+      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
+      using Position = typename Base::Position;               ///< See TapeTypesInterface.
+      using StatementData = typename TapeTypes::StatementData;///< See JacobianTapeTypes
 
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
+      /// Constructor
       JacobianReuseTape() : Base() {}
 
       using Base::clearAdjoints;
+
+
+      /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
 
         // clear adjoints
@@ -58,10 +70,12 @@ namespace codi {
 
     protected:
 
+      /// Both arguments are pushed to the tape.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         this->statementData.pushData(index, numberOfArguments);
       }
 
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateForward(
           /* data from call */
@@ -84,6 +98,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateReverse(
           /* data from call */

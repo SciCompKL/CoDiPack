@@ -19,26 +19,37 @@
 namespace codi {
 
 
+  /**
+   * @brief Final implementation for a Jacobian tape with linear index management.
+   *
+   * This class implements the interface methods from the JacobianBaseTape.
+   *
+   * @tparam _TapeTypes  JacobianTapeTypes definition.
+   */
   template<typename _TapeTypes>
   struct JacobianLinearTape : public JacobianBaseTape<_TapeTypes, JacobianLinearTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double,
+                        IndexManagerInterface<int>, DefaultChunkedData>)); ///< See JacobianLinearTape
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;
-      friend Base;
+      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>; ///< Base class abbreviation
+      friend Base; ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;
-      using Gradient = typename TapeTypes::Gradient;
-      using IndexManager = typename TapeTypes::IndexManager;
-      using Identifier = typename TapeTypes::Identifier;
-      using Position = typename Base::Position;
+      using Real = typename TapeTypes::Real;                    ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;            ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;    ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;        ///< See TapeTypesInterface.
+      using Position = typename Base::Position;                 ///< See TapeTypesInterface.
 
       static_assert(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");
 
+      /// Constructor
       JacobianLinearTape() : Base() {}
 
       using Base::clearAdjoints;
+
+      /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
 
         using IndexPosition = typename IndexManager::Position;
@@ -55,12 +66,14 @@ namespace codi {
 
     protected:
 
+      /// Only number of arguments is required for linear index managers
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         CODI_UNUSED(index);
 
         this->statementData.pushData(numberOfArguments);
       }
 
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateForward(
           /* data from call */
@@ -95,6 +108,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateReverse(
           /* data from call */
