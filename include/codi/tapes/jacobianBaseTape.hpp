@@ -24,7 +24,6 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-
   /**
    * @brief Type definitions for the Jacobian tapes.
    *
@@ -43,7 +42,7 @@ namespace codi {
       template<typename Chunk, typename Nested>
       using Data = CODI_DECLARE_DEFAULT(
                       CODI_TEMPLATE(_Data<Chunk, Nested>),
-                      CODI_TEMPLATE(DefaultChunkedData<CODI_ANY, Nested>)); ///< See JacobianTapeTypes.
+                      CODI_TEMPLATE(DataInterface<Nested>)); ///< See JacobianTapeTypes.
 
       using Identifier = typename IndexManager::Index; ///< See IndexManagerInterface.
 
@@ -138,11 +137,11 @@ namespace codi {
 
       /// Perform a forward evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename ... Args>
-      static void internalEvaluateForward(Args&& ... args);
+      static void internalEvaluateForwardStack(Args&& ... args);
 
       /// Perform a reverse evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename ... Args>
-      static void internalEvaluateReverse(Args&& ... args);
+      static void internalEvaluateReverseStack(Args&& ... args);
 
       /// Add statement specific data to the data streams.
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
@@ -160,7 +159,7 @@ namespace codi {
         indexManager(0),
         statementData(Config::ChunkSize),
         jacobianData(Config::ChunkSize),
-        adjoints(1)
+        adjoints(1) // see gradient() const
       {
         statementData.setNested(&indexManager.get());
         jacobianData.setNested(&statementData);
@@ -430,12 +429,12 @@ namespace codi {
       }
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverse, Impl::template internalEvaluateReverse);
+      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverseStack, Impl::template internalEvaluateReverseStack);
 
       /// Start for reverse evaluation between external function.
       template<typename Adjoint>
       CODI_NO_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianData& jacobianData) {
-          Wrap_internalEvaluateReverse<Adjoint> evalFunc;
+          Wrap_internalEvaluateReverseStack<Adjoint> evalFunc;
           jacobianData.evaluateReverse(start, end, evalFunc, data);
       }
 
@@ -458,12 +457,12 @@ namespace codi {
       }
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateForward, Impl::template internalEvaluateForward);
+      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateForwardStack, Impl::template internalEvaluateForwardStack);
 
       /// Start for forward evaluation between external function.
       template<typename Adjoint>
       CODI_NO_INLINE static void internalEvaluateForwardVector(NestedPosition const& start, NestedPosition const& end, Adjoint* data, JacobianData& jacobianData) {
-          Wrap_internalEvaluateForward<Adjoint> evalFunc;
+          Wrap_internalEvaluateForwardStack<Adjoint> evalFunc;
           jacobianData.evaluateForward(start, end, evalFunc, data);
       }
 

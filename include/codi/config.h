@@ -110,6 +110,7 @@ namespace codi {
     #ifndef CODI_VariableAdjointInterfaceInPrimalTapes
       #define CODI_VariableAdjointInterfaceInPrimalTapes 0
     #endif
+    bool constexpr VariableAdjointInterfaceInPrimalTapes = CODI_VariableAdjointInterfaceInPrimalTapes;
     #if CODI_VariableAdjointInterfaceInPrimalTapes
       #define ADJOINT_VECTOR_TYPE VectorAccessInterface<Real, Identifier>
     #else

@@ -25,6 +25,7 @@ namespace codi {
        *
        */
 
+      /// TODO
       template<typename Node, typename ... Args>
       void handleJacobianOnActive(Node const& node, Real jacobian, Args&& ... args);
 

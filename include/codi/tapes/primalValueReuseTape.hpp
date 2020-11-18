@@ -19,27 +19,40 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+
+  /**
+   * @brief Final implementation for a primal value tape with a reuse index management.
+   *
+   * This class implements the interface methods from the PrimalValueBaseTape.
+   *
+   * @tparam _TapeTypes  JacobianTapeTypes definition.
+   */
   template<typename _TapeTypes>
   struct PrimalValueReuseTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));
-      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueReuseTape<TapeTypes>>;
-      friend Base;
+      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double,
+                        IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>)); ///< See PrimalValueLinearTape
 
-      using Real = typename TapeTypes::Real;
-      using Gradient = typename TapeTypes::Gradient;
-      using Identifier = typename TapeTypes::Identifier;
-      using PassiveReal = PassiveRealType<Real>;
-      using StatementEvaluator = typename TapeTypes::StatementEvaluator;
-      using EvalHandle = typename TapeTypes::EvalHandle;
-      using Position = typename Base::Position;
+      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>; ///< Base class abbreviation
+      friend Base; ///< Allow the base class to call protected and private methods.
 
-      using StatementData = typename TapeTypes::StatementData;
+      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
+      using PassiveReal = PassiveRealType<Real>;              ///< Basic computation type
+      using StatementEvaluator = typename TapeTypes::StatementEvaluator; ///< See PrimalValueTapeTypes
+      using EvalHandle = typename TapeTypes::EvalHandle;                 ///< See PrimalValueTapeTypes
+      using Position = typename Base::Position;               ///< See TapeTypesInterface.
 
+      using StatementData = typename TapeTypes::StatementData; ///< See PrimalValueTapeTypes
+
+      /// Constructor
       PrimalValueReuseTape() : Base() {}
 
       using Base::clearAdjoints;
+
+      /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
 
         // clear adjoints
@@ -60,6 +73,7 @@ namespace codi {
 
     protected:
 
+      /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForwardStack
       CODI_INLINE static void internalEvaluateForwardStack(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
@@ -102,6 +116,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::PrimalValueBaseTape::internalEvaluatePrimalStack
       CODI_INLINE static void internalEvaluatePrimalStack(
           /* data from call */
           Real* primalVector,
@@ -136,6 +151,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::PrimalValueBaseTape::internalEvaluateReverseStack
       CODI_INLINE static void internalEvaluateReverseStack(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
@@ -178,6 +194,7 @@ namespace codi {
         }
       }
 
+      /// Empty implementation primal values are not restsored in linear management
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
 
         // reset primals
@@ -195,7 +212,8 @@ namespace codi {
 
       }
 
-      void pushStmtData(
+      /// Only number of arguments is required for linear index managers
+      CODI_INLINE void pushStmtData(
           Identifier const& index,
           Config::ArgumentSize const& numberOfPassiveArguments,
           Real const& oldPrimalValue,

@@ -24,11 +24,13 @@ namespace codi {
        *
        */
 
+      /// TODO
       template<typename Node, typename ... Args>
       void handleActive(Node const& node, Args&& ... args) {
         CODI_UNUSED(node, args...);
       }
 
+      /// TODO
       template<typename Node, typename ... Args>
       void handleConstant(Node const& node, Args&& ... args) {
         CODI_UNUSED(node, args...);

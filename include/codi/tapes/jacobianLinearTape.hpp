@@ -20,7 +20,7 @@ namespace codi {
 
 
   /**
-   * @brief Final implementation for a Jacobian tape with linear index management.
+   * @brief Final implementation for a Jacobian tape with a linear index management.
    *
    * This class implements the interface methods from the JacobianBaseTape.
    *
@@ -73,9 +73,9 @@ namespace codi {
         this->statementData.pushData(numberOfArguments);
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateForwardStack
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateForward(
+      CODI_INLINE static void internalEvaluateForwardStack(
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobian vector */
@@ -108,9 +108,9 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverseStack
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateReverse(
+      CODI_INLINE static void internalEvaluateReverseStack(
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobianData */
