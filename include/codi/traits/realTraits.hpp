@@ -23,23 +23,27 @@ namespace codi {
       }
   };
 
+  /// TODO
   template<typename _Type, typename = void>
   struct IsTotalZero {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(_Type, double);
 
+      /// TODO
       static CODI_INLINE bool isTotalZero(Type const& v) {
         return Type() == v;
       }
   };
 
+  /// TODO
   template<typename _Type, typename = void>
   struct IsTotalFinite {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(_Type, double);
 
+      /// TODO
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         using std::isfinite;
         return isfinite(v);
