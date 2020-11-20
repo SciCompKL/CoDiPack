@@ -34,7 +34,7 @@ namespace codi {
       using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double,
                         IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>)); ///< See PrimalValueLinearTape
 
-      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>; ///< Base class abbreviation
+      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueReuseTape<TapeTypes>>; ///< Base class abbreviation
       friend Base; ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
