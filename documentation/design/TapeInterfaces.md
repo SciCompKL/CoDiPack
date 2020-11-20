@@ -2,7 +2,7 @@ Tape Interface Design {#TapeInterfaces}
 =======
 
 The full tape interface of CoDiPack is broken down into several smaller interfaces. This has the advantage that:
- - Function with the same topic are clustered together
+ - Functions with the same topic are clustered together
  - Documentation can be provided in more concise format
  - Other classes can specify more clearly which functionality is required
  - New tape implementations can start with the basic interfaces. (Especially with regard to development guideline TODO: ref)
