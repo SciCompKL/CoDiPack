@@ -7,6 +7,7 @@
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../expressions/logic/traversalLogic.hpp"
 #include "../../traits/expressionTraits.hpp"
+#include "../../traits/realTraits.hpp"
 #include "../aux/tapeValues.hpp"
 #include "gradientAccessTapeInterface.hpp"
 #include "internalStatementRecordingInterface.hpp"
@@ -43,6 +44,8 @@ namespace codi {
       using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See ReverseTapeInterface
       using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See ReverseTapeInterface
       using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See ReverseTapeInterface
+
+      using PassiveReal = PassiveRealType<Real>;
 
       /*******************************************************************************/
       /// @name Recording

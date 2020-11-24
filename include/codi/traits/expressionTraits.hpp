@@ -107,6 +107,6 @@ namespace codi {
       }
       using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::term;
 
-      static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
+      static size_t constexpr value = Eval<NumberOfConstantTypeArguments, Expr>::value;
   };
 }
