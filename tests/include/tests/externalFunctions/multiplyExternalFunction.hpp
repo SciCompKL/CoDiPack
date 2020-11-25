@@ -14,7 +14,7 @@ struct MultiplyExternalFunction {
 
 
 template<typename _Number>
-struct MultiplyExternalFunction<_Number, codi::enableIfReverseTape<typename _Number::Tape>> {
+struct MultiplyExternalFunction<_Number, codi::TapeTraits::enableIfReverseTape<typename _Number::Tape>> {
   public:
     using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
 

@@ -151,7 +151,7 @@ namespace codi {
   /// \copydoc codi::IsTotalFinite <br>
   /// Value and gradient are tested if they are finite.
   template<typename _Type>
-  struct RealTraits::IsTotalFinite<_Type, enableIfForwardTape<typename _Type::Tape>> {
+  struct RealTraits::IsTotalFinite<_Type, TapeTraits::enableIfForwardTape<typename _Type::Tape>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(
@@ -169,7 +169,7 @@ namespace codi {
   /// \copydoc codi::IsTotalZero <br>
   /// Value and gradient are tested if they are zero.
   template<typename _Type>
-  struct RealTraits::IsTotalZero<_Type, enableIfForwardTape<typename _Type::Tape>> {
+  struct RealTraits::IsTotalZero<_Type, TapeTraits::enableIfForwardTape<typename _Type::Tape>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(

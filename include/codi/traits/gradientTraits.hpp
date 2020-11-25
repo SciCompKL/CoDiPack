@@ -64,10 +64,12 @@ namespace codi {
       >::type
     > : std::true_type {};
 
+#if CODI_IS_CPP14
     template<typename Gradient>
-    using isDirection = IsDirection<Gradient>;
+    bool constexpr isDirection = IsDirection<Gradient>::value;
+#endif
 
     template<typename Gradient>
-    using enableIfDirection = typename std::enable_if<isDirection<Gradient>::value>::type;
+    using enableIfDirection = typename std::enable_if<IsDirection<Gradient>::value>::type;
   }
 }

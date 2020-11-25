@@ -79,7 +79,7 @@ namespace codi {
             Real* x_d = new Real[inputIndices.size()];
             Real* y_d = new Real[outputIndices.size()];
 
-            if(isPrimalValueTape<Tape>::value) {
+            if(TapeTraits::IsPrimalValueTape<Tape>::value) {
               for(size_t i = 0; i < inputIndices.size(); ++i) {
                 inputValues[i] = ra->getPrimal(inputIndices[i]);
               }
@@ -99,7 +99,7 @@ namespace codi {
               }
             }
 
-            if(isPrimalValueTape<Tape>::value) {
+            if(TapeTraits::IsPrimalValueTape<Tape>::value) {
               for(size_t i = 0; i < outputIndices.size(); ++i) {
                 ra->setPrimal(outputIndices[i], outputValues[i]);
               }
@@ -122,7 +122,7 @@ namespace codi {
           void evalPrimFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            if(isPrimalValueTape<Tape>::value) {
+            if(TapeTraits::IsPrimalValueTape<Tape>::value) {
               for(size_t i = 0; i < inputIndices.size(); ++i) {
                 inputValues[i] = ra->getPrimal(inputIndices[i]);
               }
@@ -130,7 +130,7 @@ namespace codi {
 
             primalFunc(inputValues.data(), inputIndices.size(), outputValues.data(), outputIndices.size(), &userData);
 
-            if(isPrimalValueTape<Tape>::value) {
+            if(TapeTraits::IsPrimalValueTape<Tape>::value) {
               for(size_t i = 0; i < outputIndices.size(); ++i) {
                 ra->setPrimal(outputIndices[i], outputValues[i]);
               }

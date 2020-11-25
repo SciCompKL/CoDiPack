@@ -15,7 +15,7 @@ namespace codi {
   template<typename _Type,
            typename _Tool =
               typename std::conditional<
-                codi::isForwardTape<typename _Type::Tape>::value,
+                codi::TapeTraits::IsForwardTape<typename _Type::Tape>::value,
                 CoDiPackForwardTool<_Type>,
                 CoDiPackReverseTool<_Type>
              >::type
