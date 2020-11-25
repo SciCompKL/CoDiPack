@@ -2,12 +2,12 @@
 
 #include "../../config.h"
 #include "../../aux/macros.hpp"
+#include "../../tapes/interfaces/reverseTapeInterface.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "../binaryExpression.hpp"
 #include "../expressionInterface.hpp"
 #include "../static/staticContextActiveType.hpp"
 #include "../static/staticContextConstantExpression.hpp"
-#include "../tapes/interfaces/reverseTapeInterface.hpp"
 #include "../unaryExpression.hpp"
 #include "nodeInterface.hpp"
 
