@@ -29,7 +29,7 @@ the pure operator overloading approach would create three intermediate statement
 \f}
 The expression template approach creates one large expression that is represented by the structure
 \f[
-  \text{SQUARE} < \text{MULT} < \text{ADD} < \text{Real}, \text{Real}>, \text{SUB}<\text{Real}, \text{Real}> > > \equdot
+  \text{SQUARE} < \text{MULT} < \text{ADD} < \text{Real}, \text{Real}>, \text{SUB}<\text{Real}, \text{Real}> > > \eqdot
 \f]
 It can be used to evaluate the result \f$w\f$ and access additional information about the operations. In CoDiPack 2.0
 the functions for each expression are keept rather small. The only direct callable method is `getValue` which evaluates

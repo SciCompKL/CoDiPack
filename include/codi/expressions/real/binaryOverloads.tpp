@@ -19,7 +19,7 @@
 #ifndef FUNCTION
   #define PROXY
 
-  #include "../../aux/macros.h"
+  #include "../../aux/macros.hpp"
   #include "../../config.h"
   #include "../../traits/realTraits.hpp"
   #include "../binaryExpression.hpp"
@@ -31,6 +31,7 @@
   namespace codi {
 #endif
 
+    /// Function overload for FUNCTION
     template <typename Real, typename ArgA, typename ArgB>
     CODI_INLINE BinaryExpression<Real, ArgA, ArgB, OPERATION_LOGIC> FUNCTION(
         ExpressionInterface<Real, ArgA> const& argA,
@@ -38,6 +39,7 @@
       return BinaryExpression<Real, ArgA, ArgB, OPERATION_LOGIC>(argA, argB);
     }
 
+    /// Function overload for FUNCTION
     template <typename Real, typename ArgA>
     CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<PassiveRealType<Real>>, OPERATION_LOGIC> FUNCTION(
         ExpressionInterface<Real, ArgA> const& argA,
@@ -47,6 +49,7 @@
             ConstantExpression<PassiveRealType<Real>>(argB));
     }
 
+    /// Function overload for FUNCTION
     template <typename Real, typename ArgB>
     CODI_INLINE BinaryExpression<Real, ConstantExpression<PassiveRealType<Real>>, ArgB, OPERATION_LOGIC> FUNCTION(
         PassiveRealType<Real> const& argA,

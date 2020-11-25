@@ -4,7 +4,9 @@
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="usergroup" title="Design" url="@ref designPage">
+      <tab type="user" title="Expressions" url="@ref Expressions"/>
       <tab type="user" title="Tape interfaces" url="@ref TapeInterfaces"/>
+      <tab type="user" title="Template declarations" url="@ref TemplateDeclaration"/>
     </tab>
     <!-- <tab type="pages" visible="yes" title="" intro=""/> -->
     <tab type="modules" visible="yes" title="" intro=""/>

@@ -19,7 +19,7 @@
 #ifndef FUNCTION
   #define PROXY
 
-  #include "../../aux/macros.h"
+  #include "../../aux/macros.hpp"
   #include "../../config.h"
   #include "../expressionInterface.hpp"
   #include "../unaryExpression.hpp"
@@ -29,6 +29,7 @@
   namespace codi {
 #endif
 
+    /// Function overload for FUNCTION
     template <typename Real, typename Arg>
       CODI_INLINE UnaryExpression<Real, Arg, OPERATION_LOGIC> FUNCTION(ExpressionInterface<Real, Arg> const& arg) {
       return UnaryExpression<Real, Arg, OPERATION_LOGIC>(arg);

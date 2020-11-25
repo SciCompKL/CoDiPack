@@ -14,7 +14,7 @@
 #ifndef OPERATOR
   #define PROXY
 
-  #include "../../aux/macros.h"
+  #include "../../aux/macros.hpp"
   #include "../../config.h"
   #include "../expressionInterface.hpp"
   #define OPERATOR ==
@@ -23,6 +23,7 @@
 #endif
 
 
+  /// Function overload for operator OPERATOR
   template<typename Real, typename ArgA, typename ArgB>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, ArgA> const& argA, ExpressionInterface<Real, ArgB> const& argB) {
     return getPassiveValue(argA.cast()) OPERATOR getPassiveValue(argB.cast());

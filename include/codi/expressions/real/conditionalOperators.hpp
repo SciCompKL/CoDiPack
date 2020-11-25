@@ -10,12 +10,9 @@
 namespace codi {
 
 
-  /*******************************************************************************
-   * Section: Standard binary comparison operators
-   *
-   * Description: TODO
-   *
-   */
+  /*******************************************************************************/
+  /// @name Builtin binary comparison operators
+  /// @{
 
   #define OPERATOR ==
   #include "conditionalBinaryOverloads.tpp"
@@ -41,14 +38,14 @@ namespace codi {
   #define OPERATOR ||
   #include "conditionalBinaryOverloads.tpp"
 
-  /*******************************************************************************
-   * Section: Standard prefix unary comparison operators
-   *
-   * Description: TODO
-   *
-   */
+  /// @}
+  /*******************************************************************************/
+  /// @name Builtin unary comparison operators
+  /// @{
 
   #define OPERATOR !
   #include "conditionalUnaryOverloads.tpp"
+
+  /// @}
 }
 

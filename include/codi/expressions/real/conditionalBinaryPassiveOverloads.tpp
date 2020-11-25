@@ -17,7 +17,7 @@
 #ifndef OPERATOR
   #define PROXY
 
-  #include "../../aux/macros.h"
+  #include "../../aux/macros.hpp"
   #include "../../config.h"
   #include "../../traits/realTraits.hpp"
   #include "../expressionInterface.hpp"
@@ -27,11 +27,13 @@
   namespace codi {
 #endif
 
+    /// Function overload for operator OPERATOR
   template<typename Real, typename ArgA>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, ArgA> const& argA, PASSIVE_TYPE const& argB) {
     return getPassiveValue(argA.cast()) OPERATOR argB;
   }
 
+  /// Function overload for operator OPERATOR
   template<typename Real, typename ArgB>
   CODI_INLINE bool operator OPERATOR(PASSIVE_TYPE const& argA, ExpressionInterface<Real, ArgB> const& argB) {
     return argA OPERATOR getPassiveValue(argB.cast());

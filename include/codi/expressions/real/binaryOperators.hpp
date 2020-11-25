@@ -12,30 +12,31 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /*******************************************************************************
-   * Section: Builtin binary operators
-   *
-   * Description: TODO
-   *
-   */
+  /*******************************************************************************/
+  /// @name Builtin binary operator
+  /// @{
 
+  /// BinaryOperation implementation for operator +
   template<typename _Real>
   struct Add : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return argA + argB;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE PassiveRealType<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return 1.0;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  PassiveRealType<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
@@ -46,23 +47,27 @@ namespace codi {
   #define FUNCTION operator +
   #include "binaryOverloads.tpp"
 
+  /// BinaryOperation implementation for operator -
   template<typename _Real>
   struct Substract : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return argA - argB;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE PassiveRealType<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return 1.0;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  PassiveRealType<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
@@ -73,23 +78,27 @@ namespace codi {
   #define FUNCTION operator -
   #include "binaryOverloads.tpp"
 
+  /// BinaryOperation implementation for operator *
   template<typename _Real>
   struct Multiply : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return argA * argB;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE ArgB const& gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return argB;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE ArgA const& gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
@@ -100,17 +109,20 @@ namespace codi {
   #define FUNCTION operator *
   #include "binaryOverloads.tpp"
 
+  /// BinaryOperation implementation for operator /
   template<typename _Real>
   struct Divide : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return argA / argB;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, result);
@@ -119,6 +131,7 @@ namespace codi {
         return 1.0 / argB;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, result);
@@ -141,12 +154,10 @@ namespace codi {
   #define FUNCTION operator /
   #include "binaryOverloads.tpp"
 
-  /*******************************************************************************
-   * Section: Standard math library binary operators
-   *
-   * Description: TODO
-   *
-   */
+  /// @}
+  /*******************************************************************************/
+  /// @name Standard math library binary operators
+  /// @{
 
   using std::atan2;
   using std::copysign;
@@ -155,17 +166,20 @@ namespace codi {
   using std::pow;
   using std::remainder;
 
+  /// BinaryOperation implementation for atan2
   template<typename _Real>
   struct Atan2 : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return atan2(argA, argB);
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -176,6 +190,7 @@ namespace codi {
         return argB * divisor;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -200,17 +215,20 @@ namespace codi {
   #define FUNCTION atan2
   #include "binaryOverloads.tpp"
 
+  /// BinaryOperation implementation for copysign
   template<typename _Real>
   struct Copysign : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return copysign(argA, argB);
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE PassiveRealType<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
 
@@ -232,6 +250,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  PassiveRealType<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
@@ -248,17 +267,20 @@ namespace codi {
   #define FUNCTION copysignf
   #include "binaryOverloads.tpp"
 
+  /// BinaryOperation implementation for max
   template<typename _Real>
   struct Max : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return max(argA, argB);
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE PassiveRealType<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -270,6 +292,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  PassiveRealType<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -290,17 +313,20 @@ namespace codi {
   #define FUNCTION fmax
   #include "binaryOverloads.tpp"
 
+  /// BinaryOperation implementation for min
   template<typename _Real>
   struct Min : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return min(argA, argB);
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE PassiveRealType<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -312,6 +338,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  PassiveRealType<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -331,17 +358,20 @@ namespace codi {
   #define FUNCTION fmin
   #include "binaryOverloads.tpp"
 
+  /// BinaryOperation implementation for pow
   template<typename _Real>
   struct Pow : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return pow(argA, argB);
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -355,6 +385,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argB);
@@ -381,20 +412,22 @@ namespace codi {
   #define FUNCTION pow
   #include "binaryOverloads.tpp"
 
-  /* TODO: Refer to underlying IEEE remainder operation.
-   * Denote primal formula.
-   */
+  /// BinaryOperation implementation for remainder
+  ///
+  /// Derivative implementation based on IEC 60559: remainder = numer - rquot * denom
   template<typename _Real>
   struct Remainder : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
 
+      /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return remainder(argA, argB);
       }
 
+      /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
@@ -402,6 +435,7 @@ namespace codi {
         return (Real)1.0;
       }
 
+      /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -425,6 +459,8 @@ namespace codi {
   #define OPERATION_LOGIC Remainder
   #define FUNCTION remainder
   #include "binaryOverloads.tpp"
+
+  /// @}
 }
 
 namespace std {
