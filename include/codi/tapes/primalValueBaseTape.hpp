@@ -331,8 +331,8 @@ namespace codi {
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           CountActiveArguments countActiveArguments;
           PushIdentfierPassiveAndConstant pushAll;
-          size_t constexpr MaxActiveArgs = NumberOfActiveTypeArguments<Rhs>::value;
-          size_t constexpr MaxConstantArgs = NumberOfConstantTypeArguments<Rhs>::value;
+          size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+          size_t constexpr MaxConstantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
 
           size_t activeArguments = 0;
           countActiveArguments.eval(rhs.cast(), activeArguments);
@@ -1173,8 +1173,8 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        size_t constexpr MaxActiveArgs = NumberOfActiveTypeArguments<Rhs>::value;
-        size_t constexpr MaxConstantArgs = NumberOfConstantTypeArguments<Rhs>::value;
+        size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+        size_t constexpr MaxConstantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
 
         return statementEvaluateForwardFull(statementEvaluateForwardInner<Rhs>, MaxActiveArgs, MaxConstantArgs,
                                             primalVector, adjointVector, lhsTangent, numberOfPassiveArguments,
@@ -1191,8 +1191,8 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        size_t constexpr MaxActiveArgs = NumberOfActiveTypeArguments<Rhs>::value;
-        size_t constexpr MaxConstantArgs = NumberOfConstantTypeArguments<Rhs>::value;
+        size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+        size_t constexpr MaxConstantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
 
         return statementEvaluatePrimalFull(statementEvaluatePrimalInner<Rhs>, MaxActiveArgs, MaxConstantArgs,
                                     primalVector, numberOfPassiveArguments,
@@ -1210,8 +1210,8 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        size_t constexpr maxActiveArgs = NumberOfActiveTypeArguments<Rhs>::value;
-        size_t constexpr maxConstantArgs = NumberOfConstantTypeArguments<Rhs>::value;
+        size_t constexpr maxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+        size_t constexpr maxConstantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
         statementEvaluateReverseFull(
               statementEvaluateReverseInner<Rhs>, maxActiveArgs, maxConstantArgs,
               primalVector, adjointVector, lhsAdjoint, numberOfPassiveArguments,
@@ -1256,13 +1256,13 @@ namespace codi {
 
   /// Specialization for manual statement pushes of the used expression type.
   template<size_t size>
-  struct NumberOfActiveTypeArguments<JacobianExpression<size>> {
+  struct ExpressionTraits::NumberOfActiveTypeArguments<JacobianExpression<size>> {
       static size_t constexpr value = size; ///< Number of arguments
   };
 
   /// Specialization for manual statement pushes of the used expression type.
   template<size_t size>
-  struct NumberOfConstantTypeArguments<JacobianExpression<size>> {
+  struct ExpressionTraits::NumberOfConstantTypeArguments<JacobianExpression<size>> {
       static size_t constexpr value = 0; ///< Always zero
   };
 

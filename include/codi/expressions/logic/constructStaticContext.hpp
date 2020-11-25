@@ -59,7 +59,7 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
-  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, enableIfLhsExpression<_Rhs>> {
+  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, ExpressionTraits::enableIfLhsExpression<_Rhs>> {
     public:
 
       using Rhs = _Rhs;
@@ -86,7 +86,7 @@ namespace codi {
   };
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
-  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, enableIfConstantExpression<_Rhs>> {
+  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, ExpressionTraits::enableIfConstantExpression<_Rhs>> {
     public:
 
       using Rhs = _Rhs;
@@ -130,8 +130,8 @@ namespace codi {
       using ArgAMod = typename ArgAConstructor::ResultType;
 
       /// Shift offsets by the number of occurrences in the first sub tree.
-      static size_t constexpr primalValueOffsetArgB = primalValueOffset + NumberOfActiveTypeArguments<ArgA>::value;
-      static size_t constexpr constantValueOffsetArgB = constantValueOffset + NumberOfConstantTypeArguments<ArgA>::value;
+      static size_t constexpr primalValueOffsetArgB = primalValueOffset + ExpressionTraits::NumberOfActiveTypeArguments<ArgA>::value;
+      static size_t constexpr constantValueOffsetArgB = constantValueOffset + ExpressionTraits::NumberOfConstantTypeArguments<ArgA>::value;
       using ArgBConstructor = ConstructStaticContextLogic<ArgB, Tape, primalValueOffsetArgB, constantValueOffsetArgB>;
       using ArgBMod = typename ArgBConstructor::ResultType;
 

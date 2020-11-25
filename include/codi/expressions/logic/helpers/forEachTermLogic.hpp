@@ -51,13 +51,13 @@ namespace codi {
 
       /// \copydoc codi::TraversalLogic::term()
       template<typename Node, typename ... Args>
-      CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Args&& ... args) {
+      CODI_INLINE ExpressionTraits::enableIfLhsExpression<Node> term(Node const& node, Args&& ... args) {
         cast().handleActive(node, std::forward<Args>(args)...);
       }
 
       /// \copydoc codi::TraversalLogic::term()
       template<typename Node, typename ... Args>
-      CODI_INLINE enableIfConstantExpression<Node> term(Node const& node, Args&& ... args) {
+      CODI_INLINE ExpressionTraits::enableIfConstantExpression<Node> term(Node const& node, Args&& ... args) {
         cast().handleConstant(node, std::forward<Args>(args)...);
       }      
 

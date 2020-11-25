@@ -44,8 +44,8 @@ namespace codi {
 
   template<typename Generator, typename Expr>
   InnerPrimalTapeStatementData const InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore(
-      NumberOfActiveTypeArguments<Expr>::value,
-      NumberOfConstantTypeArguments<Expr>::value,
+      ExpressionTraits::NumberOfActiveTypeArguments<Expr>::value,
+      ExpressionTraits::NumberOfConstantTypeArguments<Expr>::value,
       (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateForwardInner<Expr>,
       (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluatePrimalInner<Expr>,
       (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverseInner<Expr>);

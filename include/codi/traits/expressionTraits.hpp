@@ -22,91 +22,121 @@ namespace codi {
   template<typename _Real, size_t _offset>
   struct StaticContextConstantExpression;
 
-  /*******************************************************************************
-   * Section: Detection of specific node types
-   *
-   * Description: TODO
-   *
-   */
+  namespace ExpressionTraits {
 
-  template<typename Impl, typename = void>
-  struct IsLhsExpression : std::false_type {};
+    /*******************************************************************************
+     * Section: Detection of specific node types
+     *
+     * Description: TODO
+     *
+     */
 
-  template<typename Impl>
-  struct IsLhsExpression<
-    Impl,
-    typename enable_if_base_of<
-      LhsExpressionInterface<typename Impl::Real, typename Impl::Gradient, typename Impl::Tape, Impl>,
-      Impl
-    >::type
-  > : std::true_type {};
+    template<typename Impl, typename = void>
+    struct IsLhsExpression : std::false_type {};
 
-  template<typename Tape>
-  struct IsLhsExpression<StaticContextActiveType<Tape>> : std::true_type {};
+    template<typename Impl>
+    struct IsLhsExpression<
+      Impl,
+      typename enable_if_base_of<
+        LhsExpressionInterface<typename Impl::Real, typename Impl::Gradient, typename Impl::Tape, Impl>,
+        Impl
+      >::type
+    > : std::true_type {};
 
-  template<typename Impl>
-  using isLhsExpression = IsLhsExpression<Impl>;
+    template<typename Tape>
+    struct IsLhsExpression<StaticContextActiveType<Tape>> : std::true_type {};
 
-  template<typename Impl>
-  using enableIfLhsExpression = typename std::enable_if<isLhsExpression<Impl>::value>::type;
+#if CODI_IS_CPP14
+    template<typename Impl>
+    bool constexpr isLhsExpression = IsLhsExpression<Impl>::value;
+#endif
 
-  template<typename Impl>
-  struct IsConstantExpression : std::false_type {};
+    template<typename Impl>
+    using enableIfLhsExpression = typename std::enable_if<IsLhsExpression<Impl>::value>::type;
 
-  template<typename Real>
-  struct IsConstantExpression<ConstantExpression<Real>> : std::true_type {};
+    template<typename Impl>
+    struct IsConstantExpression : std::false_type {};
 
-  template<typename Real, size_t offset>
-  struct IsConstantExpression<StaticContextConstantExpression<Real, offset>> : std::true_type {};
+    template<typename Real>
+    struct IsConstantExpression<ConstantExpression<Real>> : std::true_type {};
 
-  template<typename Impl>
-  using isConstantExpression = IsConstantExpression<Impl>;
+    template<typename Real, size_t offset>
+    struct IsConstantExpression<StaticContextConstantExpression<Real, offset>> : std::true_type {};
 
-  template<typename Impl>
-  using enableIfConstantExpression = typename std::enable_if<isConstantExpression<Impl>::value>::type;
+#if CODI_IS_CPP14
+    template<typename Impl>
+    bool constexpr isConstantExpression = IsConstantExpression<Impl>::value;
+#endif
 
-  template<typename Impl>
-  struct IsStaticContextActiveType : std::false_type {};
+    template<typename Impl>
+    using enableIfConstantExpression = typename std::enable_if<IsConstantExpression<Impl>::value>::type;
 
-  template<typename Tape>
-  struct IsStaticContextActiveType<StaticContextActiveType<Tape>> : std::true_type {};
+    template<typename Impl>
+    struct IsStaticContextActiveType : std::false_type {};
 
-  template<typename Impl>
-  using isStaticContextActiveType = IsStaticContextActiveType<Impl>;
+    template<typename Tape>
+    struct IsStaticContextActiveType<StaticContextActiveType<Tape>> : std::true_type {};
 
-  template<typename Impl>
-  using enableIfStaticContextActiveType = typename std::enable_if<isStaticContextActiveType<Impl>::value>::type;
+#if CODI_IS_CPP14
+    template<typename Impl>
+    bool constexpr isStaticContextActiveType = IsStaticContextActiveType<Impl>::value;
+#endif
 
-  /*******************************************************************************
-   * Section: Static values on expressions
-   *
-   * Description: TODO
-   *
-   */
+    template<typename Impl>
+    using enableIfStaticContextActiveType = typename std::enable_if<IsStaticContextActiveType<Impl>::value>::type;
 
-  template<typename Expr>
-  struct NumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>> {
-    public:
+    /*******************************************************************************
+     * Section: Static values on expressions
+     *
+     * Description: TODO
+     *
+     */
 
-      template<typename Node, typename = enableIfLhsExpression<Node>>
-      CODI_INLINE static size_t constexpr term() {
-        return 1;
-      }
-      using CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments>::term;
+    template<typename Expr>
+    struct NumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>> {
+      public:
 
-      static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
-  };
+        template<typename Node, typename = ExpressionTraits::enableIfLhsExpression<Node>>
+        CODI_INLINE static size_t constexpr term() {
+          return 1;
+        }
+        using CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments>::term;
 
-  template<typename Expr>
-  struct NumberOfConstantTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
-    public:
+        static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
+    };
 
-      template<typename Node, typename = enableIfConstantExpression<Node>>
-      CODI_INLINE static size_t constexpr term() {
-        return 1;
-      }
-      using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::term;
+#if CODI_IS_CPP14
+    template<typename Expr>
+    bool constexpr numberOfActiveTypeArguments = NumberOfActiveTypeArguments<Expr>::value;
+#endif
 
-      static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
-  };
+    template<typename Expr>
+    struct NumberOfConstantTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
+      public:
+
+        template<typename Node, typename = enableIfConstantExpression<Node>>
+        CODI_INLINE static size_t constexpr term() {
+          return 1;
+        }
+        using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::term;
+
+        static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
+    };
+
+#if CODI_IS_CPP14
+    template<typename Expr>
+    bool constexpr numberOfConstantTypeArguments = NumberOfConstantTypeArguments<Expr>::value;
+#endif
+
+  }
+
+
+
+
+
+
+
+
+
+
 }

@@ -38,7 +38,7 @@ namespace codi {
 
       /// \copydoc codi::TraversalLogic::term()
       template<typename Node, typename ... Args>
-      CODI_INLINE enableIfLhsExpression<Node> term(Node const& node, Real jacobian, Args&& ... args) {
+      CODI_INLINE ExpressionTraits::enableIfLhsExpression<Node> term(Node const& node, Real jacobian, Args&& ... args) {
         cast().handleJacobianOnActive(node, jacobian, std::forward<Args>(args)...);
       }
 

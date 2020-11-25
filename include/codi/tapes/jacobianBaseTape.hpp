@@ -294,7 +294,7 @@ namespace codi {
                  ExpressionInterface<Real, Rhs> const& rhs) {
 
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
-          size_t constexpr MaxArgs = NumberOfActiveTypeArguments<Rhs>::value;
+          size_t constexpr MaxArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
 
           statementData.reserveItems(1);
           typename JacobianData::InternalPosHandle jacobianStart = jacobianData.reserveItems(MaxArgs);

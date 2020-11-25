@@ -21,6 +21,9 @@ namespace codi {
   /// Conversion macro
   #define CODI_TO_STRING(expression) CODI_TO_STRING2(expression)
 
+  #define CODI_IS_CPP14 (201402L <= __cplusplus)
+  #define CODI_IS_CPP17 (201703L <= __cplusplus)
+
 
   /*******************************************************************************/
   /** @name Default template type declarations
