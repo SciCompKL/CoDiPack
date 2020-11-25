@@ -98,7 +98,7 @@ namespace codi {
     return r;
   }
 
-  template<typename Real, size_t dim, typename = RealTraits::EnableIfIsNotPassiveReal<Real>>
+  template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator * (RealTraits::PassiveReal<Real> const& s, Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
     for (size_t i = 0; i < dim; ++i) {
@@ -113,7 +113,7 @@ namespace codi {
     return s * v;
   }
 
-  template<typename Real, size_t dim, typename = RealTraits::EnableIfIsNotPassiveReal<Real>>
+  template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator * (Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     return s * v;
   }
@@ -128,7 +128,7 @@ namespace codi {
     return r;
   }
 
-  template<typename Real, size_t dim, typename = RealTraits::EnableIfIsNotPassiveReal<Real>>
+  template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator / (Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     Direction<Real, dim> r;
     for (size_t i = 0; i < dim; ++i) {

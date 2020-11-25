@@ -24,109 +24,128 @@ namespace codi {
 
   namespace ExpressionTraits {
 
-    /*******************************************************************************
-     * Section: Detection of specific node types
-     *
-     * Description: TODO
-     *
-     */
+    /*******************************************************************************/
+    /// @name Detection of specific node types
+    /// @{
 
-    template<typename Impl, typename = void>
+    /// If the expression inherits from LhsExpressionInterface. Is either std::false_type or std::true_type
+    template<typename Expr, typename = void>
     struct IsLhsExpression : std::false_type {};
 
-    template<typename Impl>
+#ifndef DOXYGEN_DISABLE
+    template<typename Expr>
     struct IsLhsExpression<
-      Impl,
+      Expr,
       typename enable_if_base_of<
-        LhsExpressionInterface<typename Impl::Real, typename Impl::Gradient, typename Impl::Tape, Impl>,
-        Impl
+        LhsExpressionInterface<typename Expr::Real, typename Expr::Gradient, typename Expr::Tape, Expr>,
+        Expr
       >::type
     > : std::true_type {};
 
     template<typename Tape>
     struct IsLhsExpression<StaticContextActiveType<Tape>> : std::true_type {};
-
-#if CODI_IS_CPP14
-    template<typename Impl>
-    bool constexpr isLhsExpression = IsLhsExpression<Impl>::value;
 #endif
 
-    template<typename Impl>
-    using EnableIfLhsExpression = typename std::enable_if<IsLhsExpression<Impl>::value>::type;
+#if CODI_IS_CPP14
+    /// Value entry of IsLhsExpression
+    template<typename Expr>
+    bool constexpr isLhsExpression = IsLhsExpression<Expr>::value;
+#endif
 
-    template<typename Impl>
+    /// Enable if wrapper for IsLhsExpression
+    template<typename Expr>
+    using EnableIfLhsExpression = typename std::enable_if<IsLhsExpression<Expr>::value>::type;
+
+    /// If the expression inherits from ConstantExpression. Is either std::false_type or std::true_type
+    template<typename Expr>
     struct IsConstantExpression : std::false_type {};
 
+#ifndef DOXYGEN_DISABLE
     template<typename Real>
     struct IsConstantExpression<ConstantExpression<Real>> : std::true_type {};
 
     template<typename Real, size_t offset>
     struct IsConstantExpression<StaticContextConstantExpression<Real, offset>> : std::true_type {};
-
-#if CODI_IS_CPP14
-    template<typename Impl>
-    bool constexpr isConstantExpression = IsConstantExpression<Impl>::value;
 #endif
 
-    template<typename Impl>
-    using EnableIfConstantExpression = typename std::enable_if<IsConstantExpression<Impl>::value>::type;
+#if CODI_IS_CPP14
+    template<typename Expr>
+    /// Value entry of IsConstantExpression
+    bool constexpr isConstantExpression = IsConstantExpression<Expr>::value;
+#endif
 
-    template<typename Impl>
+    /// Enable if wrapper for IsConstantExpression
+    template<typename Expr>
+    using EnableIfConstantExpression = typename std::enable_if<IsConstantExpression<Expr>::value>::type;
+
+    /// If the expression inherits from StaticContextActiveType. Is either std::false_type or std::true_type
+    template<typename Expr>
     struct IsStaticContextActiveType : std::false_type {};
 
+#ifndef DOXYGEN_DISABLE
     template<typename Tape>
     struct IsStaticContextActiveType<StaticContextActiveType<Tape>> : std::true_type {};
-
-#if CODI_IS_CPP14
-    template<typename Impl>
-    bool constexpr isStaticContextActiveType = IsStaticContextActiveType<Impl>::value;
 #endif
 
-    template<typename Impl>
-    using EnableIfStaticContextActiveType = typename std::enable_if<IsStaticContextActiveType<Impl>::value>::type;
+#if CODI_IS_CPP14
+    /// Value entry of IsStaticContextActiveType
+    template<typename Expr>
+    bool constexpr isStaticContextActiveType = IsStaticContextActiveType<Expr>::value;
+#endif
 
-    /*******************************************************************************
-     * Section: Static values on expressions
-     *
-     * Description: TODO
-     *
-     */
+    /// Enable if wrapper for IsStaticContextActiveType
+    template<typename Expr>
+    using EnableIfStaticContextActiveType = typename std::enable_if<IsStaticContextActiveType<Expr>::value>::type;
 
+    /// @}
+    /*******************************************************************************/
+    /// @name Static values on expressions
+    /// @{
+
+    /// Counts the number of nodes that inherit from LhsExpressionInterface in the expression.
     template<typename Expr>
     struct NumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>> {
       public:
 
+        /// \copydoc CompileTimeTraversalLogic::term()
         template<typename Node, typename = ExpressionTraits::EnableIfLhsExpression<Node>>
         CODI_INLINE static size_t constexpr term() {
           return 1;
         }
         using CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments>::term;
 
+        /// See NumberOfActiveTypeArguments
         static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
     };
 
 #if CODI_IS_CPP14
+    /// Value entry of NumberOfActiveTypeArguments
     template<typename Expr>
     bool constexpr numberOfActiveTypeArguments = NumberOfActiveTypeArguments<Expr>::value;
 #endif
 
+    /// Counts the number of types that inherit from ConstantExpression in the expression.
     template<typename Expr>
     struct NumberOfConstantTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
       public:
 
+        /// \copydoc CompileTimeTraversalLogic::term()
         template<typename Node, typename = EnableIfConstantExpression<Node>>
         CODI_INLINE static size_t constexpr term() {
           return 1;
         }
         using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::term;
 
+        /// See NumberOfConstantTypeArguments
         static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
     };
 
 #if CODI_IS_CPP14
+    /// Value entry of NumberOfConstantTypeArguments
     template<typename Expr>
     bool constexpr numberOfConstantTypeArguments = NumberOfConstantTypeArguments<Expr>::value;
 #endif
 
+    /// @}
   }
 }

@@ -134,6 +134,8 @@ namespace codi {
         return identifier;
       }
 
+      /// @}
+
     private:
 
       void setGradient(Identifier const& identifier, Gradient const& gradient) {
