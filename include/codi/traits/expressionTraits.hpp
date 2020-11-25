@@ -52,7 +52,7 @@ namespace codi {
 #endif
 
     template<typename Impl>
-    using enableIfLhsExpression = typename std::enable_if<IsLhsExpression<Impl>::value>::type;
+    using EnableIfLhsExpression = typename std::enable_if<IsLhsExpression<Impl>::value>::type;
 
     template<typename Impl>
     struct IsConstantExpression : std::false_type {};
@@ -69,7 +69,7 @@ namespace codi {
 #endif
 
     template<typename Impl>
-    using enableIfConstantExpression = typename std::enable_if<IsConstantExpression<Impl>::value>::type;
+    using EnableIfConstantExpression = typename std::enable_if<IsConstantExpression<Impl>::value>::type;
 
     template<typename Impl>
     struct IsStaticContextActiveType : std::false_type {};
@@ -83,7 +83,7 @@ namespace codi {
 #endif
 
     template<typename Impl>
-    using enableIfStaticContextActiveType = typename std::enable_if<IsStaticContextActiveType<Impl>::value>::type;
+    using EnableIfStaticContextActiveType = typename std::enable_if<IsStaticContextActiveType<Impl>::value>::type;
 
     /*******************************************************************************
      * Section: Static values on expressions
@@ -96,7 +96,7 @@ namespace codi {
     struct NumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>> {
       public:
 
-        template<typename Node, typename = ExpressionTraits::enableIfLhsExpression<Node>>
+        template<typename Node, typename = ExpressionTraits::EnableIfLhsExpression<Node>>
         CODI_INLINE static size_t constexpr term() {
           return 1;
         }
@@ -114,7 +114,7 @@ namespace codi {
     struct NumberOfConstantTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
       public:
 
-        template<typename Node, typename = enableIfConstantExpression<Node>>
+        template<typename Node, typename = EnableIfConstantExpression<Node>>
         CODI_INLINE static size_t constexpr term() {
           return 1;
         }

@@ -59,7 +59,7 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
-  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, ExpressionTraits::enableIfLhsExpression<_Rhs>> {
+  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, ExpressionTraits::EnableIfLhsExpression<_Rhs>> {
     public:
 
       using Rhs = _Rhs;
@@ -86,7 +86,7 @@ namespace codi {
   };
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
-  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, ExpressionTraits::enableIfConstantExpression<_Rhs>> {
+  struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset, ExpressionTraits::EnableIfConstantExpression<_Rhs>> {
     public:
 
       using Rhs = _Rhs;

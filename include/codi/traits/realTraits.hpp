@@ -79,10 +79,10 @@ namespace codi {
     using IsPassiveReal = std::is_same<Type, PassiveReal<Type>>;
 
     template<typename Type>
-    using enableIfIsNotPassiveReal = typename std::enable_if<!IsPassiveReal<Type>::value>::type;
+    using EnableIfIsNotPassiveReal = typename std::enable_if<!IsPassiveReal<Type>::value>::type;
 
     template<typename Type>
-    using enableIfIsPassiveReal = typename std::enable_if<IsPassiveReal<Type>::value>::type;
+    using EnableIfIsPassiveReal = typename std::enable_if<IsPassiveReal<Type>::value>::type;
 
   }
 }

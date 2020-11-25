@@ -25,7 +25,7 @@ namespace codi {
 #endif
 
     template<typename Tape>
-    using enableIfForwardTape = typename std::enable_if<IsForwardTape<Tape>::value>::type;
+    using EnableIfForwardTape = typename std::enable_if<IsForwardTape<Tape>::value>::type;
 
     template<typename Tape>
     using IsPrimalValueTape = std::is_base_of<PrimalValueBaseTape<typename Tape::TapeTypes, Tape>, Tape>;
@@ -36,7 +36,7 @@ namespace codi {
 #endif
 
     template<typename Tape>
-    using enableIfPrimalValueTape = typename std::enable_if<IsPrimalValueTape<Tape>::value>::type;
+    using EnableIfPrimalValueTape = typename std::enable_if<IsPrimalValueTape<Tape>::value>::type;
 
     template<typename Tape>
     using IsJacobianTape = std::is_base_of<JacobianBaseTape<typename Tape::TapeTypes, Tape>, Tape>;
@@ -47,7 +47,7 @@ namespace codi {
 #endif
 
     template<typename Tape>
-    using enableIfJacobianTape = typename std::enable_if<IsJacobianTape<Tape>::value>::type;
+    using EnableIfJacobianTape = typename std::enable_if<IsJacobianTape<Tape>::value>::type;
 
     template<typename Tape>
     using IsReverseTape = std::integral_constant<bool,
@@ -61,6 +61,6 @@ namespace codi {
 #endif
 
     template<typename Tape>
-    using enableIfReverseTape = typename std::enable_if<IsReverseTape<Tape>::value>::type;
+    using EnableIfReverseTape = typename std::enable_if<IsReverseTape<Tape>::value>::type;
   }
 }

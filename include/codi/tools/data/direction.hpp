@@ -98,7 +98,7 @@ namespace codi {
     return r;
   }
 
-  template<typename Real, size_t dim, typename = RealTraits::enableIfIsNotPassiveReal<Real>>
+  template<typename Real, size_t dim, typename = RealTraits::EnableIfIsNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator * (RealTraits::PassiveReal<Real> const& s, Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
     for (size_t i = 0; i < dim; ++i) {
@@ -113,7 +113,7 @@ namespace codi {
     return s * v;
   }
 
-  template<typename Real, size_t dim, typename = RealTraits::enableIfIsNotPassiveReal<Real>>
+  template<typename Real, size_t dim, typename = RealTraits::EnableIfIsNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator * (Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     return s * v;
   }
@@ -128,7 +128,7 @@ namespace codi {
     return r;
   }
 
-  template<typename Real, size_t dim, typename = RealTraits::enableIfIsNotPassiveReal<Real>>
+  template<typename Real, size_t dim, typename = RealTraits::EnableIfIsNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator / (Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     Direction<Real, dim> r;
     for (size_t i = 0; i < dim; ++i) {
@@ -215,7 +215,7 @@ namespace codi {
   }
 
   template<typename _Type>
-  struct RealTraits::IsTotalZero<_Type, GradientTraits::enableIfDirection<_Type>> {
+  struct RealTraits::IsTotalZero<_Type, GradientTraits::EnableIfDirection<_Type>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(_Type, TEMPLATE(Direction<double, 1>));
@@ -232,7 +232,7 @@ namespace codi {
   };
 
   template<typename _Type>
-  struct RealTraits::IsTotalFinite<_Type, GradientTraits::enableIfDirection<_Type>> {
+  struct RealTraits::IsTotalFinite<_Type, GradientTraits::EnableIfDirection<_Type>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(_Type, TEMPLATE(Direction<double, 1>));
@@ -250,7 +250,7 @@ namespace codi {
   namespace GradientTraits {
 
     template<typename _Gradient>
-    struct TraitsImplementation<_Gradient, enableIfDirection<_Gradient>> {
+    struct TraitsImplementation<_Gradient, EnableIfDirection<_Gradient>> {
       public:
 
         using Gradient = CODI_DECLARE_DEFAULT(_Gradient, TEMPLATE(Direction<double, 1>));

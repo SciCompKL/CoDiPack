@@ -70,6 +70,6 @@ namespace codi {
 #endif
 
     template<typename Gradient>
-    using enableIfDirection = typename std::enable_if<IsDirection<Gradient>::value>::type;
+    using EnableIfDirection = typename std::enable_if<IsDirection<Gradient>::value>::type;
   }
 }

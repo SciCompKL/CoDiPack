@@ -157,7 +157,7 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
   template<typename _Type>
-  struct RealTraits::TraitsImplementation<_Type, ExpressionTraits::enableIfLhsExpression<_Type>> {
+  struct RealTraits::TraitsImplementation<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(

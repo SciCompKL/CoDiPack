@@ -133,7 +133,7 @@ namespace codi {
   };
 
   template<typename _Type>
-  struct StatementPushHelper<_Type, TapeTraits::enableIfForwardTape<typename _Type::Tape> >
+  struct StatementPushHelper<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape> >
       : public StatementPushHelperBase<_Type, StatementPushHelper<_Type>>
   {
     public:
