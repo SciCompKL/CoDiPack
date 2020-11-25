@@ -37,7 +37,7 @@ namespace codi {
       using Impl = CODI_DECLARE_DEFAULT(_Impl, LhsExpressionInterface);  ///< See LhsExpressionInterface
 
       using Identifier = typename Tape::Identifier; ///< See GradientAccessTapeInterface
-      using PassiveReal = PassiveRealType<Real>;    ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;    ///< Basic computation type
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -157,7 +157,7 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
   template<typename _Type>
-  struct RealTraits<_Type, enableIfLhsExpression<_Type>> {
+  struct RealTraits::TraitsImplementation<_Type, enableIfLhsExpression<_Type>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(
@@ -166,12 +166,12 @@ namespace codi {
                     );
       using Real = typename Type::Real;
 
-      using PassiveReal = PassiveRealType<Real>;
+      using PassiveReal = RealTraits::PassiveReal<Real>;
 
-      static int constexpr MaxDerivativeOrder = 1 + RealTraits<Real>::MaxDerivativeOrder;
+      static int constexpr MaxDerivativeOrder = 1 + RealTraits::MaxDerivativeOrder<Real>();
 
       static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
-        return RealTraits<Real>::getPassiveValue(v.getValue());
+        return RealTraits::getPassiveValue(v.getValue());
       }
   };
 #endif

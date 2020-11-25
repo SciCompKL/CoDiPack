@@ -30,7 +30,7 @@ namespace codi {
 
       /// \copydoc UnaryOperation::gradient
       template<typename Arg>
-      static CODI_INLINE PassiveRealType<Real> gradient(Arg const& arg, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         CODI_UNUSED(result);
         return -1.0;
@@ -131,8 +131,8 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if(Config::CheckExpressionArguments) {
-          if(getPassiveValue(arg) <= -1.0 || 1.0 <= getPassiveValue(arg)) {
-            CODI_EXCEPTION("acos outside of (-1, 1).(Value: %0.15e)", getPassiveValue(arg));
+          if(RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("acos outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         return -1.0 / sqrt(1.0 - arg * arg);
@@ -160,8 +160,8 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if(Config::CheckExpressionArguments) {
-          if(getPassiveValue(arg) <= -1.0 || 1.0 <= getPassiveValue(arg)) {
-            CODI_EXCEPTION("asin outside of (-1, 1).(Value: %0.15e)", getPassiveValue(arg));
+          if(RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("asin outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         return 1.0 / sqrt(1.0 - arg * arg);
@@ -213,8 +213,8 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if(Config::CheckExpressionArguments) {
-          if(getPassiveValue(arg) <= -1.0 || 1.0 <= getPassiveValue(arg)) {
-            CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", getPassiveValue(arg));
+          if(RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         return 1.0 / (1 - arg * arg);
@@ -241,8 +241,8 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         if(Config::CheckExpressionArguments) {
-          if(0.0 == getPassiveValue(arg)) {
-            CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", getPassiveValue(arg));
+          if(0.0 == RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         if(result != 0.0) {
@@ -258,8 +258,8 @@ namespace codi {
 
   /// Function overload for ceil
   template<typename Real, typename Arg>
-  CODI_INLINE PassiveRealType<Real> ceil(ExpressionInterface<Real, Arg> const& arg) {
-    return ceil(getPassiveValue(arg.cast()));
+  CODI_INLINE RealTraits::PassiveReal<Real> ceil(ExpressionInterface<Real, Arg> const& arg) {
+    return ceil(RealTraits::getPassiveValue(arg.cast()));
   }
 
   /// UnaryOperation implementation for cos
@@ -384,32 +384,32 @@ namespace codi {
 
   /// Function overload for floor
   template<typename Real, typename Arg>
-  CODI_INLINE PassiveRealType<Real> floor(ExpressionInterface<Real, Arg> const& arg) {
-    return floor(getPassiveValue(arg.cast()));
+  CODI_INLINE RealTraits::PassiveReal<Real> floor(ExpressionInterface<Real, Arg> const& arg) {
+    return floor(RealTraits::getPassiveValue(arg.cast()));
   }
 
   /// Function overload for isfinite
   template<typename Real, typename Arg>
   CODI_INLINE bool isfinite(ExpressionInterface<Real, Arg> const& arg) {
-    return isfinite(getPassiveValue(arg.cast()));
+    return isfinite(RealTraits::getPassiveValue(arg.cast()));
   }
 
   /// Function overload for isinf
   template<typename Real, typename Arg>
   CODI_INLINE bool isinf(ExpressionInterface<Real, Arg> const& arg) {
-    return isinf(getPassiveValue(arg.cast()));
+    return isinf(RealTraits::getPassiveValue(arg.cast()));
   }
 
   /// Function overload for isnan
   template<typename Real, typename Arg>
   CODI_INLINE bool isnan(ExpressionInterface<Real, Arg> const& arg) {
-    return isnan(getPassiveValue(arg.cast()));
+    return isnan(RealTraits::getPassiveValue(arg.cast()));
   }
 
   /// Function overload for isnormal
   template<typename Real, typename Arg>
   CODI_INLINE bool isnormal(ExpressionInterface<Real, Arg> const& arg) {
-    return isnormal(getPassiveValue(arg.cast()));
+    return isnormal(RealTraits::getPassiveValue(arg.cast()));
   }
 
   /// UnaryOperation implementation for log
@@ -430,8 +430,8 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if(Config::CheckExpressionArguments) {
-          if(0.0 > getPassiveValue(arg)) {
-            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", getPassiveValue(arg));
+          if(0.0 > RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         return 1.0 / arg;
@@ -459,8 +459,8 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if(Config::CheckExpressionArguments) {
-          if(0.0 > getPassiveValue(arg)) {
-            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", getPassiveValue(arg));
+          if(0.0 > RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         return 0.434294481903252 / arg;
@@ -472,7 +472,7 @@ namespace codi {
 
   /// Function overload for round
   template<typename Real, typename Arg>
-  CODI_INLINE PassiveRealType<Real> round(ExpressionInterface<Real, Arg> const& arg) {
+  CODI_INLINE RealTraits::PassiveReal<Real> round(ExpressionInterface<Real, Arg> const& arg) {
     return round(arg.cast().getValue());
   }
 
@@ -541,8 +541,8 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         if(Config::CheckExpressionArguments) {
-          if(0.0 > getPassiveValue(arg)) {
-            CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", getPassiveValue(arg));
+          if(0.0 > RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         if(result != 0.0) {
@@ -574,8 +574,8 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if(Config::CheckExpressionArguments) {
-          if(0.0 == cos(getPassiveValue(arg))) {
-            CODI_EXCEPTION("Tan evaluated at (0.5  + i) * PI.(Value: %0.15e)", getPassiveValue(arg));
+          if(0.0 == cos(RealTraits::getPassiveValue(arg))) {
+            CODI_EXCEPTION("Tan evaluated at (0.5  + i) * PI.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         Real tmp = 1.0 / cos(arg);

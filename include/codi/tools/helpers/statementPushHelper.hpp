@@ -103,8 +103,8 @@ namespace codi {
 
         CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
           CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier()) {
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
-              CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+              CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian)) {
 
                 indexData[dataPos] = arg.getIdentifier();
                 jacobianData[dataPos] = jacobian;
@@ -150,7 +150,7 @@ namespace codi {
       }
 
       void pushArgument(Type const& arg, Real const& jacobian) {
-        CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
+        CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
           lhsTangent += jacobian * arg.getGradient();
         }
       }

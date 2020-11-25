@@ -22,9 +22,10 @@
   namespace codi {
 #endif
 
+    /// Function overload for operator OPERATOR
   template<typename Real, typename Arg>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, Arg> const& arg) {
-    return OPERATOR getPassiveValue(arg.cast());
+    return OPERATOR RealTraits::getPassiveValue(arg.cast());
   }
 
 // Create a correct include environment for viewing and programming in an IDE

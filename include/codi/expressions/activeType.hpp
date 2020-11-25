@@ -32,7 +32,7 @@ namespace codi {
       using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Real = typename Tape::Real;              ///< See LhsExpressionInterface
-      using PassiveReal = PassiveRealType<Real>;     ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;     ///< Basic computation type
       using Identifier = typename Tape::Identifier;  ///< See LhsExpressionInterface
       using Gradient = typename Tape::Gradient;      ///< See LhsExpressionInterface
 

@@ -38,7 +38,7 @@ namespace codi {
       using Real = CODI_DECLARE_DEFAULT(_Real, double);  ///< See ForwardEvaluation
       using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See ForwardEvaluation
 
-      using PassiveReal = PassiveRealType<Real>; ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
       using Identifier = Gradient;  ///< Same as the gradient type. Tangent data is stored in the active types.
 
       /*******************************************************************************/
@@ -67,7 +67,7 @@ namespace codi {
       struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
               lhsGradient += node.gradient() * jacobian;
             }
           }
@@ -151,7 +151,7 @@ namespace codi {
   /// \copydoc codi::IsTotalFinite <br>
   /// Value and gradient are tested if they are finite.
   template<typename _Type>
-  struct IsTotalFinite<_Type, enableIfForwardTape<typename _Type::Tape>> {
+  struct RealTraits::IsTotalFinite<_Type, enableIfForwardTape<typename _Type::Tape>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(
@@ -159,7 +159,7 @@ namespace codi {
                       TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
                     ); ///< See IsTotalFinite
 
-      /// \copydoc codi::IsTotalFinite::isTotalFinite()
+      /// \copydoc codi::IsTotalFinite::RealTraits::isTotalFinite()
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         using std::isfinite;
         return isfinite(v.getValue()) && isfinite(v.getGradient());
@@ -169,16 +169,16 @@ namespace codi {
   /// \copydoc codi::IsTotalZero <br>
   /// Value and gradient are tested if they are zero.
   template<typename _Type>
-  struct IsTotalZero<_Type, enableIfForwardTape<typename _Type::Tape>> {
+  struct RealTraits::IsTotalZero<_Type, enableIfForwardTape<typename _Type::Tape>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(
                       _Type,
                       TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
                     ); ///< See IsTotalZero
-      using Real = typename RealTraits<Type>::Real; ///< See codi::RealTraits::Real
+      using Real = typename Type::Real; ///< See codi::LhsExpressionInterface::Real
 
-      /// \copydoc codi::IsTotalFinite::isTotalZero()
+      /// \copydoc codi::IsTotalFinite::RealTraits::isTotalZero()
       static CODI_INLINE bool isTotalZero(Type const& v) {
         return Real() == v.getValue() && typename Type::Gradient() == v.getGradient();
       }

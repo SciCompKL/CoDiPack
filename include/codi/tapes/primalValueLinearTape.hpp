@@ -41,7 +41,7 @@ namespace codi {
       using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
       using IndexManager = typename TapeTypes::IndexManager;  ///< See PrimalValueTapeTypes
       using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
-      using PassiveReal = PassiveRealType<Real>;              ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;              ///< Basic computation type
       using StatementEvaluator = typename TapeTypes::StatementEvaluator; ///< See PrimalValueTapeTypes
       using EvalHandle = typename TapeTypes::EvalHandle;                 ///< See PrimalValueTapeTypes
       using Position = typename Base::Position;               ///< See TapeTypesInterface.

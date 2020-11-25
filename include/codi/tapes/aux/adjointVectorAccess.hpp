@@ -51,7 +51,7 @@ namespace codi {
 
       /// \copydoc VectorAccessInterface::isLhsZero
       bool isLhsZero() {
-        return isTotalZero(lhs);
+        return RealTraits::isTotalZero(lhs);
       }
 
       /*******************************************************************************/

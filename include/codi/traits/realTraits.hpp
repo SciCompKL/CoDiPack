@@ -8,69 +8,81 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Type, typename = void>
-  struct RealTraits {
-    public:
+  namespace RealTraits {
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, double);
+    template<typename _Type, typename = void>
+    struct TraitsImplementation {
+      public:
 
-      using PassiveReal = Type;
+        using Type = CODI_DECLARE_DEFAULT(_Type, double);
 
-      static int constexpr MaxDerivativeOrder = 0;
+        using PassiveReal = Type;
 
-      static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
-        return v;
-      }
-  };
+        static int constexpr MaxDerivativeOrder = 0;
 
-  /// TODO
-  template<typename _Type, typename = void>
-  struct IsTotalZero {
-    public:
+        static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
+          return v;
+        }
+    };
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, double);
+    /// TODO
+    template<typename _Type, typename = void>
+    struct IsTotalZero {
+      public:
 
-      /// TODO
-      static CODI_INLINE bool isTotalZero(Type const& v) {
-        return Type() == v;
-      }
-  };
+        using Type = CODI_DECLARE_DEFAULT(_Type, double);
 
-  /// TODO
-  template<typename _Type, typename = void>
-  struct IsTotalFinite {
-    public:
+        /// TODO
+        static CODI_INLINE bool isTotalZero(Type const& v) {
+          return Type() == v;
+        }
+    };
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, double);
+    /// TODO
+    template<typename _Type, typename = void>
+    struct IsTotalFinite {
+      public:
 
-      /// TODO
-      static CODI_INLINE bool isTotalFinite(Type const& v) {
-        using std::isfinite;
-        return isfinite(v);
-      }
-  };
+        using Type = CODI_DECLARE_DEFAULT(_Type, double);
 
-  template<typename Type>
-  using PassiveRealType = typename RealTraits<Type>::PassiveReal;
+        /// TODO
+        static CODI_INLINE bool isTotalFinite(Type const& v) {
+          using std::isfinite;
+          return isfinite(v);
+        }
+    };
 
-  template<typename Type>
-  CODI_INLINE PassiveRealType<Type> const& getPassiveValue(Type const& v) {
-    return RealTraits<Type>::getPassiveValue(v);
+    template<typename Type>
+    using PassiveReal = typename TraitsImplementation<Type>::PassiveReal;
+
+    template<typename Type>
+    CODI_INLINE size_t constexpr MaxDerivativeOrder() {
+      return TraitsImplementation<Type>::MaxDerivativeOrder;
+    }
+
+    template<typename Type>
+    CODI_INLINE PassiveReal<Type> const& getPassiveValue(Type const& v) {
+      return TraitsImplementation<Type>::getPassiveValue(v);
+    }
+
+    template<typename Type>
+    CODI_INLINE bool isTotalZero(Type const& v) {
+      return IsTotalZero<Type>::isTotalZero(v);
+    }
+
+    template<typename Type>
+    CODI_INLINE bool isTotalFinite(Type const& v) {
+      return IsTotalFinite<Type>::isTotalFinite(v);
+    }
+
+    template<typename Type>
+    using IsPassiveReal = std::is_same<Type, PassiveReal<Type>>;
+
+    template<typename Type>
+    using enableIfIsNotPassiveReal = typename std::enable_if<!IsPassiveReal<Type>::value>::type;
+
+    template<typename Type>
+    using enableIfIsPassiveReal = typename std::enable_if<IsPassiveReal<Type>::value>::type;
+
   }
-
-  template<typename Type>
-  CODI_INLINE bool isTotalZero(Type const& v) {
-    return IsTotalZero<Type>::isTotalZero(v);
-  }
-
-  template<typename Type>
-  CODI_INLINE bool isTotalFinite(Type const& v) {
-    return IsTotalFinite<Type>::isTotalFinite(v);
-  }
-
-  template<typename Type>
-  using RealIsPassiveReal = std::is_same<Type, PassiveRealType<Type>>;
-
-  template<typename Type>
-  using enableIfRealIsNotPassiveReal = typename std::enable_if<!RealIsPassiveReal<Type>::value>::type;
 }

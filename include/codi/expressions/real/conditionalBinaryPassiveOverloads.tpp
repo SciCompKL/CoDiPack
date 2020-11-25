@@ -30,13 +30,13 @@
     /// Function overload for operator OPERATOR
   template<typename Real, typename ArgA>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, ArgA> const& argA, PASSIVE_TYPE const& argB) {
-    return getPassiveValue(argA.cast()) OPERATOR argB;
+    return RealTraits::getPassiveValue(argA.cast()) OPERATOR argB;
   }
 
   /// Function overload for operator OPERATOR
   template<typename Real, typename ArgB>
   CODI_INLINE bool operator OPERATOR(PASSIVE_TYPE const& argA, ExpressionInterface<Real, ArgB> const& argB) {
-    return argA OPERATOR getPassiveValue(argB.cast());
+    return argA OPERATOR RealTraits::getPassiveValue(argB.cast());
   }
 
 // Create a correct include environment for viewing and programming in an IDE

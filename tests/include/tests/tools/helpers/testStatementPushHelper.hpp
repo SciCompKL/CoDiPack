@@ -17,8 +17,8 @@ struct TestStatementPushHelper: public TestInterface {
     template<typename Number>
     static void func(Number* x, Number* y) {
 
-      using Real = codi::PassiveRealType<Number>;
-      Number passiveValue = codi::getPassiveValue(x[0]);
+      using Real = codi::RealTraits::PassiveReal<Number>;
+      Number passiveValue = codi::RealTraits::getPassiveValue(x[0]);
 
       codi::StatementPushHelper<Number> ph;
 

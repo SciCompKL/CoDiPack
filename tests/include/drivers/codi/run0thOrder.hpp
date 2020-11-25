@@ -25,7 +25,7 @@ struct CoDi0thOrder : public Driver0thOrderBase<CODI_TYPE> {
       info.func(x, y);
 
       for(size_t curOut = 0; curOut < outputs; curOut += 1) {
-        primals[curOut] = codi::getPassiveValue(y[curOut]);
+        primals[curOut] = codi::RealTraits::getPassiveValue(y[curOut]);
       }
     }
 };

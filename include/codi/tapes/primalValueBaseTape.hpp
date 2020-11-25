@@ -51,7 +51,7 @@ namespace codi {
       using Data = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Data<Chunk, Nested>), CODI_TEMPLATE(DataInterface<Nested>)); ///< See PrimalValueTapeTypes
 
       using Identifier = typename IndexManager::Index; ///< See IndexManagerInterface.
-      using PassiveReal = PassiveRealType<Real>;       ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;       ///< Basic computation type
 
       constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear; ///< True if the index manager is linear.
       constexpr static bool IsStaticIndexHandler = !IsLinearIndexHandler;  ///< For reuse index mangers a static instantiation is used.
@@ -123,7 +123,7 @@ namespace codi {
       using PassiveValueData = typename TapeTypes::PassiveValueData;        ///< See PrimalValueTapeTypes
       using ConstantValueData = typename TapeTypes::ConstantValueData;      ///< See PrimalValueTapeTypes
 
-      using PassiveReal = PassiveRealType<Real>; ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
 
       using NestedPosition = typename ConstantValueData::Position;  ///< See PrimalValueTapeTypes
       using Position = typename Base::Position;                     ///< See TapeTypesInterface.
@@ -523,7 +523,7 @@ namespace codi {
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsTangent, ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsTangent);
 
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateTangentWithLhs(node.getIdentifier(), jacobian);
 #else
@@ -588,7 +588,7 @@ namespace codi {
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient const& lhsAdjoint, ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsAdjoint);
 
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateAdjointWithLhs(node.getIdentifier(), jacobian);
 #else
@@ -869,7 +869,7 @@ namespace codi {
             #if CODI_VariableAdjointInterfaceInPrimalTapes
               bool const lhsZero = adjointVector->isLhsZero();
             #else
-              bool const lhsZero = isTotalZero(lhsAdjoint);
+              bool const lhsZero = RealTraits::isTotalZero(lhsAdjoint);
             #endif
 
             CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !lhsZero) {
@@ -1149,7 +1149,7 @@ namespace codi {
         curPassivePos -= numberOfPassiveArguments;
         curRhsIdentifiersPos -= maxActiveArgs;
 
-        CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !isTotalZero(lhsAdjoint)) {
+        CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint)) {
           for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
             primalVector[curPos] = passiveValues[curPassivePos + curPos];
           }

@@ -20,7 +20,7 @@ namespace std {
     private:
 
       using Type = codi::ActiveType<Tape>;
-      using Passive = codi::PassiveRealType<Type>;
+      using Passive = codi::RealTraits::PassiveReal<Type>;
 
     public:
 

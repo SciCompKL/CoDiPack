@@ -30,7 +30,7 @@ namespace codi {
     template<typename Type, size_t selectionDepth, size_t order, size_t l>
     struct CheckCompileTimeValues {
 
-        static_assert (selectionDepth <= RealTraits<Type>::MaxDerivativeOrder,
+        static_assert (selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
                        "Selection depth can not be higher than the maximum derivative order." );
         static_assert (order <= selectionDepth,
                        "Derivative order can not be higher than the selection depth.");
@@ -95,7 +95,7 @@ namespace codi {
         static size_t constexpr selectionDepth = CODI_DECLARE_DEFAULT(_selectionDepth, /*TODO*/ 0);
 
         static_assert (std::is_same<typename Type::Real, typename Type::Gradient>::value, "CoDiPack type needs to have the same real and gradient value for run time derivative selection.");
-        static_assert (selectionDepth <= RealTraits<Type>::MaxDerivativeOrder, "Selection depth can not be higher than the maximum derivative order" );
+        static_assert (selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(), "Selection depth can not be higher than the maximum derivative order" );
 
         using Inner = SelectRunTime<typename Type::Real, constant, selectionDepth - 1>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
@@ -138,7 +138,7 @@ namespace codi {
       using SelectCompileTime = HigherOrderAccessImpl::SelectCompileTime<Type, constant, selectionDepth, order, l>;
 
 
-      template<size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectRunTime<true, selectionDepth>::RType const& derivative(Type const& v, size_t order, size_t l) {
 
         checkRuntimeSelection<selectionDepth>(order, l);
@@ -146,7 +146,7 @@ namespace codi {
         return SelectRunTime<true, selectionDepth>::select(v, order, l);
       }
 
-      template<size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectRunTime<false, selectionDepth>::RType& derivative(Type& v, size_t order, size_t l) {
 
         checkRuntimeSelection<selectionDepth>(order, l);
@@ -154,7 +154,7 @@ namespace codi {
         return SelectRunTime<false, selectionDepth>::select(v, order, l);
       }
 
-      template<typename Derivative, size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivatives(Type& v, size_t order, Derivative const& d) {
         size_t const maxDerivatives = binomial(selectionDepth, order);
         for(size_t i = 0; i < maxDerivatives; i += 1) {
@@ -162,37 +162,37 @@ namespace codi {
         }
       }
 
-      template<typename Derivative, size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivativesForward(Type& v, size_t order, Derivative const& d) {
         HigherOrderAccess<typename Type::Real>::template setAllDerivatives<Derivative, selectionDepth - 1>(v.value(), order, d);
       }
 
-      template<typename Derivative, size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivativesReverse(Type& v, size_t order, Derivative const& d) {
         HigherOrderAccess<typename Type::Gradient>::template setAllDerivatives<Derivative, selectionDepth - 1>(v.gradient(), order - 1, d);
       }
 
-      template<size_t order, size_t l, size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<size_t order, size_t l, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectCompileTime<true, selectionDepth, order, l>::RType const& derivative(Type const& v) {
         return SelectCompileTime<true, selectionDepth, order, l>::select(v);
       }
 
-      template<size_t order, size_t l, size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<size_t order, size_t l, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectCompileTime<false, selectionDepth, order, l>::RType& derivative(Type& v) {
         return SelectCompileTime<false, selectionDepth, order, l>::select(v);
       }
 
-      template<size_t order, typename Derivative, size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<size_t order, typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivatives(Type& v, Derivative const& d) {
         CompileTimeLoop<HigherOrderAccessImpl::maximumDerivatives(selectionDepth, order)>::eval(CallSetDerivative<order, Derivative, selectionDepth>{}, v, d);
       }
 
-      template<size_t order, typename Derivative, size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<size_t order, typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivativesForward(Type& v, Derivative const& d) {
         HigherOrderAccess<typename Type::Real>::template setAllDerivatives<order, Derivative, selectionDepth - 1>(v.value(), d);
       }
 
-      template<size_t order, typename Derivative, size_t selectionDepth = RealTraits<Type>::MaxDerivativeOrder>
+      template<size_t order, typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivativesReverse(Type& v, Derivative const& d) {
         HigherOrderAccess<typename Type::Gradient>::template setAllDerivatives<order - 1, Derivative, selectionDepth - 1>(v.gradient(), d);
       }

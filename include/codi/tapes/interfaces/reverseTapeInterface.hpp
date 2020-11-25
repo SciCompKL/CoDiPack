@@ -45,7 +45,7 @@ namespace codi {
       using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See ReverseTapeInterface
       using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See ReverseTapeInterface
 
-      using PassiveReal = PassiveRealType<Real>; ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
 
       /*******************************************************************************/
       /// @name Recording

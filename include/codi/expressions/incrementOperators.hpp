@@ -24,7 +24,7 @@ namespace codi {
       using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(LhsExpressionInterface<double, int, Tape, _Impl>)); ///< See IncrementOperators
 
       using Real = CODI_DECLARE_DEFAULT(typename Tape::Real, double); ///< See InternalStatementRecordingInterface
-      using PassiveReal = PassiveRealType<Real>; ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {

@@ -41,21 +41,21 @@
 
     /// Function overload for FUNCTION
     template <typename Real, typename ArgA>
-    CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<PassiveRealType<Real>>, OPERATION_LOGIC> FUNCTION(
+    CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<RealTraits::PassiveReal<Real>>, OPERATION_LOGIC> FUNCTION(
         ExpressionInterface<Real, ArgA> const& argA,
-        PassiveRealType<Real> const& argB) {
-      return BinaryExpression<Real, ArgA, ConstantExpression<PassiveRealType<Real>>, OPERATION_LOGIC>(
+        RealTraits::PassiveReal<Real> const& argB) {
+      return BinaryExpression<Real, ArgA, ConstantExpression<RealTraits::PassiveReal<Real>>, OPERATION_LOGIC>(
             argA,
-            ConstantExpression<PassiveRealType<Real>>(argB));
+            ConstantExpression<RealTraits::PassiveReal<Real>>(argB));
     }
 
     /// Function overload for FUNCTION
     template <typename Real, typename ArgB>
-    CODI_INLINE BinaryExpression<Real, ConstantExpression<PassiveRealType<Real>>, ArgB, OPERATION_LOGIC> FUNCTION(
-        PassiveRealType<Real> const& argA,
+    CODI_INLINE BinaryExpression<Real, ConstantExpression<RealTraits::PassiveReal<Real>>, ArgB, OPERATION_LOGIC> FUNCTION(
+        RealTraits::PassiveReal<Real> const& argA,
         ExpressionInterface<Real, ArgB> const& argB) {
-      return BinaryExpression<Real, ConstantExpression<PassiveRealType<Real>>, ArgB, OPERATION_LOGIC>(
-            ConstantExpression<PassiveRealType<Real>>(argA),
+      return BinaryExpression<Real, ConstantExpression<RealTraits::PassiveReal<Real>>, ArgB, OPERATION_LOGIC>(
+            ConstantExpression<RealTraits::PassiveReal<Real>>(argA),
             argB);
     }
 

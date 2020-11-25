@@ -97,7 +97,7 @@ namespace codi {
       using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
       using JacobianData = typename TapeTypes::JacobianData;    ///< See JacobianTapeTypes.
 
-      using PassiveReal = PassiveRealType<Real>;  ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       using NestedPosition = typename JacobianData::Position;    ///< See JacobianTapeTypes.
       using Position = typename Base::Position;                  ///< See TapeTypesInterface.
@@ -224,8 +224,8 @@ namespace codi {
           template<typename Node, typename DataVector>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
             CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
-              CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
-                CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(jacobian)) {
+              CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+                CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian)) {
                   dataVector.pushData(jacobian, node.getIdentifier());
                 }
               }
@@ -237,7 +237,7 @@ namespace codi {
           CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian, DataVector& dataVector) {
             CODI_UNUSED(dataVector);
 
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, isTotalFinite(jacobian)) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
               // Do a delayed push for these termination nodes, accumulate the jacobian in the local member
               node.jacobian += jacobian;
             }
@@ -252,7 +252,7 @@ namespace codi {
           template<typename Type, typename DataVector>
           CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, DataVector& dataVector) {
             CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
-              CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !isTotalZero(node.jacobian)) {
+              CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(node.jacobian)) {
                 dataVector.pushData(node.jacobian, node.getIdentifier());
 
                 // Reset the jacobian here such that it is not pushed multiple times and ready for the next store
@@ -418,7 +418,7 @@ namespace codi {
 
         size_t endJacobianPos = curJacobianPos - numberOfArguments;
 
-        CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !isTotalZero(lhsAdjoint)){
+        CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint)){
           while(endJacobianPos < curJacobianPos) {
             curJacobianPos -= 1;
             adjointVector[rhsIdentifiers[curJacobianPos]] += rhsJacobians[curJacobianPos] * lhsAdjoint;

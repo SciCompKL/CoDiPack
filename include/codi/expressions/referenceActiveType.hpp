@@ -29,7 +29,7 @@ namespace codi {
       using Tape = typename Type::Tape; ///< See LhsExpressionInterface.
 
       using Real = typename Tape::Real;              ///< See LhsExpressionInterface
-      using PassiveReal = PassiveRealType<Real>;     ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;     ///< Basic computation type
       using Identifier = typename Tape::Identifier;  ///< See LhsExpressionInterface
       using Gradient = typename Tape::Gradient;      ///< See LhsExpressionInterface
 

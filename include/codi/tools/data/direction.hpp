@@ -98,8 +98,8 @@ namespace codi {
     return r;
   }
 
-  template<typename Real, size_t dim, typename = enableIfRealIsNotPassiveReal<Real>>
-  CODI_INLINE Direction<Real, dim> operator * (PassiveRealType<Real> const& s, Direction<Real, dim> const& v) {
+  template<typename Real, size_t dim, typename = RealTraits::enableIfIsNotPassiveReal<Real>>
+  CODI_INLINE Direction<Real, dim> operator * (RealTraits::PassiveReal<Real> const& s, Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
     for (size_t i = 0; i < dim; ++i) {
       r[i] = s * v[i];
@@ -113,8 +113,8 @@ namespace codi {
     return s * v;
   }
 
-  template<typename Real, size_t dim, typename = enableIfRealIsNotPassiveReal<Real>>
-  CODI_INLINE Direction<Real, dim> operator * (Direction<Real, dim> const& v, PassiveRealType<Real> const& s) {
+  template<typename Real, size_t dim, typename = RealTraits::enableIfIsNotPassiveReal<Real>>
+  CODI_INLINE Direction<Real, dim> operator * (Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     return s * v;
   }
 
@@ -128,8 +128,8 @@ namespace codi {
     return r;
   }
 
-  template<typename Real, size_t dim, typename = enableIfRealIsNotPassiveReal<Real>>
-  CODI_INLINE Direction<Real, dim> operator / (Direction<Real, dim> const& v, PassiveRealType<Real> const& s) {
+  template<typename Real, size_t dim, typename = RealTraits::enableIfIsNotPassiveReal<Real>>
+  CODI_INLINE Direction<Real, dim> operator / (Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     Direction<Real, dim> r;
     for (size_t i = 0; i < dim; ++i) {
       r[i] = v[i] / s;
@@ -215,7 +215,7 @@ namespace codi {
   }
 
   template<typename _Type>
-  struct IsTotalZero<_Type, GradientTraits::enableIfDirection<_Type>> {
+  struct RealTraits::IsTotalZero<_Type, GradientTraits::enableIfDirection<_Type>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(_Type, TEMPLATE(Direction<double, 1>));
@@ -223,7 +223,7 @@ namespace codi {
 
       static CODI_INLINE bool isTotalZero(Type const& v) {
         for (size_t i = 0; i < GradientTraits::dim<Type>(); ++i) {
-          if (!codi::isTotalZero(v[i])) {
+          if (!codi::RealTraits::isTotalZero(v[i])) {
             return false;
           }
         }
@@ -232,14 +232,14 @@ namespace codi {
   };
 
   template<typename _Type>
-  struct IsTotalFinite<_Type, GradientTraits::enableIfDirection<_Type>> {
+  struct RealTraits::IsTotalFinite<_Type, GradientTraits::enableIfDirection<_Type>> {
     public:
 
       using Type = CODI_DECLARE_DEFAULT(_Type, TEMPLATE(Direction<double, 1>));
 
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         for (size_t i = 0; i < GradientTraits::dim<Type>(); ++i) {
-          if (!codi::isTotalFinite(v[i])) {
+          if (!codi::RealTraits::isTotalFinite(v[i])) {
             return false;
           }
         }
