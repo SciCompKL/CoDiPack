@@ -10,22 +10,32 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Fixed size vector mode implementation.
+   *
+   * Can be used as the gradient template argument in active CoDiPack types.
+   *
+   * @tparam _Real  Value of the gradients
+   * @tparam _dim  Dimension of the vector mode.
+   */
   template<typename _Real, size_t _dim>
   struct Direction {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
+      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See Direction
 
-      static size_t constexpr dim = _dim;
+      static size_t constexpr dim = _dim; ///< See Direction
 
     private:
       Real vector[dim];
 
     public:
 
+      /// Constructor
       CODI_INLINE Direction() :
         vector() {}
 
+      /// Constructor
       CODI_INLINE Direction(Real const& s) :
         vector()
       {
@@ -34,6 +44,7 @@ namespace codi {
         }
       }
 
+      /// Constructor
       CODI_INLINE Direction(Direction const& v) :
         vector()
       {
@@ -42,6 +53,7 @@ namespace codi {
         }
       }
 
+      /// Constructor
       CODI_INLINE Direction(std::initializer_list<Real> l) :
         vector()
       {
@@ -52,14 +64,17 @@ namespace codi {
         }
       }
 
+      /// Per reference element access.
       CODI_INLINE Real& operator[] (size_t const& i) {
         return vector[i];
       }
 
+      /// Per value element access.
       CODI_INLINE Real const& operator[] (size_t const& i) const {
         return vector[i];
       }
 
+      /// Assignment operator
       CODI_INLINE Direction& operator = (Direction const& v) {
         for (size_t i = 0; i < dim; ++i) {
           this->vector[i] = v.vector[i];
@@ -68,6 +83,7 @@ namespace codi {
         return *this;
       }
 
+      /// Update operator
       CODI_INLINE Direction& operator += (Direction const& v) {
         for (size_t i = 0; i < dim; ++i) {
           this->vector[i] += v.vector[i];
@@ -76,6 +92,7 @@ namespace codi {
         return *this;
       }
 
+      /// Update operator
       CODI_INLINE Direction& operator -= (Direction const& v) {
         for (size_t i = 0; i < dim; ++i) {
           this->vector[i] -= v.vector[i];
@@ -88,6 +105,7 @@ namespace codi {
   template<typename Real, size_t dim>
   size_t constexpr Direction<Real, dim>::dim;
 
+  /// Multiplication with scalar
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator * (Real const& s, Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
@@ -98,6 +116,7 @@ namespace codi {
     return r;
   }
 
+  /// Multiplication with passive scalar
   template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator * (RealTraits::PassiveReal<Real> const& s, Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
@@ -108,16 +127,19 @@ namespace codi {
     return r;
   }
 
+  /// Multiplication with scalar
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator * (Direction<Real, dim> const& v, Real const& s) {
     return s * v;
   }
 
+  /// Multiplication with passive scalar
   template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator * (Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     return s * v;
   }
 
+  /// Division with scalar
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator / (Direction<Real, dim> const& v, Real const& s) {
     Direction<Real, dim> r;
@@ -128,6 +150,7 @@ namespace codi {
     return r;
   }
 
+  /// Division with passive scalar
   template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator / (Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     Direction<Real, dim> r;
@@ -138,6 +161,7 @@ namespace codi {
     return r;
   }
 
+  /// Summation of two vectors
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator + (Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
     Direction<Real, dim> r;
@@ -148,6 +172,7 @@ namespace codi {
     return r;
   }
 
+  /// Subtraction of two vectors
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator - (Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
     Direction<Real, dim> r;
@@ -158,6 +183,7 @@ namespace codi {
     return r;
   }
 
+  /// Negation
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator - (Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
@@ -168,6 +194,7 @@ namespace codi {
     return r;
   }
 
+  /// True if one element differs.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator != (A const& s, Direction<Real, dim> const& v) {
     for (size_t i = 0; i < dim; ++i) {
@@ -179,11 +206,13 @@ namespace codi {
     return false;
   }
 
+  /// True if one element differs.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator != (Direction<Real, dim> const& v, A const& s) {
     return s != v;
   }
 
+  /// True if all elements are the same.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator == (A const& s, Direction<Real, dim> const& v) {
     for (size_t i = 0; i < dim; ++i) {
@@ -195,11 +224,13 @@ namespace codi {
     return true;
   }
 
+  /// True if all elements are the same.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator == (Direction<Real, dim> const& v, A const& s) {
     return s == v;
   }
 
+  /// Output stream operator.
   template<typename Real, size_t dim>
   std::ostream& operator << (std::ostream& os, Direction<Real, dim> const& v){
     os << "{";
@@ -214,6 +245,7 @@ namespace codi {
     return os;
   }
 
+#ifndef DOXYGEN_DISABLE
   template<typename _Type>
   struct RealTraits::IsTotalZero<_Type, GradientTraits::EnableIfDirection<_Type>> {
     public:
@@ -267,4 +299,5 @@ namespace codi {
         }
     };
   }
+#endif
 }
