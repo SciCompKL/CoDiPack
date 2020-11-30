@@ -21,7 +21,10 @@ namespace codi {
   /// Conversion macro
   #define CODI_TO_STRING(expression) CODI_TO_STRING2(expression)
 
+  /// Check for CPP 14 standard
   #define CODI_IS_CPP14 (201402L <= __cplusplus)
+
+  /// Check for CPP 17 standard
   #define CODI_IS_CPP17 (201703L <= __cplusplus)
 
 
