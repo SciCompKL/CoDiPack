@@ -3,6 +3,9 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
+    <tab type="usergroup" title="User" url="@ref userPage">
+      <tab type="user" title="Active type definitions" url="@ref ActiveTypeList"/>
+    </tab>
     <tab type="usergroup" title="Design" url="@ref designPage">
       <tab type="user" title="Expressions" url="@ref Expressions"/>
       <tab type="user" title="Tape interfaces" url="@ref TapeInterfaces"/>
