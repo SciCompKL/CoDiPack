@@ -12,6 +12,18 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+
+  /**
+   * @brief Mpi datatype implementation for CoDipack types in the type wrapper of MeDiPack.
+   *
+   * See tutorial TODO for an example.
+   *
+   * Use the member MPI_TYPE as the type for the communication in MeDiPack wrapped MPI routines or
+   * MPI_INT_TYPE for pairs of CoDiPack and an int.
+   *
+   * @tparam _Type  CoDiPack active type. Needs to implement LhsExpressionInterface.
+   * @tparam _Tool  Actual tool implementation of the MeDiPack interface.
+   */
   template<typename _Type,
            typename _Tool =
               typename std::conditional<
@@ -23,10 +35,11 @@ namespace codi {
   struct CoDiMpiTypes {
     public:
 
+      /// See CoDiMpiTypes
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Tool = CODI_DECLARE_DEFAULT(_Tool, medi::ADToolInterface);
+      using Tool = CODI_DECLARE_DEFAULT(_Tool, medi::ADToolInterface); ///< See CoDiMpiTypes
 
-      using MPIType = medi::MpiTypeDefault<Tool>;
+      using MPIType = medi::MpiTypeDefault<Tool>; ///< MeDiPack default implementation
 
     private:
 
@@ -39,9 +52,10 @@ namespace codi {
 
     public:
 
-      MPIType* MPI_TYPE;
-      medi::AMPI_Datatype MPI_INT_TYPE;
+      MPIType* MPI_TYPE; ///< MPI_Datatype for the specified CoDiPack type.
+      medi::AMPI_Datatype MPI_INT_TYPE;  ///< MPI_Datatype for the specified CoDiPack type and an int.
 
+      /// Constructor
       CoDiMpiTypes() :
         codiMpiType(createByteType(sizeof(Type))),
         modifiedMpiType(codiMpiType),
@@ -55,6 +69,7 @@ namespace codi {
         MPI_INT_TYPE = Tool::OpHelper::createIntType(MPI_TYPE);
       }
 
+      /// Destructor
       ~CoDiMpiTypes() {
         Tool::OpHelper::freeIntType(MPI_INT_TYPE);
 

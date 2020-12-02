@@ -17,6 +17,8 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+#ifndef DOXYGEN_DISABLE
+
   template<typename _Type>
   struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
     public:
@@ -312,4 +314,5 @@ namespace codi {
         return Type::getGlobalTape();
       }
   };
+#endif
 }

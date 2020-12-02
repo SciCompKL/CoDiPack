@@ -12,6 +12,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+#ifndef DOXYGEN_DISABLE
 
   template<typename _Type>
   struct CoDiPackForwardTool : public medi::ADToolBase<CoDiPackForwardTool<_Type>, typename _Type::Gradient, typename _Type::PassiveReal, int> {
@@ -145,4 +146,5 @@ namespace codi {
         CODI_UNUSED(inval, inoutval);
       }
   };
+#endif
 }
