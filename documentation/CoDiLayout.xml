@@ -5,6 +5,10 @@
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="usergroup" title="User" url="@ref userPage">
       <tab type="user" title="Active type definitions" url="@ref ActiveTypeList"/>
+      <tab type="usergroup" title="Tutorials &amp; Examples" url="@ref TutorialsAndExamples">
+        <tab type="user" title="Tutorial 2 - Reverse mode AD" url="@ref Tutorial_2_Reverse_mode_AD"/>
+        <tab type="user" title="Tutorial 4 - Vector mode AD" url="@ref Tutorial_4_Vector_mode_AD"/>
+      </tab>
     </tab>
     <tab type="usergroup" title="Design" url="@ref designPage">
       <tab type="user" title="Expressions" url="@ref Expressions"/>
