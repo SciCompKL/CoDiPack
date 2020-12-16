@@ -38,6 +38,9 @@ namespace codi {
 
   template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>>
   Stream& operator <<(Stream& out, Jac const& jacobian) {
+
+    CODI_DEFINE_INTERFACE(JacobianInterface<double>, jacobian);
+
     out << "[";
     for(size_t i = 0; i < jacobian.getM(); ++i) {
       if( i != 0) {
