@@ -1,7 +1,7 @@
 Tutorial 4 - Vector mode AD {#Tutorial_4_Vector_mode_AD}
 =======
 
-**Goal:** Vector mode with the reverse mode AD CoDiPack types.
+**Goal:** Vector mode with the forward and reverse mode AD CoDiPack types.
 
 **Prequesties:** \ref Tutorial_1_Forward_mode_AD, \ref Tutorial_2_Reverse_mode_AD
 
@@ -11,9 +11,11 @@ Tutorial 4 - Vector mode AD {#Tutorial_4_Vector_mode_AD}
 Full code:
 \snippet tutorials/Tutorial_4_Vector_mode_AD.cpp Tutorial 4 - Vector mode AD
 
-The vector mode of AD is introduced by using matrices for the adjoint values \f$\bar y\f$ and \f$\bar x\f$. If the vector
-mode dimension is denoted by \f$d\f$, the matrices have the dimension \f$\bar Y \in \R^{m \times d}\f$ and
-\f$\bar X \in \R^{n \times d}\f$. The basic idea is that derivatives for multiple directions are computed with one tape evaluation.
+The vector mode of AD is introduced by using matrices for the adjoint values and tangent values \f$\bar y\f$,
+\f$\bar x\f$, \f$\dot x\f$ and \f$\dot y\f$. If the vector mode dimension is denoted by \f$d\f$, the matrices have the
+dimension \f$\bar Y \in \R^{m \times d}\f$, \f$\bar X \in \R^{n \times d}\f$, \f$\dot X \in \R^{n \times d}\f$ and
+\f$\dot Y \in \R^{m \times d}\f$. The basic idea is that derivatives for multiple directions are computed with one tape
+evaluation or forward mode run.
 
 With CoDiPack, the vector mode is enabled by exchanging the type used for the gradient computation. A fixed size vector
 is implemented in the [Direction](@ref codi::Direction) class. The `codi::Real*Vec` types use this class to provide the
@@ -32,8 +34,8 @@ Jacobian matrix is extracted.
 CoDiPack offers only a fixed size vector mode that has to be defined at compile time. This decision against providing
 a vector mode that can be defined at runtime was made deliberately. In the forward mode, all operations have to check
 if the vectors have the correct size and need to allocate new memory accordingly. This reduces the performance of a
-forward vector mode. In the reverse evaluation, the compiler can optimize further if the vector size is
-known a priori.
+forward vector mode. In addition, if the vector size is known a priori, the compiler can optimize the forward and
+reverse vector mode even further by using e.g. SIMD instructions.
 
 In the reverse mode, it is possible to introduce a runtime decision on the vector size by using the custom evaluation
 methods described in TODO(vector helper) and TODO(custom adjoint vectors).

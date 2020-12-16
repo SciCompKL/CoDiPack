@@ -36,17 +36,15 @@ void forwardVectorMode() {
   func(x, 5, y);
 
   // Step 3: Get the gradients from the outputs.
-  double jacobi[5][2];
+  codi::Jacobian<double> jacobian(2,5);
   for(size_t i = 0; i < 5; ++i) {
-    jacobi[i][0] = y[0].getGradient()[i];
-    jacobi[i][1] = y[1].getGradient()[i];
+    jacobian(0,i) = y[0].getGradient()[i];
+    jacobian(1,i) = y[1].getGradient()[i];
   }
 
   std::cout << "Forward vector mode:" << std::endl;
   std::cout << "f(1 .. 5) = (" << y[0] << ", " << y[1] << ")" << std::endl;
-  for(size_t i = 0; i < 5; ++i) {
-    std::cout << "df/dx_" << (i + 1) << " (1 .. 5) = (" << jacobi[i][0] << ", " << jacobi[i][1] << ")" << std::endl;
-  }
+  std::cout << "df/dx (1 .. 5) = \n" << jacobian << std::endl;
 }
 
 void reverseVectorMode() {
@@ -83,17 +81,15 @@ void reverseVectorMode() {
   tape.evaluate();
 
   // Step 3: Get the gradients from the inputs.
-  double jacobi[5][2];
+  codi::Jacobian<double> jacobian(2,5);
   for(size_t i = 0; i < 5; ++i) {
-    jacobi[i][0] = x[i].getGradient()[0];
-    jacobi[i][1] = x[i].getGradient()[1];
+    jacobian(0,i) = x[i].getGradient()[0];
+    jacobian(1,i) = x[i].getGradient()[1];
   }
 
   std::cout << "Reverse vector mode:" << std::endl;
   std::cout << "f(1 .. 5) = (" << y[0] << ", " << y[1] << ")" << std::endl;
-  for(size_t i = 0; i < 5; ++i) {
-    std::cout << "df/dx_" << (i + 1) << " (1 .. 5) = (" << jacobi[i][0] << ", " << jacobi[i][1] << ")" << std::endl;
-  }
+  std::cout << "df/dx (1 .. 5) = \n" << jacobian << std::endl;
 
   tape.reset();
 }

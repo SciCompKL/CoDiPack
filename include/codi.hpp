@@ -19,6 +19,7 @@
 #include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
 #include "codi/tools/data/direction.hpp"
 #include "codi/tools/data/externalFunctionUserData.hpp"
+#include "codi/tools/data/jacobian.hpp"
 #include "codi/tools/helpers/customAdjointVectorHelper.hpp"
 #include "codi/tools/helpers/externalFunctionHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"

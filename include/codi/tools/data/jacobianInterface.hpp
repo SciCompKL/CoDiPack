@@ -2,6 +2,7 @@
 
 #include "../../aux/macros.hpp"
 #include "../../config.h"
+#include "../../traits/aux/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -34,4 +35,29 @@ namespace codi {
       void resize(size_t const m, size_t const n); ///< Resize the Jacobian.
       size_t size() const; ///< Get total size of the Jacobian.
   };
+
+  template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>>
+  Stream& operator <<(Stream& out, Jac const& jacobian) {
+    out << "[";
+    for(size_t i = 0; i < jacobian.getM(); ++i) {
+      if( i != 0) {
+        out << " "; // Padding for the '['
+      }
+
+      for(size_t j = 0; j < jacobian.getN(); ++j) {
+        if(j != 0) {
+          out << ", ";
+        }
+        out << jacobian(i, j);
+      }
+
+      if(i + 1 < jacobian.getM()) {
+        out << ";\n";
+      } else {
+        out << "]";
+      }
+    }
+
+    return out;
+  }
 }
