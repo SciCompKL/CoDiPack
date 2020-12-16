@@ -48,15 +48,8 @@ namespace codi {
     #define CODI_DECLARE_DEFAULT(Type, Default) Type
   #endif
 
-  /**
-   * CODI_IDE can be defined to use default definitions for template variable declarations. This enables auto completion
-   * in the IDEs on these variables.
-   */
-  #if CODI_IDE
-    #define CODI_DEFINE_INTERFACE(Default, Var) (void)Var; Default Var
-  #else
-    #define CODI_DEFINE_INTERFACE(Type, Default) /* unused */
-  #endif
+  /// Abbreviation for CODI_DECLARE_DEFAULT
+  #define CODI_DD(Type, Default) CODI_DECLARE_DEFAULT(Type, Default)
 
   /// Used in default declarations of expression templates.
   #define CODI_ANY int
@@ -66,6 +59,9 @@ namespace codi {
 
   /// Expand template types in preprocessor macros.
   #define CODI_TEMPLATE(...) __VA_ARGS__
+
+  /// Abbreviation for CODI_TEMPLATE
+  #define CODI_T(...) CODI_TEMPLATE(__VA_ARGS__)
 
   /// Used in interface declarations for types that have to be defined in the specializations.
   #define CODI_UNDEFINED void
