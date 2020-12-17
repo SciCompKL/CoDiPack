@@ -33,11 +33,11 @@ namespace codi {
   /**
    * \section sec_forwardAD Forward AD Equation
    *
-   * \f$ \dot w = dphi/du * \dot u \f$
+   * \f$ \dot w = d\phi/du * \dot u \f$
    *
    * \section sec_reverseAD Reverse AD Equation
    *
-   * \f$ \bar u = dphi/du^T * \bar w \f$
+   * \f$ \bar u = d\phi/du^T * \bar w \f$
    *
    * \section sec_namingConventions Mathematical naming conventions
    *
