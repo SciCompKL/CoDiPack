@@ -52,7 +52,7 @@ namespace codi {
    * represents the number of input variable. The derivative for the i-th output with respect to the j-th input is
    * represented by \f$ J_{i,j} \f$.
    *
-   * The Jacobian of \f$ f \f$ is defined by:
+   * The Hessian of \f$ f \f$ is defined by:
    *  \f[ H = \frac{\d^2 f}{\d^2 x} \in \R^{m \times n \times n} \f]
    * The first dimension (\f$ m \f$) represents the number of output variables, the second and third dimension (\f$ n \f$) represents the
    * first and second derivative with respect to the input variables.
