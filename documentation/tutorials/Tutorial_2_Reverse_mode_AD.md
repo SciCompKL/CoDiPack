@@ -8,7 +8,7 @@ Tutorial 2 - Reverse mode AD {#Tutorial_2_Reverse_mode_AD}
 **Function:** \ref func_simple1to1
 \snippet tutorials/Tutorial_2_Reverse_mode_AD.cpp Function
 
-Full code:
+**Full code:**
 \snippet tutorials/Tutorial_2_Reverse_mode_AD.cpp Tutorial 2 - Reverse mode AD
 
 The derivative computation with the reverse mode of CoDiPack needs in total nine steps:
@@ -19,7 +19,7 @@ The derivative computation with the reverse mode of CoDiPack needs in total nine
   - Stop the recording.
   - Setting the direction of the derivative.
   - Evaluate the tape recorded by CoDiPack.
-  - Get the results of the derivaties.
+  - Get the results of the derivatives.
   - Clear the tape and adjoints.
   
 Most of these steps need to call functions on the global tape structure of CoDiPack. This structure can be accessed with
@@ -33,7 +33,7 @@ enable the recording in CoDiPack for all statements evaluated after the `setActi
 #### Step 2: Defining the input variables
 
 In the reverse AD equation, the variable \f$x\f$ describes the vector of input variables. CoDiPack needs to know about
-alle these values. On each one, the method [registerInput](@ref codi::ReverseTapeInterface::registerInput) needs to be
+all these values. On each one, the method [registerInput](@ref codi::ReverseTapeInterface::registerInput) needs to be
 called.
 
 #### Step 3: Recording the function evaluation
@@ -71,7 +71,7 @@ For an access to the gradient data for variables which run out of scope, see Exa
 The simplest way to evaluate the full tape is to call the method [evaluate](@ref codi::ReverseTapeInterface::evaluate).
 This will evaluate the full tape from the last recorded statement to the first one.
 
-For a partial evaluation of the tape see Example TODO. There are also other evaluation possiblties available, which are
+For a partial evaluation of the tape see Example TODO. There are also other evaluation possibilities available, which are
 described in other [Tutorials](@ref TutorialsAndExamples).
 
 #### Step 8: Get the resulting derivatives

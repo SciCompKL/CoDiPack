@@ -8,7 +8,7 @@ Tutorial 4 - Vector mode AD {#Tutorial_4_Vector_mode_AD}
 **Function:** \ref func_simpleNto2
 \snippet tutorials/Tutorial_4_Vector_mode_AD.cpp Function
 
-Full code:
+**Full code:**
 \snippet tutorials/Tutorial_4_Vector_mode_AD.cpp Tutorial 4 - Vector mode AD
 
 The vector mode of AD is introduced by using matrices for the adjoint values and tangent values \f$\bar y\f$,
@@ -32,12 +32,12 @@ Jacobian matrix is extracted.
 #### Performance notes ####
 
 CoDiPack offers only a fixed size vector mode that has to be defined at compile time. This decision against providing
-a vector mode that can be defined at runtime was made deliberately. In the forward mode, all operations have to check
+a vector mode that can be defined at run time was made deliberately. In the forward mode, all operations have to check
 if the vectors have the correct size and need to allocate new memory accordingly. This reduces the performance of a
 forward vector mode. In addition, if the vector size is known a priori, the compiler can optimize the forward and
 reverse vector mode even further by using e.g. SIMD instructions.
 
-In the reverse mode, it is possible to introduce a runtime decision on the vector size by using the custom evaluation
+In the reverse mode, it is possible to introduce a run time decision on the vector size by using the custom evaluation
 methods described in TODO(vector helper) and TODO(custom adjoint vectors).
 
 
