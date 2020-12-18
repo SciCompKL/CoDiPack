@@ -23,7 +23,7 @@ int main(int nargs, char** args) {
   x.setGradient(1.0);
   Real y = func(x, true);
 
-  std::cout << "Update global:" << y << std::endl;
+  std::cout << "Update global:" << std::endl;
   std::cout << "f(4.0, true) = " << y << std::endl;
   std::cout << "df/dx(4.0, true) = " << y.getGradient() << std::endl << std::endl;
 
@@ -31,7 +31,7 @@ int main(int nargs, char** args) {
   x.setGradient(1.0);
   y = func(x, false);
 
-  std::cout << "No update global:" << y << std::endl;
+  std::cout << "No update global:" << std::endl;
   std::cout << "f(4.0, false) = " << y << std::endl;
   std::cout << "df/dx(4.0, false) = " << y.getGradient() << std::endl << std::endl;
 
@@ -40,7 +40,7 @@ int main(int nargs, char** args) {
   x.setGradient(1.0);
   y = func(x, false);
 
-  std::cout << "No update global with reset:" << y << std::endl;
+  std::cout << "No update global with reset:" << std::endl;
   std::cout << "f(4.0, false) = " << y << std::endl;
   std::cout << "df/dx(4.0, false) = " << y.getGradient() << std::endl << std::endl;
 
