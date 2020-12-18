@@ -9,4 +9,6 @@ Tutorials & Examples {#TutorialsAndExamples}
 
 \subpage Tutorial_4_Vector_mode_AD
 
+\subpage Tutorial_5_Multiple_tape_recordings
+
 \subpage Example_1_Old_tangent_leftovers_forward_mode
