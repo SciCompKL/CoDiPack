@@ -1,7 +1,7 @@
 Example 1 - Old tangent leftovers in forward mode AD {#Example_1_Old_tangent_leftovers_forward_mode}
 =======
 
-**Goal:** Introduction to forward mode AD with CoDiPack.
+**Goal:** Learn how side effects can effect the tangent computation.
 
 **Prequesties:** \ref Tutorial_1_Forward_mode_AD
 
