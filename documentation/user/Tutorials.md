@@ -14,3 +14,5 @@ Tutorials & Examples {#TutorialsAndExamples}
 \subpage Example_1_Old_tangent_leftovers_forward_mode
 
 \subpage Example_2_Custom_adjoint_vector_evaluation
+
+\subpage Example_3_Positional_tape_evaluations
