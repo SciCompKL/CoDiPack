@@ -22,7 +22,7 @@ namespace codi {
    *
    * Access to the adjoint vector is gained through the VectorAccessInterface.
    *
-   * @tparam _Type  A CoDiPack on which the evaluations take place.
+   * @tparam _Type  A CoDiPack type on which the evaluations take place.
    */
   template<typename _Type>
   struct CustomAdjointVectorInterface {
@@ -100,7 +100,7 @@ namespace codi {
    * That is, the reverse evaluation can be performed simultaneously multiple times or with a different vector mode.
    *
    * An example for a different vector mode and the general usage is:
-   * \snippet examples/customAdjointVectorHelper.cpp Custom Adjoint Vector Helper
+   * \snippet documentation/tutorials/Example_2_Custom_adjoint_vector_evaluation.cpp Custom Adjoint Vector Helper
    *
    * The major difference in using the vector helper is that the adjoints need to be set on the helper instead of the
    * tape. Therefore, the #codi::LhsExpressionInterface::getIdentifier() functions need to be used. It returns the
@@ -108,7 +108,7 @@ namespace codi {
    *
    * For details on custom vector evaluations see CustomAdjointVectorEvaluationTapeInterface.
    *
-   * @tparam _Type  A CoDiPack on which the evaluations take place.
+   * @tparam _Type  A CoDiPack type on which the evaluations take place.
    * @tparam _Gradient  The gradient data for each value.
    */
   template<typename _Type, typename _Gradient>

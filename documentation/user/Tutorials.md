@@ -12,3 +12,5 @@ Tutorials & Examples {#TutorialsAndExamples}
 \subpage Tutorial_5_Multiple_tape_recordings
 
 \subpage Example_1_Old_tangent_leftovers_forward_mode
+
+\subpage Example_2_Custom_adjoint_vector_evaluation
