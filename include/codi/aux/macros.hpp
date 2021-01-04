@@ -37,9 +37,9 @@ namespace codi {
    */
 
   /**
-   * CODI_IDE can be define to use the default declaration of typenames. This enables autocompletion in the IDEs.
+   * CODI_IDE can be defined to use the default declaration of type names. This enables auto completion in the IDEs.
    *
-   * Every using declartion in all CoDiPack classes should declare its variables as:
+   * Every using declaration in all CoDiPack classes should declare its variables as:
    *  using TYPE = CODI_DECLARE_DEFAULT(_TYPE, Default);
    */
   #if CODI_IDE
@@ -47,6 +47,9 @@ namespace codi {
   #else
     #define CODI_DECLARE_DEFAULT(Type, Default) Type
   #endif
+
+  /// Abbreviation for CODI_DECLARE_DEFAULT
+  #define CODI_DD(Type, Default) CODI_DECLARE_DEFAULT(Type, Default)
 
   /// Used in default declarations of expression templates.
   #define CODI_ANY int
@@ -56,6 +59,9 @@ namespace codi {
 
   /// Expand template types in preprocessor macros.
   #define CODI_TEMPLATE(...) __VA_ARGS__
+
+  /// Abbreviation for CODI_TEMPLATE
+  #define CODI_T(...) CODI_TEMPLATE(__VA_ARGS__)
 
   /// Used in interface declarations for types that have to be defined in the specializations.
   #define CODI_UNDEFINED void
