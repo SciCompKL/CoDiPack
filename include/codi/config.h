@@ -131,6 +131,13 @@ namespace codi {
     #endif
     // Do not undefine
 
+    #ifndef CODI_ZeroAdjointReverse
+      #define CODI_ZeroAdjointReverse true
+    #endif
+    /// With a linear index management, control if adjoints are set to zero during reversal.
+    bool constexpr ZeroAdjointReverse = CODI_ZeroAdjointReverse;
+    #undef CODI_ZeroAdjointReverse
+
     /// @}
     /*******************************************************************************/
     /// @name Macro definitions

@@ -194,7 +194,7 @@ namespace codi {
         }
       }
 
-      /// Empty implementation primal values are not restsored in linear management
+      /// \copydoc codi::PrimalValueBaseTape::internalResetPrimalValues
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
 
         // reset primals
@@ -212,7 +212,7 @@ namespace codi {
 
       }
 
-      /// Only number of arguments is required for linear index managers
+      /// \copydoc codi::PrimalValueBaseTape::pushStmtData
       CODI_INLINE void pushStmtData(
           Identifier const& index,
           Config::ArgumentSize const& numberOfPassiveArguments,
@@ -221,5 +221,12 @@ namespace codi {
       {
         Base::statementData.pushData(index, numberOfPassiveArguments, oldPrimalValue, evalHandle);
       }
+
+    public:
+      /// \copydoc codi::PrimalEvaluationTapeInterface::revertPrimals
+      void revertPrimals(Position const& pos) {
+        internalResetPrimalValues(pos);
+      }
+
   };
 }

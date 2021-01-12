@@ -188,7 +188,9 @@ namespace codi {
               adjointVector->setLhsAdjoint(curAdjointPos);
             #else
               Gradient const lhsAdjoint = adjointVector[curAdjointPos];
-              adjointVector[curAdjointPos] = Gradient();
+              if (Config::ZeroAdjointReverse) {
+                adjointVector[curAdjointPos] = Gradient();
+              }
             #endif
 
             StatementEvaluator::template callReverse<PrimalValueLinearTape>(
@@ -201,7 +203,7 @@ namespace codi {
         }
       }
 
-      /// Empty implementation primal values are not restsored in linear management
+      /// Empty implementation; primal values are not overwritten with linear index management
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
         CODI_UNUSED(pos);
 
@@ -218,6 +220,14 @@ namespace codi {
         CODI_UNUSED(index, oldPrimalValue);
 
         Base::statementData.pushData(numberOfPassiveArguments, evalHandle);
+      }
+
+    public:
+      /// Empty implementation; primal values are not overwritten with linear index management
+      void revertPrimals(Position const& pos) {
+        CODI_UNUSED(pos);
+
+        // primal values do not need to be reset
       }
   };
 }

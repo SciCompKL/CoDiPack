@@ -56,6 +56,7 @@ namespace codi {
       Real& primal(Identifier const& identifier);  ///< Writable reference to primal value.
       Real const& primal(Identifier const& identifier) const; ///< Read only reference to primal value.
 
-
+      /// Revert the primals to the state indicates by pos.
+      void revertPrimals(Position const& pos);
   };
 }

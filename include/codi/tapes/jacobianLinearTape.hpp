@@ -131,9 +131,12 @@ namespace codi {
 
           Adjoint const lhsAdjoint = adjointVector[curAdjointPos]; // Adjoint positions are shifted since we do not use the zero index
 
-          if(Config::StatementInputTag != argsSize) {
+          if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation
-            adjointVector[curAdjointPos] = Adjoint();
+
+            if (Config::ZeroAdjointReverse) {
+              adjointVector[curAdjointPos] = Adjoint();
+            }
 
             Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
           }
