@@ -134,6 +134,9 @@ namespace codi {
     #ifndef CODI_ReversalZeroesAdjoints
       #define CODI_ReversalZeroesAdjoints true
     #endif
+    #if CODI_VariableAdjointInterfaceInPrimalTapes && !CODI_ReversalZeroesAdjoints
+      #warning CODI_ReversalZeroesAdjoints == false is incompatible with CODI_VariableAdjointInterfaceInPrimalTapes == true.
+    #endif
     /// With a linear index management, control if adjoints are set to zero during reversal.
     bool constexpr ReversalZeroesAdjoints = CODI_ReversalZeroesAdjoints;
     #undef CODI_ReversalZeroesAdjoints
