@@ -134,7 +134,7 @@ namespace codi {
           if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation
 
-            if (Config::ZeroAdjointReverse) {
+            if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();
             }
 

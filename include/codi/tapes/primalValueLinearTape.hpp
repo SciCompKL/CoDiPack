@@ -188,7 +188,7 @@ namespace codi {
               adjointVector->setLhsAdjoint(curAdjointPos);
             #else
               Gradient const lhsAdjoint = adjointVector[curAdjointPos];
-              if (Config::ZeroAdjointReverse) {
+              if (Config::ReversalZeroesAdjoints) {
                 adjointVector[curAdjointPos] = Gradient();
               }
             #endif

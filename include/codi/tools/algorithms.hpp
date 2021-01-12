@@ -92,7 +92,7 @@ namespace codi {
 
             setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real());
 
-            if (!Config::ZeroAdjointReverse) {
+            if (!Config::ReversalZeroesAdjoints) {
               tape.clearAdjoints(end, start);
             }
           }
@@ -219,7 +219,7 @@ namespace codi {
 
             setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real());
 
-            if (!Config::ZeroAdjointReverse) {
+            if (!Config::ReversalZeroesAdjoints) {
               tape.clearAdjoints(end, start);
             }
           }
@@ -329,7 +329,7 @@ namespace codi {
 
             setGradientOnCoDiValue(tape, i, output.data(), output.size(), typename GT::Real());
 
-            if (!Config::ZeroAdjointReverse) {
+            if (!Config::ReversalZeroesAdjoints) {
               tape.clearAdjoints(tape.getPosition(), tape.getZeroPosition());
             }
           }
