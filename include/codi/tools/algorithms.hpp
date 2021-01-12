@@ -273,7 +273,7 @@ namespace codi {
         } else if (EvaluationType::Reverse == evalType) {
           computeHessianReverse(func, input, output, hes, jac);
         } else {
-          CODI_EXCEPTION("Evaluation mode not implemented for preaccumulation. Mode is: %d.", (int)evalType);
+          CODI_EXCEPTION("Evaluation mode not implemented. Mode is: %d.", (int)evalType);
         }
       }
 
@@ -303,7 +303,7 @@ namespace codi {
             setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT::Real(1.0));
 
             // propagate the derivatives forward for second order derivatives
-            tape.evaluateForwardPreacc(tape.getZeroPosition(), tape.getPosition());
+            tape.evaluateForwardKeepState(tape.getZeroPosition(), tape.getPosition());
 
             for (size_t i = 0; i < output.size(); i += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && k + vecPos1st < input.size(); vecPos1st += 1) {
@@ -354,7 +354,7 @@ namespace codi {
             setGradientOnCoDiValue(tape, i, output.data(), output.size(), typename GT::Real(1.0));
 
             // propagate the derivatives backward for second order derivatives
-            tape.evaluatePreacc(tape.getPosition(), tape.getZeroPosition());
+            tape.evaluateKeepState(tape.getPosition(), tape.getZeroPosition());
 
             for (size_t k = 0; k < input.size(); k += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < output.size(); vecPos1st += 1) {
