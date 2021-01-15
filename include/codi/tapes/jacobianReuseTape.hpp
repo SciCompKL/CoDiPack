@@ -53,10 +53,10 @@ namespace codi {
       void clearAdjoints(Position const& start, Position const& end) {
 
         // clear adjoints
-        auto clearFunc = [this] (Config::ArgumentSize* stmtSize, Identifier* index) {
+        auto clearFunc = [this] (Identifier* index, Config::ArgumentSize* stmtSize) {
           CODI_UNUSED(stmtSize);
 
-          if(*index < this->adjoints.size()) {
+          if (*index < (Identifier)this->adjoints.size()) {
             this->adjoints[*index] = Gradient();
           }
         };

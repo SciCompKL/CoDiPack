@@ -161,7 +161,7 @@ namespace codi {
 
         Position endPos = tape.getPosition();
         if (jacobie.getM() != outputData.size() || jacobie.getN() != inputData.size()) {
-          jacobie.reshape(outputData.size(), inputData.size());
+          jacobie.resize(outputData.size(), inputData.size());
         }
 
         Algorithms<Type, false>::computeJacobian(startPos, endPos,
@@ -170,7 +170,7 @@ namespace codi {
                                                  jacobie);
 
         // store the Jacobi matrix
-        tape.reset(startPos);
+        tape.resetTo(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
 
@@ -192,9 +192,9 @@ namespace codi {
 
               // calculate the number of Jacobies for this statement
               int jacobiesForStatement = nonZerosLeft;
-              if (jacobiesForStatement >= (int)MaxStatementIntValue) {
+              if (jacobiesForStatement >= (int)Config::MaxArgumentSize) {
 
-                jacobiesForStatement = MaxStatementIntValue;
+                jacobiesForStatement = (int)Config::MaxArgumentSize;
                 if (staggeringActive) { /* Space is used up but we need one Jacobi for the staggering */
                   jacobiesForStatement -= 1;
                 }
@@ -289,7 +289,7 @@ namespace codi {
    * @tparam Type
    */
   template<typename Type>
-  struct PreaccumulationHelper<Type, enableIfForwardTape<typename Type::Tape>>
+  struct PreaccumulationHelper<Type, TapeTraits::EnableIfForwardTape<typename Type::Tape>>
       : public PreaccumulationHelperNoOpBase {};
 
   /**

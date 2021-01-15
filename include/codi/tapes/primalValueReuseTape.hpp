@@ -59,7 +59,7 @@ namespace codi {
         auto clearFunc = [this] (Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal, EvalHandle* evalHandle) {
           CODI_UNUSED(passiveArgs, oldPrimal, evalHandle);
 
-          if(*lhsIndex < this->adjoints.size()) {
+          if(*lhsIndex < (Identifier)this->adjoints.size()) {
             this->adjoints[*lhsIndex] = Gradient();
           }
         };

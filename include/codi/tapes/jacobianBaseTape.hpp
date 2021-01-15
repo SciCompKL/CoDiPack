@@ -46,8 +46,8 @@ namespace codi {
 
       using Identifier = typename IndexManager::Index; ///< See IndexManagerInterface.
 
-      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear; ///< True if the index manager is linear.
-      constexpr static bool IsStaticIndexHandler = !IsLinearIndexHandler;  ///< For reuse index mangers a static instantiation is used.
+      static bool constexpr IsLinearIndexHandler = IndexManager::IsLinear; ///< True if the index manager is linear.
+      static bool constexpr IsStaticIndexHandler = !IsLinearIndexHandler;  ///< For reuse index mangers a static instantiation is used.
 
       /// Statement chunk is either \<argument size\> (linear management) or \<lhs identifier, argument size\>
       /// (reuse management)

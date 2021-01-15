@@ -4,6 +4,7 @@
 #include <cmath>
 #include <functional>
 #include <type_traits>
+#include <utility>
 
 #include "../aux/macros.hpp"
 #include "../aux/memberStore.hpp"
@@ -176,7 +177,9 @@ namespace codi {
       static void internalEvaluateReverseStack(Args&& ... args);
 
       /// Reset the primal values to the given position.
-      void internalResetPrimalValues(Position const& pos);
+      void internalResetPrimalValues(Position const& pos) {
+        cast().internalResetPrimalValues(pos);
+      }
 
       /// Add statement specific data to the data streams.
       void pushStmtData(
@@ -785,12 +788,14 @@ namespace codi {
           /// Throws exception
           template<typename Expr, typename ... Args>
           static Real statementEvaluateForward(Args&& ... args) {
+            CODI_UNUSED(args...);
             CODI_EXCEPTION("Forward evaluation of jacobian statement not possible.");
           }
 
           /// Throws exception
           template<typename Expr, typename ... Args>
           static Real statementEvaluatePrimal(Args&& ... args) {
+            CODI_UNUSED(args...);
             CODI_EXCEPTION("Primal evaluation of jacobian statement not possible.");
 
           }
@@ -825,6 +830,7 @@ namespace codi {
           /// Throws exception
           template<typename Expr, typename ... Args>
           static Real statementEvaluateForwardInner(Args&& ... args) {
+            CODI_UNUSED(args...);
             CODI_EXCEPTION("Forward evaluation of jacobian statement not possible.");
 
             return Real();
@@ -833,6 +839,7 @@ namespace codi {
           /// Throws exception
           template<typename Expr, typename ... Args>
           static Real statementEvaluatePrimalInner(Args&& ... args) {
+            CODI_UNUSED(args...);
             CODI_EXCEPTION("Primal evaluation of jacobian statement not possible.");
 
             return Real();
@@ -954,7 +961,7 @@ namespace codi {
 
         if(!TapeTypes::IsLinearIndexHandler) {
 
-          internalEvaluatePrimalStack(end, start);
+          evaluatePrimal(end, start);
         }
       }
 

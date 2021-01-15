@@ -149,12 +149,13 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::extractPosition
-      template<typename TargetPosition>
+      template<typename TargetPosition, typename = typename std::enable_if<!std::is_same<TargetPosition, Position>::value>::type>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
         return nested->template extractPosition<TargetPosition>(pos.inner);
       }
 
       /// \copydoc DataInterface::extractPosition
+      template<typename TargetPosition, typename = typename std::enable_if<std::is_same<TargetPosition, Position>::value>::type>
       CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }
