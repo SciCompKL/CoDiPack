@@ -337,6 +337,9 @@ namespace codi {
           size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
           size_t constexpr MaxConstantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
 
+          codiAssert(MaxActiveArgs < Config::MaxArgumentSize);
+          codiAssert(MaxConstantArgs < Config::MaxArgumentSize);
+
           size_t activeArguments = 0;
           countActiveArguments.eval(rhs.cast(), activeArguments);
 
@@ -915,6 +918,8 @@ namespace codi {
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
+
+        codiAssert(size < Config::MaxArgumentSize);
 
         statementData.reserveItems(1);
         rhsIdentiferData.reserveItems(size);

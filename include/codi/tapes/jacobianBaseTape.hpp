@@ -296,6 +296,8 @@ namespace codi {
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
           size_t constexpr MaxArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
 
+          codiAssert(MaxArgs < Config::MaxArgumentSize);
+
           statementData.reserveItems(1);
           typename JacobianData::InternalPosHandle jacobianStart = jacobianData.reserveItems(MaxArgs);
 
@@ -596,6 +598,8 @@ namespace codi {
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
+
+        codiAssert(size < Config::MaxArgumentSize);
 
         statementData.reserveItems(1);
         jacobianData.reserveItems(size);
