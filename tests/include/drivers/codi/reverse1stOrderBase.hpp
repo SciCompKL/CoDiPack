@@ -36,13 +36,13 @@ struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
 
       // Set sizes for Jacobian tapes
       if(tape.hasParameter(codi::TapeParameters::JacobianSize)) {
-        tape.setParameter(codi::TapeParameters::JacobianSize, 1000);
+        tape.setParameter(codi::TapeParameters::JacobianSize, 10000);
       }
       if(tape.hasParameter(codi::TapeParameters::StatementSize)) {
-        tape.setParameter(codi::TapeParameters::StatementSize, 1000);
+        tape.setParameter(codi::TapeParameters::StatementSize, 10000);
       }
       if(tape.hasParameter(codi::TapeParameters::ExternalFunctionsSize)) {
-        tape.setParameter(codi::TapeParameters::ExternalFunctionsSize, 1000);
+        tape.setParameter(codi::TapeParameters::ExternalFunctionsSize, 10000);
       }
 
       size_t runs = outputs / gradDim;
