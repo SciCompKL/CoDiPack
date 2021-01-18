@@ -192,9 +192,9 @@ namespace codi {
 
               // calculate the number of Jacobies for this statement
               int jacobiesForStatement = nonZerosLeft;
-              if (jacobiesForStatement >= (int)Config::MaxArgumentSize) {
+              if (jacobiesForStatement > (int)Config::MaxArgumentSize) {
 
-                jacobiesForStatement = (int)Config::MaxArgumentSize;
+                jacobiesForStatement = (int)Config::MaxArgumentSize - 1;
                 if (staggeringActive) { /* Space is used up but we need one Jacobi for the staggering */
                   jacobiesForStatement -= 1;
                 }

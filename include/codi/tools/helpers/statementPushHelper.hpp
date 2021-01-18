@@ -140,7 +140,7 @@ namespace codi {
       void pushArgument(Type const& arg, Real const& jacobian) {
         Tape& tape = Type::getGlobalTape();
 
-        if(Config::MaxArgumentSize < dataPos ) {
+        if(Config::MaxArgumentSize <= dataPos ) {
           CODI_EXCEPTION("Adding more than %zu arguments to a statement.", Config::MaxArgumentSize);
         }
 

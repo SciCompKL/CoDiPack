@@ -32,7 +32,7 @@ namespace codi {
     using ArgumentSize = uint8_t;
 
     /// Maximum number of arguments in a statement
-    size_t constexpr MaxArgumentSize = 255;
+    size_t constexpr MaxArgumentSize = 254;
 
     /// Tag for statements that are inputs. Used in linear index management context.
     size_t constexpr StatementInputTag = 255;
