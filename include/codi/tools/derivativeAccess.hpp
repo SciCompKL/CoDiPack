@@ -18,7 +18,7 @@ namespace codi {
 
 
   /**
-   * See HigherOrderAccess for details about the number for each derivative order.
+   * See DerivativeAccess for details about the number for each derivative order.
    *
    * The selection algorithm walks along the nodes in the nested classes. From the specified order and the derivative
    * number l the algorithm checks if the derivative l is in the lower (value) or upper (gradient) branch of the nested
@@ -50,7 +50,7 @@ namespace codi {
    * class under the column 'index'. It can be seen that the different derivative values of the same order are
    * not continuously ordered in the graph.
    */
-  namespace HigherOrderAccessImpl {
+  namespace DerivativeAccessImpl {
     CODI_INLINE size_t constexpr maximumDerivatives(size_t selectionDepth, size_t order) {
       return binomial(selectionDepth, order);
     }
@@ -117,7 +117,7 @@ namespace codi {
       public:
         using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-        using Inner = SelectCompileTime<typename Type::Real, constant, selectionDepth - 1, order - 1, l - maximumDerivativesPrimalBranch(selectionDepth, order)>;
+        using Inner = SelectCompileTime<typename Type::Gradient, constant, selectionDepth - 1, order - 1, l - maximumDerivativesPrimalBranch(selectionDepth, order)>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
         using RType = typename Inner::RType;
 
@@ -222,19 +222,19 @@ namespace codi {
    * @tparam _Type  The AD type for which the derivatives are selected. The type needs to be an LhsExpressionInterface.
    */
   template<typename _Type>
-  struct HigherOrderAccess {
+  struct DerivativeAccess {
     public:
 
-      /// See HigherOrderAccess
+      /// See DerivativeAccess
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       /// Helper for the run time selection of derivatives
       template<bool constant, size_t selectionDepth>
-      using SelectRunTime = HigherOrderAccessImpl::SelectRunTime<Type, constant, selectionDepth>;
+      using SelectRunTime = DerivativeAccessImpl::SelectRunTime<Type, constant, selectionDepth>;
 
       /// Helper for the compile time selection of derivatives
       template<bool constant, size_t selectionDepth, size_t order, size_t l>
-      using SelectCompileTime = HigherOrderAccessImpl::SelectCompileTime<Type, constant, selectionDepth, order, l>;
+      using SelectCompileTime = DerivativeAccessImpl::SelectCompileTime<Type, constant, selectionDepth, order, l>;
 
       /// Run time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... ((selectionDepth over order) - 1).
       template<size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
@@ -266,13 +266,13 @@ namespace codi {
       /// Run time set of all derivatives in the primal value part of the same order. order = 0 ... selectionDepth.
       template<typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivativesForward(Type& v, size_t order, Derivative const& d) {
-        HigherOrderAccess<typename Type::Real>::template setAllDerivatives<Derivative, selectionDepth - 1>(v.value(), order, d);
+        DerivativeAccess<typename Type::Real>::template setAllDerivatives<Derivative, selectionDepth - 1>(v.value(), order, d);
       }
 
       /// Run time set of all derivatives in the gradient part of the same order. order = 0 ... selectionDepth.
       template<typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivativesReverse(Type& v, size_t order, Derivative const& d) {
-        HigherOrderAccess<typename Type::Gradient>::template setAllDerivatives<Derivative, selectionDepth - 1>(v.gradient(), order - 1, d);
+        DerivativeAccess<typename Type::Gradient>::template setAllDerivatives<Derivative, selectionDepth - 1>(v.gradient(), order - 1, d);
       }
 
       /// Compile time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... ((selectionDepth over order) - 1).
@@ -290,19 +290,19 @@ namespace codi {
       /// Compile time set of all derivatives of the same order. order = 0 ... selectionDepth.
       template<size_t order, typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivatives(Type& v, Derivative const& d) {
-        CompileTimeLoop<HigherOrderAccessImpl::maximumDerivatives(selectionDepth, order)>::eval(CallSetDerivative<order, Derivative, selectionDepth>{}, v, d);
+        CompileTimeLoop<DerivativeAccessImpl::maximumDerivatives(selectionDepth, order)>::eval(CallSetDerivative<order, Derivative, selectionDepth>{}, v, d);
       }
 
       /// Compile time set of all derivatives in the primal value part of the same order. order = 0 ... selectionDepth.
       template<size_t order, typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivativesForward(Type& v, Derivative const& d) {
-        HigherOrderAccess<typename Type::Real>::template setAllDerivatives<order, Derivative, selectionDepth - 1>(v.value(), d);
+        DerivativeAccess<typename Type::Real>::template setAllDerivatives<order, Derivative, selectionDepth - 1>(v.value(), d);
       }
 
       /// Compile time set of all derivatives in the gradient part of the same order. order = 0 ... selectionDepth.
       template<size_t order, typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivativesReverse(Type& v, Derivative const& d) {
-        HigherOrderAccess<typename Type::Gradient>::template setAllDerivatives<order - 1, Derivative, selectionDepth - 1>(v.gradient(), d);
+        DerivativeAccess<typename Type::Gradient>::template setAllDerivatives<order - 1, Derivative, selectionDepth - 1>(v.gradient(), d);
       }
 
     private:
@@ -323,7 +323,7 @@ namespace codi {
       struct CallSetDerivative {
           template<size_t pos>
           void operator()(std::integral_constant<size_t, pos>, Type& v, Derivative const& d) {
-            HigherOrderAccess::derivative<order, pos - 1, selectionDepth>(v) = d;
+            DerivativeAccess::derivative<order, pos - 1, selectionDepth>(v) = d;
           }
       };
   };

@@ -12,7 +12,7 @@ Example 3 - Positional tape evaluations {#Example_3_Positional_tape_evaluations}
 \snippet tutorials/Example_3_Positional_tape_evaluations.cpp Example 3 - Positional tape evaluation
 
 Positional evaluation can have multiple use cases:
- - Record independent parts of the aplication and access them on a need basis
+ - Record independent parts of the application and access them on a need basis
  - Directly evaluate recorded functions to compute the Jacobians and store them (See also TODO Preaccumulation)
  - etc.
 

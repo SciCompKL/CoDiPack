@@ -164,7 +164,7 @@ namespace codi {
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalFinite()
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         using std::isfinite;
-        return isfinite(v.getValue()) && isfinite(v.getGradient());
+        return RealTraits::isTotalFinite(v.getValue()) && RealTraits::isTotalFinite(v.getGradient());
       }
   };
 

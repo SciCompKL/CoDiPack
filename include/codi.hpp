@@ -23,7 +23,7 @@
 #include "codi/tools/helpers/customAdjointVectorHelper.hpp"
 #include "codi/tools/helpers/externalFunctionHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
-#include "codi/tools/higherOrderAccess.hpp"
+#include "codi/tools/derivativeAccess.hpp"
 #include "codi/traits/numericLimits.hpp"
 #include "codi/traits/tapeTraits.hpp"
 
