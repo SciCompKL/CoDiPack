@@ -11,8 +11,14 @@ Tutorials & Examples {#TutorialsAndExamples}
 
 \subpage Tutorial_5_Multiple_tape_recordings
 
+\subpage Tutorial_6_Higher_order_types_helper_acces
+
 \subpage Example_1_Old_tangent_leftovers_forward_mode
 
 \subpage Example_2_Custom_adjoint_vector_evaluation
 
 \subpage Example_3_Positional_tape_evaluations
+
+\subpage Example_4_Higher_order_types_helper_access_compile_time
+
+\subpage Example_5_Higher_order_types_direct_access

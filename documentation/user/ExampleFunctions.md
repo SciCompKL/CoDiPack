@@ -20,3 +20,20 @@ Jacobian:
 \f[
   \frac{\d f}{\d x_j}(x) = \left( 1.0, \prod_{i = 1 \ldots n \wedge i \not = j } x_i \right)
 \f]
+
+#### Simple real valued function for higher order derivatives #### {#func_simple1to1_higher}
+\f[
+  y = f(x) = 3*x^7 \eqdot
+\f]
+Jacobian:
+\f[
+  \frac{\d f}{\d x}(x) = 21 * x^6, \quad
+\f]
+Higher order derivatives:
+\f[
+  \frac{\d^2 f}{\d^2 x}(x) = 126 * x^5, \quad
+  \frac{\d^3 f}{\d^3 x}(x) = 630 * x^4, \quad
+  \frac{\d^4 f}{\d^4 x}(x) = 2520 * x^3, \quad
+  \frac{\d^5 f}{\d^5 x}(x) = 7560 * x^2, \quad
+  \frac{\d^6 f}{\d^6 x}(x) = 15120 * x \eqdot
+\f]
