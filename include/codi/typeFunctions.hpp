@@ -106,18 +106,21 @@ namespace codi {
   }
 
 #ifndef DOXYGEN_DISABLE
+  template <typename T>
+  CODI_INLINE bool isTotalFinite(const T& t);
+
   // check if variable is finite
   template <typename T, typename Enable = void>
-  struct IsFiniteImpl {
+  struct IsTotalFiniteImpl {
       static CODI_INLINE bool get(const T &t) {
           using std::isfinite;
           return isfinite(t);
       }
   };
 
-  //call the specialized isfinite implementation for codi::Expression
+  //call the specialized isTotalFinite implementation for codi::Expression
   template <typename T>
-  struct IsFiniteImpl<
+  struct IsTotalFiniteImpl<
     T,
     typename std::enable_if<
       std::is_base_of<
@@ -128,8 +131,7 @@ namespace codi {
   >
   {
       static CODI_INLINE bool get(const T &t) {
-        using std::isfinite;
-        return isfinite(t.getValue());
+        return isTotalFinite(t.getValue());
       }
   };
 
@@ -138,14 +140,14 @@ namespace codi {
   /**
    * @brief Check if variable is finite
    *
-   * The default implementation calls isfinite(t) without a namespace specifier.
+   * The default implementation calls isTotalFinite(t) without a namespace specifier.
    *
    * @param[in] t The value for which the is finite attribute is checked.
    * @tparam T Type of the variable
    */
   template <typename T>
-  CODI_INLINE bool isfinite(const T& t) {
-    return IsFiniteImpl<T>::get(t);
+  CODI_INLINE bool isTotalFinite(const T& t) {
+    return IsTotalFiniteImpl<T>::get(t);
   }
 
 #ifndef DOXYGEN_DISABLE

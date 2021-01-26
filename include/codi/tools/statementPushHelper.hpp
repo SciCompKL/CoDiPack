@@ -130,7 +130,7 @@ namespace codi {
 
         ENABLE_CHECK (OptTapeActivity, tape.isActive()) {
           ENABLE_CHECK(OptCheckZeroIndex, 0 != arg.getGradientData()) {
-            ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
+            ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isTotalFinite(jacobi)) {
               ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
 
                 indexVector[vectorPos] = arg.getGradientData();
@@ -262,7 +262,7 @@ namespace codi {
        * @param[in] jacobi  The corresponding Jacobi value for the argument.
        */
       void pushArgument(const CoDiType& arg, const Real& jacobi) {
-        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
+        ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isTotalFinite(jacobi)) {
           lhsTangent += jacobi * arg.getGradient();
         }
       }

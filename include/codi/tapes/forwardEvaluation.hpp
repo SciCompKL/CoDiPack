@@ -164,7 +164,7 @@ namespace codi {
     template<typename Data>
     CODI_INLINE void pushJacobi(Data& lhsTangent, const Real& jacobi, const Real& value, const GradientData& curTangent) {
       CODI_UNUSED(value);
-      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isTotalFinite(jacobi)) {
         lhsTangent += jacobi * curTangent;
       }
     }

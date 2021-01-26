@@ -613,7 +613,7 @@ namespace codi {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
-      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isTotalFinite(seed)) {
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
         adjointValues->updateJacobiAdjoint(indices[offset], seed);
 #else
@@ -650,7 +650,7 @@ namespace codi {
       CODI_UNUSED(constantValues);
       CODI_UNUSED(primalValues);
 
-      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(seed)) {
+      ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isTotalFinite(seed)) {
 #if CODI_EnableVariableAdjointInterfaceInPrimalTapes
         adjointValues->updateJacobiTangent(indices[offset], seed);
 #else

@@ -184,7 +184,7 @@ namespace codi {
   /**
    * @brief Tests if all elements of the given direction are finite.
    *
-   * Calls on all elements codi::isfinite.
+   * Calls on all elements codi::isTotalFinite.
    *
    * @param[in] d  The direction vector that is tested.
    * @return true if all elements are finite.
@@ -196,7 +196,7 @@ namespace codi {
     bool finite = true;
 
     for(size_t i = 0; i < dim; ++i) {
-      finite &= codi::isfinite(d[i]);
+      finite &= codi::isTotalFinite(d[i]);
     }
 
     return finite;

@@ -248,7 +248,7 @@ namespace codi {
       CODI_INLINE void pushJacobi(Data& data, const Real& jacobi, const Real& value, const Index& index) {
         CODI_UNUSED(value);
         ENABLE_CHECK(OptCheckZeroIndex, 0 != index) {
-          ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isfinite(jacobi)) {
+          ENABLE_CHECK(OptIgnoreInvalidJacobies, codi::isTotalFinite(jacobi)) {
             ENABLE_CHECK(OptJacobiIsZero, !isTotalZero(jacobi)) {
               data.setDataAndMove(jacobi, index);
             }
