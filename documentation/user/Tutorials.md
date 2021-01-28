@@ -22,3 +22,7 @@ Tutorials & Examples {#TutorialsAndExamples}
 \subpage Example_4_Higher_order_types_helper_access_compile_time
 
 \subpage Example_5_Higher_order_types_direct_access
+
+\subpage Example_6_Forward_tape_evaluation
+
+\subpage Example_7_Primal_tape_evaluation
