@@ -1,7 +1,7 @@
 Example 8 - Custom adjoint vector helper {#Example_8_Vector_helper}
 =======
 
-**Goal:** Vector mode with the forward and reverse mode AD CoDiPack types.
+**Goal:** Vector mode with a custom adjoint vector.
 
 **Prequesties:** \ref Tutorial_4_Vector_mode_AD
 
