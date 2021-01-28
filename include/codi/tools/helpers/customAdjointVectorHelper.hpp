@@ -42,6 +42,8 @@ namespace codi {
 
       Tape& tape; ///< Current tape for evaluations. Default: globalTape
 
+    public:
+
       /// Constructor
       CustomAdjointVectorInterface() :
         tape(Type::getGlobalTape()) {

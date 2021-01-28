@@ -26,3 +26,5 @@ Tutorials & Examples {#TutorialsAndExamples}
 \subpage Example_6_Forward_tape_evaluation
 
 \subpage Example_7_Primal_tape_evaluation
+
+\subpage Example_8_Vector_helper
