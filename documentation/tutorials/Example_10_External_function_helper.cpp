@@ -43,8 +43,6 @@ void solve2_rev(const BaseReal* x, BaseReal* x_b, size_t m, const BaseReal* y, c
 }
 
 void runExample(int mode) {
-  std::cout << "codi::RealReverse:" << std::endl;
-
   Real u = 3.0;
 
   Tape& tape = Real::getGlobalTape();

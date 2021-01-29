@@ -55,3 +55,16 @@ Reverse mode:
       \bar x = & 0 \eqdot
   \end{aligned}
 \f]
+
+#### 2D polynomial #### {#func_poly2D}
+\f[
+  w = f(x, y) = \sum_{i = 1 \ldots n, j = 1 \ldots n} A_{i,j} x^{i - 1} y^{j - 1}
+\f]
+
+Derivatives:
+\f[
+  \frac{\d f}{\d x}(x, y) = \sum_{i = 2 \ldots n, j = 1 \ldots n} (i - 1) A_{i,j} x^{i - 2}  y^{j - 1}
+\f]
+\f[
+  \frac{\d f}{\d y}(x, y) = \sum_{i = 1 \ldots n, j = 2 \ldots n} (j - 1) A_{i,j} x^{i - 1}  y^{j - 2}
+\f]
