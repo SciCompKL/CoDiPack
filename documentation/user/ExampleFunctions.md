@@ -37,3 +37,21 @@ Higher order derivatives:
   \frac{\d^5 f}{\d^5 x}(x) = 7560 * x^2, \quad
   \frac{\d^6 f}{\d^6 x}(x) = 15120 * x \eqdot
 \f]
+
+#### Linear system solve #### {#func_linearSystemSolve}
+\f[
+  x = A^{-1}b
+\f]
+Forward mode:
+\f[
+  \dot x = A^{-1}(\dot b - \dot Ax)
+\f]
+Reverse mode:
+\f[
+  \begin{aligned}
+      s = & A^{-T}\bar x\\
+      \bar A \aeq & -s \cdot x^T \\
+      \bar b \aeq & s \\
+      \bar x = & 0 \eqdot
+  \end{aligned}
+\f]

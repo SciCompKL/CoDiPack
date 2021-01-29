@@ -30,3 +30,5 @@ Tutorials & Examples {#TutorialsAndExamples}
 \subpage Example_8_Vector_helper
 
 \subpage Example_9_OpenMP_reverse_evaluation
+
+\subpage Example_10_External_function_helper
