@@ -49,6 +49,13 @@ namespace codi {
     /// @name Compile time flags
     /// @{
 
+    #ifndef CODI_EnableMPI
+      #define CODI_EnableMPI false
+    #endif
+    /// Add MPI and MeDiPack specific headers
+    bool constexpr EnableMPI = CODI_EnableMPI;
+    // Do not undefine
+
     #ifndef CODI_CheckExpressionArguments
       #define CODI_CheckExpressionArguments false
     #endif

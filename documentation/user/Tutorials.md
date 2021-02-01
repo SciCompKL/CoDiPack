@@ -36,3 +36,5 @@ Tutorials & Examples {#TutorialsAndExamples}
 \subpage Example_11_External_function_user_data
 
 \subpage Example_12_Manual_statement_creation
+
+\subpage Example_13_MPI_communication

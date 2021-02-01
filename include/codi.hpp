@@ -27,6 +27,10 @@
 #include "codi/traits/numericLimits.hpp"
 #include "codi/traits/tapeTraits.hpp"
 
+#if CODI_EnableMPI
+  #include "codi/tools/mpi/codiMpiTypes.hpp"
+#endif
+
 /** \copydoc codi::Namespace */
 namespace codi {
 

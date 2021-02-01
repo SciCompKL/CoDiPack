@@ -23,15 +23,27 @@ else
   FLAGS += -std=c++11
 endif
 ifeq ($(OPT), yes)
-  CXX_FLAGS := -O3 $(FLAGS)
+  FLAGS += -O3
 else
-  CXX_FLAGS := -O0 -g $(FLAGS)
+  FLAGS += -O0 -g
+endif
+ifeq ($(MPI), yes)
+  FLAGS += -DCODI_EnableMPI
+  ifdef MEDI_DIR
+    FLAGS += -I$(MEDI_DIR)/include -I$(MEDI_DIR)/src
+  else
+    $(error Error: 'MEDI_DIR' is not defined for the MPI build. You can get it at 'https://www.scicomp.uni-kl.de/software/medi/' or with 'git clone https://github.com/SciCompKL/MeDiPack.git'.)
+  endif
 endif
 
-ifeq ($(CXX), )
-	CXX := g++
+ifdef CXX
+  ifeq ($(MPI), yes)
+    CXX := mpic++
+  else
+    CXX := g++
+  endif
 else
-	CXX := $(CXX)
+  CXX := $(CXX)
 endif
 
 TUTORIALS = $(patsubst %.cpp,$(BUILD_DIR)/%.exe,$(TUTORIAL_FILES))
@@ -40,10 +52,10 @@ EXAMPLES = $(patsubst %.cpp,$(BUILD_DIR)/%.exe,$(EXAMPLE_FILES))
 # set default rule
 all: tutorials examples
 
-$(BUILD_DIR)/%.exe : %.cpp
+$(BUILD_DIR)/%.exe : %.cpp $(BUILD_DIR)/compiler_flags
 	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $< -o $@
-	@$(CXX) $(CXX_FLAGS) $< -MM -MP -MT $@ -MF $@.d
+	$(CXX) $(FLAGS) $< -o $@
+	@$(CXX) $(FLAGS) $< -MM -MP -MT $@ -MF $@.d
 
 tutorials: $(TUTORIALS)
 
@@ -57,5 +69,10 @@ doc:
 .PHONY: clean
 clean:
 	rm -fr $(BUILD_DIR)
+
+.PHONY: force
+$(BUILD_DIR)/compiler_flags: force
+	@mkdir -p $(@D)
+	@echo '$(FLAGS)' | cmp -s - $@ || echo '$(FLAGS)' > $@
 
 -include $(DEP_FILES)

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <medi/ampi/types/indexTypeHelper.hpp>
-#include <medi/ampi/typeDefault.hpp>
+#include <medi/medi.hpp>
 
 #include "../../aux/macros.hpp"
 #include "../../config.h"
