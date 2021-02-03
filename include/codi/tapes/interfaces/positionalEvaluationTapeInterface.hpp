@@ -16,7 +16,7 @@ namespace codi {
    * in this interface all these operations can be performed on parts of the tape.
    *
    * An example for a positional tape evaluation (\ref Example_3_Positional_tape_evaluations):
-   * \snippet tutorials/Example_3_Positional_tape_evaluations.cpp Positional evaluation
+   * \snippet examples/Example_3_Positional_tape_evaluations.cpp Positional evaluation
    *
    * @tparam _Position  Global tape position usually defined by Tape::Position.
    */

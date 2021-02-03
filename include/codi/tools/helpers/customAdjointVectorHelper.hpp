@@ -102,7 +102,7 @@ namespace codi {
    * That is, the reverse evaluation can be performed simultaneously multiple times or with a different vector mode.
    *
    * An example for a different vector mode and the general usage is:
-   * \snippet documentation/tutorials/Example_2_Custom_adjoint_vector_evaluation.cpp Custom Adjoint Vector Helper
+   * \snippet documentation/examples/Example_2_Custom_adjoint_vector_evaluation.cpp Custom Adjoint Vector Helper
    *
    * The major difference in using the vector helper is that the adjoints need to be set on the helper instead of the
    * tape. Therefore, the #codi::LhsExpressionInterface::getIdentifier() functions need to be used. It returns the

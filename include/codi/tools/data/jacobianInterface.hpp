@@ -36,6 +36,15 @@ namespace codi {
       size_t size() const; ///< Get total size of the Jacobian.
   };
 
+  /**
+   * Format the Jacobian and write it to the stream.
+   *
+   * The format is (Matlab):
+   * [v11, v12, ..., v1N;
+   *  v21, v22, ..., v2N;
+   *  ...
+   *  vM1, vM2, ..., vMN]
+   */
   template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>>
   Stream& operator <<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {
 

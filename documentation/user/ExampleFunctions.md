@@ -1,6 +1,8 @@
 Examples functions {#ExampleFunctions}
 =======
 
+These are functions that are used in tutorials and examples.
+
 #### Simple real valued function #### {#func_simple1to1}
 Definition:
 \f[

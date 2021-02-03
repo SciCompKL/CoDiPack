@@ -69,10 +69,13 @@ namespace codi {
   /// Used in interface declarations for variables that have to be defined in the specializations.
   #define CODI_UNDEFINED_VALUE false
 
+#ifndef DOXYGEN_DISABLE
   /// Creates a union of interface definitions
   template<typename First, typename... Tail>
   struct CODI_UNION : public First, public CODI_UNION<Tail...> {};
+#endif
 
+  /// Creates a union of interface definitions
   template<typename First>
   struct CODI_UNION<First> : public First {};
 

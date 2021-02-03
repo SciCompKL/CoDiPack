@@ -20,6 +20,6 @@ Otherwise the use is quite simple. First, the values need to be computed outside
 disabling the tape or by computing with non CoDiPack values. Afterwards, the helper can be used to push the statement:
  - Start with a call to [startPushStatement](@ref codi::StatementPushHelper::startPushStatement)
  - Add all arguments and their Jacobians with [pushArgument](@ref codi::StatementPushHelper::pushArgument)
- - Finish the statement with [endPushStatement](@ref codi:StatementPushHelper::endPushStatement)
+ - Finish the statement with [endPushStatement](@ref codi::StatementPushHelper::endPushStatement)
  
 The other [pushStatement](@ref codi::StatementPushHelper::pushStatement) functions will always push a complete statement.

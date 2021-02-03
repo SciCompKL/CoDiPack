@@ -23,7 +23,7 @@ The derivative computation with the reverse mode of CoDiPack needs in total nine
   - Clear the tape and adjoints.
   
 Most of these steps need to call functions on the global tape structure of CoDiPack. This structure can be accessed with
-the function [getGlobalTape](@ref codi::ReverseTapeInterface::getGlobalTape).
+the function [getGlobalTape](@ref codi::LhsExpressionInterface::getGlobalTape).
 
 #### Step 1: Start the recording
 
