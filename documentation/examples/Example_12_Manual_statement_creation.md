@@ -6,10 +6,10 @@ Example 12 - Manual statement creation {#Example_12_Manual_statement_creation}
 **Prequesties:** \ref Tutorial_2_Reverse_mode_AD
 
 **Function:** \ref func_poly2D
-\snippet tutorials/Example_12_Manual_statement_creation.cpp Function
+\snippet examples/Example_12_Manual_statement_creation.cpp Function
 
 **Full code:**
-\snippet tutorials/Example_12_Manual_statement_creation.cpp Example 12 - Manual statement creation
+\snippet examples/Example_12_Manual_statement_creation.cpp Example 12 - Manual statement creation
 
 
 The statement helper can be used to push multiple statements on the tape. It resets itself after each
@@ -21,5 +21,5 @@ disabling the tape or by computing with non CoDiPack values. Afterwards, the hel
  - Start with a call to [startPushStatement](@ref codi::StatementPushHelper::startPushStatement)
  - Add all arguments and their Jacobians with [pushArgument](@ref codi::StatementPushHelper::pushArgument)
  - Finish the statement with [endPushStatement](@ref codi:StatementPushHelper::endPushStatement)
-
+ 
 The other [pushStatement](@ref codi::StatementPushHelper::pushStatement) functions will always push a complete statement.

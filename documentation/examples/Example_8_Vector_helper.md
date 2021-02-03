@@ -6,10 +6,10 @@ Example 8 - Custom adjoint vector helper {#Example_8_Vector_helper}
 **Prequesties:** \ref Tutorial_4_Vector_mode_AD
 
 **Function:** \ref func_simpleNto2
-\snippet tutorials/Example_8_Vector_helper.cpp Function
+\snippet examples/Example_8_Vector_helper.cpp Function
 
 **Full code:**
-\snippet tutorials/Example_8_Vector_helper.cpp Example 8 - Vector helper
+\snippet examples/Example_8_Vector_helper.cpp Example 8 - Vector helper
 
 The custom adjoint vector helper structure ([CustomAdjointVectorHelper](@ref codi::CustomAdjointVectorHelper) allows to
 use a custom type for the adjoint vector, by providing a simple tape like interface. Custom adjoint vectors can also be

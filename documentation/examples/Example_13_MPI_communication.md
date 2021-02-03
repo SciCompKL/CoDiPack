@@ -6,7 +6,7 @@ Example 13 - MPI communication {#Example_13_MPI_communication}
 **Prequesties:** \ref Tutorial_2_Reverse_mode_AD
 
 **Full code:**
-\snippet tutorials/Example_13_MPI_communication.cpp Example 13 - MPI communication
+\snippet examples/Example_13_MPI_communication.cpp Example 13 - MPI communication
 
 The differentiation of MPI communication is done via the MeDiPack library (https://www.scicomp.uni-kl.de/software/medi).
 As the example shows all 'MPI_*" routines and functions need to be replaced with the MeDiPack wrapper functions 'AMPI_*'.

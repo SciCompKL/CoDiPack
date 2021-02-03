@@ -6,10 +6,10 @@ Example 10 - External function helper {#Example_10_External_function_helper}
 **Prequesties:** \ref Tutorial_2_Reverse_mode_AD
 
 **Function:** \ref func_linearSystemSolve
-\snippet tutorials/Example_10_External_function_helper.cpp Function
+\snippet examples/Example_10_External_function_helper.cpp Function
 
 **Full code:**
-\snippet tutorials/Example_10_External_function_helper.cpp Example 10 - External function helper
+\snippet examples/Example_10_External_function_helper.cpp Example 10 - External function helper
 
 The forward and reverse equations for the linear system solve are defined in \ref func_linearSystemSolve. The function
 `solve2_rev` implements the reverse mode equation according to this definition. The header, the functions has to
@@ -27,7 +27,7 @@ codi::ExternalFUnctionHelper are then quite simple. The user has to:
  - Add the outputs
  - Call the primal function
  - Add the reverse function to the tape
-
+ 
 For the fourth step the user has two choices. Either a primal evaluation function with the header
 [PrimalFunc](@ref codi::ExternalFunctionHelper::PrimalFunc) can be implemented or the original function can be
 evaluated with the CoDiPack type. In the second option nothing is recorded during this evaluation.

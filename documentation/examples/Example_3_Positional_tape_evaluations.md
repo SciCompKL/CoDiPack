@@ -6,10 +6,10 @@ Example 3 - Positional tape evaluations {#Example_3_Positional_tape_evaluations}
 **Prequesties:** \ref Tutorial_2_Reverse_mode_AD
 
 **Function:**
-\snippet tutorials/Example_3_Positional_tape_evaluations.cpp Function
+\snippet examples/Example_3_Positional_tape_evaluations.cpp Function
 
 **Full code:**
-\snippet tutorials/Example_3_Positional_tape_evaluations.cpp Example 3 - Positional tape evaluation
+\snippet examples/Example_3_Positional_tape_evaluations.cpp Example 3 - Positional tape evaluation
 
 Positional evaluation can have multiple use cases:
  - Record independent parts of the application and access them on a need basis
