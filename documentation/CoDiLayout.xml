@@ -5,6 +5,7 @@
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="usergroup" title="User" url="@ref userPage">
       <tab type="user" title="Active type definitions" url="@ref ActiveTypeList"/>
+      <tab type="user" title="Active type overview" url="@ref ActiveTypeOverview"/>
       <tab type="usergroup" title="Tutorials &amp; Examples" url="@ref TutorialsAndExamples">
         <tab type="user" title="Tutorial 1 - Forward mode AD" url="@ref Tutorial_1_Forward_mode_AD"/>
         <tab type="user" title="Tutorial 2 - Reverse mode AD" url="@ref Tutorial_2_Reverse_mode_AD"/>

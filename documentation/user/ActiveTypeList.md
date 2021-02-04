@@ -7,7 +7,7 @@ The most used types are:
  - codi::RealForward : AD forward mode implementation see \ref sec_forwardAD. 
  - codi::RealReverse : AD reverse mode implementation see \ref sec_reverseAD.
  
-These two types are configured such that they work mostly out of the box and the user does not need to vory that much
+These two types are configured such that they work mostly out of the box and the user does not need to worry that much
 about modifying his application for the type.
 
 The other codi::RealReverse* type definitions have some common postfixes. Each of these postfixes changes some aspects
