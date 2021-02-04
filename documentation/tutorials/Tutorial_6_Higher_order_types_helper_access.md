@@ -1,4 +1,4 @@
-Tutorial 6: Higher order derivatives {#Tutorial_6_Higher_order_types_helper_acces}
+Tutorial 6 - Higher order derivatives {#Tutorial_6_Higher_order_types_helper_acces}
 ============
 
 **Goal:** Learn how to define higher order types and how to compute higher order derivatives.
