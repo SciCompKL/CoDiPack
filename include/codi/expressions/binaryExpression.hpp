@@ -61,13 +61,9 @@ namespace codi {
       using ArgB = CODI_DECLARE_DEFAULT(_ArgB, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>)); ///< See BinaryExpression
       using Operation = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Operation<Real>), CODI_TEMPLATE(BinaryOperation<Real>)); ///< See BinaryExpression
 
-    private:
-
-      typename ArgA::StoreAs argA;
-      typename ArgB::StoreAs argB;
-      Real result;
-
-    public:
+      typename ArgA::StoreAs argA; ///< First argument of the expression
+      typename ArgB::StoreAs argB; ///< Second argument of the expression
+      Real result;  ///< Precomputed result
 
       /// Constructor
       template<typename RealA, typename RealB>

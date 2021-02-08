@@ -53,12 +53,8 @@ namespace codi {
       using Arg = CODI_DECLARE_DEFAULT(_Arg, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>)); ///< See UnaryExpression
       using Operation = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Operation<Real>), CODI_TEMPLATE(UnaryOperation<Real>)); ///< See UnaryExpression
 
-    private:
-
-      typename Arg::StoreAs arg;
-      Real result;
-
-    public:
+      typename Arg::StoreAs arg; ///< Argument of the expression
+      Real result; ///< Precomputed result
 
       /// Constructor
       template<typename RealArg>
