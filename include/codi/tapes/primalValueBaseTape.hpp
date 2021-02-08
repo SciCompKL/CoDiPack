@@ -466,10 +466,10 @@ namespace codi {
         TapeValues values = TapeValues(name);
 
         size_t nAdjoints      = indexManager.get().getLargestAssignedIndex();
-        double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient)) * TapeValues::BYTE_TO_MB;
+        double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient));
 
         size_t nPrimals = indexManager.get().getLargestAssignedIndex();
-        double memoryPrimals = static_cast<double>(nPrimals) * static_cast<double>(sizeof(Real)) * TapeValues::BYTE_TO_MB;
+        double memoryPrimals = static_cast<double>(nPrimals) * static_cast<double>(sizeof(Real));
 
         values.addSection("Adjoint vector");
         values.addUnsignedLongEntry("Number of adjoints", nAdjoints);

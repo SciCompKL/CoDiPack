@@ -88,8 +88,8 @@ namespace codi {
         unsigned long allocatedIndices   = usedIndices.size() + unusedIndices.size();
         long currentLiveIndices          = maximumGlobalIndex - storedIndices;
 
-        double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * TapeValues::BYTE_TO_MB;
-        double memoryAllocatedIndices = (double)allocatedIndices*(double)(sizeof(Index)) * TapeValues::BYTE_TO_MB;
+        double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index));
+        double memoryAllocatedIndices = (double)allocatedIndices*(double)(sizeof(Index));
 
         values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex);
         values.addLongEntry("Cur. live indices", currentLiveIndices);

@@ -60,7 +60,7 @@ namespace codi {
 
         Base::addToTapeValues(values);
 
-        double memoryindexUseVector = (double)indexUse.size()*(double)(sizeof(Index)) * TapeValues::BYTE_TO_MB;
+        double memoryindexUseVector = (double)indexUse.size()*(double)(sizeof(Index));
 
         values.addDoubleEntry("Memory index use vector", memoryindexUseVector, true, true);
       }

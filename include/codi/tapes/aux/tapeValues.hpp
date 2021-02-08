@@ -80,8 +80,6 @@ namespace codi {
 
     public:
 
-      static double constexpr BYTE_TO_MB = 1.0 / 1024.0 / 1024.0; ///< Helper to convert byte to MB
-
       /// Constructor
       TapeValues(std::string const& tapeName) :
         sections(),
@@ -100,7 +98,7 @@ namespace codi {
       /// @name Add data
       /// @{
 
-      /// Add double entry. If it is a memory entry it should be in MB.
+      /// Add double entry. If it is a memory entry it should be in byte.
       void addDoubleEntry(std::string const& name, double const& value, bool usedMem = false, bool allocatedMem = false) {
 
         addEntryInternal(name, EntryType::Double, doubleData, value);
@@ -217,12 +215,12 @@ namespace codi {
 #endif
       }
 
-      /// Get the allocated memory in MB.
+      /// Get the allocated memory in byte.
       double getAllocatedMemorySize() {
         return doubleData[allocatedMemoryIndex];
       }
 
-      /// Get the used memory in MB.
+      /// Get the used memory in byte.
       double getUsedMemorySize() {
         return doubleData[usedMemoryIndex];
       }
@@ -253,9 +251,15 @@ namespace codi {
 
         switch (entry.type) {
           case EntryType::Double:
-            ss << std::right << std::setiosflags(std::ios::fixed) << std::setprecision(2) << std::setw(maximumFieldSize) << doubleData[entry.pos];
-            if(outputType) {
-              ss << " MB";
+            {
+              double formattedData = doubleData[entry.pos];
+              std::string typeString = "";
+
+              if(outputType) {
+                formatSizeHumanReadable(formattedData, typeString);
+              }
+              ss << std::right << std::setiosflags(std::ios::fixed) << std::setprecision(2) << std::setw(maximumFieldSize)
+                 << formattedData << typeString;
             }
             break;
           case EntryType::Long:
@@ -274,6 +278,20 @@ namespace codi {
 
       size_t formatEntryLength(Entry const& entry) const {
         return formatEntryFull(entry, false, 0).size();
+      }
+
+      void formatSizeHumanReadable(double& size, std::string& type) const {
+        char const* const typeList[] = {"B", "KB", "MB", "GB", "TB"};
+        size_t typeListSize = sizeof(typeList) / sizeof(typeList[0]);
+
+        size_t pos = 0;
+        while (pos < typeListSize && size > 1024.0) {
+          size /= 1024.0;
+          pos += 1;
+        }
+
+        type = " ";
+        type += typeList[pos];
       }
 
       size_t getMaximumNameLength() const {

@@ -140,8 +140,8 @@ namespace codi {
         size_t dataEntries    = getDataSize();
         size_t entrySize      = Chunk::EntrySize;
 
-        double  memoryUsed  = (double)dataEntries*(double)entrySize* TapeValues::BYTE_TO_MB;
-        double  memoryAlloc = (double)allocedSize*(double)entrySize* TapeValues::BYTE_TO_MB;
+        double  memoryUsed  = (double)dataEntries*(double)entrySize;
+        double  memoryAlloc = (double)allocedSize*(double)entrySize;
 
         values.addUnsignedLongEntry("Total number", dataEntries);
         values.addDoubleEntry("Memory used", memoryUsed, true, false);

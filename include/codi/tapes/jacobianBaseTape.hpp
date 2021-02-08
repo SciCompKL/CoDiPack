@@ -382,7 +382,7 @@ namespace codi {
         TapeValues values = TapeValues(name);
 
         size_t nAdjoints      = indexManager.get().getLargestAssignedIndex();
-        double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient)) * TapeValues::BYTE_TO_MB;
+        double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient));
 
         values.addSection("Adjoint vector");
         values.addUnsignedLongEntry("Number of adjoints", nAdjoints);
