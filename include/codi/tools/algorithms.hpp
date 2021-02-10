@@ -6,6 +6,7 @@
 #include "../traits/gradientTraits.hpp"
 #include "data/dummy.hpp"
 #include "data/jacobian.hpp"
+#include "data/staticDummy.hpp"
 
 
 /** \copydoc codi::Namespace */
@@ -111,12 +112,12 @@ namespace codi {
         computeJacobian(Type::getGlobalTape(), start, end, input, inputSize, output, outputSize, jac);
       }
 
-      template<typename Hes, typename Jac>
+      template<typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianPrimalValueTape(
           Tape& tape, Position const& start, Position const& end,
           Identifier const* input, size_t const inputSize,
           Identifier const* output, size_t const outputSize,
-          Hes& hes, Jac& jac)
+          Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy)
       {
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
@@ -128,23 +129,12 @@ namespace codi {
         }
       }
 
-      template<typename Hes>
-      static CODI_INLINE void computeHessianPrimalValueTape(
-          Tape& tape, Position const& start, Position const& end,
-          Identifier const* input, size_t const inputSize,
-          Identifier const* output, size_t const outputSize,
-          Hes& hes)
-      {
-        DummyJacobian dummy;
-        computeHessianPrimalValueTape(tape, start, end, input, inputSize, output, outputSize, hes, dummy);
-      }
-
-      template<typename Hes, typename Jac>
+      template<typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianPrimalValueTapeForward(
           Tape& tape, Position const& start, Position const& end,
           Identifier const* input, size_t const inputSize,
           Identifier const* output, size_t const outputSize,
-          Hes& hes, Jac& jac)
+          Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy)
       {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
@@ -185,23 +175,12 @@ namespace codi {
         }
       }
 
-      template<typename Hes>
-      static CODI_INLINE void computeHessianPrimalValueTapeForward(
-          Tape& tape, Position const& start, Position const& end,
-          Identifier const* input, size_t const inputSize,
-          Identifier const* output, size_t const outputSize,
-          Hes& hes)
-      {
-        DummyJacobian dummy;
-        computeHessianPrimalValueTapeForward(tape, start, end, input, inputSize, output, outputSize, hes, dummy);
-      }
-
-      template<typename Hes, typename Jac>
+      template<typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianPrimalValueTapeReverse(
           Tape& tape, Position const& start, Position const& end,
           Identifier const* input, size_t const inputSize,
           Identifier const* output, size_t const outputSize,
-          Hes& hes, Jac& jac)
+          Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy)
       {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
@@ -254,19 +233,8 @@ namespace codi {
         }
       }
 
-      template<typename Hes>
-      static CODI_INLINE void computeHessianPrimalValueTapeReverse(
-          Tape& tape, Position const& start, Position const& end,
-          Identifier const* input, size_t const inputSize,
-          Identifier const* output, size_t const outputSize,
-          Hes& hes)
-      {
-        DummyJacobian dummy;
-        computeHessianPrimalValueTapeReverse(tape, start, end, input, inputSize, output, outputSize, hes, dummy);
-      }
-
-      template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac>
-      static CODI_INLINE void computeHessian(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac) {
+      template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
+      static CODI_INLINE void computeHessian(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         EvaluationType evalType = getEvaluationChoice(input.size(), output.size());
         if (EvaluationType::Forward == evalType) {
           computeHessianForward(func, input, output, hes, jac);
@@ -277,14 +245,8 @@ namespace codi {
         }
       }
 
-      template<typename Func, typename VecIn, typename VecOut, typename Hes>
-      static CODI_INLINE void computeHessian(Func func, VecIn& input, VecOut& output, Hes& hes) {
-        DummyJacobian dummy;
-        computeHessian(func, input, output, hes, dummy);
-      }
-
-      template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac>
-      static CODI_INLINE void computeHessianForward(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac) {
+      template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
+      static CODI_INLINE void computeHessianForward(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
@@ -329,14 +291,8 @@ namespace codi {
         }
       }
 
-      template<typename Func, typename VecIn, typename VecOut, typename Hes>
-      static CODI_INLINE void computeHessianForward(Func func, VecIn& input, VecOut& output, Hes& hes) {
-        DummyJacobian dummy;
-        computeHessianForward(func, input, output, hes, dummy);
-      }
-
-      template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac>
-      static CODI_INLINE void computeHessianReverse(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac) {
+      template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
+      static CODI_INLINE void computeHessianReverse(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
@@ -383,12 +339,6 @@ namespace codi {
 
           tape.reset();
         }
-      }
-
-      template<typename Func, typename VecIn, typename VecOut, typename Hes>
-      static CODI_INLINE void computeHessianReverse(Func func, VecIn& input, VecOut& output, Hes& hes) {
-        DummyJacobian dummy;
-        computeHessianReverse(func, input, output, hes, dummy);
       }
 
     private:
