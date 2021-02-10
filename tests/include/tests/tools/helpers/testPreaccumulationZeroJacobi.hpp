@@ -1,29 +1,23 @@
-#include "../../testInterface.hpp"
+#include "../../../testInterface.hpp"
 
-struct TestPreaccumulationForward : public TestInterface {
+struct TestPreaccumulationZeroJacobi : public TestInterface {
   public:
-    NAME("PreaccumulationForward")
+    NAME("PreaccumulationZeroJacobi")
     IN(2)
-    OUT(4)
+    OUT(2)
     POINTS(1) = {{1.0, 0.5}};
 
     template<typename Number>
     static void evalFunc(Number* x, Number* y) {
-      y[0] = x[0];
+      y[0] = codi::RealTraits::getPassiveValue(x[0]); // kill x dependency
       y[1] = x[1];
-      for (int i = 0; i < 1000; ++i) {
+      for (int i = 0; i < 5; ++i) {
         Number xTemp = y[0];
         Number yTemp = y[1];
 
-        Number xSqr = xTemp * xTemp;
-        Number ySqr = yTemp * yTemp;
-
-        y[0] = xSqr - ySqr - 0.65;
+        y[0] = xTemp * xTemp - yTemp * yTemp - 0.65;
         y[1] = 2.0 * yTemp * xTemp;
       }
-
-      y[2] = x[0] * x[0];
-      y[3] = x[1] * x[1];
     }
 
     template<typename Number>
@@ -35,6 +29,6 @@ struct TestPreaccumulationForward : public TestInterface {
 
       evalFunc(x, y);
 
-      ph.finish(false, y[0], y[1], y[2], y[3]);
+      ph.finish(false, y[0], y[1]);
     }
 };

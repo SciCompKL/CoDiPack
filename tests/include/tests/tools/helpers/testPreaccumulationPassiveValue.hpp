@@ -1,22 +1,25 @@
-#include "../../testInterface.hpp"
+#include "../../../testInterface.hpp"
 
-struct TestPreaccumulation : public TestInterface {
+struct TestPreaccumulationPassiveValue : public TestInterface {
   public:
-    NAME("Preaccumulation")
+    NAME("PreaccumulationPassiveValue")
     IN(2)
     OUT(2)
     POINTS(1) = {{1.0, 0.5}};
 
     template<typename Number>
     static void evalFunc(Number* x, Number* y) {
-      y[0] = x[0];
+      y[0] = codi::RealTraits::getPassiveValue(x[0]); // kill x dependency
       y[1] = x[1];
+
+      Number two = 2.0;
+      Number zeroSix = 0.65;
       for (int i = 0; i < 5; ++i) {
         Number xTemp = y[0];
         Number yTemp = y[1];
 
-        y[0] = xTemp * xTemp - yTemp * yTemp - 0.65;
-        y[1] = 2.0 * yTemp * xTemp;
+        y[0] = xTemp * xTemp - yTemp * yTemp - zeroSix;
+        y[1] = two * yTemp * xTemp;
       }
     }
 

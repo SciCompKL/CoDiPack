@@ -1,4 +1,4 @@
-#include "../../testInterface.hpp"
+#include "../../../testInterface.hpp"
 
 struct TestReset : public TestInterface {
   public:
