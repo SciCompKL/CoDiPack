@@ -11,10 +11,6 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  namespace {
-    namespace GT = GradientTraits;
-  }
-
   template<typename _Type, bool _ActiveChecks = true>
   struct Algorithms {
     public:
@@ -28,6 +24,8 @@ namespace codi {
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
       using Gradient = typename Type::Gradient;
+
+      using GT = GradientTraits::TraitsImplementation<Gradient>;
 
       enum class EvaluationType {
           Forward,
@@ -49,13 +47,13 @@ namespace codi {
           Identifier const* output, size_t const outputSize,
           Jac& jac)
       {
-        size_t constexpr gradDim = GT::dim<Gradient>();
+        size_t constexpr gradDim = GT::dim;
 
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
 
           for (size_t j = 0; j < inputSize; j += gradDim) {
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real<Gradient>(1.0));
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0));
 
             if (keepState) {
               tape.evaluateForwardKeepState(start, end);
@@ -65,11 +63,11 @@ namespace codi {
 
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
-                jac(i,j + curDim) = GT::at<Gradient>(tape.getGradient(output[i]), curDim);
+                jac(i,j + curDim) = GT::at(tape.getGradient(output[i]), curDim);
               }
             }
 
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real<Gradient>());
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real());
           }
 
           tape.clearAdjoints(end, start);
@@ -77,7 +75,7 @@ namespace codi {
         } else if (EvaluationType::Reverse == evalType) {
 
           for (size_t i = 0; i < outputSize; i += gradDim) {
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real<Gradient>(1.0));
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0));
 
             if (keepState) {
               tape.evaluateKeepState(end, start);
@@ -87,12 +85,12 @@ namespace codi {
 
             for (size_t j = 0; j < inputSize; j += 1) {
               for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
-                jac(i + curDim,j) = GT::at<Gradient>(tape.getGradient(input[j]), curDim);
-                GT::at<Gradient>(tape.gradient(input[j]), curDim) = typename GT::Real<Gradient>();
+                jac(i + curDim,j) = GT::at(tape.getGradient(input[j]), curDim);
+                GT::at(tape.gradient(input[j]), curDim) = typename GT::Real();
               }
             }
 
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real<Gradient>());
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real());
 
             if (!Config::ReversalZeroesAdjoints) {
               tape.clearAdjoints(end, start);
@@ -148,41 +146,42 @@ namespace codi {
           Identifier const* output, size_t const outputSize,
           Hes& hes, Jac& jac)
       {
-        size_t constexpr gradDim1st = GT::dim<Gradient>();
-        using InnerGradient = typename Real::Gradient;
-        size_t constexpr gradDim2nd = GT::dim<InnerGradient>();
+        using GT1st = GT;
+        size_t constexpr gradDim1st = GT1st::dim;
+        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        size_t constexpr gradDim2nd = GT2nd::dim;
 
         // Assume tape that was just recorded
         tape.revertPrimals(start);
 
         for (size_t j = 0; j < inputSize; j += gradDim2nd) {
-          setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT::Real<InnerGradient>(1.0));
+          setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT2nd::Real(1.0));
 
           // The k = j init is no problem, it will evaluated slightly more elements around the diagonal
           for (size_t k = j; k < inputSize; k += gradDim1st) {
-            setGradientOnIdentifier(tape, k, input, inputSize, typename GT::Real<Gradient>(1.0));
+            setGradientOnIdentifier(tape, k, input, inputSize, typename GT1st::Real(1.0));
 
             tape.evaluateForward(start, end);
 
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && k + vecPos1st < inputSize; vecPos1st += 1) {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
-                  hes(i, j + vecPos2nd, k + vecPos1st) = GT::at<InnerGradient>(GT::at<Gradient>(tape.getGradient(output[i]), vecPos1st).gradient(), vecPos2nd);
+                  hes(i, j + vecPos2nd, k + vecPos1st) = GT2nd::at(GT1st::at(tape.getGradient(output[i]), vecPos1st).gradient(), vecPos2nd);
                   hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st); // symmetry
                 }
               }
 
               if (j == 0) {
                 for (size_t vecPos = 0; vecPos < gradDim1st && k + vecPos < inputSize; vecPos += 1) {
-                  jac(i, k + vecPos) = GT::at<Gradient>(tape.getGradient(output[i]), vecPos).value();
+                  jac(i, k + vecPos) = GT1st::at(tape.getGradient(output[i]), vecPos).value();
                 }
               }
             }
 
-            setGradientOnIdentifier(tape, k, input, inputSize, typename GT::Real<Gradient>());
+            setGradientOnIdentifier(tape, k, input, inputSize, typename GT1st::Real());
           }
 
-          setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT::Real<InnerGradient>());
+          setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT2nd::Real());
         }
       }
 
@@ -204,21 +203,22 @@ namespace codi {
           Identifier const* output, size_t const outputSize,
           Hes& hes, Jac& jac)
       {
-        size_t constexpr gradDim1st = GT::dim<Gradient>();
-        using InnerGradient = typename Real::Gradient;
-        size_t constexpr gradDim2nd = GT::dim<InnerGradient>();
+        using GT1st = GT;
+        size_t constexpr gradDim1st = GT1st::dim;
+        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        size_t constexpr gradDim2nd = GT2nd::dim;
 
         // Assume tape that was just recorded
         tape.revertPrimals(start);
 
         for (size_t j = 0; j < inputSize; j += gradDim2nd) {
-          setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT::Real<InnerGradient>(1.0));
+          setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT2nd::Real(1.0));
 
           // propagate the new derivative information
           tape.evaluatePrimal(start, end);
 
           for (size_t i = 0; i < outputSize; i += gradDim1st) {
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real<Gradient>(1.0));
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT1st::Real(1.0));
 
             // propagate the derivatives backward for second order derivatives
             tape.evaluateKeepState(end, start);
@@ -226,27 +226,27 @@ namespace codi {
             for (size_t k = 0; k < inputSize; k += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < outputSize; vecPos1st += 1) {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
-                  hes(i + vecPos1st, j + vecPos2nd, k) = GT::at<InnerGradient>(GT::at<Gradient>(tape.gradient(input[k]), vecPos1st).gradient(), vecPos2nd);
+                  hes(i + vecPos1st, j + vecPos2nd, k) = GT2nd::at(GT1st::at(tape.gradient(input[k]), vecPos1st).gradient(), vecPos2nd);
                 }
               }
 
               if (j == 0) {
                 for (size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < outputSize; vecPos1st += 1) {
-                  jac(i + vecPos1st, k) = GT::at<Gradient>(tape.getGradient(input[k]), vecPos1st).value();
+                  jac(i + vecPos1st, k) = GT1st::at(tape.getGradient(input[k]), vecPos1st).value();
                 }
               }
 
               tape.gradient(input[k]) = Gradient();
             }
 
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real<Gradient>());
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT1st::Real());
 
             if (!Config::ReversalZeroesAdjoints) {
               tape.clearAdjoints(end, start);
             }
           }
 
-          setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT::Real<InnerGradient>());
+          setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT2nd::Real());
 
           if (j + gradDim2nd < inputSize) {
             tape.revertPrimals(start);
@@ -285,21 +285,22 @@ namespace codi {
 
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac>
       static CODI_INLINE void computeHessianForward(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac) {
-        size_t constexpr gradDim1st = GT::dim<Gradient>();
-        using InnerGradient = typename Real::Gradient;
-        size_t constexpr gradDim2nd = GT::dim<InnerGradient>();
+        using GT1st = GT;
+        size_t constexpr gradDim1st = GT1st::dim;
+        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        size_t constexpr gradDim2nd = GT2nd::dim;
 
         Tape& tape = Type::getGlobalTape();
 
         for (size_t j = 0; j < input.size(); j += gradDim2nd) {
-          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT::Real<InnerGradient>(1.0));
+          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real(1.0));
 
           // propagate the new derivative information
           recordTape(func, input, output);
 
           // The k = j init is no problem, it will evaluated slightly more elements around the diagonal
           for (size_t k = j; k < input.size(); k += gradDim1st) {
-            setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT::Real<Gradient>(1.0));
+            setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT1st::Real(1.0));
 
             // propagate the derivatives forward for second order derivatives
             tape.evaluateForwardKeepState(tape.getZeroPosition(), tape.getPosition());
@@ -307,22 +308,22 @@ namespace codi {
             for (size_t i = 0; i < output.size(); i += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && k + vecPos1st < input.size(); vecPos1st += 1) {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < input.size(); vecPos2nd += 1) {
-                  hes(i, j + vecPos2nd, k + vecPos1st) = GT::at<InnerGradient>(GT::at<Gradient>(tape.getGradient(output[i].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
+                  hes(i, j + vecPos2nd, k + vecPos1st) = GT2nd::at(GT1st::at(tape.getGradient(output[i].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
                   hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st); // symmetry
                 }
               }
 
               if (j == 0) {
                 for (size_t vecPos = 0; vecPos < gradDim1st && k + vecPos < input.size(); vecPos += 1) {
-                  jac(i, k + vecPos) = GT::at<Gradient>(tape.getGradient(output[i].getIdentifier()), vecPos).value();
+                  jac(i, k + vecPos) = GT1st::at(tape.getGradient(output[i].getIdentifier()), vecPos).value();
                 }
               }
             }
 
-            setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT::Real<Gradient>());
+            setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT1st::Real());
           }
 
-          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT::Real<InnerGradient>());
+          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real());
 
           tape.reset();
         }
@@ -336,20 +337,21 @@ namespace codi {
 
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac>
       static CODI_INLINE void computeHessianReverse(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac) {
-        size_t constexpr gradDim1st = GT::dim<Gradient>();
-        using InnerGradient = typename Real::Gradient;
-        size_t constexpr gradDim2nd = GT::dim<InnerGradient>();
+        using GT1st = GT;
+        size_t constexpr gradDim1st = GT1st::dim;
+        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        size_t constexpr gradDim2nd = GT2nd::dim;
 
         Tape& tape = Type::getGlobalTape();
 
         for (size_t j = 0; j < input.size(); j += gradDim2nd) {
-          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT::Real<InnerGradient>(1.0));
+          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real(1.0));
 
           // propagate the new derivative information
           recordTape(func, input, output);
 
           for (size_t i = 0; i < output.size(); i += gradDim1st) {
-            setGradientOnCoDiValue(tape, i, output.data(), output.size(), typename GT::Real<Gradient>(1.0));
+            setGradientOnCoDiValue(tape, i, output.data(), output.size(), typename GT1st::Real(1.0));
 
             // propagate the derivatives backward for second order derivatives
             tape.evaluateKeepState(tape.getPosition(), tape.getZeroPosition());
@@ -357,27 +359,27 @@ namespace codi {
             for (size_t k = 0; k < input.size(); k += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < output.size(); vecPos1st += 1) {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < input.size(); vecPos2nd += 1) {
-                  hes(i + vecPos1st, j + vecPos2nd, k) = GT::at<InnerGradient>(GT::at<Gradient>(tape.gradient(input[k].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
+                  hes(i + vecPos1st, j + vecPos2nd, k) = GT2nd::at(GT1st::at(tape.gradient(input[k].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
                 }
               }
 
               if (j == 0) {
                 for (size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < output.size(); vecPos1st += 1) {
-                  jac(i + vecPos1st, k) = GT::at<Gradient>(tape.getGradient(input[k].getIdentifier()), vecPos1st).value();
+                  jac(i + vecPos1st, k) = GT1st::at(tape.getGradient(input[k].getIdentifier()), vecPos1st).value();
                 }
               }
 
               tape.gradient(input[k].getIdentifier()) = Gradient();
             }
 
-            setGradientOnCoDiValue(tape, i, output.data(), output.size(), typename GT::Real<Gradient>());
+            setGradientOnCoDiValue(tape, i, output.data(), output.size(), typename GT1st::Real());
 
             if (!Config::ReversalZeroesAdjoints) {
               tape.clearAdjoints(tape.getPosition(), tape.getZeroPosition());
             }
           }
 
-          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT::Real<InnerGradient>());
+          setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real());
 
           tape.reset();
         }
@@ -393,44 +395,44 @@ namespace codi {
 
       template<typename T>
       static CODI_INLINE void setGradientOnIdentifier(Tape& tape, size_t const pos, Identifier const* values, size_t const size, T value) {
-        size_t constexpr gradDim = GT::dim<Gradient>();
+        size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           CODI_ENABLE_CHECK(ActiveChecks, 0 != values[pos + curDim]) {
-            GT::at<Gradient>(tape.gradient(values[pos + curDim]), curDim) = value;
+            GT::at(tape.gradient(values[pos + curDim]), curDim) = value;
           }
         }
       }
 
       template<typename T>
       static CODI_INLINE void setGradient2ndOnIdentifier(Tape& tape, size_t const pos, Identifier const* values, size_t const size, T value) {
-        using InnerGradient = typename Real::Gradient;
-        size_t constexpr gradDim2nd = GT::dim<InnerGradient>();
+        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
-          GT::at<InnerGradient>(tape.primalValue(values[pos + curDim]).gradient(), curDim) = value;
+          GT2nd::at(tape.primalValue(values[pos + curDim]).gradient(), curDim) = value;
         }
       }
 
       template<typename T>
       static CODI_INLINE void setGradientOnCoDiValue(Tape& tape, size_t const pos, Type* values, size_t const size, T value) {
-        size_t constexpr gradDim = GT::dim<Gradient>();
+        size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           CODI_ENABLE_CHECK(ActiveChecks, 0 != values[pos + curDim].getIdentifier()) {
-            GT::at<Gradient>(tape.gradient(values[pos + curDim].getIdentifier()), curDim) = value;
+            GT::at(tape.gradient(values[pos + curDim].getIdentifier()), curDim) = value;
           }
         }
       }
 
       template<typename T>
       static CODI_INLINE void setGradient2ndOnCoDiValue(size_t const pos, Type* values, size_t const size, T value) {
-        using InnerGradient = typename Real::Gradient;
-        size_t constexpr gradDim2nd = GT::dim<InnerGradient>();
+        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
           // No check required since this are forward types.
-          GT::at<InnerGradient>(values[pos + curDim].value().gradient(), curDim) = value;
+          GT2nd::at(values[pos + curDim].value().gradient(), curDim) = value;
         }
       }
 
