@@ -4,6 +4,7 @@
 
 #include "../../aux/macros.hpp"
 #include "../../config.h"
+#include "../../traits/realTraits.hpp"
 #include "jacobianInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -163,6 +164,33 @@ namespace codi {
           nonZerosRow[i] += 1;
         }
         Jacobian<T, Store>::operator()(i, j) = v;
+      }
+  };
+
+  template <typename _Nested>
+  struct JacobianConvertWrapper {
+    public:
+      using Nested = CODI_DECLARE_DEFAULT(_Nested, JacobianInterface<double>);
+      using T = typename Nested::T;
+      using DelayAcc = DelayAccessor<JacobianConvertWrapper>;
+
+    private:
+      Nested& nested;
+
+    public:
+      explicit JacobianConvertWrapper(Nested& nested) : nested(nested) {}
+
+      CODI_INLINE T operator()(size_t const i, size_t const j) const {
+        return nested(i, j);
+      }
+
+      CODI_INLINE DelayAcc operator()(size_t const i, size_t const j) {
+        return DelayAcc(i, j, *this);
+      }
+
+      template<typename SetT>
+      CODI_INLINE void setLogic(size_t const i, size_t const j, SetT const& v) {
+        nested(i, j) = RealTraits::getPassiveValue<SetT>(v);
       }
   };
 

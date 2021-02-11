@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../../aux/macros.hpp"
+
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -14,8 +16,16 @@ namespace codi {
   struct DummyJacobian {
     public:
       CODI_INLINE DummyValue operator()(size_t const i, size_t const j) const {
-        CODI_UNUSED(i);
-        CODI_UNUSED(j);
+        CODI_UNUSED(i, j);
+
+        return DummyValue();
+      }
+  };
+
+  struct DummyHessian {
+    public:
+      CODI_INLINE DummyValue operator()(size_t const i, size_t const j, size_t const k) {
+        CODI_UNUSED(i, j, k);
 
         return DummyValue();
       }

@@ -5,7 +5,6 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../traits/gradientTraits.hpp"
 #include "data/dummy.hpp"
-#include "data/jacobian.hpp"
 #include "data/staticDummy.hpp"
 
 
