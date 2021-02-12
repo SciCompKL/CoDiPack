@@ -13,15 +13,6 @@ namespace codi {
       }
   };
 
-  struct DummyJacobian {
-    public:
-      CODI_INLINE DummyValue operator()(size_t const i, size_t const j) const {
-        CODI_UNUSED(i, j);
-
-        return DummyValue();
-      }
-  };
-
   struct DummyHessian {
     public:
       CODI_INLINE DummyValue operator()(size_t const i, size_t const j, size_t const k) {

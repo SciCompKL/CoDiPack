@@ -5,7 +5,9 @@
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
+#include "dummy.hpp"
 #include "jacobianInterface.hpp"
+#include "staticDummy.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -194,4 +196,25 @@ namespace codi {
       }
   };
 
+  struct DummyJacobian : public JacobianInterface<DummyValue>{
+    public:
+
+      size_t getM() const {return 0;}
+      size_t getN() const {return 0;}
+
+      CODI_INLINE DummyValue operator()(size_t const i, size_t const j) const {
+        CODI_UNUSED(i, j);
+
+        return DummyValue();
+      }
+
+      CODI_INLINE DummyValue& operator()(size_t const i, size_t const j) {
+        CODI_UNUSED(i, j);
+
+        return StaticDummy<DummyValue>::dummy;
+      }
+
+      void resize(size_t const m, size_t const n) {CODI_UNUSED(m, n);}
+      size_t size() const {return 0;}
+  };
 }
