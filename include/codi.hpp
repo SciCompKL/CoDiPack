@@ -22,6 +22,7 @@
 #include "codi/tools/data/jacobian.hpp"
 #include "codi/tools/helpers/customAdjointVectorHelper.hpp"
 #include "codi/tools/helpers/externalFunctionHelper.hpp"
+// #include "codi/tools/helpers/evaluationHelper.hpp" // included at the end of this file
 #include "codi/tools/helpers/preaccumulationHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
 #include "codi/tools/helpers/tapeHelper.hpp"
@@ -180,3 +181,5 @@ namespace codi {
   using RealReversePrimalIndexUnchecked = RealReversePrimalIndexUncheckedGen<double>;
 
 }
+
+#include "codi/tools/helpers/evaluationHelper.hpp"
