@@ -3,7 +3,7 @@
 #include <array>
 #include <vector>
 
-#include "../../codi.hpp"
+#include "../../../codi.hpp"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../traits/gradientTraits.hpp"
 #include "../../traits/tapeTraits.hpp"
@@ -110,9 +110,11 @@ namespace codi {
       void computeJacobian(VecX const& locX, Jac& jac, VecY& locY) {
         setAllPrimals(locX);
 
+        JacobianConvertWrapper<Jac> wrapper(jac);
+
         // First order derivatives should always exist
         using GradientTraits1st = GradientTraits::TraitsImplementation<typename Type::Gradient>;
-        size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim();
+        size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim;
 
         for (size_t j = 0; j < locX.size(); j+= VectorSizeFirstOrder) {
           for (size_t vecPos = 0; vecPos < VectorSizeFirstOrder && j + vecPos < locX.size(); vecPos += 1) {
@@ -127,7 +129,7 @@ namespace codi {
 
           for (size_t i = 0; i < this->y.size(); i += 1) {
             for (size_t vecPos = 0; vecPos < VectorSizeFirstOrder && j + vecPos < locX.size(); vecPos += 1) {
-              jac(i, j + vecPos) = GradientTraits1st::at(this->y[i].gradient(), vecPos);
+              wrapper(i, j + vecPos) = GradientTraits1st::at(this->y[i].gradient(), vecPos);
             }
           }
 
@@ -347,10 +349,10 @@ namespace codi {
 
   template <typename _Func,
             typename _Type,
-            typename _InputStore = std::vector<_Type>,
-            typename _OutputStore = std::vector<_Type>
+            typename _InputStore,
+            typename _OutputStore
             >
-  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore, TapeTraits::EnableIfForwardTape<typename Type::Tape>> :
+  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> :
       public ForwardHandle<_Func, _Type, _InputStore, _OutputStore> {
 
       using ForwardHandle<_Func, _Type, _InputStore, _OutputStore>::ForwardHandle;
@@ -358,10 +360,10 @@ namespace codi {
 
   template <typename _Func,
             typename _Type,
-            typename _InputStore = std::vector<_Type>,
-            typename _OutputStore = std::vector<_Type>
+            typename _InputStore,
+            typename _OutputStore
             >
-  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore, TapeTraits::EnableIfJacobianTape<typename Type::Tape>> :
+  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore, TapeTraits::EnableIfJacobianTape<typename _Type::Tape>> :
       public ReverseHandleJacobiTapes<_Func, _Type, _InputStore, _OutputStore> {
 
       using ReverseHandleJacobiTapes<_Func, _Type, _InputStore, _OutputStore>::ReverseHandleJacobiTapes;
@@ -369,10 +371,10 @@ namespace codi {
 
   template <typename _Func,
             typename _Type,
-            typename _InputStore = std::vector<_Type>,
-            typename _OutputStore = std::vector<_Type>
+            typename _InputStore,
+            typename _OutputStore
             >
-  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore, TapeTraits::EnableIfPrimalValueTape<typename Type::Tape>> :
+  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore, TapeTraits::EnableIfPrimalValueTape<typename _Type::Tape>> :
       public ReverseHandlePrimalValueTapes<_Func, _Type, _InputStore, _OutputStore> {
 
       using ReverseHandlePrimalValueTapes<_Func, _Type, _InputStore, _OutputStore>::ReverseHandlePrimalValueTapes;

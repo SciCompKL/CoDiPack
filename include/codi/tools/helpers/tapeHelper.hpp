@@ -315,14 +315,14 @@ namespace codi {
 
       virtual void evalPrimal(Real const* x, Real* y = nullptr) {
         for (size_t j = 0; j < this->inputValues.size(); j += 1) {
-          this->tape.primalValue(this->inputValues[j]) = x[j];
+          this->tape.primal(this->inputValues[j]) = x[j];
         }
 
         this->tape.evaluatePrimal();
 
         if (nullptr != y) {
           for (size_t i = 0; i < this->outputValues.size(); i += 1) {
-            y[i] = this->tape.primalValue(this->outputValues[i]);
+            y[i] = this->tape.primal(this->outputValues[i]);
           }
         }
       }
@@ -353,9 +353,9 @@ namespace codi {
   struct TapeHelper : public TapeHelperBase<Type, TapeHelperNoImpl<Type>> {};
 
   template<typename Type>
-  struct TapeHelper<Type, TapeTraits::EnableIfJacobianTape<typename Type::TapeType>> : public TapeHelperJacobi<Type> {};
+  struct TapeHelper<Type, TapeTraits::EnableIfJacobianTape<typename Type::Tape>> : public TapeHelperJacobi<Type> {};
 
   template<typename Type>
-  struct TapeHelper<Type, TapeTraits::EnableIfPrimalValueTape<typename Type::TapeType>> : public TapeHelperPrimal<Type> {};
+  struct TapeHelper<Type, TapeTraits::EnableIfPrimalValueTape<typename Type::Tape>> : public TapeHelperPrimal<Type> {};
 
 }
