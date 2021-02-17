@@ -30,7 +30,7 @@ struct Driver1stOrderBase : public DriverBase<_Number> {
 
       codi::Jacobian<double> jac(outputs, inputs);
 
-      for(int curPoint = 0; curPoint < evalPoints; ++curPoint) {
+      for (int curPoint = 0; curPoint < evalPoints; ++curPoint) {
 
         Base::prepare(x, y, curPoint, test, out);
 
@@ -41,6 +41,5 @@ struct Driver1stOrderBase : public DriverBase<_Number> {
 
       delete [] x;
       delete [] y;
-
     }
 };

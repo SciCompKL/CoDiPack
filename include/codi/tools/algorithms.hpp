@@ -359,7 +359,7 @@ namespace codi {
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
-          GT2nd::at(tape.primalValue(values[pos + curDim]).gradient(), curDim) = value;
+          GT2nd::at(tape.primal(values[pos + curDim]).gradient(), curDim) = value;
         }
       }
 

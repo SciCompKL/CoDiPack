@@ -145,11 +145,11 @@ namespace codi {
 
         // First order derivatives should always exist
         using GradientTraits1st = GradientTraits::TraitsImplementation<typename Type::Gradient>;
-        size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim();
+        size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim;
 
         // Define these here since not all types have second order derivatives
         using GradientTraits2nd = GradientTraits::TraitsImplementation<typename Type::Real::Gradient>;
-        size_t constexpr VectorSizeSecondOrder = GradientTraits2nd::dim();
+        size_t constexpr VectorSizeSecondOrder = GradientTraits2nd::dim;
 
 
         for (size_t k = 0; k < locX.size(); k+= VectorSizeFirstOrder) {
@@ -333,7 +333,7 @@ namespace codi {
       void computeHessian(VecX const& locX, Hes& hes, VecY& locY, Jac& jac) {
         this->setAllPrimals(locX, false);
 
-        Algorithms<Type>::computeHessian(this->func, this->x.vec, this->y.vec, hes, jac);
+        Algorithms<Type>::computeHessian(this->func, this->x, this->y, hes, jac);
 
         this->getAllPrimals(locY, false);
       }

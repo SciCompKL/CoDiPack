@@ -1,22 +1,22 @@
 #pragma once
 
-#include <vector>
+#include <codi/tools/data/hessian.hpp>
 
 #include "../output.hpp"
 #include "driverBase.hpp"
 
 template<typename _Number>
-struct Driver0thOrderBase : public DriverBase<_Number> {
+struct Driver2ndOrderBase : public DriverBase<_Number> {
   public:
 
     using Number = CODI_DECLARE_DEFAULT(_Number, double);
     using Base = DriverBase<Number>;
 
-    virtual void evaluatePrimal(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs, std::vector<double>& primals) = 0;
+    virtual void evaluateHessian(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs, codi::Hessian<double>& hes) = 0;
 
   public:
 
-    Driver0thOrderBase(std::string const& name) : Base(name) {}
+    Driver2ndOrderBase(std::string const& name) : Base(name) {}
 
     void runTest(TestInfo<Number>& info, FILE* out) {
 
@@ -28,15 +28,15 @@ struct Driver0thOrderBase : public DriverBase<_Number> {
       Number* x = new Number[inputs];
       Number* y = new Number[outputs];
 
-      std::vector<double> primals(outputs);
+      codi::Hessian<double> hes(outputs, inputs);
 
       for (int curPoint = 0; curPoint < evalPoints; ++curPoint) {
 
         Base::prepare(x, y, curPoint, test, out);
 
-        evaluatePrimal(info, x, inputs, y, outputs, primals);
+        evaluateHessian(info, x, inputs, y, outputs, hes);
 
-        writeOutputPrimal(out, primals);
+        writeOutputHessian(out, hes);
       }
 
       delete [] x;
