@@ -1052,7 +1052,7 @@ namespace codi {
 
         IncrementForwardLogic incrementForward;
 
-        incrementForward.eval(staticsRhs, 1.0, lhsTangent, adjointVector);
+        incrementForward.eval(staticsRhs, Real(1.0), lhsTangent, adjointVector);
         return staticsRhs.getValue();
 
       }
@@ -1143,7 +1143,7 @@ namespace codi {
 
         IncrementReversalLogic incrementReverse;
 
-        incrementReverse.eval(staticsRhs, 1.0, const_cast<Gradient const&>(lhsAdjoint), adjointVector);
+        incrementReverse.eval(staticsRhs, Real(1.0), const_cast<Gradient const&>(lhsAdjoint), adjointVector);
       }
 
       /// \copydoc codi::StatementEvaluatorInnerTapeInterface::statementEvaluateReverseFull()
