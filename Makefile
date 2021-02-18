@@ -3,10 +3,11 @@ BUILD_DIR    = build
 DOC_DIR      = documentation
 EXAMPLE_DIR  = $(DOC_DIR)/examples
 TUTORIAL_DIR = $(DOC_DIR)/tutorials
+DEVELOPER_DIR = $(DOC_DIR)/developer
 
 #list all source files in DOC_DIR
 TUTORIAL_FILES  = $(wildcard $(TUTORIAL_DIR)/*.cpp)
-EXAMPLE_FILES  = $(wildcard $(EXAMPLE_DIR)/*.cpp)
+EXAMPLE_FILES  = $(wildcard $(EXAMPLE_DIR)/*.cpp) $(wildcard $(DEVELOPER_DIR)/*.cpp)
 
 #list all dependency files in BUILD_DIR
 DEP_FILES   = $(wildcard $(BUILD_DIR)/*.d)

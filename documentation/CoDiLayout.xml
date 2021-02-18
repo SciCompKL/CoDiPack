@@ -33,6 +33,9 @@
       <tab type="user" title="Tape interfaces" url="@ref TapeInterfaces"/>
       <tab type="user" title="Template declarations" url="@ref TemplateDeclaration"/>
     </tab>
+    <tab type="usergroup" title="Developer" url="@ref develperPage">
+      <tab type="user" title="Simple tape implementation" url="@ref Developer_Simple_Tape"/>
+    </tab>
     <!-- <tab type="pages" visible="yes" title="" intro=""/> -->
     <tab type="modules" visible="yes" title="" intro=""/>
     <tab type="namespaces" visible="yes" title="">
