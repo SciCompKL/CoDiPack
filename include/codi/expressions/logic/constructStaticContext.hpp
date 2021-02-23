@@ -7,7 +7,6 @@
 #include "../binaryExpression.hpp"
 #include "../expressionInterface.hpp"
 #include "../static/staticContextActiveType.hpp"
-#include "../static/staticContextConstantExpression.hpp"
 #include "../unaryExpression.hpp"
 #include "nodeInterface.hpp"
 
@@ -23,7 +22,7 @@ namespace codi {
    * Conversion and initialization is done for:
    *  - LhsExpressionInterface -> StaticContextActiveType: id = identifiers[primalValueOffset]
    *                                                       primal = primalVector[id]
-   *  - ConstantExpression -> StaticContextConstantExpression: value = constantData[constantValueOffset]
+   *  - ConstantExpression -> ConstantExpression: value = constantData[constantValueOffset]
    *
    * The offsets are computed from the corresponding expression traits NumberOfActiveTypeArguments and
    * NumberOfConstantTypeArguments. They are evaluated on each sub graph.
@@ -98,14 +97,14 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      /// Conversion from ConstantExpression to StaticContextConstantExpression
-      using ResultType = StaticContextConstantExpression<PassiveReal, constantValueOffset>;
+      /// Conversion from ConstantExpression to ConstantExpression
+      using ResultType = ConstantExpression<PassiveReal>;
 
       /// Uses constantData[constantValueOffset]
       static ResultType construct(Real* primalVector, Identifier const* const identifiers, PassiveReal const* const constantData) {
         CODI_UNUSED(primalVector, identifiers);
 
-        return ResultType(constantData);
+        return ResultType(constantData[constantValueOffset]);
       }
   };
 

@@ -19,9 +19,6 @@ namespace codi {
   template<typename _Tape>
   struct StaticContextActiveType;
 
-  template<typename _Real, size_t _offset>
-  struct StaticContextConstantExpression;
-
   namespace ExpressionTraits {
 
     /*******************************************************************************/
@@ -63,9 +60,6 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
     template<typename Real>
     struct IsConstantExpression<ConstantExpression<Real>> : std::true_type {};
-
-    template<typename Real, size_t offset>
-    struct IsConstantExpression<StaticContextConstantExpression<Real, offset>> : std::true_type {};
 #endif
 
 #if CODI_IS_CPP14
