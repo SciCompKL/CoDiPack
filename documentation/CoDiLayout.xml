@@ -26,6 +26,7 @@
         <tab type="user" title="Example 11 - External function user data" url="@ref Example_11_External_function_user_data"/>
         <tab type="user" title="Example 12 - Manual statement creation" url="@ref Example_12_Manual_statement_creation"/>
         <tab type="user" title="Example 13 - MPI communication" url="@ref Example_13_MPI_communication"/>
+        <tab type="user" title="Example 14 - ReferenceActiveType" url="@ref Example_14_ReferenceActiveType"/>
       </tab>
     </tab>
     <tab type="usergroup" title="Design" url="@ref designPage">

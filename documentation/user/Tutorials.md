@@ -32,6 +32,7 @@ or pointers to other features.
 | \subpage Example_11_External_function_user_data "" | How user data can be added to external functions. |
 | \subpage Example_12_Manual_statement_creation "" | Describes how custom derivatives for small statements can be added to the tape. |
 | \subpage Example_13_MPI_communication "" | Demonstrates how MPI constructs can be handled with CoDiPack types. |
+| \subpage Example_14_ReferenceActiveType "" | Shows how the codi::ReferenceActiveType class is used. |
 
 The graph shows how the tutorials and examples are connected. Usually it is better to understand first the prerequisites
 of a tutorial/example before reading the actual example.
