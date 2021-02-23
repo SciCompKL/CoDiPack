@@ -6,6 +6,7 @@
     <tab type="usergroup" title="User" url="@ref userPage">
       <tab type="user" title="Active type definitions" url="@ref ActiveTypeList"/>
       <tab type="user" title="Active type overview" url="@ref ActiveTypeOverview"/>
+      <tab type="user" title="Features" url="@ref Features"/>
       <tab type="usergroup" title="Tutorials &amp; Examples" url="@ref TutorialsAndExamples">
         <tab type="user" title="Tutorial 1 - Forward mode AD" url="@ref Tutorial_1_Forward_mode_AD"/>
         <tab type="user" title="Tutorial 2 - Reverse mode AD" url="@ref Tutorial_2_Reverse_mode_AD"/>
@@ -28,6 +29,7 @@
         <tab type="user" title="Example 13 - MPI communication" url="@ref Example_13_MPI_communication"/>
         <tab type="user" title="Example 14 - ReferenceActiveType" url="@ref Example_14_ReferenceActiveType"/>
       </tab>
+      <tab type="user" title="Papers" url="@ref Papers"/>
     </tab>
     <tab type="usergroup" title="Design" url="@ref designPage">
       <tab type="user" title="Expressions" url="@ref Expressions"/>

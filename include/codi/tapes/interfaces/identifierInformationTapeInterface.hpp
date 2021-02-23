@@ -14,7 +14,7 @@ namespace codi {
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
    * With this interface the user can check if a variable in the program is active or not. For an explanation of what is
-   * an active variable for CoDiPack please see (TODO: ref).
+   * an active variable for CoDiPack please see \ref ActivityAnalysis.
    *
    * An example that deactivates an identifier (documentation/examples/identifierInformationTapeInterface.cpp):
    * \snippet examples/identifierInformationTapeInterface.cpp Identifier Activity

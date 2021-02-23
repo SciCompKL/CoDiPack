@@ -15,7 +15,7 @@ namespace codi {
   /**
    * @brief Mpi datatype implementation for CoDipack types in the type wrapper of MeDiPack.
    *
-   * See tutorial TODO for an example.
+   * See \ref Example_13_MPI_communication for an example.
    *
    * Use the member MPI_TYPE as the type for the communication in MeDiPack wrapped MPI routines or
    * MPI_INT_TYPE for pairs of CoDiPack and an int.

@@ -16,7 +16,7 @@ namespace codi {
    * A simple assign optimization is implemented here. Since each index is only bound to one primal value, the index
    * can simply be copied.
    *
-   * TODO: Paper ref.
+   * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
    * Since this index manager is tightly coupled to the statements it also implements a simple data interface. It just
    * provides the current maximum index as positional information and adds this positional information in the evaluate

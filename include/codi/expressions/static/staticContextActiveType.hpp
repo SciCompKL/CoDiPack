@@ -20,8 +20,6 @@ namespace codi {
    */
   template<typename _Tape>
   struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape>> {
-      // TODO: Implement full LhsExpressionInterface
-      //        - Extend constructor such that the tape reference is provided.
     public:
 
       using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(

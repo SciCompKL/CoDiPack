@@ -11,7 +11,11 @@ namespace codi {
   #endif
 
   /**
-   * @brief TODO: CoDiPack namespace documentation.
+   * @brief CoDiPack - Code Differentiation Package
+   *
+   * Web: https://www.scicomp.uni-kl.de/software/codi
+   * Git: https://github.com/scicompkl/codipack
+   * Doc: https://www.scicomp.uni-kl.de/codi
    */
   struct Namespace {};
 

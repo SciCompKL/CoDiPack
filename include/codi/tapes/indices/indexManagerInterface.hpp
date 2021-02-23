@@ -31,7 +31,7 @@ namespace codi {
    *
    * IsLinear tells if the indices are coupled to the statements of a program. The tape needs to be managed accordingly.
    *
-   * TODO: Paper ref.
+   * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
    * @tparam _Index  Type for the identifier usually an integer type.
    */

@@ -25,7 +25,7 @@ using t6s = codi::RealForwardGen<t5s>;
 ~~~~
 The types are created by using the general types where the user can specify the type of the value and gradient. The
 nesting is done in the
-example up to the 6-th order. This nesting is called forward over forward since the forward AD mode is applied on the
+example up to the 6-th order. This nesting is called forward-over-forward since the forward AD mode is applied on the
 forward AD mode.
 
 The reverse types can also be used to create higher oder types. The general recomendation is to create first a nesing
@@ -34,11 +34,11 @@ with forward mode types and then apply once the reverse type:
 using r6s = codi::RealReverseGen<t5s>;
 ~~~~
 Here, a 6-th order type is constructed by applying five times the forward mode and then once the reverse mode. This
-nesting is called reverse over forward (TODO: Check).
+nesting is called forward-over-reverse.
 
 With these two techniques arbitray higher order types can be constructed. There are also the two other posibilites to
-use a forward over reverse (TODO: Check) nesting or a reverse over reverse nesting. The first one is mathematical
-identical to the reverse over forward approach but it would create a very large reverse tape since all higher order
+use a reverse-over-forward nesting or a reverse-over-reverse nesting. The first one is mathematical
+identical to the forward-over-reverse approach but it would create a very large reverse tape since all higher order
 computations are recorded on the tape. The second approach is theoretical possible but the seccond application of the
 reversal transforms the reverse code into a _forward_ derivative code. Therefore it is more appropritate to use a
 forward mode type in the first place.
@@ -68,7 +68,7 @@ be set in order to get the second order derivative \f$\frac{\d^2 \phi}{\d^2 u}(u
 \f$\dot u^{(1,2)}\f$ needs to be zero, otherwise the result will contain additional information.
 
 This can be extended to arbitrary derivative orders. All first order derivatives need to be seeded in order to
-compute the highest order derivative. For reverse over forward higher order types this is also true, but here n-1
+compute the highest order derivative. For forward-over-reverse higher order types this is also true, but here n-1
 direction need to be set during the recording and 1 direction during the reversal.
 
 This tutorial uses the [DerivativeAccess](@ref codi::DerivativeAccess) helper for the management of the derivative

@@ -37,4 +37,4 @@ on a tape reset the identifiers are not invalidated. Nevertheless, it is still a
 such that the run time activity analysis of CoDiPack only records values, that are dependent on the registered input
 variables.
 
-Have a look at TODO for the properties of the default CoDiPack types.
+Have a look at \ref ActiveTypeOverview for the properties of the default CoDiPack types.

@@ -21,7 +21,7 @@ namespace codi {
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
    * For an example on how to uses this interface to perform an AD reverse mode recording and evaluation of a program
-   * pleas see tutorials (TODO: ref).
+   * pleas see tutorials \ref Tutorial_2_Reverse_mode_AD and \ref Tutorial_5_Multiple_tape_recordings).
    *
    * Implementation hints:
    * A tape should only record information if it is active. That is everything between a call to
@@ -68,7 +68,7 @@ namespace codi {
       /// @name Reset
 
       void clearAdjoints();  ///< Clear all adjoint values and set them to zero.
-      void reset(bool resetAdjoints = true);  ///< Reset the tape to the initial state for a fresh recording. See tutorial (TODO: ref) for remarks on repeated tape recording in CoDiPack.
+      void reset(bool resetAdjoints = true);  ///< Reset the tape to the initial state for a fresh recording. See tutorial (\ref Tutorial_5_Multiple_tape_recordings) for remarks on repeated tape recording in CoDiPack.
 
       /*******************************************************************************/
       /// @name Tape information

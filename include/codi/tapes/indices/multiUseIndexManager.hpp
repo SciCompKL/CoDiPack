@@ -12,7 +12,7 @@ namespace codi {
   /**
    * @brief Extends the ReuseIndexManager with a copy optimization.
    *
-   * TODO: Add paper ref.
+   * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
    * Performs a reference counting for each index. If the reference count is zero then it is freed and given to
    * the ReuseIndexManager.

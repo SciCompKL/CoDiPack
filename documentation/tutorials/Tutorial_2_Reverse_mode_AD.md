@@ -64,14 +64,14 @@ variables serve in the reverse mode of AD as inputs, they need to be defined bef
 The ''bar'' values of the variables can be accessed via the functions [gradient](@ref codi::LhsExpressionInterface::gradient) and
 [setGradient](@ref codi::LhsExpressionInterface::setGradient). The default value is zero for the gradients.
 
-For an access to the gradient data for variables which run out of scope, see Example TODO.
+For an access to the gradient data for variables which run out of scope, see \ref IdentifierManagement.
 
 #### Step 7: Evaluating the tape
 
 The simplest way to evaluate the full tape is to call the method [evaluate](@ref codi::ReverseTapeInterface::evaluate).
 This will evaluate the full tape from the last recorded statement to the first one.
 
-For a partial evaluation of the tape see Example TODO. There are also other evaluation possibilities available, which are
+For a partial evaluation of the tape see \ref Example_3_Positional_tape_evaluations. There are also other evaluation possibilities available, which are
 described in other [Tutorials](@ref TutorialsAndExamples).
 
 #### Step 8: Get the resulting derivatives
@@ -89,8 +89,8 @@ and multiples evaluations are performed, then the derivative data will be accumu
 The last step is very important when multiple tape evaluations or recordings are performed during one program execution.
 A tape can be reset via the function [reset](@ref codi::ReverseTapeInterface::reset).
 
-Depending on the use case, a full tape reset might not be necessary. See Tutorial TODO(multiple adjoint evaluations) and
-TODO(multiple tape recordings) for more details.
+Depending on the use case, a full tape reset might not be necessary. See \ref Tutorial_3_Full_jacobian_computation and
+\ref Tutorial_5_Multiple_tape_recordings for more details.
 
 
 

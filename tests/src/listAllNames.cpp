@@ -16,8 +16,6 @@ void listNames(TestNames& names) {
   listNames<Dummy, Args...>(names);
 }
 
-// TODO: needs to be generated
 void listAllNames(TestNames& names) {
   listNames<void, ALL_TESTS>(names);
-
 }

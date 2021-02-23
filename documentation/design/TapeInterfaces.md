@@ -17,7 +17,7 @@ all helper structures of CoDiPack.
 Since the full tape interface is quite cumbersome to implement for a new tape development. It is most of the time enough
 to just implement a subset of the interfaces for a working tape implementation. For reverse tapes the minimum required
 functionality is defined in the codi::ReverseTapeInterface. A development tutorial on how to implement a simple reverse
-tape with the functionality available in CoDiPack is provided int TODO: ref.
+tape with the functionality available in CoDiPack is provided in \ref Developer_Simple_Tape.
 
 The list of all interfaces currently defined in CoDiPack is:
  - Internal:

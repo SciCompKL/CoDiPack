@@ -14,7 +14,7 @@ namespace codi {
   /**
    * @brief Holds a reference to an ActiveType for manual optimization of common arguments.
    *
-   * See the tutorial TODO. For an example use and explanation.
+   * See the \ref Example_14_ReferenceActiveType for an example use.
    *
    * @tparam _Type  The type of the reference which is captured.
    */
@@ -38,6 +38,8 @@ namespace codi {
       Type& reference;
 
   public:
+
+      // TODO: Implement const variant
 
       /// Used by Jacobian tapes to optimize for reoccurring arguments.
       mutable Real jacobian;

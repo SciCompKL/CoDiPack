@@ -3,7 +3,7 @@ Example tape implementation with CoDiPack {#Developer_Simple_Tape}
 
 **Goal:** Get to know how a simple operator taping approach can be implemented with CoDiPack
 
-**Prequesties:** AD reverse mode, see \ref sec_reverseAD; Identifier management, see TODO
+**Prequesties:** AD reverse mode, see \ref sec_reverseAD; [Identifier management](@ref IdentifierManagement)
 
 **Full code:**
 \snippet developer/simpleTape.cpp Simple Tape
@@ -112,7 +112,7 @@ recording mode, then it forwards the data to the method `storeOperator`:
 \snippet developer/simpleTape.cpp Storing - Entry
 
 `storeOperator` is the entry point for storing the expressions. Since CoDiPack usually employs a statement taping
-strategy with expressions (TODO: Ref), the storing of pure operators is a little bit more complicated. We need to walk
+strategy with expressions (\ref ExpressionTemplates), the storing of pure operators is a little bit more complicated. We need to walk
 recursively through the expression tree and store all operators in this tree. In order to do that we define a helper
 class `StoreOperator_Impl`. This class is then specialized for all the different nodes in a CoDiPack expression. In our
 case this will be:
@@ -141,7 +141,7 @@ otherwise the result identifier of this operation is also set to passive (zero).
 
 The storing of the operation starts with the reservation of the data items. All reservations for one operation have to
 be done in one block and from the most nested stream to the root stream. This ensures, that all data is stored in the
-same evaluation block. (See also TODO.) Afterwards the new identifier for the result of the operator is generated and
+same evaluation block. (See also codi::DataInterface.) Afterwards the new identifier for the result of the operator is generated and
 the data is stored. As described in the introduction we store the primal values of the arguments and the identifiers for
 the argument as well as the result. The operator entry is retrieved via a lookup function. This function is specialized
 for each operator node in a CoDiPack expression tree. The definition of the enumeration and the lookup function is:

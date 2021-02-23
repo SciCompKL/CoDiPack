@@ -11,9 +11,10 @@ namespace codi {
   /**
    * @brief Unified access to the adjoint vector and primal vector in a tape evaluation.
    *
-   * The interface abstracts the vector access such that custom vectors modes (TODO: link) can be handled in a generalized way.
-   * All definitions in this interface are based upon the primal evaluation type of the tape. This means that also all
-   * vector definitions need to be evaluated with this type.
+   * The interface abstracts the vector access such that custom vectors modes ( \ref Example_11_External_function_user_data)
+   * can be handled in a generalized way for external functions. All definitions in this interface are based upon the
+   * primal evaluation type of the tape. This means that also all vector definitions need to be evaluated with this
+   * type.
    *
    * In general this interface allows to evaluate the \ref sec_forwardAD "forward" and \ref sec_reverseAD "reverse" AD
    * equations. All mathematical symbols in this documentation refer to the linked equations.

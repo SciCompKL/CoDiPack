@@ -18,7 +18,7 @@ Real func(const Real& x) {
 void extFunc_rev(Tape* t, void* d, codi::VectorAccessInterface<typename Tape::Real, Identifier>* va) {
   codi::ExternalFunctionUserData* data = (codi::ExternalFunctionUserData*)d;
 
-  // Step 4: Get dat in the same order as it was added.
+  // Step 4: Get data in the same order as it was added.
   Identifier t_i = data->getData<int>();
   double scale = data->getData<double>();
 
