@@ -112,7 +112,7 @@ recording mode, then it forwards the data to the method `storeOperator`:
 \snippet developer/simpleTape.cpp Storing - Entry
 
 `storeOperator` is the entry point for storing the expressions. Since CoDiPack usually employs a statement taping
-strategy with expressions (\ref ExpressionTemplates), the storing of pure operators is a little bit more complicated. We need to walk
+strategy with expressions (\ref Expressions), the storing of pure operators is a little bit more complicated. We need to walk
 recursively through the expression tree and store all operators in this tree. In order to do that we define a helper
 class `StoreOperator_Impl`. This class is then specialized for all the different nodes in a CoDiPack expression. In our
 case this will be:

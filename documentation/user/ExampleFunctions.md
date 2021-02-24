@@ -13,7 +13,6 @@ Jacobian:
   \frac{\d f}{\d x}(x) = 3 * x * x = 3 * x^2
 \f]
 
-
 #### Simple vector valued function #### {#func_simpleNto2}
 \f[
   y = f(x) = \left(\sum_{i = 1}^n x_i, \prod_{i = 1}^n x_i \right)
@@ -56,6 +55,16 @@ Reverse mode:
       \bar b \aeq & s \\
       \bar x = & 0 \eqdot
   \end{aligned}
+\f]
+
+#### 1D polynomial #### {#func_poly1D}
+\f[
+  w = f(x) = 3x^4 + 5x^3 - 3x^2 + 2x -4
+\f]
+
+Derivatives:
+\f[
+  \frac{\d f}{\d x}(x) = 12x^3 + 15x^2 - 6x + 2
 \f]
 
 #### 2D polynomial #### {#func_poly2D}

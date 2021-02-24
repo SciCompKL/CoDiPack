@@ -3,42 +3,40 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
-    <tab type="usergroup" title="User" url="@ref userPage">
-      <tab type="user" title="AD theory and definitions" url="@ref AD_TheoryMathematicalDefinitions"/>
-      <tab type="user" title="Active type definitions" url="@ref ActiveTypeList"/>
-      <tab type="user" title="Active type overview" url="@ref ActiveTypeOverview"/>
-      <tab type="user" title="Features" url="@ref Features"/>
-      <tab type="usergroup" title="Tutorials &amp; Examples" url="@ref TutorialsAndExamples">
-        <tab type="user" title="Tutorial 1 - Forward mode AD" url="@ref Tutorial_1_Forward_mode_AD"/>
-        <tab type="user" title="Tutorial 2 - Reverse mode AD" url="@ref Tutorial_2_Reverse_mode_AD"/>
-        <tab type="user" title="Tutorial 3 - Full Jacobian computation" url="@ref Tutorial_3_Full_jacobian_computation"/>
-        <tab type="user" title="Tutorial 4 - Vector mode AD" url="@ref Tutorial_4_Vector_mode_AD"/>
-        <tab type="user" title="Tutorial 5 - Multiple tape recordings" url="@ref Tutorial_5_Multiple_tape_recordings"/>
-        <tab type="user" title="Tutorial 6 - Higher order derivatives" url="@ref Tutorial_6_Higher_order_types_helper_acces"/>
-        <tab type="user" title="Example 1 - Old tangent leftovers in forward mode AD" url="@ref Example_1_Old_tangent_leftovers_forward_mode"/>
-        <tab type="user" title="Example 2 - Custom adjoint vector evaluation" url="@ref Example_2_Custom_adjoint_vector_evaluation"/>
-        <tab type="user" title="Example 3 - Positional tape evaluations" url="@ref Example_3_Positional_tape_evaluations"/>
-        <tab type="user" title="Example 4 - Higher order derivatives compile time access" url="@ref Example_4_Higher_order_types_helper_access_compile_time"/>
-        <tab type="user" title="Example 5 - Higher order derivatives direct access" url="@ref Example_5_Higher_order_types_direct_access"/>
-        <tab type="user" title="Example 6 - Forward mode tape evaluation" url="@ref Example_6_Forward_tape_evaluation"/>
-        <tab type="user" title="Example 7 - Primal tape evaluation" url="@ref Example_7_Primal_tape_evaluation"/>
-        <tab type="user" title="Example 8 - Custom adjoint vector helper" url="@ref Example_8_Vector_helper"/>
-        <tab type="user" title="Example 9 - OpenMP reverse evaluation" url="@ref Example_9_OpenMP_reverse_evaluation"/>
-        <tab type="user" title="Example 10 - External function helper" url="@ref Example_10_External_function_helper"/>
-        <tab type="user" title="Example 11 - External function user data" url="@ref Example_11_External_function_user_data"/>
-        <tab type="user" title="Example 12 - Manual statement creation" url="@ref Example_12_Manual_statement_creation"/>
-        <tab type="user" title="Example 13 - MPI communication" url="@ref Example_13_MPI_communication"/>
-        <tab type="user" title="Example 14 - ReferenceActiveType" url="@ref Example_14_ReferenceActiveType"/>
-      </tab>
-      <tab type="user" title="Papers" url="@ref Papers"/>
-    </tab>
-    <tab type="usergroup" title="Design" url="@ref designPage">
+    <tab type="user" title="AD theory and definitions" url="@ref AD_TheoryMathematicalDefinitions"/>
+    <tab type="user" title="Active type definitions" url="@ref ActiveTypeList"/>
+    <tab type="user" title="Active type overview" url="@ref ActiveTypeOverview"/>
+    <tab type="usergroup" title="Features" url="@ref Features">
       <tab type="user" title="Expressions" url="@ref Expressions"/>
-      <tab type="user" title="Tape interfaces" url="@ref TapeInterfaces"/>
-      <tab type="user" title="Template declarations" url="@ref TemplateDeclaration"/>
     </tab>
+    <tab type="usergroup" title="Tutorials &amp; Examples" url="@ref TutorialsAndExamples">
+      <tab type="user" title="Tutorial 1 - Forward mode AD" url="@ref Tutorial_1_Forward_mode_AD"/>
+      <tab type="user" title="Tutorial 2 - Reverse mode AD" url="@ref Tutorial_2_Reverse_mode_AD"/>
+      <tab type="user" title="Tutorial 3 - Full Jacobian computation" url="@ref Tutorial_3_Full_jacobian_computation"/>
+      <tab type="user" title="Tutorial 4 - Vector mode AD" url="@ref Tutorial_4_Vector_mode_AD"/>
+      <tab type="user" title="Tutorial 5 - Multiple tape recordings" url="@ref Tutorial_5_Multiple_tape_recordings"/>
+      <tab type="user" title="Tutorial 6 - Higher order derivatives" url="@ref Tutorial_6_Higher_order_types_helper_acces"/>
+      <tab type="user" title="Example 1 - Old tangent leftovers in forward mode AD" url="@ref Example_1_Old_tangent_leftovers_forward_mode"/>
+      <tab type="user" title="Example 2 - Custom adjoint vector evaluation" url="@ref Example_2_Custom_adjoint_vector_evaluation"/>
+      <tab type="user" title="Example 3 - Positional tape evaluations" url="@ref Example_3_Positional_tape_evaluations"/>
+      <tab type="user" title="Example 4 - Higher order derivatives compile time access" url="@ref Example_4_Higher_order_types_helper_access_compile_time"/>
+      <tab type="user" title="Example 5 - Higher order derivatives direct access" url="@ref Example_5_Higher_order_types_direct_access"/>
+      <tab type="user" title="Example 6 - Forward mode tape evaluation" url="@ref Example_6_Forward_tape_evaluation"/>
+      <tab type="user" title="Example 7 - Primal tape evaluation" url="@ref Example_7_Primal_tape_evaluation"/>
+      <tab type="user" title="Example 8 - Custom adjoint vector helper" url="@ref Example_8_Vector_helper"/>
+      <tab type="user" title="Example 9 - OpenMP reverse evaluation" url="@ref Example_9_OpenMP_reverse_evaluation"/>
+      <tab type="user" title="Example 10 - External function helper" url="@ref Example_10_External_function_helper"/>
+      <tab type="user" title="Example 11 - External function user data" url="@ref Example_11_External_function_user_data"/>
+      <tab type="user" title="Example 12 - Manual statement creation" url="@ref Example_12_Manual_statement_creation"/>
+      <tab type="user" title="Example 13 - MPI communication" url="@ref Example_13_MPI_communication"/>
+      <tab type="user" title="Example 14 - ReferenceActiveType" url="@ref Example_14_ReferenceActiveType"/>
+    </tab>
+    <tab type="user" title="Papers" url="@ref Papers"/>
+    <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>
     <tab type="usergroup" title="Developer" url="@ref develperPage">
       <tab type="user" title="Simple tape implementation" url="@ref Developer_Simple_Tape"/>
+      <tab type="user" title="Tape interfaces" url="@ref TapeInterfaces"/>
+      <tab type="user" title="Template declarations" url="@ref TemplateDeclaration"/>
     </tab>
     <!-- <tab type="pages" visible="yes" title="" intro=""/> -->
     <tab type="modules" visible="yes" title="" intro=""/>
