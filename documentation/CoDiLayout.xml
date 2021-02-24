@@ -4,6 +4,7 @@
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="usergroup" title="User" url="@ref userPage">
+      <tab type="user" title="AD theory and definitions" url="@ref AD_TheoryMathematicalDefinitions"/>
       <tab type="user" title="Active type definitions" url="@ref ActiveTypeList"/>
       <tab type="user" title="Active type overview" url="@ref ActiveTypeOverview"/>
       <tab type="user" title="Features" url="@ref Features"/>

@@ -34,38 +34,6 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /**
-   * \section sec_forwardAD Forward AD Equation
-   *
-   * \f$ \dot w = d\phi/du * \dot u \f$
-   *
-   * \section sec_reverseAD Reverse AD Equation
-   *
-   * \f$ \bar u = d\phi/du^T * \bar w \f$
-   *
-   * \section sec_namingConventions Mathematical naming conventions
-   *
-   * The function is defined by:
-   *  \f[ y = f(x) \f]
-   * where \f$ x \in \R^n \f$ is the input vector with the size \f$ n \f$ and \f$y \in \R^m \f$ is the output vector
-   * with the size \f$ m \f$
-   *
-   * The Jacobian of \f$ f \f$ is defined by:
-   *  \f[ J = \frac{\d f}{\d x} \in \R^{m \times n} \f]
-   * The number of rows (\f$ m \f$) represents the number of output variables and the number of columns (\f$ n \f$)
-   * represents the number of input variable. The derivative for the i-th output with respect to the j-th input is
-   * represented by \f$ J_{i,j} \f$.
-   *
-   * The Hessian of \f$ f \f$ is defined by:
-   *  \f[ H = \frac{\d^2 f}{\d^2 x} \in \R^{m \times n \times n} \f]
-   * The first dimension (\f$ m \f$) represents the number of output variables, the second and third dimension (\f$ n \f$) represents the
-   * first and second derivative with respect to the input variables.
-   * The second derivative for the i-th output with respect to the j-th and k-th input is
-   * represented by \f$ H_{i,j,k} \f$.
-   *
-   */
-  struct Temp {};
-
   /// BlockData DataInterface used in all unchecked tapes.
   template<typename Chunk, typename NestedData = EmptyData>
   using DefaultBlockData = BlockData<Chunk, NestedData>;
