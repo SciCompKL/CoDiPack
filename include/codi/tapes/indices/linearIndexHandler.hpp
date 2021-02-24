@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -131,7 +131,7 @@ namespace codi {
        */
       CODI_INLINE Index createIndex() {
         ENABLE_CHECK(IsOverflowCheck, count > count + 1) {
-          CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
+          CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or a reuse index manager.");
         }
         return ++count;
       }

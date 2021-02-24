@@ -269,7 +269,7 @@ namespace codi {
      *
      * @param[in] pos The position to which the tape is reset.
      */
-    virtual void reset(const Position& pos) = 0;
+    virtual void reset(const Position& pos, bool resetAdjoints = true) = 0;
 
     /**
      * @brief Completely reset the tape.

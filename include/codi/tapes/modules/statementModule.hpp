@@ -259,7 +259,7 @@ namespace codi {
             Real* jacobies = NULL;
             Index* rhsIndices = NULL;
 
-            JACOBI_VECTOR_NAME.getDataPointer(jacobies, rhsIndices);
+            tape.jacobiVector.getDataPointer(jacobies, rhsIndices);
             jacobies -= activeVariables;
             rhsIndices -= activeVariables;
 

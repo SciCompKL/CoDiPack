@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -105,17 +105,6 @@ namespace codi {
     protected:
 
       /**
-       * @brief The adjoint vector.
-       *
-       * The size of the adjoint vector is set according to the requested positions.
-       * But the positions should not be greater than the current expression counter.
-       */
-      GradientValue* adjoints;
-
-      /** @brief The current size of the adjoint vector. */
-      Index adjointsSize;
-
-      /**
        * @brief Determines if statements are recorded or ignored.
        */
       bool active;
@@ -124,13 +113,10 @@ namespace codi {
        * @brief Default constructor
        */
       TapeBaseModule() :
-        adjoints(NULL),
-        adjointsSize(0),
         active(false)
       {}
 
       ~TapeBaseModule() {
-        cleanTapeBase();
       }
 
     protected:
@@ -144,87 +130,13 @@ namespace codi {
         // Nothing to do
       }
 
-    protected:
-
-    // ----------------------------------------------------------------------
-    // Protected function for the communication with the including class
-    // ----------------------------------------------------------------------
-
-      /**
-      * @brief Adds information about adjoint vector.
-      *
-      * Adds the number of adjoint vector entries and the size of the adjoint vector.
-      *
-      * @param[in,out] values  The information is added to the values
-      */
-      void addTapeBaseValues(TapeValues& values) const {
-
-        size_t nAdjoints      = cast().indexHandler.getMaximumGlobalIndex() + 1;
-        double memoryAdjoints = (double)nAdjoints * (double)sizeof(GradientValue) * BYTE_TO_MB;
-
-        values.addSection("Adjoint vector");
-        values.addData("Number of adjoints", nAdjoints);
-        values.addData("Memory allocated", memoryAdjoints, true, true);
-
-        cast().indexHandler.addValues(values);
-      }
-
-      /**
-       * @brief Helper function: Sets the adjoint vector to a new size.
-       *
-       * @param[in] size The new size for the adjoint vector.
-       */
-      void resizeAdjoints(const Index& size) {
-        Index oldSize = adjointsSize;
-        adjointsSize = size;
-
-        for(Index i = adjointsSize; i < oldSize; ++i) {
-          adjoints[i].~GradientValue();
-        }
-
-        adjoints = (GradientValue*)realloc((void*)adjoints, sizeof(GradientValue) * (size_t)adjointsSize);
-
-        if(NULL == adjoints) {
-          throw std::bad_alloc();
-        }
-
-        for(Index i = oldSize; i < adjointsSize; ++i) {
-          new (adjoints + i) GradientValue();
-        }
-      }
-
-      /**
-       * @brief Resize the adjoint vector such that it fits the number of indices.
-       */
-      void resizeAdjointsToIndexSize() {
-        if(adjointsSize <= cast().indexHandler.getMaximumGlobalIndex()) {
-          resizeAdjoints(cast().indexHandler.getMaximumGlobalIndex() + 1);
-        }
-      }
-
-      /**
-       * @brief Helper function: Deletes all arrays
-       */
-      void cleanTapeBase() {
-        if(NULL != adjoints) {
-          free(adjoints);
-          adjoints = NULL;
-          adjointsSize = 0;
-        }
-      }
-
       /**
        * @brief Swap the data of the tape base module with the data of the other tape base module.
        *
        * @param[in] other  The object with the other tape base module.
        */
       void swapTapeBaseModule(Tape& other) {
-        std::swap(adjoints, other.adjoints);
-        std::swap(adjointsSize, other.adjointsSize);
         std::swap(active, other.active);
-
-        // the index handler is not swaped because it is either swaped in the recursive call to of the data vectors
-        // or it is handled by the including class
       }
 
     public:
@@ -315,78 +227,6 @@ namespace codi {
       }
 
       /**
-       * @brief Get the gradient value of the corresponding index.
-       *
-       * @param[in] index The index of the active type.
-       * @return The gradient value corresponding to the given index.
-       */
-      CODI_INLINE GradientValue getGradient(const Index& index) const {
-        if(0 == index || adjointsSize <= index) {
-          return GradientValue();
-        } else {
-          return adjoints[index];
-        }
-      }
-
-      /**
-       * @brief Get a reference to the gradient value of the corresponding index.
-       *
-       * An index of 0 will raise an codiAssert exception.
-       *
-       * @param[in] index The index of the active type.
-       * @return The reference to the gradient data.
-       */
-      CODI_INLINE GradientValue& gradient(const Index& index) {
-        codiAssert(0 != index);
-        codiAssert(index <= cast().indexHandler.getMaximumGlobalIndex());
-
-        //TODO: Add error when index is bigger than expression count
-        if(adjointsSize <= index) {
-          resizeAdjoints(cast().indexHandler.getMaximumGlobalIndex() + 1);
-        }
-
-        return adjoints[index];
-      }
-
-      /**
-       * @brief Get a reference to the gradient value of the corresponding index.
-       *
-       * An index of 0 will raise an codiAssert exception.
-       *
-       * @param[in] index The index of the active type.
-       * @return The reference to the gradient data.
-       */
-      CODI_INLINE GradientValue& gradient(Index& index) {
-        Index const& indexConst = index;
-        return gradient(indexConst);
-      }
-
-      /**
-       * @brief Get a constant reference to the gradient value of the corresponding index.
-       *
-       * @param[in] index The index of the active type.
-       * @return The constant reference to the gradient data.
-       */
-      CODI_INLINE const GradientValue& gradient(const Index& index) const {
-        if(adjointsSize <= index) {
-          return adjoints[0];
-        } else {
-          return adjoints[index];
-        }
-      }
-
-      /**
-       * @brief Sets all adjoint/gradients to zero.
-       */
-      CODI_INLINE void clearAdjoints(){
-        if(NULL != adjoints) {
-          for(Index i = 0; i < adjointsSize; ++i) {
-            adjoints[i] = GradientValue();
-          }
-        }
-      }
-
-      /**
        * @brief Clear the derivative information from a value.
        *
        * The value is considered afterwards as not dependent on any input variables.
@@ -402,8 +242,10 @@ namespace codi {
        *
        * @param[in] pos Reset the state of the tape to the given position.
        */
-      CODI_INLINE void reset(const Position& pos) {
-        cast().clearAdjoints(cast().getPosition(), pos);
+      CODI_INLINE void reset(const Position& pos, bool resetAdjoints = true) {
+        if (resetAdjoints) {
+          cast().clearAdjoints(cast().getPosition(), pos);
+        }
 
         // reset will be done iteratively through the vectors
         cast().resetInternal(pos);
@@ -449,9 +291,9 @@ namespace codi {
        * @param[in]   end  The ending position for the adjoint evaluation.
        */
       CODI_NO_INLINE void evaluate(const Position& start, const Position& end) {
-        resizeAdjointsToIndexSize();
+        cast().resizeAdjointsToIndexSize();
 
-        evaluate(start, end, adjoints);
+        evaluate(start, end, cast().getAdjoints());
       }
 
       /**
@@ -486,9 +328,9 @@ namespace codi {
        * @param[in]   end  The ending position for the forward evaluation.
        */
       CODI_NO_INLINE void evaluateForward(const Position& start, const Position& end) {
-        resizeAdjointsToIndexSize();
+        cast().resizeAdjointsToIndexSize();
 
-        evaluateForward(start, end, adjoints);
+        evaluateForward(start, end, cast().getAdjoints());
       }
 
       /**
@@ -614,13 +456,6 @@ namespace codi {
        */
       size_t getAdjointSize() const {
         return cast().indexHandler.getMaximumGlobalIndex();
-      }
-
-      /**
-       * @brief Clear the adjoint vector and delete it.
-       */
-      void deleteAdjointVector() {
-        cleanTapeBase();
       }
   };
 }

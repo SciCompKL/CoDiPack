@@ -212,6 +212,14 @@ namespace codi {
       virtual Real getPrimal(const Index index) = 0;
 
       /**
+       * @brief Obtain a heap allocated equivalent of this adjoint interface.
+       * @return Pointer to the clone.
+       *
+       * The user is responsible for deleting the pointer.
+       */
+      virtual AdjointInterface* clone() const = 0;
+
+      /**
        * @brief If the underlying tape privides the recording of primal values.
        *
        * @return true for primal value tapes.

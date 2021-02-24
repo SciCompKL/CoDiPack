@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -215,21 +215,8 @@ namespace codi {
    * @tparam Real  The scalar value type that is used by the direction.
    * @tparam  dim  The dimension of the direction.
    */
-  template<typename Real, size_t dim>
-  CODI_INLINE Direction<Real, dim> operator * (const Real& s, const Direction<Real, dim>& v) {
-    Direction<Real, dim> r;
-    for(size_t i = 0; i < dim; ++i) {
-      r[i] = s * v[i];
-    }
-
-    return r;
-  }
-
-  /**
-   * \copydoc operator*(const Real& s, const Direction<Real, dim>& v)
-   */
-  template<typename Real, size_t dim, typename = typename std::enable_if<!std::is_same<Real, typename TypeTraits<Real>::PassiveReal>::value>::type>
-  CODI_INLINE Direction<Real, dim> operator * (const typename TypeTraits<Real>::PassiveReal& s, const Direction<Real, dim>& v) {
+  template<typename Real, typename Scalar, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator * (const Scalar& s, const Direction<Real, dim>& v) {
     Direction<Real, dim> r;
     for(size_t i = 0; i < dim; ++i) {
       r[i] = s * v[i];
@@ -251,16 +238,8 @@ namespace codi {
    * @tparam Real  The scalar value type that is used by the direction.
    * @tparam  dim  The dimension of the direction.
    */
-  template<typename Real, size_t dim>
-  CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const Real& s) {
-    return s * v;
-  }
-
-  /**
-   * \copydoc operator*(const Direction<Real, dim>& v, const Real& s)
-   */
-  template<typename Real, size_t dim, typename , typename = typename std::enable_if<!std::is_same<Real, typename TypeTraits<Real>::PassiveReal>::value>::type>
-  CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const typename TypeTraits<Real>::PassiveReal& s) {
+  template<typename Real, typename Scalar, size_t dim>
+  CODI_INLINE Direction<Real, dim> operator * (const Direction<Real, dim>& v, const Scalar& s) {
     return s * v;
   }
 

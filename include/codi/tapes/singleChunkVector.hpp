@@ -133,6 +133,35 @@ namespace codi {
       bool operator == (const Position& o) {
         return this->inner == o.inner && chunk == o.chunk && data == o.data;
       }
+
+      /**
+       * @brief Ordering of positions.
+       * @param o The position to compare to.
+       * @return True if this position is ordered before the other.
+       */
+      bool operator < (const Position& o) {
+        return this->chunk < o.chunk || (this->chunk == o.chunk && (this->data < o.data || (this->data == o.data && this->inner < o.inner)));
+      }
+
+      /**
+       * @brief Ordering of positions.
+       * @param o The position to compare to.
+       * @return True if this position is ordered before the other, or if both are the same.
+       */
+      bool operator <= (const Position& o) {
+        return this->chunk < o.chunk || (this->chunk == o.chunk && (this->data < o.data || (this->data == o.data && this->inner <= o.inner)));
+      }
+
+      /**
+       * @brief Output position to std ostream.
+       * @param stream The output stream.
+       * @param pos Position.
+       * @return Reference to the output stream.
+       */
+      friend std::ostream& operator<<(std::ostream& stream, const Position& pos) {
+        stream << "[" << pos.chunk << ", " << pos.data << ", " << pos.inner << "]";
+        return stream;
+      }
     };
 
   private:
@@ -256,6 +285,7 @@ namespace codi {
      * @param items   The maximum number of items to store.
      */
     CODI_INLINE void reserveItems(const size_t items) const {
+      CODI_UNUSED(items);
       codiAssert(chunk.getUsedSize() + items < chunk.getSize());
     }
 
@@ -531,6 +561,15 @@ namespace codi {
       size_t dataPos = start.data;
       pHandle.setPointers(0, &chunk);
       pHandle.callNestedForward(nested, start.inner, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
+    }
+
+    CODI_INLINE void erase(const Position& start, const Position& end, bool recursive = true) {
+
+      chunk.erase(start.data, end.data);
+
+      if (recursive) {
+        nested->erase(start.inner, end.inner, recursive);
+      }
     }
   };
 }

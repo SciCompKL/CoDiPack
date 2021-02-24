@@ -476,6 +476,13 @@ namespace codi {
       }
 
       /**
+       * \copydoc AdjointInterface::clone
+       */
+      AdjointInterface<Real, GradientData>* clone() const {
+        return new AdjointInterfaceImpl(this->adjointVector);
+      }
+
+      /**
        * @brief False for this interface.
        *
        * @return false
@@ -534,6 +541,13 @@ namespace codi {
        */
       Real getPrimal(const GradientData index) {
         return primalVector[index];
+      }
+
+      /**
+       * \copydoc AdjointInterface::clone
+       */
+      AdjointInterface<Real, GradientData>* clone() const {
+        return new AdjointInterfacePrimalImpl(this->adjointVector, this->primalVector);
       }
 
       /**

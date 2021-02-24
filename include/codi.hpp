@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -53,6 +53,12 @@
 #include "codi/tools/preaccumulationHelper.hpp"
 #include "codi/tools/statementPushHelper.hpp"
 #include "codi/tools/tapeVectorHelper.hpp"
+
+#if defined(_OPENMP)
+  #include "codi/atomic.hpp"
+  #include "codi/tapes/indices/parallelGlobalIndexHandler.hpp"
+  #include "codi/tapes/modules/parallelAdjointsModule.hpp"
+#endif
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -219,7 +225,7 @@ namespace codi {
    * @tparam Gradient  The type of the derivative values for the AD evaluation. Needs to implement an addition and multiplication operation.
    */
   template<typename Real, typename Gradient = Real>
-  using RealReverseIndexGen = ActiveReal<JacobiIndexTape<JacobiIndexTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandlerUseCount<int> >, ChunkVector> > >;
+  using RealReverseIndexGen = ActiveReal<JacobiIndexTape<JacobiIndexTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandler<int> >, ChunkVector> > >;
 
   /**
    * @brief A reverse type like the default reverse type in CoDiPack but with index reuse.
@@ -231,6 +237,14 @@ namespace codi {
    *
    */
   typedef RealReverseIndexGen<double, double> RealReverseIndex;
+
+  #if defined(_OPENMP)
+
+    template<typename Real, typename Gradient = Real>
+    using RealReverseIndexParallelGen = ActiveReal<JacobiIndexTape<JacobiIndexTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandler<int, ParallelGlobalIndexHandler<int> >, ParallelAdjointsModule>, ChunkVector> > >;
+
+    typedef RealReverseIndexParallelGen<double> RealReverseIndexParallel;
+  #endif
 
   /**
    * @brief Vector mode of the #RealReverseIndex type.

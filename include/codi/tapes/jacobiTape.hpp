@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -125,6 +125,7 @@ namespace codi {
       public StatementModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
       public ExternalFunctionModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
       public IOModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
+      public TapeTypes_t::template AdjointsModule<TapeTypes_t, JacobiTape<TapeTypes_t>>,
       public virtual ReverseTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, JacobiTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
@@ -134,6 +135,7 @@ namespace codi {
     friend TapeBaseModule<TapeTypes, JacobiTape>;  /**< No doc */
     friend StatementModule<TapeTypes, JacobiTape>;  /**< No doc */
     friend ::codi::IOModule<TapeTypes, JacobiTape>;  /**< No doc */
+    friend typename TapeTypes::template AdjointsModule<TapeTypes, JacobiTape>; /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -166,13 +168,18 @@ namespace codi {
       StatementModule<TapeTypes, JacobiTape<TapeTypes> > (),
       ExternalFunctionModule<TapeTypes, JacobiTape<TapeTypes> > (),
       IOModule<TapeTypes, JacobiTape<TapeTypes> > (),
+      TapeTypes::template AdjointsModule<TapeTypes, JacobiTape<TapeTypes> >(),
       indexHandler(0) {
+      this->initTapeBaseModule();
       this->initStmtModule(&indexHandler);
       this->initJacobiModule(&this->stmtVector);
       this->initExtFuncModule(&this->jacobiVector);
       this->initIOModule();
       this->initTapeBaseModule();
+      this->initAdjointsModule();
     }
+
+    virtual ~JacobiTape() {}
 
     /**
      * @brief Swap the tape with an other tape.
@@ -186,6 +193,7 @@ namespace codi {
      */
     void swap(JacobiTape& other) {
       this->swapTapeBaseModule(other);
+      this->swapAdjointsModule(other);
 
       this->extFuncVector.swap(other.extFuncVector);
     }
@@ -213,15 +221,15 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
-      Index startPos = min(end.inner.inner.inner, this->adjointsSize - 1);
-      Index endPos = min(start.inner.inner.inner, this->adjointsSize - 1);
+      Index startPos = min(end.inner.inner.inner, this->getAdjointsSize() - 1);
+      Index endPos = min(start.inner.inner.inner, this->getAdjointsSize() - 1);
 
       for(Index i = startPos + 1; i <= endPos; ++i) {
-        this->adjoints[i] = GradientValue();
+        this->clearAdjoint(i);
       }
     }
 
-    using TapeBaseModule<TapeTypes, JacobiTape>::clearAdjoints;
+    using TapeTypes::template AdjointsModule<TapeTypes, JacobiTape>::clearAdjoints;
 
     /**
      * @brief Optimization for the copy operation just copies the index of the rhs.
@@ -515,7 +523,7 @@ namespace codi {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);
 
-      this->addTapeBaseValues(values);
+      this->addAdjointValues(values);
       this->addStmtValues(values);
       this->addJacobiValues(values);
       this->addExtFuncValues(values);

@@ -36,6 +36,10 @@
 #include "../adjointInterface.hpp"
 #include "../tapes/tapeTraits.hpp"
 
+#if _OPENMP
+  #include <omp.h>
+#endif
+
 #include <vector>
 
 /**
@@ -263,21 +267,47 @@ namespace codi {
       void evalRevFunc(Tape* t, AdjointInterface<Real, GradientData>* ra) {
         CODI_UNUSED(t);
 
-        Real* x_b = new Real[inputIndices.size()];
-        Real* y_b = new Real[outputIndices.size()];
+        Real* x_b = new Real[inputIndices.size()] {};
+        Real* y_b = new Real[outputIndices.size()] {};
 
         for(size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
 
           for(size_t i = 0; i < outputIndices.size(); ++i) {
             y_b[i] = ra->getAdjoint(outputIndices[i], dim);
-            ra->resetAdjoint(outputIndices[i], dim);
           }
 
+          #if _OPENMP
+            #pragma omp barrier
+          #endif
+
+          #if _OPENMP
+            #pragma omp master
+            {
+          #endif
+          for(size_t i = 0; i < outputIndices.size(); ++i) {
+            ra->resetAdjoint(outputIndices[i], dim);
+          }
+          #if _OPENMP
+            }
+          #endif
+
+          #if _OPENMP
+            #pragma omp barrier
+          #endif
+
           revFunc(inputValues.data(), x_b, inputIndices.size(), outputValues.data(), y_b, outputIndices.size(), &userData);
+
+          #if _OPENMP
+            #pragma omp barrier
+          #endif
 
           for(size_t i = 0; i < inputIndices.size(); ++i) {
             ra->updateAdjoint(inputIndices[i], dim, x_b[i]);
           }
+
+          #if _OPENMP
+            #pragma omp barrier
+          #endif
         }
 
         if(Tape::RequiresPrimalReset) {
@@ -616,7 +646,17 @@ namespace codi {
             data->inputValues.clear();
           }
 
-          CoDiType::getGlobalTape().pushExternalFunctionHandle(ExternalFunctionData<CoDiType>::evalRevFuncStatic, data, ExternalFunctionData<CoDiType>::delFunc, ExternalFunctionData<CoDiType>::evalForwFuncStatic, ExternalFunctionData<CoDiType>::evalPrimFuncStatic);
+          #if _OPENMP
+            // make sure that the delete handle is pushed onto only one tape in a parallel context
+            if (omp_in_parallel() && omp_get_thread_num() != 0) {
+              CoDiType::getGlobalTape().pushExternalFunctionHandle(ExternalFunctionData<CoDiType>::evalRevFuncStatic, data, nullptr, ExternalFunctionData<CoDiType>::evalForwFuncStatic, ExternalFunctionData<CoDiType>::evalPrimFuncStatic);
+            }
+            else {
+              CoDiType::getGlobalTape().pushExternalFunctionHandle(ExternalFunctionData<CoDiType>::evalRevFuncStatic, data, ExternalFunctionData<CoDiType>::delFunc, ExternalFunctionData<CoDiType>::evalForwFuncStatic, ExternalFunctionData<CoDiType>::evalPrimFuncStatic);
+            }
+          #else
+            CoDiType::getGlobalTape().pushExternalFunctionHandle(ExternalFunctionData<CoDiType>::evalRevFuncStatic, data, ExternalFunctionData<CoDiType>::delFunc, ExternalFunctionData<CoDiType>::evalForwFuncStatic, ExternalFunctionData<CoDiType>::evalPrimFuncStatic);
+          #endif
         }
       }
   };

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -129,6 +129,7 @@ namespace codi {
       public StatementModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
       public ExternalFunctionModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
       public IOModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
+      public TapeTypes_t::template AdjointsModule<TapeTypes_t, JacobiIndexTape<TapeTypes_t>>,
       public virtual ReverseTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, JacobiIndexTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
@@ -138,6 +139,7 @@ namespace codi {
     friend TapeBaseModule<TapeTypes, JacobiIndexTape>; /**< No doc */
     friend StatementModule<TapeTypes, JacobiIndexTape>;  /**< No doc */
     friend ::codi::IOModule<TapeTypes, JacobiIndexTape>;  /**< No doc */
+    friend typename TapeTypes::template AdjointsModule<TapeTypes, JacobiIndexTape>; /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -154,7 +156,7 @@ namespace codi {
     EmptyChunkVector emptyVector;
 
     /** @brief The index handler for the active real's. */
-    static typename TapeTypes::IndexHandler indexHandler;
+    typename TapeTypes::IndexHandler indexHandler;
 
     /** @brief Enables code path in CoDiPack that are optimized for Jacobi taping */
     static const bool AllowJacobiOptimization = true;
@@ -173,13 +175,19 @@ namespace codi {
       StatementModule<TapeTypes, JacobiIndexTape<TapeTypes> > (),
       ExternalFunctionModule<TapeTypes, JacobiIndexTape<TapeTypes> > (),
       IOModule<TapeTypes, JacobiIndexTape<TapeTypes> > (),
-      emptyVector() {
+      TapeTypes::template AdjointsModule<TapeTypes, JacobiIndexTape<TapeTypes> >(),
+      emptyVector(),
+      indexHandler(MaxStatementIntSize - 1) {
+      this->initTapeBaseModule();
       this->initStmtModule(&emptyVector);
       this->initJacobiModule(&this->stmtVector);
       this->initExtFuncModule(&this->jacobiVector);
       this->initIOModule();
       this->initTapeBaseModule();
+      this->initAdjointsModule();
     }
+
+    virtual ~JacobiIndexTape() {}
 
     /**
      * @brief Swap the tape with an other tape.
@@ -193,6 +201,7 @@ namespace codi {
      */
     void swap(JacobiIndexTape& other) {
       this->swapTapeBaseModule(other);
+      this->swapAdjointsModule(other);
 
       // the index handler is not swapped because the indices of the program state need to stay valid
 
@@ -256,12 +265,12 @@ namespace codi {
      * @param[in]   end  The ending position for the reset of the vector.
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end){
-      if(NULL != this->adjoints) {
+      if (this->adjointsValid()) {
         auto clearFunc = [this] (StatementInt* stmtSize, Index* index) {
           CODI_UNUSED(stmtSize);
 
-          if(*index < this->adjointsSize) {
-            this->adjoints[*index] = GradientValue();
+          if(*index < this->getAdjointsSize()) {
+            this->clearAdjoint(*index);
           }
         };
 
@@ -269,7 +278,7 @@ namespace codi {
       }
     }
 
-    using TapeBaseModule<TapeTypes, JacobiIndexTape>::clearAdjoints;
+    using TapeTypes::template AdjointsModule<TapeTypes, JacobiIndexTape>::clearAdjoints;
 
   private:
 
@@ -486,19 +495,51 @@ namespace codi {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);
 
-      this->addTapeBaseValues(values);
+      this->addAdjointValues(values);
       this->addStmtValues(values);
       this->addJacobiValues(values);
       this->addExtFuncValues(values);
 
       return values;
     }
+
+    void initialize() {
+      this->initializeAdjointsModule();
+    }
+
+    void finalize() {
+      this->finalizeAdjointsModule();
+    }
+
+    // does not adapt external function positions right now
+    CODI_INLINE void erase(const Position& start, const Position& end) {
+      this->extFuncVector.erase(start, end);
+    }
+
+    static CODI_INLINE void appendFunctional(JacobiIndexTape* dstTape,
+                                            size_t& dataPos, const size_t& endDataPos, Real* &jacobies, Index* &indices,
+                                            size_t& stmtPos, const size_t& endStmtPos, StatementInt* &numberOfArguments,
+                                            Index* lhsIndices) {
+      while(stmtPos < endStmtPos) {
+
+        // manual statement push
+        dstTape->stmtVector.reserveItems(1);
+        dstTape->pushStmtData(numberOfArguments[stmtPos], lhsIndices[stmtPos]);
+        dstTape->jacobiVector.reserveItems(numberOfArguments[stmtPos]);
+
+        while(dataPos < endDataPos) {
+          dstTape->pushJacobiManual(jacobies[dataPos], 0.0, indices[dataPos]);
+          ++dataPos;
+        }
+
+        ++stmtPos;
+      }
+    }
+
+    // does not support external functions right now
+    CODI_INLINE void append(JacobiIndexTape& source, const Position& start, const Position& end) {
+
+      source.jacobiVector.evaluateForward(start.inner, end.inner, JacobiIndexTape::appendFunctional, this);
+    }
   };
-
-  /**
-   * @brief The instantiation of the index manager for the jacobi index tapes.
-   */
-  template <typename TapeTypes>
-  typename TapeTypes::IndexHandler JacobiIndexTape<TapeTypes>::indexHandler(0);
-
 }

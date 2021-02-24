@@ -161,6 +161,18 @@ namespace codi {
      * evaluation process.
      */
     CODI_INLINE void load() {}
+
+    /**
+     * @brief erase
+     * @param start
+     * @param end
+     *
+     * start <= end
+     */
+    CODI_INLINE void erase(const size_t& start, const size_t& end) {
+      CODI_UNUSED(start);
+      CODI_UNUSED(end);
+    }
   };
 
   /**
@@ -236,6 +248,17 @@ namespace codi {
       if(NULL != data) {
         delete [] data;
         data = NULL;
+      }
+    }
+
+    CODI_INLINE void erase(const size_t& start, const size_t& end) {
+      codiAssert(start <= end);
+      codiAssert(start < usedSize);
+      codiAssert(end <= usedSize);
+
+      if (start != end) {
+        memcpy(&data[start], &data[end], (usedSize - end) * sizeof(Data));
+        usedSize -= end - start;
       }
     }
 
@@ -367,6 +390,18 @@ namespace codi {
       if(NULL != data2) {
         delete [] data2;
         data2 = NULL;
+      }
+    }
+
+    CODI_INLINE void erase(const size_t& start, const size_t& end) {
+      codiAssert(start <= end);
+      codiAssert(start < usedSize);
+      codiAssert(end <= usedSize);
+
+      if (start != end) {
+        memcpy(&data1[start], &data1[end], (usedSize - end) * sizeof(Data1));
+        memcpy(&data2[start], &data2[end], (usedSize - end) * sizeof(Data2));
+        usedSize -= end - start;
       }
     }
 
@@ -520,6 +555,19 @@ namespace codi {
       if(NULL != data3) {
         delete [] data3;
         data3 = NULL;
+      }
+    }
+
+    CODI_INLINE void erase(const size_t& start, const size_t& end) {
+      codiAssert(start <= end);
+      codiAssert(start < usedSize);
+      codiAssert(end <= usedSize);
+
+      if (start != end) {
+        memcpy(&data1[start], &data1[end], (usedSize - end) * sizeof(Data1));
+        memcpy(&data2[start], &data2[end], (usedSize - end) * sizeof(Data2));
+        memcpy(&data3[start], &data3[end], (usedSize - end) * sizeof(Data3));
+        usedSize -= end - start;
       }
     }
 
@@ -692,6 +740,20 @@ namespace codi {
       if(NULL != data4) {
         delete [] data4;
         data4 = NULL;
+      }
+    }
+
+    CODI_INLINE void erase(const size_t& start, const size_t& end) {
+      codiAssert(start <= end);
+      codiAssert(start < usedSize);
+      codiAssert(end <= usedSize);
+
+      if (start != end) {
+        memcpy(&data1[start], &data1[end], (usedSize - end) * sizeof(Data1));
+        memcpy(&data2[start], &data2[end], (usedSize - end) * sizeof(Data2));
+        memcpy(&data3[start], &data3[end], (usedSize - end) * sizeof(Data3));
+        memcpy(&data4[start], &data4[end], (usedSize - end) * sizeof(Data4));
+        usedSize -= end - start;
       }
     }
 

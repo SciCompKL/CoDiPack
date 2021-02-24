@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -33,9 +33,11 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "../../configure.h"
 #include "../../tools/tapeValues.hpp"
+#include "defaultGlobalIndexHandler.hpp"
 
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
@@ -54,7 +56,7 @@ namespace codi {
    *
    * @tparam IndexType  The type for the handled indices.
    */
-  template<typename IndexType>
+  template<typename IndexType, typename GlobalIndexHandler = DefaultGlobalIndexHandler<IndexType> >
   class ReuseIndexHandlerUseCount {
     public:
       /**
@@ -76,9 +78,12 @@ namespace codi {
       static const bool IsLinear = false;
 
     private:
+      static GlobalIndexHandler globalIndexHandler;
+
+      const IndexRange<Index> reservedIndices;
 
       /** @brief The maximum index that was used over the whole process */
-      Index globalMaximumIndex;
+      Index localMaximumIndex;
 
       /**
        * @brief The list with the indices that are available for reuse.
@@ -110,14 +115,9 @@ namespace codi {
       std::vector<Index> indexUse;
 
       /**
-       * @brief The size increment for all index vectors and how many indices are generated.
-       */
-      size_t indexSizeIncrement;
-
-      /**
        * @brief Indicates the destruction of the index handler.
        *
-       * Required to prevent segmentation faults if varaibles are deleted after the index handler.
+       * Required to prevent segmentation faults if variables are deleted after the index handler.
        */
       bool valid;
 
@@ -132,13 +132,13 @@ namespace codi {
        * @param[in] reserveIndices  The number of indices that are reserved and not used by the manager.
        */
       ReuseIndexHandlerUseCount(const Index reserveIndices) :
-        globalMaximumIndex(reserveIndices + 1),
+        reservedIndices(globalIndexHandler.getRange(reserveIndices)),
+        localMaximumIndex(reservedIndices.last),
         usedIndices(),
         usedIndicesPos(0),
         unusedIndices(),
         unusedIndicesPos(0),
         indexUse(DefaultSmallChunkSize),
-        indexSizeIncrement(DefaultSmallChunkSize),
         valid(true)
       {
         increaseIndicesSize(unusedIndices);
@@ -315,8 +315,12 @@ namespace codi {
        *
        * @return The maximum index that was used during the lifetime of this index handler.
        */
-      CODI_INLINE Index getMaximumGlobalIndex() const {
-        return globalMaximumIndex;
+      static CODI_INLINE Index getMaximumGlobalIndex() {
+        return globalIndexHandler.getNextIndex() - 1;
+      }
+
+      CODI_INLINE Index getMaximumLocalIndex() const {
+        return this->localMaximumIndex;
       }
 
       /**
@@ -325,7 +329,7 @@ namespace codi {
        * @return The current maximum index that is in use.
        */
       CODI_INLINE Index getCurrentIndex() const {
-        return globalMaximumIndex;
+        return this->localMaximumIndex;
       }
 
       /**
@@ -333,7 +337,7 @@ namespace codi {
        *
        * @return The number of stored indices.
        */
-      size_t getNumberStoredIndices() const {
+      CODI_INLINE size_t getNumberStoredIndices() const {
         return unusedIndicesPos + usedIndicesPos;
       }
 
@@ -342,7 +346,7 @@ namespace codi {
        *
        * @return The number of the allocated indices.
        */
-      size_t getNumberAllocatedIndices() const {
+      CODI_INLINE size_t getNumberAllocatedIndices() const {
         return unusedIndices.capacity() + usedIndices.capacity();
       }
 
@@ -359,16 +363,16 @@ namespace codi {
        * @param[in,out] values  The values where the information is added to.
        */
       void addValues(TapeValues& values) const {
-        size_t maximumGlobalIndex     = (size_t)this->getMaximumGlobalIndex();
-        size_t storedIndices          = (size_t)this->getNumberStoredIndices();
-        size_t currentLiveIndices     = (size_t)this->getCurrentIndex() - this->getNumberStoredIndices();
+        size_t maximumLocalIndex     = static_cast<size_t>(this->getMaximumLocalIndex());
+        size_t storedIndices          = static_cast<size_t>(this->getNumberStoredIndices());
+        size_t currentLiveIndices     = static_cast<size_t>(this->getCurrentIndex() - this->getNumberStoredIndices());
 
-        double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index)) * BYTE_TO_MB;
-        double memoryIndexUse         = (double)this->indexUse.size()*(double)(sizeof(Index)) * BYTE_TO_MB;
-        double memoryAllocatedIndices = (double)this->getNumberAllocatedIndices()*(double)(sizeof(Index)) * BYTE_TO_MB;
+        double memoryStoredIndices    = static_cast<double>(storedIndices) * static_cast<double>(sizeof(Index)) * BYTE_TO_MB;
+        double memoryIndexUse         = static_cast<double>(this->indexUse.size()) * static_cast<double>(sizeof(Index)) * BYTE_TO_MB;
+        double memoryAllocatedIndices = static_cast<double>(this->getNumberAllocatedIndices()) * static_cast<double>(sizeof(Index)) * BYTE_TO_MB;
 
         values.addSection("Indices");
-        values.addData("Max. live indices", maximumGlobalIndex);
+        values.addData("Max. live indices", maximumLocalIndex);
         values.addData("Cur. live indices", currentLiveIndices);
         values.addData("Indices stored", storedIndices);
         values.addData("Memory used", memoryStoredIndices, true, false);
@@ -384,26 +388,31 @@ namespace codi {
         // the same amount as we now generate, therefore we do not
         // check for size
 
-        codiAssert(unusedIndices.size() >= indexSizeIncrement);
+        IndexRange<Index> newRange = globalIndexHandler.getRange();
 
-        for(size_t pos = 0; pos < indexSizeIncrement; ++pos) {
-          unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + (Index)pos;
+        codiAssert(unusedIndices.size() >= newRange.size());
+
+        for(std::size_t pos = 0; pos < newRange.size(); ++pos) {
+          unusedIndices[unusedIndicesPos + pos] = newRange.first + static_cast<Index>(pos);
         }
 
-        unusedIndicesPos = indexSizeIncrement;
-        globalMaximumIndex += indexSizeIncrement;
-        indexUse.resize(globalMaximumIndex);
+        unusedIndicesPos = newRange.size();
+        localMaximumIndex = newRange.last;
+        indexUse.resize(localMaximumIndex);
       }
 
       CODI_NO_INLINE void increaseIndicesSize(std::vector<Index>& v) {
-        v.resize(v.size() + indexSizeIncrement);
+        v.resize(v.size() + globalIndexHandler.getRangeSize());
       }
 
       CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
         codiAssert(v.size() < minimalSize);
 
-        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1; // +1 rounds always up
-        v.resize(v.size() + increaseMul * indexSizeIncrement);
+        size_t increaseMul = (minimalSize - v.size()) / globalIndexHandler.getRangeSize() + 1; // +1 rounds always up
+        v.resize(v.size() + increaseMul * globalIndexHandler.getRangeSize());
       }
   };
+
+  template<typename IndexType, typename GlobalIndexHandler>
+  GlobalIndexHandler ReuseIndexHandlerUseCount<IndexType, GlobalIndexHandler>::globalIndexHandler;
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -137,6 +137,7 @@ namespace codi {
       public PrimalValueModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
       public ExternalFunctionModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
       public IOModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
+      public TapeTypes_t::template AdjointsModule<TapeTypes_t, PrimalValueTape<TapeTypes_t>>,
       public virtual ReversePrimalValueTapeInterface<typename TapeTypes_t::Real, typename TapeTypes_t::Index, typename TapeTypes_t::GradientValue, PrimalValueTape<TapeTypes_t>, typename TapeTypes_t::Position >
   {
   public:
@@ -146,6 +147,7 @@ namespace codi {
     friend TapeBaseModule<TapeTypes, PrimalValueTape>;  /**< No doc */
     friend PrimalValueModule<TapeTypes, PrimalValueTape>;  /**< No doc */
     friend ::codi::IOModule<TapeTypes, PrimalValueTape>;  /**< No doc */
+    friend typename TapeTypes::template AdjointsModule<TapeTypes, PrimalValueTape>; /**< No doc */
 
     CODI_INLINE_REVERSE_TAPE_TYPES(TapeTypes::BaseTypes)
 
@@ -190,12 +192,17 @@ namespace codi {
         PrimalValueModule<TapeTypes, PrimalValueTape>(),
         ExternalFunctionModule<TapeTypes, PrimalValueTape<TapeTypes> > (),
         IOModule<TapeTypes, PrimalValueTape<TapeTypes> > (),
+        TapeTypes::template AdjointsModule<TapeTypes, PrimalValueTape<TapeTypes> >(),
         indexHandler(MaxStatementIntSize - 1) {
+      this->initTapeBaseModule();
       this->initPrimalValueModule(&indexHandler);
       this->initExtFuncModule(&this->constantValueVector);
       this->initIOModule();
       this->initTapeBaseModule();
+      this->initAdjointsModule();
     }
+
+    virtual ~PrimalValueTape() {}
 
     /**
      * @brief Swap the tape with an other tape.
@@ -210,6 +217,7 @@ namespace codi {
     void swap(PrimalValueTape& other) {
       this->swapTapeBaseModule(other);
       this->swapPrimalValueModule(other);
+      this->swapAdjointsModule(other);
 
       this->extFuncVector.swap(other.extFuncVector);
     }
@@ -224,14 +232,15 @@ namespace codi {
      */
     CODI_INLINE void clearAdjoints(const Position& start, const Position& end) {
 
-      Index startPos = min(end.inner.inner.inner.inner.inner, this->adjointsSize - 1);
-      Index endPos = min(start.inner.inner.inner.inner.inner, this->adjointsSize - 1);
+      Index startPos = min(end.inner.inner.inner.inner.inner, this->getAdjointsSize() - 1);
+      Index endPos = min(start.inner.inner.inner.inner.inner, this->getAdjointsSize() - 1);
 
       for(Index i = startPos + 1; i <= endPos; ++i) {
-        this->adjoints[i] = GradientValue();
+        this->clearAdjoint(i);
       }
     }
-    using TapeBaseModule<TapeTypes, PrimalValueTape>::clearAdjoints;
+
+    using TapeTypes::template AdjointsModule<TapeTypes, PrimalValueTape>::clearAdjoints;
 
     /**
      * @brief Set the size of the index and statement data and the primal vector.
@@ -549,7 +558,7 @@ namespace codi {
      */
     CODI_INLINE void evaluatePrimalInternal(const Position& start, const Position& end) {
 
-      AdjVecInterface<GradientValue> inter(this->adjoints, this->primals);
+      AdjVecInterface<GradientValue> inter(this->getAdjoints(), this->primals);
 
       Wrap_evaluateStackPrimal evalFunc{};
       auto primalFunc = &TapeTypes::ConstantValueVector::template evaluateForward<decltype(evalFunc), Real*&>;
@@ -652,7 +661,7 @@ namespace codi {
       std::string name = "CoDi Tape Statistics (" + std::string(TapeTypes::tapeName) + ")";
       TapeValues values(name);
 
-      this->addTapeBaseValues(values);
+      this->addAdjointValues(values);
       this->addPrimalValueValues(values);
       this->addExtFuncValues(values);
 

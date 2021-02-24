@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -46,8 +46,6 @@
 #ifndef FUNCTION
   #error Please define the primal function representation.
 #endif
-
-#include "macros.h"
 
 /**
  * @brief Overload for FUNCTION with the CoDiPack expressions.

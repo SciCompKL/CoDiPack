@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
@@ -124,7 +124,7 @@ namespace codi {
          * @param[in] o  The other position.
          * @return False if the inner position and the own data are not equal.
          */
-        bool operator != (const Position& o) {
+        bool operator != (const Position& o) const {
           return this->inner != o.inner || chunk != o.chunk || data != o.data;
         }
 
@@ -133,8 +133,37 @@ namespace codi {
          * @param[in] o  The other position.
          * @return True if the inner position and the own data are not equal.
          */
-        bool operator == (const Position& o) {
+        bool operator == (const Position& o) const {
           return this->inner == o.inner && chunk == o.chunk && data == o.data;
+        }
+
+        /**
+         * @brief Ordering of positions.
+         * @param o The position to compare to.
+         * @return True if this position is ordered before the other.
+         */
+        bool operator < (const Position& o) const {
+          return this->chunk < o.chunk || (this->chunk == o.chunk && (this->data < o.data || (this->data == o.data && this->inner < o.inner)));
+        }
+
+        /**
+         * @brief Ordering of positions.
+         * @param o The position to compare to.
+         * @return True if this position is ordered before the other, or if both are the same.
+         */
+        bool operator <= (const Position& o) const {
+          return this->chunk < o.chunk || (this->chunk == o.chunk && (this->data < o.data || (this->data == o.data && this->inner <= o.inner)));
+        }
+
+        /**
+         * @brief Output position to std ostream.
+         * @param stream The output stream.
+         * @param pos Position.
+         * @return Reference to the output stream.
+         */
+        friend std::ostream& operator<<(std::ostream& stream, const Position& pos) {
+          stream << "[" << pos.chunk << ", " << pos.data << ", " << pos.inner << "]";
+          return stream;
         }
     };
 
@@ -734,6 +763,29 @@ namespace codi {
       pHandle.callNestedForward(nested, curInnerPos, end.inner, function, std::forward<Args>(args)..., dataPos, end.data);
 
       codiAssert(dataPos == end.data); // after the last chunk is evaluated, the data position needs to be at the end position
+    }
+
+    CODI_INLINE void erase(const Position& start, const Position& end, bool recursive = true) {
+
+      size_t chunkRange = end.chunk - start.chunk;
+
+      if (chunkRange == 0) {
+        chunks[start.chunk]->erase(start.data, end.data);
+      }
+      else {
+        // treat first chunk
+        chunks[start.chunk]->erase(start.data, chunks[start.chunk]->usedSize);
+
+        // treat last chunk
+        chunks[end.chunk]->erase(0, end.data);
+
+        // erase completely covered chunks (covers also the case that there is no such chunk)
+        chunks.erase(chunks.begin() + start.chunk + 1, chunks.begin() + end.chunk);
+      }
+
+      if (recursive) {
+        nested->erase(start.inner, end.inner, recursive);
+      }
     }
   };
 }

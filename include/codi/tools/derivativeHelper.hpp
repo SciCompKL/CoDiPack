@@ -163,6 +163,9 @@ namespace codi {
        * @return The derivative value that is specified through order and l.
        */
       static RealRef select(RealRef value, size_t order, size_t l) {
+        CODI_UNUSED(order);
+        CODI_UNUSED(l);
+
         codiAssert(order == 0); // The order is reduced every time a derivative path is chosen so the order must be 0
         codiAssert(l == 0); // The selection index is adapted every time a path is chosen so the index must be 0
 
