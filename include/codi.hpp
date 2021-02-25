@@ -34,6 +34,11 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  #define CODI_MAJOR_VERSION 2
+  #define CODI_MINOR_VERSION 0
+  #define CODI_BUILD_VERSION 0
+  #define CODI_VERSION "2.0.0"
+
   /// BlockData DataInterface used in all unchecked tapes.
   template<typename Chunk, typename NestedData = EmptyData>
   using DefaultBlockData = BlockData<Chunk, NestedData>;

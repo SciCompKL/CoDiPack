@@ -14,6 +14,11 @@ DEP_FILES   = $(wildcard $(BUILD_DIR)/*.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/*.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/*.d)
 
+MAJOR_VERSION = $(shell grep -oP 'define CODI_MAJOR_VERSION \K\d+' include/codi.hpp)
+MINOR_VERSION = $(shell grep -oP 'define CODI_MINOR_VERSION \K\d+' include/codi.hpp)
+BUILD_VERSION = $(shell grep -oP 'define CODI_BUILD_VERSION \K\d+' include/codi.hpp)
+CODI_VERSION = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
+
 CODI_DIR := .
 
 FLAGS = -Wall -pedantic -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
@@ -65,7 +70,7 @@ examples: $(EXAMPLES)
 doc:
 	@mkdir -p $(BUILD_DIR)
 	@mkdir -p $(BUILD_DIR)/documentation
-	doxygen
+	CODI_VERSION=$(CODI_VERSION) doxygen
 
 .PHONY: clean
 clean:
