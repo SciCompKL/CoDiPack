@@ -2,6 +2,8 @@
 
 #include "../config.h"
 
+/** @file */
+
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -30,9 +32,11 @@ namespace codi {
 
   /*******************************************************************************/
   /** @name Default template type declarations
+   *  @anchor TemplateDeclarationHelpers
    *
-   * Description: These template are used to employ the design guide line for the default definitions of template
-   *              arguments. See \ref TemplateDeclaration for Details.
+   * These template are used to employ the design guide line for the default definitions of template
+   * arguments. See \ref TemplateDeclaration for Details.
+   *
    * @{
    */
 

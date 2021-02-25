@@ -3,9 +3,12 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/** @file */
+
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  // Can be enabled to allow for auto completion in IDEs.
   #ifndef CODI_IDE
     #define CODI_IDE 0
   #endif

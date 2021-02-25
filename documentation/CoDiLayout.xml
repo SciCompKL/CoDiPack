@@ -33,7 +33,7 @@
     </tab>
     <tab type="user" title="Papers" url="@ref Papers"/>
     <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>
-    <tab type="usergroup" title="Developer" url="@ref develperPage">
+    <tab type="usergroup" title="Developer">
       <tab type="user" title="Coding guidelines" url="@ref CodingGuidelines"/>
       <tab type="user" title="Simple tape implementation" url="@ref Developer_Simple_Tape"/>
       <tab type="user" title="Tape interfaces" url="@ref TapeInterfaces"/>
