@@ -29,7 +29,7 @@ namespace codi {
   struct CustomAdjointVectorEvaluationTapeInterface : public virtual ForwardEvaluationTapeInterface<_Position> {
     public:
 
-      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition); ///< See CustomAdjointVectorEvaluationTapeInterface
+      using Position = CODI_DD(_Position, EmptyPosition); ///< See CustomAdjointVectorEvaluationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

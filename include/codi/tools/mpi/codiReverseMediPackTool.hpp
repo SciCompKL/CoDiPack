@@ -23,7 +23,7 @@ namespace codi {
   struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
@@ -126,7 +126,7 @@ namespace codi {
     public:
 
       // All type definitions for the interface
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using PrimalType = typename Type::Real;
       using AdjointType = void;
       using ModifiedType = Type;
@@ -134,7 +134,7 @@ namespace codi {
 
 
       // Helper definition for CoDiPack
-      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
+      using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
 
       using OpHelper = medi::OperatorHelper<
                 medi::FunctionHelper<

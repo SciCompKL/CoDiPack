@@ -26,7 +26,7 @@ namespace codi {
     struct TraitsImplementation {
       public:
 
-        using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See TraitsImplementation
+        using Gradient = CODI_DD(_Gradient, double); ///< See TraitsImplementation
         using Real = Gradient;  ///< The base value used in the gradient entries.
 
         static size_t constexpr dim = 1; ///< Number of dimensions this gradient value has.

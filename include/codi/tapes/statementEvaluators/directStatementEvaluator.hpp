@@ -55,7 +55,7 @@ namespace codi {
   struct DirectStatementEvaluator : public StatementEvaluatorInterface<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See DirectStatementEvaluator
+      using Real = CODI_DD(_Real, double); ///< See DirectStatementEvaluator
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation

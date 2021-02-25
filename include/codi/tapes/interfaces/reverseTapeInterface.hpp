@@ -41,9 +41,9 @@ namespace codi {
                                 public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
 
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See ReverseTapeInterface
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See ReverseTapeInterface
-      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See ReverseTapeInterface
+      using Real = CODI_DD(_Real, double); ///< See ReverseTapeInterface
+      using Gradient = CODI_DD(_Gradient, double); ///< See ReverseTapeInterface
+      using Identifier = CODI_DD(_Identifier, int); ///< See ReverseTapeInterface
 
       using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
 

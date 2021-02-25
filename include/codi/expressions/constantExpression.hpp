@@ -22,7 +22,7 @@ namespace codi {
   struct ConstantExpression : public ExpressionInterface<_Real, ConstantExpression<_Real>> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See ConstantExpression
+      using Real = CODI_DD(_Real, double); ///< See ConstantExpression
 
     private:
       Real primalValue;

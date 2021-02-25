@@ -21,7 +21,7 @@ namespace codi {
   struct StatementEvaluatorTapeInterface {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See StatementEvaluatorTapeInterface
+      using Real = CODI_DD(_Real, double); ///< See StatementEvaluatorTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -57,7 +57,7 @@ namespace codi {
   struct StatementEvaluatorInnerTapeInterface {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See StatementEvaluatorInnerTapeInterface
+      using Real = CODI_DD(_Real, double); ///< See StatementEvaluatorInnerTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

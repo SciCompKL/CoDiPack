@@ -29,12 +29,12 @@ namespace codi {
   struct LhsExpressionInterface : public ExpressionInterface<_Real, _Impl> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See LhsExpressionInterface
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, Real);  ///< See LhsExpressionInterface
-      using Tape = CODI_DECLARE_DEFAULT(_Tape,
-                     CODI_TEMPLATE(CODI_UNION<InternalStatementRecordingInterface<int>,
+      using Real = CODI_DD(_Real, double); ///< See LhsExpressionInterface
+      using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface
+      using Tape = CODI_DD(_Tape,
+                     CODI_T(CODI_UNION<InternalStatementRecordingInterface<int>,
                                               GradientAccessTapeInterface<double, int>>));  ///< See LhsExpressionInterface
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, LhsExpressionInterface);  ///< See LhsExpressionInterface
+      using Impl = CODI_DD(_Impl, LhsExpressionInterface);  ///< See LhsExpressionInterface
 
       using Identifier = typename Tape::Identifier; ///< See GradientAccessTapeInterface
       using PassiveReal = RealTraits::PassiveReal<Real>;    ///< Basic computation type
@@ -160,9 +160,9 @@ namespace codi {
   struct RealTraits::TraitsImplementation<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(
+      using Type = CODI_DD(
                       _Type,
-                      CODI_TEMPLATE(LhsExpressionInterface<double, double, InternalStatementRecordingInterface<CODI_ANY>, _Type>)
+                      CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingInterface<CODI_ANY>, _Type>)
                     );
       using Real = typename Type::Real;
 

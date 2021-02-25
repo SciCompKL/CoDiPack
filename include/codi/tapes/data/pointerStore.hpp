@@ -58,7 +58,7 @@ namespace codi {
   struct PointerStore<Chunk1<_Data1> > {
     public:
 
-      using Data1 = CODI_DECLARE_DEFAULT(_Data1, int); ///< Data entry 1.
+      using Data1 = CODI_DD(_Data1, int); ///< Data entry 1.
 
       using Chunk = Chunk1<Data1>; ///< Specialized template
 
@@ -101,8 +101,8 @@ namespace codi {
   struct PointerStore<Chunk2<_Data1, _Data2> > {
     public:
 
-      using Data1 = CODI_DECLARE_DEFAULT(_Data1, int); ///< Data entry 1.
-      using Data2 = CODI_DECLARE_DEFAULT(_Data2, int); ///< Data entry 2.
+      using Data1 = CODI_DD(_Data1, int); ///< Data entry 1.
+      using Data2 = CODI_DD(_Data2, int); ///< Data entry 2.
 
       using Chunk = Chunk2<Data1, Data2>; ///< Specialized template
 
@@ -145,9 +145,9 @@ namespace codi {
   struct PointerStore<Chunk3<_Data1, _Data2, _Data3> > {
     public:
 
-      using Data1 = CODI_DECLARE_DEFAULT(_Data1, int); ///< Data entry 1.
-      using Data2 = CODI_DECLARE_DEFAULT(_Data2, int); ///< Data entry 2.
-      using Data3 = CODI_DECLARE_DEFAULT(_Data3, int); ///< Data entry 3.
+      using Data1 = CODI_DD(_Data1, int); ///< Data entry 1.
+      using Data2 = CODI_DD(_Data2, int); ///< Data entry 2.
+      using Data3 = CODI_DD(_Data3, int); ///< Data entry 3.
 
       using Chunk = Chunk3<Data1, Data2, Data3>; ///< Specialized template
 
@@ -191,10 +191,10 @@ namespace codi {
   struct PointerStore<Chunk4<_Data1, _Data2, _Data3, _Data4> > {
     public:
 
-      using Data1 = CODI_DECLARE_DEFAULT(_Data1, int); ///< Data entry 1.
-      using Data2 = CODI_DECLARE_DEFAULT(_Data2, int); ///< Data entry 2.
-      using Data3 = CODI_DECLARE_DEFAULT(_Data3, int); ///< Data entry 3.
-      using Data4 = CODI_DECLARE_DEFAULT(_Data4, int); ///< Data entry 4.
+      using Data1 = CODI_DD(_Data1, int); ///< Data entry 1.
+      using Data2 = CODI_DD(_Data2, int); ///< Data entry 2.
+      using Data3 = CODI_DD(_Data3, int); ///< Data entry 3.
+      using Data4 = CODI_DD(_Data4, int); ///< Data entry 4.
 
       using Chunk = Chunk4<Data1, Data2, Data3, Data4>; ///< Specialized template
 

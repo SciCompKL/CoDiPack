@@ -26,7 +26,7 @@ namespace codi {
   struct ForEachTermLogic : public TraversalLogic<_Impl> {
     public:
 
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(TraversalLogic<CODI_ANY>)); ///< See ForEachTermLogic
+      using Impl = CODI_DD(_Impl, CODI_T(TraversalLogic<CODI_ANY>)); ///< See ForEachTermLogic
 
       /*******************************************************************************/
       /// @name Interface definition

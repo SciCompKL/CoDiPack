@@ -97,7 +97,7 @@ namespace codi {
     template<typename _Type, bool constant, size_t selectionDepth, size_t order, size_t l>
     struct SelectCompileTime<_Type, constant, selectionDepth, order, l, true> {
       public:
-        using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
         using Inner = SelectCompileTime<typename Type::Real, constant, selectionDepth - 1, order, l>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
@@ -115,7 +115,7 @@ namespace codi {
     template<typename _Type, bool constant, size_t selectionDepth, size_t order, size_t l>
     struct SelectCompileTime<_Type, constant, selectionDepth, order, l, false> {
       public:
-        using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
         using Inner = SelectCompileTime<typename Type::Gradient, constant, selectionDepth - 1, order - 1, l - maximumDerivativesPrimalBranch(selectionDepth, order)>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
@@ -152,8 +152,8 @@ namespace codi {
     template<typename _Type, bool constant, size_t _selectionDepth>
     struct SelectRunTime {
 
-        using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-        static size_t constexpr selectionDepth = CODI_DECLARE_DEFAULT(_selectionDepth, CODI_UNDEFINED_VALUE);
+        using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        static size_t constexpr selectionDepth = CODI_DD(_selectionDepth, CODI_UNDEFINED_VALUE);
 
         static_assert (std::is_same<typename Type::Real, typename Type::Gradient>::value, "CoDiPack type needs to have the same real and gradient value for run time derivative selection.");
         static_assert (selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(), "Selection depth can not be higher than the maximum derivative order" );
@@ -176,7 +176,7 @@ namespace codi {
     template<typename _Type, bool constant>
     struct SelectRunTime<_Type, constant, 0> {
 
-        using Type = CODI_DECLARE_DEFAULT(_Type, double);
+        using Type = CODI_DD(_Type, double);
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
         using RType = ArgType;
 
@@ -226,7 +226,7 @@ namespace codi {
     public:
 
       /// See DerivativeAccess
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       /// Helper for the run time selection of derivatives
       template<bool constant, size_t selectionDepth>

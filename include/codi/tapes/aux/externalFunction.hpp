@@ -74,7 +74,7 @@ namespace codi {
   struct ExternalFunction : public ExternalFunctionInternalData {
     public:
 
-      using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(ExternalFunctionTapeInterface<double, double, int>)); ///< See ExternalFunction
+      using Tape = CODI_DD(_Tape, CODI_T(ExternalFunctionTapeInterface<double, double, int>)); ///< See ExternalFunction
 
       using VectorAccess = VectorAccessInterface<typename Tape::Real, typename Tape::Identifier>; ///< Shortcut for VectorAccessInterface.
       typedef void (*CallFunction)(Tape* tape, void* data, VectorAccess* adjointInterface); ///< Call function definition.

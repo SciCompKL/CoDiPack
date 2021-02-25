@@ -68,7 +68,7 @@ namespace codi {
   struct ArrayPosition {
     public:
 
-      using NestedPosition = CODI_DECLARE_DEFAULT(_NestedPosition, EmptyPosition); ///< See ArrayPosition
+      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition); ///< See ArrayPosition
 
       size_t data;  ///< Array position index.
 
@@ -136,7 +136,7 @@ namespace codi {
   struct ChunkPosition : public ArrayPosition<_NestedPosition> {
     public:
 
-      using NestedPosition = CODI_DECLARE_DEFAULT(_NestedPosition, EmptyPosition); ///< See ChunkPosition
+      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition); ///< See ChunkPosition
       using Base = ArrayPosition<NestedPosition>; ///< Base abbreviation
 
       size_t chunk; ///< Chunk position index

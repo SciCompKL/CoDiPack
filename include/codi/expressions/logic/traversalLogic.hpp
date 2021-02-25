@@ -22,7 +22,7 @@ namespace codi {
   struct TraversalLogic {
     public:
 
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, TraversalLogic); ///< See TraversalLogic
+      using Impl = CODI_DD(_Impl, TraversalLogic); ///< See TraversalLogic
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {

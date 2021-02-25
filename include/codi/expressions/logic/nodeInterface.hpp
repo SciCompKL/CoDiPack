@@ -22,7 +22,7 @@ namespace codi {
   struct NodeInterface {
     public:
 
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, NodeInterface); ///< See NodeInterface
+      using Impl = CODI_DD(_Impl, NodeInterface); ///< See NodeInterface
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {

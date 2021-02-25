@@ -27,9 +27,9 @@ namespace codi {
   struct IdentifierInformationTapeInterface {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See IdentifierInformationTapeInterface
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See IdentifierInformationTapeInterface
-      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See IdentifierInformationTapeInterface
+      using Real = CODI_DD(_Real, double); ///< See IdentifierInformationTapeInterface
+      using Gradient = CODI_DD(_Gradient, double); ///< See IdentifierInformationTapeInterface
+      using Identifier = CODI_DD(_Identifier, int); ///< See IdentifierInformationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

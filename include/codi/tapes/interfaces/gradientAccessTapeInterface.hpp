@@ -34,8 +34,8 @@ namespace codi {
   struct GradientAccessTapeInterface {
     public:
 
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See GradientAccessTapeInterface
-      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See GradientAccessTapeInterface
+      using Gradient = CODI_DD(_Gradient, double); ///< See GradientAccessTapeInterface
+      using Identifier = CODI_DD(_Identifier, int); ///< See GradientAccessTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

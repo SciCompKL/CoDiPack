@@ -23,7 +23,7 @@ namespace codi {
   struct MultiUseIndexManager : public ReuseIndexManager<_Index> {
     public:
 
-      using Index = CODI_DECLARE_DEFAULT(_Index, int); ///< See MultiUseIndexManager
+      using Index = CODI_DD(_Index, int); ///< See MultiUseIndexManager
       using Base = ReuseIndexManager<Index>; ///< Base class abbreviation
 
       /*******************************************************************************/

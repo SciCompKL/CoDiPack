@@ -28,7 +28,7 @@ namespace codi {
   struct JacobianReuseTape : public JacobianBaseTape<_TapeTypes, JacobianReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double,
+      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double,
                         IndexManagerInterface<int>, DefaultChunkedData>)); ///< See JacobianReuseTape
 
       using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>; ///< Base class abbreviation

@@ -31,7 +31,7 @@ namespace codi {
   struct InternalStatementRecordingInterface {
     public:
 
-      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See InternalStatementRecordingInterface
+      using Identifier = CODI_DD(_Identifier, int); ///< See InternalStatementRecordingInterface
 
       /*******************************************************************************/
       /// @name Interface definition

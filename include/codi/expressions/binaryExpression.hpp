@@ -21,7 +21,7 @@ namespace codi {
   struct BinaryOperation {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
 
       /// Compute the primal value from the arguments.
       ///
@@ -56,10 +56,10 @@ namespace codi {
   template<typename _Real, typename _ArgA, typename _ArgB, template<typename> class _Operation>
   struct BinaryExpression : public ExpressionInterface<_Real, BinaryExpression<_Real, _ArgA, _ArgB, _Operation> > {
     public:
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See BinaryExpression
-      using ArgA = CODI_DECLARE_DEFAULT(_ArgA, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>)); ///< See BinaryExpression
-      using ArgB = CODI_DECLARE_DEFAULT(_ArgB, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>)); ///< See BinaryExpression
-      using Operation = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Operation<Real>), CODI_TEMPLATE(BinaryOperation<Real>)); ///< See BinaryExpression
+      using Real = CODI_DD(_Real, double); ///< See BinaryExpression
+      using ArgA = CODI_DD(_ArgA, CODI_T(ExpressionInterface<double, CODI_ANY>)); ///< See BinaryExpression
+      using ArgB = CODI_DD(_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>)); ///< See BinaryExpression
+      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(BinaryOperation<Real>)); ///< See BinaryExpression
 
       typename ArgA::StoreAs argA; ///< First argument of the expression
       typename ArgB::StoreAs argB; ///< Second argument of the expression

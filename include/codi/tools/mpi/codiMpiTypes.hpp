@@ -35,8 +35,8 @@ namespace codi {
     public:
 
       /// See CoDiMpiTypes
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Tool = CODI_DECLARE_DEFAULT(_Tool, medi::ADToolInterface); ///< See CoDiMpiTypes
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Tool = CODI_DD(_Tool, medi::ADToolInterface); ///< See CoDiMpiTypes
 
       using MPIType = medi::MpiTypeDefault<Tool>; ///< MeDiPack default implementation
 

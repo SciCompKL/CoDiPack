@@ -54,8 +54,8 @@ namespace codi {
   template<typename _Real, typename _Identifier>
   struct VectorAccessInterface {
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See VectorAccessInterface
-      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See VectorAccessInterface
+      using Real = CODI_DD(_Real, double); ///< See VectorAccessInterface
+      using Identifier = CODI_DD(_Identifier, int); ///< See VectorAccessInterface
 
       virtual ~VectorAccessInterface() {} ///< Destructor
 

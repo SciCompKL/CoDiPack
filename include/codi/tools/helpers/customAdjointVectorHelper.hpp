@@ -29,13 +29,13 @@ namespace codi {
     public:
 
       /// See CustomAdjointVectorInterface
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real; ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
 
       /// See LhsExpressionInterface
-      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
+      using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
       using Position = typename Tape::Position; ///< See PositionalEvaluationTapeInterface
 
     protected:
@@ -118,8 +118,8 @@ namespace codi {
     public:
 
       ///< See CustomAdjointVectorHelper
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See CustomAdjointVectorHelper
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Gradient = CODI_DD(_Gradient, double); ///< See CustomAdjointVectorHelper
 
       using Base = CustomAdjointVectorInterface<Type>; ///< Abbreviation for the base class
 
@@ -127,7 +127,7 @@ namespace codi {
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
 
       /// See LhsExpressionInterface
-      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
+      using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
       using Position = typename Tape::Position; ///< See PositionalEvaluationTapeInterface
 
     protected:

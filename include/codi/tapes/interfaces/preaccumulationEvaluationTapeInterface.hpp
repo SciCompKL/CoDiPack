@@ -36,10 +36,10 @@ namespace codi {
   {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See PreaccumulationEvaluationTapeInterface.
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See PreaccumulationEvaluationTapeInterface.
-      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See PreaccumulationEvaluationTapeInterface.
-      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition); ///< See PreaccumulationEvaluationTapeInterface.
+      using Real = CODI_DD(_Real, double); ///< See PreaccumulationEvaluationTapeInterface.
+      using Gradient = CODI_DD(_Gradient, double); ///< See PreaccumulationEvaluationTapeInterface.
+      using Identifier = CODI_DD(_Identifier, int); ///< See PreaccumulationEvaluationTapeInterface.
+      using Position = CODI_DD(_Position, EmptyPosition); ///< See PreaccumulationEvaluationTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

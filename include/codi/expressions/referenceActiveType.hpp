@@ -25,7 +25,7 @@ namespace codi {
     public:
 
       /// See ReferenceActiveType
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Tape = typename Type::Tape; ///< See LhsExpressionInterface.
 
       using Real = typename Tape::Real;              ///< See LhsExpressionInterface

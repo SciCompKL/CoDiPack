@@ -23,7 +23,7 @@ namespace codi {
     struct TraitsImplementation {
       public:
 
-        using Type = CODI_DECLARE_DEFAULT(_Type, double); ///< See TraitsImplementation
+        using Type = CODI_DD(_Type, double); ///< See TraitsImplementation
 
         using PassiveReal = Type; ///< The original computation type, that was used in the application.
 
@@ -44,7 +44,7 @@ namespace codi {
     struct IsTotalFinite {
       public:
 
-        using Type = CODI_DECLARE_DEFAULT(_Type, double); ///< See IsTotalFinite
+        using Type = CODI_DD(_Type, double); ///< See IsTotalFinite
 
         /// Checks if the values are all finite.
         static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -62,7 +62,7 @@ namespace codi {
     struct IsTotalZero {
       public:
 
-        using Type = CODI_DECLARE_DEFAULT(_Type, double); ///< See IsTotalZero
+        using Type = CODI_DD(_Type, double); ///< See IsTotalZero
 
         /// Checks if the values are completely zero.
         static CODI_INLINE bool isTotalZero(Type const& v) {

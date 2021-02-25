@@ -21,8 +21,8 @@ namespace codi {
   struct Jacobian : public JacobianInterface<_T>{
     public:
 
-      using T = CODI_DECLARE_DEFAULT(_T, double); ///< See Jacobian
-      using Store = CODI_DECLARE_DEFAULT(_Store, std::vector<double>); ///< See Jacobian
+      using T = CODI_DD(_T, double); ///< See Jacobian
+      using Store = CODI_DD(_Store, std::vector<double>); ///< See Jacobian
 
     protected:
       Store values; ///< Array store for the data.

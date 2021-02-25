@@ -93,8 +93,8 @@ namespace codi {
   struct DataInterface {
     public:
 
-      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, DataInterface); ///< See DataInterface
-      using InternalPosHandle = CODI_DECLARE_DEFAULT(_InternalPosHandle, size_t);  ///< See DataInterface
+      using NestedData = CODI_DD(_NestedData, DataInterface); ///< See DataInterface
+      using InternalPosHandle = CODI_DD(_InternalPosHandle, size_t);  ///< See DataInterface
 
       using Position = EmptyPosition; ///< Contains position data for this DataInterface and all nested interfaces
 

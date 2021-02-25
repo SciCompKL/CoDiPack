@@ -23,9 +23,9 @@ namespace codi {
   template<typename _Real, typename _Identifier, typename _Gradient>
   struct PrimalAdjointVectorAccess : public AdjointVectorAccess<_Real, _Identifier, _Gradient>  {
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See PrimalAdjointVectorAccess
-      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int);  ///< See PrimalAdjointVectorAccess
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);  ///< See PrimalAdjointVectorAccess
+      using Real = CODI_DD(_Real, double); ///< See PrimalAdjointVectorAccess
+      using Identifier = CODI_DD(_Identifier, int);  ///< See PrimalAdjointVectorAccess
+      using Gradient = CODI_DD(_Gradient, double);  ///< See PrimalAdjointVectorAccess
 
       using Base = AdjointVectorAccess<Real, Identifier, Gradient>; ///< Base class abbreviation
 

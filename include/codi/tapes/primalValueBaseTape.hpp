@@ -41,14 +41,14 @@ namespace codi {
   struct PrimalValueTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See PrimalValueTapeTypes
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double);  ///< See PrimalValueTapeTypes
-      using IndexManager = CODI_DECLARE_DEFAULT(_IndexManager, CODI_TEMPLATE(IndexManagerInterface<int>));  ///< See PrimalValueTapeTypes
-      using StatementEvaluator = CODI_DECLARE_DEFAULT(
-                                    CODI_TEMPLATE(_StatementEvaluator<Real>),
-                                    CODI_TEMPLATE(StatementEvaluatorInterface<double>));  ///< See PrimalValueTapeTypes
+      using Real = CODI_DD(_Real, double); ///< See PrimalValueTapeTypes
+      using Gradient = CODI_DD(_Gradient, double);  ///< See PrimalValueTapeTypes
+      using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See PrimalValueTapeTypes
+      using StatementEvaluator = CODI_DD(
+                                    CODI_T(_StatementEvaluator<Real>),
+                                    CODI_T(StatementEvaluatorInterface<double>));  ///< See PrimalValueTapeTypes
       template<typename Chunk, typename Nested>
-      using Data = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Data<Chunk, Nested>), CODI_TEMPLATE(DataInterface<Nested>)); ///< See PrimalValueTapeTypes
+      using Data = CODI_DD(CODI_T(_Data<Chunk, Nested>), CODI_T(DataInterface<Nested>)); ///< See PrimalValueTapeTypes
 
       using Identifier = typename IndexManager::Index; ///< See IndexManagerInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;       ///< Basic computation type
@@ -99,13 +99,13 @@ namespace codi {
     public:
 
       /// See PrimalValueBaseTape
-      using TapeTypes = CODI_DECLARE_DEFAULT(
+      using TapeTypes = CODI_DD(
                           _TapeTypes,
-                          CODI_TEMPLATE(PrimalValueTapeTypes<double, double,
+                          CODI_T(PrimalValueTapeTypes<double, double,
                                                              IndexManagerInterface<int>, StatementEvaluatorInterface,
                                                              DefaultChunkedData>));
       /// See PrimalValueBaseTape
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Impl = CODI_DD(_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>; ///< Base class abbreviation
       friend Base; ///< Allow the base class to call protected and private methods.

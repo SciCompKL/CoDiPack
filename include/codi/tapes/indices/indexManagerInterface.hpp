@@ -39,7 +39,7 @@ namespace codi {
   struct IndexManagerInterface {
     public:
 
-      using Index = CODI_DECLARE_DEFAULT(_Index, int); ///< See IndexManagerInterface
+      using Index = CODI_DD(_Index, int); ///< See IndexManagerInterface
 
       /*******************************************************************************/
       /// @name Global constants

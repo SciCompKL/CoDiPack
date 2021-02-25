@@ -40,7 +40,7 @@ namespace codi {
   struct StatementEvaluatorInterface {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See StatementEvaluatorInterface
+      using Real = CODI_DD(_Real, double); ///< See StatementEvaluatorInterface
 
       /*******************************************************************************/
       /// @name Interface definition

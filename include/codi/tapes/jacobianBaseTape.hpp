@@ -36,13 +36,13 @@ namespace codi {
   struct JacobianTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See JacobianTapeTypes.
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See JacobianTapeTypes.
-      using IndexManager = CODI_DECLARE_DEFAULT(_IndexManager, CODI_TEMPLATE(IndexManagerInterface<int>)); ///< See JacobianTapeTypes.
+      using Real = CODI_DD(_Real, double); ///< See JacobianTapeTypes.
+      using Gradient = CODI_DD(_Gradient, double); ///< See JacobianTapeTypes.
+      using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>)); ///< See JacobianTapeTypes.
       template<typename Chunk, typename Nested>
-      using Data = CODI_DECLARE_DEFAULT(
-                      CODI_TEMPLATE(_Data<Chunk, Nested>),
-                      CODI_TEMPLATE(DataInterface<Nested>)); ///< See JacobianTapeTypes.
+      using Data = CODI_DD(
+                      CODI_T(_Data<Chunk, Nested>),
+                      CODI_T(DataInterface<Nested>)); ///< See JacobianTapeTypes.
 
       using Identifier = typename IndexManager::Index; ///< See IndexManagerInterface.
 
@@ -79,12 +79,12 @@ namespace codi {
     public:
 
       /// See JacobianBaseTape
-      using TapeTypes = CODI_DECLARE_DEFAULT(
+      using TapeTypes = CODI_DD(
                           _TapeTypes,
-                          CODI_TEMPLATE(JacobianTapeTypes<double, double,
+                          CODI_T(JacobianTapeTypes<double, double,
                                                           IndexManagerInterface<int>, DefaultChunkedData>));
       /// See JacobianBaseTape
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Impl = CODI_DD(_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>; ///< Base class abbreviation
       friend Base; ///< Allow the base class to call protected and private methods.

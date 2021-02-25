@@ -6,7 +6,7 @@ needs to follow:
  - Template arguments begin with an `_`.
  - Template arguments are redeclared inside the class with using without the underscore.
  - A default declaration of the template type needs to be done.
-
+ 
 The first two rules are simple and an example is:
 ```{.cpp}
 template<typename _T>
@@ -31,3 +31,6 @@ Example declarations are
   using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(BinaryOperation<Real>));
   using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>));
 ```
+
+
+

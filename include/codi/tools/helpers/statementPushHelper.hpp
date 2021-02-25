@@ -23,10 +23,10 @@ namespace codi {
     public:
 
       /// See StatementPushHelperBase
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       /// See StatementPushHelperBase
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(StatementPushHelperBase<CODI_ANY, CODI_ANY>));
+      using Impl = CODI_DD(_Impl, CODI_T(StatementPushHelperBase<CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real; ///< See LhsExpressionInterface
 
@@ -113,12 +113,12 @@ namespace codi {
     public:
 
       ///< See StatementPushHelper
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real; ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier; ///< See LhsExpressionInterface
       /// See LhsExpressionInterface
-      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
+      using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
 
     protected:
       Identifier indexData[Config::MaxArgumentSize];  ///< Storage for the identifiers of the arguments
@@ -188,7 +188,7 @@ namespace codi {
     public:
 
       /// See StatementPushHelper
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real; ///< See LhsExpressionInterface
       using Gradient = typename Type::Gradient; ///< See LhsExpressionInterface

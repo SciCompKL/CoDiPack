@@ -30,7 +30,7 @@ namespace codi {
   struct JacobianLinearTape : public JacobianBaseTape<_TapeTypes, JacobianLinearTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(JacobianTapeTypes<double, double,
+      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double,
                         IndexManagerInterface<int>, DefaultChunkedData>)); ///< See JacobianLinearTape
 
       using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>; ///< Base class abbreviation

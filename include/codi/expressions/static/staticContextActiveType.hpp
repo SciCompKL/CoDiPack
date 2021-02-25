@@ -22,7 +22,7 @@ namespace codi {
   struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape>> {
     public:
 
-      using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(
+      using Tape = CODI_DD(_Tape, CODI_T(
                                       CODI_UNION<InternalStatementRecordingInterface<int>,
                                                  GradientAccessTapeInterface<double, int>>)); ///< See StaticContextActiveType
 

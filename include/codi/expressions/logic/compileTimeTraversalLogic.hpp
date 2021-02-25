@@ -23,8 +23,8 @@ namespace codi {
   struct CompileTimeTraversalLogic {
     public:
 
-      using ResultType = CODI_DECLARE_DEFAULT(_ResultType, size_t); ///< See CompileTimeTraversalLogic
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic
+      using ResultType = CODI_DD(_ResultType, size_t); ///< See CompileTimeTraversalLogic
+      using Impl = CODI_DD(_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic
 
       static constexpr ResultType NeutralElement = {}; ///< Neutral element of the reduction.
 

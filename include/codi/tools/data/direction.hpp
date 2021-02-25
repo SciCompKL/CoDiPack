@@ -22,7 +22,7 @@ namespace codi {
   struct Direction {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See Direction
+      using Real = CODI_DD(_Real, double); ///< See Direction
 
       static size_t constexpr dim = _dim; ///< See Direction
 
@@ -250,7 +250,7 @@ namespace codi {
   struct RealTraits::IsTotalZero<_Type, GradientTraits::EnableIfDirection<_Type>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, TEMPLATE(Direction<double, 1>));
+      using Type = CODI_DD(_Type, TEMPLATE(Direction<double, 1>));
       using Real = typename GradientTraits::Real<Type>;
 
       static CODI_INLINE bool isTotalZero(Type const& v) {
@@ -267,7 +267,7 @@ namespace codi {
   struct RealTraits::IsTotalFinite<_Type, GradientTraits::EnableIfDirection<_Type>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, TEMPLATE(Direction<double, 1>));
+      using Type = CODI_DD(_Type, TEMPLATE(Direction<double, 1>));
 
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         for (size_t i = 0; i < GradientTraits::dim<Type>(); ++i) {
@@ -285,7 +285,7 @@ namespace codi {
     struct TraitsImplementation<_Gradient, EnableIfDirection<_Gradient>> {
       public:
 
-        using Gradient = CODI_DECLARE_DEFAULT(_Gradient, TEMPLATE(Direction<double, 1>));
+        using Gradient = CODI_DD(_Gradient, TEMPLATE(Direction<double, 1>));
         using Real = typename Gradient::Real;
 
         static size_t constexpr dim = Gradient::dim;

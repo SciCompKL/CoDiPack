@@ -21,7 +21,7 @@ namespace codi {
   struct UnaryOperation {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See UnaryOperation
+      using Real = CODI_DD(_Real, double); ///< See UnaryOperation
 
       /// Compute the primal value from the argument.
       ///
@@ -49,9 +49,9 @@ namespace codi {
   struct UnaryExpression : public ExpressionInterface<_Real, UnaryExpression<_Real, _Arg, _Operation> > {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See UnaryExpression
-      using Arg = CODI_DECLARE_DEFAULT(_Arg, CODI_TEMPLATE(ExpressionInterface<double, CODI_ANY>)); ///< See UnaryExpression
-      using Operation = CODI_DECLARE_DEFAULT(CODI_TEMPLATE(_Operation<Real>), CODI_TEMPLATE(UnaryOperation<Real>)); ///< See UnaryExpression
+      using Real = CODI_DD(_Real, double); ///< See UnaryExpression
+      using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>)); ///< See UnaryExpression
+      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(UnaryOperation<Real>)); ///< See UnaryExpression
 
       typename Arg::StoreAs arg; ///< Argument of the expression
       Real result; ///< Precomputed result

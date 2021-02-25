@@ -35,8 +35,8 @@ namespace codi {
                              public GradientAccessTapeInterface<_Gradient, _Gradient> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);  ///< See ForwardEvaluation
-      using Gradient = CODI_DECLARE_DEFAULT(_Gradient, double); ///< See ForwardEvaluation
+      using Real = CODI_DD(_Real, double);  ///< See ForwardEvaluation
+      using Gradient = CODI_DD(_Gradient, double); ///< See ForwardEvaluation
 
       using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
       using Identifier = Gradient;  ///< Same as the gradient type. Tangent data is stored in the active types.
@@ -156,7 +156,7 @@ namespace codi {
   struct RealTraits::IsTotalFinite<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(
+      using Type = CODI_DD(
                       _Type,
                       TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
                     ); ///< See RealTraits::IsTotalFinite
@@ -174,7 +174,7 @@ namespace codi {
   struct RealTraits::IsTotalZero<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(
+      using Type = CODI_DD(
                       _Type,
                       TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
                     ); ///< See RealTraits::IsTotalZero

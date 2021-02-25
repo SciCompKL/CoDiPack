@@ -31,7 +31,7 @@ namespace codi {
   struct PrimalValueReuseTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, CODI_TEMPLATE(PrimalValueTapeTypes<double, double,
+      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(PrimalValueTapeTypes<double, double,
                         IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>)); ///< See PrimalValueLinearTape
 
       using Base = PrimalValueBaseTape<TapeTypes, PrimalValueReuseTape<TapeTypes>>; ///< Base class abbreviation

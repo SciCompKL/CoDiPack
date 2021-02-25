@@ -24,7 +24,7 @@ namespace codi {
   struct PositionalEvaluationTapeInterface {
     public:
 
-      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition); ///< See PositionalEvaluationTapeInterface
+      using Position = CODI_DD(_Position, EmptyPosition); ///< See PositionalEvaluationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

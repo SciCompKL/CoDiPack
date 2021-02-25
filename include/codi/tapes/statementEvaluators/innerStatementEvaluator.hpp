@@ -62,7 +62,7 @@ namespace codi {
   struct InnerStatementEvaluator : public StatementEvaluatorInterface<_Real> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See InnerStatementEvaluator
+      using Real = CODI_DD(_Real, double); ///< See InnerStatementEvaluator
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation

@@ -8,8 +8,8 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  // Can be enabled to allow for auto completion in IDEs.
   #ifndef CODI_IDE
+    /// Can be enabled to allow for auto completion in IDEs.
     #define CODI_IDE 0
   #endif
 
@@ -29,10 +29,11 @@ namespace codi {
     /// @{
 
     #ifndef CODI_ChunkSize
+      /// See codi::Config::ChunkSize
       #define CODI_ChunkSize 2097152
     #endif
     /// Default size of chunks (ChunkBase) used in ChunkedData in reverse tape implementations.
-    static size_t ChunkSize = CODI_ChunkSize;
+    size_t constexpr ChunkSize = CODI_ChunkSize;
     #undef CODI_ChunkSize
 
     /// Type for the number of arguments in statements
@@ -45,6 +46,7 @@ namespace codi {
     size_t constexpr StatementInputTag = 255;
 
     #ifndef CODI_SmallChunkSize
+      /// See codi::Config::SmallChunkSize
       #define CODI_SmallChunkSize 32768
     #endif
     /// Default smaller size of chunks (ChunkBase) used in ChunkedData in reverse tape implementations.
@@ -57,6 +59,7 @@ namespace codi {
     /// @{
 
     #ifndef CODI_EnableMPI
+      /// See codi::Config::EnableMPI
       #define CODI_EnableMPI false
     #endif
     /// Add MPI and MeDiPack specific headers
@@ -64,6 +67,7 @@ namespace codi {
     // Do not undefine
 
     #ifndef CODI_CheckExpressionArguments
+      /// See codi::Config::CheckExpressionArguments
       #define CODI_CheckExpressionArguments false
     #endif
     /// Check for invalid arguments to expressions like division by zero.
@@ -71,6 +75,7 @@ namespace codi {
     #undef CODI_CheckExpressionArguments
 
     #ifndef CODI_CheckJacobiIsZero
+      /// See codi::Config::CheckJacobiIsZero
       #define CODI_CheckJacobiIsZero true
     #endif
     /// Ignore Jacobian that are zero in Jacobian based tapes.
@@ -78,6 +83,7 @@ namespace codi {
     #undef CODI_CheckJacobiIsZero
 
     #ifndef CODI_CheckTapeActivity
+      /// See codi::Config::CheckTapeActivity
       #define CODI_CheckTapeActivity true
     #endif
     /// Makes it possible to ignore certain code parts. If turned of everything will be recorded.
@@ -85,6 +91,7 @@ namespace codi {
     #undef CODI_CheckTapeActivity
 
     #ifndef CODI_CheckZeroIndex
+      /// See codi::Config::CheckZeroIndex
       #define CODI_CheckZeroIndex true
     #endif
     /// Ignore active types that are not dependent on any input value in Jacobian tapes.
@@ -92,6 +99,7 @@ namespace codi {
     #undef CODI_CheckZeroIndex
 
     #ifndef CODI_CopyOptimization
+      /// See codi::Config::CopyOptimization
       #define CODI_CopyOptimization true
     #endif
     /// Do not store copy statements like a = b; if the identity handler allows it.
@@ -99,6 +107,7 @@ namespace codi {
     #undef CODI_CopyOptimization
 
     #ifndef CODI_RemoveDuplicateJacobianArguments
+      /// See codi::Config::RemoveDuplicateJacobianArguments
       #define CODI_RemoveDuplicateJacobianArguments 0
     #endif
     /// Extra pass in Jacobian tapes that combines arguments with the same identifier.
@@ -106,6 +115,7 @@ namespace codi {
     // Do not undefine
 
     #ifndef CODI_IgnoreInvalidJacobies
+      /// See codi::Config::IgnoreInvalidJacobies
       #define CODI_IgnoreInvalidJacobies false
     #endif
     /// Ignore invalid Jacobians like NaN or Inf
@@ -113,6 +123,7 @@ namespace codi {
     #undef CODI_IgnoreInvalidJacobies
 
     #ifndef CODI_OverflowCheck
+      /// See codi::Config::OverflowCheck
       #define CODI_OverflowCheck true
     #endif
     /// Check in the index manager if an overflow occurred.
@@ -120,6 +131,7 @@ namespace codi {
     #undef CODI_OverflowCheck
 
     #ifndef CODI_SkipZeroAdjointEvaluation
+      /// See codi::Config::SkipZeroAdjointEvaluation
       #define CODI_SkipZeroAdjointEvaluation true
     #endif
     /// Do not perform a reverse evaluation of a statement if the seeding adjoint is zero.
@@ -127,6 +139,7 @@ namespace codi {
     #undef CODI_SkipZeroAdjointEvaluation
 
     #ifndef CODI_SortIndicesOnReset
+      /// See codi::Config::SortIndicesOnReset
       #define CODI_SortIndicesOnReset true
     #endif
     /// Reuse index tapes will sort their indices on a reset.
@@ -134,6 +147,7 @@ namespace codi {
     #undef CODI_SortIndicesOnReset
 
     #ifndef CODI_VariableAdjointInterfaceInPrimalTapes
+      /// See codi::Config::VariableAdjointInterfaceInPrimalTapes
       #define CODI_VariableAdjointInterfaceInPrimalTapes 0
     #endif
     /// Allow custom adjoint vector in primal values tapes.
@@ -141,6 +155,7 @@ namespace codi {
     #if CODI_VariableAdjointInterfaceInPrimalTapes
       #define ADJOINT_VECTOR_TYPE VectorAccessInterface<Real, Identifier>
     #else
+      /// See codi::Config::VariableAdjointInterfaceInPrimalTapes
       #define ADJOINT_VECTOR_TYPE Gradient
     #endif
     // Do not undefine
@@ -151,6 +166,7 @@ namespace codi {
     /// @{
 
     #ifndef CODI_AvoidedInlines
+      /// See codi::Config::AvoidedInlines
       #define CODI_AvoidedInlines 1
     #endif
     #if CODI_AvoidedInlines
@@ -160,6 +176,7 @@ namespace codi {
         #define CODI_NO_INLINE __attribute__((noinline))
       #endif
     #else
+      /// See codi::Config::AvoidedInlines
       #define CODI_NO_INLINE /* no avoiding of inline defined */
     #endif
     /// Do not inline functions like evaluate()
@@ -167,12 +184,14 @@ namespace codi {
     #undef CODI_AvoidedInlines
 
     #ifndef CODI_EnableAssert
+      /// See codi::Config::EnableAssert
       #define CODI_EnableAssert false
     #endif
     #ifndef codiAssert // Can also be defined by the user before including codi.hpp
       #if CODI_EnableAssert
         #define codiAssert(x) ::codi::checkAndOutputAssert(x, CODI_TO_STRING(x), __PRETTY_FUNCTION__, __FILE__, __LINE__)
       #else
+        /// See codi::Config::EnableAssert
         #define codiAssert(x) /* disabled by CODI_EnableAssert */
       #endif
     #endif
@@ -181,6 +200,7 @@ namespace codi {
     #undef CODI_EnableAssert
 
     #ifndef CODI_ForcedInlines
+      /// See codi::Config::ForcedInlines
       #define CODI_ForcedInlines 0
     #endif
     #if CODI_ForcedInlines
@@ -193,6 +213,7 @@ namespace codi {
         #define CODI_INLINE inline
       #endif
     #else
+      /// See codi::Config::ForcedInlines
       #define CODI_INLINE inline
     #endif
     /// Force inlining instead of using the heuristics from the compiler.

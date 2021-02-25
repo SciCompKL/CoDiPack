@@ -34,9 +34,9 @@ namespace codi {
   struct PrimalEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<_Position> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See PrimalEvaluationTapeInterface
-      using Identifier = CODI_DECLARE_DEFAULT(_Identifier, int); ///< See PrimalEvaluationTapeInterface
-      using Position = CODI_DECLARE_DEFAULT(_Position, EmptyPosition); ///< See PrimalEvaluationTapeInterface
+      using Real = CODI_DD(_Real, double); ///< See PrimalEvaluationTapeInterface
+      using Identifier = CODI_DD(_Identifier, int); ///< See PrimalEvaluationTapeInterface
+      using Position = CODI_DD(_Position, EmptyPosition); ///< See PrimalEvaluationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

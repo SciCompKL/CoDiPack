@@ -42,7 +42,7 @@ namespace codi {
   struct CommonTapeTypes {
     public:
 
-      using TapeTypes = CODI_DECLARE_DEFAULT(_TapeTypes, TapeTypesInterface);  ///< See CommonTapeTypes
+      using TapeTypes = CODI_DD(_TapeTypes, TapeTypesInterface);  ///< See CommonTapeTypes
 
       using NestedData = typename TapeTypes::NestedData; ///< See TapeTypesInterface.
       template<typename Chunk, typename Nested>
@@ -83,8 +83,8 @@ namespace codi {
   {
     public:
 
-      using ImplTapeTypes = CODI_DECLARE_DEFAULT(_ImplTapeTypes, TapeTypesInterface); ///< See CommonTapeImplementation.
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See CommonTapeImplementation.
+      using ImplTapeTypes = CODI_DD(_ImplTapeTypes, TapeTypesInterface); ///< See CommonTapeImplementation.
+      using Impl = CODI_DD(_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See CommonTapeImplementation.
 
       using Real = typename ImplTapeTypes::Real;             ///< See TapeTypesInterface.
       using Gradient = typename ImplTapeTypes::Gradient;     ///< See TapeTypesInterface.

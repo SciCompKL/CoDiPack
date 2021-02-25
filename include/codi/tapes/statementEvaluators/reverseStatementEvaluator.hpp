@@ -23,7 +23,7 @@ namespace codi {
   template<typename _Real>
   struct ReverseStatementEvaluator : public StatementEvaluatorInterface<_Real> {
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double); ///< See ReverseStatementEvaluator
+      using Real = CODI_DD(_Real, double); ///< See ReverseStatementEvaluator
 
     public:
 

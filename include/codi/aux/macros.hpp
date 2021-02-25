@@ -53,7 +53,7 @@ namespace codi {
   #endif
 
   /// Abbreviation for CODI_DECLARE_DEFAULT
-  #define CODI_DD(Type, Default) CODI_DECLARE_DEFAULT(Type, Default)
+  #define CODI_DD(Type, Default) CODI_DECLARE_DEFAULT(CODI_TEMPLATE(Type), CODI_TEMPLATE(Default))
 
   /// Used in default declarations of expression templates.
   #define CODI_ANY int

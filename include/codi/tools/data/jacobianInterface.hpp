@@ -21,7 +21,7 @@ namespace codi {
   struct JacobianInterface {
     public:
 
-      using T = CODI_DECLARE_DEFAULT(_T, double); ///< See JacobianInterface
+      using T = CODI_DD(_T, double); ///< See JacobianInterface
 
       size_t getM() const; ///< Get size of rows (Output variables)
       size_t getN() const; ///< Get size of columns  (Input variables)

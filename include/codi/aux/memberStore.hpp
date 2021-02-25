@@ -24,7 +24,7 @@ namespace codi {
 
       ///< See MemberStore
       using Type = _Type; // default declaration breaks auto completion
-      using Parent = CODI_DECLARE_DEFAULT(_Parent, CODI_ANY); ///< See MemberStore
+      using Parent = CODI_DD(_Parent, CODI_ANY); ///< See MemberStore
 
       static bool constexpr storeStatic = _storeStatic;  ///< See MemberStore
 
@@ -54,8 +54,8 @@ namespace codi {
   struct MemberStore<_Type, _Parent, true> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_ANY); ///< See MemberStore
-      using Parent = CODI_DECLARE_DEFAULT(_Parent, CODI_ANY);  ///< See MemberStore
+      using Type = CODI_DD(_Type, CODI_ANY); ///< See MemberStore
+      using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore
 
       static bool constexpr storeStatic = true;  ///< See MemberStore
 

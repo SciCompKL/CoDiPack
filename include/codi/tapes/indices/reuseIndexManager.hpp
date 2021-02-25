@@ -26,7 +26,7 @@ namespace codi {
   struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DECLARE_DEFAULT(_Index, int); ///< See ReuseIndexManager
+      using Index = CODI_DD(_Index, int); ///< See ReuseIndexManager
       using Base = IndexManagerInterface<Index>; ///< Base class abbreviation
 
       /*******************************************************************************/
