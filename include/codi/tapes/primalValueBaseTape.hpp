@@ -824,7 +824,7 @@ namespace codi {
             evalJacobianReverse(adjointVector, lhsAdjoint, passivePos, primalVector, rhsPos, rhsIdentifiers, endPos);
           }
 
-          /// $}
+          /// @}
 
         private:
 
