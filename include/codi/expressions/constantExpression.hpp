@@ -22,7 +22,7 @@ namespace codi {
   struct ConstantExpression : public ExpressionInterface<_Real, ConstantExpression<_Real>> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See ConstantExpression
+      using Real = CODI_DD(_Real, double);  ///< See ConstantExpression
 
     private:
       Real primalValue;
@@ -36,7 +36,7 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = ConstantExpression; ///< codi::ExpressionInterface::StoreAs
+      using StoreAs = ConstantExpression;  ///< codi::ExpressionInterface::StoreAs
 
       /// \copydoc codi::ExpressionInterface::getValue
       CODI_INLINE Real const& getValue() const {
@@ -54,17 +54,17 @@ namespace codi {
       /// @name Implementation of NodeInterface
       /// @{
 
-      static bool constexpr EndPoint = true; ///< \copydoc codi::NodeInterface::EndPoint
+      static bool constexpr EndPoint = true;  ///< \copydoc codi::NodeInterface::EndPoint
 
       /// \copydoc codi::NodeInterface::forEachLink()
-      template<typename Logic, typename ... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+      template<typename Logic, typename... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
         CODI_UNUSED(logic, args...);
       }
 
       /// \copydoc codi::NodeInterface::forEachLinkConstExpr()
-      template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... CODI_UNUSED_ARG(args)) {
+      template<typename Logic, typename... Args>
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... CODI_UNUSED_ARG(args)) {
         return Logic::NeutralElement;
       }
 

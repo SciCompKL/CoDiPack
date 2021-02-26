@@ -21,8 +21,8 @@ namespace codi {
    *
    * \code{.cpp}
    *                     item 0 | item 1 | item 2 | etc.
-   *   array1 (double) :  0.1   |   3.14 |  2.17  | ...
-   *   array2 (int)    :   1    |   10   |   2    | ...
+   *   array1 (double) :  0.1   |   3.14 |  2.17  |...
+   *   array2 (int)    :   1    |   10   |   2    |...
    * \endcode
    *
    * The base class defines functions for getting and setting the number of used items. The interface defines the
@@ -51,33 +51,33 @@ namespace codi {
       /// @name Interface: Entry management
       /// @{
 
-      template<typename ... Data>
-      CODI_INLINE void pushData(Data&& ... dataEntries); ///< Add one data item. For each entry one argument has to be provided.
+      template<typename... Data>
+      CODI_INLINE void pushData(Data&&... dataEntries);  ///< Add one data item. For each entry one argument has to be provided.
 
-      template<typename ... Pointers>
-      CODI_INLINE void dataPointer(size_t const& index, Pointers*& ... pointers); ///< Extract pointer to requested position.  For each entry one argument has to be provided.
+      template<typename... Pointers>
+      CODI_INLINE void dataPointer(size_t const& index, Pointers*&... pointers);  ///< Extract pointer to requested position.  For each entry one argument has to be provided.
 
       /// @}
       /*******************************************************************************/
       /// @name Interface: Data IO
       /// @{
 
-      virtual void allocateData() = 0; ///< Allocated the data if it was deallocated before.
-      virtual void deleteData() = 0; ///< Delete the allocated data.
+      virtual void allocateData() = 0;  ///< Allocated the data if it was deallocated before.
+      virtual void deleteData() = 0;  ///< Delete the allocated data.
       virtual void readData(FileIo& handle) = 0;  ///< Read data from the FileIo handle
-      virtual void writeData(FileIo& handle) const = 0; ///< Write data to the FileIO handle
+      virtual void writeData(FileIo& handle) const = 0;  ///< Write data to the FileIO handle
 
       /// @}
       /*******************************************************************************/
       /// @name Interface: Misc
       /// @{
 
-      void swap(CODI_IMPLEMENTATION& other); ///< Swap data with other chunk of the same type.
+      void swap(CODI_IMPLEMENTATION& other);  ///< Swap data with other chunk of the same type.
 
       /// @}
     protected:
-      size_t size;     ///< Maximum size of arrays.
-      size_t usedSize; ///< Currently used size.
+      size_t size;  ///< Maximum size of arrays.
+      size_t usedSize;  ///< Currently used size.
 
     public:
 
@@ -147,7 +147,7 @@ namespace codi {
   struct Chunk1 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase; ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type
 
     private:
 
@@ -171,11 +171,11 @@ namespace codi {
       /// @name ChunkBase interface implementation
       /// @{
 
-      static size_t constexpr EntrySize = sizeof(Data1); ///< \copydoc ChunkBase::EntrySize
+      static size_t constexpr EntrySize = sizeof(Data1);  ///< \copydoc ChunkBase::EntrySize
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if(NULL == data1) {
+        if (NULL == data1) {
           data1 = new Data1[size];
         }
       }
@@ -188,7 +188,7 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if(NULL != data1) {
+        if (NULL != data1) {
           delete [] data1;
           data1 = NULL;
         }
@@ -233,7 +233,7 @@ namespace codi {
   struct Chunk2 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase; ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type
 
     private:
 
@@ -259,15 +259,15 @@ namespace codi {
       /// @name ChunkBase interface implementation
       /// @{
 
-      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2); ///< \copydoc ChunkBase::EntrySize
+      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2);  ///< \copydoc ChunkBase::EntrySize
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if(NULL == data1) {
+        if (NULL == data1) {
           data1 = new Data1[size];
         }
 
-        if(NULL == data2) {
+        if (NULL == data2) {
           data2 = new Data2[size];
         }
       }
@@ -281,12 +281,12 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if(NULL != data1) {
+        if (NULL != data1) {
           delete [] data1;
           data1 = NULL;
         }
 
-        if(NULL != data2) {
+        if (NULL != data2) {
           delete [] data2;
           data2 = NULL;
         }
@@ -336,7 +336,7 @@ namespace codi {
   struct Chunk3 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase; ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type
 
     private:
 
@@ -364,19 +364,19 @@ namespace codi {
       /// @name ChunkBase interface implementation
       /// @{
 
-      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3); ///< \copydoc ChunkBase::EntrySize
+      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3);  ///< \copydoc ChunkBase::EntrySize
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if(NULL == data1) {
+        if (NULL == data1) {
           data1 = new Data1[size];
         }
 
-        if(NULL == data2) {
+        if (NULL == data2) {
           data2 = new Data2[size];
         }
 
-        if(NULL == data3) {
+        if (NULL == data3) {
           data3 = new Data3[size];
         }
       }
@@ -391,17 +391,17 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if(NULL != data1) {
+        if (NULL != data1) {
           delete [] data1;
           data1 = NULL;
         }
 
-        if(NULL != data2) {
+        if (NULL != data2) {
           delete [] data2;
           data2 = NULL;
         }
 
-        if(NULL != data3) {
+        if (NULL != data3) {
           delete [] data3;
           data3 = NULL;
         }
@@ -457,7 +457,7 @@ namespace codi {
   struct Chunk4 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase; ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type
 
     private:
 
@@ -487,23 +487,23 @@ namespace codi {
       /// @name ChunkBase interface implementation
       /// @{
 
-      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3) + sizeof(Data4); ///< \copydoc ChunkBase::EntrySize
+      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3) + sizeof(Data4);  ///< \copydoc ChunkBase::EntrySize
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if(NULL == data1) {
+        if (NULL == data1) {
           data1 = new Data1[size];
         }
 
-        if(NULL == data2) {
+        if (NULL == data2) {
           data2 = new Data2[size];
         }
 
-        if(NULL == data3) {
+        if (NULL == data3) {
           data3 = new Data3[size];
         }
 
-        if(NULL == data4) {
+        if (NULL == data4) {
           data4 = new Data4[size];
         }
       }
@@ -519,22 +519,22 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if(NULL != data1) {
+        if (NULL != data1) {
           delete [] data1;
           data1 = NULL;
         }
 
-        if(NULL != data2) {
+        if (NULL != data2) {
           delete [] data2;
           data2 = NULL;
         }
 
-        if(NULL != data3) {
+        if (NULL != data3) {
           delete [] data3;
           data3 = NULL;
         }
 
-        if(NULL != data4) {
+        if (NULL != data4) {
           delete [] data4;
           data4 = NULL;
         }

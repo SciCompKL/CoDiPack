@@ -29,14 +29,14 @@ namespace codi {
   struct ChunkedData : public DataInterface<_NestedData> {
     public:
 
-      using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>)); ///< ChunkBase Interface
-      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>)); ///< DataInterface Interface
-      using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>)); ///< PointerStore
+      using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>));  ///< ChunkBase Interface
+      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));  ///< DataInterface Interface
+      using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< PointerStore
       using InternalPosHandle = size_t ;///< Position in the chunk
 
-      using NestedPosition = typename NestedData::Position; ///< Position of NestedData
+      using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 
-      using Position = ChunkPosition<NestedPosition>; ///< \copydoc DataInterface::Position
+      using Position = ChunkPosition<NestedPosition>;  ///< \copydoc DataInterface::Position
 
     private:
       std::vector<Chunk*> chunks;
@@ -75,7 +75,7 @@ namespace codi {
 
       /// Destructor
       ~ChunkedData() {
-        for(size_t i = 0; i < chunks.size(); ++i) {
+        for (size_t i = 0; i < chunks.size(); ++i) {
           delete chunks[i];
         }
       }
@@ -84,8 +84,8 @@ namespace codi {
       /// @name Adding items
 
       /// \copydoc DataInterface::pushData
-      template<typename ... Data>
-      CODI_INLINE void pushData(Data const& ... data) {
+      template<typename... Data>
+      CODI_INLINE void pushData(Data const&... data) {
         // this method should only be called if reserveItems has been called
         curChunk->pushData(data...);
       }
@@ -95,7 +95,7 @@ namespace codi {
       CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
         codiAssert(items <= chunkSize);
 
-        if(chunkSize < curChunk->getUsedSize() + items) {
+        if (chunkSize < curChunk->getUsedSize() + items) {
           nextChunk();
         }
 
@@ -108,11 +108,11 @@ namespace codi {
       /// \copydoc DataInterface::resize
       void resize(size_t const& totalSize) {
         size_t noOfChunks = totalSize / chunkSize;
-        if(0 != totalSize % chunkSize) {
+        if (0 != totalSize % chunkSize) {
           noOfChunks += 1;
         }
 
-        for(size_t i = chunks.size(); i < noOfChunks; ++i) {
+        for (size_t i = chunks.size(); i < noOfChunks; ++i) {
           chunks.push_back(new Chunk(chunkSize));
           positions.push_back(nested->getPosition());
         }
@@ -125,7 +125,7 @@ namespace codi {
 
       /// \copydoc DataInterface::resetHard
       void resetHard() {
-        for(size_t i = 1; i < chunks.size(); ++i) {
+        for (size_t i = 1; i < chunks.size(); ++i) {
           delete chunks[i];
         }
 
@@ -144,7 +144,7 @@ namespace codi {
         codiAssert(pos.chunk < chunks.size());
         codiAssert(pos.data <= chunkSize);
 
-        for(size_t i = pos.chunk + 1; i <= curChunkIndex; i += 1) {
+        for (size_t i = pos.chunk + 1; i <= curChunkIndex; i += 1) {
           chunks[i]->reset();
         }
 
@@ -161,7 +161,7 @@ namespace codi {
       /// \copydoc DataInterface::getDataSize
       CODI_INLINE size_t getDataSize() const {
         size_t size = 0;
-        for(size_t i = 0; i < chunks.size(); ++i) {
+        for (size_t i = 0; i < chunks.size(); ++i) {
           size += chunks[i]->getUsedSize();
         }
 
@@ -244,7 +244,7 @@ namespace codi {
       /// @name Iterator functions
 
       /// \copydoc DataInterface::evaluateForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
@@ -255,9 +255,9 @@ namespace codi {
         NestedPosition endInnerPos;
 
         size_t curChunk = start.chunk;
-        for(;;) {
+        for (;;) {
           // Update of end conditions
-          if(curChunk != end.chunk) {
+          if (curChunk != end.chunk) {
             endInnerPos = positions[curChunk + 1];
             endDataPos = chunks[curChunk]->getUsedSize();
           } else {
@@ -275,7 +275,7 @@ namespace codi {
           // After a full chunk is evaluated, the data position needs to be at the end data position
           codiAssert(curDataPos == endDataPos);
 
-          if(curChunk != end.chunk) {
+          if (curChunk != end.chunk) {
             curChunk += 1;
             curInnerPos = endInnerPos;
             curDataPos = 0;
@@ -286,7 +286,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::evaluateReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
@@ -297,9 +297,9 @@ namespace codi {
         NestedPosition endInnerPos;
 
         size_t curChunk = start.chunk;
-        for(;;) {
+        for (;;) {
           // Update of end conditions
-          if(curChunk != end.chunk) {
+          if (curChunk != end.chunk) {
             endInnerPos = positions[curChunk];
             endDataPos = 0;
           } else {
@@ -317,7 +317,7 @@ namespace codi {
           // After a full chunk is evaluated, the data position needs to be at the end data position
           codiAssert(curDataPos == endDataPos);
 
-          if(curChunk != end.chunk){
+          if (curChunk != end.chunk){
             // Update of loop variables
             curChunk -= 1;
             curInnerPos = endInnerPos;
@@ -329,29 +329,29 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::forEachChunk
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
 
-        for(size_t chunkPos = 0; chunkPos < chunks.size(); chunkPos += 1) {
+        for (size_t chunkPos = 0; chunkPos < chunks.size(); chunkPos += 1) {
 
           function(chunks[chunkPos], std::forward<Args>(args)...);
         }
 
-        if(recursive) {
+        if (recursive) {
           nested->forEachChunk(function, recursive, std::forward<Args>(args)...);
         }
       }
 
       /// \copydoc DataInterface::forEachForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.chunk < end.chunk || (start.chunk == end.chunk && start.data <= end.data));
         codiAssert(end.chunk < chunks.size());
 
         size_t dataStart = start.data;
-        for(size_t chunkPos = start.chunk; chunkPos <= end.chunk; chunkPos += 1) {
+        for (size_t chunkPos = start.chunk; chunkPos <= end.chunk; chunkPos += 1) {
           size_t dataEnd;
-          if(chunkPos != end.chunk) {
+          if (chunkPos != end.chunk) {
             dataEnd = chunks[chunkPos]->getUsedSize();
           } else {
             dataEnd = end.data;
@@ -364,7 +364,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::forEachReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.chunk > end.chunk || (start.chunk == end.chunk && start.data >= end.data));
         codiAssert(start.chunk < chunks.size());
@@ -375,9 +375,9 @@ namespace codi {
         // For loop break condition is illformed due to unsigned underflow of chunkPos. The condition would be
         // chunkPos >= end.chunk which only breaks if chunkPos == -1 when end.chunk == 0. The minus one is not possible
         // for unsigned types.
-        for(;;) {
+        for (;;) {
           size_t dataEnd;
-          if(chunkPos != end.chunk) {
+          if (chunkPos != end.chunk) {
             dataEnd = 0;
           } else {
             dataEnd = end.data;
@@ -385,7 +385,7 @@ namespace codi {
 
           forEachChunkEntryReverse(chunkPos, dataStart, dataEnd, function, std::forward<Args>(args)...);
 
-          if(chunkPos == end.chunk) {
+          if (chunkPos == end.chunk) {
             break;
           } else {
             // decrement of loop variable
@@ -399,20 +399,20 @@ namespace codi {
 
     private:
 
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunkEntryForward(size_t const& chunkPos, size_t const& start, size_t const& end, FunctionObject function, Args&&... args) {
         codiAssert(start <= end);
         codiAssert(chunkPos < chunks.size());
 
         PointerInserter pHandle;
 
-        for(size_t dataPos = start; dataPos < end; dataPos += 1) {
+        for (size_t dataPos = start; dataPos < end; dataPos += 1) {
           pHandle.setPointers(dataPos, chunks[chunkPos]);
           pHandle.call(function, std::forward<Args>(args)...);
         }
       }
 
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunkEntryReverse(size_t const& chunkPos, size_t const& start, size_t const& end,
                                           FunctionObject function, Args&&... args) {
         codiAssert(start >= end);
@@ -423,7 +423,7 @@ namespace codi {
         // For loop break condition is illformed due to unsigned underflow of dataPos. The condition would be
         // dataPos >= end which only breaks if dataPos == -1 when end == 0. The minus one is not possible
         // for unsigned types.
-        for(size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
+        for (size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
           dataPos -= 1; // decrement of loop variable
 
           pHandle.setPointers(dataPos, chunks[chunkPos]);
@@ -434,7 +434,7 @@ namespace codi {
       /// Loads next chunk or creates a new one if none is available.
       CODI_NO_INLINE void nextChunk() {
         curChunkIndex += 1;
-        if(chunks.size() == curChunkIndex) {
+        if (chunks.size() == curChunkIndex) {
           curChunk = new Chunk(chunkSize);
           chunks.push_back(curChunk);
           positions.push_back(nested->getPosition());

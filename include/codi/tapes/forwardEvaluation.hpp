@@ -36,9 +36,9 @@ namespace codi {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See ForwardEvaluation
-      using Gradient = CODI_DD(_Gradient, double); ///< See ForwardEvaluation
+      using Gradient = CODI_DD(_Gradient, double);  ///< See ForwardEvaluation
 
-      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
       using Identifier = Gradient;  ///< Same as the gradient type. Tangent data is stored in the active types.
 
       /*******************************************************************************/
@@ -159,7 +159,7 @@ namespace codi {
       using Type = CODI_DD(
                       _Type,
                       TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
-                    ); ///< See RealTraits::IsTotalFinite
+                    );  ///< See RealTraits::IsTotalFinite
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalFinite()
       static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -177,8 +177,8 @@ namespace codi {
       using Type = CODI_DD(
                       _Type,
                       TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
-                    ); ///< See RealTraits::IsTotalZero
-      using Real = typename Type::Real; ///< See codi::LhsExpressionInterface::Real
+                    );  ///< See RealTraits::IsTotalZero
+      using Real = typename Type::Real;  ///< See codi::LhsExpressionInterface::Real
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalZero()
       static CODI_INLINE bool isTotalZero(Type const& v) {

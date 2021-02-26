@@ -21,7 +21,7 @@ namespace codi {
   struct Add : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -52,7 +52,7 @@ namespace codi {
   struct Substract : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -83,7 +83,7 @@ namespace codi {
   struct Multiply : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -114,7 +114,7 @@ namespace codi {
   struct Divide : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -143,8 +143,8 @@ namespace codi {
     private:
       template<typename ArgB>
       static CODI_INLINE void checkArguments(ArgB const& argB) {
-        if(Config::CheckExpressionArguments) {
-          if( RealTraits::isTotalZero(RealTraits::getPassiveValue(argB))) {
+        if (Config::CheckExpressionArguments) {
+          if ( RealTraits::isTotalZero(RealTraits::getPassiveValue(argB))) {
             CODI_EXCEPTION("Division called with divisor of zero.");
           }
         }
@@ -171,7 +171,7 @@ namespace codi {
   struct Atan2 : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -204,8 +204,8 @@ namespace codi {
     private:
       template<typename ArgA, typename ArgB>
       static CODI_INLINE void checkArguments(ArgA& argA, ArgB& argB) {
-        if(Config::CheckExpressionArguments) {
-          if( 0.0 == RealTraits::getPassiveValue(argA) && 0.0 == RealTraits::getPassiveValue(argB)) {
+        if (Config::CheckExpressionArguments) {
+          if ( 0.0 == RealTraits::getPassiveValue(argA) && 0.0 == RealTraits::getPassiveValue(argB)) {
             CODI_EXCEPTION("atan2 called at point (0,0).");
           }
         }
@@ -220,7 +220,7 @@ namespace codi {
   struct Copysign : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -233,13 +233,13 @@ namespace codi {
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
 
         CODI_UNUSED(result);
-        if(RealTraits::getPassiveValue(argA) < 0.0) {
+        if (RealTraits::getPassiveValue(argA) < 0.0) {
           if (RealTraits::getPassiveValue(argB) < 0.0) {
             return RealTraits::PassiveReal<Real>(1.0);
           } else {
             return RealTraits::PassiveReal<Real>(-1.0);
           }
-        } else if(RealTraits::getPassiveValue(argA) > 0.0) {
+        } else if (RealTraits::getPassiveValue(argA) > 0.0) {
           if (RealTraits::getPassiveValue(argB) < 0.0) {
             return RealTraits::PassiveReal<Real>(-1.0);
           } else {
@@ -272,7 +272,7 @@ namespace codi {
   struct Max : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -285,7 +285,7 @@ namespace codi {
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
 
-        if(RealTraits::getPassiveValue(argA) > RealTraits::getPassiveValue(argB)) {
+        if (RealTraits::getPassiveValue(argA) > RealTraits::getPassiveValue(argB)) {
           return 1.0;
         } else {
           return 0.0;
@@ -297,7 +297,7 @@ namespace codi {
       static CODI_INLINE  RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
 
-        if(RealTraits::getPassiveValue(argA) > RealTraits::getPassiveValue(argB)) {
+        if (RealTraits::getPassiveValue(argA) > RealTraits::getPassiveValue(argB)) {
           return 0.0;
         } else {
           return 1.0;
@@ -318,7 +318,7 @@ namespace codi {
   struct Min : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -331,7 +331,7 @@ namespace codi {
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
 
-        if(RealTraits::getPassiveValue(argA) < RealTraits::getPassiveValue(argB)) {
+        if (RealTraits::getPassiveValue(argA) < RealTraits::getPassiveValue(argB)) {
           return 1.0;
         } else {
           return 0.0;
@@ -343,7 +343,7 @@ namespace codi {
       static CODI_INLINE  RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
 
-        if(RealTraits::getPassiveValue(argA) < RealTraits::getPassiveValue(argB)) {
+        if (RealTraits::getPassiveValue(argA) < RealTraits::getPassiveValue(argB)) {
           return 0.0;
         } else {
           return 1.0;
@@ -363,7 +363,7 @@ namespace codi {
   struct Pow : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -401,8 +401,8 @@ namespace codi {
     private:
       template<typename ArgA>
       static CODI_INLINE void checkArguments(ArgA& argA) {
-        if(Config::CheckExpressionArguments) {
-          if(RealTraits::getPassiveValue(argA) < 0.0) {
+        if (Config::CheckExpressionArguments) {
+          if (RealTraits::getPassiveValue(argA) < 0.0) {
             CODI_EXCEPTION("Negative base for active exponent in pow function. (Value: %0.15e)", RealTraits::getPassiveValue(argA));
           }
         }
@@ -419,7 +419,7 @@ namespace codi {
   struct Remainder : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>

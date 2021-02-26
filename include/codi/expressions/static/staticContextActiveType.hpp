@@ -24,10 +24,10 @@ namespace codi {
 
       using Tape = CODI_DD(_Tape, CODI_T(
                                       CODI_UNION<InternalStatementRecordingInterface<int>,
-                                                 GradientAccessTapeInterface<double, int>>)); ///< See StaticContextActiveType
+                                                 GradientAccessTapeInterface<double, int>>));  ///< See StaticContextActiveType
 
-      using Real = typename Tape::Real;             ///< See TapeTypesInterface.
-      using Identifier = typename Tape::Identifier; ///< See TapeTypesInterface.
+      using Real = typename Tape::Real;  ///< See TapeTypesInterface.
+      using Identifier = typename Tape::Identifier;  ///< See TapeTypesInterface.
 
     private:
 
@@ -56,7 +56,7 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = StaticContextActiveType; ///< \copydoc codi::ExpressionInterface::EndPoint
+      using StoreAs = StaticContextActiveType;  ///< \copydoc codi::ExpressionInterface::EndPoint
 
       /// \copydoc codi::ExpressionInterface::getValue()
       CODI_INLINE Real const getValue() const {
@@ -74,17 +74,17 @@ namespace codi {
       /// @name Implementation of NodeInterface
       /// @{
 
-      static bool constexpr EndPoint = true; ///< \copydoc codi::NodeInterface::EndPoint
+      static bool constexpr EndPoint = true;  ///< \copydoc codi::NodeInterface::EndPoint
 
       /// \copydoc codi::NodeInterface::forEachLink
-      template<typename Logic, typename ... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+      template<typename Logic, typename... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
         CODI_UNUSED(logic, args...);
       }
 
       /// \copydoc codi::NodeInterface::forEachLinkConstExpr
-      template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... CODI_UNUSED_ARG(args)) {
+      template<typename Logic, typename... Args>
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... CODI_UNUSED_ARG(args)) {
         return Logic::NeutralElement;
       }
 

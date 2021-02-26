@@ -29,16 +29,16 @@ namespace codi {
     public:
 
       using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double,
-                        IndexManagerInterface<int>, DefaultChunkedData>)); ///< See JacobianReuseTape
+                        IndexManagerInterface<int>, DefaultChunkedData>));  ///< See JacobianReuseTape
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>; ///< Base class abbreviation
-      friend Base; ///< Allow the base class to call protected and private methods.
+      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation
+      friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;  ///< See TapeTypesInterface.
       using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
-      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
-      using Position = typename Base::Position;               ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;  ///< See TapeTypesInterface.
+      using Position = typename Base::Position;  ///< See TapeTypesInterface.
       using StatementData = typename TapeTypes::StatementData;///< See JacobianTapeTypes
 
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
@@ -56,7 +56,7 @@ namespace codi {
         auto clearFunc = [this] (Config::ArgumentSize* stmtSize, Identifier* index) {
           CODI_UNUSED(stmtSize);
 
-          if(*index < this->adjoints.size()) {
+          if (*index < this->adjoints.size()) {
             this->adjoints[*index] = Gradient();
           }
         };
@@ -87,7 +87,7 @@ namespace codi {
 
         CODI_UNUSED(endJacobianPos);
 
-        while(curStmtPos < endStmtPos) {
+        while (curStmtPos < endStmtPos) {
 
           Adjoint lhsAdjoint = Adjoint();
           Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos, rhsJacobians, rhsIdentifiers);
@@ -110,7 +110,7 @@ namespace codi {
 
         CODI_UNUSED(endJacobianPos);
 
-        while(curStmtPos > endStmtPos) {
+        while (curStmtPos > endStmtPos) {
           curStmtPos -= 1;
 
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];

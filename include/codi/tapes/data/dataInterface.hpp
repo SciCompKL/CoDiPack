@@ -35,8 +35,8 @@ namespace codi {
    *
    * Example usage:
    *  \code{.cpp}
-   *    ArgDataInterface argVector = ...;
-   *    StmtDataInterface<ArgDataInterface> stmtVector = ...;  // argVector is nested into the stmtVector
+   *    ArgDataInterface argVector =...;
+   *    StmtDataInterface<ArgDataInterface> stmtVector =...;  // argVector is nested into the stmtVector
    *
    *    stmtVector.setNested(&argVector);  // Set the pointer to the nested vector
    *
@@ -54,8 +54,8 @@ namespace codi {
    *    // How data is provided to func depends on the interface implementations, lets assume start,end and a data
    *    // pointer
    *    auto func = (startStmt, endStmt, stmt, startArg, endArg, arg) {
-   *        for(int i = startStmt; i < endStmt; i += 1) { std::cout << st,t[i] << ", ";}
-   *        for(int i = startArg; i < endArg; i += 1) { std::cout << arg[i] << ", ";}
+   *        for (int i = startStmt; i < endStmt; i += 1) { std::cout << st,t[i] << ", ";}
+   *        for (int i = startArg; i < endArg; i += 1) { std::cout << arg[i] << ", ";}
    *    };
    *    stmtVector.evaluateForward(stmtVector.getZeroPosition(), stmtVector.getPosition(), func);
    *
@@ -93,10 +93,10 @@ namespace codi {
   struct DataInterface {
     public:
 
-      using NestedData = CODI_DD(_NestedData, DataInterface); ///< See DataInterface
+      using NestedData = CODI_DD(_NestedData, DataInterface);  ///< See DataInterface
       using InternalPosHandle = CODI_DD(_InternalPosHandle, size_t);  ///< See DataInterface
 
-      using Position = EmptyPosition; ///< Contains position data for this DataInterface and all nested interfaces
+      using Position = EmptyPosition;  ///< Contains position data for this DataInterface and all nested interfaces
 
       /*******************************************************************************/
       /// @name Adding items
@@ -114,8 +114,8 @@ namespace codi {
        * @param[in] data  The number of arguments has to match the number of data stores of the implementation.
        * @tparam Data Types of the pushed data.
        */
-      template<typename ... Data>
-      CODI_INLINE void pushData(Data const& ... data);
+      template<typename... Data>
+      CODI_INLINE void pushData(Data const&... data);
 
       /**
        * @brief Reserve this many items on the data stream. See pushData for details.
@@ -183,7 +183,7 @@ namespace codi {
        *            start, end, dataEntry1*, dataEntry2*,
        *            startNested, endNested, dataEntry1Nested*, dataEntry2Nested*,
        *            startNestedNested, endNestedNested, dataEntry1NestedNested*,
-       *            ...);
+       *           ...);
        * \endcode
        *
        * What kind of data is appended by each DataInterface is implementation dependent. The default is the set
@@ -201,7 +201,7 @@ namespace codi {
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args);
 
@@ -218,7 +218,7 @@ namespace codi {
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args);
 
@@ -239,7 +239,7 @@ namespace codi {
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args);
 
 
@@ -248,7 +248,7 @@ namespace codi {
        *
        * The call to function is
        * \code{.cpp}
-       *   function(args..., entry1*, entry2*, ...);
+       *   function(args..., entry1*, entry2*,...);
        * \endcode
        *
        * It has to hold start <= end.
@@ -261,7 +261,7 @@ namespace codi {
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args);
 
@@ -280,7 +280,7 @@ namespace codi {
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args);
   };

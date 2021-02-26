@@ -31,17 +31,17 @@ namespace codi {
   struct InternalStatementRecordingInterface {
     public:
 
-      using Identifier = CODI_DD(_Identifier, int); ///< See InternalStatementRecordingInterface
+      using Identifier = CODI_DD(_Identifier, int);  ///< See InternalStatementRecordingInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
-      static bool constexpr AllowJacobianOptimization = CODI_UNDEFINED_VALUE; ///< If certain operations can be hidden from the tape.
+      static bool constexpr AllowJacobianOptimization = CODI_UNDEFINED_VALUE;  ///< If certain operations can be hidden from the tape.
 
       template<typename Real>
-      void initIdentifier(Real& value, Identifier& identifier); ///< Needs to be called for each identifier, after it is allocated.
+      void initIdentifier(Real& value, Identifier& identifier);  ///< Needs to be called for each identifier, after it is allocated.
       template<typename Real>
-      void destroyIdentifier(Real& value, Identifier& identifier); ///< Needs to be called for each identifier, before it is deallocated.
+      void destroyIdentifier(Real& value, Identifier& identifier);  ///< Needs to be called for each identifier, before it is deallocated.
 
       /**
        * @brief Needs to called by a value every time it is assigned.

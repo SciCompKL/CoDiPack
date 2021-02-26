@@ -41,11 +41,11 @@ namespace codi {
                                 public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
 
 
-      using Real = CODI_DD(_Real, double); ///< See ReverseTapeInterface
-      using Gradient = CODI_DD(_Gradient, double); ///< See ReverseTapeInterface
-      using Identifier = CODI_DD(_Identifier, int); ///< See ReverseTapeInterface
+      using Real = CODI_DD(_Real, double);  ///< See ReverseTapeInterface
+      using Gradient = CODI_DD(_Gradient, double);  ///< See ReverseTapeInterface
+      using Identifier = CODI_DD(_Identifier, int);  ///< See ReverseTapeInterface
 
-      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       /*******************************************************************************/
       /// @name Recording
@@ -55,14 +55,14 @@ namespace codi {
       /// Mark a value as output (dependent)
       template<typename Lhs> void registerOutput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
 
-      void setActive();      ///< Start/continue recording of statements
-      void setPassive();     ///< Stop recording of statements
-      bool isActive() const; ///< Check if the tape is recording
+      void setActive();  ///< Start/continue recording of statements
+      void setPassive();  ///< Stop recording of statements
+      bool isActive() const;  ///< Check if the tape is recording
 
       /*******************************************************************************/
       /// @name Reversal
 
-      void evaluate(); ///< Perform a full reverse evaluation of the tape.
+      void evaluate();  ///< Perform a full reverse evaluation of the tape.
 
       /*******************************************************************************/
       /// @name Reset

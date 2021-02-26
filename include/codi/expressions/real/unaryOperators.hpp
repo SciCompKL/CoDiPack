@@ -20,7 +20,7 @@ namespace codi {
   struct UnaryMinus : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -84,7 +84,7 @@ namespace codi {
   struct Abs : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -96,9 +96,9 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(arg < 0.0) {
+        if (arg < 0.0) {
           return (Real)-1.0;
-        } else if(arg > 0.0) {
+        } else if (arg > 0.0) {
           return (Real)1.0;
         } else {
           return (Real)0.0;
@@ -118,7 +118,7 @@ namespace codi {
   struct Acos : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -130,8 +130,8 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(Config::CheckExpressionArguments) {
-          if(RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+        if (Config::CheckExpressionArguments) {
+          if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
             CODI_EXCEPTION("acos outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
@@ -147,7 +147,7 @@ namespace codi {
   struct Asin : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -159,8 +159,8 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(Config::CheckExpressionArguments) {
-          if(RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+        if (Config::CheckExpressionArguments) {
+          if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
             CODI_EXCEPTION("asin outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
@@ -176,7 +176,7 @@ namespace codi {
   struct Atan : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -200,7 +200,7 @@ namespace codi {
   struct Atanh : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -212,8 +212,8 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(Config::CheckExpressionArguments) {
-          if(RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+        if (Config::CheckExpressionArguments) {
+          if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
             CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
@@ -229,7 +229,7 @@ namespace codi {
   struct Cbrt : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -240,12 +240,12 @@ namespace codi {
       /// \copydoc UnaryOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
-        if(Config::CheckExpressionArguments) {
-          if(0.0 == RealTraits::getPassiveValue(arg)) {
+        if (Config::CheckExpressionArguments) {
+          if (0.0 == RealTraits::getPassiveValue(arg)) {
             CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
-        if(result != 0.0) {
+        if (result != 0.0) {
           return 1.0 / (3.0 * result * result);
         } else {
           return (Real)0.0;
@@ -267,7 +267,7 @@ namespace codi {
   struct Cos : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -291,7 +291,7 @@ namespace codi {
   struct Cosh : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -315,7 +315,7 @@ namespace codi {
   struct Erf : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -339,7 +339,7 @@ namespace codi {
   struct Erfc : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -363,7 +363,7 @@ namespace codi {
   struct Exp : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -417,7 +417,7 @@ namespace codi {
   struct Log : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -429,8 +429,8 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(Config::CheckExpressionArguments) {
-          if(0.0 > RealTraits::getPassiveValue(arg)) {
+        if (Config::CheckExpressionArguments) {
+          if (0.0 > RealTraits::getPassiveValue(arg)) {
             CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
@@ -446,7 +446,7 @@ namespace codi {
   struct Log10 : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -458,8 +458,8 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(Config::CheckExpressionArguments) {
-          if(0.0 > RealTraits::getPassiveValue(arg)) {
+        if (Config::CheckExpressionArguments) {
+          if (0.0 > RealTraits::getPassiveValue(arg)) {
             CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
@@ -481,7 +481,7 @@ namespace codi {
   struct Sin : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -505,7 +505,7 @@ namespace codi {
   struct Sinh : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -529,7 +529,7 @@ namespace codi {
   struct Sqrt : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -540,12 +540,12 @@ namespace codi {
       /// \copydoc UnaryOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
-        if(Config::CheckExpressionArguments) {
-          if(0.0 > RealTraits::getPassiveValue(arg)) {
+        if (Config::CheckExpressionArguments) {
+          if (0.0 > RealTraits::getPassiveValue(arg)) {
             CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
-        if(result != 0.0) {
+        if (result != 0.0) {
           return 0.5 / result;
         } else {
           return (Real)0.0;
@@ -561,7 +561,7 @@ namespace codi {
   struct Tan : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -573,8 +573,8 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        if(Config::CheckExpressionArguments) {
-          if(0.0 == cos(RealTraits::getPassiveValue(arg))) {
+        if (Config::CheckExpressionArguments) {
+          if (0.0 == cos(RealTraits::getPassiveValue(arg))) {
             CODI_EXCEPTION("Tan evaluated at (0.5  + i) * PI.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
@@ -591,7 +591,7 @@ namespace codi {
   struct Tanh : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -615,7 +615,7 @@ namespace codi {
   struct Tgamma : public UnaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -626,7 +626,7 @@ namespace codi {
       /// \copydoc UnaryOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
-        if(arg <= 0.0) {
+        if (arg <= 0.0) {
           std::cout << "Derivative for gamma function only for positive arguments at the moment" << std::endl;
           std::exit(1);
         }
@@ -639,7 +639,7 @@ namespace codi {
         // Differentation is Gamma'(arg) = Gamma(arg) * DiGamma(arg)
 
         Real diGamma = 0.0;
-        if(arg <= 0.000001) { // special case for small numbers
+        if (arg <= 0.000001) { // special case for small numbers
           const Real eulerMascheroni = 0.57721566490153286060;
           diGamma = -eulerMascheroni - 1.0/arg + 1.6449340668482264365*arg;
         } else {
@@ -648,7 +648,7 @@ namespace codi {
           Real shiftBound = 8.5;
 
           Real shiftedValue = arg;
-          while( shiftedValue < shiftBound ) {
+          while ( shiftedValue < shiftBound ) {
             diGamma      -= 1.0/shiftedValue;
             shiftedValue += 1.0;
           }

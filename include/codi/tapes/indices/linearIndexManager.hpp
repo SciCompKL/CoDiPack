@@ -28,23 +28,23 @@ namespace codi {
   struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
     public:
 
-      using Index = CODI_DD(_Index, int); ///< See LinearIndexManager
-      using Base = IndexManagerInterface<Index>; ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);  ///< See LinearIndexManager
+      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
       /// @{
 
       static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization implemented
-      static bool constexpr IsLinear = true; ///< Tightly coupled to statements.
+      static bool constexpr IsLinear = true;  ///< Tightly coupled to statements.
 
       /// @}
       /*******************************************************************************/
       /// @name DataInterface: Type declaration
       /// @{
 
-      using Position = Index; ///< The current maximum index
-      using NestedData = void; ///< Terminator
+      using Position = Index;  ///< The current maximum index
+      using NestedData = void;  ///< Terminator
       using InternalPosHandle = size_t;  ///< The current maximum index
 
       /// @}
@@ -174,7 +174,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::evaluateForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
 
@@ -182,7 +182,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::evaluateReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
 
@@ -190,21 +190,21 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::forEachChunk
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
         CODI_UNUSED(function, recursive, args...);
         // Do nothing
       }
 
       /// \copydoc DataInterface::forEachForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);
       }
 
       /// \copydoc DataInterface::forEachReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);

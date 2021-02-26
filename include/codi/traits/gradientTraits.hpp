@@ -26,10 +26,10 @@ namespace codi {
     struct TraitsImplementation {
       public:
 
-        using Gradient = CODI_DD(_Gradient, double); ///< See TraitsImplementation
+        using Gradient = CODI_DD(_Gradient, double);  ///< See TraitsImplementation
         using Real = Gradient;  ///< The base value used in the gradient entries.
 
-        static size_t constexpr dim = 1; ///< Number of dimensions this gradient value has.
+        static size_t constexpr dim = 1;  ///< Number of dimensions this gradient value has.
 
         /// Get the entry at the given index.
         CODI_INLINE static Real& at(Gradient& gradient, size_t dim) {

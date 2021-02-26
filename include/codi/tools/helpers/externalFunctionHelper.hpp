@@ -50,8 +50,8 @@ namespace codi {
       /// See ExternalFunctionHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
-      using Identifier = typename Type::Identifier; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
 
       /// See LhsExpressionInterface
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
@@ -103,7 +103,7 @@ namespace codi {
           static void evalForwFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
             EvalData* data = (EvalData*)d;
 
-            if(nullptr != data->forwardFunc) {
+            if (nullptr != data->forwardFunc) {
               data->evalForwFunc(t, ra);
             } else {
               CODI_EXCEPTION("Calling forward evaluation in external function helper without a forward function pointer.");
@@ -116,28 +116,28 @@ namespace codi {
             Real* x_d = new Real[inputIndices.size()];
             Real* y_d = new Real[outputIndices.size()];
 
-            if(TapeTraits::IsPrimalValueTape<Tape>::value) {
-              for(size_t i = 0; i < inputIndices.size(); ++i) {
+            if (TapeTraits::IsPrimalValueTape<Tape>::value) {
+              for (size_t i = 0; i < inputIndices.size(); ++i) {
                 inputValues[i] = ra->getPrimal(inputIndices[i]);
               }
             }
 
-            for(size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
+            for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
 
-              for(size_t i = 0; i < inputIndices.size(); ++i) {
+              for (size_t i = 0; i < inputIndices.size(); ++i) {
                 x_d[i] = ra->getAdjoint(inputIndices[i], dim);
               }
 
               forwardFunc(inputValues.data(), x_d, inputIndices.size(), outputValues.data(), y_d, outputIndices.size(), &userData);
 
-              for(size_t i = 0; i < outputIndices.size(); ++i) {
+              for (size_t i = 0; i < outputIndices.size(); ++i) {
                 ra->resetAdjoint(outputIndices[i], dim);
                 ra->updateAdjoint(outputIndices[i], dim, y_d[i]);
               }
             }
 
-            if(TapeTraits::IsPrimalValueTape<Tape>::value) {
-              for(size_t i = 0; i < outputIndices.size(); ++i) {
+            if (TapeTraits::IsPrimalValueTape<Tape>::value) {
+              for (size_t i = 0; i < outputIndices.size(); ++i) {
                 ra->setPrimal(outputIndices[i], outputValues[i]);
               }
             }
@@ -149,7 +149,7 @@ namespace codi {
           static void evalPrimFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
             EvalData* data = (EvalData*)d;
 
-            if(nullptr != data->primalFunc) {
+            if (nullptr != data->primalFunc) {
               data->evalPrimFunc(t, ra);
             } else {
               CODI_EXCEPTION("Calling primal evaluation in external function helper without a primal function pointer.");
@@ -159,16 +159,16 @@ namespace codi {
           void evalPrimFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            if(TapeTraits::IsPrimalValueTape<Tape>::value) {
-              for(size_t i = 0; i < inputIndices.size(); ++i) {
+            if (TapeTraits::IsPrimalValueTape<Tape>::value) {
+              for (size_t i = 0; i < inputIndices.size(); ++i) {
                 inputValues[i] = ra->getPrimal(inputIndices[i]);
               }
             }
 
             primalFunc(inputValues.data(), inputIndices.size(), outputValues.data(), outputIndices.size(), &userData);
 
-            if(TapeTraits::IsPrimalValueTape<Tape>::value) {
-              for(size_t i = 0; i < outputIndices.size(); ++i) {
+            if (TapeTraits::IsPrimalValueTape<Tape>::value) {
+              for (size_t i = 0; i < outputIndices.size(); ++i) {
                 ra->setPrimal(outputIndices[i], outputValues[i]);
               }
             }
@@ -177,7 +177,7 @@ namespace codi {
           static void evalRevFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
             EvalData* data = (EvalData*)d;
 
-            if(nullptr != data->reverseFunc) {
+            if (nullptr != data->reverseFunc) {
               data->evalRevFunc(t, ra);
             } else {
               CODI_EXCEPTION("Calling reverse evaluation in external function helper without a reverse function pointer.");
@@ -190,22 +190,22 @@ namespace codi {
             Real* x_b = new Real[inputIndices.size()];
             Real* y_b = new Real[outputIndices.size()];
 
-            for(size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
+            for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
 
-              for(size_t i = 0; i < outputIndices.size(); ++i) {
+              for (size_t i = 0; i < outputIndices.size(); ++i) {
                 y_b[i] = ra->getAdjoint(outputIndices[i], dim);
                 ra->resetAdjoint(outputIndices[i], dim);
               }
 
               reverseFunc(inputValues.data(), x_b, inputIndices.size(), outputValues.data(), y_b, outputIndices.size(), &userData);
 
-              for(size_t i = 0; i < inputIndices.size(); ++i) {
+              for (size_t i = 0; i < inputIndices.size(); ++i) {
                 ra->updateAdjoint(inputIndices[i], dim, x_b[i]);
               }
             }
 
-            if(Tape::RequiresPrimalRestore) {
-              for(size_t i = 0; i < outputIndices.size(); ++i) {
+            if (Tape::RequiresPrimalRestore) {
+              for (size_t i = 0; i < outputIndices.size(); ++i) {
                 ra->setPrimal(outputIndices[i], oldPrimals[i]);
               }
             }
@@ -217,11 +217,11 @@ namespace codi {
 
     protected:
 
-      std::vector<Type*> outputValues; ///< References to output values
+      std::vector<Type*> outputValues;  ///< References to output values
 
-      bool storeInputPrimals;    ///< If input primals are stored
-      bool storeOutputPrimals;   ///< If output primal are stored
-      bool primalFuncUsesADType; ///< If a primal call with a self implemented function will be done
+      bool storeInputPrimals;  ///< If input primals are stored
+      bool storeOutputPrimals;  ///< If output primal are stored
+      bool primalFuncUsesADType;  ///< If a primal call with a self implemented function will be done
 
       EvalData* data;  ///< External function data
 
@@ -254,7 +254,7 @@ namespace codi {
 
       /// Add an input value.
       void addInput(Type const& input) {
-        if(Type::getGlobalTape().isActive()) {
+        if (Type::getGlobalTape().isActive()) {
           data->inputIndices.push_back(input.getIdentifier());
         }
 
@@ -271,10 +271,10 @@ namespace codi {
         Real oldPrimal = Type::getGlobalTape().registerExternalFunctionOutput(output);
 
         data->outputIndices.push_back(output.getIdentifier());
-        if(storeOutputPrimals) {
+        if (storeOutputPrimals) {
           data->outputValues.push_back(output.getValue());
         }
-        if(Tape::RequiresPrimalRestore) {
+        if (Tape::RequiresPrimalRestore) {
           data->oldPrimals.push_back(oldPrimal);
         }
       }
@@ -283,7 +283,7 @@ namespace codi {
 
       /// Add an output value.
       void addOutput(Type& output) {
-        if(Type::getGlobalTape().isActive()) {
+        if (Type::getGlobalTape().isActive()) {
           outputValues.push_back(&output);
         }
       }
@@ -302,21 +302,21 @@ namespace codi {
 
       /// Call the provided function such that no data is recorded on the tape. All output values will be registered
       /// as outputs of this external function.
-      template<typename FuncObj, typename ... Args>
-      void callPrimalFuncWithADType(FuncObj& func, Args&& ... args) {
+      template<typename FuncObj, typename... Args>
+      void callPrimalFuncWithADType(FuncObj& func, Args&&... args) {
 
         bool isTapeActive = Type::getGlobalTape().isActive();
 
-        if(isTapeActive) {
+        if (isTapeActive) {
           Type::getGlobalTape().setPassive();
         }
 
         func(std::forward<Args>(args)...);
 
-        if(isTapeActive) {
+        if (isTapeActive) {
           Type::getGlobalTape().setActive();
 
-          for(size_t i = 0; i < outputValues.size(); ++i) {
+          for (size_t i = 0; i < outputValues.size(); ++i) {
             addOutputToData(*outputValues[i]);
           }
         }
@@ -334,10 +334,10 @@ namespace codi {
           func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
 
           // ok now set the primal values on the output values and add them to the data for the reverse evaluation
-          for(size_t i = 0; i < outputValues.size(); ++i) {
+          for (size_t i = 0; i < outputValues.size(); ++i) {
             outputValues[i]->setValue(y[i]);
 
-            if(Type::getGlobalTape().isActive()) {
+            if (Type::getGlobalTape().isActive()) {
               addOutputToData(*outputValues[i]);
             }
           }
@@ -351,18 +351,18 @@ namespace codi {
 
       /// Add the external function to the tape.
       void addToTape(ReverseFunc reverseFunc, ForwardFunc forwardFunc = nullptr, PrimalFunc primalFunc = nullptr) {
-        if(Type::getGlobalTape().isActive()) {
+        if (Type::getGlobalTape().isActive()) {
 
           data->reverseFunc = reverseFunc;
           data->forwardFunc = forwardFunc;
 
-          if(nullptr != primalFunc) {
+          if (nullptr != primalFunc) {
             // Only overwrite if the user provides one. Otherwise it is set in the callPrimalFunc method
             data->primalFunc = primalFunc;
           }
 
           // clear now the primal values if they are not required
-          if(!storeInputPrimals) {
+          if (!storeInputPrimals) {
             data->inputValues.clear();
           }
 

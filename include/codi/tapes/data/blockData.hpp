@@ -30,14 +30,14 @@ namespace codi {
   struct BlockData : public DataInterface<_NestedData> {
     public:
 
-      using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>)); ///< ChunkBase Interface
-      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>)); ///< DataInterface interface
-      using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>)); ///< PointerStore
-      using InternalPosHandle = size_t; ///< Position in the chunk
+      using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>));  ///< ChunkBase Interface
+      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));  ///< DataInterface interface
+      using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< PointerStore
+      using InternalPosHandle = size_t;  ///< Position in the chunk
 
-      using NestedPosition = typename NestedData::Position; ///< Position of NestedData
+      using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 
-      using Position = ArrayPosition<NestedPosition>; ///< \copydoc DataInterface::Position
+      using Position = ArrayPosition<NestedPosition>;  ///< \copydoc DataInterface::Position
 
     private:
       Chunk chunk;
@@ -64,8 +64,8 @@ namespace codi {
       /// @name Adding items
 
       /// \copydoc DataInterface::pushData
-      template<typename ... Data>
-      CODI_INLINE void pushData(Data const& ... data) {
+      template<typename... Data>
+      CODI_INLINE void pushData(Data const&... data) {
         // this method should only be called if reserveItems has been called
         chunk.pushData(data...);
       }
@@ -179,7 +179,7 @@ namespace codi {
       /// @name Iterator functions
 
       /// \copydoc DataInterface::evaluateForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
@@ -196,7 +196,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::evaluateReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
@@ -214,38 +214,38 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::forEachChunk
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
 
         function(&chunk, std::forward<Args>(args)...);
 
-        if(recursive) {
+        if (recursive) {
           nested->forEachChunk(function, recursive, std::forward<Args>(args)...);
         }
       }
 
       /// \copydoc DataInterface::forEachForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.data <= end.data);
 
         PointerInserter pHandle;
 
-        for(size_t dataPos = start.data; dataPos < end.data; dataPos += 1) {
+        for (size_t dataPos = start.data; dataPos < end.data; dataPos += 1) {
           pHandle.setPointers(dataPos, &chunk);
           pHandle.call(function, std::forward<Args>(args)...);
         }
       }
 
       /// \copydoc DataInterface::forEachReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
         codiAssert(start.data >= end.data);
 
         PointerInserter pHandle;
 
         // we do not initialize dataPos with start - 1 since the type can be unsigned
-        for(size_t dataPos = start.data; dataPos > end.data; /* decrement is done inside the loop */) {
+        for (size_t dataPos = start.data; dataPos > end.data; /* decrement is done inside the loop */) {
           dataPos -= 1; // decrement of loop variable
 
           pHandle.setPointers(dataPos, &chunk);

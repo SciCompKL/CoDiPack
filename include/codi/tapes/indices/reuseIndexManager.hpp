@@ -26,15 +26,15 @@ namespace codi {
   struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DD(_Index, int); ///< See ReuseIndexManager
-      using Base = IndexManagerInterface<Index>; ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);  ///< See ReuseIndexManager
+      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      static bool constexpr CopyNeedsStatement = true; ///< No copy optimization implemented.
-      static bool constexpr IsLinear = false; ///< Identifiers are not coupled to statements.
+      static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization implemented.
+      static bool constexpr IsLinear = false;  ///< Identifiers are not coupled to statements.
 
       /// @}
 
@@ -52,7 +52,7 @@ namespace codi {
 
     protected:
 
-      bool valid; ///< Prevent index free after destruction.
+      bool valid;  ///< Prevent index free after destruction.
 
     public:
 
@@ -126,7 +126,7 @@ namespace codi {
         freeIndex(index); // zero check is performed inside
 
         bool generatedNewIndex = false;
-        if(0 == unusedIndicesPos) {
+        if (0 == unusedIndicesPos) {
           generateNewIndices();
           generatedNewIndex = true;
         }
@@ -139,7 +139,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::copyIndex
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
-        if(Base::UnusedIndex == rhs) {
+        if (Base::UnusedIndex == rhs) {
           freeIndex(lhs);
         } else {
           assignIndex(lhs);
@@ -148,9 +148,9 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
-        if(valid && Base::UnusedIndex != index) { // do not free the zero index
+        if (valid && Base::UnusedIndex != index) { // do not free the zero index
 
-          if(usedIndicesPos == usedIndices.size()) {
+          if (usedIndicesPos == usedIndices.size()) {
             increaseIndicesSize(usedIndices);
           }
 
@@ -169,18 +169,18 @@ namespace codi {
       /// \copydoc IndexManagerInterface::reset
       CODI_INLINE void reset() {
         size_t totalSize = usedIndicesPos + unusedIndicesPos;
-        if(totalSize > unusedIndices.size()) {
+        if (totalSize > unusedIndices.size()) {
           increaseIndicesSizeTo(unusedIndices, totalSize);
         }
 
-        for(size_t pos = 0; pos < usedIndicesPos; ++pos) {
+        for (size_t pos = 0; pos < usedIndicesPos; ++pos) {
           unusedIndices[unusedIndicesPos + pos] = usedIndices[pos];
         }
         unusedIndicesPos = totalSize;
         usedIndicesPos = 0;
 
-        if(Config::SortIndicesOnReset) {
-          if(totalSize == unusedIndices.size()) {
+        if (Config::SortIndicesOnReset) {
+          if (totalSize == unusedIndices.size()) {
             std::sort(unusedIndices.begin(), unusedIndices.end());
           } else {
             std::sort(&unusedIndices[0], &unusedIndices[unusedIndicesPos]);
@@ -195,7 +195,7 @@ namespace codi {
 
       /// \copydoc EmptyData::resetTo
       void resetTo(Position const& pos) {
-        if(pos == getZeroPosition()) {
+        if (pos == getZeroPosition()) {
           reset();
         }
       }
@@ -212,7 +212,7 @@ namespace codi {
 
         codiAssert(unusedIndices.size() >= indexSizeIncrement);
 
-        for(size_t pos = 0; pos < indexSizeIncrement; ++pos) {
+        for (size_t pos = 0; pos < indexSizeIncrement; ++pos) {
           unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + Index(pos);
         }
 

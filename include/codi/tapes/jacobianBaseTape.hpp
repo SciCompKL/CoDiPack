@@ -36,17 +36,17 @@ namespace codi {
   struct JacobianTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See JacobianTapeTypes.
-      using Gradient = CODI_DD(_Gradient, double); ///< See JacobianTapeTypes.
-      using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>)); ///< See JacobianTapeTypes.
+      using Real = CODI_DD(_Real, double);  ///< See JacobianTapeTypes.
+      using Gradient = CODI_DD(_Gradient, double);  ///< See JacobianTapeTypes.
+      using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See JacobianTapeTypes.
       template<typename Chunk, typename Nested>
       using Data = CODI_DD(
                       CODI_T(_Data<Chunk, Nested>),
-                      CODI_T(DataInterface<Nested>)); ///< See JacobianTapeTypes.
+                      CODI_T(DataInterface<Nested>));  ///< See JacobianTapeTypes.
 
-      using Identifier = typename IndexManager::Index; ///< See IndexManagerInterface.
+      using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
 
-      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear; ///< True if the index manager is linear.
+      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
       constexpr static bool IsStaticIndexHandler = !IsLinearIndexHandler;  ///< For reuse index mangers a static instantiation is used.
 
       /// Statement chunk is either \<argument size\> (linear management) or \<lhs identifier, argument size\>
@@ -56,12 +56,12 @@ namespace codi {
                                  Chunk1<Config::ArgumentSize>,
                                  Chunk2<Identifier, Config::ArgumentSize>
                                >::type;
-      using StatementData = Data<StatementChunk, IndexManager>; ///< Statement data vector.
+      using StatementData = Data<StatementChunk, IndexManager>;  ///< Statement data vector.
 
-      using JacobianChunk = Chunk2<Real, Identifier>; ///< Jacobian chunks is \<Jacobian, rhs index\>
+      using JacobianChunk = Chunk2<Real, Identifier>;  ///< Jacobian chunks is \<Jacobian, rhs index\>
       using JacobianData = Data<JacobianChunk, StatementData>;  ///< Jacobian data vector.
 
-      using NestedData = JacobianData; ///< See TapeTypesInterface.
+      using NestedData = JacobianData;  ///< See TapeTypesInterface.
   };
 
   /**
@@ -86,26 +86,26 @@ namespace codi {
       /// See JacobianBaseTape
       using Impl = CODI_DD(_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>; ///< Base class abbreviation
-      friend Base; ///< Allow the base class to call protected and private methods.
+      using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation
+      friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;  ///< See TapeTypesInterface.
       using IndexManager = typename TapeTypes::IndexManager;  ///< See JacobianTapeTypes.
-      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;  ///< See TapeTypesInterface.
 
       using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
-      using JacobianData = typename TapeTypes::JacobianData;    ///< See JacobianTapeTypes.
+      using JacobianData = typename TapeTypes::JacobianData;  ///< See JacobianTapeTypes.
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
-      using NestedPosition = typename JacobianData::Position;    ///< See JacobianTapeTypes.
-      using Position = typename Base::Position;                  ///< See TapeTypesInterface.
+      using NestedPosition = typename JacobianData::Position;  ///< See JacobianTapeTypes.
+      using Position = typename Base::Position;  ///< See TapeTypesInterface.
 
-      static bool constexpr AllowJacobianOptimization = true;    ///< See InternalStatementRecordingInterface.
-      static bool constexpr HasPrimalValues = false;             ///< See PrimalEvaluationTapeInterface
-      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler; ///< See IdentifierInformationTapeInterface
-      static bool constexpr RequiresPrimalRestore = false;       ///< See PrimalEvaluationTapeInterface
+      static bool constexpr AllowJacobianOptimization = true;  ///< See InternalStatementRecordingInterface.
+      static bool constexpr HasPrimalValues = false;  ///< See PrimalEvaluationTapeInterface
+      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler;  ///< See IdentifierInformationTapeInterface
+      static bool constexpr RequiresPrimalRestore = false;  ///< See PrimalEvaluationTapeInterface
 
     protected:
 
@@ -113,11 +113,11 @@ namespace codi {
       DuplicateJacobianRemover<Real, Identifier> jacobianSorter;  ///< Replacement for jacobianData to remove duplicated Jacobians.
 #endif
 
-      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager; ///< Index manager.
-      StatementData statementData; ///< Data stream for statement specific data.
-      JacobianData jacobianData;   ///< Data stream for argument specific data.
+      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;  ///< Index manager.
+      StatementData statementData;  ///< Data stream for statement specific data.
+      JacobianData jacobianData;  ///< Data stream for argument specific data.
 
-      std::vector<Gradient> adjoints; ///< Evaluation vector for AD.
+      std::vector<Gradient> adjoints;  ///< Evaluation vector for AD.
 
     private:
 
@@ -136,12 +136,12 @@ namespace codi {
       /// @{
 
       /// Perform a forward evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
-      template<typename ... Args>
-      static void internalEvaluateForwardStack(Args&& ... args);
+      template<typename... Args>
+      static void internalEvaluateForwardStack(Args&&... args);
 
       /// Perform a reverse evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
-      template<typename ... Args>
-      static void internalEvaluateReverseStack(Args&& ... args);
+      template<typename... Args>
+      static void internalEvaluateReverseStack(Args&&... args);
 
       /// Add statement specific data to the data streams.
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
@@ -185,7 +185,7 @@ namespace codi {
 
       /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&) const
       CODI_INLINE Gradient const& gradient(Identifier const& identifier) const {
-        if(identifier > (Identifier)adjoints.size()) {
+        if (identifier > (Identifier)adjoints.size()) {
           return adjoints[0];
         } else {
           return adjoints[identifier];
@@ -302,7 +302,7 @@ namespace codi {
           pushJacobians(rhs);
 
           size_t numberOfArguments = jacobianData.getPushedDataCount(jacobianStart);
-          if(0 != numberOfArguments) {
+          if (0 != numberOfArguments) {
             indexManager.get().assignIndex(lhs.cast().getIdentifier());
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
           } else {
@@ -322,7 +322,7 @@ namespace codi {
                  LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
 
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
-          if(IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
+          if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
           } else {
             indexManager.get().copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
@@ -354,7 +354,7 @@ namespace codi {
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if (TapeTypes::IsLinearIndexHandler) {
           statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
         }
@@ -362,7 +362,7 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
       CODI_INLINE void clearAdjoints() {
-        for(Gradient& gradient : adjoints) {
+        for (Gradient& gradient : adjoints) {
           gradient = Gradient();
         }
       }
@@ -374,7 +374,7 @@ namespace codi {
       /// Adds data from all streams, the size of the adjoint vector and index manager data.
       CODI_INLINE TapeValues internalGetTapeValues() const {
         std::string name;
-        if(TapeTypes::IsLinearIndexHandler) {
+        if (TapeTypes::IsLinearIndexHandler) {
           name = "CoDi Tape Statistics ( JacobiLinearTape )";
         } else {
           name = "CoDi Tape Statistics ( JacobiReuseTape )";
@@ -419,7 +419,7 @@ namespace codi {
         size_t endJacobianPos = curJacobianPos - numberOfArguments;
 
         CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint)){
-          while(endJacobianPos < curJacobianPos) {
+          while (endJacobianPos < curJacobianPos) {
             curJacobianPos -= 1;
             adjointVector[rhsIdentifiers[curJacobianPos]] += rhsJacobians[curJacobianPos] * lhsAdjoint;
           }
@@ -450,7 +450,7 @@ namespace codi {
 
         size_t endJacobianPos = curJacobianPos + numberOfArguments;
 
-        while(curJacobianPos < endJacobianPos) {
+        while (curJacobianPos < endJacobianPos) {
           lhsAdjoint += rhsJacobians[curJacobianPos] * adjointVector[rhsIdentifiers[curJacobianPos]];
           curJacobianPos += 1;
         }
@@ -670,7 +670,7 @@ namespace codi {
     private:
 
       CODI_INLINE void checkAdjointSize(Identifier const& identifier) {
-        if(identifier >= (Identifier)adjoints.size()) {
+        if (identifier >= (Identifier)adjoints.size()) {
           resizeAdjointsVector();
         }
       }

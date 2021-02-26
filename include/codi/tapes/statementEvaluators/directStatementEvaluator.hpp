@@ -17,11 +17,11 @@ namespace codi {
   struct PrimalTapeStatementFunctions {
     public:
 
-      using Handle = void*; ///< Function pointer
+      using Handle = void*;  ///< Function pointer
 
-      Handle forward; ///< Forward function handle
+      Handle forward;  ///< Forward function handle
       Handle primal;  ///< Primal function handle
-      Handle reverse; ///< Reverse function handle
+      Handle reverse;  ///< Reverse function handle
 
       /// Constructor
       PrimalTapeStatementFunctions(Handle forward, Handle primal, Handle reverse) :
@@ -35,7 +35,7 @@ namespace codi {
   struct DirectStatementEvaluatorStaticStore {
     public:
 
-      static PrimalTapeStatementFunctions const staticStore; ///< Static storage.
+      static PrimalTapeStatementFunctions const staticStore;  ///< Static storage.
   };
 
   template<typename Generator, typename Expr>
@@ -55,29 +55,29 @@ namespace codi {
   struct DirectStatementEvaluator : public StatementEvaluatorInterface<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See DirectStatementEvaluator
+      using Real = CODI_DD(_Real, double);  ///< See DirectStatementEvaluator
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation
       /// @{
 
-      using Handle = PrimalTapeStatementFunctions const*; ///< Pointer to static storage location.
+      using Handle = PrimalTapeStatementFunctions const*;  ///< Pointer to static storage location.
 
       /// \copydoc StatementEvaluatorInterface::callForward
-      template<typename Tape, typename ... Args>
-      static Real callForward(Handle const& h, Args&& ... args) {
+      template<typename Tape, typename... Args>
+      static Real callForward(Handle const& h, Args&&... args) {
         return ((FunctionForward<Tape>)h->forward)(std::forward<Args>(args)...);
       }
 
       /// \copydoc StatementEvaluatorInterface::callPrimal
-      template<typename Tape, typename ... Args>
-      static Real callPrimal(Handle const& h, Args&& ... args) {
+      template<typename Tape, typename... Args>
+      static Real callPrimal(Handle const& h, Args&&... args) {
         return ((FunctionPrimal<Tape>)h->primal)(std::forward<Args>(args)...);
       }
 
       /// \copydoc StatementEvaluatorInterface::callReverse
-      template<typename Tape, typename ... Args>
-      static void callReverse(Handle const& h, Args&& ... args) {
+      template<typename Tape, typename... Args>
+      static void callReverse(Handle const& h, Args&&... args) {
         ((FunctionReverse<Tape>)h->reverse)(std::forward<Args>(args)...);
       }
 

@@ -31,16 +31,16 @@ namespace codi {
     public:
 
       using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double,
-                        IndexManagerInterface<int>, DefaultChunkedData>)); ///< See JacobianLinearTape
+                        IndexManagerInterface<int>, DefaultChunkedData>));  ///< See JacobianLinearTape
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>; ///< Base class abbreviation
-      friend Base; ///< Allow the base class to call protected and private methods.
+      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation
+      friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                    ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;            ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;    ///< See TapeTypesInterface.
-      using Identifier = typename TapeTypes::Identifier;        ///< See TapeTypesInterface.
-      using Position = typename Base::Position;                 ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;  ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;  ///< See TapeTypesInterface.
+      using Position = typename Base::Position;  ///< See TapeTypesInterface.
 
       static_assert(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");
 
@@ -59,7 +59,7 @@ namespace codi {
         startIndex = std::min(startIndex, (IndexPosition)this->adjoints.size() - 1);
         endIndex = std::min(endIndex, (IndexPosition)this->adjoints.size() - 1);
 
-        for(IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
+        for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
           this->adjoints[curPos] = Gradient();
         }
       }
@@ -89,14 +89,14 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while(curAdjointPos < endAdjointPos) {
+        while (curAdjointPos < endAdjointPos) {
 
           curAdjointPos += 1;
 
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
 
-          if(Config::StatementInputTag != argsSize) {
+          if (Config::StatementInputTag != argsSize) {
             Adjoint lhsAdjoint = Adjoint();
 
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
@@ -124,14 +124,14 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while(curAdjointPos > endAdjointPos) {
+        while (curAdjointPos > endAdjointPos) {
 
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           Adjoint const lhsAdjoint = adjointVector[curAdjointPos]; // Adjoint positions are shifted since we do not use the zero index
 
-          if(Config::StatementInputTag != argsSize) {
+          if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation
             adjointVector[curAdjointPos] = Adjoint();
 

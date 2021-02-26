@@ -20,10 +20,10 @@ namespace codi {
   struct EmptyData : public DataInterface<> {
     public:
 
-      using NestedData = void; ///< No nested data
+      using NestedData = void;  ///< No nested data
 
       using Position = EmptyPosition;  ///< No positional data
-      using InternalPosHandle = size_t; ///< Will always be zero.
+      using InternalPosHandle = size_t;  ///< Will always be zero.
 
       /*******************************************************************************/
       /// @name Adding items
@@ -103,7 +103,7 @@ namespace codi {
 
       /// \copydoc DataInterface::evaluateForward <br><br>
       /// Implementation: Calls the function object with all arguments except start and end.
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         CODI_UNUSED(start, end);
@@ -112,7 +112,7 @@ namespace codi {
 
       /// \copydoc DataInterface::evaluateReverse <br><br>
       /// Implementation: Calls the function object with all arguments except start and end.
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         CODI_UNUSED(start, end);
@@ -120,20 +120,20 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::forEachChunk
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
         CODI_UNUSED(function, recursive, args...);
       }
 
       /// \copydoc DataInterface::forEachForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);
       }
 
       /// \copydoc DataInterface::forEachReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);

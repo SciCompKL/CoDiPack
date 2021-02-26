@@ -28,7 +28,7 @@ namespace codi {
       /// See StatementPushHelperBase
       using Impl = CODI_DD(_Impl, CODI_T(StatementPushHelperBase<CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;  ///< See LhsExpressionInterface
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -58,7 +58,7 @@ namespace codi {
 
         JacobiIter jacPos = startJac;
         ArgIter argPos = startArg;
-        while(argPos != endArg) {
+        while (argPos != endArg) {
           cast().pushArgument(*argPos, *jacPos);
 
           ++jacPos;
@@ -77,7 +77,7 @@ namespace codi {
 
         cast().startPushStatement();
 
-        for(size_t i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
           cast().pushArgument(arguments[i], jacobians[i]);
         }
 
@@ -115,15 +115,15 @@ namespace codi {
       ///< See StatementPushHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
-      using Identifier = typename Type::Identifier; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
       /// See LhsExpressionInterface
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
 
     protected:
       Identifier indexData[Config::MaxArgumentSize];  ///< Storage for the identifiers of the arguments
-      Real jacobianData[Config::MaxArgumentSize];     ///< Storage for the Jacobians of the arguments
-      size_t dataPos; ///< Current number of arguments.
+      Real jacobianData[Config::MaxArgumentSize];  ///< Storage for the Jacobians of the arguments
+      size_t dataPos;  ///< Current number of arguments.
 
     public:
 
@@ -140,7 +140,7 @@ namespace codi {
       void pushArgument(Type const& arg, Real const& jacobian) {
         Tape& tape = Type::getGlobalTape();
 
-        if(Config::MaxArgumentSize < dataPos ) {
+        if (Config::MaxArgumentSize < dataPos ) {
           CODI_EXCEPTION("Adding more than %zu arguments to a statement.", Config::MaxArgumentSize);
         }
 
@@ -163,10 +163,10 @@ namespace codi {
         Tape& tape = Type::getGlobalTape();
 
         CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
-          if(0 != dataPos) {
+          if (0 != dataPos) {
             tape.storeManual(primal, lhs.getIdentifier(), dataPos);
 
-            for(size_t i = 0; i < dataPos; ++i) {
+            for (size_t i = 0; i < dataPos; ++i) {
               tape.pushJacobiManual(jacobianData[i], 0.0, indexData[i]);
             }
           }
@@ -190,12 +190,12 @@ namespace codi {
       /// See StatementPushHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
-      using Gradient = typename Type::Gradient; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Gradient = typename Type::Gradient;  ///< See LhsExpressionInterface
 
     protected:
 
-      Gradient lhsTangent; ///< Tangent value for the left hand side
+      Gradient lhsTangent;  ///< Tangent value for the left hand side
 
     public:
 
@@ -230,8 +230,8 @@ namespace codi {
   struct StatementPushHelper<double, void> {
     public:
 
-      using Type = double; ///< See LhsExpressionInterface
-      using Real = double; ///< See LhsExpressionInterface
+      using Type = double;  ///< See LhsExpressionInterface
+      using Real = double;  ///< See LhsExpressionInterface
 
       /*******************************************************************************/
       /// @name Implementation of StatementPushHelperBase and overwrite of all methods.

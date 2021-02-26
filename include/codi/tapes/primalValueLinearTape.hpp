@@ -32,19 +32,19 @@ namespace codi {
     public:
 
       using TapeTypes = CODI_DD(_TapeTypes, CODI_T(PrimalValueTapeTypes<double, double,
-                        IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>)); ///< See PrimalValueLinearTape
+                        IndexManagerInterface<int>, StatementEvaluatorInterface, DefaultChunkedData>));  ///< See PrimalValueLinearTape
 
-      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>; ///< Base class abbreviation
-      friend Base; ///< Allow the base class to call protected and private methods.
+      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>;  ///< Base class abbreviation
+      friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;  ///< See TapeTypesInterface.
       using IndexManager = typename TapeTypes::IndexManager;  ///< See PrimalValueTapeTypes
-      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;              ///< Basic computation type
-      using StatementEvaluator = typename TapeTypes::StatementEvaluator; ///< See PrimalValueTapeTypes
-      using EvalHandle = typename TapeTypes::EvalHandle;                 ///< See PrimalValueTapeTypes
-      using Position = typename Base::Position;               ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;  ///< See TapeTypesInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes
+      using EvalHandle = typename TapeTypes::EvalHandle;  ///< See PrimalValueTapeTypes
+      using Position = typename Base::Position;  ///< See TapeTypesInterface.
 
       /// Constructor
       PrimalValueLinearTape() : Base() {}
@@ -61,7 +61,7 @@ namespace codi {
         startIndex = std::min(startIndex, (IndexPosition)this->adjoints.size() - 1);
         endIndex = std::min(endIndex, (IndexPosition)this->adjoints.size() - 1);
 
-        for(IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
+        for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
           this->adjoints[curPos] = Gradient();
         }
       }
@@ -90,13 +90,13 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while(curAdjointPos < endAdjointPos) {
+        while (curAdjointPos < endAdjointPos) {
 
           curAdjointPos += 1;
 
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
-          if(Config::StatementInputTag != nPassiveValues) {
+          if (Config::StatementInputTag != nPassiveValues) {
             Gradient lhsTangent = Gradient();
 
             primalVector[curAdjointPos] = StatementEvaluator::template callForward<PrimalValueLinearTape>(
@@ -137,13 +137,13 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while(curAdjointPos < endAdjointPos) {
+        while (curAdjointPos < endAdjointPos) {
 
           curAdjointPos += 1;
 
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
-          if(Config::StatementInputTag != nPassiveValues) {
+          if (Config::StatementInputTag != nPassiveValues) {
 
             primalVector[curAdjointPos] = StatementEvaluator::template callPrimal<PrimalValueLinearTape>(
                   stmtEvalhandle[curStatementPos], primalVector,
@@ -177,12 +177,12 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while(curAdjointPos > endAdjointPos) {
+        while (curAdjointPos > endAdjointPos) {
           curStatementPos -= 1;
 
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
-          if(Config::StatementInputTag != nPassiveValues) {
+          if (Config::StatementInputTag != nPassiveValues) {
             #if CODI_VariableAdjointInterfaceInPrimalTapes
               Gradient const lhsAdjoint;
               adjointVector->setLhsAdjoint(curAdjointPos);

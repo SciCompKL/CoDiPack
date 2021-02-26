@@ -23,11 +23,11 @@ namespace codi {
     struct TraitsImplementation {
       public:
 
-        using Type = CODI_DD(_Type, double); ///< See TraitsImplementation
+        using Type = CODI_DD(_Type, double);  ///< See TraitsImplementation
 
-        using PassiveReal = Type; ///< The original computation type, that was used in the application.
+        using PassiveReal = Type;  ///< The original computation type, that was used in the application.
 
-        static int constexpr MaxDerivativeOrder = 0; ///< CoDiPack derivative order of the type.
+        static int constexpr MaxDerivativeOrder = 0;  ///< CoDiPack derivative order of the type.
 
         /// Get the basic primal value of the type.
         static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
@@ -44,7 +44,7 @@ namespace codi {
     struct IsTotalFinite {
       public:
 
-        using Type = CODI_DD(_Type, double); ///< See IsTotalFinite
+        using Type = CODI_DD(_Type, double);  ///< See IsTotalFinite
 
         /// Checks if the values are all finite.
         static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -62,7 +62,7 @@ namespace codi {
     struct IsTotalZero {
       public:
 
-        using Type = CODI_DD(_Type, double); ///< See IsTotalZero
+        using Type = CODI_DD(_Type, double);  ///< See IsTotalZero
 
         /// Checks if the values are completely zero.
         static CODI_INLINE bool isTotalZero(Type const& v) {

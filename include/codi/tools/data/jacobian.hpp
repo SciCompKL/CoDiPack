@@ -21,14 +21,14 @@ namespace codi {
   struct Jacobian : public JacobianInterface<_T>{
     public:
 
-      using T = CODI_DD(_T, double); ///< See Jacobian
-      using Store = CODI_DD(_Store, std::vector<double>); ///< See Jacobian
+      using T = CODI_DD(_T, double);  ///< See Jacobian
+      using Store = CODI_DD(_Store, std::vector<double>);  ///< See Jacobian
 
     protected:
-      Store values; ///< Array store for the data.
+      Store values;  ///< Array store for the data.
 
-      size_t m; ///< Number of row (output variables)
-      size_t n; ///< Number of columns (input variables);
+      size_t m;  ///< Number of row (output variables)
+      size_t n;  ///< Number of columns (input variables);
 
     public:
 

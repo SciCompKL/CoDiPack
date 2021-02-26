@@ -96,7 +96,7 @@ namespace codi {
 
       /// Delete all data entries
       void clear() {
-        for(size_t i = 0; i < store.size(); ++i) {
+        for (size_t i = 0; i < store.size(); ++i) {
           delete store[i];
         }
         store.clear();
@@ -182,7 +182,7 @@ namespace codi {
     private:
 
       static void copyAll(ExternalFunctionUserData const& from, ExternalFunctionUserData& to) {
-        for(size_t i = 0; i < from.store.size(); ++i) {
+        for (size_t i = 0; i < from.store.size(); ++i) {
           to.store.push_back(from.store[i]->clone());
         }
         to.storePos = from.storePos;
@@ -197,7 +197,7 @@ namespace codi {
       Type* nextStore() {
         Type* pointer = getStore<Type>(storePos);
         storePos += 1;
-        if(storePos >= store.size()) {
+        if (storePos >= store.size()) {
           storePos = 0;
         }
 

@@ -103,11 +103,11 @@ namespace codi {
 
         addEntryInternal(name, EntryType::Double, doubleData, value);
 
-        if(usedMem) {
+        if (usedMem) {
           doubleData[usedMemoryIndex] += value;
         }
 
-        if(allocatedMem) {
+        if (allocatedMem) {
           doubleData[allocatedMemoryIndex] += value;
         }
       }
@@ -142,18 +142,18 @@ namespace codi {
         size_t maxValueSize = std::max((size_t)10, getMaximumValueLength());
 
         out << hLine;
-        for(Section const& section : sections) {
+        for (Section const& section : sections) {
           out << std::left << section.name << "\n";
           out << hLine;
 
-          for(Entry const& entry : section.data) {
+          for (Entry const& entry : section.data) {
             out << "  "
                 << std::left << std::setw(maxNameSize) << entry.name
                 << " : "
                 << formatEntry(entry, maxValueSize) << "\n";
           }
 
-          if(!section.data.empty()) {
+          if (!section.data.empty()) {
             out << hLine;
           }
         }
@@ -164,10 +164,10 @@ namespace codi {
       void formatHeader(Stream& out = std::cout) const {
 
         bool first = true;
-        for(Section const& section : sections) {
-          for(Entry const& entry : section.data) {
+        for (Section const& section : sections) {
+          for (Entry const& entry : section.data) {
 
-            if(first) {
+            if (first) {
               first = false;
             } else {
               out << "; ";
@@ -186,10 +186,10 @@ namespace codi {
         size_t maxValueSize = std::max((size_t)10, getMaximumValueLength());
 
         bool first = true;
-        for(Section const& section : sections) {
-          for(Entry const& entry : section.data) {
+        for (Section const& section : sections) {
+          for (Entry const& entry : section.data) {
 
-            if(first) {
+            if (first) {
               first = false;
             } else {
               out << "; ";
@@ -234,7 +234,7 @@ namespace codi {
         size_t entryPos = vector.size();
         vector.push_back(value);
 
-        if(sections.empty()) {
+        if (sections.empty()) {
           addSection("General");
         }
 
@@ -255,7 +255,7 @@ namespace codi {
               double formattedData = doubleData[entry.pos];
               std::string typeString = "";
 
-              if(outputType) {
+              if (outputType) {
                 formatSizeHumanReadable(formattedData, typeString);
               }
               ss << std::right << std::setiosflags(std::ios::fixed) << std::setprecision(2) << std::setw(maximumFieldSize)
@@ -296,8 +296,8 @@ namespace codi {
 
       size_t getMaximumNameLength() const {
         size_t maxLength = 0;
-        for(Section const& section : sections) {
-          for(Entry const& data : section.data) {
+        for (Section const& section : sections) {
+          for (Entry const& data : section.data) {
             maxLength = std::max(maxLength, data.name.size());
           }
         }
@@ -307,8 +307,8 @@ namespace codi {
 
       size_t getMaximumValueLength() const {
         size_t maxLength = 0;
-        for(Section const& section : sections) {
-          for(Entry const& data : section.data) {
+        for (Section const& section : sections) {
+          for (Entry const& data : section.data) {
             maxLength = std::max(maxLength, formatEntryLength(data));
           }
         }

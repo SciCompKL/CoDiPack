@@ -22,9 +22,9 @@ namespace codi {
   struct Direction {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See Direction
+      using Real = CODI_DD(_Real, double);  ///< See Direction
 
-      static size_t constexpr dim = _dim; ///< See Direction
+      static size_t constexpr dim = _dim;  ///< See Direction
 
     private:
       Real vector[dim];

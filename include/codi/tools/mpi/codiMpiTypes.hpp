@@ -36,9 +36,9 @@ namespace codi {
 
       /// See CoDiMpiTypes
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Tool = CODI_DD(_Tool, medi::ADToolInterface); ///< See CoDiMpiTypes
+      using Tool = CODI_DD(_Tool, medi::ADToolInterface);  ///< See CoDiMpiTypes
 
-      using MPIType = medi::MpiTypeDefault<Tool>; ///< MeDiPack default implementation
+      using MPIType = medi::MpiTypeDefault<Tool>;  ///< MeDiPack default implementation
 
     private:
 
@@ -51,7 +51,7 @@ namespace codi {
 
     public:
 
-      MPIType* MPI_TYPE; ///< MPI_Datatype for the specified CoDiPack type.
+      MPIType* MPI_TYPE;  ///< MPI_Datatype for the specified CoDiPack type.
       medi::AMPI_Datatype MPI_INT_TYPE;  ///< MPI_Datatype for the specified CoDiPack type and an int.
 
       /// Constructor
@@ -72,7 +72,7 @@ namespace codi {
       ~CoDiMpiTypes() {
         Tool::OpHelper::freeIntType(MPI_INT_TYPE);
 
-        if(nullptr != MPI_TYPE) {
+        if (nullptr != MPI_TYPE) {
           delete MPI_TYPE;
           MPI_TYPE = nullptr;
         }

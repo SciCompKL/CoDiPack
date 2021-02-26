@@ -49,7 +49,7 @@ namespace codi {
         Real* adjoints = (Real*)a;
         Identifier* indices = (Identifier*)i;
 
-        for(int pos = 0; pos < elements; ++pos) {
+        for (int pos = 0; pos < elements; ++pos) {
           codiInterface->getAdjointVec(indices[pos], &adjoints[pos * vecSize]);
           codiInterface->resetAdjointVec(indices[pos]);
         }
@@ -59,7 +59,7 @@ namespace codi {
         Real* adjoints = (Real*)a;
         Identifier* indices = (Identifier*)i;
 
-        for(int pos = 0; pos < elements; ++pos) {
+        for (int pos = 0; pos < elements; ++pos) {
 
           codiInterface->updateAdjointVec(indices[pos], &adjoints[pos * vecSize]);
         }
@@ -69,7 +69,7 @@ namespace codi {
         Real* primals = (Real*)p;
         Identifier* indices = (Identifier*)i;
 
-        for(int pos = 0; pos < elements; ++pos) {
+        for (int pos = 0; pos < elements; ++pos) {
           primals[pos] = codiInterface->getPrimal(indices[pos]);
         }
       }
@@ -78,7 +78,7 @@ namespace codi {
         Real* primals = (Real*)p;
         Identifier* indices = (Identifier*)i;
 
-        for(int pos = 0; pos < elements; ++pos) {
+        for (int pos = 0; pos < elements; ++pos) {
           codiInterface->setPrimal(indices[pos], primals[pos]);
         }
       }
@@ -86,9 +86,9 @@ namespace codi {
       CODI_INLINE void combineAdjoints(void* b, int const elements, int const ranks) const {
         Real* buf = (Real*)b;
 
-        for(int curRank = 1; curRank < ranks; ++curRank) {
-          for(int curPos = 0; curPos < elements; ++curPos) {
-            for(int dim = 0; dim < vecSize; ++dim) {
+        for (int curRank = 1; curRank < ranks; ++curRank) {
+          for (int curPos = 0; curPos < elements; ++curPos) {
+            for (int dim = 0; dim < vecSize; ++dim) {
 
               buf[curPos * vecSize + dim] += buf[(elements * curRank + curPos) * vecSize + dim];
             }
@@ -101,7 +101,7 @@ namespace codi {
       }
 
       CODI_INLINE void deletePrimalTypeBuffer(void* &b) const {
-        if(NULL != b) {
+        if (NULL != b) {
           Real* buf = (Real*)b;
           delete [] buf;
           b = NULL;
@@ -113,7 +113,7 @@ namespace codi {
       }
 
       CODI_INLINE void deleteAdjointTypeBuffer(void* &b) const {
-        if(NULL != b) {
+        if (NULL != b) {
           Real* buf = (Real*)b;
           delete [] buf;
           b = NULL;
@@ -175,7 +175,7 @@ namespace codi {
       }
 
       CODI_INLINE void addToolAction(medi::HandleBase* h) const {
-        if(NULL != h) {
+        if (NULL != h) {
           getTape().pushExternalFunction(ExternalFunction<Tape>::create(callHandleReverse, h, deleteHandle, callHandleForward, callHandlePrimal));
         }
       }
@@ -200,31 +200,31 @@ namespace codi {
         value.getIdentifier() = IndexType();
 
         // make the value active again if it has been active before on the other processor
-        if(wasActive) {
-          if(Tape::LinearIndexHandling) {
+        if (wasActive) {
+          if (Tape::LinearIndexHandling) {
             // value has been registered in createIndices
             value.getIdentifier() = index;
 
             // in createIndices the primal value has been set to zero. So set now the correct value
-            if(Tape::HasPrimalValues) {
+            if (Tape::HasPrimalValues) {
               getTape().setPrimal(index, value.getValue());
             }
-            if(Tape::RequiresPrimalRestore) {
+            if (Tape::RequiresPrimalRestore) {
               oldPrimal = PrimalType(0.0);
             }
           } else {
             PrimalType primal = getTape().registerExternalFunctionOutput(value);
-            if(Tape::RequiresPrimalRestore) {
+            if (Tape::RequiresPrimalRestore) {
               oldPrimal = primal;
             }
             index = value.getIdentifier();
           }
         } else {
 
-          if(Tape::RequiresPrimalRestore) {
+          if (Tape::RequiresPrimalRestore) {
             oldPrimal = PrimalType(0.0);
           }
-          if(!Tape::LinearIndexHandling) {
+          if (!Tape::LinearIndexHandling) {
             index = getTape().getPassiveIndex();
           }
         }
@@ -237,7 +237,7 @@ namespace codi {
       }
 
       static CODI_INLINE void createIndex(Type& value, IndexType& index) {
-        if(Tape::LinearIndexHandling) {
+        if (Tape::LinearIndexHandling) {
           getTape().registerInput(value);
           index = value.getIdentifier();
         }
@@ -270,7 +270,7 @@ namespace codi {
       static void modifyDependency(ModifiedType& inval, ModifiedType& inoutval) {
 
         bool active = getTape().isIdentifierActive(inoutval.getIdentifier()) || getTape().isIdentifierActive(inval.getIdentifier());
-        if(active) {
+        if (active) {
           inoutval.getIdentifier() = getTape().getInvalidIndex();
         } else {
           inoutval.getIdentifier() = getTape().getPassiveIndex();

@@ -40,7 +40,7 @@ namespace codi {
   struct StatementEvaluatorInterface {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See StatementEvaluatorInterface
+      using Real = CODI_DD(_Real, double);  ///< See StatementEvaluatorInterface
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -49,18 +49,18 @@ namespace codi {
 
       /// @tparam Tape  Needs to implement StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface
       ///               depending which interface the implementation uses.
-      template<typename Tape, typename ... Args>
-      static Real callForward(Handle const& h, Args&& ... args);
+      template<typename Tape, typename... Args>
+      static Real callForward(Handle const& h, Args&&... args);
 
       /// @tparam Tape  Needs to implement StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface
       ///               depending which interface the implementation uses.
-      template<typename Tape, typename ... Args>
-      static Real callPrimal(Handle const& h, Args&& ... args);
+      template<typename Tape, typename... Args>
+      static Real callPrimal(Handle const& h, Args&&... args);
 
       /// @tparam Tape  Needs to implement StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface
       ///               depending which interface the implementation uses.
-      template<typename Tape, typename ... Args>
-      static void callReverse(Handle const& h, Args&& ... args);
+      template<typename Tape, typename... Args>
+      static void callReverse(Handle const& h, Args&&... args);
 
       /// @tparam Tape       Usually not required. Access tape specific configurations.
       /// @tparam Generator  Needs to implement the StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface

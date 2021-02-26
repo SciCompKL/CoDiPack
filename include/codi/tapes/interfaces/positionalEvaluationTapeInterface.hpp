@@ -24,7 +24,7 @@ namespace codi {
   struct PositionalEvaluationTapeInterface {
     public:
 
-      using Position = CODI_DD(_Position, EmptyPosition); ///< See PositionalEvaluationTapeInterface
+      using Position = CODI_DD(_Position, EmptyPosition);  ///< See PositionalEvaluationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -35,9 +35,9 @@ namespace codi {
       /// Clear all adjoints that would be set in a tape evaluation from start to end. It has to hold start >= end.
       void clearAdjoints(Position const& start, Position const& end);
 
-      Position getPosition() const; ///< Current position of the tape.
-      Position getZeroPosition() const; ///< Initial position of the tape.
+      Position getPosition() const;  ///< Current position of the tape.
+      Position getZeroPosition() const;  ///< Initial position of the tape.
 
-      void resetTo(Position const& pos, bool resetAdjoints = true); ///< Rest the tape to the provided position.
+      void resetTo(Position const& pos, bool resetAdjoints = true);  ///< Rest the tape to the provided position.
   };
 }

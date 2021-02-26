@@ -39,28 +39,28 @@ namespace codi {
   struct IndexManagerInterface {
     public:
 
-      using Index = CODI_DD(_Index, int); ///< See IndexManagerInterface
+      using Index = CODI_DD(_Index, int);  ///< See IndexManagerInterface
 
       /*******************************************************************************/
       /// @name Global constants
 
-      static Index constexpr UnusedIndex = 0; ///< Default inactive index for all index managers.
-      static Index constexpr InvalidIndex = -1; ///< Default invalid index for all index mangers. (Max value for unsigned types.)
+      static Index constexpr UnusedIndex = 0;  ///< Default inactive index for all index managers.
+      static Index constexpr InvalidIndex = -1;  ///< Default invalid index for all index mangers. (Max value for unsigned types.)
 
       /*******************************************************************************/
       /// @name Identifier handling
 
-      static bool constexpr CopyNeedsStatement = CODI_UNDEFINED_VALUE; ///< If no copy optimization is implemented. See IndexManagerInterface.
-      static bool constexpr IsLinear = CODI_UNDEFINED_VALUE; ///< If identifiers are coupled to the statements. See IndexManagerInterface.
+      static bool constexpr CopyNeedsStatement = CODI_UNDEFINED_VALUE;  ///< If no copy optimization is implemented. See IndexManagerInterface.
+      static bool constexpr IsLinear = CODI_UNDEFINED_VALUE;  ///< If identifiers are coupled to the statements. See IndexManagerInterface.
 
-      bool assignIndex(Index& index); ///< Call on assignment on a primal value e.g. On `w` for  `w = a + b`.
+      bool assignIndex(Index& index);  ///< Call on assignment on a primal value e.g. On `w` for  `w = a + b`.
                                       ///< @return true if new indices have been generated internally.
       bool assignUnusedIndex(Index& index);  ///< Call on registering input values.
                                              ///< @return true if new indices have been generated internally.
       void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy on a primal value e.g. `w = a`.
-      void freeIndex(Index& index); ///< Call on destruction of primal value. Usually in the destructor.
+      void freeIndex(Index& index);  ///< Call on destruction of primal value. Usually in the destructor.
 
-      void reset(); ///< Reset for a new recording
+      void reset();  ///< Reset for a new recording
 
       /*******************************************************************************/
       /// @name Misc functions
@@ -71,6 +71,6 @@ namespace codi {
        */
       void addToTapeValues(TapeValues& values) const;
 
-      Index getLargestAssignedIndex() const; ///< @return The largest assigned index.
+      Index getLargestAssignedIndex() const;  ///< @return The largest assigned index.
   };
 }

@@ -20,11 +20,11 @@ namespace codi {
   struct AssignmentOperators {
     public:
 
-      using Tape = CODI_DD(_Tape, CODI_T(InternalStatementRecordingInterface<int>)); ///< See AssignmentOperators
-      using Impl = CODI_DD(_Impl, CODI_T(LhsExpressionInterface<double, int, Tape, _Impl>)); ///< See AssignmentOperators
+      using Tape = CODI_DD(_Tape, CODI_T(InternalStatementRecordingInterface<int>));  ///< See AssignmentOperators
+      using Impl = CODI_DD(_Impl, CODI_T(LhsExpressionInterface<double, int, Tape, _Impl>));  ///< See AssignmentOperators
 
-      using Real = CODI_DD(typename Tape::Real, double); ///< See InternalStatementRecordingInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
+      using Real = CODI_DD(typename Tape::Real, double);  ///< See InternalStatementRecordingInterface
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {
@@ -57,7 +57,7 @@ namespace codi {
 
       /// Operator += for passive values.
       CODI_INLINE Impl& operator+=(PassiveReal const& rhs) {
-        if(Tape::AllowJacobianOptimization) {
+        if (Tape::AllowJacobianOptimization) {
           cast().value() += rhs;
         } else {
           cast() = (cast() + rhs);
@@ -67,7 +67,7 @@ namespace codi {
 
       /// Operator -= for passive values.
       CODI_INLINE Impl& operator-=(PassiveReal const& rhs) {
-        if(Tape::AllowJacobianOptimization) {
+        if (Tape::AllowJacobianOptimization) {
           cast().value() -= rhs;
         } else {
           cast() = (cast() - rhs);

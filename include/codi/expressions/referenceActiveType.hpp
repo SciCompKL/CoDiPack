@@ -26,12 +26,12 @@ namespace codi {
 
       /// See ReferenceActiveType
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Tape = typename Type::Tape; ///< See LhsExpressionInterface.
+      using Tape = typename Type::Tape;  ///< See LhsExpressionInterface.
 
-      using Real = typename Tape::Real;              ///< See LhsExpressionInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;     ///< Basic computation type
+      using Real = typename Tape::Real;  ///< See LhsExpressionInterface
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
       using Identifier = typename Tape::Identifier;  ///< See LhsExpressionInterface
-      using Gradient = typename Tape::Gradient;      ///< See LhsExpressionInterface
+      using Gradient = typename Tape::Gradient;  ///< See LhsExpressionInterface
 
   private:
 
@@ -58,7 +58,7 @@ namespace codi {
       /// @name Implementation of LhsExpressionInterface
       /// @{
 
-      using StoreAs = ReferenceActiveType const&; ///< \copydoc codi::ExpressionInterface::StoreAs
+      using StoreAs = ReferenceActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
 
       /// \copydoc codi::LhsExpressionInterface::getIdentifier()
       CODI_INLINE Identifier& getIdentifier() {

@@ -41,19 +41,19 @@ namespace codi {
   struct PrimalValueTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See PrimalValueTapeTypes
+      using Real = CODI_DD(_Real, double);  ///< See PrimalValueTapeTypes
       using Gradient = CODI_DD(_Gradient, double);  ///< See PrimalValueTapeTypes
       using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See PrimalValueTapeTypes
       using StatementEvaluator = CODI_DD(
                                     CODI_T(_StatementEvaluator<Real>),
                                     CODI_T(StatementEvaluatorInterface<double>));  ///< See PrimalValueTapeTypes
       template<typename Chunk, typename Nested>
-      using Data = CODI_DD(CODI_T(_Data<Chunk, Nested>), CODI_T(DataInterface<Nested>)); ///< See PrimalValueTapeTypes
+      using Data = CODI_DD(CODI_T(_Data<Chunk, Nested>), CODI_T(DataInterface<Nested>));  ///< See PrimalValueTapeTypes
 
-      using Identifier = typename IndexManager::Index; ///< See IndexManagerInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;       ///< Basic computation type
+      using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
-      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear; ///< True if the index manager is linear.
+      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
       constexpr static bool IsStaticIndexHandler = !IsLinearIndexHandler;  ///< For reuse index mangers a static instantiation is used.
 
       using EvalHandle = typename StatementEvaluator::Handle;  ///< Handle type returned by the statement generator.
@@ -66,18 +66,18 @@ namespace codi {
                                 Chunk2<Config::ArgumentSize, EvalHandle>,
                                 Chunk4<Identifier, Config::ArgumentSize, Real, EvalHandle>
                               >::type;
-      using StatementData = Data<StatementChunk, IndexManager>; ///< Statement data vector.
+      using StatementData = Data<StatementChunk, IndexManager>;  ///< Statement data vector.
 
-      using IdentifierChunk = Chunk1<Identifier>; ///< Identifiers of statement arguments.
-      using RhsIdentifierData = Data<IdentifierChunk, StatementData>; ///< Rhs identifiers data vector.
+      using IdentifierChunk = Chunk1<Identifier>;  ///< Identifiers of statement arguments.
+      using RhsIdentifierData = Data<IdentifierChunk, StatementData>;  ///< Rhs identifiers data vector.
 
-      using PassiveValueChunk = Chunk1<Real>; ///< Passive values of statement arguments.
+      using PassiveValueChunk = Chunk1<Real>;  ///< Passive values of statement arguments.
       using PassiveValueData = Data<PassiveValueChunk, RhsIdentifierData>;  ///< Passive values data vector
 
-      using ConstantValueChunk = Chunk1<PassiveReal>; ///< Constant values of in statement expressions.
-      using ConstantValueData = Data<ConstantValueChunk, PassiveValueData>; ///< Constant values data vector
+      using ConstantValueChunk = Chunk1<PassiveReal>;  ///< Constant values of in statement expressions.
+      using ConstantValueData = Data<ConstantValueChunk, PassiveValueData>;  ///< Constant values data vector
 
-      using NestedData = ConstantValueData; ///< See TapeTypesInterface.
+      using NestedData = ConstantValueData;  ///< See TapeTypesInterface.
   };
 
   /**
@@ -107,44 +107,44 @@ namespace codi {
       /// See PrimalValueBaseTape
       using Impl = CODI_DD(_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>; ///< Base class abbreviation
-      friend Base; ///< Allow the base class to call protected and private methods.
+      using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation
+      friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                                ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;                        ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;                ///< See TapeTypesInterface.
-      using StatementEvaluator = typename TapeTypes::StatementEvaluator;    ///< See PrimalValueTapeTypes.
-      using Identifier = typename TapeTypes::Identifier;                    ///< See PrimalValueTapeTypes.
+      using Real = typename TapeTypes::Real;  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;  ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
+      using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes.
+      using Identifier = typename TapeTypes::Identifier;  ///< See PrimalValueTapeTypes.
 
-      using EvalHandle = typename TapeTypes::EvalHandle;                    ///< See PrimalValueTapeTypes
+      using EvalHandle = typename TapeTypes::EvalHandle;  ///< See PrimalValueTapeTypes
 
-      using StatementData = typename TapeTypes::StatementData;              ///< See PrimalValueTapeTypes
-      using RhsIdentifierData = typename TapeTypes::RhsIdentifierData;      ///< See PrimalValueTapeTypes
-      using PassiveValueData = typename TapeTypes::PassiveValueData;        ///< See PrimalValueTapeTypes
-      using ConstantValueData = typename TapeTypes::ConstantValueData;      ///< See PrimalValueTapeTypes
+      using StatementData = typename TapeTypes::StatementData;  ///< See PrimalValueTapeTypes
+      using RhsIdentifierData = typename TapeTypes::RhsIdentifierData;  ///< See PrimalValueTapeTypes
+      using PassiveValueData = typename TapeTypes::PassiveValueData;  ///< See PrimalValueTapeTypes
+      using ConstantValueData = typename TapeTypes::ConstantValueData;  ///< See PrimalValueTapeTypes
 
-      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       using NestedPosition = typename ConstantValueData::Position;  ///< See PrimalValueTapeTypes
-      using Position = typename Base::Position;                     ///< See TapeTypesInterface.
+      using Position = typename Base::Position;  ///< See TapeTypesInterface.
 
       static bool constexpr AllowJacobianOptimization = false;  ///< See InternalStatementRecordingInterface.
-      static bool constexpr HasPrimalValues = true;             ///< See PrimalEvaluationTapeInterface
-      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler;    ///< See IdentifierInformationTapeInterface
-      static bool constexpr RequiresPrimalRestore = !TapeTypes::IsLinearIndexHandler; ///< See PrimalEvaluationTapeInterface
+      static bool constexpr HasPrimalValues = true;  ///< See PrimalEvaluationTapeInterface
+      static bool constexpr LinearIndexHandling = TapeTypes::IsLinearIndexHandler;  ///< See IdentifierInformationTapeInterface
+      static bool constexpr RequiresPrimalRestore = !TapeTypes::IsLinearIndexHandler;  ///< See PrimalEvaluationTapeInterface
 
     protected:
 
       static EvalHandle const jacobianExpressions[Config::MaxArgumentSize];
 
-      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager; ///< Index manager.
-      StatementData statementData;         ///< Data stream for statement specific data.
+      MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;  ///< Index manager.
+      StatementData statementData;  ///< Data stream for statement specific data.
       RhsIdentifierData rhsIdentiferData;  ///< Data stream for argument identifier data.
-      PassiveValueData passiveValueData;   ///< Data stream for passive argument value data
-      ConstantValueData constantValueData; ///< Data stream for constant argument data
+      PassiveValueData passiveValueData;  ///< Data stream for passive argument value data
+      ConstantValueData constantValueData;  ///< Data stream for constant argument data
 
-      std::vector<Gradient> adjoints; ///< Evaluation vector for AD.
-      std::vector<Real> primals;      ///< Current state of primal values in the program
+      std::vector<Gradient> adjoints;  ///< Evaluation vector for AD.
+      std::vector<Real> primals;  ///< Current state of primal values in the program
       std::vector<Real> primalsCopy;  ///< Copy of primal values for AD evaluations
 
     private:
@@ -164,16 +164,16 @@ namespace codi {
       /// @{
 
       /// Perform a forward evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
-      template<typename ... Args>
-      static void internalEvaluateForwardStack(Args&& ... args);
+      template<typename... Args>
+      static void internalEvaluateForwardStack(Args&&... args);
 
       /// Perform a primal evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
-      template<typename ... Args>
-      static void internalEvaluatePrimalStack(Args&& ... args);
+      template<typename... Args>
+      static void internalEvaluatePrimalStack(Args&&... args);
 
       /// Perform a reverse evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
-      template<typename ... Args>
-      static void internalEvaluateReverseStack(Args&& ... args);
+      template<typename... Args>
+      static void internalEvaluateReverseStack(Args&&... args);
 
       /// Reset the primal values to the given position.
       void internalResetPrimalValues(Position const& pos);
@@ -232,7 +232,7 @@ namespace codi {
 
       /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&) const
       CODI_INLINE Gradient const& gradient(Identifier const& identifier) const {
-        if(identifier > (Identifier)adjoints.size()) {
+        if (identifier > (Identifier)adjoints.size()) {
           return adjoints[0];
         } else {
           return adjoints[identifier];
@@ -337,7 +337,7 @@ namespace codi {
           size_t activeArguments = 0;
           countActiveArguments.eval(rhs.cast(), activeArguments);
 
-          if(0 != activeArguments) {
+          if (0 != activeArguments) {
 
             statementData.reserveItems(1);
             rhsIdentiferData.reserveItems(MaxActiveArgs);
@@ -372,7 +372,7 @@ namespace codi {
                  LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
 
         CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
-          if(IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
+          if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
           } else {
             indexManager.get().copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
@@ -404,7 +404,7 @@ namespace codi {
       template<typename Lhs>
       CODI_INLINE Real internalRegisterInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value, bool unusedIndex) {
         bool generatedNewIndex;
-        if(unusedIndex) {
+        if (unusedIndex) {
           generatedNewIndex = indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
         } else {
           generatedNewIndex = indexManager.get().assignIndex(value.cast().getIdentifier());
@@ -412,7 +412,7 @@ namespace codi {
         checkPrimalSize(generatedNewIndex);
 
         Real& primalEntry = primals[value.cast().getIdentifier()];
-        if(TapeTypes::IsLinearIndexHandler) {
+        if (TapeTypes::IsLinearIndexHandler) {
           statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag, primalEntry,
                               StatementEvaluator::template createHandle<Impl, Impl, Lhs>());
@@ -437,14 +437,14 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
       CODI_INLINE void clearAdjoints() {
-        for(Gradient& gradient : adjoints) {
+        for (Gradient& gradient : adjoints) {
           gradient = Gradient();
         }
       }
 
       /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
-        for(Real& primal : primals) {
+        for (Real& primal : primals) {
           primal = Real();
         }
 
@@ -458,7 +458,7 @@ namespace codi {
       /// Adds data from all streams, the size of the adjoint vector the size of the primal vector and index manager data.
       CODI_INLINE TapeValues internalGetTapeValues() const {
         std::string name;
-        if(TapeTypes::IsLinearIndexHandler) {
+        if (TapeTypes::IsLinearIndexHandler) {
           name = "CoDi Tape Statistics ( PrimalValueLinearTape )";
         } else {
           name = "CoDi Tape Statistics ( PrimalValueReuseTape )";
@@ -555,7 +555,7 @@ namespace codi {
         std::vector<Real> primalsCopy(0);
         Real* primalData = primals.data();
 
-        if(copyPrimal) {
+        if (copyPrimal) {
           primalsCopy = primals;
           primalData = primalsCopy.data();
         }
@@ -565,7 +565,7 @@ namespace codi {
 
         VectorAccessInterface<Real, Identifier>* vectorAccess;
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if (TapeTypes::IsLinearIndexHandler) {
           vectorAccess = &adjointAccess;
         } else {
           vectorAccess = &primalAdjointAccess;
@@ -616,7 +616,7 @@ namespace codi {
 
         Real* primalData = primals.data();
 
-        if(copyPrimal) {
+        if (copyPrimal) {
           primalsCopy = primals;
           primalData = primalsCopy.data();
         }
@@ -626,7 +626,7 @@ namespace codi {
 
         VectorAccessInterface<Real, Identifier>* vectorAccess;
 
-        if(TapeTypes::IsLinearIndexHandler) {
+        if (TapeTypes::IsLinearIndexHandler) {
           vectorAccess = &adjointAccess;
         } else {
           vectorAccess = &primalAdjointAccess;
@@ -776,21 +776,21 @@ namespace codi {
       struct JacobianStatementGenerator {
         public:
 
-          static size_t constexpr size = _size; ///< See JacobianStatementGenerator
+          static size_t constexpr size = _size;  ///< See JacobianStatementGenerator
 
           /*******************************************************************************/
           /// @name Implementation of StatementEvaluatorTapeInterface
           /// @{
 
           /// Throws exception
-          template<typename Expr, typename ... Args>
-          static Real statementEvaluateForward(Args&& ... args) {
+          template<typename Expr, typename... Args>
+          static Real statementEvaluateForward(Args&&... args) {
             CODI_EXCEPTION("Forward evaluation of jacobian statement not possible.");
           }
 
           /// Throws exception
-          template<typename Expr, typename ... Args>
-          static Real statementEvaluatePrimal(Args&& ... args) {
+          template<typename Expr, typename... Args>
+          static Real statementEvaluatePrimal(Args&&... args) {
             CODI_EXCEPTION("Primal evaluation of jacobian statement not possible.");
 
           }
@@ -823,16 +823,16 @@ namespace codi {
           /// @{
 
           /// Throws exception
-          template<typename Expr, typename ... Args>
-          static Real statementEvaluateForwardInner(Args&& ... args) {
+          template<typename Expr, typename... Args>
+          static Real statementEvaluateForwardInner(Args&&... args) {
             CODI_EXCEPTION("Forward evaluation of jacobian statement not possible.");
 
             return Real();
           }
 
           /// Throws exception
-          template<typename Expr, typename ... Args>
-          static Real statementEvaluatePrimalInner(Args&& ... args) {
+          template<typename Expr, typename... Args>
+          static Real statementEvaluatePrimalInner(Args&&... args) {
             CODI_EXCEPTION("Primal evaluation of jacobian statement not possible.");
 
             return Real();
@@ -873,7 +873,7 @@ namespace codi {
             #endif
 
             CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !lhsZero) {
-              while(curRhsIdentifiersPos > endRhsIdentifiersPos) {
+              while (curRhsIdentifiersPos > endRhsIdentifiersPos) {
                 curPassivePos -= 1;
                 curRhsIdentifiersPos -= 1;
 
@@ -952,7 +952,7 @@ namespace codi {
 
         internalEvaluateReverse<false>(start, end, adjoints.data());
 
-        if(!TapeTypes::IsLinearIndexHandler) {
+        if (!TapeTypes::IsLinearIndexHandler) {
 
           internalEvaluatePrimalStack(end, start);
         }
@@ -962,7 +962,7 @@ namespace codi {
       void evaluateForwardKeepState(Position const& start, Position const& end) {
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
-        if(!TapeTypes::IsLinearIndexHandler) {
+        if (!TapeTypes::IsLinearIndexHandler) {
           internalResetPrimalValues(end);
         }
 
@@ -1055,7 +1055,7 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
+        for (Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
           primalVector[curPos] = passiveValues[curPassivePos + curPos];
 
         }
@@ -1099,7 +1099,7 @@ namespace codi {
           size_t& curPassivePos, Real const* const passiveValues,
           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
 
-        for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
+        for (Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
           primalVector[curPos] = passiveValues[curPassivePos + curPos];
         }
 
@@ -1150,7 +1150,7 @@ namespace codi {
         curRhsIdentifiersPos -= maxActiveArgs;
 
         CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint)) {
-          for(Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
+          for (Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
             primalVector[curPos] = passiveValues[curPassivePos + curPos];
           }
 
@@ -1223,18 +1223,18 @@ namespace codi {
     private:
 
       CODI_INLINE void checkAdjointSize(Identifier const& identifier) {
-        if(identifier >= (Identifier)adjoints.size()) {
+        if (identifier >= (Identifier)adjoints.size()) {
           resizeAdjointsVector();
         }
       }
 
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
-        if(TapeTypes::IsLinearIndexHandler) {
-          if(indexManager.get().getLargestAssignedIndex() >= (Identifier)primals.size()) {
+        if (TapeTypes::IsLinearIndexHandler) {
+          if (indexManager.get().getLargestAssignedIndex() >= (Identifier)primals.size()) {
             resizePrimalVector(primals.size() + Config::ChunkSize);
           }
         } else {
-          if(generatedNewIndex) {
+          if (generatedNewIndex) {
             resizePrimalVector(indexManager.get().getLargestAssignedIndex() + 1);
           }
         }
@@ -1257,13 +1257,13 @@ namespace codi {
   /// Specialization for manual statement pushes of the used expression type.
   template<size_t size>
   struct ExpressionTraits::NumberOfActiveTypeArguments<JacobianExpression<size>> {
-      static size_t constexpr value = size; ///< Number of arguments
+      static size_t constexpr value = size;  ///< Number of arguments
   };
 
   /// Specialization for manual statement pushes of the used expression type.
   template<size_t size>
   struct ExpressionTraits::NumberOfConstantTypeArguments<JacobianExpression<size>> {
-      static size_t constexpr value = 0; ///< Always zero
+      static size_t constexpr value = 0;  ///< Always zero
   };
 
   #define CREATE_EXPRESSION(size) \

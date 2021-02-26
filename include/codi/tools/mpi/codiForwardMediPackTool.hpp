@@ -91,14 +91,14 @@ namespace codi {
       }
 
       CODI_INLINE void deletePrimalTypeBuffer(PrimalType* &buf) const {
-        if(NULL != buf) {
+        if (NULL != buf) {
           delete [] buf;
           buf = NULL;
         }
       }
 
       CODI_INLINE void deleteIndexTypeBuffer(IndexType* &buf) const {
-        if(NULL != buf) {
+        if (NULL != buf) {
           delete [] buf;
           buf = NULL;
         }

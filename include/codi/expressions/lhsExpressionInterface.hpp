@@ -29,27 +29,27 @@ namespace codi {
   struct LhsExpressionInterface : public ExpressionInterface<_Real, _Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See LhsExpressionInterface
+      using Real = CODI_DD(_Real, double);  ///< See LhsExpressionInterface
       using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface
       using Tape = CODI_DD(_Tape,
                      CODI_T(CODI_UNION<InternalStatementRecordingInterface<int>,
                                               GradientAccessTapeInterface<double, int>>));  ///< See LhsExpressionInterface
       using Impl = CODI_DD(_Impl, LhsExpressionInterface);  ///< See LhsExpressionInterface
 
-      using Identifier = typename Tape::Identifier; ///< See GradientAccessTapeInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;    ///< Basic computation type
+      using Identifier = typename Tape::Identifier;  ///< See GradientAccessTapeInterface
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       /*******************************************************************************/
       /// @name Interface definition
       /// @{
 
-      Real const& value() const; ///< Get a constant reference to the lvalue represented by the expression.
-      Real& value();             ///< Get a reference to the lvalue represented by the expression.
+      Real const& value() const;  ///< Get a constant reference to the lvalue represented by the expression.
+      Real& value();  ///< Get a reference to the lvalue represented by the expression.
 
-      Identifier const& getIdentifier() const; ///< Get a constant reference to the identifier of the tape for this expression.
-      Identifier& getIdentifier();             ///< Get a constant reference to the identifier of the tape for this expression.
+      Identifier const& getIdentifier() const;  ///< Get a constant reference to the identifier of the tape for this expression.
+      Identifier& getIdentifier();  ///< Get a constant reference to the identifier of the tape for this expression.
 
-      static Tape& getGlobalTape(); ///< Get a reference to the tape which manages this expression.
+      static Tape& getGlobalTape();  ///< Get a reference to the tape which manages this expression.
 
       /// @}
       /*******************************************************************************/
@@ -116,17 +116,17 @@ namespace codi {
       /// @name Implementation of NodeInterface
       /// @{
 
-      static bool constexpr EndPoint = true; ///< \copydoc codi::NodeInterface::EndPoint
+      static bool constexpr EndPoint = true;  ///< \copydoc codi::NodeInterface::EndPoint
 
       /// \copydoc codi::NodeInterface::forEachLink
-      template<typename Logic, typename ... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+      template<typename Logic, typename... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
         CODI_UNUSED(logic, args...);
       }
 
       /// \copydoc codi::NodeInterface::forEachLinkConstExpr
-      template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... CODI_UNUSED_ARG(args)) {
+      template<typename Logic, typename... Args>
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... CODI_UNUSED_ARG(args)) {
         return Logic::NeutralElement;
       }
 

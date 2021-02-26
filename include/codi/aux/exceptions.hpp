@@ -31,7 +31,7 @@ namespace codi {
   /**
    * @brief Generates an exception.
    *
-   * @param ...  Arguments for a printf like output and format.
+   * @param...  Arguments for a printf like output and format.
    */
   #define CODI_EXCEPTION(...) outputException( __func__, __FILE__, __LINE__, __VA_ARGS__)
 
@@ -46,7 +46,7 @@ namespace codi {
    * @param[in]     line  Line inside the file where the exception was generated.
    * @param[in]  message  The exception message and the arguments for the formatting in the message.
    */
-  inline void outputException(char const function[], char const file[], int const line, char const* message, ...) {
+  inline void outputException(char const function[], char const file[], int const line, char const* message,...) {
     fprintf(stderr, "Error in function %s (%s:%d)\nThe message is: ", function, file, line);
 
     va_list vl;

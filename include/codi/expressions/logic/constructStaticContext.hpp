@@ -35,14 +35,14 @@ namespace codi {
   struct ConstructStaticContextLogic {
     public:
 
-      using Rhs = CODI_DD(_Rhs, CODI_T(ExpressionInterface<double, CODI_ANY>)); ///< See ConstructStaticContextLogic
-      using Tape = CODI_DD(_Tape, CODI_T(ReverseTapeInterface<double, double, CODI_ANY>)); ///< See ConstructStaticContextLogic
-      static constexpr size_t primalValueOffset = CODI_DD(_primalValueOffset, 0); ///< See ConstructStaticContextLogic
-      static constexpr size_t constantValueOffset = CODI_DD(_constantValueOffset, 0); ///< See ConstructStaticContextLogic
+      using Rhs = CODI_DD(_Rhs, CODI_T(ExpressionInterface<double, CODI_ANY>));  ///< See ConstructStaticContextLogic
+      using Tape = CODI_DD(_Tape, CODI_T(ReverseTapeInterface<double, double, CODI_ANY>));  ///< See ConstructStaticContextLogic
+      static constexpr size_t primalValueOffset = CODI_DD(_primalValueOffset, 0);  ///< See ConstructStaticContextLogic
+      static constexpr size_t constantValueOffset = CODI_DD(_constantValueOffset, 0);  ///< See ConstructStaticContextLogic
 
-      using Real = typename Tape::Real;               ///< See TapeTypesInterface.
-      using Identifier = typename Tape::Identifier;   ///< See TapeTypesInterface.
-      using PassiveReal = typename Tape::PassiveReal; ///< Basic computation type
+      using Real = typename Tape::Real;  ///< See TapeTypesInterface.
+      using Identifier = typename Tape::Identifier;  ///< See TapeTypesInterface.
+      using PassiveReal = typename Tape::PassiveReal;  ///< Basic computation type
 
       /// The resulting expression type after all nodes are replaced.
       using ResultType = CODI_DD(_Rhs, CODI_T(ExpressionInterface<double, CODI_ANY>));

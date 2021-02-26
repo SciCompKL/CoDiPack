@@ -31,10 +31,10 @@ namespace codi {
       /// For forward AD the 'tape' needs to implement the InternalStatementRecordingInterface and GradientAccessTapeInterface
       using Tape = CODI_DD(_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Real = typename Tape::Real;              ///< See LhsExpressionInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;     ///< Basic computation type
+      using Real = typename Tape::Real;  ///< See LhsExpressionInterface
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
       using Identifier = typename Tape::Identifier;  ///< See LhsExpressionInterface
-      using Gradient = typename Tape::Gradient;      ///< See LhsExpressionInterface
+      using Gradient = typename Tape::Gradient;  ///< See LhsExpressionInterface
 
       using Base = LhsExpressionInterface<Real, Gradient, Tape, ActiveType>;  ///< Base class abbreviation
 
@@ -86,7 +86,7 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = ActiveType const&; ///< \copydoc codi::ExpressionInterface::StoreAs
+      using StoreAs = ActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
 
       /// @}
       /*******************************************************************************/
