@@ -133,7 +133,7 @@ namespace codi {
     public:
 
       using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition);  ///< See ChunkPosition
-      using Base = ArrayPosition<NestedPosition>;  ///< Base abbreviation
+      using Base = ArrayPosition<NestedPosition>;                      ///< Base abbreviation
 
       size_t chunk;  ///< Chunk position index
 

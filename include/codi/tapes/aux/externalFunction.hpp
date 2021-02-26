@@ -15,12 +15,12 @@ namespace codi {
   struct ExternalFunctionInternalData {
     protected:
       typedef void (*CallFunctionUntyped)(void* tape, void* data,
-                                          void* adjointInterface);  ///< Call function definition.
+                                          void* adjointInterface);    ///< Call function definition.
       typedef void (*DeleteFunctionUntyped)(void* tape, void* data);  ///< Delete function definition.
 
-      CallFunctionUntyped funcReverse;  ///< Reverse evaluation function pointer
-      CallFunctionUntyped funcForward;  ///< Forward evaluation function pointer
-      CallFunctionUntyped funcPrimal;  ///< Primal evaluation function pointer
+      CallFunctionUntyped funcReverse;   ///< Reverse evaluation function pointer
+      CallFunctionUntyped funcForward;   ///< Forward evaluation function pointer
+      CallFunctionUntyped funcPrimal;    ///< Primal evaluation function pointer
       DeleteFunctionUntyped funcDelete;  ///< User data deletion function pointer
 
       void* data;  ///< User data pointer
@@ -73,7 +73,7 @@ namespace codi {
                                                                                   ///< VectorAccessInterface.
       typedef void (*CallFunction)(Tape* tape, void* data,
                                    VectorAccess* adjointInterface);  ///< Call function definition.
-      typedef void (*DeleteFunction)(Tape* tape, void* data);  ///< Delete function definition.
+      typedef void (*DeleteFunction)(Tape* tape, void* data);        ///< Delete function definition.
 
       /// Any arguments can be NULL if not required.
       ExternalFunction(CallFunction funcReverse, CallFunction funcForward, CallFunction funcPrimal, void* data,

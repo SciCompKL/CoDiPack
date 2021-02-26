@@ -49,12 +49,12 @@ namespace codi {
   struct UnaryExpression : public ExpressionInterface<_Real, UnaryExpression<_Real, _Arg, _Operation> > {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See UnaryExpression
-      using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>));  ///< See UnaryExpression
+      using Real = CODI_DD(_Real, double);                                                ///< See UnaryExpression
+      using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>));           ///< See UnaryExpression
       using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(UnaryOperation<Real>));  ///< See UnaryExpression
 
       typename Arg::StoreAs arg;  ///< Argument of the expression
-      Real result;  ///< Precomputed result
+      Real result;                ///< Precomputed result
 
       /// Constructor
       template<typename RealArg>

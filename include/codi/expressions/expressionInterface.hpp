@@ -21,7 +21,7 @@ namespace codi {
   struct ExpressionInterface : public NodeInterface<_Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See ExpressionInterface
+      using Real = CODI_DD(_Real, double);               ///< See ExpressionInterface
       using Impl = CODI_DD(_Impl, ExpressionInterface);  ///< See ExpressionInterface
 
       /// Cast to the implementation.

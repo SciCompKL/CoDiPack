@@ -40,8 +40,8 @@ namespace codi {
   struct ReverseTapeInterface : public virtual InternalStatementRecordingInterface<_Identifier>,
                                 public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
     public:
-      using Real = CODI_DD(_Real, double);  ///< See ReverseTapeInterface
-      using Gradient = CODI_DD(_Gradient, double);  ///< See ReverseTapeInterface
+      using Real = CODI_DD(_Real, double);           ///< See ReverseTapeInterface
+      using Gradient = CODI_DD(_Gradient, double);   ///< See ReverseTapeInterface
       using Identifier = CODI_DD(_Identifier, int);  ///< See ReverseTapeInterface
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
@@ -56,8 +56,8 @@ namespace codi {
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
 
-      void setActive();  ///< Start/continue recording of statements
-      void setPassive();  ///< Stop recording of statements
+      void setActive();       ///< Start/continue recording of statements
+      void setPassive();      ///< Stop recording of statements
       bool isActive() const;  ///< Check if the tape is recording
 
       /*******************************************************************************/
@@ -68,7 +68,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Reset
 
-      void clearAdjoints();  ///< Clear all adjoint values and set them to zero.
+      void clearAdjoints();                   ///< Clear all adjoint values and set them to zero.
       void reset(bool resetAdjoints = true);  ///< Reset the tape to the initial state for a fresh recording. See
                                               ///< tutorial
                                               ///< (\ref Tutorial_5_Multiple_tape_recordings) for remarks on repeated

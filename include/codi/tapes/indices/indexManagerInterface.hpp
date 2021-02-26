@@ -56,8 +56,8 @@ namespace codi {
       static bool constexpr IsLinear =
           CODI_UNDEFINED_VALUE;  ///< If identifiers are coupled to the statements. See IndexManagerInterface.
 
-      bool assignIndex(Index& index);  ///< Call on assignment on a primal value e.g. On `w` for  `w = a + b`.
-                                       ///< @return true if new indices have been generated internally.
+      bool assignIndex(Index& index);        ///< Call on assignment on a primal value e.g. On `w` for  `w = a + b`.
+                                             ///< @return true if new indices have been generated internally.
       bool assignUnusedIndex(Index& index);  ///< Call on registering input values.
                                              ///< @return true if new indices have been generated internally.
       void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy on a primal value e.g. `w = a`.

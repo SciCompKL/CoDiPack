@@ -55,14 +55,14 @@ namespace codi {
   template<typename _Real, typename _ArgA, typename _ArgB, template<typename> class _Operation>
   struct BinaryExpression : public ExpressionInterface<_Real, BinaryExpression<_Real, _ArgA, _ArgB, _Operation> > {
     public:
-      using Real = CODI_DD(_Real, double);  ///< See BinaryExpression
-      using ArgA = CODI_DD(_ArgA, CODI_T(ExpressionInterface<double, CODI_ANY>));  ///< See BinaryExpression
-      using ArgB = CODI_DD(_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>));  ///< See BinaryExpression
+      using Real = CODI_DD(_Real, double);                                                 ///< See BinaryExpression
+      using ArgA = CODI_DD(_ArgA, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression
+      using ArgB = CODI_DD(_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression
       using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(BinaryOperation<Real>));  ///< See BinaryExpression
 
       typename ArgA::StoreAs argA;  ///< First argument of the expression
       typename ArgB::StoreAs argB;  ///< Second argument of the expression
-      Real result;  ///< Precomputed result
+      Real result;                  ///< Precomputed result
 
       /// Constructor
       template<typename RealA, typename RealB>

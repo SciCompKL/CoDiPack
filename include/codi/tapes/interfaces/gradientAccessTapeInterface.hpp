@@ -34,16 +34,16 @@ namespace codi {
   struct GradientAccessTapeInterface {
     public:
 
-      using Gradient = CODI_DD(_Gradient, double);  ///< See GradientAccessTapeInterface
+      using Gradient = CODI_DD(_Gradient, double);   ///< See GradientAccessTapeInterface
       using Identifier = CODI_DD(_Identifier, int);  ///< See GradientAccessTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
       void setGradient(Identifier const& identifier, Gradient const& gradient);  ///< Set the gradient
-      Gradient const& getGradient(Identifier const& identifier) const;  ///< Get the gradient
+      Gradient const& getGradient(Identifier const& identifier) const;           ///< Get the gradient
 
-      Gradient& gradient(Identifier const& identifier);  ///< Reference access to gradient
+      Gradient& gradient(Identifier const& identifier);              ///< Reference access to gradient
       Gradient const& gradient(Identifier const& identifier) const;  ///< Constant reference access to gradient
   };
 }

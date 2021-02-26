@@ -21,7 +21,7 @@ namespace codi {
 
       using Base = PrimalTapeStatementFunctions;  ///< Base class abbreviation
 
-      size_t maxActiveArguments;  ///< Maximum number of active arguments.
+      size_t maxActiveArguments;    ///< Maximum number of active arguments.
       size_t maxConstantArguments;  ///< Maximum number of constant arguments.
 
       /// Constructor

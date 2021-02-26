@@ -38,14 +38,14 @@ namespace codi {
       using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>;  ///< Base class abbreviation
       friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;  ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;  ///< See PrimalValueTapeTypes
-      using Identifier = typename TapeTypes::Identifier;  ///< See TapeTypesInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;                      ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;              ///< See PrimalValueTapeTypes
+      using Identifier = typename TapeTypes::Identifier;                  ///< See TapeTypesInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;                  ///< Basic computation type
       using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes
-      using EvalHandle = typename TapeTypes::EvalHandle;  ///< See PrimalValueTapeTypes
-      using Position = typename Base::Position;  ///< See TapeTypesInterface.
+      using EvalHandle = typename TapeTypes::EvalHandle;                  ///< See PrimalValueTapeTypes
+      using Position = typename Base::Position;                           ///< See TapeTypesInterface.
 
       /// Constructor
       PrimalValueLinearTape() : Base() {}

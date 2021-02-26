@@ -29,10 +29,10 @@ namespace codi {
   struct ChunkedData : public DataInterface<_NestedData> {
     public:
 
-      using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>));  ///< ChunkBase Interface
-      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));  ///< DataInterface Interface
+      using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>));                         ///< ChunkBase Interface
+      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< DataInterface Interface
       using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< PointerStore
-      using InternalPosHandle = size_t;  ///< Position in the chunk
+      using InternalPosHandle = size_t;                                                ///< Position in the chunk
 
       using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 

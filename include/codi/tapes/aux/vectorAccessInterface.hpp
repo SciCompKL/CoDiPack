@@ -55,7 +55,7 @@ namespace codi {
   struct VectorAccessInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See VectorAccessInterface
+      using Real = CODI_DD(_Real, double);           ///< See VectorAccessInterface
       using Identifier = CODI_DD(_Identifier, int);  ///< See VectorAccessInterface
 
       virtual ~VectorAccessInterface() {}  ///< Destructor
@@ -64,7 +64,7 @@ namespace codi {
       /// @name Misc
 
       virtual size_t getVectorSize() const = 0;  ///< Vector size in the current tape evaluation
-      virtual bool isLhsZero() = 0;  ///< If adjoint set with setLhsAdjoint is zero.
+      virtual bool isLhsZero() = 0;              ///< If adjoint set with setLhsAdjoint is zero.
 
       /*******************************************************************************/
       /// @name Indirect adjoint access
@@ -88,9 +88,9 @@ namespace codi {
       /// @name Direct adjoint access
 
       virtual void resetAdjoint(Identifier const& index, size_t dim) = 0;  ///< Set the adjoint component to zero
-      virtual void resetAdjointVec(Identifier const& index) = 0;  ///< Set the adjoint entry to zero
+      virtual void resetAdjointVec(Identifier const& index) = 0;           ///< Set the adjoint entry to zero
 
-      virtual Real getAdjoint(Identifier const& index, size_t dim) = 0;  ///< Get the adjoint component
+      virtual Real getAdjoint(Identifier const& index, size_t dim) = 0;          ///< Get the adjoint component
       virtual void getAdjointVec(Identifier const& index, Real* const vec) = 0;  ///< Get the adjoint entry
 
       virtual void updateAdjoint(Identifier const& index, size_t dim,
@@ -101,7 +101,7 @@ namespace codi {
       /// @name Primal access
 
       virtual void setPrimal(Identifier const& index, Real const& primal) = 0;  ///< Set the primal value
-      virtual Real getPrimal(Identifier const& index) = 0;  ///< Get the primal value
+      virtual Real getPrimal(Identifier const& index) = 0;                      ///< Get the primal value
 
       virtual bool hasPrimals() = 0;  ///< If the tape/vector interface has primal values.
   };

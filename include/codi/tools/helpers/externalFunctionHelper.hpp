@@ -49,7 +49,7 @@ namespace codi {
       /// See ExternalFunctionHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
 
       /// See LhsExpressionInterface
@@ -223,8 +223,8 @@ namespace codi {
 
       std::vector<Type*> outputValues;  ///< References to output values
 
-      bool storeInputPrimals;  ///< If input primals are stored
-      bool storeOutputPrimals;  ///< If output primal are stored
+      bool storeInputPrimals;     ///< If input primals are stored
+      bool storeOutputPrimals;    ///< If output primal are stored
       bool primalFuncUsesADType;  ///< If a primal call with a self implemented function will be done
 
       EvalData* data;  ///< External function data

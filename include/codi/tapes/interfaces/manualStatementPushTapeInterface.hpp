@@ -38,8 +38,8 @@ namespace codi {
   struct ManualStatementPushTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See ManualStatementPushTapeInterface.
-      using Gradient = CODI_DD(_Gradient, double);  ///< See ManualStatementPushTapeInterface.
+      using Real = CODI_DD(_Real, double);           ///< See ManualStatementPushTapeInterface.
+      using Gradient = CODI_DD(_Gradient, double);   ///< See ManualStatementPushTapeInterface.
       using Identifier = CODI_DD(_Identifier, int);  ///< See ManualStatementPushTapeInterface.
 
       /*******************************************************************************/

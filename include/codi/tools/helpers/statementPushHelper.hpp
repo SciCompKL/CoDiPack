@@ -107,15 +107,15 @@ namespace codi {
       ///< See StatementPushHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
       /// See LhsExpressionInterface
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
 
     protected:
       Identifier indexData[Config::MaxArgumentSize];  ///< Storage for the identifiers of the arguments
-      Real jacobianData[Config::MaxArgumentSize];  ///< Storage for the Jacobians of the arguments
-      size_t dataPos;  ///< Current number of arguments.
+      Real jacobianData[Config::MaxArgumentSize];     ///< Storage for the Jacobians of the arguments
+      size_t dataPos;                                 ///< Current number of arguments.
 
     public:
 
@@ -180,7 +180,7 @@ namespace codi {
       /// See StatementPushHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Real = typename Type::Real;          ///< See LhsExpressionInterface
       using Gradient = typename Type::Gradient;  ///< See LhsExpressionInterface
 
     protected:

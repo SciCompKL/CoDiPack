@@ -46,9 +46,9 @@ namespace codi {
         public virtual ReverseTapeInterface<_Real, _Gradient, _Identifier> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See FullTapeInterface
-      using Gradient = CODI_DD(_Gradient, double);  ///< See FullTapeInterface
-      using Identifier = CODI_DD(_Identifier, int);  ///< See FullTapeInterface
+      using Real = CODI_DD(_Real, double);                 ///< See FullTapeInterface
+      using Gradient = CODI_DD(_Gradient, double);         ///< See FullTapeInterface
+      using Identifier = CODI_DD(_Identifier, int);        ///< See FullTapeInterface
       using Position = CODI_DD(_Position, EmptyPosition);  ///< See FullTapeInterface
   };
 }

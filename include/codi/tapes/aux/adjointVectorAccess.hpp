@@ -22,9 +22,9 @@ namespace codi {
    */
   template<typename _Real, typename _Identifier, typename _Gradient>
   struct AdjointVectorAccess : public VectorAccessInterface<_Real, _Identifier> {
-      using Real = CODI_DD(_Real, double);  ///< See AdjointVectorAccess
+      using Real = CODI_DD(_Real, double);           ///< See AdjointVectorAccess
       using Identifier = CODI_DD(_Identifier, int);  ///< See AdjointVectorAccess
-      using Gradient = CODI_DD(_Gradient, double);  ///< See AdjointVectorAccess
+      using Gradient = CODI_DD(_Gradient, double);   ///< See AdjointVectorAccess
 
     private:
 

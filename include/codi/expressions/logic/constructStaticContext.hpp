@@ -42,8 +42,8 @@ namespace codi {
       static constexpr size_t constantValueOffset =
           CODI_DD(_constantValueOffset, 0);  ///< See ConstructStaticContextLogic
 
-      using Real = typename Tape::Real;  ///< See TapeTypesInterface.
-      using Identifier = typename Tape::Identifier;  ///< See TapeTypesInterface.
+      using Real = typename Tape::Real;                ///< See TapeTypesInterface.
+      using Identifier = typename Tape::Identifier;    ///< See TapeTypesInterface.
       using PassiveReal = typename Tape::PassiveReal;  ///< Basic computation type
 
       /// The resulting expression type after all nodes are replaced.

@@ -92,7 +92,7 @@ namespace codi {
   struct DataInterface {
     public:
 
-      using NestedData = CODI_DD(_NestedData, DataInterface);  ///< See DataInterface
+      using NestedData = CODI_DD(_NestedData, DataInterface);         ///< See DataInterface
       using InternalPosHandle = CODI_DD(_InternalPosHandle, size_t);  ///< See DataInterface
 
       using Position = EmptyPosition;  ///< Contains position data for this DataInterface and all nested interfaces
@@ -129,7 +129,7 @@ namespace codi {
 
       void resize(size_t const& totalSize); /**< Allocated the requested number of data items. */
 
-      void reset(); /**< Reset to the zero position. Data is not deallocated. Also called on nested interfaces. */
+      void reset();     /**< Reset to the zero position. Data is not deallocated. Also called on nested interfaces. */
       void resetHard(); /**< Reset to the zero position. Data is deallocated and the default size is allocated again.
                              Also called on nested interfaces. */
       void resetTo(Position const& pos); /**< Reset to the given position. Data is not deallocated. Also called on the
@@ -138,7 +138,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Position functions
 
-      CODI_INLINE size_t getDataSize() const; /**< @return Total number of data items stored. */
+      CODI_INLINE size_t getDataSize() const;   /**< @return Total number of data items stored. */
       CODI_INLINE Position getPosition() const; /**< @return The current global position of this DataInterface and all
                                                              nested interfaces */
       CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos); /**< Compute the number of data items

@@ -28,7 +28,7 @@ namespace codi {
   struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
     public:
 
-      using Index = CODI_DD(_Index, int);  ///< See LinearIndexManager
+      using Index = CODI_DD(_Index, int);         ///< See LinearIndexManager
       using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
 
       /*******************************************************************************/
@@ -36,15 +36,15 @@ namespace codi {
       /// @{
 
       static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization implemented
-      static bool constexpr IsLinear = true;  ///< Tightly coupled to statements.
+      static bool constexpr IsLinear = true;             ///< Tightly coupled to statements.
 
       /// @}
       /*******************************************************************************/
       /// @name DataInterface: Type declaration
       /// @{
 
-      using Position = Index;  ///< The current maximum index
-      using NestedData = void;  ///< Terminator
+      using Position = Index;            ///< The current maximum index
+      using NestedData = void;           ///< Terminator
       using InternalPosHandle = size_t;  ///< The current maximum index
 
     /// @}

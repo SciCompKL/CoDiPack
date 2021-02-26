@@ -45,7 +45,7 @@ namespace codi {
 
     public:
 
-      MPIType* MPI_TYPE;  ///< MPI_Datatype for the specified CoDiPack type.
+      MPIType* MPI_TYPE;                 ///< MPI_Datatype for the specified CoDiPack type.
       medi::AMPI_Datatype MPI_INT_TYPE;  ///< MPI_Datatype for the specified CoDiPack type and an int.
 
       /// Constructor

@@ -38,16 +38,16 @@ namespace codi {
       /// @name Interface: File IO
 
       void writeToFile(std::string const& filename) const;  ///< See \ref fileIO
-      void readFromFile(std::string const& filename);  ///< See \ref fileIO
-      void deleteData();  ///< See \ref fileIO
+      void readFromFile(std::string const& filename);       ///< See \ref fileIO
+      void deleteData();                                    ///< See \ref fileIO
 
       /*******************************************************************************/
       /// @name Interface: Parameters
 
       std::set<TapeParameters> const& getAvailableParameters() const;  ///< See \ref parameters
-      size_t getParameter(TapeParameters parameter) const;  ///< See \ref parameters
-      bool hasParameter(TapeParameters parameter) const;  ///< See \ref parameters
-      void setParameter(TapeParameters parameter, size_t value);  ///< See \ref parameters
+      size_t getParameter(TapeParameters parameter) const;             ///< See \ref parameters
+      bool hasParameter(TapeParameters parameter) const;               ///< See \ref parameters
+      void setParameter(TapeParameters parameter, size_t value);       ///< See \ref parameters
 
       /*******************************************************************************/
       /// @name Interface: Misc

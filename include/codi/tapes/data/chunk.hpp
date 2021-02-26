@@ -65,9 +65,9 @@ namespace codi {
       /// @name Interface: Data IO
       /// @{
 
-      virtual void allocateData() = 0;  ///< Allocated the data if it was deallocated before.
-      virtual void deleteData() = 0;  ///< Delete the allocated data.
-      virtual void readData(FileIo& handle) = 0;  ///< Read data from the FileIo handle
+      virtual void allocateData() = 0;                   ///< Allocated the data if it was deallocated before.
+      virtual void deleteData() = 0;                     ///< Delete the allocated data.
+      virtual void readData(FileIo& handle) = 0;         ///< Read data from the FileIo handle
       virtual void writeData(FileIo& handle) const = 0;  ///< Write data to the FileIO handle
 
       /// @}
@@ -79,7 +79,7 @@ namespace codi {
 
     /// @}
     protected:
-      size_t size;  ///< Maximum size of arrays.
+      size_t size;      ///< Maximum size of arrays.
       size_t usedSize;  ///< Currently used size.
 
     public:

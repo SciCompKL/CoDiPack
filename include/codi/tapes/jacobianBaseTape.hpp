@@ -36,8 +36,8 @@ namespace codi {
   struct JacobianTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See JacobianTapeTypes.
-      using Gradient = CODI_DD(_Gradient, double);  ///< See JacobianTapeTypes.
+      using Real = CODI_DD(_Real, double);                                              ///< See JacobianTapeTypes.
+      using Gradient = CODI_DD(_Gradient, double);                                      ///< See JacobianTapeTypes.
       using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See JacobianTapeTypes.
       template<typename Chunk, typename Nested>
       using Data = CODI_DD(CODI_T(_Data<Chunk, Nested>),
@@ -55,7 +55,7 @@ namespace codi {
                                                        Chunk2<Identifier, Config::ArgumentSize> >::type;
       using StatementData = Data<StatementChunk, IndexManager>;  ///< Statement data vector.
 
-      using JacobianChunk = Chunk2<Real, Identifier>;  ///< Jacobian chunks is \<Jacobian, rhs index\>
+      using JacobianChunk = Chunk2<Real, Identifier>;           ///< Jacobian chunks is \<Jacobian, rhs index\>
       using JacobianData = Data<JacobianChunk, StatementData>;  ///< Jacobian data vector.
 
       using NestedData = JacobianData;  ///< See TapeTypesInterface.
@@ -84,23 +84,23 @@ namespace codi {
       using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation
       friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;  ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
       using IndexManager = typename TapeTypes::IndexManager;  ///< See JacobianTapeTypes.
-      using Identifier = typename TapeTypes::Identifier;  ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
 
       using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
-      using JacobianData = typename TapeTypes::JacobianData;  ///< See JacobianTapeTypes.
+      using JacobianData = typename TapeTypes::JacobianData;    ///< See JacobianTapeTypes.
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       using NestedPosition = typename JacobianData::Position;  ///< See JacobianTapeTypes.
-      using Position = typename Base::Position;  ///< See TapeTypesInterface.
+      using Position = typename Base::Position;                ///< See TapeTypesInterface.
 
       static bool constexpr AllowJacobianOptimization = true;  ///< See InternalStatementRecordingInterface.
-      static bool constexpr HasPrimalValues = false;  ///< See PrimalEvaluationTapeInterface
+      static bool constexpr HasPrimalValues = false;           ///< See PrimalEvaluationTapeInterface
       static bool constexpr LinearIndexHandling =
-          TapeTypes::IsLinearIndexHandler;  ///< See IdentifierInformationTapeInterface
+          TapeTypes::IsLinearIndexHandler;                  ///< See IdentifierInformationTapeInterface
       static bool constexpr RequiresPrimalRestore = false;  ///< See PrimalEvaluationTapeInterface
 
     protected:
@@ -112,7 +112,7 @@ namespace codi {
 
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;  ///< Index manager.
       StatementData statementData;  ///< Data stream for statement specific data.
-      JacobianData jacobianData;  ///< Data stream for argument specific data.
+      JacobianData jacobianData;    ///< Data stream for argument specific data.
 
       std::vector<Gradient> adjoints;  ///< Evaluation vector for AD.
 

@@ -1,0 +1,21 @@
+BasedOnStyle: Google
+IndentCaseLabels: true
+IndentWidth: 2
+NamespaceIndentation: All
+ColumnLimit: 120
+IndentPPDirectives: BeforeHash
+AccessModifierOffset: 0
+AccessModifierIndentation: true
+SpaceAfterTemplateKeyword: false
+AllowShortEnumsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach
+MaxEmptyLinesToKeep: 1
+PenaltyBreakComment: 100
+
+#change back
+AlignTrailingComments: true
+FixNamespaceComments: false

@@ -22,8 +22,8 @@ namespace codi {
   struct TapeTypesInterface {
     public:
 
-      using Real = CODI_ANY;  ///< Primal computation type e.g. double
-      using Gradient = CODI_ANY;  ///< Gradient computation type e.g. double or Direction
+      using Real = CODI_ANY;        ///< Primal computation type e.g. double
+      using Gradient = CODI_ANY;    ///< Gradient computation type e.g. double or Direction
       using Identifier = CODI_ANY;  ///< Identifier for the internal management e.g. int
 
       /// Declaration for the data vector that is used for the internal storage. See DateInterface implementations.
@@ -53,7 +53,7 @@ namespace codi {
       using ExternalFunctionChunk =
           Chunk2<ExternalFunctionInternalData, NestedPosition>;  ///< See Data entries for external functions.
       using ExternalFunctionData = Data<ExternalFunctionChunk, NestedData>;  ///< Data vector for external functions.
-      using Position = typename ExternalFunctionData::Position;  ///< Global position of the tape.
+      using Position = typename ExternalFunctionData::Position;              ///< Global position of the tape.
   };
 
   /**
@@ -85,19 +85,19 @@ namespace codi {
       using Impl = CODI_DD(
           _Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See CommonTapeImplementation.
 
-      using Real = typename ImplTapeTypes::Real;  ///< See TapeTypesInterface.
-      using Gradient = typename ImplTapeTypes::Gradient;  ///< See TapeTypesInterface.
+      using Real = typename ImplTapeTypes::Real;              ///< See TapeTypesInterface.
+      using Gradient = typename ImplTapeTypes::Gradient;      ///< See TapeTypesInterface.
       using Identifier = typename ImplTapeTypes::Identifier;  ///< See TapeTypesInterface.
       using NestedData = typename ImplTapeTypes::NestedData;  ///< See TapeTypesInterface.
-      using NestedPosition = typename NestedData::Position;  ///< See DataInterface.
+      using NestedPosition = typename NestedData::Position;   ///< See DataInterface.
 
       using ExternalFunctionData =
-          typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData;  ///< See CommonTapeTypes.
+          typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData;   ///< See CommonTapeTypes.
       using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;  ///< See TapeTypesInterface.
 
     protected:
 
-      bool active;  ///< If tape stores statements or not.
+      bool active;                       ///< If tape stores statements or not.
       std::set<TapeParameters> options;  ///< All options.
 
       ExternalFunctionData externalFunctionData;  ///< Data vector for external function data.

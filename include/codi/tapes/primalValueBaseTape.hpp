@@ -41,15 +41,15 @@ namespace codi {
   struct PrimalValueTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See PrimalValueTapeTypes
-      using Gradient = CODI_DD(_Gradient, double);  ///< See PrimalValueTapeTypes
+      using Real = CODI_DD(_Real, double);                                              ///< See PrimalValueTapeTypes
+      using Gradient = CODI_DD(_Gradient, double);                                      ///< See PrimalValueTapeTypes
       using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See PrimalValueTapeTypes
       using StatementEvaluator = CODI_DD(CODI_T(_StatementEvaluator<Real>),
                                          CODI_T(StatementEvaluatorInterface<double>));  ///< See PrimalValueTapeTypes
       template<typename Chunk, typename Nested>
       using Data = CODI_DD(CODI_T(_Data<Chunk, Nested>), CODI_T(DataInterface<Nested>));  ///< See PrimalValueTapeTypes
 
-      using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
+      using Identifier = typename IndexManager::Index;    ///< See IndexManagerInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
@@ -66,10 +66,10 @@ namespace codi {
                                     Chunk4<Identifier, Config::ArgumentSize, Real, EvalHandle>>::type;
       using StatementData = Data<StatementChunk, IndexManager>;  ///< Statement data vector.
 
-      using IdentifierChunk = Chunk1<Identifier>;  ///< Identifiers of statement arguments.
+      using IdentifierChunk = Chunk1<Identifier>;                      ///< Identifiers of statement arguments.
       using RhsIdentifierData = Data<IdentifierChunk, StatementData>;  ///< Rhs identifiers data vector.
 
-      using PassiveValueChunk = Chunk1<Real>;  ///< Passive values of statement arguments.
+      using PassiveValueChunk = Chunk1<Real>;                               ///< Passive values of statement arguments.
       using PassiveValueData = Data<PassiveValueChunk, RhsIdentifierData>;  ///< Passive values data vector
 
       using ConstantValueChunk = Chunk1<PassiveReal>;  ///< Constant values of in statement expressions.
@@ -104,26 +104,26 @@ namespace codi {
       using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation
       friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;  ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;                      ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;              ///< See TapeTypesInterface.
       using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes.
-      using Identifier = typename TapeTypes::Identifier;  ///< See PrimalValueTapeTypes.
+      using Identifier = typename TapeTypes::Identifier;                  ///< See PrimalValueTapeTypes.
 
       using EvalHandle = typename TapeTypes::EvalHandle;  ///< See PrimalValueTapeTypes
 
-      using StatementData = typename TapeTypes::StatementData;  ///< See PrimalValueTapeTypes
+      using StatementData = typename TapeTypes::StatementData;          ///< See PrimalValueTapeTypes
       using RhsIdentifierData = typename TapeTypes::RhsIdentifierData;  ///< See PrimalValueTapeTypes
-      using PassiveValueData = typename TapeTypes::PassiveValueData;  ///< See PrimalValueTapeTypes
+      using PassiveValueData = typename TapeTypes::PassiveValueData;    ///< See PrimalValueTapeTypes
       using ConstantValueData = typename TapeTypes::ConstantValueData;  ///< See PrimalValueTapeTypes
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       using NestedPosition = typename ConstantValueData::Position;  ///< See PrimalValueTapeTypes
-      using Position = typename Base::Position;  ///< See TapeTypesInterface.
+      using Position = typename Base::Position;                     ///< See TapeTypesInterface.
 
       static bool constexpr AllowJacobianOptimization = false;  ///< See InternalStatementRecordingInterface.
-      static bool constexpr HasPrimalValues = true;  ///< See PrimalEvaluationTapeInterface
+      static bool constexpr HasPrimalValues = true;             ///< See PrimalEvaluationTapeInterface
       static bool constexpr LinearIndexHandling =
           TapeTypes::IsLinearIndexHandler;  ///< See IdentifierInformationTapeInterface
       static bool constexpr RequiresPrimalRestore =
@@ -134,14 +134,14 @@ namespace codi {
       static EvalHandle const jacobianExpressions[Config::MaxArgumentSize];
 
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;  ///< Index manager.
-      StatementData statementData;  ///< Data stream for statement specific data.
-      RhsIdentifierData rhsIdentiferData;  ///< Data stream for argument identifier data.
-      PassiveValueData passiveValueData;  ///< Data stream for passive argument value data
+      StatementData statementData;          ///< Data stream for statement specific data.
+      RhsIdentifierData rhsIdentiferData;   ///< Data stream for argument identifier data.
+      PassiveValueData passiveValueData;    ///< Data stream for passive argument value data
       ConstantValueData constantValueData;  ///< Data stream for constant argument data
 
       std::vector<Gradient> adjoints;  ///< Evaluation vector for AD.
-      std::vector<Real> primals;  ///< Current state of primal values in the program
-      std::vector<Real> primalsCopy;  ///< Copy of primal values for AD evaluations
+      std::vector<Real> primals;       ///< Current state of primal values in the program
+      std::vector<Real> primalsCopy;   ///< Copy of primal values for AD evaluations
 
     private:
 

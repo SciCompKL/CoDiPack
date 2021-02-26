@@ -29,14 +29,14 @@ namespace codi {
   struct LhsExpressionInterface : public ExpressionInterface<_Real, _Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See LhsExpressionInterface
+      using Real = CODI_DD(_Real, double);        ///< See LhsExpressionInterface
       using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface
       using Tape =
           CODI_DD(_Tape, CODI_T(CODI_UNION<InternalStatementRecordingInterface<int>,
                                            GradientAccessTapeInterface<double, int>>));  ///< See LhsExpressionInterface
-      using Impl = CODI_DD(_Impl, LhsExpressionInterface);  ///< See LhsExpressionInterface
+      using Impl = CODI_DD(_Impl, LhsExpressionInterface);                               ///< See LhsExpressionInterface
 
-      using Identifier = typename Tape::Identifier;  ///< See GradientAccessTapeInterface
+      using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       /*******************************************************************************/
@@ -44,7 +44,7 @@ namespace codi {
       /// @{
 
       Real const& value() const;  ///< Get a constant reference to the lvalue represented by the expression.
-      Real& value();  ///< Get a reference to the lvalue represented by the expression.
+      Real& value();              ///< Get a reference to the lvalue represented by the expression.
 
       Identifier const& getIdentifier() const;  ///< Get a constant reference to the identifier of the tape for this
                                                 ///< expression.

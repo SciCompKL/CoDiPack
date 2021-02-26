@@ -28,7 +28,7 @@ namespace codi {
     public:
 
       std::string text;  ///< Textual description
-      IoError id;  ///< Exception ID
+      IoError id;        ///< Exception ID
 
       /// Constructor
       IoException(IoError id, std::string const& text, bool appendErrno) : text(text), id(id) {
@@ -52,7 +52,7 @@ namespace codi {
     private:
 
       FILE* fileHandle;  ///< File handle
-      bool writeMode;  ///< true = write, false = read
+      bool writeMode;    ///< true = write, false = read
 
     public:
 

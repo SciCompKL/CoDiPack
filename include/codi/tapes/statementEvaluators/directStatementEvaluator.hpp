@@ -20,7 +20,7 @@ namespace codi {
       using Handle = void*;  ///< Function pointer
 
       Handle forward;  ///< Forward function handle
-      Handle primal;  ///< Primal function handle
+      Handle primal;   ///< Primal function handle
       Handle reverse;  ///< Reverse function handle
 
       /// Constructor

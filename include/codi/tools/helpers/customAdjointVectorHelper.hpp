@@ -30,7 +30,7 @@ namespace codi {
       /// See CustomAdjointVectorInterface
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
 
       /// See LhsExpressionInterface
@@ -119,7 +119,7 @@ namespace codi {
 
       using Base = CustomAdjointVectorInterface<Type>;  ///< Abbreviation for the base class
 
-      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
 
       /// See LhsExpressionInterface
@@ -129,7 +129,7 @@ namespace codi {
     protected:
       std::vector<Gradient> adjointVector;  ///< Custom adjoint vector
 
-      Gradient zeroValue;  ///< Temporary zero value
+      Gradient zeroValue;             ///< Temporary zero value
       Gradient const constZeroValue;  ///< Temporary constant zero value.
 
       AdjointVectorAccess<Real, Identifier, Gradient>* adjointInterface;  ///< Last provided adjoint interface.

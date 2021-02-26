@@ -33,7 +33,7 @@ namespace codi {
       T& operator()(size_t const i, size_t const j);
 
       void resize(size_t const m, size_t const n);  ///< Resize the Jacobian.
-      size_t size() const;  ///< Get total size of the Jacobian.
+      size_t size() const;                          ///< Get total size of the Jacobian.
   };
 
   /**

@@ -40,8 +40,8 @@ namespace codi {
   struct ExternalFunctionTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See ExternalFunctionTapeInterface
-      using Gradient = CODI_DD(_Gradient, double);  ///< See ExternalFunctionTapeInterface
+      using Real = CODI_DD(_Real, double);           ///< See ExternalFunctionTapeInterface
+      using Gradient = CODI_DD(_Gradient, double);   ///< See ExternalFunctionTapeInterface
       using Identifier = CODI_DD(_Identifier, int);  ///< See ExternalFunctionTapeInterface
 
       /*******************************************************************************/

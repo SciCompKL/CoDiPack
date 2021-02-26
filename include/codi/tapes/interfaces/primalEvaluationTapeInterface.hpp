@@ -34,8 +34,8 @@ namespace codi {
   struct PrimalEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<_Position> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See PrimalEvaluationTapeInterface
-      using Identifier = CODI_DD(_Identifier, int);  ///< See PrimalEvaluationTapeInterface
+      using Real = CODI_DD(_Real, double);                 ///< See PrimalEvaluationTapeInterface
+      using Identifier = CODI_DD(_Identifier, int);        ///< See PrimalEvaluationTapeInterface
       using Position = CODI_DD(_Position, EmptyPosition);  ///< See PrimalEvaluationTapeInterface
 
       /*******************************************************************************/
@@ -52,9 +52,9 @@ namespace codi {
       void evaluatePrimal();
 
       void setPrimal(Identifier const& identifier, Real const& gradient);  ///< Set primal value.
-      Real const& getPrimal(Identifier const& identifier) const;  ///< Get primal value.
+      Real const& getPrimal(Identifier const& identifier) const;           ///< Get primal value.
 
-      Real& primal(Identifier const& identifier);  ///< Writable reference to primal value.
+      Real& primal(Identifier const& identifier);              ///< Writable reference to primal value.
       Real const& primal(Identifier const& identifier) const;  ///< Read only reference to primal value.
   };
 }

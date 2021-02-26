@@ -24,9 +24,9 @@ namespace codi {
   struct DuplicateJacobianRemover {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See DuplicateJacobianRemover
+      using Real = CODI_DD(_Real, double);           ///< See DuplicateJacobianRemover
       using Identifier = CODI_DD(_Identifier, int);  ///< See DuplicateJacobianRemover
-      using ArgumentSize = Config::ArgumentSize;  ///< Definition of ArgumentSize type
+      using ArgumentSize = Config::ArgumentSize;     ///< Definition of ArgumentSize type
 
     private:
       std::array<Identifier, Config::MaxArgumentSize> indices;

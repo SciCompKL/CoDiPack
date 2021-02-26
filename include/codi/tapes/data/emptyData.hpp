@@ -22,7 +22,7 @@ namespace codi {
 
       using NestedData = void;  ///< No nested data
 
-      using Position = EmptyPosition;  ///< No positional data
+      using Position = EmptyPosition;    ///< No positional data
       using InternalPosHandle = size_t;  ///< Will always be zero.
 
       /*******************************************************************************/

@@ -26,7 +26,7 @@ namespace codi {
           _Tape, CODI_T(CODI_UNION<InternalStatementRecordingInterface<int>,
                                    GradientAccessTapeInterface<double, int>>));  ///< See StaticContextActiveType
 
-      using Real = typename Tape::Real;  ///< See TapeTypesInterface.
+      using Real = typename Tape::Real;              ///< See TapeTypesInterface.
       using Identifier = typename Tape::Identifier;  ///< See TapeTypesInterface.
 
     private:

@@ -26,7 +26,7 @@ namespace codi {
   struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DD(_Index, int);  ///< See ReuseIndexManager
+      using Index = CODI_DD(_Index, int);         ///< See ReuseIndexManager
       using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
 
       /*******************************************************************************/
@@ -34,7 +34,7 @@ namespace codi {
       /// @{
 
       static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization implemented.
-      static bool constexpr IsLinear = false;  ///< Identifiers are not coupled to statements.
+      static bool constexpr IsLinear = false;           ///< Identifiers are not coupled to statements.
 
     /// @}
 
