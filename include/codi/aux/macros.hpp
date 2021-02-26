@@ -8,8 +8,8 @@
 namespace codi {
 
   /// Disable unused warnings for arbitrary number of arguments.
-  template<typename...Args>
-  void CODI_UNUSED(Args const&... ) {}
+  template<typename... Args>
+  void CODI_UNUSED(Args const&...) {}
 
   /// used in a constant context, where using CODI_UNUSED spoils the constantness */
   #define CODI_UNUSED_ARG(arg) /* arg */
@@ -28,7 +28,6 @@ namespace codi {
 
   /// Check for CPP 17 standard
   #define CODI_IS_CPP17 (201703L <= __cplusplus)
-
 
   /*******************************************************************************/
   /** @name Default template type declarations
@@ -73,11 +72,11 @@ namespace codi {
   /// Used in interface declarations for variables that have to be defined in the specializations.
   #define CODI_UNDEFINED_VALUE false
 
-#ifndef DOXYGEN_DISABLE
+  #ifndef DOXYGEN_DISABLE
   /// Creates a union of interface definitions
   template<typename First, typename... Tail>
   struct CODI_UNION : public First, public CODI_UNION<Tail...> {};
-#endif
+  #endif
 
   /// Creates a union of interface definitions
   template<typename First>
@@ -86,23 +85,23 @@ namespace codi {
   /// @}
 
   /// Wrap a function in a function object. Used for speed optimizations.
-  #define CODI_WRAP_FUNCTION(NAME, FUNC) \
-    struct NAME { \
-      /** Empty */ \
-      template<typename... Args> \
+  #define CODI_WRAP_FUNCTION(NAME, FUNC)      \
+    struct NAME {                             \
+      /** Empty */                            \
+      template<typename... Args>              \
       void operator()(Args&&... args) const { \
-        FUNC(std::forward<Args>(args)...); \
-      } \
-  }
+        FUNC(std::forward<Args>(args)...);    \
+      }                                       \
+    }
 
   /// Wrap a function in a function object. Used for speed optimizations.
   #define CODI_WRAP_FUNCTION_TEMPLATE(NAME, FUNC) \
-    template<typename... TT> \
-    struct NAME { \
-      /** Empty */ \
-      template<typename... Args> \
-      void operator()(Args&&... args) const { \
+    template<typename... TT>                      \
+    struct NAME {                                 \
+      /** Empty */                                \
+      template<typename... Args>                  \
+      void operator()(Args&&... args) const {     \
         FUNC<TT...>(std::forward<Args>(args)...); \
-      } \
+      }                                           \
     }
 }

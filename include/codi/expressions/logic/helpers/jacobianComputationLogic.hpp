@@ -5,8 +5,8 @@
 
 #include "../../../aux/macros.hpp"
 #include "../../../config.h"
-#include "../traversalLogic.hpp"
 #include "../../../traits/expressionTraits.hpp"
+#include "../traversalLogic.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -49,19 +49,17 @@ namespace codi {
       /// The Jacobian is multiplied with the Jacobian of the link. The result is forwarded to the leaf.
       template<size_t LeafNumber, typename Leaf, typename Root, typename... Args>
       CODI_INLINE void link(Leaf const& leaf, Root const& root, Real const& jacobian, Args&&... args) {
-
         Real curJacobian = root.template getJacobian<LeafNumber>() * jacobian;
 
         cast().toNode(leaf, curJacobian, std::forward<Args>(args)...);
       }
 
-      /// @}
+    /// @}
 
     private:
 
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
       }
-
   };
 }

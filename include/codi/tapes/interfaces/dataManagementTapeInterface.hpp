@@ -37,7 +37,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface: File IO
 
-      void writeToFile(std::string const& filename) const ;  ///< See \ref fileIO
+      void writeToFile(std::string const& filename) const;  ///< See \ref fileIO
       void readFromFile(std::string const& filename);  ///< See \ref fileIO
       void deleteData();  ///< See \ref fileIO
 
@@ -55,6 +55,5 @@ namespace codi {
       void swap(DataManagementTapeInterface& other);  ///< Swap all data with an other tape.
       void resetHard();  ///< Delete everything and return to the state after construction, as far as possible.
       void deleteAdjointVector();  ///< Delete the adjoint vector
-
   };
 }

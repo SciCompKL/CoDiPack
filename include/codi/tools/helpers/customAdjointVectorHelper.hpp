@@ -8,7 +8,6 @@
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -45,9 +44,7 @@ namespace codi {
     public:
 
       /// Constructor
-      CustomAdjointVectorInterface() :
-        tape(Type::getGlobalTape()) {
-      }
+      CustomAdjointVectorInterface() : tape(Type::getGlobalTape()) {}
 
       /// Destructor
       virtual ~CustomAdjointVectorInterface() {}
@@ -80,7 +77,6 @@ namespace codi {
       void evaluate() {
         evaluate(tape.getPosition(), tape.getZeroPosition());
       }
-
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
       void evaluateForward() {
@@ -141,13 +137,8 @@ namespace codi {
     public:
 
       /// Constructor
-      CustomAdjointVectorHelper() :
-        Base(),
-        adjointVector(0),
-        zeroValue(),
-        constZeroValue(),
-        adjointInterface(nullptr) {
-      }
+      CustomAdjointVectorHelper()
+          : Base(), adjointVector(0), zeroValue(), constZeroValue(), adjointInterface(nullptr) {}
 
       /// Destructor
       ~CustomAdjointVectorHelper() {
@@ -210,7 +201,6 @@ namespace codi {
         return gradient(identifier);
       }
 
-
       /// Get reference to the gradient value. Unchecked access.
       Gradient& gradientAt(Identifier const& identifier) {
         return adjointVector[identifier];
@@ -247,7 +237,7 @@ namespace codi {
         gradient(identifier) = gradientValue;
       }
 
-      /// @}
+    /// @}
 
     private:
 

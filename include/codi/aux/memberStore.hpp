@@ -23,7 +23,7 @@ namespace codi {
     public:
 
       ///< See MemberStore
-      using Type = _Type; // default declaration breaks auto completion
+      using Type = _Type;  // default declaration breaks auto completion
       using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore
 
       static bool constexpr storeStatic = _storeStatic;  ///< See MemberStore
@@ -71,7 +71,7 @@ namespace codi {
       MemberStore(Args&&... args) {
         if (!isInitialized) {
           isInitialized = true;
-          new(member) Type(std::forward<Args>(args)...);
+          new (member) Type(std::forward<Args>(args)...);
         }
       }
 
@@ -86,12 +86,12 @@ namespace codi {
       }
   };
 
-#ifndef DOXYGEN_DISABLE
+  #ifndef DOXYGEN_DISABLE
 
   template<typename Type, typename Parent>
   char MemberStore<Type, Parent, true>::member[sizeof(Type)] = {};
 
   template<typename Type, typename Parent>
   bool MemberStore<Type, Parent, true>::isInitialized = false;
-#endif
+  #endif
 }

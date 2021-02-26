@@ -24,10 +24,8 @@ namespace codi {
       Handle reverse;  ///< Reverse function handle
 
       /// Constructor
-      PrimalTapeStatementFunctions(Handle forward, Handle primal, Handle reverse) :
-        forward(forward),
-        primal(primal),
-        reverse(reverse) {}
+      PrimalTapeStatementFunctions(Handle forward, Handle primal, Handle reverse)
+          : forward(forward), primal(primal), reverse(reverse) {}
   };
 
   /// Store PrimalTapeStatementFunctions as static variables.
@@ -87,7 +85,7 @@ namespace codi {
         return &DirectStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
       }
 
-      /// @}
+    /// @}
 
     protected:
 
@@ -102,7 +100,5 @@ namespace codi {
       /// Full reverse function type.
       template<typename Tape>
       using FunctionReverse = decltype(&Tape::template statementEvaluateReverse<ActiveType<Tape>>);
-
-
   };
 }

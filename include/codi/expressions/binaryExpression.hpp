@@ -42,7 +42,6 @@ namespace codi {
       static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result);
   };
 
-
   /**
    * @brief Represents an operator with two arguments in the expression tree.
    *
@@ -67,10 +66,11 @@ namespace codi {
 
       /// Constructor
       template<typename RealA, typename RealB>
-      explicit BinaryExpression(ExpressionInterface<RealA, ArgA> const& argA, ExpressionInterface<RealB, ArgB> const& argB) :
-        argA(argA.cast()),
-        argB(argB.cast()),
-        result(Operation::primal(this->argA.getValue(), this->argB.getValue())) {}
+      explicit BinaryExpression(ExpressionInterface<RealA, ArgA> const& argA,
+                                ExpressionInterface<RealB, ArgB> const& argB)
+          : argA(argA.cast()),
+            argB(argB.cast()),
+            result(Operation::primal(this->argA.getValue(), this->argB.getValue())) {}
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface
@@ -111,8 +111,8 @@ namespace codi {
       template<typename CompileTimeLogic, typename... Args>
       CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConstExpr(Args&&... args) {
         return CompileTimeLogic::reduce(
-              CompileTimeLogic::template link<0, ArgA, BinaryExpression>(std::forward<Args>(args)...),
-              CompileTimeLogic::template link<1, ArgB, BinaryExpression>(std::forward<Args>(args)...));
+            CompileTimeLogic::template link<0, ArgA, BinaryExpression>(std::forward<Args>(args)...),
+            CompileTimeLogic::template link<1, ArgB, BinaryExpression>(std::forward<Args>(args)...));
       }
 
       /// @}

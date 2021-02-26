@@ -19,7 +19,8 @@ namespace codi {
    * @tparam _Type  The type of the reference which is captured.
    */
   template<typename _Type>
-  struct ReferenceActiveType : public LhsExpressionInterface<typename _Type::Real, typename _Type::Gradient, typename _Type::Tape, ReferenceActiveType<_Type> >,
+  struct ReferenceActiveType : public LhsExpressionInterface<typename _Type::Real, typename _Type::Gradient,
+                                                             typename _Type::Tape, ReferenceActiveType<_Type>>,
                                public AssignmentOperators<_Type, ReferenceActiveType<_Type>>,
                                public IncrementOperators<_Type, ReferenceActiveType<_Type>> {
     public:
@@ -33,11 +34,11 @@ namespace codi {
       using Identifier = typename Tape::Identifier;  ///< See LhsExpressionInterface
       using Gradient = typename Tape::Gradient;  ///< See LhsExpressionInterface
 
-  private:
+    private:
 
       Type& reference;
 
-  public:
+    public:
 
       // TODO: Implement const variant
 
@@ -45,10 +46,10 @@ namespace codi {
       mutable Real jacobian;
 
       /// Constructor
-      CODI_INLINE ReferenceActiveType(Type & v) : reference(v), jacobian() {}
+      CODI_INLINE ReferenceActiveType(Type& v) : reference(v), jacobian() {}
 
       /// See LhsExpressionInterface::operator =(ExpressionInterface const&)
-      CODI_INLINE ReferenceActiveType<Tape>& operator=(ReferenceActiveType<Tape > const& v) {
+      CODI_INLINE ReferenceActiveType<Tape>& operator=(ReferenceActiveType<Tape> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ReferenceActiveType>&>(*this) = v;
         return *this;
       }

@@ -34,12 +34,14 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// True if the tape provides a index handler that provides identifiers in a monotone increasing way. (See LinearIndexManager.)
+      /// True if the tape provides a index handler that provides identifiers in a monotone increasing way. (See
+      /// LinearIndexManager.)
       static bool constexpr LinearIndexHandling = CODI_UNDEFINED_VALUE;
 
       Identifier getPassiveIndex() const;  ///< Identifier for passive values. Usually 0.
       Identifier getInvalidIndex() const;  ///< Invalid identifier.
-      bool isIdentifierActive(Identifier const& index) const;  ///< True if the identifier is considered active by the tape.
+      bool isIdentifierActive(Identifier const& index) const;  ///< True if the identifier is considered active by the
+                                                               ///< tape.
 
       /// Modify the value such that is no longer active.
       template<typename Lhs>

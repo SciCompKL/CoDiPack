@@ -1,11 +1,12 @@
 
 #pragma once
 
-#include <iostream>
-#include <stdio.h>
 #include <errno.h>
-#include <string>
+#include <stdio.h>
 #include <string.h>
+
+#include <iostream>
+#include <string>
 
 #include "../config.h"
 #include "macros.hpp"
@@ -14,7 +15,8 @@
 namespace codi {
 
   /// Possible IO errors.
-  enum struct IoError {
+  enum struct IoError
+  {
     Mode,
     Open,
     Write,
@@ -29,10 +31,7 @@ namespace codi {
       IoError id;  ///< Exception ID
 
       /// Constructor
-      IoException(IoError id, std::string const& text, bool appendErrno) :
-        text(text),
-        id(id)
-      {
+      IoException(IoError id, std::string const& text, bool appendErrno) : text(text), id(id) {
         if (appendErrno) {
           this->text += " (Internal error: ";
           this->text += strerror(errno);
@@ -70,7 +69,7 @@ namespace codi {
         }
 
         if (NULL == fileHandle) {
-          throw IoException(IoError::Open , "Could not open file: " + file, true);
+          throw IoException(IoError::Open, "Could not open file: " + file, true);
         }
       }
 

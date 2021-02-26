@@ -36,7 +36,7 @@ namespace codi {
       static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization implemented.
       static bool constexpr IsLinear = false;  ///< Identifiers are not coupled to statements.
 
-      /// @}
+    /// @}
 
     private:
 
@@ -57,15 +57,14 @@ namespace codi {
     public:
 
       /// Constructor
-      ReuseIndexManager(Index const& reserveIndices) :
-        globalMaximumIndex(reserveIndices + 1),
-        usedIndices(),
-        usedIndicesPos(0),
-        unusedIndices(),
-        unusedIndicesPos(0),
-        indexSizeIncrement(Config::SmallChunkSize),
-        valid(true)
-      {
+      ReuseIndexManager(Index const& reserveIndices)
+          : globalMaximumIndex(reserveIndices + 1),
+            usedIndices(),
+            usedIndicesPos(0),
+            unusedIndices(),
+            unusedIndicesPos(0),
+            indexSizeIncrement(Config::SmallChunkSize),
+            valid(true) {
         increaseIndicesSize(unusedIndices);
         generateNewIndices();
       }
@@ -82,14 +81,13 @@ namespace codi {
       /// \copydoc IndexManagerInterface::addToTapeValues <br><br>
       /// Implementation: Adds max live indices, cur live indices, indices stored, memory used, memory allocated.
       void addToTapeValues(TapeValues& values) const {
-
         unsigned long maximumGlobalIndex = globalMaximumIndex;
-        unsigned long storedIndices      = usedIndicesPos + unusedIndicesPos;
-        unsigned long allocatedIndices   = usedIndices.size() + unusedIndices.size();
-        long currentLiveIndices          = maximumGlobalIndex - storedIndices;
+        unsigned long storedIndices = usedIndicesPos + unusedIndicesPos;
+        unsigned long allocatedIndices = usedIndices.size() + unusedIndices.size();
+        long currentLiveIndices = maximumGlobalIndex - storedIndices;
 
-        double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index));
-        double memoryAllocatedIndices = (double)allocatedIndices*(double)(sizeof(Index));
+        double memoryStoredIndices = (double)storedIndices * (double)(sizeof(Index));
+        double memoryAllocatedIndices = (double)allocatedIndices * (double)(sizeof(Index));
 
         values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex);
         values.addLongEntry("Cur. live indices", currentLiveIndices);
@@ -97,7 +95,6 @@ namespace codi {
         values.addDoubleEntry("Memory used", memoryStoredIndices, true, false);
         values.addDoubleEntry("Memory allocated", memoryAllocatedIndices, false, true);
       }
-
 
       /// \copydoc IndexManagerInterface::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
@@ -123,7 +120,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::assignUnusedIndex
       CODI_INLINE bool assignUnusedIndex(Index& index) {
-        freeIndex(index); // zero check is performed inside
+        freeIndex(index);  // zero check is performed inside
 
         bool generatedNewIndex = false;
         if (0 == unusedIndicesPos) {
@@ -148,7 +145,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
-        if (valid && Base::UnusedIndex != index) { // do not free the zero index
+        if (valid && Base::UnusedIndex != index) {  // do not free the zero index
 
           if (usedIndicesPos == usedIndices.size()) {
             increaseIndicesSize(usedIndices);
@@ -200,7 +197,7 @@ namespace codi {
         }
       }
 
-      /// @}
+    /// @}
 
     private:
 
@@ -227,7 +224,7 @@ namespace codi {
       CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
         codiAssert(v.size() < minimalSize);
 
-        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1; // +1 rounds always up
+        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1;  // +1 rounds always up
         v.resize(v.size() + increaseMul * indexSizeIncrement);
       }
   };

@@ -28,8 +28,8 @@ namespace codi {
   struct JacobianReuseTape : public JacobianBaseTape<_TapeTypes, JacobianReuseTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double,
-                        IndexManagerInterface<int>, DefaultChunkedData>));  ///< See JacobianReuseTape
+      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
+                                                                     DefaultChunkedData>));  ///< See JacobianReuseTape
 
       using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation
       friend Base;  ///< Allow the base class to call protected and private methods.
@@ -39,7 +39,7 @@ namespace codi {
       using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
       using Identifier = typename TapeTypes::Identifier;  ///< See TapeTypesInterface.
       using Position = typename Base::Position;  ///< See TapeTypesInterface.
-      using StatementData = typename TapeTypes::StatementData;///< See JacobianTapeTypes
+      using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes
 
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
@@ -48,12 +48,10 @@ namespace codi {
 
       using Base::clearAdjoints;
 
-
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-
         // clear adjoints
-        auto clearFunc = [this] (Config::ArgumentSize* stmtSize, Identifier* index) {
+        auto clearFunc = [this](Config::ArgumentSize* stmtSize, Identifier* index) {
           CODI_UNUSED(stmtSize);
 
           if (*index < this->adjoints.size()) {
@@ -81,16 +79,17 @@ namespace codi {
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobian vector */
-          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
           /* data from statement vector */
-          size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers, Config::ArgumentSize const* const numberOfJacobians) {
-
+          size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
+          Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos);
 
         while (curStmtPos < endStmtPos) {
-
           Adjoint lhsAdjoint = Adjoint();
-          Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos, rhsJacobians, rhsIdentifiers);
+          Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
+                                  rhsJacobians, rhsIdentifiers);
 
           adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
 
@@ -104,10 +103,11 @@ namespace codi {
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobianData */
-          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
           /* data from statementData */
-          size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers, Config::ArgumentSize const* const numberOfJacobians) {
-
+          size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
+          Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos);
 
         while (curStmtPos > endStmtPos) {
@@ -116,9 +116,9 @@ namespace codi {
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
           adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
 
-          Base::incrementAdjoints(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos, rhsJacobians, rhsIdentifiers);
+          Base::incrementAdjoints(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
+                                  rhsJacobians, rhsIdentifiers);
         }
       }
   };
 }
-

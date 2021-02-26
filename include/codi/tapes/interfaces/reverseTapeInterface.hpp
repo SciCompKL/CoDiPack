@@ -39,8 +39,7 @@ namespace codi {
   template<typename _Real, typename _Gradient, typename _Identifier>
   struct ReverseTapeInterface : public virtual InternalStatementRecordingInterface<_Identifier>,
                                 public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
-
-
+    public:
       using Real = CODI_DD(_Real, double);  ///< See ReverseTapeInterface
       using Gradient = CODI_DD(_Gradient, double);  ///< See ReverseTapeInterface
       using Identifier = CODI_DD(_Identifier, int);  ///< See ReverseTapeInterface
@@ -51,9 +50,11 @@ namespace codi {
       /// @name Recording
 
       /// Mark a value as input (independent) and make it active
-      template<typename Lhs> void registerInput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
+      template<typename Lhs>
+      void registerInput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
       /// Mark a value as output (dependent)
-      template<typename Lhs> void registerOutput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
+      template<typename Lhs>
+      void registerOutput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
 
       void setActive();  ///< Start/continue recording of statements
       void setPassive();  ///< Stop recording of statements
@@ -68,19 +69,24 @@ namespace codi {
       /// @name Reset
 
       void clearAdjoints();  ///< Clear all adjoint values and set them to zero.
-      void reset(bool resetAdjoints = true);  ///< Reset the tape to the initial state for a fresh recording. See tutorial (\ref Tutorial_5_Multiple_tape_recordings) for remarks on repeated tape recording in CoDiPack.
+      void reset(bool resetAdjoints = true);  ///< Reset the tape to the initial state for a fresh recording. See
+                                              ///< tutorial
+                                              ///< (\ref Tutorial_5_Multiple_tape_recordings) for remarks on repeated
+                                              ///< tape recording in CoDiPack.
 
       /*******************************************************************************/
       /// @name Tape information
 
       /// Default formatting of TapeValues
-      template<typename Stream = std::ostream> void printStatistics(Stream& out = std::cout) const;
+      template<typename Stream = std::ostream>
+      void printStatistics(Stream& out = std::cout) const;
       /// Table header output of TapeValues
-      template<typename Stream = std::ostream> void printTableHeader(Stream& out = std::cout) const;
+      template<typename Stream = std::ostream>
+      void printTableHeader(Stream& out = std::cout) const;
       /// Table row output of TapeValues
-      template<typename Stream = std::ostream> void printTableRow(Stream& out = std::cout) const;
+      template<typename Stream = std::ostream>
+      void printTableRow(Stream& out = std::cout) const;
       /// Get current tape values.
       TapeValues getTapeValues() const;
   };
 }
-

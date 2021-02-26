@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../config.h"
 #include "../../aux/macros.hpp"
+#include "../../config.h"
 
 /** \copydoc codi::Namespace */
 namespace codi {

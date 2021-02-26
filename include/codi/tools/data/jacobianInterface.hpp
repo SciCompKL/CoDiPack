@@ -46,12 +46,11 @@ namespace codi {
    *  vM1, vM2,..., vMN]
    */
   template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>>
-  Stream& operator <<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {
-
+  Stream& operator<<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {
     out << "[";
     for (size_t i = 0; i < jacobian.getM(); ++i) {
-      if ( i != 0) {
-        out << " "; // Padding for the '['
+      if (i != 0) {
+        out << " ";  // Padding for the '['
       }
 
       for (size_t j = 0; j < jacobian.getN(); ++j) {

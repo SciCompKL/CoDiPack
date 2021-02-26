@@ -20,18 +20,18 @@ namespace codi {
    * - 2. Load expression specific data
    * - 3. Call expression specific function
    *
-   * The call to a handle can now either be between step 1 and 2 or 2 and 3. The advantage between step 1. and 2. is that
-   * it is very simple to implement, the disadvantage is that the expression specific data load is handled after the function
-   * pointer call. The compiler can therefore not optimize these data loading calls. If the call of the handle is
-   * between step 2 and 3, then the compiler can optimize the generalized data handling and only the specifics for the
-   * expression are hidden behind the function pointer call. But in order to perform step 2 the tape needs some
+   * The call to a handle can now either be between step 1 and 2 or 2 and 3. The advantage between step 1. and 2. is
+   * that it is very simple to implement, the disadvantage is that the expression specific data load is handled after
+   * the function pointer call. The compiler can therefore not optimize these data loading calls. If the call of the
+   * handle is between step 2 and 3, then the compiler can optimize the generalized data handling and only the specifics
+   * for the expression are hidden behind the function pointer call. But in order to perform step 2 the tape needs some
    * expression specific data which need to be extracted from the handle. Therefore the implementation is more involved.
    *
    * The first approach, handle call between step 1 and 2 is defined by the StatementEvaluatorTapeInterface.
    * The second approach, handle call between step 2 and 3 is defined by the StatementEvaluatorInnerTapeInterface.
    *
-   * In general, implementations of this interface need to store functions pointers to the `statementEvaluate*` functions
-   * of the StatementEvaluatorTapeInterface or function pointers to the `statementEvaluateForwardInner` of the
+   * In general, implementations of this interface need to store functions pointers to the `statementEvaluate*`
+   * functions of the StatementEvaluatorTapeInterface or function pointers to the `statementEvaluateForwardInner` of the
    * StatementEvaluatorInnerTapeInterface.
    *
    * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
@@ -63,10 +63,10 @@ namespace codi {
       static void callReverse(Handle const& h, Args&&... args);
 
       /// @tparam Tape       Usually not required. Access tape specific configurations.
-      /// @tparam Generator  Needs to implement the StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface
+      /// @tparam Generator  Needs to implement the StatementEvaluatorTapeInterface or
+      /// StatementEvaluatorInnerTapeInterface
       /// @tparam Expr       Instance of ExpressionInterface.
       template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle();
-
   };
 }

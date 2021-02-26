@@ -11,7 +11,6 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-
   /**
    * @brief Mpi datatype implementation for CoDipack types in the type wrapper of MeDiPack.
    *
@@ -24,13 +23,8 @@ namespace codi {
    * @tparam _Tool  Actual tool implementation of the MeDiPack interface.
    */
   template<typename _Type,
-           typename _Tool =
-              typename std::conditional<
-                codi::TapeTraits::IsForwardTape<typename _Type::Tape>::value,
-                CoDiPackForwardTool<_Type>,
-                CoDiPackReverseTool<_Type>
-             >::type
-           >
+           typename _Tool = typename std::conditional<codi::TapeTraits::IsForwardTape<typename _Type::Tape>::value,
+                                                      CoDiPackForwardTool<_Type>, CoDiPackReverseTool<_Type> >::type>
   struct CoDiMpiTypes {
     public:
 
@@ -55,15 +49,14 @@ namespace codi {
       medi::AMPI_Datatype MPI_INT_TYPE;  ///< MPI_Datatype for the specified CoDiPack type and an int.
 
       /// Constructor
-      CoDiMpiTypes() :
-        codiMpiType(createByteType(sizeof(Type))),
-        modifiedMpiType(codiMpiType),
-        primalMpiType(createByteType(sizeof(typename Type::Real))),
-        adjointMpiType(primalMpiType),
-        adTool(primalMpiType, adjointMpiType),
-        MPI_TYPE(nullptr),
-        MPI_INT_TYPE()
-      {
+      CoDiMpiTypes()
+          : codiMpiType(createByteType(sizeof(Type))),
+            modifiedMpiType(codiMpiType),
+            primalMpiType(createByteType(sizeof(typename Type::Real))),
+            adjointMpiType(primalMpiType),
+            adTool(primalMpiType, adjointMpiType),
+            MPI_TYPE(nullptr),
+            MPI_INT_TYPE() {
         MPI_TYPE = new MPIType(&adTool, codiMpiType, modifiedMpiType);
         MPI_INT_TYPE = Tool::OpHelper::createIntType(MPI_TYPE);
       }

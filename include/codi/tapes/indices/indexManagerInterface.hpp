@@ -45,16 +45,19 @@ namespace codi {
       /// @name Global constants
 
       static Index constexpr UnusedIndex = 0;  ///< Default inactive index for all index managers.
-      static Index constexpr InvalidIndex = -1;  ///< Default invalid index for all index mangers. (Max value for unsigned types.)
+      static Index constexpr InvalidIndex =
+          -1;  ///< Default invalid index for all index mangers. (Max value for unsigned types.)
 
       /*******************************************************************************/
       /// @name Identifier handling
 
-      static bool constexpr CopyNeedsStatement = CODI_UNDEFINED_VALUE;  ///< If no copy optimization is implemented. See IndexManagerInterface.
-      static bool constexpr IsLinear = CODI_UNDEFINED_VALUE;  ///< If identifiers are coupled to the statements. See IndexManagerInterface.
+      static bool constexpr CopyNeedsStatement =
+          CODI_UNDEFINED_VALUE;  ///< If no copy optimization is implemented. See IndexManagerInterface.
+      static bool constexpr IsLinear =
+          CODI_UNDEFINED_VALUE;  ///< If identifiers are coupled to the statements. See IndexManagerInterface.
 
       bool assignIndex(Index& index);  ///< Call on assignment on a primal value e.g. On `w` for  `w = a + b`.
-                                      ///< @return true if new indices have been generated internally.
+                                       ///< @return true if new indices have been generated internally.
       bool assignUnusedIndex(Index& index);  ///< Call on registering input values.
                                              ///< @return true if new indices have been generated internally.
       void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy on a primal value e.g. `w = a`.

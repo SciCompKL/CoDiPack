@@ -9,7 +9,6 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-
   /*******************************************************************************/
   /// @name Builtin binary comparison operators
   /// @{
@@ -48,4 +47,3 @@ namespace codi {
 
   /// @}
 }
-

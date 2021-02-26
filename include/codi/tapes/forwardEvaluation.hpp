@@ -60,17 +60,17 @@ namespace codi {
         CODI_UNUSED(value, identifier);
       }
 
-      /// @}
+    /// @}
 
     private:
 
       struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
-          template<typename Node>
-          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
-              lhsGradient += node.gradient() * jacobian;
-            }
+        template<typename Node>
+        CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
+          CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+            lhsGradient += node.gradient() * jacobian;
           }
+        }
       };
 
     public:
@@ -81,7 +81,6 @@ namespace codi {
       template<typename Lhs, typename Rhs>
       void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
                  ExpressionInterface<Real, Rhs> const& rhs) {
-
         LocalReverseLogic reversal;
 
         Gradient newGradient = Gradient();
@@ -96,7 +95,6 @@ namespace codi {
       template<typename Lhs, typename Rhs>
       void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
                  LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Rhs> const& rhs) {
-
         lhs.cast().value() = rhs.cast().getValue();
         lhs.cast().gradient() = rhs.cast().getGradient();
       }
@@ -134,7 +132,7 @@ namespace codi {
         return identifier;
       }
 
-      /// @}
+    /// @}
 
     private:
 
@@ -149,17 +147,14 @@ namespace codi {
       }
   };
 
-
   /// \copydoc codi::RealTraits::IsTotalFinite <br>
   /// Value and gradient are tested if they are finite.
   template<typename _Type>
   struct RealTraits::IsTotalFinite<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> {
     public:
 
-      using Type = CODI_DD(
-                      _Type,
-                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
-                    );  ///< See RealTraits::IsTotalFinite
+      using Type = CODI_DD(_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
+                                                                  _Type>));  ///< See RealTraits::IsTotalFinite
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalFinite()
       static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -174,10 +169,8 @@ namespace codi {
   struct RealTraits::IsTotalZero<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> {
     public:
 
-      using Type = CODI_DD(
-                      _Type,
-                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
-                    );  ///< See RealTraits::IsTotalZero
+      using Type = CODI_DD(_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
+                                                                  _Type>));  ///< See RealTraits::IsTotalZero
       using Real = typename Type::Real;  ///< See codi::LhsExpressionInterface::Real
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalZero()
@@ -186,4 +179,3 @@ namespace codi {
       }
   };
 }
-

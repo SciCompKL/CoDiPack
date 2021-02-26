@@ -59,17 +59,16 @@ namespace codi {
       template<typename Node, typename... Args>
       CODI_INLINE ExpressionTraits::EnableIfConstantExpression<Node> term(Node const& node, Args&&... args) {
         cast().handleConstant(node, std::forward<Args>(args)...);
-      }      
+      }
 
       using TraversalLogic<Impl>::term;
 
-      /// @}
+    /// @}
 
     private:
 
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
       }
-
   };
 }

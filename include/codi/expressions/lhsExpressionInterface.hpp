@@ -31,9 +31,9 @@ namespace codi {
 
       using Real = CODI_DD(_Real, double);  ///< See LhsExpressionInterface
       using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface
-      using Tape = CODI_DD(_Tape,
-                     CODI_T(CODI_UNION<InternalStatementRecordingInterface<int>,
-                                              GradientAccessTapeInterface<double, int>>));  ///< See LhsExpressionInterface
+      using Tape =
+          CODI_DD(_Tape, CODI_T(CODI_UNION<InternalStatementRecordingInterface<int>,
+                                           GradientAccessTapeInterface<double, int>>));  ///< See LhsExpressionInterface
       using Impl = CODI_DD(_Impl, LhsExpressionInterface);  ///< See LhsExpressionInterface
 
       using Identifier = typename Tape::Identifier;  ///< See GradientAccessTapeInterface
@@ -46,7 +46,8 @@ namespace codi {
       Real const& value() const;  ///< Get a constant reference to the lvalue represented by the expression.
       Real& value();  ///< Get a reference to the lvalue represented by the expression.
 
-      Identifier const& getIdentifier() const;  ///< Get a constant reference to the identifier of the tape for this expression.
+      Identifier const& getIdentifier() const;  ///< Get a constant reference to the identifier of the tape for this
+                                                ///< expression.
       Identifier& getIdentifier();  ///< Get a constant reference to the identifier of the tape for this expression.
 
       static Tape& getGlobalTape();  ///< Get a reference to the tape which manages this expression.
@@ -93,14 +94,14 @@ namespace codi {
       }
 
       /// Assignment operator for passive values. Calls store on the InternalStatementRecordingInterface.
-      CODI_INLINE Impl& operator=(PassiveReal const& rhs){
+      CODI_INLINE Impl& operator=(PassiveReal const& rhs) {
         Impl::getGlobalTape().store(cast(), rhs);
         return cast();
       }
 
       /// Assignment operator for expressions. Calls store on the InternalStatementRecordingInterface.
       template<typename Rhs>
-      CODI_INLINE Impl& operator=(ExpressionInterface<Real, Rhs> const& rhs){
+      CODI_INLINE Impl& operator=(ExpressionInterface<Real, Rhs> const& rhs) {
         Impl::getGlobalTape().store(cast(), rhs.cast());
         return cast();
       }
@@ -155,15 +156,13 @@ namespace codi {
     return out << v.cast().value();
   }
 
-#ifndef DOXYGEN_DISABLE
+  #ifndef DOXYGEN_DISABLE
   template<typename _Type>
   struct RealTraits::TraitsImplementation<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
     public:
 
       using Type = CODI_DD(
-                      _Type,
-                      CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingInterface<CODI_ANY>, _Type>)
-                    );
+          _Type, CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingInterface<CODI_ANY>, _Type>));
       using Real = typename Type::Real;
 
       using PassiveReal = RealTraits::PassiveReal<Real>;
@@ -174,5 +173,5 @@ namespace codi {
         return RealTraits::getPassiveValue(v.getValue());
       }
   };
-#endif
+  #endif
 }

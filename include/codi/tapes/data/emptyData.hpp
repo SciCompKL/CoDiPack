@@ -42,7 +42,9 @@ namespace codi {
       /// @name Size management
 
       /// \copydoc DataInterface::resize
-      void resize(size_t const& totalSize) { CODI_UNUSED(totalSize); }
+      void resize(size_t const& totalSize) {
+        CODI_UNUSED(totalSize);
+      }
 
       /// \copydoc DataInterface::reset
       void reset() {}
@@ -51,7 +53,9 @@ namespace codi {
       void resetHard() {}
 
       /// \copydoc DataInterface::resetTo
-      void resetTo(Position const& pos) { CODI_UNUSED(pos); }
+      void resetTo(Position const& pos) {
+        CODI_UNUSED(pos);
+      }
 
       /*******************************************************************************/
       /// @name Position functions
@@ -93,10 +97,14 @@ namespace codi {
 
       /// \copydoc DataInterface::setNested <br><br>
       /// Implementation: Does not need to be called.
-      void setNested(NestedData* v) { CODI_UNUSED(v); }
+      void setNested(NestedData* v) {
+        CODI_UNUSED(v);
+      }
 
       /// \copydoc DataInterface::swap
-      void swap(DataInterface& other) { CODI_UNUSED(other); }
+      void swap(DataInterface& other) {
+        CODI_UNUSED(other);
+      }
 
       /*******************************************************************************/
       /// @name Iterator functions

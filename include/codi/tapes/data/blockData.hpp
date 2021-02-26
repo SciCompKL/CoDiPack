@@ -6,8 +6,8 @@
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "chunk.hpp"
-#include "emptyData.hpp"
 #include "dataInterface.hpp"
+#include "emptyData.hpp"
 #include "pointerStore.hpp"
 #include "position.hpp"
 
@@ -47,18 +47,12 @@ namespace codi {
     public:
 
       /// Allocate chunkSize entries and set the nested DataInterface
-      BlockData(size_t const& chunkSize, NestedData* nested) :
-        chunk(chunkSize),
-        nested(NULL)
-      {
+      BlockData(size_t const& chunkSize, NestedData* nested) : chunk(chunkSize), nested(NULL) {
         setNested(nested);
       }
 
       /// Allocate chunkSize entries. Requires a call to #setNested
-      BlockData(size_t const& chunkSize) :
-        chunk(chunkSize),
-        nested(NULL)
-      {}
+      BlockData(size_t const& chunkSize) : chunk(chunkSize), nested(NULL) {}
 
       /*******************************************************************************/
       /// @name Adding items
@@ -136,12 +130,12 @@ namespace codi {
       /// \copydoc DataInterface::addToTapeValues <br><br>
       /// Implementation: Adds: Total number, Memory used, Memory allocated
       void addToTapeValues(TapeValues& values) const {
-        size_t allocedSize    = chunk.getSize();
-        size_t dataEntries    = getDataSize();
-        size_t entrySize      = Chunk::EntrySize;
+        size_t allocedSize = chunk.getSize();
+        size_t dataEntries = getDataSize();
+        size_t entrySize = Chunk::EntrySize;
 
-        double  memoryUsed  = (double)dataEntries*(double)entrySize;
-        double  memoryAlloc = (double)allocedSize*(double)entrySize;
+        double memoryUsed = (double)dataEntries * (double)entrySize;
+        double memoryAlloc = (double)allocedSize * (double)entrySize;
 
         values.addUnsignedLongEntry("Total number", dataEntries);
         values.addDoubleEntry("Memory used", memoryUsed, true, false);
@@ -187,10 +181,10 @@ namespace codi {
 
         size_t dataPos = start.data;
         pHandle.callNestedForward(
-              /* arguments for callNestedForward */
-              nested, dataPos, end.data,
-              /* arguments for nested->evaluateForward */
-              start.inner, end.inner, function, std::forward<Args>(args)...);
+            /* arguments for callNestedForward */
+            nested, dataPos, end.data,
+            /* arguments for nested->evaluateForward */
+            start.inner, end.inner, function, std::forward<Args>(args)...);
 
         codiAssert(dataPos == end.data);
       }
@@ -205,10 +199,10 @@ namespace codi {
         pHandle.setPointers(0, &chunk);
 
         pHandle.callNestedReverse(
-              /* arguments for callNestedReverse */
-              nested, dataPos, end.data,
-              /* arguments for nested->evaluateReverse */
-              start.inner, end.inner, function, std::forward<Args>(args)...);
+            /* arguments for callNestedReverse */
+            nested, dataPos, end.data,
+            /* arguments for nested->evaluateReverse */
+            start.inner, end.inner, function, std::forward<Args>(args)...);
 
         codiAssert(dataPos == end.data);
       }
@@ -216,7 +210,6 @@ namespace codi {
       /// \copydoc DataInterface::forEachChunk
       template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
-
         function(&chunk, std::forward<Args>(args)...);
 
         if (recursive) {
@@ -226,7 +219,8 @@ namespace codi {
 
       /// \copydoc DataInterface::forEachForward
       template<typename FunctionObject, typename... Args>
-      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
+      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
+                                      Args&&... args) {
         codiAssert(start.data <= end.data);
 
         PointerInserter pHandle;
@@ -239,14 +233,15 @@ namespace codi {
 
       /// \copydoc DataInterface::forEachReverse
       template<typename FunctionObject, typename... Args>
-      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
+      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
+                                      Args&&... args) {
         codiAssert(start.data >= end.data);
 
         PointerInserter pHandle;
 
         // we do not initialize dataPos with start - 1 since the type can be unsigned
         for (size_t dataPos = start.data; dataPos > end.data; /* decrement is done inside the loop */) {
-          dataPos -= 1; // decrement of loop variable
+          dataPos -= 1;  // decrement of loop variable
 
           pHandle.setPointers(dataPos, &chunk);
           pHandle.call(function, std::forward<Args>(args)...);

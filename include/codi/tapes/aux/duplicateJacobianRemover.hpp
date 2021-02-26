@@ -2,7 +2,6 @@
 
 #include <array>
 
-
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 

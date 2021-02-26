@@ -17,8 +17,8 @@ namespace codi {
    * @tparam _T  The data type in the Jacobian.
    * @tparam _Store  Storage allocator. Should implement the standard vector interface.
    */
-  template <typename _T, typename _Store = std::vector<_T>>
-  struct Jacobian : public JacobianInterface<_T>{
+  template<typename _T, typename _Store = std::vector<_T>>
+  struct Jacobian : public JacobianInterface<_T> {
     public:
 
       using T = CODI_DD(_T, double);  ///< See Jacobian
@@ -35,17 +35,21 @@ namespace codi {
       /// m = rows ( output variables), n = columns (input variables)
       explicit Jacobian(size_t const m, size_t const n) : values(n * m), m(m), n(n) {}
 
-      CODI_INLINE size_t getM() const {return m;} ///< \copydoc codi::JacobianInterface::getM()
-      CODI_INLINE size_t getN() const {return n;} ///< \copydoc codi::JacobianInterface::getN()
+      CODI_INLINE size_t getM() const {
+        return m;
+      }  ///< \copydoc codi::JacobianInterface::getM()
+      CODI_INLINE size_t getN() const {
+        return n;
+      }  ///< \copydoc codi::JacobianInterface::getN()
 
       /// \copydoc codi::JacobianInterface::operator()( size_t const, size_t const) const
       CODI_INLINE T operator()(size_t const i, size_t const j) const {
-        return values[computeIndex(i,j)];
+        return values[computeIndex(i, j)];
       }
 
       /// \copydoc codi::JacobianInterface::operator()( size_t const, size_t const)
       CODI_INLINE T& operator()(size_t const i, size_t const j) {
-        return values[computeIndex(i,j)];
+        return values[computeIndex(i, j)];
       }
 
       /// \copydoc codi::JacobianInterface::resize()
@@ -55,11 +59,13 @@ namespace codi {
         this->m = m;
         this->n = n;
 
-        values.resize(m*n);
+        values.resize(m * n);
       }
 
       /// \copydoc codi::JacobianInterface::size()
-      CODI_INLINE size_t size() const {return m * n;}
+      CODI_INLINE size_t size() const {
+        return m * n;
+      }
 
     protected:
 

@@ -58,9 +58,8 @@ namespace codi {
 
       /// Constructor
       template<typename RealArg>
-      explicit UnaryExpression(ExpressionInterface<RealArg, Arg> const& arg) :
-        arg(arg.cast()),
-        result(Operation::primal(this->arg.getValue())) {}
+      explicit UnaryExpression(ExpressionInterface<RealArg, Arg> const& arg)
+          : arg(arg.cast()), result(Operation::primal(this->arg.getValue())) {}
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface

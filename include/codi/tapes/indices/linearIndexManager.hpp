@@ -47,7 +47,7 @@ namespace codi {
       using NestedData = void;  ///< Terminator
       using InternalPosHandle = size_t;  ///< The current maximum index
 
-      /// @}
+    /// @}
 
     private:
 
@@ -57,9 +57,7 @@ namespace codi {
     public:
 
       /// Constructor
-      LinearIndexManager(Index zeroState) :
-        zeroState(zeroState),
-        count(zeroState) {}
+      LinearIndexManager(Index zeroState) : zeroState(zeroState), count(zeroState) {}
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Methods
@@ -107,7 +105,6 @@ namespace codi {
       /// @name DataInterface: Methods
       /// @{
 
-
       /// \copydoc DataInterface::extractPosition
       template<typename TargetPosition>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
@@ -145,7 +142,9 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::resize
-      void resize(size_t const& totalSize) { CODI_UNUSED(totalSize); }
+      void resize(size_t const& totalSize) {
+        CODI_UNUSED(totalSize);
+      }
 
       /// \copydoc DataInterface::resetTo
       CODI_INLINE void resetTo(Position const& pos) {
@@ -165,7 +164,9 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::setNested
-      void setNested(NestedData* v) { CODI_UNUSED(v); }
+      void setNested(NestedData* v) {
+        CODI_UNUSED(v);
+      }
 
       /// \copydoc DataInterface::swap
       void swap(LinearIndexManager<Index>& other) {
@@ -177,7 +178,6 @@ namespace codi {
       template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-
         function(std::forward<Args>(args)..., start, end);
       }
 
@@ -185,7 +185,6 @@ namespace codi {
       template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-
         function(std::forward<Args>(args)..., start, end);
       }
 

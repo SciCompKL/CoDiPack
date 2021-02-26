@@ -44,7 +44,7 @@ namespace codi {
       template<size_t argNumber>
       CODI_INLINE Real getJacobian() const;
 
-      /// @}
+    /// @}
 
     private:
       ExpressionInterface& operator=(ExpressionInterface const&) = delete;

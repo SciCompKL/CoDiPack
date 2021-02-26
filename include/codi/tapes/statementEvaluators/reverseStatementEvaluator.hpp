@@ -4,9 +4,9 @@
 #include <functional>
 #include <type_traits>
 
+#include "../../aux/exceptions.hpp"
 #include "../../aux/macros.hpp"
 #include "../../aux/memberStore.hpp"
-#include "../../aux/exceptions.hpp"
 #include "../../expressions/activeType.hpp"
 #include "statementEvaluatorInterface.hpp"
 
@@ -22,7 +22,6 @@ namespace codi {
    */
   template<typename _Real>
   struct ReverseStatementEvaluator : public StatementEvaluatorInterface<_Real> {
-
       using Real = CODI_DD(_Real, double);  ///< See ReverseStatementEvaluator
 
     public:
@@ -67,13 +66,12 @@ namespace codi {
         return (Handle*)Generator::template statementEvaluateReverse<Expr>;
       }
 
-      /// @}
+    /// @}
 
     protected:
 
       /// Full reverse function type.
       template<typename Tape>
       using HandleTyped = decltype(&Tape::template statementEvaluateReverse<ActiveType<Tape>>);
-
   };
 }

@@ -11,7 +11,6 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-
   /**
    * @brief Data stream interface for tape data. Encapsulates data that is written e.g. for each statement or argument.
    *
@@ -105,8 +104,8 @@ namespace codi {
        * @brief Add data to the allocated data in the implementation. The method can only be called after a call to
        *        reserveItems and only as often as the number of reserved items.
        *
-       * pushData() can be called less often than indicated with reserveItems(). The call to reserveItems only represents
-       * the maximum number of data items that might be pushed.
+       * pushData() can be called less often than indicated with reserveItems(). The call to reserveItems only
+       * represents the maximum number of data items that might be pushed.
        *
        * After a new call to reserveItems() only this many number of data items can be pushed, leftovers will not
        * accumulate.
@@ -158,7 +157,8 @@ namespace codi {
       void addToTapeValues(TapeValues& values) const;
 
       /**
-       * @brief Extract the position of a nested DataInterface from the global position object provide by this interface.
+       * @brief Extract the position of a nested DataInterface from the global position object provide by this
+       * interface.
        *
        * @param[in] pos  Position of the DataInterface.
        * @tparam TargetPosition  Position definition of a nested DataInterface.
@@ -241,7 +241,6 @@ namespace codi {
        */
       template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args);
-
 
       /**
        * @brief Calls the function object for each item in the data stream. This call is not recursive.

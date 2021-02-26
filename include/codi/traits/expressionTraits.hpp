@@ -29,25 +29,22 @@ namespace codi {
     template<typename Expr, typename = void>
     struct IsLhsExpression : std::false_type {};
 
-#ifndef DOXYGEN_DISABLE
+    #ifndef DOXYGEN_DISABLE
     template<typename Expr>
     struct IsLhsExpression<
-      Expr,
-      typename enable_if_base_of<
-        LhsExpressionInterface<typename Expr::Real, typename Expr::Gradient, typename Expr::Tape, Expr>,
-        Expr
-      >::type
-    > : std::true_type {};
+        Expr, typename enable_if_base_of<
+                  LhsExpressionInterface<typename Expr::Real, typename Expr::Gradient, typename Expr::Tape, Expr>,
+                  Expr>::type> : std::true_type {};
 
     template<typename Tape>
     struct IsLhsExpression<StaticContextActiveType<Tape>> : std::true_type {};
-#endif
+    #endif
 
-#if CODI_IS_CPP14
+    #if CODI_IS_CPP14
     /// Value entry of IsLhsExpression
     template<typename Expr>
     bool constexpr isLhsExpression = IsLhsExpression<Expr>::value;
-#endif
+    #endif
 
     /// Enable if wrapper for IsLhsExpression
     template<typename Expr>
@@ -57,16 +54,16 @@ namespace codi {
     template<typename Expr>
     struct IsConstantExpression : std::false_type {};
 
-#ifndef DOXYGEN_DISABLE
+    #ifndef DOXYGEN_DISABLE
     template<typename Real>
     struct IsConstantExpression<ConstantExpression<Real>> : std::true_type {};
-#endif
+    #endif
 
-#if CODI_IS_CPP14
+    #if CODI_IS_CPP14
     template<typename Expr>
     /// Value entry of IsConstantExpression
     bool constexpr isConstantExpression = IsConstantExpression<Expr>::value;
-#endif
+    #endif
 
     /// Enable if wrapper for IsConstantExpression
     template<typename Expr>
@@ -76,16 +73,16 @@ namespace codi {
     template<typename Expr>
     struct IsStaticContextActiveType : std::false_type {};
 
-#ifndef DOXYGEN_DISABLE
+    #ifndef DOXYGEN_DISABLE
     template<typename Tape>
     struct IsStaticContextActiveType<StaticContextActiveType<Tape>> : std::true_type {};
-#endif
+    #endif
 
-#if CODI_IS_CPP14
+    #if CODI_IS_CPP14
     /// Value entry of IsStaticContextActiveType
     template<typename Expr>
     bool constexpr isStaticContextActiveType = IsStaticContextActiveType<Expr>::value;
-#endif
+    #endif
 
     /// Enable if wrapper for IsStaticContextActiveType
     template<typename Expr>
@@ -112,15 +109,16 @@ namespace codi {
         static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
     };
 
-#if CODI_IS_CPP14
+    #if CODI_IS_CPP14
     /// Value entry of NumberOfActiveTypeArguments
     template<typename Expr>
     bool constexpr numberOfActiveTypeArguments = NumberOfActiveTypeArguments<Expr>::value;
-#endif
+    #endif
 
     /// Counts the number of types that inherit from ConstantExpression in the expression.
     template<typename Expr>
-    struct NumberOfConstantTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
+    struct NumberOfConstantTypeArguments
+        : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
       public:
 
         /// \copydoc CompileTimeTraversalLogic::term()
@@ -134,11 +132,11 @@ namespace codi {
         static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
     };
 
-#if CODI_IS_CPP14
+    #if CODI_IS_CPP14
     /// Value entry of NumberOfConstantTypeArguments
     template<typename Expr>
     bool constexpr numberOfConstantTypeArguments = NumberOfConstantTypeArguments<Expr>::value;
-#endif
+    #endif
 
     /// @}
   }

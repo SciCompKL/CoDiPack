@@ -31,20 +31,22 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return 1.0;
       }
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return 1.0;
       }
   };
   #define OPERATION_LOGIC Add
-  #define FUNCTION operator +
+  #define FUNCTION operator+
   #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator -
@@ -62,20 +64,22 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return 1.0;
       }
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return -1.0;
       }
   };
   #define OPERATION_LOGIC Substract
-  #define FUNCTION operator -
+  #define FUNCTION operator-
   #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator *
@@ -106,7 +110,7 @@ namespace codi {
       }
   };
   #define OPERATION_LOGIC Multiply
-  #define FUNCTION operator *
+  #define FUNCTION operator*
   #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator /
@@ -133,7 +137,7 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, result);
 
         checkArguments(argB);
@@ -144,14 +148,14 @@ namespace codi {
       template<typename ArgB>
       static CODI_INLINE void checkArguments(ArgB const& argB) {
         if (Config::CheckExpressionArguments) {
-          if ( RealTraits::isTotalZero(RealTraits::getPassiveValue(argB))) {
+          if (RealTraits::isTotalZero(RealTraits::getPassiveValue(argB))) {
             CODI_EXCEPTION("Division called with divisor of zero.");
           }
         }
       }
   };
   #define OPERATION_LOGIC Divide
-  #define FUNCTION operator /
+  #define FUNCTION operator/
   #include "binaryOverloads.tpp"
 
   /// @}
@@ -192,7 +196,7 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
 
         checkArguments(argA, argB);
@@ -205,7 +209,7 @@ namespace codi {
       template<typename ArgA, typename ArgB>
       static CODI_INLINE void checkArguments(ArgA& argA, ArgB& argB) {
         if (Config::CheckExpressionArguments) {
-          if ( 0.0 == RealTraits::getPassiveValue(argA) && 0.0 == RealTraits::getPassiveValue(argB)) {
+          if (0.0 == RealTraits::getPassiveValue(argA) && 0.0 == RealTraits::getPassiveValue(argB)) {
             CODI_EXCEPTION("atan2 called at point (0,0).");
           }
         }
@@ -230,8 +234,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
-
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(result);
         if (RealTraits::getPassiveValue(argA) < 0.0) {
           if (RealTraits::getPassiveValue(argB) < 0.0) {
@@ -252,7 +256,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(argA, argB, result);
 
         return RealTraits::PassiveReal<Real>(0.0);
@@ -282,7 +287,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(result);
 
         if (RealTraits::getPassiveValue(argA) > RealTraits::getPassiveValue(argB)) {
@@ -294,7 +300,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(result);
 
         if (RealTraits::getPassiveValue(argA) > RealTraits::getPassiveValue(argB)) {
@@ -328,7 +335,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(result);
 
         if (RealTraits::getPassiveValue(argA) < RealTraits::getPassiveValue(argB)) {
@@ -340,7 +348,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(result);
 
         if (RealTraits::getPassiveValue(argA) < RealTraits::getPassiveValue(argB)) {
@@ -387,7 +396,7 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argB);
 
         checkArguments(argA);
@@ -403,7 +412,8 @@ namespace codi {
       static CODI_INLINE void checkArguments(ArgA& argA) {
         if (Config::CheckExpressionArguments) {
           if (RealTraits::getPassiveValue(argA) < 0.0) {
-            CODI_EXCEPTION("Negative base for active exponent in pow function. (Value: %0.15e)", RealTraits::getPassiveValue(argA));
+            CODI_EXCEPTION("Negative base for active exponent in pow function. (Value: %0.15e)",
+                           RealTraits::getPassiveValue(argA));
           }
         }
       }
@@ -437,13 +447,13 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE  Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
 
         checkArguments(argB);
 
         using std::round;
-        return -round(argA/argB);
+        return -round(argA / argB);
       }
 
     private:

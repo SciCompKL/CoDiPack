@@ -6,7 +6,6 @@
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -50,10 +49,8 @@ namespace codi {
 
       /// Push a complete statement where the Jacobians and arguments are provided as iterator objects.
       template<typename ArgIter, typename JacobiIter>
-      CODI_INLINE void pushStatement(Type& lhs, Real const& primal,
-                                     ArgIter const startArg, ArgIter const endArg,
+      CODI_INLINE void pushStatement(Type& lhs, Real const& primal, ArgIter const startArg, ArgIter const endArg,
                                      JacobiIter const startJac) {
-
         cast().startPushStatement();
 
         JacobiIter jacPos = startJac;
@@ -66,15 +63,12 @@ namespace codi {
         }
 
         cast().endPushStatement(lhs, primal);
-
       }
 
       /// Push a complete statement where the Jacobians and arguments are provided as arrays.
       template<typename ArgVector, typename JacobiVector>
-      CODI_INLINE void pushStatement(Type& lhs, Real const& primal,
-                                     ArgVector const& arguments, JacobiVector const& jacobians,
-                                     size_t const size) {
-
+      CODI_INLINE void pushStatement(Type& lhs, Real const& primal, ArgVector const& arguments,
+                                     JacobiVector const& jacobians, size_t const size) {
         cast().startPushStatement();
 
         for (size_t i = 0; i < size; ++i) {
@@ -84,15 +78,13 @@ namespace codi {
         cast().endPushStatement(lhs, primal);
       }
 
-      /// @}
+    /// @}
 
     private:
 
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
       }
-
-
   };
 
   /**
@@ -140,15 +132,14 @@ namespace codi {
       void pushArgument(Type const& arg, Real const& jacobian) {
         Tape& tape = Type::getGlobalTape();
 
-        if (Config::MaxArgumentSize < dataPos ) {
+        if (Config::MaxArgumentSize < dataPos) {
           CODI_EXCEPTION("Adding more than %zu arguments to a statement.", Config::MaxArgumentSize);
         }
 
-        CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
+        CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive()) {
           CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier()) {
             CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
               CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian)) {
-
                 indexData[dataPos] = arg.getIdentifier();
                 jacobianData[dataPos] = jacobian;
                 dataPos += 1;
@@ -162,7 +153,7 @@ namespace codi {
       void endPushStatement(Type& lhs, Real const& primal) {
         Tape& tape = Type::getGlobalTape();
 
-        CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
+        CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive()) {
           if (0 != dataPos) {
             tape.storeManual(primal, lhs.getIdentifier(), dataPos);
 
@@ -178,13 +169,12 @@ namespace codi {
       /// @}
   };
 
-#ifndef DOXYGEN_DISABLE
+  #ifndef DOXYGEN_DISABLE
 
   /// Specialization for forward tapes.
   template<typename _Type>
-  struct StatementPushHelper<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape> >
-      : public StatementPushHelperBase<_Type, StatementPushHelper<_Type>>
-  {
+  struct StatementPushHelper<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>>
+      : public StatementPushHelperBase<_Type, StatementPushHelper<_Type>> {
     public:
 
       /// See StatementPushHelper
@@ -202,7 +192,6 @@ namespace codi {
       /*******************************************************************************/
       /// @name Implementation of StatementPushHelperBase
       /// @{
-
 
       /// \copydoc codi::StatementPushHelperBase::startPushStatement()
       void startPushStatement() {
@@ -250,20 +239,20 @@ namespace codi {
         lhs = primal;
       }
 
-      /// \copydoc codi::StatementPushHelperBase::pushStatement(Type&, Real const&, ArgIter const, ArgIter const, JacobiIter const)
+      /// \copydoc codi::StatementPushHelperBase::pushStatement(Type&, Real const&, ArgIter const, ArgIter const,
+      /// JacobiIter const)
       template<typename ArgIter, typename JacobiIter>
-      void pushStatement(Type& lhs, Real const& primal,
-                         ArgIter const startArg, ArgIter const endArg,
+      void pushStatement(Type& lhs, Real const& primal, ArgIter const startArg, ArgIter const endArg,
                          JacobiIter const startJac) {
         CODI_UNUSED(startArg, endArg, startJac);
 
         endPushStatement(lhs, primal);
       }
 
-      /// \copydoc codi::StatementPushHelperBase::pushStatement(Type&, Real const&,ArgVector const&, JacobiVector const&, size_t const)
+      /// \copydoc codi::StatementPushHelperBase::pushStatement(Type&, Real const&,ArgVector const&, JacobiVector
+      /// const&, size_t const)
       template<typename ArgVector, typename JacobiVector>
-      void pushStatement(Type& lhs, Real const& primal,
-                         ArgVector const& arguments, JacobiVector const& jacobians,
+      void pushStatement(Type& lhs, Real const& primal, ArgVector const& arguments, JacobiVector const& jacobians,
                          size_t const size) {
         CODI_UNUSED(arguments, jacobians, size);
 
@@ -272,5 +261,5 @@ namespace codi {
 
       /// @}
   };
-#endif
+  #endif
 }

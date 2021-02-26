@@ -2,8 +2,8 @@
 
 #include <utility>
 
-#include "../../config.h"
 #include "../../aux/macros.hpp"
+#include "../../config.h"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -79,27 +79,27 @@ namespace codi {
         toNode(leaf, std::forward<Args>(args)...);
       }
 
-      /// @}
+    /// @}
 
     protected:
 
-#ifndef DOXYGEN_DISABLE
+    #ifndef DOXYGEN_DISABLE
       template<typename TraversalImpl, bool endPoint = false>
       struct CallSwitch {
-          template<typename... Args>
-          CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
-            impl.node(std::forward<Args>(args)...);
-          }
+        template<typename... Args>
+        CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
+          impl.node(std::forward<Args>(args)...);
+        }
       };
 
       template<typename TraversalImpl>
-      struct CallSwitch <TraversalImpl, true>{
-          template<typename... Args>
-          CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
-            impl.term(std::forward<Args>(args)...);
-          }
+      struct CallSwitch<TraversalImpl, true> {
+        template<typename... Args>
+        CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
+          impl.term(std::forward<Args>(args)...);
+        }
       };
-#endif
+      #endif
 
       /// Helper method to distinguish between termination nodes and normal nodes.
       template<typename Node, typename... Args>
@@ -114,4 +114,3 @@ namespace codi {
       }
   };
 }
-

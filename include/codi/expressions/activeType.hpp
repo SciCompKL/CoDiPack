@@ -21,14 +21,16 @@ namespace codi {
    * @tparam _Tape  The tape that manages all expressions created with this type.
    */
   template<typename _Tape>
-  struct ActiveType : public LhsExpressionInterface<typename _Tape::Real, typename _Tape::Gradient, _Tape, ActiveType<_Tape> >,
-                      public AssignmentOperators<_Tape, ActiveType<_Tape>>,
-                      public IncrementOperators<_Tape, ActiveType<_Tape>> {
+  struct ActiveType
+      : public LhsExpressionInterface<typename _Tape::Real, typename _Tape::Gradient, _Tape, ActiveType<_Tape>>,
+        public AssignmentOperators<_Tape, ActiveType<_Tape>>,
+        public IncrementOperators<_Tape, ActiveType<_Tape>> {
     public:
 
       /// See ActiveType.
       /// For reverse AD the tape needs to implement the ReverseTapeInterface
-      /// For forward AD the 'tape' needs to implement the InternalStatementRecordingInterface and GradientAccessTapeInterface
+      /// For forward AD the 'tape' needs to implement the InternalStatementRecordingInterface and
+      /// GradientAccessTapeInterface
       using Tape = CODI_DD(_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Real = typename Tape::Real;  ///< See LhsExpressionInterface

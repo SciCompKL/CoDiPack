@@ -21,8 +21,7 @@ namespace codi {
    * @tparam _Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.
    */
   template<typename _Real, typename _Identifier, typename _Gradient>
-  struct PrimalAdjointVectorAccess : public AdjointVectorAccess<_Real, _Identifier, _Gradient>  {
-
+  struct PrimalAdjointVectorAccess : public AdjointVectorAccess<_Real, _Identifier, _Gradient> {
       using Real = CODI_DD(_Real, double);  ///< See PrimalAdjointVectorAccess
       using Identifier = CODI_DD(_Identifier, int);  ///< See PrimalAdjointVectorAccess
       using Gradient = CODI_DD(_Gradient, double);  ///< See PrimalAdjointVectorAccess
@@ -36,9 +35,8 @@ namespace codi {
     public:
 
       /// Size of both vectors needs to be big enough. No bounds checking is performed.
-      PrimalAdjointVectorAccess(Gradient* adjointVector, Real* primalVector) :
-        Base(adjointVector),
-        primalVector(primalVector) {}
+      PrimalAdjointVectorAccess(Gradient* adjointVector, Real* primalVector)
+          : Base(adjointVector), primalVector(primalVector) {}
 
       /*******************************************************************************/
       /// @name Primal access

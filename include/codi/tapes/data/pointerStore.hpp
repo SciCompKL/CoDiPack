@@ -23,8 +23,10 @@ namespace codi {
    *   ps.setPointers(0, data);
    *   // one of
    *   ps.call(func, user); // will call func(p1 (double*), p2 (int*), user);
-   *   ps.callNestedForward(nested, 0, 10, func, user); // will call nested->evaluateForward(func, user, 0, 10, p1 (double*), p2 (int*));
-   *   ps.callNestedReverse(nested, 10, 0, func, user); // will call nested->evaluateReverse(func, user, 10, 0, p1 (double*), p2 (int*));
+   *   ps.callNestedForward(nested, 0, 10, func, user); // will call nested->evaluateForward(func, user, 0, 10,
+   *                                                                                         p1 (double*), p2 (int*));
+   *   ps.callNestedReverse(nested, 10, 0, func, user); // will call nested->evaluateReverse(func, user, 10, 0,
+   *                                                                                         p1 (double*), p2 (int*));
    * \endcode
    *
    * @tparam ChunkData  Implementation of ChunkBase.

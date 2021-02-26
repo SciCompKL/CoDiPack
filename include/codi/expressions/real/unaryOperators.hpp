@@ -37,7 +37,7 @@ namespace codi {
       }
   };
   #define OPERATION_LOGIC UnaryMinus
-  #define FUNCTION operator -
+  #define FUNCTION operator-
   #include "unaryOverloads.tpp"
 
   /// Function overload for operator +
@@ -52,7 +52,6 @@ namespace codi {
   /// @{
 
   using std::abs;
-  using std::fabs;
   using std::acos;
   using std::asin;
   using std::atan;
@@ -64,6 +63,7 @@ namespace codi {
   using std::erf;
   using std::erfc;
   using std::exp;
+  using std::fabs;
   using std::floor;
   using std::isfinite;
   using std::isinf;
@@ -327,7 +327,7 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        return 1.128379167095513 * exp( -(arg * arg) ); // erf'(arg) = 2.0 / sqrt(pi) * exp(-arg^2)
+        return 1.128379167095513 * exp(-(arg * arg));  // erf'(arg) = 2.0 / sqrt(pi) * exp(-arg^2)
       }
   };
   #define OPERATION_LOGIC Erf
@@ -351,7 +351,7 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        return -1.128379167095513 * exp( -(arg * arg) ); // erfc'(arg) = - 2.0 / sqrt(pi) * exp(-arg^2)
+        return -1.128379167095513 * exp(-(arg * arg));  // erfc'(arg) = - 2.0 / sqrt(pi) * exp(-arg^2)
       }
   };
   #define OPERATION_LOGIC Erfc
@@ -550,7 +550,7 @@ namespace codi {
         } else {
           return (Real)0.0;
         }
-    }
+      }
   };
   #define OPERATION_LOGIC Sqrt
   #define FUNCTION sqrt
@@ -639,29 +639,30 @@ namespace codi {
         // Differentation is Gamma'(arg) = Gamma(arg) * DiGamma(arg)
 
         Real diGamma = 0.0;
-        if (arg <= 0.000001) { // special case for small numbers
+        if (arg <= 0.000001) {  // special case for small numbers
           const Real eulerMascheroni = 0.57721566490153286060;
-          diGamma = -eulerMascheroni - 1.0/arg + 1.6449340668482264365*arg;
+          diGamma = -eulerMascheroni - 1.0 / arg + 1.6449340668482264365 * arg;
         } else {
           // shift DiGamma(arg) = DiGamma(arg + 1) - 1/arg
           // we require arg large such that the approximation below is more accurate
           Real shiftBound = 8.5;
 
           Real shiftedValue = arg;
-          while ( shiftedValue < shiftBound ) {
-            diGamma      -= 1.0/shiftedValue;
+          while (shiftedValue < shiftBound) {
+            diGamma -= 1.0 / shiftedValue;
             shiftedValue += 1.0;
           }
 
           // Now compute the approximation via an asymptotic series
-          Real r = 1.0/shiftedValue;
-          diGamma += log(shiftedValue) - 0.5*r;
+          Real r = 1.0 / shiftedValue;
+          diGamma += log(shiftedValue) - 0.5 * r;
 
-          Real rSqr = r*r;
-          diGamma -= rSqr*(1.0/12.0 - rSqr*(1.0/120.0 - rSqr*(1.0/252.0 - rSqr*(1.0/240.0 - rSqr*(1.0/132.0)))));
+          Real rSqr = r * r;
+          diGamma -= rSqr * (1.0 / 12.0 -
+                             rSqr * (1.0 / 120.0 - rSqr * (1.0 / 252.0 - rSqr * (1.0 / 240.0 - rSqr * (1.0 / 132.0)))));
         }
 
-        return diGamma*result;
+        return diGamma * result;
       }
   };
   #define OPERATION_LOGIC Tgamma
@@ -674,7 +675,6 @@ namespace codi {
 namespace std {
 
   using codi::abs;
-  using codi::fabs;
   using codi::acos;
   using codi::asin;
   using codi::atan;
@@ -686,6 +686,7 @@ namespace std {
   using codi::erf;
   using codi::erfc;
   using codi::exp;
+  using codi::fabs;
   using codi::floor;
   using codi::isfinite;
   using codi::isinf;
