@@ -195,6 +195,18 @@ namespace codi {
   }
 
   /// True if one element differs.
+  template<typename Real, size_t dim>
+  CODI_INLINE bool operator != (Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
+    for (size_t i = 0; i < dim; ++i) {
+      if ( v1[i] != v2[i] ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /// True if one element differs.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator != (A const& s, Direction<Real, dim> const& v) {
     for (size_t i = 0; i < dim; ++i) {
@@ -210,6 +222,18 @@ namespace codi {
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator != (Direction<Real, dim> const& v, A const& s) {
     return s != v;
+  }
+
+  /// True if all elements are the same.
+  template<typename Real, size_t dim>
+  CODI_INLINE bool operator == (Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
+    for (size_t i = 0; i < dim; ++i) {
+      if ( v1[i] != v2[i] ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /// True if all elements are the same.
