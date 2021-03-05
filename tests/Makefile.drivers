@@ -73,10 +73,19 @@ $(eval $(call define_codi_driver,D0_eh_rwsPrimLin,"drivers/codi/evalHelper0thOrd
 $(eval $(call define_codi_driver,D0_eh_rwsPrimInd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReversePrimalIndex,$(EH_TESTS),-DREVERSE_TAPE))
 
 # second order drivers
+COMMA = ,
+VECTOR_ARG = codi::RealForwardVec<$(VECTOR_DIM)>$(COMMA) codi::Direction<codi::RealForwardVec<$(VECTOR_DIM)>$(COMMA) $(VECTOR_DIM)>
 
 $(eval $(call define_codi_driver,D2_eh_fwd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealForwardGen<codi::RealForward>,$(EH_TESTS),-DSECOND_ORDER))
+
+$(eval $(call define_codi_driver,D2_eh_fwdVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealForwardGen<$(VECTOR_ARG)>,$(EH_TESTS),-DSECOND_ORDER))
 
 $(eval $(call define_codi_driver,D2_eh_rwsJacLin,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseGen<codi::RealForward>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
 $(eval $(call define_codi_driver,D2_eh_rwsJacInd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseIndexGen<codi::RealForward>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
 $(eval $(call define_codi_driver,D2_eh_rwsPrimLin,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalGen<codi::RealForward>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
 $(eval $(call define_codi_driver,D2_eh_rwsPrimInd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalIndexGen<codi::RealForward>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+
+$(eval $(call define_codi_driver,D2_eh_rwsJacLinVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseGen<$(VECTOR_ARG)>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsJacIndVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseIndexGen<$(VECTOR_ARG)>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsPrimLinVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalGen<$(VECTOR_ARG)>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsPrimIndVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalIndexGen<$(VECTOR_ARG)>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
