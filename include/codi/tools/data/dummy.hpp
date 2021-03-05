@@ -25,12 +25,4 @@ namespace codi {
       }
   };
 
-  struct DummyHessian {
-    public:
-      CODI_INLINE DummyValue operator()(size_t const i, size_t const j, size_t const k) {
-        CODI_UNUSED(i, j, k);
-
-        return DummyValue();
-      }
-  };
 }

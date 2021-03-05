@@ -1,8 +1,10 @@
 #pragma once
 
-#include "../../config.h"
-
 #include <vector>
+
+#include "../../config.h"
+#include "dummy.hpp"
+#include "staticDummy.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -67,4 +69,25 @@ namespace codi {
       }
   };
 
+  struct DummyHessian : public HessianInterface<DummyValue> {
+    public:
+
+      size_t getM() const {return 0;}
+      size_t getN() const {return 0;}
+
+      CODI_INLINE DummyValue operator()(size_t const i, size_t const j, size_t const k) const {
+        CODI_UNUSED(i, j, k);
+
+        return DummyValue();
+      }
+
+      CODI_INLINE DummyValue& operator()(size_t const i, size_t const j, size_t const k) {
+        CODI_UNUSED(i, j, k);
+
+        return StaticDummy<DummyValue>::dummy;
+      }
+
+      void resize(size_t const m, size_t const n) {CODI_UNUSED(m, n);}
+      size_t size() const {return 0;}
+  };
 }
