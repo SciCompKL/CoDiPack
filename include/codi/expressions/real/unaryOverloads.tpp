@@ -5,7 +5,8 @@
  *
  * The defines OPERATION_LOGIC and FUNCTION will be undefined at the end of this template.
  *
- * Prior to including this file, the user has to implement the operation's primal and derivative logic according to UnaryOpInterface.
+ * Prior to including this file, the user has to implement the operation's primal and derivative logic according to
+ * UnaryOpInterface.
  */
 
 #ifndef OPERATION_LOGIC
@@ -26,19 +27,19 @@
   #define FUNCTION func
   #define OPERATION_LOGIC UnaryOperation
 
-  namespace codi {
+namespace codi {
 #endif
 
-    /// Function overload for FUNCTION
-    template <typename Real, typename Arg>
-      CODI_INLINE UnaryExpression<Real, Arg, OPERATION_LOGIC> FUNCTION(ExpressionInterface<Real, Arg> const& arg) {
-      return UnaryExpression<Real, Arg, OPERATION_LOGIC>(arg);
-    }
+  /// Function overload for FUNCTION
+  template<typename Real, typename Arg>
+  CODI_INLINE UnaryExpression<Real, Arg, OPERATION_LOGIC> FUNCTION(ExpressionInterface<Real, Arg> const& arg) {
+    return UnaryExpression<Real, Arg, OPERATION_LOGIC>(arg);
+  }
 
 // Create a correct include environment for viewing and programming in an IDE
 #ifdef PROXY
   #undef PROXY
-  }
+}
 #endif
 
 #undef FUNCTION

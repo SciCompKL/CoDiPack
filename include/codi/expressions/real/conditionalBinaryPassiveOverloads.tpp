@@ -24,10 +24,10 @@
   #define OPERATOR ==
   #define PASSIVE_TYPE double
 
-  namespace codi {
+namespace codi {
 #endif
 
-    /// Function overload for operator OPERATOR
+  /// Function overload for operator OPERATOR
   template<typename Real, typename ArgA>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, ArgA> const& argA, PASSIVE_TYPE const& argB) {
     return RealTraits::getPassiveValue(argA.cast()) OPERATOR argB;
@@ -42,7 +42,7 @@
 // Create a correct include environment for viewing and programming in an IDE
 #ifdef PROXY
   #undef PROXY
-  }
+}
 #endif
 
 #undef PASSIVE_TYPE
