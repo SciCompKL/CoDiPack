@@ -80,7 +80,7 @@ doc:
 
 .PHONY: format
 format:
-	find include -type f -exec $(CLANG_FORMAT) -i {} \;
+	find include tests/include tests/src -type f -exec $(CLANG_FORMAT) -i {} \;
 
 .PHONY: clean
 clean:
