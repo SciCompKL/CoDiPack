@@ -339,8 +339,7 @@ namespace codi {
           } else {
             indexManager.get().freeIndex(lhs.cast().getIdentifier());
           }
-        }
-        else {
+        } else {
           indexManager.get().freeIndex(lhs.cast().getIdentifier());
         }
 
@@ -358,8 +357,7 @@ namespace codi {
           } else {
             indexManager.get().copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
           }
-        }
-        else {
+        } else {
           indexManager.get().freeIndex(lhs.cast().getIdentifier());
         }
 
