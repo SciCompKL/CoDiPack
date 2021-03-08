@@ -60,17 +60,17 @@ namespace codi {
         CODI_UNUSED(value, identifier);
       }
 
-    /// @}
+      /// @}
 
     private:
 
       struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
-        template<typename Node>
-        CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
-          CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
-            lhsGradient += node.gradient() * jacobian;
+          template<typename Node>
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
+            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+              lhsGradient += node.gradient() * jacobian;
+            }
           }
-        }
       };
 
     public:
@@ -132,7 +132,7 @@ namespace codi {
         return identifier;
       }
 
-    /// @}
+      /// @}
 
     private:
 

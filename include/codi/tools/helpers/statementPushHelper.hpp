@@ -78,7 +78,7 @@ namespace codi {
         cast().endPushStatement(lhs, primal);
       }
 
-    /// @}
+      /// @}
 
     private:
 

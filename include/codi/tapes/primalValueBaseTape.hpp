@@ -178,7 +178,7 @@ namespace codi {
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfPassiveArguments,
                         Real const& oldPrimalValue, EvalHandle evalHandle);
 
-    /// @}
+      /// @}
 
     public:
 
@@ -252,7 +252,7 @@ namespace codi {
         indexManager.get().freeIndex(identifier);
       }
 
-    /// @}
+      /// @}
 
     protected:
 
@@ -375,10 +375,10 @@ namespace codi {
         lhs.cast().value() = rhs;
       }
 
-    /// @}
-    /*******************************************************************************
-     * Protected helper function for ReverseTapeInterface
-     */
+      /// @}
+      /*******************************************************************************
+       * Protected helper function for ReverseTapeInterface
+       */
 
     protected:
 
@@ -434,7 +434,7 @@ namespace codi {
         Base::reset(resetAdjoints);
       }
 
-    /// @}
+      /// @}
 
     protected:
 
@@ -738,10 +738,10 @@ namespace codi {
         cast().evaluateForward(start, end, adjoints.data());
       }
 
-    /// @}
-    /******************************************************************************
-     * Protected helper function for ManualStatementPushTapeInterface
-     */
+      /// @}
+      /******************************************************************************
+       * Protected helper function for ManualStatementPushTapeInterface
+       */
 
     protected:
 
@@ -826,7 +826,7 @@ namespace codi {
             evalJacobianReverse(adjointVector, lhsAdjoint, passivePos, primalVector, rhsPos, rhsIdentifiers, endPos);
           }
 
-        /// $}
+          /// $}
 
         private:
 
@@ -1188,13 +1188,13 @@ namespace codi {
   /// Specialization for manual statement pushes of the used expression type.
   template<size_t size>
   struct ExpressionTraits::NumberOfActiveTypeArguments<JacobianExpression<size>> {
-    static size_t constexpr value = size;  ///< Number of arguments
+      static size_t constexpr value = size;  ///< Number of arguments
   };
 
   /// Specialization for manual statement pushes of the used expression type.
   template<size_t size>
   struct ExpressionTraits::NumberOfConstantTypeArguments<JacobianExpression<size>> {
-    static size_t constexpr value = 0;  ///< Always zero
+      static size_t constexpr value = 0;  ///< Always zero
   };
 
   #define CREATE_EXPRESSION(size)                         \

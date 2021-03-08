@@ -85,7 +85,7 @@ namespace codi {
         return &DirectStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
       }
 
-    /// @}
+      /// @}
 
     protected:
 

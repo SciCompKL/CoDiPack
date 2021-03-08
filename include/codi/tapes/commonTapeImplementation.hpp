@@ -120,7 +120,7 @@ namespace codi {
 
       TapeValues internalGetTapeValues() const;  ///< Create tape values.
 
-    /// @}
+      /// @}
 
     public:
 
@@ -241,7 +241,7 @@ namespace codi {
         externalFunctionData.resetHard();
       }
 
-    /// @}
+      /// @}
 
     private:
       static void writeFunction(const ChunkBase* chunk, FileIo& handle) {
@@ -386,7 +386,7 @@ namespace codi {
         return externalFunctionData.getZeroPosition();
       }
 
-    /// @}
+      /// @}
 
     protected:
 
@@ -443,7 +443,7 @@ namespace codi {
         return cast().primal(identifier);
       }
 
-    /// @}
+      /// @}
 
     protected:
 

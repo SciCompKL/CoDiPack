@@ -54,7 +54,7 @@ namespace codi {
         cast().toNode(leaf, curJacobian, std::forward<Args>(args)...);
       }
 
-    /// @}
+      /// @}
 
     private:
 

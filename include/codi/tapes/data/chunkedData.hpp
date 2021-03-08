@@ -383,7 +383,7 @@ namespace codi {
         }
       }
 
-    /// @}
+      /// @}
 
     private:
 

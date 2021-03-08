@@ -105,7 +105,7 @@ namespace codi {
 
     protected:
 
-    #if CODI_RemoveDuplicateJacobianArguments
+      #if CODI_RemoveDuplicateJacobianArguments
       DuplicateJacobianRemover<Real, Identifier> jacobianSorter;  ///< Replacement for jacobianData to remove duplicated
                                                                   ///< Jacobians.
       #endif
@@ -143,7 +143,7 @@ namespace codi {
       /// Add statement specific data to the data streams.
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
 
-    /// @}
+      /// @}
 
     public:
 
@@ -210,7 +210,7 @@ namespace codi {
         indexManager.get().freeIndex(identifier);
       }
 
-    /// @}
+      /// @}
 
     protected:
 
@@ -364,7 +364,7 @@ namespace codi {
         }
       }
 
-    /// @}
+      /// @}
 
     protected:
 
@@ -396,9 +396,9 @@ namespace codi {
         return values;
       }
 
-    /******************************************************************************
-     * Protected helper function for CustomAdjointVectorEvaluationTapeInterface
-     */
+      /******************************************************************************
+       * Protected helper function for CustomAdjointVectorEvaluationTapeInterface
+       */
 
     protected:
 
@@ -654,7 +654,7 @@ namespace codi {
         return Real();
       }
 
-    /// @}
+      /// @}
 
     private:
 

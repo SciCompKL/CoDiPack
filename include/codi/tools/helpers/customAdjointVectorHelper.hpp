@@ -237,7 +237,7 @@ namespace codi {
         gradient(identifier) = gradientValue;
       }
 
-    /// @}
+      /// @}
 
     private:
 

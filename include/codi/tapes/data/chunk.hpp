@@ -77,7 +77,7 @@ namespace codi {
 
       void swap(CODI_IMPLEMENTATION& other);  ///< Swap data with other chunk of the same type.
 
-    /// @}
+      /// @}
     protected:
       size_t size;      ///< Maximum size of arrays.
       size_t usedSize;  ///< Currently used size.
@@ -127,7 +127,7 @@ namespace codi {
         usedSize = usage;
       }
 
-    /// @}
+      /// @}
 
     protected:
 

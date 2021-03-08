@@ -36,7 +36,7 @@ namespace codi {
       static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization implemented.
       static bool constexpr IsLinear = false;           ///< Identifiers are not coupled to statements.
 
-    /// @}
+      /// @}
 
     private:
 
@@ -197,7 +197,7 @@ namespace codi {
         }
       }
 
-    /// @}
+      /// @}
 
     private:
 

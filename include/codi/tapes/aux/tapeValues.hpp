@@ -209,7 +209,7 @@ namespace codi {
         return doubleData[usedMemoryIndex];
       }
 
-    /// @}
+      /// @}
 
     private:
 

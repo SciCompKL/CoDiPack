@@ -86,7 +86,7 @@ namespace codi {
         return Logic::NeutralElement;
       }
 
-    /// @}
+      /// @}
 
     private:
       StaticContextActiveType& operator=(StaticContextActiveType const&) = delete;

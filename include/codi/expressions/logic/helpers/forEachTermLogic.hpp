@@ -63,7 +63,7 @@ namespace codi {
 
       using TraversalLogic<Impl>::term;
 
-    /// @}
+      /// @}
 
     private:
 

@@ -96,7 +96,7 @@ namespace codi {
         return &InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
       }
 
-    /// @}
+      /// @}
 
     protected:
 

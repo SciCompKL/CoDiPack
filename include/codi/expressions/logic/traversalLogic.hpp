@@ -79,25 +79,25 @@ namespace codi {
         toNode(leaf, std::forward<Args>(args)...);
       }
 
-    /// @}
+      /// @}
 
     protected:
 
-    #ifndef DOXYGEN_DISABLE
+      #ifndef DOXYGEN_DISABLE
       template<typename TraversalImpl, bool endPoint = false>
       struct CallSwitch {
-        template<typename... Args>
-        CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
-          impl.node(std::forward<Args>(args)...);
-        }
+          template<typename... Args>
+          CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
+            impl.node(std::forward<Args>(args)...);
+          }
       };
 
       template<typename TraversalImpl>
       struct CallSwitch<TraversalImpl, true> {
-        template<typename... Args>
-        CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
-          impl.term(std::forward<Args>(args)...);
-        }
+          template<typename... Args>
+          CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
+            impl.term(std::forward<Args>(args)...);
+          }
       };
       #endif
 

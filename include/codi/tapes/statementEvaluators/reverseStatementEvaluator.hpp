@@ -66,7 +66,7 @@ namespace codi {
         return (Handle*)Generator::template statementEvaluateReverse<Expr>;
       }
 
-    /// @}
+      /// @}
 
     protected:
 

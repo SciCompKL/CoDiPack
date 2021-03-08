@@ -85,23 +85,23 @@ namespace codi {
   /// @}
 
   /// Wrap a function in a function object. Used for speed optimizations.
-  #define CODI_WRAP_FUNCTION(NAME, FUNC)      \
-    struct NAME {                             \
-      /** Empty */                            \
-      template<typename... Args>              \
-      void operator()(Args&&... args) const { \
-        FUNC(std::forward<Args>(args)...);    \
-      }                                       \
+  #define CODI_WRAP_FUNCTION(NAME, FUNC)        \
+    struct NAME {                               \
+        /** Empty */                            \
+        template<typename... Args>              \
+        void operator()(Args&&... args) const { \
+          FUNC(std::forward<Args>(args)...);    \
+        }                                       \
     }
 
   /// Wrap a function in a function object. Used for speed optimizations.
-  #define CODI_WRAP_FUNCTION_TEMPLATE(NAME, FUNC) \
-    template<typename... TT>                      \
-    struct NAME {                                 \
-      /** Empty */                                \
-      template<typename... Args>                  \
-      void operator()(Args&&... args) const {     \
-        FUNC<TT...>(std::forward<Args>(args)...); \
-      }                                           \
+  #define CODI_WRAP_FUNCTION_TEMPLATE(NAME, FUNC)   \
+    template<typename... TT>                        \
+    struct NAME {                                   \
+        /** Empty */                                \
+        template<typename... Args>                  \
+        void operator()(Args&&... args) const {     \
+          FUNC<TT...>(std::forward<Args>(args)...); \
+        }                                           \
     }
 }

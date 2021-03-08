@@ -47,7 +47,7 @@ namespace codi {
       using NestedData = void;           ///< Terminator
       using InternalPosHandle = size_t;  ///< The current maximum index
 
-    /// @}
+      /// @}
 
     private:
 

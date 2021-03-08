@@ -63,14 +63,14 @@ namespace codi {
 
     template<typename Type, size_t selectionDepth, size_t order, size_t l>
     struct CheckCompileTimeValues {
-      static_assert(selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
-                    "Selection depth can not be higher than the maximum derivative order.");
-      static_assert(order <= selectionDepth, "Derivative order can not be higher than the selection depth.");
-      static_assert(l < maximumDerivatives(selectionDepth, order),
-                    "Selected derivative can not be greater than the number of available derivatives for that"
-                    "order.");
+        static_assert(selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
+                      "Selection depth can not be higher than the maximum derivative order.");
+        static_assert(order <= selectionDepth, "Derivative order can not be higher than the selection depth.");
+        static_assert(l < maximumDerivatives(selectionDepth, order),
+                      "Selected derivative can not be greater than the number of available derivatives for that"
+                      "order.");
 
-      static bool constexpr isValid = true;
+        static bool constexpr isValid = true;
     };
 
     /**
@@ -331,10 +331,10 @@ namespace codi {
 
       template<size_t order, typename Derivative, size_t selectionDepth>
       struct CallSetDerivative {
-        template<size_t pos>
-        void operator()(std::integral_constant<size_t, pos>, Type& v, Derivative const& d) {
-          DerivativeAccess::derivative<order, pos - 1, selectionDepth>(v) = d;
-        }
+          template<size_t pos>
+          void operator()(std::integral_constant<size_t, pos>, Type& v, Derivative const& d) {
+            DerivativeAccess::derivative<order, pos - 1, selectionDepth>(v) = d;
+          }
       };
   };
 }
