@@ -5,7 +5,7 @@ struct TestTwoArgumentExpr2 : public TestInterface {
     NAME("TwoArgumentExpr2")
     IN(2)
     OUT(9)
-    POINTS(18) =
+    POINTS(18) =  // clang-format off
     {
       {-10.0,   -10},
       {-10.0,    -5},
@@ -25,7 +25,7 @@ struct TestTwoArgumentExpr2 : public TestInterface {
       { 10.0,    -5},
       { 10.0,     5},
       { 10.0,    10}
-    };
+    };  // clang-format on
     
     template<typename Number>
     static void func(Number* x, Number* y) {

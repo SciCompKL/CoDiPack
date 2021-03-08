@@ -5,11 +5,11 @@ struct TestBigExpressions : public TestInterface {
     NAME("BigExpressions")
     IN(12)
     OUT(1)
-    POINTS(1) =
+    POINTS(1) =  // clang-format off
     {
       {1.25, 2.5, 3.25, 4.5, 5.75, 6.25, 7.5, 8.5, 9.25, 10.25, 11.75, 12.5}
     
-    };
+    };  // clang-format on
     
     template<typename Number>
     static void func(Number* x, Number* y) {

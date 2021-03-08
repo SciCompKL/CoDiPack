@@ -5,7 +5,7 @@ struct TestOneArgumentExpr1 : public TestInterface {
     NAME("OneArgumentExpr1")
     IN(1)
     OUT(18)
-    POINTS(41) =
+    POINTS(41) =  // clang-format off
     {
       {-10.0000},
       { -9.5000},
@@ -48,8 +48,8 @@ struct TestOneArgumentExpr1 : public TestInterface {
       {  9.0000},
       {  9.5000},
       { 10.0000}
-    };
-    
+    };  // clang-format on
+
     template<typename Number>
     static void func(Number* x, Number* y) {
       y[ 0] =      +x[0];   // R

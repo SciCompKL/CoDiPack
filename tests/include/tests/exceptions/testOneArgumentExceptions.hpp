@@ -8,7 +8,7 @@ struct TestOneArgumentExceptions : public TestInterface {
     NAME("OneArgumentExceptions")
     IN(1)
     OUT(8)
-    POINTS(6) =
+    POINTS(6) =  // clang-format off
     {
       {0.5 * M_PI},
       { 0.000},
@@ -16,7 +16,7 @@ struct TestOneArgumentExceptions : public TestInterface {
       {-1.000},
       { 2.000},
       {-2.000},
-    };
+    };  // clang-format on
     
     template<typename Number>
     static void func(Number* x, Number* y) {

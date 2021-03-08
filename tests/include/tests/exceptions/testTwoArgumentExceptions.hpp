@@ -5,13 +5,13 @@ struct TestTwoArgumentExceptions : public TestInterface {
     NAME("TwoArgumentExceptions")
     IN(2)
     OUT(9)
-    POINTS(4) =
+    POINTS(4) =  // clang-format off
     {
       {0.0,   0.0},
       {1.0,   0.0},
       {0.0,  -5.0},
       {-1.0,  0.5}
-    };
+    };  // clang-format on
     
     template<typename Number>
     static void func(Number* x, Number* y) {
