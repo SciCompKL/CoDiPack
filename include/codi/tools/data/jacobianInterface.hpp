@@ -26,10 +26,10 @@ namespace codi {
       size_t getM() const;  ///< Get size of rows (Output variables)
       size_t getN() const;  ///< Get size of columns  (Input variables)
 
-      /// Value access, i in [0,..., m), j in [0,..., n)
+      /// Value access, i in [0, ..., m), j in [0, ..., n)
       T operator()(size_t const i, size_t const j) const;
 
-      /// Reference access, i in [0,..., m), j in [0,..., n)
+      /// Reference access, i in [0, ..., m), j in [0, ..., n)
       T& operator()(size_t const i, size_t const j);
 
       void resize(size_t const m, size_t const n);  ///< Resize the Jacobian.
@@ -40,10 +40,10 @@ namespace codi {
    * Format the Jacobian and write it to the stream.
    *
    * The format is (Matlab):
-   * [v11, v12,..., v1N;
-   *  v21, v22,..., v2N;
-   * ...
-   *  vM1, vM2,..., vMN]
+   * [v11, v12, ..., v1N;
+   *  v21, v22, ..., v2N;
+   *  ...
+   *  vM1, vM2, ..., vMN]
    */
   template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>>
   Stream& operator<<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {

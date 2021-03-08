@@ -34,8 +34,8 @@ namespace codi {
    *
    * Example usage:
    *  \code{.cpp}
-   *    ArgDataInterface argVector =...;
-   *    StmtDataInterface<ArgDataInterface> stmtVector =...;  // argVector is nested into the stmtVector
+   *    ArgDataInterface argVector = ...;
+   *    StmtDataInterface<ArgDataInterface> stmtVector = ...;  // argVector is nested into the stmtVector
    *
    *    stmtVector.setNested(&argVector);  // Set the pointer to the nested vector
    *
@@ -183,7 +183,7 @@ namespace codi {
        *            start, end, dataEntry1*, dataEntry2*,
        *            startNested, endNested, dataEntry1Nested*, dataEntry2Nested*,
        *            startNestedNested, endNestedNested, dataEntry1NestedNested*,
-       *           ...);
+       *            ...);
        * \endcode
        *
        * What kind of data is appended by each DataInterface is implementation dependent. The default is the set
@@ -247,7 +247,7 @@ namespace codi {
        *
        * The call to function is
        * \code{.cpp}
-       *   function(args..., entry1*, entry2*,...);
+       *   function(args..., entry1*, entry2*, ...);
        * \endcode
        *
        * It has to hold start <= end.
