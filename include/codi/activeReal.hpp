@@ -139,8 +139,7 @@ namespace codi {
     /**
      * @brief Constructs the equivalent of zero and initializes the gradient data.
      */
-    CODI_INLINE ActiveReal() : primalValue() {
-      getGlobalTape().initGradientData(primalValue, gradientData);
+    CODI_INLINE ActiveReal() : primalValue(), gradientData() {
     }
 
     /**
@@ -150,8 +149,7 @@ namespace codi {
      *
      * @param[in] value   The primal value of the active type.
      */
-    CODI_INLINE ActiveReal(const PassiveReal& value) : primalValue(value) {
-      getGlobalTape().initGradientData(this->primalValue, gradientData);
+    CODI_INLINE ActiveReal(const PassiveReal& value) : primalValue(value), gradientData() {
     }
 
     /**
