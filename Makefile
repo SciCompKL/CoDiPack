@@ -23,6 +23,12 @@ CODI_DIR := .
 
 FLAGS = -Wall -pedantic -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
 
+ifndef CLANG_FORMAT
+  CLANG_FORMAT := clang-format
+else
+  CLANG_FORMAT := $(CLANG_FORMAT)
+endif
+
 ifeq ($(CPP14), yes)
   FLAGS += -std=c++14
 else
@@ -42,7 +48,7 @@ ifeq ($(MPI), yes)
   endif
 endif
 
-ifdef CXX
+ifndef CXX
   ifeq ($(MPI), yes)
     CXX := mpic++
   else
@@ -71,6 +77,10 @@ doc:
 	@mkdir -p $(BUILD_DIR)
 	@mkdir -p $(BUILD_DIR)/documentation
 	CODI_VERSION=$(CODI_VERSION) doxygen
+
+.PHONY: format
+format:
+	find include -type f -exec $(CLANG_FORMAT) -i {} \;
 
 .PHONY: clean
 clean:
