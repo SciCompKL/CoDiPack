@@ -1,7 +1,8 @@
 
+#include <sys/stat.h>
+
 #include <iostream>
 #include <string>
-#include <sys/stat.h>
 #include <vector>
 
 #include "../include/compareFiles.h"
@@ -11,7 +12,8 @@
 struct CompareOutput {
   public:
 
-    enum struct Color {
+    enum struct Color
+    {
       Red = 31,
       Green = 32,
       Yellow = 33
@@ -30,19 +32,17 @@ struct CompareOutput {
 
     bool testInHeader;
 
-    CompareOutput() :
-      OK("OK"),
-      FAILURE("Failure"),
-      FILE_MISSING("Missing"),
-      minFieldSize(0),
-      threshold(1e-16),
-      drivers(),
-      testNames(),
-      testInHeader(true)
-    {
+    CompareOutput()
+        : OK("OK"),
+          FAILURE("Failure"),
+          FILE_MISSING("Missing"),
+          minFieldSize(0),
+          threshold(1e-16),
+          drivers(),
+          testNames(),
+          testInHeader(true) {
       listAllNames(testNames);
       minFieldSize = std::max(OK.size(), std::max(FAILURE.size(), FILE_MISSING.size()));
-
     }
 
     bool parse(int nargs, char* args[]) {
@@ -52,20 +52,20 @@ struct CompareOutput {
       std::string const DRIVER_OPTION("-d");
       std::string const TRANSPOSE_OPTION("--trans");
 
-      for(int curArg = 1; curArg < nargs; curArg += 1) {
-        if(TRANSPOSE_OPTION == std::string(args[curArg])) {
+      for (int curArg = 1; curArg < nargs; curArg += 1) {
+        if (TRANSPOSE_OPTION == std::string(args[curArg])) {
           testInHeader = false;
-        } else if(THRESHOLD_OPTION == std::string(args[curArg])) {
+        } else if (THRESHOLD_OPTION == std::string(args[curArg])) {
           curArg += 1;
-          if(curArg >= nargs) {
+          if (curArg >= nargs) {
             std::cerr << "Error: Missing value for -t option." << std::endl;
             allOk = false;
             break;
           }
           threshold = std::stod(args[curArg]);
-        } else if(DRIVER_OPTION == std::string(args[curArg])) {
+        } else if (DRIVER_OPTION == std::string(args[curArg])) {
           curArg += 1;
-          if(curArg >= nargs) {
+          if (curArg >= nargs) {
             std::cerr << "Error: Missing value for -d option." << std::endl;
             allOk = false;
             break;
@@ -83,7 +83,7 @@ struct CompareOutput {
     template<typename List>
     void formatHeader(size_t const maxDriverSize, List& list) {
       printf("%*s", (int)maxDriverSize, " ");
-      for(std::string const& item : list) {
+      for (std::string const& item : list) {
         int maxEntrySize = (int)std::max(item.size(), minFieldSize);
         printf(" %s", formatCenter(item, maxEntrySize, item.size()).c_str());
       }
@@ -93,16 +93,16 @@ struct CompareOutput {
     bool getLongModeName(std::string const& driverName, std::string& modeName) {
       bool allOk = true;
       size_t modePos = driverName.find("_");
-      if(std::string::npos == modePos) {
+      if (std::string::npos == modePos) {
         std::cerr << "Error: could not find mode in driver name: " << driverName << std::endl;
         allOk = false;
       }
 
-      if(allOk) {
+      if (allOk) {
         std::string mode = driverName.substr(0, modePos);
-        if("D0" == mode) {
+        if ("D0" == mode) {
           modeName = "deriv0th";
-        } else if("D1" == mode) {
+        } else if ("D1" == mode) {
           modeName = "deriv1st";
         } else {
           std::cerr << "Error: No long mode name available for: " << mode << std::endl;
@@ -116,7 +116,7 @@ struct CompareOutput {
     bool formatEntry(std::string const& driver, std::string const& test, int maxCellSize, std::string& cell) {
       bool allOk = true;
       std::string modeName;
-      if(!getLongModeName(driver, modeName)) {
+      if (!getLongModeName(driver, modeName)) {
         return false;
       }
 
@@ -126,9 +126,9 @@ struct CompareOutput {
       int contentSize = 0;
       std::string result = "";
 
-      if(isTestAvail(resultFile)) {
+      if (isTestAvail(resultFile)) {
         bool same = compareFiles(baseFile, resultFile, threshold);
-        if(same) {
+        if (same) {
           contentSize = OK.size();
           result = formatColor(OK, Color::Green);
         } else {
@@ -142,7 +142,7 @@ struct CompareOutput {
       }
 
       int targetSize = std::max((int)minFieldSize, maxCellSize);
-      cell = " " +formatCenter(result, targetSize, contentSize);
+      cell = " " + formatCenter(result, targetSize, contentSize);
 
       return allOk;
     }
@@ -153,17 +153,15 @@ struct CompareOutput {
       size_t maxDriverSize = getMaxSize(drivers);
       size_t maxTestSize = getMaxSize(testNames);
 
-
       std::string curLine;
-      if(testInHeader) {
+      if (testInHeader) {
         formatHeader(maxDriverSize + 1, testNames);
 
-        for(std::string const& curDriver : drivers) {
+        for (std::string const& curDriver : drivers) {
           curLine = "";
           curLine += format("%*s:", (int)maxDriverSize, curDriver.c_str());
 
-          for(std::string const& curTest : testNames) {
-
+          for (std::string const& curTest : testNames) {
             std::string cell;
             allOk &= formatEntry(curDriver, curTest, (int)curTest.size(), cell);
             curLine += cell;
@@ -173,12 +171,11 @@ struct CompareOutput {
       } else {
         formatHeader(maxTestSize + 1, drivers);
 
-        for(std::string const& curTest : testNames) {
+        for (std::string const& curTest : testNames) {
           curLine = "";
           curLine += format("%*s:", (int)maxTestSize, curTest.c_str());
 
-          for(std::string const& curDriver : drivers) {
-
+          for (std::string const& curDriver : drivers) {
             std::string cell;
             allOk &= formatEntry(curDriver, curTest, (int)curDriver.size(), cell);
             curLine += cell;
@@ -186,7 +183,6 @@ struct CompareOutput {
           std::cout << curLine << std::endl;
         }
       }
-
 
       return allOk;
     }
@@ -206,7 +202,7 @@ struct CompareOutput {
     template<typename List>
     size_t getMaxSize(List const& list) {
       size_t maxSize = 0;
-      for(std::string const& item: list) {
+      for (std::string const& item : list) {
         maxSize = std::max(maxSize, item.size());
       }
 
@@ -230,27 +226,25 @@ struct CompareOutput {
     }
 
     bool isTestAvail(std::string const& file) {
-        struct stat sb;
+      struct stat sb;
 
-        return !stat(file.c_str(), &sb);
+      return !stat(file.c_str(), &sb);
     }
 };
 
 int main(int nargs, char* args[]) {
-
   CompareOutput compare;
 
   bool allOk = true;
 
   allOk = compare.parse(nargs, args);
-  if(allOk) {
-    allOk =  compare.run();
+  if (allOk) {
+    allOk = compare.run();
   }
 
-  if(allOk) {
+  if (allOk) {
     return 0;
   } else {
     return -1;
   }
 }
-

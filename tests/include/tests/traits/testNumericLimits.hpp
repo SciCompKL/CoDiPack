@@ -1,9 +1,8 @@
-#include "../../testInterface.hpp"
-
 #include <type_traits>
 #include <vector>
 
 #include "../../../../include/codi.hpp"
+#include "../../testInterface.hpp"
 
 struct TestNumericLimits : public TestInterface {
   public:

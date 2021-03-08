@@ -26,7 +26,7 @@ struct TestAssignOperators2 : public TestInterface {
       { 10.0,     5},
       { 10.0,    10}
     };  // clang-format on
-    
+
     template<typename Number>
     static void func(Number* x, Number* y) {
       y[0] = x[0];

@@ -17,8 +17,7 @@ struct DriverBase : public DriverInterface<_Number> {
 
   public:
 
-    DriverBase(std::string const& name) :
-      name(name) {}
+    DriverBase(std::string const& name) : name(name) {}
 
     std::string getName() {
       return name;
@@ -48,8 +47,8 @@ struct DriverBase : public DriverInterface<_Number> {
     void prepare(Number* x, Number* y, int curPoint, TestInterface* test, FILE* out) {
       fprintf(out, "Point %d : {", curPoint);
 
-      for(int i = 0; i < test->getInputCount(); ++i) {
-        if(i != 0) {
+      for (int i = 0; i < test->getInputCount(); ++i) {
+        if (i != 0) {
           fprintf(out, ", ");
         }
         double val = test->getEvalPoint(curPoint, i);
@@ -59,7 +58,7 @@ struct DriverBase : public DriverInterface<_Number> {
       }
       fprintf(out, "}\n");
 
-      for(int i = 0; i < test->getOutputCount(); ++i) {
+      for (int i = 0; i < test->getOutputCount(); ++i) {
         y[i] = 0.0;
       }
     }
