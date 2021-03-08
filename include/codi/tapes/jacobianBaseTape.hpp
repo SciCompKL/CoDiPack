@@ -105,10 +105,10 @@ namespace codi {
 
     protected:
 
-      #if CODI_RemoveDuplicateJacobianArguments
+#if CODI_RemoveDuplicateJacobianArguments
       DuplicateJacobianRemover<Real, Identifier> jacobianSorter;  ///< Replacement for jacobianData to remove duplicated
                                                                   ///< Jacobians.
-      #endif
+#endif
 
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;  ///< Index manager.
       StatementData statementData;  ///< Data stream for statement specific data.
@@ -150,9 +150,9 @@ namespace codi {
       /// Constructor
       JacobianBaseTape()
           : Base(),
-      #if CODI_RemoveDuplicateJacobianArguments
+#if CODI_RemoveDuplicateJacobianArguments
             jacobianSorter(),
-      #endif
+#endif
             indexManager(0),
             statementData(Config::ChunkSize),
             jacobianData(Config::ChunkSize),
@@ -268,18 +268,18 @@ namespace codi {
         PushJacobianLogic pushJacobianLogic;
         PushDelayedJacobianLogic pushDelayedJacobianLogic;
 
-        #if CODI_RemoveDuplicateJacobianArguments
+#if CODI_RemoveDuplicateJacobianArguments
         auto& insertVector = jacobianSorter;
-        #else
+#else
         auto& insertVector = jacobianData;
-        #endif
+#endif
 
         pushJacobianLogic.eval(rhs.cast(), Real(1.0), insertVector);
         pushDelayedJacobianLogic.eval(rhs.cast(), insertVector);
 
-        #if CODI_RemoveDuplicateJacobianArguments
+#if CODI_RemoveDuplicateJacobianArguments
         jacobianSorter.storeData(jacobianData);
-        #endif
+#endif
       }
 
     public:

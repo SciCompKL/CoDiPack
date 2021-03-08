@@ -238,7 +238,7 @@ namespace codi {
     return os;
   }
 
-  #ifndef DOXYGEN_DISABLE
+#ifndef DOXYGEN_DISABLE
   template<typename _Type>
   struct RealTraits::IsTotalZero<_Type, GradientTraits::EnableIfDirection<_Type>> {
     public:
@@ -292,5 +292,5 @@ namespace codi {
         }
     };
   }
-  #endif
+#endif
 }

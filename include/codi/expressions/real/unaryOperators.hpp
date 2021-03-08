@@ -36,9 +36,9 @@ namespace codi {
         return -1.0;
       }
   };
-  #define OPERATION_LOGIC UnaryMinus
-  #define FUNCTION operator-
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC UnaryMinus
+#define FUNCTION operator-
+#include "unaryOverloads.tpp"
 
   /// Function overload for operator +
   template<typename Real, typename Arg>
@@ -105,13 +105,13 @@ namespace codi {
         }
       }
   };
-  #define OPERATION_LOGIC Abs
-  #define FUNCTION abs
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Abs
+#define FUNCTION abs
+#include "unaryOverloads.tpp"
 
-  #define OPERATION_LOGIC Abs
-  #define FUNCTION fabs
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Abs
+#define FUNCTION fabs
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for acos
   template<typename _Real>
@@ -138,9 +138,9 @@ namespace codi {
         return -1.0 / sqrt(1.0 - arg * arg);
       }
   };
-  #define OPERATION_LOGIC Acos
-  #define FUNCTION acos
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Acos
+#define FUNCTION acos
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for asin
   template<typename _Real>
@@ -167,9 +167,9 @@ namespace codi {
         return 1.0 / sqrt(1.0 - arg * arg);
       }
   };
-  #define OPERATION_LOGIC Asin
-  #define FUNCTION asin
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Asin
+#define FUNCTION asin
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for atan
   template<typename _Real>
@@ -191,9 +191,9 @@ namespace codi {
         return 1.0 / (1 + arg * arg);
       }
   };
-  #define OPERATION_LOGIC Atan
-  #define FUNCTION atan
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Atan
+#define FUNCTION atan
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for atanh
   template<typename _Real>
@@ -220,9 +220,9 @@ namespace codi {
         return 1.0 / (1 - arg * arg);
       }
   };
-  #define OPERATION_LOGIC Atanh
-  #define FUNCTION atanh
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Atanh
+#define FUNCTION atanh
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for cbrt
   template<typename _Real>
@@ -252,9 +252,9 @@ namespace codi {
         }
       }
   };
-  #define OPERATION_LOGIC Cbrt
-  #define FUNCTION cbrt
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Cbrt
+#define FUNCTION cbrt
+#include "unaryOverloads.tpp"
 
   /// Function overload for ceil
   template<typename Real, typename Arg>
@@ -282,9 +282,9 @@ namespace codi {
         return -sin(arg);
       }
   };
-  #define OPERATION_LOGIC Cos
-  #define FUNCTION cos
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Cos
+#define FUNCTION cos
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for cosh
   template<typename _Real>
@@ -306,9 +306,9 @@ namespace codi {
         return sinh(arg);
       }
   };
-  #define OPERATION_LOGIC Cosh
-  #define FUNCTION cosh
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Cosh
+#define FUNCTION cosh
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for erf
   template<typename _Real>
@@ -330,9 +330,9 @@ namespace codi {
         return 1.128379167095513 * exp(-(arg * arg));  // erf'(arg) = 2.0 / sqrt(pi) * exp(-arg^2)
       }
   };
-  #define OPERATION_LOGIC Erf
-  #define FUNCTION erf
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Erf
+#define FUNCTION erf
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for erfc
   template<typename _Real>
@@ -354,9 +354,9 @@ namespace codi {
         return -1.128379167095513 * exp(-(arg * arg));  // erfc'(arg) = - 2.0 / sqrt(pi) * exp(-arg^2)
       }
   };
-  #define OPERATION_LOGIC Erfc
-  #define FUNCTION erfc
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Erfc
+#define FUNCTION erfc
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for exp
   template<typename _Real>
@@ -378,9 +378,9 @@ namespace codi {
         return result;
       }
   };
-  #define OPERATION_LOGIC Exp
-  #define FUNCTION exp
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Exp
+#define FUNCTION exp
+#include "unaryOverloads.tpp"
 
   /// Function overload for floor
   template<typename Real, typename Arg>
@@ -437,9 +437,9 @@ namespace codi {
         return 1.0 / arg;
       }
   };
-  #define OPERATION_LOGIC Log
-  #define FUNCTION log
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Log
+#define FUNCTION log
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for log10
   template<typename _Real>
@@ -466,9 +466,9 @@ namespace codi {
         return 0.434294481903252 / arg;
       }
   };
-  #define OPERATION_LOGIC Log10
-  #define FUNCTION log10
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Log10
+#define FUNCTION log10
+#include "unaryOverloads.tpp"
 
   /// Function overload for round
   template<typename Real, typename Arg>
@@ -496,9 +496,9 @@ namespace codi {
         return cos(arg);
       }
   };
-  #define OPERATION_LOGIC Sin
-  #define FUNCTION sin
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Sin
+#define FUNCTION sin
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for sinh
   template<typename _Real>
@@ -520,9 +520,9 @@ namespace codi {
         return cosh(arg);
       }
   };
-  #define OPERATION_LOGIC Sinh
-  #define FUNCTION sinh
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Sinh
+#define FUNCTION sinh
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for sqrt
   template<typename _Real>
@@ -552,9 +552,9 @@ namespace codi {
         }
       }
   };
-  #define OPERATION_LOGIC Sqrt
-  #define FUNCTION sqrt
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Sqrt
+#define FUNCTION sqrt
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tan
   template<typename _Real>
@@ -582,9 +582,9 @@ namespace codi {
         return tmp * tmp;
       }
   };
-  #define OPERATION_LOGIC Tan
-  #define FUNCTION tan
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Tan
+#define FUNCTION tan
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tanh
   template<typename _Real>
@@ -606,9 +606,9 @@ namespace codi {
         return 1 - result * result;
       }
   };
-  #define OPERATION_LOGIC Tanh
-  #define FUNCTION tanh
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Tanh
+#define FUNCTION tanh
+#include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tgamma
   template<typename _Real>
@@ -665,9 +665,9 @@ namespace codi {
         return diGamma * result;
       }
   };
-  #define OPERATION_LOGIC Tgamma
-  #define FUNCTION tgamma
-  #include "unaryOverloads.tpp"
+#define OPERATION_LOGIC Tgamma
+#define FUNCTION tgamma
+#include "unaryOverloads.tpp"
 
   /// @}
 }

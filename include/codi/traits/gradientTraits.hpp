@@ -75,18 +75,18 @@ namespace codi {
     template<typename Gradient, typename = void>
     struct IsDirection : std::false_type {};
 
-    #ifndef DOXYGEN_DISABLE
+#ifndef DOXYGEN_DISABLE
     template<typename Gradient>
     struct IsDirection<Gradient,
                        typename enable_if_same<Gradient, Direction<typename Gradient::Real, Gradient::dim> >::type>
         : std::true_type {};
-    #endif
+#endif
 
-    #if CODI_IS_CPP14
+#if CODI_IS_CPP14
     /// Value entry of IsDirection
     template<typename Gradient>
     bool constexpr isDirection = IsDirection<Gradient>::value;
-    #endif
+#endif
 
     /// Enable if wrapper for EnableIfDirection
     template<typename Gradient>

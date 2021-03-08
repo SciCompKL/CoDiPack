@@ -485,15 +485,15 @@ namespace codi {
       ADJOINT_VECTOR_TYPE* wrapAdjointVector(VectorAccessInterface<Real, Identifier>* vectorAccess, Adjoint* data) {
         CODI_UNUSED(vectorAccess, data);
 
-        #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
         return vectorAccess;
-        #else
+#else
         static_assert(std::is_same<Adjoint, Gradient>::value,
                       "Please enable 'CODI_VariableAdjointInterfacePrimalInPrimalTapes' in order"
                       " to use custom adjoint vectors in the primal value tapes.");
 
         return data;
-        #endif
+#endif
       }
 
       /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes
@@ -507,11 +507,11 @@ namespace codi {
             CODI_UNUSED(lhsTangent);
 
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
-              #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateTangentWithLhs(node.getIdentifier(), jacobian);
-              #else
+#else
               lhsTangent += jacobian * adjointVector[node.getIdentifier()];
-              #endif
+#endif
             }
           }
       };
@@ -566,11 +566,11 @@ namespace codi {
             CODI_UNUSED(lhsAdjoint);
 
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
-              #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateAdjointWithLhs(node.getIdentifier(), jacobian);
-              #else
+#else
               adjointVector[node.getIdentifier()] += jacobian * lhsAdjoint;
-              #endif
+#endif
             }
           }
       };
@@ -832,11 +832,11 @@ namespace codi {
                                           size_t& curPassivePos, Real const* const passiveValues,
                                           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
                                           size_t endRhsIdentifiersPos) {
-            #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
             bool const lhsZero = adjointVector->isLhsZero();
-            #else
+#else
             bool const lhsZero = RealTraits::isTotalZero(lhsAdjoint);
-            #endif
+#endif
 
             if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !lhsZero)) {
               while (curRhsIdentifiersPos > endRhsIdentifiersPos) {
@@ -844,11 +844,11 @@ namespace codi {
                 curRhsIdentifiersPos -= 1;
 
                 Real const& jacobian = passiveValues[curPassivePos];
-                #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
                 adjointVector->updateAdjointWithLhs(rhsIdentifiers[curRhsIdentifiersPos], jacobian);
-                #else
+#else
                 adjointVector[rhsIdentifiers[curRhsIdentifiersPos]] += jacobian * lhsAdjoint;
-                #endif
+#endif
               }
             }
 
@@ -1195,9 +1195,9 @@ namespace codi {
       static size_t constexpr value = 0;  ///< Always zero
   };
 
-  #define CREATE_EXPRESSION(size)                         \
-    TapeTypes::StatementEvaluator::template createHandle< \
-        Impl, typename Impl::template JacobianStatementGenerator<size>, JacobianExpression<size>>()
+#define CREATE_EXPRESSION(size)                                                                                        \
+  TapeTypes::StatementEvaluator::template createHandle<Impl, typename Impl::template JacobianStatementGenerator<size>, \
+                                                       JacobianExpression<size>>()
 
   /// Expression for manual statement pushes
   template<typename TapeTypes, typename Impl>
@@ -1268,5 +1268,5 @@ namespace codi {
           CREATE_EXPRESSION(248), CREATE_EXPRESSION(249), CREATE_EXPRESSION(250), CREATE_EXPRESSION(251),
           CREATE_EXPRESSION(252), CREATE_EXPRESSION(253), CREATE_EXPRESSION(254)};
 
-  #undef CREATE_EXPRESSION
+#undef CREATE_EXPRESSION
 }

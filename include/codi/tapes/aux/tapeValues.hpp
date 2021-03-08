@@ -191,12 +191,12 @@ namespace codi {
 
       /// Perform a MPI_Allreduce with MPI_COMM_WORLD.
       void combineData() {
-        #ifdef MPI_VERSION
+#ifdef MPI_VERSION
         MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
         MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
         MPI_Allreduce(MPI_IN_PLACE, unsignedLongData.data(), unsignedLongData.size(), MPI_UNSINGED_LONG, MPI_SUM,
                       MPI_COMM_WORLD);
-        #endif
+#endif
       }
 
       /// Get the allocated memory in byte.

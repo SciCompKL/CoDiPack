@@ -13,7 +13,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  #ifndef DOXYGEN_DISABLE
+#ifndef DOXYGEN_DISABLE
 
   /**
    * See DerivativeAccess for details about the number for each derivative order.
@@ -184,7 +184,7 @@ namespace codi {
         }
     };
   }
-  #endif
+#endif
 
   /**
    * @brief A helper class for the convenient selection of gradient data of higher order AD types.

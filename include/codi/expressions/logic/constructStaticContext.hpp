@@ -58,7 +58,7 @@ namespace codi {
                                   PassiveReal const* const constantData);
   };
 
-  #ifndef DOXYGEN_DISABLE
+#ifndef DOXYGEN_DISABLE
 
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset>
   struct ConstructStaticContextLogic<_Rhs, _Tape, _primalValueOffset, _constantValueOffset,
@@ -184,5 +184,5 @@ namespace codi {
         return ResultType(ArgConstructor::construct(primalVector, identifiers, constantData));
       }
   };
-  #endif
+#endif
 }

@@ -13,37 +13,37 @@ namespace codi {
   /// @name Builtin binary comparison operators
   /// @{
 
-  #define OPERATOR ==
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR ==
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR !=
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR !=
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR >
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR >
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR <
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR <
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR >=
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR >=
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR <=
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR <=
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR &&
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR &&
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR ||
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR ||
+#include "conditionalBinaryOverloads.tpp"
 
   /// @}
   /*******************************************************************************/
   /// @name Builtin unary comparison operators
   /// @{
 
-  #define OPERATOR !
-  #include "conditionalUnaryOverloads.tpp"
+#define OPERATOR !
+#include "conditionalUnaryOverloads.tpp"
 
   /// @}
 }

@@ -86,12 +86,12 @@ namespace codi {
       }
   };
 
-  #ifndef DOXYGEN_DISABLE
+#ifndef DOXYGEN_DISABLE
 
   template<typename Type, typename Parent>
   char MemberStore<Type, Parent, true>::member[sizeof(Type)] = {};
 
   template<typename Type, typename Parent>
   bool MemberStore<Type, Parent, true>::isInitialized = false;
-  #endif
+#endif
 }

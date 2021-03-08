@@ -99,11 +99,11 @@ namespace codi {
                 stmtEvalhandle[curStatementPos], primalVector, adjointVector, lhsTangent, nPassiveValues,
                 curConstantPos, constantValues, curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
 
-            #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
             adjointVector->setLhsTangent(curAdjointPos);
-            #else
+#else
             adjointVector[curAdjointPos] = lhsTangent;
-            #endif
+#endif
           }
 
           curStatementPos += 1;
@@ -169,13 +169,13 @@ namespace codi {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementInputTag != nPassiveValues) {
-            #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
             Gradient const lhsAdjoint;
             adjointVector->setLhsAdjoint(curAdjointPos);
-            #else
+#else
             Gradient const lhsAdjoint = adjointVector[curAdjointPos];
             adjointVector[curAdjointPos] = Gradient();
-            #endif
+#endif
 
             StatementEvaluator::template callReverse<PrimalValueLinearTape>(
                 stmtEvalhandle[curStatementPos], primalVector, adjointVector, lhsAdjoint, nPassiveValues,

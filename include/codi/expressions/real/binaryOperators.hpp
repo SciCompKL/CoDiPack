@@ -45,9 +45,9 @@ namespace codi {
         return 1.0;
       }
   };
-  #define OPERATION_LOGIC Add
-  #define FUNCTION operator+
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Add
+#define FUNCTION operator+
+#include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator -
   template<typename _Real>
@@ -78,9 +78,9 @@ namespace codi {
         return -1.0;
       }
   };
-  #define OPERATION_LOGIC Substract
-  #define FUNCTION operator-
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Substract
+#define FUNCTION operator-
+#include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator *
   template<typename _Real>
@@ -109,9 +109,9 @@ namespace codi {
         return argA;
       }
   };
-  #define OPERATION_LOGIC Multiply
-  #define FUNCTION operator*
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Multiply
+#define FUNCTION operator*
+#include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator /
   template<typename _Real>
@@ -154,9 +154,9 @@ namespace codi {
         }
       }
   };
-  #define OPERATION_LOGIC Divide
-  #define FUNCTION operator/
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Divide
+#define FUNCTION operator/
+#include "binaryOverloads.tpp"
 
   /// @}
   /*******************************************************************************/
@@ -215,9 +215,9 @@ namespace codi {
         }
       }
   };
-  #define OPERATION_LOGIC Atan2
-  #define FUNCTION atan2
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Atan2
+#define FUNCTION atan2
+#include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for copysign
   template<typename _Real>
@@ -264,13 +264,13 @@ namespace codi {
       }
   };
 
-  #define OPERATION_LOGIC Copysign
-  #define FUNCTION copysign
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Copysign
+#define FUNCTION copysign
+#include "binaryOverloads.tpp"
 
-  #define OPERATION_LOGIC Copysign
-  #define FUNCTION copysignf
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Copysign
+#define FUNCTION copysignf
+#include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for max
   template<typename _Real>
@@ -312,13 +312,13 @@ namespace codi {
       }
   };
 
-  #define OPERATION_LOGIC Max
-  #define FUNCTION max
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Max
+#define FUNCTION max
+#include "binaryOverloads.tpp"
 
-  #define OPERATION_LOGIC Max
-  #define FUNCTION fmax
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Max
+#define FUNCTION fmax
+#include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for min
   template<typename _Real>
@@ -359,13 +359,13 @@ namespace codi {
         }
       }
   };
-  #define OPERATION_LOGIC Min
-  #define FUNCTION min
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Min
+#define FUNCTION min
+#include "binaryOverloads.tpp"
 
-  #define OPERATION_LOGIC Min
-  #define FUNCTION fmin
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Min
+#define FUNCTION fmin
+#include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for pow
   template<typename _Real>
@@ -418,9 +418,9 @@ namespace codi {
         }
       }
   };
-  #define OPERATION_LOGIC Pow
-  #define FUNCTION pow
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Pow
+#define FUNCTION pow
+#include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for remainder
   ///
@@ -466,9 +466,9 @@ namespace codi {
         }
       }
   };
-  #define OPERATION_LOGIC Remainder
-  #define FUNCTION remainder
-  #include "binaryOverloads.tpp"
+#define OPERATION_LOGIC Remainder
+#define FUNCTION remainder
+#include "binaryOverloads.tpp"
 
   /// @}
 }

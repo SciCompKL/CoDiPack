@@ -101,11 +101,11 @@ namespace codi {
               numberOfPassiveArguments[curStatementPos], curConstantPos, constantValues, curPassivePos, passiveValues,
               curRhsIdentifiersPos, rhsIdentifiers);
 
-          #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
           adjointVector->setLhsTangent(lhsIdentifier);
-          #else
+#else
           adjointVector[lhsIdentifier] = lhsTangent;
-          #endif
+#endif
 
           curStatementPos += 1;
         }
@@ -160,13 +160,13 @@ namespace codi {
 
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
-          #if CODI_VariableAdjointInterfaceInPrimalTapes
+#if CODI_VariableAdjointInterfaceInPrimalTapes
           Gradient const lhsAdjoint;
           adjointVector->setLhsAdjoint(lhsIdentifier);
-          #else
+#else
           Gradient const lhsAdjoint = adjointVector[lhsIdentifier];
           adjointVector[lhsIdentifier] = Gradient();
-          #endif
+#endif
 
           primalVector[lhsIdentifier] = oldPrimalValues[curStatementPos];
 

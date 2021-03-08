@@ -169,7 +169,7 @@ namespace codi {
       /// @}
   };
 
-  #ifndef DOXYGEN_DISABLE
+#ifndef DOXYGEN_DISABLE
 
   /// Specialization for forward tapes.
   template<typename _Type>
@@ -261,5 +261,5 @@ namespace codi {
 
       /// @}
   };
-  #endif
+#endif
 }

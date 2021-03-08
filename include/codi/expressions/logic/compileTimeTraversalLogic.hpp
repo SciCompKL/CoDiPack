@@ -98,7 +98,7 @@ namespace codi {
 
     protected:
 
-      #ifndef DOXYGEN_DISABLE
+#ifndef DOXYGEN_DISABLE
       template<typename TraversalImpl, bool endPoint = false>
       struct CallSwitch {
           template<typename Node, typename... Args>
@@ -114,7 +114,7 @@ namespace codi {
             return TraversalImpl::template term<Node>(std::forward<Args>(args)...);
           }
       };
-      #endif
+#endif
 
       /// Helper method to distinguish between termination nodes and normal nodes.
       template<typename Node, typename... Args>

@@ -156,7 +156,7 @@ namespace codi {
     return out << v.cast().value();
   }
 
-  #ifndef DOXYGEN_DISABLE
+#ifndef DOXYGEN_DISABLE
   template<typename _Type>
   struct RealTraits::TraitsImplementation<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
     public:
@@ -173,5 +173,5 @@ namespace codi {
         return RealTraits::getPassiveValue(v.getValue());
       }
   };
-  #endif
+#endif
 }
