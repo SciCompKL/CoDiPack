@@ -15,7 +15,7 @@ namespace codi {
   #define CODI_UNUSED_ARG(arg) /* arg */
 
   /// Enable the if only if the option is true otherwise the code block is always evaluated
-  #define CODI_ENABLE_CHECK(option, condition) if (!(option) || (condition))
+  #define CODI_ENABLE_CHECK(option, condition) (!(option) || (condition))
 
   /// Conversion macro
   #define CODI_TO_STRING2(expression) #expression

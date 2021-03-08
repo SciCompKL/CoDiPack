@@ -136,10 +136,10 @@ namespace codi {
           CODI_EXCEPTION("Adding more than %zu arguments to a statement.", Config::MaxArgumentSize);
         }
 
-        CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive()) {
-          CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier()) {
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
-              CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian)) {
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive())) {
+          if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier())) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
+              if (CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian))) {
                 indexData[dataPos] = arg.getIdentifier();
                 jacobianData[dataPos] = jacobian;
                 dataPos += 1;
@@ -153,7 +153,7 @@ namespace codi {
       void endPushStatement(Type& lhs, Real const& primal) {
         Tape& tape = Type::getGlobalTape();
 
-        CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive()) {
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive())) {
           if (0 != dataPos) {
             tape.storeManual(primal, lhs.getIdentifier(), dataPos);
 
@@ -200,7 +200,7 @@ namespace codi {
 
       /// \copydoc codi::StatementPushHelperBase::pushArgument()
       void pushArgument(Type const& arg, Real const& jacobian) {
-        CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+        if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
           lhsTangent += jacobian * arg.getGradient();
         }
       }

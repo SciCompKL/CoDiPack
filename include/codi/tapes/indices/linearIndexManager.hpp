@@ -77,7 +77,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
-        CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1) {
+        if (CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1)) {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
         }
         count += 1;

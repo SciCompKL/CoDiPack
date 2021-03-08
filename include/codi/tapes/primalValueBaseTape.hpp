@@ -263,7 +263,7 @@ namespace codi {
           /// \copydoc codi::ForEachTermLogic::handleActive
           template<typename Node>
           CODI_INLINE void handleActive(Node const& node, size_t& numberOfActiveArguments) {
-            CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::UnusedIndex != node.getIdentifier()) {
+            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::UnusedIndex != node.getIdentifier())) {
               numberOfActiveArguments += 1;
             }
           }
@@ -281,7 +281,7 @@ namespace codi {
             CODI_UNUSED(constantValueData);
 
             Identifier rhsIndex = node.getIdentifier();
-            CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::UnusedIndex == rhsIndex) {
+            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::UnusedIndex == rhsIndex)) {
               rhsIndex = curPassiveArgument;
 
               curPassiveArgument += 1;
@@ -310,7 +310,7 @@ namespace codi {
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                              ExpressionInterface<Real, Rhs> const& rhs) {
-        CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           CountActiveArguments countActiveArguments;
           PushIdentfierPassiveAndConstant pushAll;
           size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
@@ -352,7 +352,7 @@ namespace codi {
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                              LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
-        CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
           } else {
@@ -508,7 +508,7 @@ namespace codi {
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsTangent);
 
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
               #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateTangentWithLhs(node.getIdentifier(), jacobian);
               #else
@@ -567,7 +567,7 @@ namespace codi {
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsAdjoint);
 
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
               #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateAdjointWithLhs(node.getIdentifier(), jacobian);
               #else
@@ -840,7 +840,7 @@ namespace codi {
             bool const lhsZero = RealTraits::isTotalZero(lhsAdjoint);
             #endif
 
-            CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !lhsZero) {
+            if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !lhsZero)) {
               while (curRhsIdentifiersPos > endRhsIdentifiersPos) {
                 curPassivePos -= 1;
                 curRhsIdentifiersPos -= 1;
@@ -1090,7 +1090,7 @@ namespace codi {
         curPassivePos -= numberOfPassiveArguments;
         curRhsIdentifiersPos -= maxActiveArgs;
 
-        CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint)) {
+        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) {
           for (Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
             primalVector[curPos] = passiveValues[curPassivePos + curPos];
           }

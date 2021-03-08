@@ -324,7 +324,7 @@ namespace codi {
 
       /// \copydoc codi::ExternalFunctionTapeInterface::pushExternalFunction()
       void pushExternalFunction(ExternalFunction<Impl> const& extFunc) {
-        CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           externalFunctionData.reserveItems(1);
           externalFunctionData.pushData(extFunc,
                                         externalFunctionData.getPosition().inner);  // TODO: Add getInner zum Interface?

@@ -220,9 +220,9 @@ namespace codi {
           /// General implementation. Checks for invalid and passive values/Jacobians.
           template<typename Node, typename DataVector>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
-            CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
-              CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
-                CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian)) {
+            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
+              if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
+                if (CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian))) {
                   dataVector.pushData(jacobian, node.getIdentifier());
                 }
               }
@@ -235,7 +235,7 @@ namespace codi {
                                                   DataVector& dataVector) {
             CODI_UNUSED(dataVector);
 
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
               // Do a delayed push for these termination nodes, accumulate the jacobian in the local member
               node.jacobian += jacobian;
             }
@@ -249,8 +249,8 @@ namespace codi {
           /// Specialization for ReferenceActiveType nodes. Pushes the delayed Jacobian.
           template<typename Type, typename DataVector>
           CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, DataVector& dataVector) {
-            CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier()) {
-              CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(node.jacobian)) {
+            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
+              if (CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(node.jacobian))) {
                 dataVector.pushData(node.jacobian, node.getIdentifier());
 
                 // Reset the jacobian here such that it is not pushed multiple times and ready for the next store
@@ -290,7 +290,7 @@ namespace codi {
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                              ExpressionInterface<Real, Rhs> const& rhs) {
-        CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           size_t constexpr MaxArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
 
           statementData.reserveItems(1);
@@ -318,7 +318,7 @@ namespace codi {
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                              LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
-        CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive()) {
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
           } else {
@@ -410,7 +410,7 @@ namespace codi {
                                                 Identifier const* const rhsIdentifiers) {
         size_t endJacobianPos = curJacobianPos - numberOfArguments;
 
-        CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint)) {
+        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) {
           while (endJacobianPos < curJacobianPos) {
             curJacobianPos -= 1;
             adjointVector[rhsIdentifiers[curJacobianPos]] += rhsJacobians[curJacobianPos] * lhsAdjoint;
