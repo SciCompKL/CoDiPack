@@ -298,7 +298,7 @@ namespace codi {
         CODI_UNUSED(hes, jac);
 
         CODI_EXCEPTION(
-            "No direct hessian evaluation for Jacobian tapes. "
+            "No direct Hessian evaluation for Jacobian tapes. "
             "Please use codi::RealReversePrimal or codi::RealReversePrimalIndex types for this kind of functionality "
             "or the EvaluationHelper class.");
       }

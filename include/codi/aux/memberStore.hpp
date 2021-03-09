@@ -87,7 +87,6 @@ namespace codi {
   };
 
 #ifndef DOXYGEN_DISABLE
-
   template<typename Type, typename Parent>
   char MemberStore<Type, Parent, true>::member[sizeof(Type)] = {};
 

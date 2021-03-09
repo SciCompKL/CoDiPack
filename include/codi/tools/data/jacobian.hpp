@@ -79,6 +79,14 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Adds counting of non zero entries.
+   *
+   * The user has to manually reset the count.
+   *
+   * @tparam _T  The data type in the Jacobian.
+   * @tparam _Store  Storage allocator. Should implement the standard vector interface.
+   */
   template<typename _T, typename _Store = std::vector<_T>>
   struct JacobianCountNonZerosRow : public Jacobian<_T, _Store> {
     public:
@@ -88,7 +96,7 @@ namespace codi {
       using T = typename Base::T;          ///< See Jacobian
       using Store = typename Base::Store;  ///< See Jacobian
 
-      using DelayAcc = DelayAccessor<JacobianCountNonZerosRow>;
+      using DelayAcc = JacobianDelayAccessor<JacobianCountNonZerosRow>;  ///< Delayed accessor for reference access.
 
     private:
 
@@ -117,14 +125,6 @@ namespace codi {
         nonZerosRowVector.resize(m);
       }
 
-      /// \copydoc JacobianInterface::reshape
-      CODI_INLINE void reshape(size_t const m, size_t const n) {
-        Base::reshape(m, n);
-        if (nonZerosRowVector.size() < m) {
-          nonZerosRowVector.resize(m);
-        }
-      }
-
       /// Reference to the number of non zero entries for the specified row.
       CODI_INLINE int& nonZerosRow(size_t const i) {
         return nonZerosRowVector[i];
@@ -139,58 +139,78 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Wrapper for JacboianInterfaces that requires a passive value conversion.
+   *
+   * @tparam _Nested  The nested Jacobian, that has a passive value storage.
+   */
   template<typename _Nested>
   struct JacobianConvertWrapper {
     public:
-      using Nested = CODI_DECLARE_DEFAULT(_Nested, JacobianInterface<double>);
-      using T = typename Nested::T;
-      using DelayAcc = DelayAccessor<JacobianConvertWrapper>;
+      using Nested = CODI_DECLARE_DEFAULT(_Nested, JacobianInterface<double>);  ///< See JacobianConvertWrapper
+      using T = typename Nested::T;                                             ///< See JacobianInterface
+      using DelayAcc = JacobianDelayAccessor<JacobianConvertWrapper>;           ///< Return type for reference access.
 
     private:
       Nested& nested;
 
     public:
+
+      /// Constructor
       explicit JacobianConvertWrapper(Nested& nested) : nested(nested) {}
 
+      /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j) const
       CODI_INLINE T operator()(size_t const i, size_t const j) const {
         return nested(i, j);
       }
 
+      /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j)
+      /// Returns a JacobianDelayAccessor for the tracking of the nonzero entries.
       CODI_INLINE DelayAcc operator()(size_t const i, size_t const j) {
         return DelayAcc(i, j, *this);
       }
 
+      /// Called by the JacobianDelayAccessor when a value is set.
       template<typename SetT>
       CODI_INLINE void setLogic(size_t const i, size_t const j, SetT const& v) {
         nested(i, j) = RealTraits::getPassiveValue<SetT>(v);
       }
   };
 
+  /// Dummy Jacobian. Has size zero and no logic in all calls.
   struct DummyJacobian : public JacobianInterface<DummyValue> {
     public:
 
+      /// \copydoc JacobianInterface::getM()
       size_t getM() const {
         return 0;
       }
+
+      /// \copydoc JacobianInterface::getN()
       size_t getN() const {
         return 0;
       }
 
+      /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j) const
       CODI_INLINE DummyValue operator()(size_t const i, size_t const j) const {
         CODI_UNUSED(i, j);
 
         return DummyValue();
       }
 
+      /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j)
       CODI_INLINE DummyValue& operator()(size_t const i, size_t const j) {
         CODI_UNUSED(i, j);
 
         return StaticDummy<DummyValue>::dummy;
       }
 
+      /// \copydoc JacobianInterface::resize()
       void resize(size_t const m, size_t const n) {
         CODI_UNUSED(m, n);
       }
+
+      /// \copydoc JacobianInterface::size()
       size_t size() const {
         return 0;
       }

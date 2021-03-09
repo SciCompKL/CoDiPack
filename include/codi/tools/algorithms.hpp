@@ -35,13 +35,13 @@ namespace codi {
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      static bool constexpr ActiveChecks = _ActiveChecks; ///< See Algorithms
+      static bool constexpr ActiveChecks = _ActiveChecks;  ///< See Algorithms
 
-      using Tape = typename Type::Tape;  ///< See LhsExpressionInterface
-      using Position = typename Tape::Position;  ///< See LhsExpressionInterface
-      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Tape = typename Type::Tape;              ///< See LhsExpressionInterface
+      using Position = typename Tape::Position;      ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
-      using Gradient = typename Type::Gradient;  ///< See LhsExpressionInterface
+      using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface
 
       using GT = GradientTraits::TraitsImplementation<Gradient>;  ///< Shortcut for traits of gradient
 
@@ -71,7 +71,8 @@ namespace codi {
        * The algorithm expects that no gradient data has been seeded with non zero values.
        * After the return the algorithm ensures that all gradient data have zero values.
        *
-       * param[in,out] jac  Has to implement JacobianInterface.
+       * #### Parameters
+       * [in,out] __jac__  Has to implement JacobianInterface.
        */
       template<typename Jac, bool keepState = true>
       static CODI_INLINE void computeJacobian(Tape& tape, Position const& start, Position const& end,
@@ -129,8 +130,11 @@ namespace codi {
         }
       }
 
-      /// \copydoc computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac)
-      /// This method uses the global tape for the Jacobian evaluation.
+      // clang-format off
+      /// \copybrief computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac)
+      /// \n This method uses the global tape for the Jacobian evaluation.
+      /// \copydetails computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac)
+      // clang-format on
       template<typename Jac>
       static CODI_INLINE void computeJacobian(Position const& start, Position const& end, Identifier const* input,
                                               size_t const inputSize, Identifier const* output, size_t const outputSize,
@@ -152,8 +156,9 @@ namespace codi {
        *
        * It has to hold start < end.
        *
-       * param[in,out] hes  Has to implement HessianInterface.
-       * param[in,out] jac  Optional: Jacobian values are also extracted. Has to implement JacobianInterface.
+       * #### Parameters
+       * [in,out] __hes__  Has to implement HessianInterface. \n
+       * [in,out] __jac__  Optional: Jacobian values are also extracted. Has to implement JacobianInterface.
        */
       template<typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianPrimalValueTape(Tape& tape, Position const& start, Position const& end,
@@ -171,7 +176,7 @@ namespace codi {
       }
 
       /**
-       * @brief Forward version of the hessian computation.
+       * @brief Forward version of the Hessian computation.
        *
        * Two input variables are seeded with gradient information and then a forward evaluation is performed.
        * Before each evaluation the primal values of the tape are reverted to the start position.
@@ -228,7 +233,7 @@ namespace codi {
       }
 
       /**
-       * @brief Reverse version of the hessian computation.
+       * @brief Reverse version of the Hessian computation.
        *
        * One input variable is seeded with gradient information and then a forward evaluation is performed.
        * Afterwards one output variable is seeded with gradient information and then a reverse evaluation is performed.
@@ -307,10 +312,11 @@ namespace codi {
        *
        * It has to hold start < end.
        *
-       * param[in]     func  The function for the recording of the tape. It needs to be a function object that
-       *                     will accept the call: func(input, output)
-       * param[in,out] hes  Has to implement HessianInterface.
-       * param[in,out] jac  Optional: Jacobian values are also extracted. Has to implement JacobianInterface.
+       * #### Parameters
+       * [in]     __func__  The function for the recording of the tape. It needs to be a function object that
+       *                         will accept the call: func(input, output) \n
+       * [in,out] __hes__  Has to implement HessianInterface. \n
+       * [in,out] __jac__  Optional: Jacobian values are also extracted. Has to implement JacobianInterface.
        */
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessian(Func func, VecIn& input, VecOut& output, Hes& hes,
@@ -326,7 +332,7 @@ namespace codi {
       }
 
       /**
-       * @brief Forward version of the hessian computation with a function object.
+       * @brief Forward version of the Hessian computation with a function object.
        *
        * One input variable is seeded with gradient information and then a tape is recorded.
        * Afterwards a second input variable is seeded with gradient information and the tape is evaluated multiple times
@@ -387,7 +393,7 @@ namespace codi {
       }
 
       /**
-       * @brief Reverse version of the hessian computation with a function object.
+       * @brief Reverse version of the Hessian computation with a function object.
        *
        * One input variable is seeded with gradient information and then a tape is recorded.
        * Afterwards an output variable is seeded with gradient information and the tape is evaluated once in the reverse

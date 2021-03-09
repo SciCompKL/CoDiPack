@@ -171,7 +171,7 @@ namespace codi {
               getAllPrimals(locY);
             }
 
-            // Extract all hessian values, this populates the hessian from (j,k) to (j + vecSize_j, k + vecSize_k).
+            // Extract all Hessian values, this populates the Hessian from (j,k) to (j + vecSize_j, k + vecSize_k).
             for (size_t i = 0; i < this->y.size(); i += 1) {
               for (size_t vecPos1st = 0; vecPos1st < VectorSizeFirstOrder && k + vecPos1st < locX.size();
                    vecPos1st += 1) {

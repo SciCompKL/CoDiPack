@@ -21,7 +21,7 @@ namespace codi {
   struct JacobianInterface {
     public:
 
-      using T = CODI_DD(_T, double);  ///< See JacobianInterface
+      using T = CODI_DECLARE_DEFAULT(_T, double);  ///< See JacobianInterface
 
       size_t getM() const;  ///< Get size of rows (Output variables)
       size_t getN() const;  ///< Get size of columns  (Input variables)
@@ -37,13 +37,12 @@ namespace codi {
   };
 
   /**
-   * Format the Jacobian and write it to the stream.
+   * @brief Output a Jacobian on the data stream.
    *
    * The format is (Matlab):
-   * [v11, v12, ..., v1N;
-   *  v21, v22, ..., v2N;
-   *  ...
-   *  vM1, vM2, ..., vMN]
+   * [ 1, 2, 3;
+   *   4, 5, 6;
+   *   7, 8, 8]
    */
   template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>>
   Stream& operator<<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {
