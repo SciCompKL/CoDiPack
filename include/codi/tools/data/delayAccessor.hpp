@@ -5,7 +5,7 @@
 
 /** \copydoc codi::Namespace */
 namespace codi {
-  template <typename _Impl>
+  template<typename _Impl>
   struct DelayAccessor {
     public:
 
@@ -23,14 +23,14 @@ namespace codi {
       DelayAccessor(size_t const i, size_t const j, Impl& data) : i(i), j(j), data(data) {}
 
       template<typename T>
-      DelayAccessor& operator =(T const& v) {
-        data.setLogic(i,j, v);
+      DelayAccessor& operator=(T const& v) {
+        data.setLogic(i, j, v);
 
         return *this;
       }
 
       operator typename Impl::T() const {
-        return const_cast<Impl const&>(data).operator()(i,j);
+        return const_cast<Impl const&>(data).operator()(i, j);
       }
   };
 }

@@ -22,7 +22,6 @@ struct TestPreaccumulation : public TestInterface {
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-
       codi::PreaccumulationHelper<Number> ph;
 
       ph.start(x[0], x[1]);

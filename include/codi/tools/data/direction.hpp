@@ -189,13 +189,13 @@ namespace codi {
 
   /// True if one element differs.
   template<typename Real, size_t dim>
-  CODI_INLINE bool operator != (Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
+  CODI_INLINE bool operator!=(Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
     return !(v1 == v2);
   }
 
   /// True if one element differs.
   template<typename A, typename Real, size_t dim>
-  CODI_INLINE bool operator != (A const& s, Direction<Real, dim> const& v) {
+  CODI_INLINE bool operator!=(A const& s, Direction<Real, dim> const& v) {
     return !(s == v);
   }
 
@@ -207,9 +207,9 @@ namespace codi {
 
   /// True if all elements are the same.
   template<typename Real, size_t dim>
-  CODI_INLINE bool operator == (Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
+  CODI_INLINE bool operator==(Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
     for (size_t i = 0; i < dim; ++i) {
-      if ( v1[i] != v2[i] ) {
+      if (v1[i] != v2[i]) {
         return false;
       }
     }

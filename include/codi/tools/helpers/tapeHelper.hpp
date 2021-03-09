@@ -1,14 +1,14 @@
 #pragma once
 
+#include <vector>
+
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../traits/realTraits.hpp"
 #include "../../traits/tapeTraits.hpp"
 #include "../algorithms.hpp"
-#include "../data/jacobian.hpp"
 #include "../data/hessian.hpp"
-
-#include <vector>
+#include "../data/jacobian.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -17,7 +17,8 @@ namespace codi {
   struct TapeHelperBase {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type,
+                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Impl = CODI_DECLARE_DEFAULT(_Impl, TapeHelperBase);
 
       using Real = typename Type::Real;
@@ -42,12 +43,7 @@ namespace codi {
 
     public:
 
-      TapeHelperBase() :
-        tape(Type::getGlobalTape()),
-        inputValues(),
-        outputValues(),
-        wasForwardEvaluated(false)
-      {}
+      TapeHelperBase() : tape(Type::getGlobalTape()), inputValues(), outputValues(), wasForwardEvaluated(false) {}
 
       virtual ~TapeHelperBase() {}
 
@@ -80,7 +76,7 @@ namespace codi {
       }
 
       void deleteGradientVector(Gradient* vec) {
-        delete [] vec;
+        delete[] vec;
 
         vec = nullptr;
       }
@@ -98,7 +94,7 @@ namespace codi {
       }
 
       void deletePrimalVector(Real* vec) {
-        delete [] vec;
+        delete[] vec;
 
         vec = nullptr;
       }
@@ -165,7 +161,6 @@ namespace codi {
 
         tape.evaluate();
 
-
         for (size_t j = 0; j < inputValues.size(); j += 1) {
           x_b[j] = tape.getGradient(inputValues[j]);
           tape.setGradient(inputValues[j], Gradient());
@@ -196,7 +191,6 @@ namespace codi {
 
       template<typename Jac>
       CODI_INLINE void evalJacobianGen(Jac& jac) {
-
         using Algo = Algorithms<Type>;
         typename Algo::EvaluationType evalType = Algo::getEvaluationChoice(inputValues.size(), outputValues.size());
 
@@ -208,18 +202,17 @@ namespace codi {
           CODI_EXCEPTION("Evaluation type not implemented.");
         }
 
-        Algorithms<Type>::template computeJacobian<Jac, false>(
-              tape, tape.getZeroPosition(), tape.getPosition(),
-              inputValues.data(), inputValues.size(),
-              outputValues.data(), outputValues.size(),
-              jac);
+        Algorithms<Type>::template computeJacobian<Jac, false>(tape, tape.getZeroPosition(), tape.getPosition(),
+                                                               inputValues.data(), inputValues.size(),
+                                                               outputValues.data(), outputValues.size(), jac);
       }
 
       template<typename Jac = DummyJacobian>
       void evalHessian(HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy);
 
       template<typename Jac = DummyJacobian>
-      CODI_INLINE void evalHessianAt(Real const* x, HessianType& hes, Real* y = nullptr, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
+      CODI_INLINE void evalHessianAt(Real const* x, HessianType& hes, Real* y = nullptr,
+                                     Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         evalPrimal(x, y);
 
         cast().evalHessian(hes, jac);
@@ -256,12 +249,12 @@ namespace codi {
       }
   };
 
-
   template<typename _Type>
   struct TapeHelperNoImpl : public TapeHelperBase<_Type, TapeHelperNoImpl<_Type>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type,
+                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;
 
     private:
@@ -273,15 +266,16 @@ namespace codi {
       virtual void evalPrimal(Real const* x, Real* y = nullptr) = 0;
 
       template<typename Jac = DummyJacobian>
-      void evalHessian(typename TapeHelperBase<Type, Impl>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy);
+      void evalHessian(typename TapeHelperBase<Type, Impl>::HessianType& hes,
+                       Jac& jac = StaticDummy<DummyJacobian>::dummy);
   };
-
 
   template<typename _Type>
   struct TapeHelperJacobi : public TapeHelperBase<_Type, TapeHelperJacobi<_Type>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type,
+                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;
 
     private:
@@ -294,18 +288,19 @@ namespace codi {
         CODI_UNUSED(x, y);
 
         CODI_EXCEPTION(
-          "No primal evaluation for Jacobian tapes. "
-          "Please use codi::RealReversePrimal or codi::RealReversePrimalIndex types for this kind of functionality.");
+            "No primal evaluation for Jacobian tapes. "
+            "Please use codi::RealReversePrimal or codi::RealReversePrimalIndex types for this kind of functionality.");
       }
 
       template<typename Jac = DummyJacobian>
-      void evalHessian(typename TapeHelperBase<Type, Impl>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
+      void evalHessian(typename TapeHelperBase<Type, Impl>::HessianType& hes,
+                       Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         CODI_UNUSED(hes, jac);
 
         CODI_EXCEPTION(
-          "No direct hessian evaluation for Jacobian tapes. "
-          "Please use codi::RealReversePrimal or codi::RealReversePrimalIndex types for this kind of functionality "
-          "or the EvaluationHelper class.");
+            "No direct hessian evaluation for Jacobian tapes. "
+            "Please use codi::RealReversePrimal or codi::RealReversePrimalIndex types for this kind of functionality "
+            "or the EvaluationHelper class.");
       }
   };
 
@@ -313,7 +308,8 @@ namespace codi {
   struct TapeHelperPrimal : public TapeHelperBase<_Type, TapeHelperPrimal<_Type>> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type,
+                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;
 
     private:
@@ -337,10 +333,11 @@ namespace codi {
       }
 
       template<typename Jac = DummyJacobian>
-      void evalHessian(typename TapeHelperBase<Type, Impl>::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
-
+      void evalHessian(typename TapeHelperBase<Type, Impl>::HessianType& hes,
+                       Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using Algo = Algorithms<Type>;
-        typename Algo::EvaluationType evalType = Algo::getEvaluationChoice(this->inputValues.size(), this->outputValues.size());
+        typename Algo::EvaluationType evalType =
+            Algo::getEvaluationChoice(this->inputValues.size(), this->outputValues.size());
 
         if (Algo::EvaluationType::Forward == evalType) {
           this->changeStateToForwardEvaluation();
@@ -351,10 +348,8 @@ namespace codi {
         }
 
         Algorithms<Type>::computeHessianPrimalValueTape(
-              this->tape, this->tape.getZeroPosition(), this->tape.getPosition(),
-              this->inputValues.data(), this->inputValues.size(),
-              this->outputValues.data(), this->outputValues.size(),
-              hes, jac);
+            this->tape, this->tape.getZeroPosition(), this->tape.getPosition(), this->inputValues.data(),
+            this->inputValues.size(), this->outputValues.data(), this->outputValues.size(), hes, jac);
       }
   };
 

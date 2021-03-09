@@ -205,6 +205,5 @@ namespace codi {
       void revertPrimals(Position const& pos) {
         internalResetPrimalValues(pos);
       }
-
   };
 }

@@ -19,7 +19,6 @@ struct TestPreaccumulationLargeStatement : public TestInterface {
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-
       codi::PreaccumulationHelper<Number> ph;
 
       size_t const size = 256 * 3;

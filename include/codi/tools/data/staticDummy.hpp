@@ -3,9 +3,8 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template <typename Dummy>
+  template<typename Dummy>
   struct StaticDummy {
-
       static Dummy dummy;
   };
 

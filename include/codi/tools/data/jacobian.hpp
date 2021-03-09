@@ -79,26 +79,25 @@ namespace codi {
       }
   };
 
-  template <typename _T, typename _Store = std::vector<_T>>
+  template<typename _T, typename _Store = std::vector<_T>>
   struct JacobianCountNonZerosRow : public Jacobian<_T, _Store> {
     public:
 
-      using Base = Jacobian<_T, _Store>; ///< Base class abbreviation
+      using Base = Jacobian<_T, _Store>;  ///< Base class abbreviation
 
-      using T = typename Base::T; ///< See Jacobian
-      using Store = typename Base::Store; ///< See Jacobian
+      using T = typename Base::T;          ///< See Jacobian
+      using Store = typename Base::Store;  ///< See Jacobian
 
       using DelayAcc = DelayAccessor<JacobianCountNonZerosRow>;
 
     private:
 
-      std::vector<int> nonZerosRowVector; ///< Count nonzero entries in each row.
+      std::vector<int> nonZerosRowVector;  ///< Count nonzero entries in each row.
 
     public:
 
       /// \copydoc Jacobian::Jacobian
       explicit JacobianCountNonZerosRow(size_t m, size_t n) : Base(m, n), nonZerosRowVector(m) {}
-
 
       /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j) const
       CODI_INLINE T operator()(size_t const i, size_t const j) const {
@@ -114,7 +113,6 @@ namespace codi {
 
       /// \copydoc JacobianInterface::resize
       CODI_INLINE void resize(size_t const m, size_t const n) {
-
         Base::resize(m, n);
         nonZerosRowVector.resize(m);
       }
@@ -141,7 +139,7 @@ namespace codi {
       }
   };
 
-  template <typename _Nested>
+  template<typename _Nested>
   struct JacobianConvertWrapper {
     public:
       using Nested = CODI_DECLARE_DEFAULT(_Nested, JacobianInterface<double>);
@@ -168,11 +166,15 @@ namespace codi {
       }
   };
 
-  struct DummyJacobian : public JacobianInterface<DummyValue>{
+  struct DummyJacobian : public JacobianInterface<DummyValue> {
     public:
 
-      size_t getM() const {return 0;}
-      size_t getN() const {return 0;}
+      size_t getM() const {
+        return 0;
+      }
+      size_t getN() const {
+        return 0;
+      }
 
       CODI_INLINE DummyValue operator()(size_t const i, size_t const j) const {
         CODI_UNUSED(i, j);
@@ -186,7 +188,11 @@ namespace codi {
         return StaticDummy<DummyValue>::dummy;
       }
 
-      void resize(size_t const m, size_t const n) {CODI_UNUSED(m, n);}
-      size_t size() const {return 0;}
+      void resize(size_t const m, size_t const n) {
+        CODI_UNUSED(m, n);
+      }
+      size_t size() const {
+        return 0;
+      }
   };
 }

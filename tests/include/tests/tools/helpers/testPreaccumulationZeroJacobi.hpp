@@ -9,7 +9,7 @@ struct TestPreaccumulationZeroJacobi : public TestInterface {
 
     template<typename Number>
     static void evalFunc(Number* x, Number* y) {
-      y[0] = codi::RealTraits::getPassiveValue(x[0]); // kill x dependency
+      y[0] = codi::RealTraits::getPassiveValue(x[0]);  // kill x dependency
       y[1] = x[1];
       for (int i = 0; i < 5; ++i) {
         Number xTemp = y[0];
@@ -22,7 +22,6 @@ struct TestPreaccumulationZeroJacobi : public TestInterface {
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-
       codi::PreaccumulationHelper<Number> ph;
 
       ph.start(x[0], x[1]);

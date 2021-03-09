@@ -19,17 +19,15 @@ struct CoDiEvalHelper0thOrder : public Driver0thOrderBase<CODI_TYPE> {
       createTests<Number, DRIVER_TESTS>(tests);
     }
 
-    void evaluatePrimal(TestInfo<Number>& info, Number* x, size_t inputs, Number* /*y*/, size_t outputs, std::vector<double>& primals) {
-
+    void evaluatePrimal(TestInfo<Number>& info, Number* x, size_t inputs, Number* /*y*/, size_t outputs,
+                        std::vector<double>& primals) {
       std::vector<double> xVec(inputs);
 
       for (size_t i = 0; i < inputs; ++i) {
         xVec[i] = codi::RealTraits::getPassiveValue(x[i]);
       }
 
-      auto evalFunc = [&](std::vector<Number>& x, std::vector<Number>& y) {
-        info.func(x.data(), y.data());
-      };
+      auto evalFunc = [&](std::vector<Number>& x, std::vector<Number>& y) { info.func(x.data(), y.data()); };
 
       auto handle = codi::EvaluationHelper::template createHandle<Number>(evalFunc, outputs, inputs);
 

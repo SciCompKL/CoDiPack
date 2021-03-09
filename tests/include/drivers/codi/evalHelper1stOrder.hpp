@@ -19,17 +19,15 @@ struct CoDiEvalHelper1stOrder : public Driver1stOrderBase<CODI_TYPE> {
       createTests<Number, DRIVER_TESTS>(tests);
     }
 
-    void evaluateJacobian(TestInfo<Number>& info, Number* x, size_t inputs, Number* /*y*/, size_t outputs, codi::Jacobian<double>& jac) {
-
+    void evaluateJacobian(TestInfo<Number>& info, Number* x, size_t inputs, Number* /*y*/, size_t outputs,
+                          codi::Jacobian<double>& jac) {
       std::vector<double> xVec(inputs);
 
       for (size_t i = 0; i < inputs; ++i) {
         xVec[i] = codi::RealTraits::getPassiveValue(x[i]);
       }
 
-      auto evalFunc = [&](std::vector<Number>& x, std::vector<Number>& y) {
-        info.func(x.data(), y.data());
-      };
+      auto evalFunc = [&](std::vector<Number>& x, std::vector<Number>& y) { info.func(x.data(), y.data()); };
 
       auto handle = codi::EvaluationHelper::template createHandle<Number>(evalFunc, outputs, inputs);
 

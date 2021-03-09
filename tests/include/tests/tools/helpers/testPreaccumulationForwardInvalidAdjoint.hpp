@@ -16,7 +16,6 @@ struct TestPreaccumulationForwardInvalidAdjoint : public TestInterface {
       Number temp5 = temp1 * temp3;
       Number temp6 = temp2 * temp4;
 
-
       y[0] = temp5 * temp5;
       y[1] = temp6 * temp6;
       y[2] = temp5 * temp5;
@@ -25,7 +24,6 @@ struct TestPreaccumulationForwardInvalidAdjoint : public TestInterface {
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-
       codi::PreaccumulationHelper<Number> ph;
 
       ph.start(x[0], x[1]);

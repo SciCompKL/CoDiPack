@@ -7,7 +7,6 @@
 #include "data/dummy.hpp"
 #include "data/staticDummy.hpp"
 
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -15,7 +14,8 @@ namespace codi {
   struct Algorithms {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type,
+                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       static bool constexpr ActiveChecks = _ActiveChecks;
 
@@ -27,9 +27,10 @@ namespace codi {
 
       using GT = GradientTraits::TraitsImplementation<Gradient>;
 
-      enum class EvaluationType {
-          Forward,
-          Reverse
+      enum class EvaluationType
+      {
+        Forward,
+        Reverse
       };
 
       static CODI_INLINE EvaluationType getEvaluationChoice(size_t const inputs, size_t const outputs) {
@@ -41,17 +42,13 @@ namespace codi {
       }
 
       template<typename Jac, bool keepState = true>
-      static CODI_INLINE void computeJacobian(
-          Tape& tape, Position const& start, Position const& end,
-          Identifier const* input, size_t const inputSize,
-          Identifier const* output, size_t const outputSize,
-          Jac& jac)
-      {
+      static CODI_INLINE void computeJacobian(Tape& tape, Position const& start, Position const& end,
+                                              Identifier const* input, size_t const inputSize, Identifier const* output,
+                                              size_t const outputSize, Jac& jac) {
         size_t constexpr gradDim = GT::dim;
 
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
-
           for (size_t j = 0; j < inputSize; j += gradDim) {
             setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0));
 
@@ -63,7 +60,7 @@ namespace codi {
 
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
-                jac(i,j + curDim) = GT::at(tape.getGradient(output[i]), curDim);
+                jac(i, j + curDim) = GT::at(tape.getGradient(output[i]), curDim);
               }
             }
 
@@ -73,7 +70,6 @@ namespace codi {
           tape.clearAdjoints(end, start);
 
         } else if (EvaluationType::Reverse == evalType) {
-
           for (size_t i = 0; i < outputSize; i += gradDim) {
             setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0));
 
@@ -85,7 +81,7 @@ namespace codi {
 
             for (size_t j = 0; j < inputSize; j += 1) {
               for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
-                jac(i + curDim,j) = GT::at(tape.getGradient(input[j]), curDim);
+                jac(i + curDim, j) = GT::at(tape.getGradient(input[j]), curDim);
                 GT::at(tape.gradient(input[j]), curDim) = typename GT::Real();
               }
             }
@@ -102,22 +98,17 @@ namespace codi {
       }
 
       template<typename Jac>
-      static CODI_INLINE void computeJacobian(
-          Position const& start, Position const& end,
-          Identifier const* input, size_t const inputSize,
-          Identifier const* output, size_t const outputSize,
-          Jac& jac)
-      {
+      static CODI_INLINE void computeJacobian(Position const& start, Position const& end, Identifier const* input,
+                                              size_t const inputSize, Identifier const* output, size_t const outputSize,
+                                              Jac& jac) {
         computeJacobian(Type::getGlobalTape(), start, end, input, inputSize, output, outputSize, jac);
       }
 
       template<typename Hes, typename Jac = DummyJacobian>
-      static CODI_INLINE void computeHessianPrimalValueTape(
-          Tape& tape, Position const& start, Position const& end,
-          Identifier const* input, size_t const inputSize,
-          Identifier const* output, size_t const outputSize,
-          Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy)
-      {
+      static CODI_INLINE void computeHessianPrimalValueTape(Tape& tape, Position const& start, Position const& end,
+                                                            Identifier const* input, size_t const inputSize,
+                                                            Identifier const* output, size_t const outputSize, Hes& hes,
+                                                            Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
           computeHessianPrimalValueTapeForward(tape, start, end, input, inputSize, output, outputSize, hes, jac);
@@ -129,12 +120,11 @@ namespace codi {
       }
 
       template<typename Hes, typename Jac = DummyJacobian>
-      static CODI_INLINE void computeHessianPrimalValueTapeForward(
-          Tape& tape, Position const& start, Position const& end,
-          Identifier const* input, size_t const inputSize,
-          Identifier const* output, size_t const outputSize,
-          Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy)
-      {
+      static CODI_INLINE void computeHessianPrimalValueTapeForward(Tape& tape, Position const& start,
+                                                                   Position const& end, Identifier const* input,
+                                                                   size_t const inputSize, Identifier const* output,
+                                                                   size_t const outputSize, Hes& hes,
+                                                                   Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
@@ -155,8 +145,9 @@ namespace codi {
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && k + vecPos1st < inputSize; vecPos1st += 1) {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
-                  hes(i, j + vecPos2nd, k + vecPos1st) = GT2nd::at(GT1st::at(tape.getGradient(output[i]), vecPos1st).gradient(), vecPos2nd);
-                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st); // symmetry
+                  hes(i, j + vecPos2nd, k + vecPos1st) =
+                      GT2nd::at(GT1st::at(tape.getGradient(output[i]), vecPos1st).gradient(), vecPos2nd);
+                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st);  // symmetry
                 }
               }
 
@@ -175,12 +166,11 @@ namespace codi {
       }
 
       template<typename Hes, typename Jac = DummyJacobian>
-      static CODI_INLINE void computeHessianPrimalValueTapeReverse(
-          Tape& tape, Position const& start, Position const& end,
-          Identifier const* input, size_t const inputSize,
-          Identifier const* output, size_t const outputSize,
-          Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy)
-      {
+      static CODI_INLINE void computeHessianPrimalValueTapeReverse(Tape& tape, Position const& start,
+                                                                   Position const& end, Identifier const* input,
+                                                                   size_t const inputSize, Identifier const* output,
+                                                                   size_t const outputSize, Hes& hes,
+                                                                   Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
@@ -204,7 +194,8 @@ namespace codi {
             for (size_t k = 0; k < inputSize; k += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < outputSize; vecPos1st += 1) {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
-                  hes(i + vecPos1st, j + vecPos2nd, k) = GT2nd::at(GT1st::at(tape.gradient(input[k]), vecPos1st).gradient(), vecPos2nd);
+                  hes(i + vecPos1st, j + vecPos2nd, k) =
+                      GT2nd::at(GT1st::at(tape.gradient(input[k]), vecPos1st).gradient(), vecPos2nd);
                 }
               }
 
@@ -233,7 +224,8 @@ namespace codi {
       }
 
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
-      static CODI_INLINE void computeHessian(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
+      static CODI_INLINE void computeHessian(Func func, VecIn& input, VecOut& output, Hes& hes,
+                                             Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         EvaluationType evalType = getEvaluationChoice(input.size(), output.size());
         if (EvaluationType::Forward == evalType) {
           computeHessianForward(func, input, output, hes, jac);
@@ -245,7 +237,8 @@ namespace codi {
       }
 
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
-      static CODI_INLINE void computeHessianForward(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
+      static CODI_INLINE void computeHessianForward(Func func, VecIn& input, VecOut& output, Hes& hes,
+                                                    Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
@@ -269,8 +262,9 @@ namespace codi {
             for (size_t i = 0; i < output.size(); i += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && k + vecPos1st < input.size(); vecPos1st += 1) {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < input.size(); vecPos2nd += 1) {
-                  hes(i, j + vecPos2nd, k + vecPos1st) = GT2nd::at(GT1st::at(tape.getGradient(output[i].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
-                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st); // symmetry
+                  hes(i, j + vecPos2nd, k + vecPos1st) = GT2nd::at(
+                      GT1st::at(tape.getGradient(output[i].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
+                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st);  // symmetry
                 }
               }
 
@@ -291,7 +285,8 @@ namespace codi {
       }
 
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
-      static CODI_INLINE void computeHessianReverse(Func func, VecIn& input, VecOut& output, Hes& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
+      static CODI_INLINE void computeHessianReverse(Func func, VecIn& input, VecOut& output, Hes& hes,
+                                                    Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
@@ -314,7 +309,8 @@ namespace codi {
             for (size_t k = 0; k < input.size(); k += 1) {
               for (size_t vecPos1st = 0; vecPos1st < gradDim1st && i + vecPos1st < output.size(); vecPos1st += 1) {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < input.size(); vecPos2nd += 1) {
-                  hes(i + vecPos1st, j + vecPos2nd, k) = GT2nd::at(GT1st::at(tape.gradient(input[k].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
+                  hes(i + vecPos1st, j + vecPos2nd, k) =
+                      GT2nd::at(GT1st::at(tape.gradient(input[k].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
                 }
               }
 
@@ -343,7 +339,8 @@ namespace codi {
     private:
 
       template<typename T>
-      static CODI_INLINE void setGradientOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers, size_t const size, T value) {
+      static CODI_INLINE void setGradientOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers,
+                                                      size_t const size, T value) {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
@@ -354,7 +351,8 @@ namespace codi {
       }
 
       template<typename T>
-      static CODI_INLINE void setGradient2ndOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers, size_t const size, T value) {
+      static CODI_INLINE void setGradient2ndOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers,
+                                                         size_t const size, T value) {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
@@ -364,7 +362,8 @@ namespace codi {
       }
 
       template<typename T>
-      static CODI_INLINE void setGradientOnCoDiValue(Tape& tape, size_t const pos, Type* identifiers, size_t const size, T value) {
+      static CODI_INLINE void setGradientOnCoDiValue(Tape& tape, size_t const pos, Type* identifiers, size_t const size,
+                                                     T value) {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
@@ -375,7 +374,8 @@ namespace codi {
       }
 
       template<typename T>
-      static CODI_INLINE void setGradient2ndOnCoDiValue(size_t const pos, Type* identifiers, size_t const size, T value) {
+      static CODI_INLINE void setGradient2ndOnCoDiValue(size_t const pos, Type* identifiers, size_t const size,
+                                                        T value) {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
@@ -387,7 +387,6 @@ namespace codi {
 
       template<typename Func, typename VecIn, typename VecOut>
       static CODI_INLINE void recordTape(Func func, VecIn& input, VecOut& output) {
-
         Tape& tape = Type::getGlobalTape();
         tape.setActive();
         for (size_t curIn = 0; curIn < input.size(); curIn += 1) {
@@ -402,6 +401,5 @@ namespace codi {
         tape.setPassive();
       }
   };
-
 
 }

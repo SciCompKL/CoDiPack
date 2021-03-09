@@ -3,14 +3,14 @@
 
 #include <vector>
 
-#include "../algorithms.hpp"
-#include "../data/jacobian.hpp"
-#include "../../config.h"
 #include "../../aux/exceptions.hpp"
+#include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../traits/gradientTraits.hpp"
 #include "../../traits/tapeTraits.hpp"
+#include "../algorithms.hpp"
+#include "../data/jacobian.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -19,13 +19,15 @@ namespace codi {
   struct PreaccumulationHelper {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DECLARE_DEFAULT(_Type,
+                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real =  typename Type::Real;
+      using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
       using Gradient = typename Type::Gradient;
 
-      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
+      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape,
+                                        CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
       using Position = typename Tape::Position;
 
       std::vector<Identifier> inputData;
@@ -37,10 +39,11 @@ namespace codi {
 
       JacobianCountNonZerosRow<Real> jacobie;
 
-      PreaccumulationHelper() : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobie(0,0) {}
+      PreaccumulationHelper()
+          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobie(0, 0) {}
 
       template<typename... Inputs>
-      void addInput(Inputs const& ... inputs) {
+      void addInput(Inputs const&... inputs) {
         Tape& tape = Type::getGlobalTape();
 
         if (tape.isActive()) {
@@ -48,8 +51,8 @@ namespace codi {
         }
       }
 
-      template<typename ... Inputs>
-      void start(Inputs const& ... inputs) {
+      template<typename... Inputs>
+      void start(Inputs const&... inputs) {
         Tape& tape = Type::getGlobalTape();
 
         if (tape.isActive()) {
@@ -63,8 +66,8 @@ namespace codi {
         }
       }
 
-      template<typename ... Outputs>
-      void addOutput(Outputs& ... outputs) {
+      template<typename... Outputs>
+      void addOutput(Outputs&... outputs) {
         Tape& tape = Type::getGlobalTape();
 
         if (tape.isActive()) {
@@ -72,12 +75,11 @@ namespace codi {
         }
       }
 
-      template<typename ... Outputs>
-      void finish (bool const storeAdjoints, Outputs& ... outputs) {
+      template<typename... Outputs>
+      void finish(bool const storeAdjoints, Outputs&... outputs) {
         Tape& tape = Type::getGlobalTape();
 
         if (tape.isActive()) {
-
           addOutputRec(outputs...);
 
           if (storeAdjoints) {
@@ -106,8 +108,8 @@ namespace codi {
         // terminator implementation
       }
 
-      template<typename ... Inputs>
-      void addInputRec(Type const& input, Inputs const& ... r) {
+      template<typename... Inputs>
+      void addInputRec(Type const& input, Inputs const&... r) {
         addInputLogic(input);
         addInputRec(r...);
       }
@@ -125,8 +127,8 @@ namespace codi {
         // terminator implementation
       }
 
-      template<typename ... Outputs>
-      void addOutputRec(Type& output, Outputs& ... r) {
+      template<typename... Outputs>
+      void addOutputRec(Type& output, Outputs&... r) {
         addOutputLogic(output);
         addOutputRec(r...);
       }
@@ -164,19 +166,15 @@ namespace codi {
           jacobie.resize(outputData.size(), inputData.size());
         }
 
-        Algorithms<Type, false>::computeJacobian(startPos, endPos,
-                                                 inputData.data(), inputData.size(),
-                                                 outputData.data(), outputData.size(),
-                                                 jacobie);
+        Algorithms<Type, false>::computeJacobian(startPos, endPos, inputData.data(), inputData.size(),
+                                                 outputData.data(), outputData.size(), jacobie);
 
         // store the Jacobian matrix
         tape.resetTo(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
-
           Type& value = *outputValues[curOut];
           if (0 != jacobie.nonZerosRow(curOut)) {
-
             int nonZerosLeft = jacobie.nonZerosRow(curOut);
             jacobie.nonZerosRow(curOut) = 0;
 
@@ -189,21 +187,19 @@ namespace codi {
             // if there are more than MaxStatementIntValue non zeros, then we need to stagger the
             // statement pushes
             while (nonZerosLeft > 0) {
-
               // calculate the number of Jacobians for this statement
               int jacobiesForStatement = nonZerosLeft;
               if (jacobiesForStatement > (int)Config::MaxArgumentSize) {
-
                 jacobiesForStatement = (int)Config::MaxArgumentSize - 1;
-                if (staggeringActive) { // Space is used up but we need one Jacobian for the staggering
+                if (staggeringActive) {  // Space is used up but we need one Jacobian for the staggering
                   jacobiesForStatement -= 1;
                 }
               }
-              nonZerosLeft -= jacobiesForStatement; // Update non zeros so that we know if it is the last round
+              nonZerosLeft -= jacobiesForStatement;  // Update non zeros so that we know if it is the last round
 
               Identifier storedIdentifier = lastIdentifier;
               tape.storeManual(value.getValue(), lastIdentifier, jacobiesForStatement + (int)staggeringActive);
-              if (staggeringActive) { // Not the first staggering so push the last output
+              if (staggeringActive) {  // Not the first staggering so push the last output
                 tape.pushJacobiManual(1.0, 0.0, storedIdentifier);
               }
 
@@ -237,29 +233,29 @@ namespace codi {
     public:
 
       /// Does nothing
-      template<typename ... Inputs>
-      void addInput(Inputs const& ... inputs) {
+      template<typename... Inputs>
+      void addInput(Inputs const&... inputs) {
         CODI_UNUSED(inputs...);
         // do nothing
       }
 
       /// Does nothing
-      template<typename ... Inputs>
-      void start(Inputs const& ... inputs) {
+      template<typename... Inputs>
+      void start(Inputs const&... inputs) {
         CODI_UNUSED(inputs...);
         // do nothing
       }
 
       /// Does nothing
-      template<typename ... Outputs>
-      void addOutput(Outputs& ... outputs) {
+      template<typename... Outputs>
+      void addOutput(Outputs&... outputs) {
         CODI_UNUSED(outputs...);
         // do nothing
       }
 
       /// Does nothing
-      template<typename ... Outputs>
-      void finish(bool const storeAdjoints, Outputs& ... outputs) {
+      template<typename... Outputs>
+      void finish(bool const storeAdjoints, Outputs&... outputs) {
         CODI_UNUSED(storeAdjoints, outputs...);
         // do nothing
       }
@@ -273,7 +269,6 @@ namespace codi {
 
   /// Spcialize PreaccumulationHelper for doubles
   template<>
-  struct PreaccumulationHelper<double, void>
-      : public PreaccumulationHelperNoOpBase {};
+  struct PreaccumulationHelper<double, void> : public PreaccumulationHelperNoOpBase {};
 #endif
 }
