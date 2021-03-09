@@ -10,6 +10,7 @@
 #include <vector>
 
 struct Settings {
+  public:
     double threshold;
 
     std::vector<std::string> fileNames;

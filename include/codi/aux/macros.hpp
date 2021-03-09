@@ -11,7 +11,7 @@ namespace codi {
   template<typename... Args>
   void CODI_UNUSED(Args const&...) {}
 
-/// used in a constant context, where using CODI_UNUSED spoils the constantness */
+/// used in a constant context, where using CODI_UNUSED spoils the constantness
 #define CODI_UNUSED_ARG(arg) /* arg */
 
 /// Enable the if only if the option is true otherwise the code block is always evaluated
