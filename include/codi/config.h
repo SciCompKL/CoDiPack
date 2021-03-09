@@ -161,6 +161,7 @@ namespace codi {
     // Do not undefine
 
 #ifndef CODI_ReversalZeroesAdjoints
+  /// See codi::Config::ReversalZeroesAdjoints
   #define CODI_ReversalZeroesAdjoints true
 #endif
 #if CODI_VariableAdjointInterfaceInPrimalTapes && !CODI_ReversalZeroesAdjoints

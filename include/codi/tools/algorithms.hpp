@@ -10,29 +10,51 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Basic algorithms for tape evaluation in CoDiPack
+   *
+   * This class provides algorithms for:
+   *  - Jacobian assembly
+   *  - Hessian assembly
+   *
+   * All algorithms try to make the best choice for the evaluation mode, either forward or reverse. Which mode is
+   * selected can be get in advance with the method Algorithms::getEvaluationChoice.
+   *
+   * See \ref sec_namingConventions for the naming conventions.
+   *
+   * Hessians have to implement the HessianInterface and Jacobians have to implement the JacobianInterface.
+   *
+   * @tparam _Type  An ActiveReal type that has a tape which implements the ReverseTapeInterface
+   * @tparam ActiveChecks  If activity checks for the seeding of gradient data should be performed. [Default: true]
+   */
   template<typename _Type, bool _ActiveChecks = true>
   struct Algorithms {
     public:
 
+      /// See Algorithms
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      static bool constexpr ActiveChecks = _ActiveChecks;
+      static bool constexpr ActiveChecks = _ActiveChecks; ///< See Algorithms
 
-      using Tape = typename Type::Tape;
-      using Position = typename Tape::Position;
-      using Real = typename Type::Real;
-      using Identifier = typename Type::Identifier;
-      using Gradient = typename Type::Gradient;
+      using Tape = typename Type::Tape;  ///< See LhsExpressionInterface
+      using Position = typename Tape::Position;  ///< See LhsExpressionInterface
+      using Real = typename Type::Real;  ///< See LhsExpressionInterface
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
+      using Gradient = typename Type::Gradient;  ///< See LhsExpressionInterface
 
-      using GT = GradientTraits::TraitsImplementation<Gradient>;
+      using GT = GradientTraits::TraitsImplementation<Gradient>;  ///< Shortcut for traits of gradient
 
+      /// Evaluation modes for the derivative computation
       enum class EvaluationType
       {
         Forward,
         Reverse
       };
 
+      /// Which path the algorithm will select for the evaluation.
+      /// If the number of inputs are smaller than the outputs a forward evaluation will be chosen. Otherwise a reverse
+      /// evaluation.
       static CODI_INLINE EvaluationType getEvaluationChoice(size_t const inputs, size_t const outputs) {
         if (inputs <= outputs) {
           return EvaluationType::Forward;
@@ -41,6 +63,16 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Compute the Jacobian with multiple tape sweeps.
+       *
+       * It has to hold start < end
+       *
+       * The algorithm expects that no gradient data has been seeded with non zero values.
+       * After the return the algorithm ensures that all gradient data have zero values.
+       *
+       * param[in,out] jac  Has to implement JacobianInterface.
+       */
       template<typename Jac, bool keepState = true>
       static CODI_INLINE void computeJacobian(Tape& tape, Position const& start, Position const& end,
                                               Identifier const* input, size_t const inputSize, Identifier const* output,
@@ -97,6 +129,8 @@ namespace codi {
         }
       }
 
+      /// \copydoc computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac)
+      /// This method uses the global tape for the Jacobian evaluation.
       template<typename Jac>
       static CODI_INLINE void computeJacobian(Position const& start, Position const& end, Identifier const* input,
                                               size_t const inputSize, Identifier const* output, size_t const outputSize,
@@ -104,6 +138,23 @@ namespace codi {
         computeJacobian(Type::getGlobalTape(), start, end, input, inputSize, output, outputSize, jac);
       }
 
+      /**
+       * @brief Compute the Hessian with multiple tape sweeps.
+       *
+       * This algorithm is only available if the tape implements the PrimalEvaluationTapeInterface. It performs repeated
+       * primal evaluations to change original seeding of the tape. It also requires that the tape can compute second
+       * order derivatives via a nested first order forward type.
+       *
+       * The algorithm expects that no gradient data has been seeded with non zero values.
+       * It also expects that the current tape state was just recorded. This is, the primal values in the tape represent
+       * the output values of f.
+       * After the return the algorithm ensures that all gradient data have zero values.
+       *
+       * It has to hold start < end.
+       *
+       * param[in,out] hes  Has to implement HessianInterface.
+       * param[in,out] jac  Optional: Jacobian values are also extracted. Has to implement JacobianInterface.
+       */
       template<typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianPrimalValueTape(Tape& tape, Position const& start, Position const& end,
                                                             Identifier const* input, size_t const inputSize,
@@ -119,6 +170,17 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Forward version of the hessian computation.
+       *
+       * Two input variables are seeded with gradient information and then a forward evaluation is performed.
+       * Before each evaluation the primal values of the tape are reverted to the start position.
+       *
+       * The algorithm exploits symmetry and will perform n * (n + 1) / 2 forward tape evaluation. Vector gradient
+       * values for the first and second order derivatives will reduce the tape evaluations accordingly.
+       *
+       * \copydetails computeHessianPrimalValueTape
+       */
       template<typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianPrimalValueTapeForward(Tape& tape, Position const& start,
                                                                    Position const& end, Identifier const* input,
@@ -165,6 +227,17 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Reverse version of the hessian computation.
+       *
+       * One input variable is seeded with gradient information and then a forward evaluation is performed.
+       * Afterwards one output variable is seeded with gradient information and then a reverse evaluation is performed.
+       *
+       * The algorithm can not exploit symmetry and will perform n forward evaluation and n * m reverse evaluations.
+       * Vector gradient values for the first and second order derivatives will reduce the tape evaluations accordingly.
+       *
+       * \copydetails computeHessianPrimalValueTape
+       */
       template<typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianPrimalValueTapeReverse(Tape& tape, Position const& start,
                                                                    Position const& end, Identifier const* input,
@@ -223,6 +296,22 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Compute the Hessian with multiple tape recordings and sweeps.
+       *
+       * The algorithm will repeatedly evaluated the function func and record the evaluation on the global tape. It
+       * expects that the tape is empty. The tape needs to be able to compute second order derivatives via a nested
+       * first order forward type.
+       *
+       * After the return, the algorithm ensures that the tape is empty.
+       *
+       * It has to hold start < end.
+       *
+       * param[in]     func  The function for the recording of the tape. It needs to be a function object that
+       *                     will accept the call: func(input, output)
+       * param[in,out] hes  Has to implement HessianInterface.
+       * param[in,out] jac  Optional: Jacobian values are also extracted. Has to implement JacobianInterface.
+       */
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessian(Func func, VecIn& input, VecOut& output, Hes& hes,
                                              Jac& jac = StaticDummy<DummyJacobian>::dummy) {
@@ -236,6 +325,19 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Forward version of the hessian computation with a function object.
+       *
+       * One input variable is seeded with gradient information and then a tape is recorded.
+       * Afterwards a second input variable is seeded with gradient information and the tape is evaluated multiple times
+       * in the forward mode. Before each recording the global tape is reset.
+       *
+       * The algorithm will record n tapes and exploits symmetry for the forward evaluation which will result in
+       * n * (n + 1) / 2 forward tape evaluations. Vector gradient values for the first and second order derivatives
+       * will reduce the tape evaluations accordingly.
+       *
+       * \copydetails computeHessian
+       */
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianForward(Func func, VecIn& input, VecOut& output, Hes& hes,
                                                     Jac& jac = StaticDummy<DummyJacobian>::dummy) {
@@ -284,6 +386,19 @@ namespace codi {
         }
       }
 
+      /**
+       * @brief Reverse version of the hessian computation with a function object.
+       *
+       * One input variable is seeded with gradient information and then a tape is recorded.
+       * Afterwards an output variable is seeded with gradient information and the tape is evaluated once in the reverse
+       * mode.
+       * Before each recording the global tape is reset.
+       *
+       * The algorithm will record n tapes and perform m * n reverse tape evaluations.
+       * Vector gradient values for the first and second order derivatives will reduce the tape evaluations accordingly.
+       *
+       * \copydetails computeHessian
+       */
       template<typename Func, typename VecIn, typename VecOut, typename Hes, typename Jac = DummyJacobian>
       static CODI_INLINE void computeHessianReverse(Func func, VecIn& input, VecOut& output, Hes& hes,
                                                     Jac& jac = StaticDummy<DummyJacobian>::dummy) {
@@ -338,6 +453,7 @@ namespace codi {
 
     private:
 
+      /// Sets the gradient for vector modes. Seeds the next GT::dim dimensions.
       template<typename T>
       static CODI_INLINE void setGradientOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers,
                                                       size_t const size, T value) {
@@ -350,6 +466,7 @@ namespace codi {
         }
       }
 
+      /// Sets the gradient for 2nd order vector modes. Seeds the next GT2nd:dim dimensions.
       template<typename T>
       static CODI_INLINE void setGradient2ndOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers,
                                                          size_t const size, T value) {
@@ -361,6 +478,7 @@ namespace codi {
         }
       }
 
+      /// Sets the gradient for order vector modes. Seeds the next GT:dim dimensions.
       template<typename T>
       static CODI_INLINE void setGradientOnCoDiValue(Tape& tape, size_t const pos, Type* identifiers, size_t const size,
                                                      T value) {
@@ -373,6 +491,7 @@ namespace codi {
         }
       }
 
+      /// Sets the gradient for 2nd order vector modes. Seeds the next GT2nd:dim dimensions.
       template<typename T>
       static CODI_INLINE void setGradient2ndOnCoDiValue(size_t const pos, Type* identifiers, size_t const size,
                                                         T value) {
@@ -385,6 +504,7 @@ namespace codi {
         }
       }
 
+      /// Record an evalaution of the function.
       template<typename Func, typename VecIn, typename VecOut>
       static CODI_INLINE void recordTape(Func func, VecIn& input, VecOut& output) {
         Tape& tape = Type::getGlobalTape();
