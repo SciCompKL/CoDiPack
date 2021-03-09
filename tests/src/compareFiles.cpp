@@ -178,7 +178,7 @@ class ResultDiff {
 
       if (0 == diff) {
         return diff;
-      } else if (0.0 == base) {
+      } else if (0.0 == base || 0.0 == value) {
         return diff;
       } else {
         return diff / std::abs(base);

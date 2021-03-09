@@ -45,9 +45,9 @@ namespace codi {
 
       using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
 
-      constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
-      constexpr static bool IsStaticIndexHandler =
-          !IsLinearIndexHandler;  ///< For reuse index mangers a static instantiation is used.
+      static bool constexpr IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
+      static bool constexpr IsStaticIndexHandler = !IsLinearIndexHandler;   ///< For reuse index mangers a static
+                                                                            ///< instantiation is used.
 
       /// Statement chunk is either \<argument size\> (linear management) or \<lhs identifier, argument size\>
       /// (reuse management)
@@ -292,6 +292,8 @@ namespace codi {
                              ExpressionInterface<Real, Rhs> const& rhs) {
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           size_t constexpr MaxArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+
+          codiAssert(MaxArgs < Config::MaxArgumentSize);
 
           statementData.reserveItems(1);
           typename JacobianData::InternalPosHandle jacobianStart = jacobianData.reserveItems(MaxArgs);
@@ -583,6 +585,8 @@ namespace codi {
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
+
+        codiAssert(size < Config::MaxArgumentSize);
 
         statementData.reserveItems(1);
         jacobianData.reserveItems(size);

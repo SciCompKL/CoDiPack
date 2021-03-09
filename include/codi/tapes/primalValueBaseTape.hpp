@@ -4,6 +4,7 @@
 #include <cmath>
 #include <functional>
 #include <type_traits>
+#include <utility>
 
 #include "../aux/macros.hpp"
 #include "../aux/memberStore.hpp"
@@ -315,6 +316,9 @@ namespace codi {
           PushIdentfierPassiveAndConstant pushAll;
           size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
           size_t constexpr MaxConstantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
+
+          codiAssert(MaxActiveArgs < Config::MaxArgumentSize);
+          codiAssert(MaxConstantArgs < Config::MaxArgumentSize);
 
           size_t activeArguments = 0;
           countActiveArguments.eval(rhs.cast(), activeArguments);
@@ -758,12 +762,14 @@ namespace codi {
           /// Throws exception
           template<typename Expr, typename... Args>
           static Real statementEvaluateForward(Args&&... args) {
+            CODI_UNUSED(args...);
             CODI_EXCEPTION("Forward evaluation of jacobian statement not possible.");
           }
 
           /// Throws exception
           template<typename Expr, typename... Args>
           static Real statementEvaluatePrimal(Args&&... args) {
+            CODI_UNUSED(args...);
             CODI_EXCEPTION("Primal evaluation of jacobian statement not possible.");
           }
 
@@ -795,6 +801,7 @@ namespace codi {
           /// Throws exception
           template<typename Expr, typename... Args>
           static Real statementEvaluateForwardInner(Args&&... args) {
+            CODI_UNUSED(args...);
             CODI_EXCEPTION("Forward evaluation of jacobian statement not possible.");
 
             return Real();
@@ -803,6 +810,7 @@ namespace codi {
           /// Throws exception
           template<typename Expr, typename... Args>
           static Real statementEvaluatePrimalInner(Args&&... args) {
+            CODI_UNUSED(args...);
             CODI_EXCEPTION("Primal evaluation of jacobian statement not possible.");
 
             return Real();
@@ -874,6 +882,8 @@ namespace codi {
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
 
+        codiAssert(size < Config::MaxArgumentSize);
+
         statementData.reserveItems(1);
         rhsIdentiferData.reserveItems(size);
         passiveValueData.reserveItems(size);
@@ -899,7 +909,8 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos) {
-        internalResetPrimalValues(pos);
+
+        cast().internalResetPrimalValues(pos);
 
         Base::resetTo(pos);
       }
@@ -916,7 +927,7 @@ namespace codi {
         internalEvaluateReverse<false>(start, end, adjoints.data());
 
         if (!TapeTypes::IsLinearIndexHandler) {
-          internalEvaluatePrimalStack(end, start);
+          evaluatePrimal(end, start);
         }
       }
 
@@ -925,7 +936,7 @@ namespace codi {
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
         if (!TapeTypes::IsLinearIndexHandler) {
-          internalResetPrimalValues(end);
+          cast().internalResetPrimalValues(end);
         }
 
         internalEvaluateForward<false>(start, end, adjoints.data());
@@ -994,7 +1005,7 @@ namespace codi {
 
         IncrementForwardLogic incrementForward;
 
-        incrementForward.eval(staticsRhs, 1.0, lhsTangent, adjointVector);
+        incrementForward.eval(staticsRhs, Real(1.0), lhsTangent, adjointVector);
         return staticsRhs.getValue();
       }
 
@@ -1073,7 +1084,7 @@ namespace codi {
 
         IncrementReversalLogic incrementReverse;
 
-        incrementReverse.eval(staticsRhs, 1.0, const_cast<Gradient const&>(lhsAdjoint), adjointVector);
+        incrementReverse.eval(staticsRhs, Real(1.0), const_cast<Gradient const&>(lhsAdjoint), adjointVector);
       }
 
       /// \copydoc codi::StatementEvaluatorInnerTapeInterface::statementEvaluateReverseFull()
@@ -1266,7 +1277,7 @@ namespace codi {
           CREATE_EXPRESSION(240), CREATE_EXPRESSION(241), CREATE_EXPRESSION(242), CREATE_EXPRESSION(243),
           CREATE_EXPRESSION(244), CREATE_EXPRESSION(245), CREATE_EXPRESSION(246), CREATE_EXPRESSION(247),
           CREATE_EXPRESSION(248), CREATE_EXPRESSION(249), CREATE_EXPRESSION(250), CREATE_EXPRESSION(251),
-          CREATE_EXPRESSION(252), CREATE_EXPRESSION(253), CREATE_EXPRESSION(254)};
+          CREATE_EXPRESSION(252), CREATE_EXPRESSION(253)};
 
 #undef CREATE_EXPRESSION
 }

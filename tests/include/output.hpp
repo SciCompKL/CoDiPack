@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "../../include/codi/tools/data/jacobian.hpp"
-//#include ../../include/codi/tools/data/hessian.hpp"
+#include "../../include/codi/tools/data/hessian.hpp"
 
 char const* const HEADER_FORMAT = "%6s_%03zd";
 char const* const VALUE_FORMAT = "%10g";
@@ -63,8 +63,8 @@ void writeOutputPrimal(FILE* out, std::vector<T> const& primal) {
   }
 }
 
-template<typename Vec>
-void writeOutputJacobian(FILE* out, codi::Jacobian<Vec> const& jac) {
+template<typename T>
+void writeOutputJacobian(FILE* out, codi::Jacobian<T> const& jac) {
   // print header
   fprintf(out, BLANK);
   for (size_t curIn = 0; curIn < jac.getN(); curIn += 1) {
@@ -84,30 +84,29 @@ void writeOutputJacobian(FILE* out, codi::Jacobian<Vec> const& jac) {
   }
 }
 
-// template<typename Vec>
-// void writeOutputHessian(codi::Hessian<Vec> const& hes) {
+template<typename T>
+void writeOutputHessian(FILE* out, codi::Hessian<T> const& hes) {
+  for(size_t curOut = 0; curOut < hes.getM(); curOut += 1) {
 
-//  for(size_t curOut = 0; curOut < hes.getM(); curOut += 1) {
+    // print header
+    fprintf(out, HEADER_FORMAT, "out", curOut);
+    for(size_t curIn = 0; curIn < hes.getN(); curIn += 1) {
+      fprintf(out, COL_SEPERATOR);
+      fprintf(out, HEADER_FORMAT, "in", curIn);
+    }
+    fprintf(out, LINE_END);
 
-//    // print header
-//    fprintf(out, HEADER_FORMAT, "out", curOut);
-//    for(size_t curIn = 0; curIn < hes.getN(); curIn += 1) {
-//      fprintf(out, COL_SEPERATOR);
-//      fprintf(out, HEADER_FORMAT, "in", curIn);
-//    }
-//    fprintf(out, LINE_END);
+    for(size_t curIn1st = 0; curIn1st < hes.getN(); curIn1st += 1) {
+      fprintf(out, HEADER_FORMAT, "in", curIn1st);
 
-//    for(size_t curIn1st = 0; curIn1st < hes.getN(); curIn1st += 1) {
-//      fprintf(out, HEADER_FORMAT, "in", curIn1st);
+      for(size_t curIn2nd = 0; curIn2nd < hes.getN(); curIn2nd += 1) {
+        fprintf(out, COL_SEPERATOR);
+        fprintf(out, VALUE_FORMAT, hes(curOut, curIn1st, curIn2nd));
+      }
 
-//      for(size_t curIn2nd = 0; curIn2nd < hes.getN(); curIn2nd += 1) {
-//        fprintf(out, COL_SEPERATOR);
-//        fprintf(out, VALUE_FORMAT, hes(curOut, curIn1st, curIn2nd));
-//      }
+      fprintf(out, LINE_END);
+    }
 
-//      fprintf(out, LINE_END);
-//    }
-
-//    fprintf(out, LINE_END);
-//  }
-//}
+    fprintf(out, LINE_END);
+  }
+}

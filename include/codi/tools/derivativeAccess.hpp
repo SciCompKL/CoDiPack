@@ -180,6 +180,7 @@ namespace codi {
         using RType = ArgType;
 
         static RType& select(ArgType& v, size_t order, size_t l) {
+          CODI_UNUSED(order, l);
           return v;
         }
     };

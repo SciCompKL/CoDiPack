@@ -91,6 +91,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::extractPosition
+      template<typename = void>
       CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }

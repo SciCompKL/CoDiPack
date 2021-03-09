@@ -62,7 +62,7 @@ struct MultiplyExternalFunctionHelper<_Number, codi::TapeTraits::EnableIfReverse
         eh.callPrimalFunc(MultiplyExternalFunctionHelper::func_primal);
       }
 
-      eh.addToTape(MultiplyExternalFunctionHelper::func_reverse, MultiplyExternalFunctionHelper::func_forward);
+      eh.addToTape(MultiplyExternalFunctionHelper::func_reverse, MultiplyExternalFunctionHelper::func_forward, MultiplyExternalFunctionHelper::func_primal);
 
       return w;
     }

@@ -127,7 +127,10 @@ namespace codi {
 
           if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation
-            adjointVector[curAdjointPos] = Adjoint();
+
+            if (Config::ReversalZeroesAdjoints) {
+              adjointVector[curAdjointPos] = Adjoint();
+            }
 
             Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
           }

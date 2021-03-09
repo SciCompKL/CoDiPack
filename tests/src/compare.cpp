@@ -104,6 +104,8 @@ struct CompareOutput {
           modeName = "deriv0th";
         } else if ("D1" == mode) {
           modeName = "deriv1st";
+        } else if ("D2" == mode) {
+          modeName = "deriv2nd";
         } else {
           std::cerr << "Error: No long mode name available for: " << mode << std::endl;
           allOk = false;

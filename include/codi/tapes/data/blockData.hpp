@@ -5,6 +5,7 @@
 
 #include "../../aux/macros.hpp"
 #include "../../config.h"
+#include "../../traits/aux/enableIfHelpers.hpp"
 #include "chunk.hpp"
 #include "dataInterface.hpp"
 #include "emptyData.hpp"
@@ -143,12 +144,13 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::extractPosition
-      template<typename TargetPosition>
+      template<typename TargetPosition, typename = typename enable_if_not_same<TargetPosition, Position>::type>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
         return nested->template extractPosition<TargetPosition>(pos.inner);
       }
 
       /// \copydoc DataInterface::extractPosition
+      template<typename TargetPosition, typename = typename enable_if_same<TargetPosition, Position>::type>
       CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }

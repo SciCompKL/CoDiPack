@@ -40,7 +40,7 @@ namespace codi {
     using ArgumentSize = uint8_t;
 
     /// Maximum number of arguments in a statement
-    size_t constexpr MaxArgumentSize = 255;
+    size_t constexpr MaxArgumentSize = 254;
 
     /// Tag for statements that are inputs. Used in linear index management context.
     size_t constexpr StatementInputTag = 255;
@@ -159,6 +159,16 @@ namespace codi {
   #define ADJOINT_VECTOR_TYPE Gradient
 #endif
     // Do not undefine
+
+    #ifndef CODI_ReversalZeroesAdjoints
+      #define CODI_ReversalZeroesAdjoints true
+    #endif
+    #if CODI_VariableAdjointInterfaceInPrimalTapes && !CODI_ReversalZeroesAdjoints
+      #warning CODI_ReversalZeroesAdjoints == false is incompatible with CODI_VariableAdjointInterfaceInPrimalTapes == true.
+    #endif
+    /// With a linear index management, control if adjoints are set to zero during reversal.
+    bool constexpr ReversalZeroesAdjoints = CODI_ReversalZeroesAdjoints;
+    #undef CODI_ReversalZeroesAdjoints
 
     /// @}
     /*******************************************************************************/

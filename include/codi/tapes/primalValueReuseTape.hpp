@@ -60,7 +60,7 @@ namespace codi {
                                 EvalHandle* evalHandle) {
           CODI_UNUSED(passiveArgs, oldPrimal, evalHandle);
 
-          if (*lhsIndex < this->adjoints.size()) {
+          if (*lhsIndex < (Identifier)this->adjoints.size()) {
             this->adjoints[*lhsIndex] = Gradient();
           }
         };
@@ -177,7 +177,7 @@ namespace codi {
         }
       }
 
-      /// Empty implementation primal values are not restsored in linear management
+      /// \copydoc codi::PrimalValueBaseTape::internalResetPrimalValues
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
         // reset primals
         auto clearFunc = [this](Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal,
@@ -199,5 +199,12 @@ namespace codi {
                                     Real const& oldPrimalValue, EvalHandle evalHandle) {
         Base::statementData.pushData(index, numberOfPassiveArguments, oldPrimalValue, evalHandle);
       }
+
+    public:
+      /// \copydoc codi::PrimalEvaluationTapeInterface::revertPrimals
+      void revertPrimals(Position const& pos) {
+        internalResetPrimalValues(pos);
+      }
+
   };
 }
