@@ -4,9 +4,9 @@
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../data/position.hpp"
-#include "positionalEvaluationTapeInterface.hpp"
 #include "forwardEvaluationTapeInterface.hpp"
 #include "manualStatementPushTapeInterface.hpp"
+#include "positionalEvaluationTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -29,26 +29,26 @@ namespace codi {
    * @tparam _Position  Global tape position usually defined by Tape::Position.
    */
   template<typename _Real, typename _Gradient, typename _Identifier, typename _Position>
-  struct PreaccumulationEvaluationTapeInterface :
-      public virtual PositionalEvaluationTapeInterface<_Position>,
-      public virtual ForwardEvaluationTapeInterface<_Position>,
-      public virtual ManualStatementPushTapeInterface<_Real, _Gradient, _Identifier>
-  {
+  struct PreaccumulationEvaluationTapeInterface
+      : public virtual PositionalEvaluationTapeInterface<_Position>,
+        public virtual ForwardEvaluationTapeInterface<_Position>,
+        public virtual ManualStatementPushTapeInterface<_Real, _Gradient, _Identifier> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See PreaccumulationEvaluationTapeInterface.
-      using Gradient = CODI_DD(_Gradient, double); ///< See PreaccumulationEvaluationTapeInterface.
-      using Identifier = CODI_DD(_Identifier, int); ///< See PreaccumulationEvaluationTapeInterface.
-      using Position = CODI_DD(_Position, EmptyPosition); ///< See PreaccumulationEvaluationTapeInterface.
+      using Real = CODI_DD(_Real, double);                 ///< See PreaccumulationEvaluationTapeInterface.
+      using Gradient = CODI_DD(_Gradient, double);         ///< See PreaccumulationEvaluationTapeInterface.
+      using Identifier = CODI_DD(_Identifier, int);        ///< See PreaccumulationEvaluationTapeInterface.
+      using Position = CODI_DD(_Position, EmptyPosition);  ///< See PreaccumulationEvaluationTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// Perform a tape evaluation but restore the state afterwards such that it is the same as when the evaluation started.
+      /// Perform a tape evaluation but restore the state afterwards such that it is the same as when the evaluation
+      /// started.
       void evaluateKeepState(Position const& start, Position const& end);
 
-      /// Perform a tape evaluation but restore the state afterwards such that it is the same as when the evaluation started.
+      /// Perform a tape evaluation but restore the state afterwards such that it is the same as when the evaluation
+      /// started.
       void evaluateForwardKeepState(Position const& start, Position const& end);
-
   };
 }

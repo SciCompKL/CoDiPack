@@ -21,22 +21,22 @@ namespace codi {
   struct StatementEvaluatorTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See StatementEvaluatorTapeInterface
+      using Real = CODI_DD(_Real, double);  ///< See StatementEvaluatorTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
       /// Evaluate expression in a forward mode.
-      template<typename Expr, typename ... Args>
-      static Real statementEvaluateForward(Args&& ... args);
+      template<typename Expr, typename... Args>
+      static Real statementEvaluateForward(Args&&... args);
 
       /// Evaluate primal expression.
-      template<typename Expr, typename ... Args>
-      static Real statementEvaluatePrimal(Args&& ... args);
+      template<typename Expr, typename... Args>
+      static Real statementEvaluatePrimal(Args&&... args);
 
       /// Evaluate expression in a reverse mode.
-      template<typename Expr, typename ... Args>
-      static void statementEvaluateReverse(Args&& ... args);
+      template<typename Expr, typename... Args>
+      static void statementEvaluateReverse(Args&&... args);
   };
 
   /**
@@ -57,36 +57,36 @@ namespace codi {
   struct StatementEvaluatorInnerTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See StatementEvaluatorInnerTapeInterface
+      using Real = CODI_DD(_Real, double);  ///< See StatementEvaluatorInnerTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
       /// Load the expression data and evaluate the expression in a forward mode.
-      template<typename Func, typename ... Args>
-      static Real statementEvaluateForwardFull(
-          Func const& inner, size_t const& maxActiveArgs, size_t const& maxConstantArgs, Args&& ... args);
+      template<typename Func, typename... Args>
+      static Real statementEvaluateForwardFull(Func const& inner, size_t const& maxActiveArgs,
+                                               size_t const& maxConstantArgs, Args&&... args);
 
       /// Load the expression data and evaluate the expression in a primal setting.
-      template<typename Func, typename ... Args>
-      static Real statementEvaluatePrimalFull(
-          Func const& inner, size_t const& maxActiveArgs, size_t const& maxConstantArgs, Args&& ... args);
+      template<typename Func, typename... Args>
+      static Real statementEvaluatePrimalFull(Func const& inner, size_t const& maxActiveArgs,
+                                              size_t const& maxConstantArgs, Args&&... args);
 
       /// Load the expression data and evaluate the expression in a reverse mode.
-      template<typename Func, typename ... Args>
-      static void statementEvaluateReverseFull(
-          Func const& inner, size_t const& maxActiveArgs, size_t const& maxConstantArgs, Args&& ... args);
+      template<typename Func, typename... Args>
+      static void statementEvaluateReverseFull(Func const& inner, size_t const& maxActiveArgs,
+                                               size_t const& maxConstantArgs, Args&&... args);
 
       /// Evaluate expression in a forward mode.
-      template<typename Expr, typename ... Args>
-      static Real statementEvaluateForwardInner(Args&& ... args);
+      template<typename Expr, typename... Args>
+      static Real statementEvaluateForwardInner(Args&&... args);
 
       /// Evaluate expression in a primal setting.
-      template<typename Expr, typename ... Args>
-      static Real statementEvaluatePrimalInner(Args&& ... args);
+      template<typename Expr, typename... Args>
+      static Real statementEvaluatePrimalInner(Args&&... args);
 
       /// Evaluate expression in a reverse mode.
-      template<typename Expr, typename ... Args>
-      static void statementEvaluateReverseInner(Args&& ... args);
+      template<typename Expr, typename... Args>
+      static void statementEvaluateReverseInner(Args&&... args);
   };
 }

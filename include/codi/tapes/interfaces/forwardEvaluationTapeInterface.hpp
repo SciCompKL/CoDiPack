@@ -22,7 +22,7 @@ namespace codi {
   struct ForwardEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<_Position> {
     public:
 
-      using Position = CODI_DD(_Position, EmptyPosition); ///< See ForwardEvaluationTapeInterface.
+      using Position = CODI_DD(_Position, EmptyPosition);  ///< See ForwardEvaluationTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

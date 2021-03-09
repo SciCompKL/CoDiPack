@@ -4,7 +4,6 @@
 
 #include "../aux/macros.hpp"
 #include "../config.h"
-
 #include "../tapes/jacobianBaseTape.hpp"
 #include "../tapes/primalValueBaseTape.hpp"
 
@@ -64,10 +63,7 @@ namespace codi {
 
     /// If the tape inherits either from JacobianBaseTape or PrimalValueBaseTape.
     template<typename Tape>
-    using IsReverseTape = std::integral_constant<bool,
-           IsJacobianTape<Tape>::value
-        || IsPrimalValueTape<Tape>::value
-      >;
+    using IsReverseTape = std::integral_constant<bool, IsJacobianTape<Tape>::value || IsPrimalValueTape<Tape>::value>;
 
 #if CODI_IS_CPP14
     /// Value entry of IsReverseTape

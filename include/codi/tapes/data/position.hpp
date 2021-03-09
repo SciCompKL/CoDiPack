@@ -14,37 +14,37 @@ namespace codi {
     public:
 
       /// Always false
-      bool operator != (EmptyPosition const& o) const {
+      bool operator!=(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return false;
       }
 
       /// Always true
-      bool operator == (EmptyPosition const& o) const {
+      bool operator==(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return true;
       }
 
       /// Always false
-      bool operator < (EmptyPosition const& o) const {
+      bool operator<(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return false;
       }
 
       /// Always true
-      bool operator <= (EmptyPosition const& o) const {
+      bool operator<=(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return true;
       }
 
       /// Always false
-      bool operator > (EmptyPosition const& o) const {
+      bool operator>(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return false;
       }
 
       /// Always true
-      bool operator >= (EmptyPosition const& o) const {
+      bool operator>=(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return true;
       }
@@ -68,49 +68,45 @@ namespace codi {
   struct ArrayPosition {
     public:
 
-      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition); ///< See ArrayPosition
+      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition);  ///< See ArrayPosition
 
       size_t data;  ///< Array position index.
 
-      NestedPosition inner; ///< Position of nested data
+      NestedPosition inner;  ///< Position of nested data
 
       /// Constructor
-      ArrayPosition() :
-        data(0),
-        inner() {}
+      ArrayPosition() : data(0), inner() {}
 
       /// Constructor
-      ArrayPosition(size_t const& data, NestedPosition const& inner) :
-        data(data),
-        inner(inner) {}
+      ArrayPosition(size_t const& data, NestedPosition const& inner) : data(data), inner(inner) {}
 
       /// Operator != also compares with nested data
-      bool operator != (ArrayPosition const& o) const {
+      bool operator!=(ArrayPosition const& o) const {
         return data != o.data || this->inner != o.inner;
       }
 
       /// Operator == also compares with nested data
-      bool operator == (ArrayPosition const& o) const {
+      bool operator==(ArrayPosition const& o) const {
         return data == o.data && this->inner == o.inner;
       }
 
       /// Operator < also compares with nested data
-      bool operator < (ArrayPosition const& o) const {
+      bool operator<(ArrayPosition const& o) const {
         return data < o.data || (data == o.data && inner < o.inner);
       }
 
       /// Operator <= also compares with nested data
-      bool operator <= (ArrayPosition const& o) const {
+      bool operator<=(ArrayPosition const& o) const {
         return data < o.data || (data == o.data && inner <= o.inner);
       }
 
       /// Operator > also compares with nested data
-      bool operator > (ArrayPosition const& o) const {
+      bool operator>(ArrayPosition const& o) const {
         return o < *this;
       }
 
       /// Operator >= also compares with nested data
-      bool operator >= (ArrayPosition const& o) const {
+      bool operator>=(ArrayPosition const& o) const {
         return o <= *this;
       }
 
@@ -136,48 +132,45 @@ namespace codi {
   struct ChunkPosition : public ArrayPosition<_NestedPosition> {
     public:
 
-      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition); ///< See ChunkPosition
-      using Base = ArrayPosition<NestedPosition>; ///< Base abbreviation
+      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition);  ///< See ChunkPosition
+      using Base = ArrayPosition<NestedPosition>;                      ///< Base abbreviation
 
-      size_t chunk; ///< Chunk position index
-
-      /// Constructor
-      ChunkPosition() :
-        Base(),
-        chunk(0) {}
+      size_t chunk;  ///< Chunk position index
 
       /// Constructor
-      ChunkPosition(size_t const& chunk, size_t const& data, NestedPosition const& inner) :
-        Base(data, inner),
-        chunk(chunk) {}
+      ChunkPosition() : Base(), chunk(0) {}
+
+      /// Constructor
+      ChunkPosition(size_t const& chunk, size_t const& data, NestedPosition const& inner)
+          : Base(data, inner), chunk(chunk) {}
 
       /// Operator != also compares with nested data
-      bool operator != (ChunkPosition const& o) const {
-        return chunk != o.chunk || Base::operator !=(static_cast<Base const&>(o));
+      bool operator!=(ChunkPosition const& o) const {
+        return chunk != o.chunk || Base::operator!=(static_cast<Base const&>(o));
       }
 
       /// Operator == also compares with nested data
-      bool operator == (ChunkPosition const& o) const {
-        return chunk == o.chunk && Base::operator ==(static_cast<Base const&>(o));
+      bool operator==(ChunkPosition const& o) const {
+        return chunk == o.chunk && Base::operator==(static_cast<Base const&>(o));
       }
 
       /// Operator < also compares with nested data
-      bool operator < (ChunkPosition const& o) const {
-        return chunk < o.chunk || (chunk == o.chunk && Base::operator <(static_cast<Base const&>(o)));
+      bool operator<(ChunkPosition const& o) const {
+        return chunk < o.chunk || (chunk == o.chunk && Base::operator<(static_cast<Base const&>(o)));
       }
 
       /// Operator <= also compares with nested data
-      bool operator <= (ChunkPosition const& o) const {
-        return chunk < o.chunk || (chunk == o.chunk && Base::operator <=(static_cast<Base const&>(o)));
+      bool operator<=(ChunkPosition const& o) const {
+        return chunk < o.chunk || (chunk == o.chunk && Base::operator<=(static_cast<Base const&>(o)));
       }
 
       /// Operator > also compares with nested data
-      bool operator > (ChunkPosition const& o) const {
+      bool operator>(ChunkPosition const& o) const {
         return o < *this;
       }
 
       /// Operator >= also compares with nested data
-      bool operator >= (ChunkPosition const& o) const {
+      bool operator>=(ChunkPosition const& o) const {
         return o <= *this;
       }
 

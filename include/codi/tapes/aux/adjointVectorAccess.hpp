@@ -21,25 +21,21 @@ namespace codi {
    * @tparam _Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.
    */
   template<typename _Real, typename _Identifier, typename _Gradient>
-  struct AdjointVectorAccess : public VectorAccessInterface<_Real, _Identifier>  {
-
-      using Real = CODI_DD(_Real, double); ///< See AdjointVectorAccess
+  struct AdjointVectorAccess : public VectorAccessInterface<_Real, _Identifier> {
+      using Real = CODI_DD(_Real, double);           ///< See AdjointVectorAccess
       using Identifier = CODI_DD(_Identifier, int);  ///< See AdjointVectorAccess
-      using Gradient = CODI_DD(_Gradient, double); ///< See AdjointVectorAccess
+      using Gradient = CODI_DD(_Gradient, double);   ///< See AdjointVectorAccess
 
     private:
 
-      Gradient* adjointVector; ///< Pointer to the gradient vector
+      Gradient* adjointVector;  ///< Pointer to the gradient vector
 
-      Gradient lhs; ///< Temporary storage for indirect adjoint or tangent updates.
+      Gradient lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
 
     public:
 
-
       /// Size of adjointVector needs to big enough to. No bounds checking is performed.
-      AdjointVectorAccess(Gradient* adjointVector) :
-        adjointVector(adjointVector),
-        lhs() {}
+      AdjointVectorAccess(Gradient* adjointVector) : adjointVector(adjointVector), lhs() {}
 
       /*******************************************************************************/
       /// @name Misc
@@ -71,7 +67,6 @@ namespace codi {
       /*******************************************************************************/
       /// @name Indirect tangent access
 
-
       /// \copydoc VectorAccessInterface::setLhsTangent
       void setLhsTangent(Identifier const& index) {
         adjointVector[index] = lhs;
@@ -80,12 +75,11 @@ namespace codi {
 
       /// \copydoc VectorAccessInterface::updateTangentWithLhs
       void updateTangentWithLhs(Identifier const& index, Real const& jacobi) {
-        lhs +=  jacobi * adjointVector[index];
+        lhs += jacobi * adjointVector[index];
       }
 
       /*******************************************************************************/
       /// @name Direct adjoint access
-
 
       /// \copydoc VectorAccessInterface::resetAdjoint
       void resetAdjoint(Identifier const& index, size_t dim) {
@@ -101,13 +95,13 @@ namespace codi {
       Real getAdjoint(Identifier const& index, size_t dim) {
         CODI_UNUSED(dim);
 
-        return (Real) GradientTraits::at(adjointVector[index], dim);
+        return (Real)GradientTraits::at(adjointVector[index], dim);
       }
 
       /// \copydoc VectorAccessInterface::getAdjointVec
       void getAdjointVec(Identifier const& index, Real* const vec) {
         for (size_t i = 0; i < getVectorSize(); ++i) {
-          vec[i] = (Real) GradientTraits::at(adjointVector[index], i);
+          vec[i] = (Real)GradientTraits::at(adjointVector[index], i);
         }
       }
 
@@ -147,4 +141,3 @@ namespace codi {
       }
   };
 }
-

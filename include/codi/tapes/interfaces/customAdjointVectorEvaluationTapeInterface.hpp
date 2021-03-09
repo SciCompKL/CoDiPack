@@ -20,7 +20,8 @@ namespace codi {
    *  - operator +=
    *  - It also needs to specialize #codi::GradientTraits::TraitsImplementation
    *
-   * An example for a custom vector mode evaluation (documentation/examples/customAdjointVectorEvaluationTapeInterface.cpp):
+   * An example for a custom vector mode evaluation
+   * (documentation/examples/customAdjointVectorEvaluationTapeInterface.cpp):
    * \snippet examples/customAdjointVectorEvaluationTapeInterface.cpp Custom vector
    *
    * @tparam _Position  Global tape position usually defined by Tape::Position.
@@ -29,7 +30,7 @@ namespace codi {
   struct CustomAdjointVectorEvaluationTapeInterface : public virtual ForwardEvaluationTapeInterface<_Position> {
     public:
 
-      using Position = CODI_DD(_Position, EmptyPosition); ///< See CustomAdjointVectorEvaluationTapeInterface
+      using Position = CODI_DD(_Position, EmptyPosition);  ///< See CustomAdjointVectorEvaluationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

@@ -1,18 +1,15 @@
-#include "../../testInterface.hpp"
-
 #include <type_traits>
 #include <vector>
 
 #include "../../../../include/codi.hpp"
+#include "../../testInterface.hpp"
 
 struct TestNumericLimits : public TestInterface {
   public:
     NAME("NumericLimits")
     IN(1)
     OUT(1)
-    POINTS(1) = {
-      {1.0}
-    };
+    POINTS(1) = {{1.0}};
 
     template<typename Number>
     static void func(Number* x, Number* y) {

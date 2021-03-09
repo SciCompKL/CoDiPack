@@ -20,11 +20,11 @@ namespace codi {
   struct CompileTimeLoop {
     public:
 
-      static size_t constexpr pos = _pos; ///< See CompileTimeLoop
+      static size_t constexpr pos = _pos;  ///< See CompileTimeLoop
 
       /// Func is evaluated with args as func(pos, args...)
-      template<typename Func, typename ... Args>
-      static CODI_INLINE void eval(Func&& func, Args&& ... args) {
+      template<typename Func, typename... Args>
+      static CODI_INLINE void eval(Func&& func, Args&&... args) {
         func(std::integral_constant<size_t, pos>{}, std::forward<Args>(args)...);
 
         CompileTimeLoop<pos - 1>::eval(std::forward<Func>(func), std::forward<Args>(args)...);
@@ -36,11 +36,11 @@ namespace codi {
   struct CompileTimeLoop<0> {
     public:
 
-      static size_t constexpr pos = 0; ///< See CompileTimeLoop
+      static size_t constexpr pos = 0;  ///< See CompileTimeLoop
 
       /// Nothing is evaluated
-      template<typename ... Args>
-      static CODI_INLINE void eval(Args&& ... args) {
+      template<typename... Args>
+      static CODI_INLINE void eval(Args&&... args) {
         CODI_UNUSED(args...);
       }
   };

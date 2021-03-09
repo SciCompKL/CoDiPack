@@ -5,7 +5,7 @@ struct TestOneArgumentExpr2 : public TestInterface {
     NAME("OneArgumentExpr2")
     IN(1)
     OUT(4)
-    POINTS(20) =
+    POINTS(20) =  // clang-format off
     {
       {  0.5000},
       {  1.0000},
@@ -27,13 +27,13 @@ struct TestOneArgumentExpr2 : public TestInterface {
       {  9.0000},
       {  9.5000},
       { 10.0000}
-    };
-    
+    };  // clang-format on
+
     template<typename Number>
     static void func(Number* x, Number* y) {
-      y[0] =    log(x[0]);  // (0, inf)
-      y[1] =  log10(x[0]);  // (0, inf)
-      y[2] =   sqrt(x[0]);  // [0, inf)
+      y[0] = log(x[0]);     // (0, inf)
+      y[1] = log10(x[0]);   // (0, inf)
+      y[2] = sqrt(x[0]);    // [0, inf)
       y[3] = tgamma(x[0]);  // R currently only defined for positive arguments
     }
 };

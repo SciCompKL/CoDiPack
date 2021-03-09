@@ -1,11 +1,12 @@
 
 #pragma once
 
-#include <iostream>
-#include <stdio.h>
 #include <errno.h>
-#include <string>
+#include <stdio.h>
 #include <string.h>
+
+#include <iostream>
+#include <string>
 
 #include "../config.h"
 #include "macros.hpp"
@@ -14,7 +15,8 @@
 namespace codi {
 
   /// Possible IO errors.
-  enum struct IoError {
+  enum struct IoError
+  {
     Mode,
     Open,
     Write,
@@ -25,15 +27,12 @@ namespace codi {
   struct IoException {
     public:
 
-      std::string text; ///< Textual description
-      IoError id;       ///< Exception ID
+      std::string text;  ///< Textual description
+      IoError id;        ///< Exception ID
 
       /// Constructor
-      IoException(IoError id, std::string const& text, bool appendErrno) :
-        text(text),
-        id(id)
-      {
-        if(appendErrno) {
+      IoException(IoError id, std::string const& text, bool appendErrno) : text(text), id(id) {
+        if (appendErrno) {
           this->text += " (Internal error: ";
           this->text += strerror(errno);
           this->text += ")";
@@ -52,8 +51,8 @@ namespace codi {
   struct FileIo {
     private:
 
-      FILE* fileHandle; ///< File handle
-      bool writeMode;   ///< true = write, false = read
+      FILE* fileHandle;  ///< File handle
+      bool writeMode;    ///< true = write, false = read
 
     public:
 
@@ -63,20 +62,20 @@ namespace codi {
         writeMode = write;
         fileHandle = NULL;
 
-        if(write) {
+        if (write) {
           fileHandle = fopen(file.c_str(), "wb");
         } else {
           fileHandle = fopen(file.c_str(), "rb");
         }
 
-        if(NULL == fileHandle) {
-          throw IoException(IoError::Open , "Could not open file: " + file, true);
+        if (NULL == fileHandle) {
+          throw IoException(IoError::Open, "Could not open file: " + file, true);
         }
       }
 
       /// Destructor
       ~FileIo() {
-        if(NULL != fileHandle) {
+        if (NULL != fileHandle) {
           fclose(fileHandle);
         }
       }
@@ -85,10 +84,10 @@ namespace codi {
       /// Will throw an IoException if not in write mode or if number of bytes written is wrong.
       template<typename Data>
       void writeData(Data const* data, size_t const length) {
-        if(writeMode) {
+        if (writeMode) {
           size_t s = fwrite(data, sizeof(Data), length, fileHandle);
 
-          if(s != length) {
+          if (s != length) {
             throw IoException(IoError::Read, "Wrong number of bytes written.", true);
           }
         } else {
@@ -100,10 +99,10 @@ namespace codi {
       /// Will throw an IoException if not in read mode or if number of bytes read is wrong.
       template<typename Data>
       void readData(Data* data, size_t const length) {
-        if(!writeMode) {
+        if (!writeMode) {
           size_t s = fread(data, sizeof(Data), length, fileHandle);
 
-          if(s != length) {
+          if (s != length) {
             throw IoException(IoError::Read, "Wrong number of bytes read.", false);
           }
         } else {

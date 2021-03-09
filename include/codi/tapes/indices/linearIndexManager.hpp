@@ -28,23 +28,23 @@ namespace codi {
   struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
     public:
 
-      using Index = CODI_DD(_Index, int); ///< See LinearIndexManager
-      using Base = IndexManagerInterface<Index>; ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);         ///< See LinearIndexManager
+      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
       /// @{
 
       static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization implemented
-      static bool constexpr IsLinear = true; ///< Tightly coupled to statements.
+      static bool constexpr IsLinear = true;             ///< Tightly coupled to statements.
 
       /// @}
       /*******************************************************************************/
       /// @name DataInterface: Type declaration
       /// @{
 
-      using Position = Index; ///< The current maximum index
-      using NestedData = void; ///< Terminator
+      using Position = Index;            ///< The current maximum index
+      using NestedData = void;           ///< Terminator
       using InternalPosHandle = size_t;  ///< The current maximum index
 
       /// @}
@@ -57,9 +57,7 @@ namespace codi {
     public:
 
       /// Constructor
-      LinearIndexManager(Index zeroState) :
-        zeroState(zeroState),
-        count(zeroState) {}
+      LinearIndexManager(Index zeroState) : zeroState(zeroState), count(zeroState) {}
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Methods
@@ -79,7 +77,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
-        CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1) {
+        if (CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1)) {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
         }
         count += 1;
@@ -106,7 +104,6 @@ namespace codi {
       /*******************************************************************************/
       /// @name DataInterface: Methods
       /// @{
-
 
       /// \copydoc DataInterface::extractPosition
       template<typename TargetPosition>
@@ -145,7 +142,9 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::resize
-      void resize(size_t const& totalSize) { CODI_UNUSED(totalSize); }
+      void resize(size_t const& totalSize) {
+        CODI_UNUSED(totalSize);
+      }
 
       /// \copydoc DataInterface::resetTo
       CODI_INLINE void resetTo(Position const& pos) {
@@ -165,7 +164,9 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::setNested
-      void setNested(NestedData* v) { CODI_UNUSED(v); }
+      void setNested(NestedData* v) {
+        CODI_UNUSED(v);
+      }
 
       /// \copydoc DataInterface::swap
       void swap(LinearIndexManager<Index>& other) {
@@ -174,37 +175,35 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::evaluateForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-
         function(std::forward<Args>(args)..., start, end);
       }
 
       /// \copydoc DataInterface::evaluateReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-
         function(std::forward<Args>(args)..., start, end);
       }
 
       /// \copydoc DataInterface::forEachChunk
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
         CODI_UNUSED(function, recursive, args...);
         // Do nothing
       }
 
       /// \copydoc DataInterface::forEachForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);
       }
 
       /// \copydoc DataInterface::forEachReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);

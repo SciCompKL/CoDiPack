@@ -4,9 +4,9 @@
 #include <functional>
 #include <type_traits>
 
+#include "../../aux/exceptions.hpp"
 #include "../../aux/macros.hpp"
 #include "../../aux/memberStore.hpp"
-#include "../../aux/exceptions.hpp"
 #include "../../expressions/activeType.hpp"
 #include "statementEvaluatorInterface.hpp"
 
@@ -22,8 +22,7 @@ namespace codi {
    */
   template<typename _Real>
   struct ReverseStatementEvaluator : public StatementEvaluatorInterface<_Real> {
-
-      using Real = CODI_DD(_Real, double); ///< See ReverseStatementEvaluator
+      using Real = CODI_DD(_Real, double);  ///< See ReverseStatementEvaluator
 
     public:
 
@@ -31,11 +30,11 @@ namespace codi {
       /// @name StatementEvaluatorInterface implementation
       /// @{
 
-      using Handle = void*; ///< Function pointer to the reverse evaluation
+      using Handle = void*;  ///< Function pointer to the reverse evaluation
 
       /// Throws CODI_EXCEPTION on call.
-      template<typename Tape, typename ... Args>
-      static Real callForward(Handle const& h, Args&& ... args) {
+      template<typename Tape, typename... Args>
+      static Real callForward(Handle const& h, Args&&... args) {
         CODI_UNUSED(h, args...);
 
         CODI_EXCEPTION("ReverseStatementEvaluator does not support forward evaluation calls.");
@@ -44,8 +43,8 @@ namespace codi {
       }
 
       /// Throws CODI_EXCEPTION on call.
-      template<typename Tape, typename ... Args>
-      static Real callPrimal(Handle const& h, Args&& ... args) {
+      template<typename Tape, typename... Args>
+      static Real callPrimal(Handle const& h, Args&&... args) {
         CODI_UNUSED(h, args...);
 
         CODI_EXCEPTION("ReverseStatementEvaluator does not support primal evaluation calls.");
@@ -54,8 +53,8 @@ namespace codi {
       }
 
       /// \copydoc StatementEvaluatorInterface::callReverse
-      template<typename Tape, typename ... Args>
-      static void callReverse(Handle const& h, Args&& ... args) {
+      template<typename Tape, typename... Args>
+      static void callReverse(Handle const& h, Args&&... args) {
         HandleTyped<Tape> func = (HandleTyped<Tape>)h;
 
         func(std::forward<Args>(args)...);
@@ -74,6 +73,5 @@ namespace codi {
       /// Full reverse function type.
       template<typename Tape>
       using HandleTyped = decltype(&Tape::template statementEvaluateReverse<ActiveType<Tape>>);
-
   };
 }

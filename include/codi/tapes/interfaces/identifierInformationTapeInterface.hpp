@@ -27,19 +27,21 @@ namespace codi {
   struct IdentifierInformationTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See IdentifierInformationTapeInterface
-      using Gradient = CODI_DD(_Gradient, double); ///< See IdentifierInformationTapeInterface
-      using Identifier = CODI_DD(_Identifier, int); ///< See IdentifierInformationTapeInterface
+      using Real = CODI_DD(_Real, double);           ///< See IdentifierInformationTapeInterface
+      using Gradient = CODI_DD(_Gradient, double);   ///< See IdentifierInformationTapeInterface
+      using Identifier = CODI_DD(_Identifier, int);  ///< See IdentifierInformationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// True if the tape provides a index handler that provides identifiers in a monotone increasing way. (See LinearIndexManager.)
+      /// True if the tape provides a index handler that provides identifiers in a monotone increasing way. (See
+      /// LinearIndexManager.)
       static bool constexpr LinearIndexHandling = CODI_UNDEFINED_VALUE;
 
-      Identifier getPassiveIndex() const; ///< Identifier for passive values. Usually 0.
-      Identifier getInvalidIndex() const; ///< Invalid identifier.
-      bool isIdentifierActive(Identifier const& index) const; ///< True if the identifier is considered active by the tape.
+      Identifier getPassiveIndex() const;                      ///< Identifier for passive values. Usually 0.
+      Identifier getInvalidIndex() const;                      ///< Invalid identifier.
+      bool isIdentifierActive(Identifier const& index) const;  ///< True if the identifier is considered active by the
+                                                               ///< tape.
 
       /// Modify the value such that is no longer active.
       template<typename Lhs>

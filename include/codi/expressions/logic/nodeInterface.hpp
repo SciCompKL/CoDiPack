@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../config.h"
 #include "../../aux/macros.hpp"
+#include "../../config.h"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -22,7 +22,7 @@ namespace codi {
   struct NodeInterface {
     public:
 
-      using Impl = CODI_DD(_Impl, NodeInterface); ///< See NodeInterface
+      using Impl = CODI_DD(_Impl, NodeInterface);  ///< See NodeInterface
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
@@ -32,14 +32,14 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      static bool constexpr EndPoint = CODI_UNDEFINED_VALUE; ///< If this expression is handled as a termination point.
+      static bool constexpr EndPoint = CODI_UNDEFINED_VALUE;  ///< If this expression is handled as a termination point.
 
       /// Call the link method on the logic for all arguments of this node.
-      template<typename Logic, typename ... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const;
+      template<typename Logic, typename... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const;
 
       /// Call the link method on the logic for all arguments of this node.
-      template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... args);
+      template<typename Logic, typename... Args>
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... args);
   };
 }

@@ -8,7 +8,6 @@
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -31,23 +30,21 @@ namespace codi {
       /// See CustomAdjointVectorInterface
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
 
       /// See LhsExpressionInterface
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
-      using Position = typename Tape::Position; ///< See PositionalEvaluationTapeInterface
+      using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface
 
     protected:
 
-      Tape& tape; ///< Current tape for evaluations. Default: globalTape
+      Tape& tape;  ///< Current tape for evaluations. Default: globalTape
 
     public:
 
       /// Constructor
-      CustomAdjointVectorInterface() :
-        tape(Type::getGlobalTape()) {
-      }
+      CustomAdjointVectorInterface() : tape(Type::getGlobalTape()) {}
 
       /// Destructor
       virtual ~CustomAdjointVectorInterface() {}
@@ -80,7 +77,6 @@ namespace codi {
       void evaluate() {
         evaluate(tape.getPosition(), tape.getZeroPosition());
       }
-
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
       void evaluateForward() {
@@ -119,39 +115,34 @@ namespace codi {
 
       ///< See CustomAdjointVectorHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Gradient = CODI_DD(_Gradient, double); ///< See CustomAdjointVectorHelper
+      using Gradient = CODI_DD(_Gradient, double);  ///< See CustomAdjointVectorHelper
 
-      using Base = CustomAdjointVectorInterface<Type>; ///< Abbreviation for the base class
+      using Base = CustomAdjointVectorInterface<Type>;  ///< Abbreviation for the base class
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
 
       /// See LhsExpressionInterface
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
-      using Position = typename Tape::Position; ///< See PositionalEvaluationTapeInterface
+      using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface
 
     protected:
       std::vector<Gradient> adjointVector;  ///< Custom adjoint vector
 
-      Gradient zeroValue; ///< Temporary zero value
-      Gradient const constZeroValue; ///< Temporary constant zero value.
+      Gradient zeroValue;             ///< Temporary zero value
+      Gradient const constZeroValue;  ///< Temporary constant zero value.
 
-      AdjointVectorAccess<Real, Identifier, Gradient>* adjointInterface; ///< Last provided adjoint interface.
+      AdjointVectorAccess<Real, Identifier, Gradient>* adjointInterface;  ///< Last provided adjoint interface.
 
     public:
 
       /// Constructor
-      CustomAdjointVectorHelper() :
-        Base(),
-        adjointVector(0),
-        zeroValue(),
-        constZeroValue(),
-        adjointInterface(nullptr) {
-      }
+      CustomAdjointVectorHelper()
+          : Base(), adjointVector(0), zeroValue(), constZeroValue(), adjointInterface(nullptr) {}
 
       /// Destructor
       ~CustomAdjointVectorHelper() {
-        if(nullptr != adjointInterface) {
+        if (nullptr != adjointInterface) {
           delete adjointInterface;
         }
       }
@@ -162,7 +153,7 @@ namespace codi {
 
       /// \copydoc codi::CustomAdjointVectorInterface::clearAdjoints()
       void clearAdjoints() {
-        for(size_t i = 0; i < adjointVector.size(); i += 1) {
+        for (size_t i = 0; i < adjointVector.size(); i += 1) {
           adjointVector[i] = Gradient();
         }
       }
@@ -191,7 +182,7 @@ namespace codi {
 
       /// \copydoc codi::CustomAdjointVectorInterface::getVectorInterface()
       VectorAccessInterface<Real, Identifier>* getVectorInterface() {
-        if(nullptr != adjointInterface) {
+        if (nullptr != adjointInterface) {
           delete adjointInterface;
         }
 
@@ -210,7 +201,6 @@ namespace codi {
         return gradient(identifier);
       }
 
-
       /// Get reference to the gradient value. Unchecked access.
       Gradient& gradientAt(Identifier const& identifier) {
         return adjointVector[identifier];
@@ -225,7 +215,7 @@ namespace codi {
       Gradient& gradient(Identifier const& identifier) {
         checkAdjointVectorSize();
 
-        if(0 != identifier && identifier < (Identifier)adjointVector.size()) {
+        if (0 != identifier && identifier < (Identifier)adjointVector.size()) {
           return adjointVector[identifier];
         } else {
           zeroValue = Gradient();
@@ -235,7 +225,7 @@ namespace codi {
 
       /// Get value to the gradient data. Checked access.
       Gradient const& gradient(Identifier const& identifier) const {
-        if(0 != identifier && identifier < (Identifier)adjointVector.size()) {
+        if (0 != identifier && identifier < (Identifier)adjointVector.size()) {
           return adjointVector[identifier];
         } else {
           return constZeroValue;
@@ -252,7 +242,7 @@ namespace codi {
     private:
 
       void checkAdjointVectorSize() {
-        if(adjointVector.size() <= Base::tape.getParameter(TapeParameters::LargestIdentifier)) {
+        if (adjointVector.size() <= Base::tape.getParameter(TapeParameters::LargestIdentifier)) {
           adjointVector.resize(Base::tape.getParameter(TapeParameters::LargestIdentifier) + 1);
         }
       }

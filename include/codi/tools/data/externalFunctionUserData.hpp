@@ -9,7 +9,8 @@
 namespace codi {
 
   /**
-   * @brief Ease of access structure for used data on the tape for external functions. See ExternalFunctionTapeInterface.
+   * @brief Ease of access structure for used data on the tape for external functions. See
+   * ExternalFunctionTapeInterface.
    *
    * The structure clones all data that is stored via the put methods.
    *
@@ -36,34 +37,39 @@ namespace codi {
           using Type = CODI_DD(_Type, CODI_ANY);
 
           explicit DataItem(Type const& value) {
-            data = (void*) new Type(value);
+            data = (void*)new Type(value);
           }
 
           ~DataItem() {
-            Type* pointer = (Type*) data;
+            Type* pointer = (Type*)data;
             delete pointer;
           }
 
-          DataItemBase* clone() { return new DataItem<Type>(*((Type*) data)); }
+          DataItemBase* clone() {
+            return new DataItem<Type>(*((Type*)data));
+          }
       };
 
       template<typename Type>
       struct DataArray : public DataItemBase {
         private:
           int size;
+
         public:
           DataArray(Type const* value, int size) {
-            data = (void*) new Type[size];
+            data = (void*)new Type[size];
             this->size = size;
-            std::copy(value, &value[size], (Type*) data);
+            std::copy(value, &value[size], (Type*)data);
           }
 
           ~DataArray() {
-            Type* pointer = (Type*) data;
+            Type* pointer = (Type*)data;
             delete[] pointer;
           }
 
-          DataItemBase* clone() { return new DataArray<Type>(*((Type*) data), size); }
+          DataItemBase* clone() {
+            return new DataArray<Type>(*((Type*)data), size);
+          }
       };
 
       std::vector<DataItemBase*> store;
@@ -73,8 +79,7 @@ namespace codi {
     public:
 
       /// Constructor
-      ExternalFunctionUserData() :
-        storePos(0) { }
+      ExternalFunctionUserData() : storePos(0) {}
 
       /// Constructor
       ExternalFunctionUserData(ExternalFunctionUserData const& other) {
@@ -96,7 +101,7 @@ namespace codi {
 
       /// Delete all data entries
       void clear() {
-        for(size_t i = 0; i < store.size(); ++i) {
+        for (size_t i = 0; i < store.size(); ++i) {
           delete store[i];
         }
         store.clear();
@@ -163,7 +168,6 @@ namespace codi {
         getDataArrayByIndex<Type>(&value, 1, pos);
       }
 
-
       /// Get a data array based on the index. The target array must have the correct size.
       ///
       /// The internal position is not modified.
@@ -182,7 +186,7 @@ namespace codi {
     private:
 
       static void copyAll(ExternalFunctionUserData const& from, ExternalFunctionUserData& to) {
-        for(size_t i = 0; i < from.store.size(); ++i) {
+        for (size_t i = 0; i < from.store.size(); ++i) {
           to.store.push_back(from.store[i]->clone());
         }
         to.storePos = from.storePos;
@@ -190,14 +194,14 @@ namespace codi {
 
       template<typename Type>
       Type* getStore(size_t pos) {
-        return (Type*) store[pos]->data;
+        return (Type*)store[pos]->data;
       }
 
       template<typename Type>
       Type* nextStore() {
         Type* pointer = getStore<Type>(storePos);
         storePos += 1;
-        if(storePos >= store.size()) {
+        if (storePos >= store.size()) {
           storePos = 0;
         }
 

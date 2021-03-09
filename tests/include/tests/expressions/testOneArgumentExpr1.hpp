@@ -5,7 +5,7 @@ struct TestOneArgumentExpr1 : public TestInterface {
     NAME("OneArgumentExpr1")
     IN(1)
     OUT(18)
-    POINTS(41) =
+    POINTS(41) =  // clang-format off
     {
       {-10.0000},
       { -9.5000},
@@ -48,27 +48,27 @@ struct TestOneArgumentExpr1 : public TestInterface {
       {  9.0000},
       {  9.5000},
       { 10.0000}
-    };
-    
+    };  // clang-format on
+
     template<typename Number>
     static void func(Number* x, Number* y) {
-      y[ 0] =      +x[0];   // R
-      y[ 1] =      -x[0];   // R
-      y[ 2] =   exp(x[0]);  // R
-      y[ 3] =   sin(x[0]);  // R
-      y[ 4] =   cos(x[0]);  // R
-      y[ 5] =  atan(x[0]);  // R
-      y[ 6] =  sinh(x[0]);  // R
-      y[ 7] =  cosh(x[0]);  // R
-      y[ 8] =   abs(x[0]);  // R
-      y[ 9] =  fabs(x[0]);  // R
+      y[0] = +x[0];         // R
+      y[1] = -x[0];         // R
+      y[2] = exp(x[0]);     // R
+      y[3] = sin(x[0]);     // R
+      y[4] = cos(x[0]);     // R
+      y[5] = atan(x[0]);    // R
+      y[6] = sinh(x[0]);    // R
+      y[7] = cosh(x[0]);    // R
+      y[8] = abs(x[0]);     // R
+      y[9] = fabs(x[0]);    // R
       y[10] = floor(x[0]);  // R
-      y[11] =  tanh(x[0]);  // R
-      y[12] =   tan(x[0]);  // R \ {(1/2 + i) * PI | for all i in Z}
-      y[13] =   erf(x[0]);  // R
-      y[14] =  erfc(x[0]);  // R
-      y[15] =  cbrt(x[0]);  // R \ {0}
+      y[11] = tanh(x[0]);   // R
+      y[12] = tan(x[0]);    // R \ {(1/2 + i) * PI | for all i in Z}
+      y[13] = erf(x[0]);    // R
+      y[14] = erfc(x[0]);   // R
+      y[15] = cbrt(x[0]);   // R \ {0}
       y[16] = round(x[0]);  // R
-      y[17] =  ceil(x[0]);  // R
+      y[17] = ceil(x[0]);   // R
     }
 };

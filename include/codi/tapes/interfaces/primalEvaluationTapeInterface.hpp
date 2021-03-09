@@ -34,15 +34,16 @@ namespace codi {
   struct PrimalEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<_Position> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See PrimalEvaluationTapeInterface
-      using Identifier = CODI_DD(_Identifier, int); ///< See PrimalEvaluationTapeInterface
-      using Position = CODI_DD(_Position, EmptyPosition); ///< See PrimalEvaluationTapeInterface
+      using Real = CODI_DD(_Real, double);                 ///< See PrimalEvaluationTapeInterface
+      using Identifier = CODI_DD(_Identifier, int);        ///< See PrimalEvaluationTapeInterface
+      using Position = CODI_DD(_Position, EmptyPosition);  ///< See PrimalEvaluationTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
-      static bool constexpr HasPrimalValues = CODI_UNDEFINED_VALUE; ///< True if the tape has primal values
-      static bool constexpr RequiresPrimalRestore = CODI_UNDEFINED_VALUE;  ///< True if the primal state changes during a reverse or forward evaluation
+      static bool constexpr HasPrimalValues = CODI_UNDEFINED_VALUE;  ///< True if the tape has primal values
+      static bool constexpr RequiresPrimalRestore =
+          CODI_UNDEFINED_VALUE;  ///< True if the primal state changes during a reverse or forward evaluation
 
       /// Perform a partly (forward) reevaluation of the primals in the tape. It has to hold start <= end.
       void evaluatePrimal(Position const& start, Position const& end);
@@ -50,12 +51,13 @@ namespace codi {
       /// Perform a full (forward) reevaluation of the primals in the tape
       void evaluatePrimal();
 
-      void setPrimal(Identifier const& identifier, Real const& gradient); ///< Set primal value.
-      Real const& getPrimal(Identifier const& identifier) const; ///< Get primal value.
+      void setPrimal(Identifier const& identifier, Real const& gradient);  ///< Set primal value.
+      Real const& getPrimal(Identifier const& identifier) const;           ///< Get primal value.
 
-      Real& primal(Identifier const& identifier);  ///< Writable reference to primal value.
-      Real const& primal(Identifier const& identifier) const; ///< Read only reference to primal value.
+      Real& primal(Identifier const& identifier);              ///< Writable reference to primal value.
+      Real const& primal(Identifier const& identifier) const;  ///< Read only reference to primal value.
 
-
+      /// Revert the primals to the state indicated by pos.
+      void revertPrimals(Position const& pos);
   };
 }

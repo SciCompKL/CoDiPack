@@ -21,10 +21,10 @@ namespace codi {
   struct JacobianInterface {
     public:
 
-      using T = CODI_DD(_T, double); ///< See JacobianInterface
+      using T = CODI_DD(_T, double);  ///< See JacobianInterface
 
-      size_t getM() const; ///< Get size of rows (Output variables)
-      size_t getN() const; ///< Get size of columns  (Input variables)
+      size_t getM() const;  ///< Get size of rows (Output variables)
+      size_t getN() const;  ///< Get size of columns  (Input variables)
 
       /// Value access, i in [0, ..., m), j in [0, ..., n)
       T operator()(size_t const i, size_t const j) const;
@@ -32,8 +32,8 @@ namespace codi {
       /// Reference access, i in [0, ..., m), j in [0, ..., n)
       T& operator()(size_t const i, size_t const j);
 
-      void resize(size_t const m, size_t const n); ///< Resize the Jacobian.
-      size_t size() const; ///< Get total size of the Jacobian.
+      void resize(size_t const m, size_t const n);  ///< Resize the Jacobian.
+      size_t size() const;                          ///< Get total size of the Jacobian.
   };
 
   /**
@@ -46,22 +46,21 @@ namespace codi {
    *  vM1, vM2, ..., vMN]
    */
   template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>>
-  Stream& operator <<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {
-
+  Stream& operator<<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {
     out << "[";
-    for(size_t i = 0; i < jacobian.getM(); ++i) {
-      if( i != 0) {
-        out << " "; // Padding for the '['
+    for (size_t i = 0; i < jacobian.getM(); ++i) {
+      if (i != 0) {
+        out << " ";  // Padding for the '['
       }
 
-      for(size_t j = 0; j < jacobian.getN(); ++j) {
-        if(j != 0) {
+      for (size_t j = 0; j < jacobian.getN(); ++j) {
+        if (j != 0) {
           out << ", ";
         }
         out << jacobian(i, j);
       }
 
-      if(i + 1 < jacobian.getM()) {
+      if (i + 1 < jacobian.getM()) {
         out << ";\n";
       } else {
         out << "]";

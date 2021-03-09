@@ -23,8 +23,8 @@ namespace codi {
     public:
 
       ///< See MemberStore
-      using Type = _Type; // default declaration breaks auto completion
-      using Parent = CODI_DD(_Parent, CODI_ANY); ///< See MemberStore
+      using Type = _Type;                         // default declaration breaks auto completion
+      using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore
 
       static bool constexpr storeStatic = _storeStatic;  ///< See MemberStore
 
@@ -35,8 +35,8 @@ namespace codi {
     public:
 
       /// Arguments are forwarded to the constructor of the member
-      template<typename ... Args>
-      MemberStore(Args&& ... args) : member(std::forward<Args>(args)...) {}
+      template<typename... Args>
+      MemberStore(Args&&... args) : member(std::forward<Args>(args)...) {}
 
       /// Get a reference to the actual member.
       Type& get() {
@@ -54,7 +54,7 @@ namespace codi {
   struct MemberStore<_Type, _Parent, true> {
     public:
 
-      using Type = CODI_DD(_Type, CODI_ANY); ///< See MemberStore
+      using Type = CODI_DD(_Type, CODI_ANY);      ///< See MemberStore
       using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore
 
       static bool constexpr storeStatic = true;  ///< See MemberStore
@@ -67,11 +67,11 @@ namespace codi {
     public:
 
       /// \copydoc codi::MemberStore::MemberStore
-      template<typename ... Args>
-      MemberStore(Args&& ... args) {
-        if(!isInitialized) {
+      template<typename... Args>
+      MemberStore(Args&&... args) {
+        if (!isInitialized) {
           isInitialized = true;
-          new(member) Type(std::forward<Args>(args)...);
+          new (member) Type(std::forward<Args>(args)...);
         }
       }
 

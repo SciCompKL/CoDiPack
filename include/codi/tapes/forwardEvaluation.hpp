@@ -35,10 +35,10 @@ namespace codi {
                              public GradientAccessTapeInterface<_Gradient, _Gradient> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See ForwardEvaluation
-      using Gradient = CODI_DD(_Gradient, double); ///< See ForwardEvaluation
+      using Real = CODI_DD(_Real, double);          ///< See ForwardEvaluation
+      using Gradient = CODI_DD(_Gradient, double);  ///< See ForwardEvaluation
 
-      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
       using Identifier = Gradient;  ///< Same as the gradient type. Tangent data is stored in the active types.
 
       /*******************************************************************************/
@@ -65,9 +65,10 @@ namespace codi {
     private:
 
       struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
+        public:
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
               lhsGradient += node.gradient() * jacobian;
             }
           }
@@ -81,7 +82,6 @@ namespace codi {
       template<typename Lhs, typename Rhs>
       void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
                  ExpressionInterface<Real, Rhs> const& rhs) {
-
         LocalReverseLogic reversal;
 
         Gradient newGradient = Gradient();
@@ -96,7 +96,6 @@ namespace codi {
       template<typename Lhs, typename Rhs>
       void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
                  LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Rhs> const& rhs) {
-
         lhs.cast().value() = rhs.cast().getValue();
         lhs.cast().gradient() = rhs.cast().getGradient();
       }
@@ -149,17 +148,14 @@ namespace codi {
       }
   };
 
-
   /// \copydoc codi::RealTraits::IsTotalFinite <br>
   /// Value and gradient are tested if they are finite.
   template<typename _Type>
   struct RealTraits::IsTotalFinite<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> {
     public:
 
-      using Type = CODI_DD(
-                      _Type,
-                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
-                    ); ///< See RealTraits::IsTotalFinite
+      using Type = CODI_DD(_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
+                                                                  _Type>));  ///< See RealTraits::IsTotalFinite
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalFinite()
       static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -174,11 +170,9 @@ namespace codi {
   struct RealTraits::IsTotalZero<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> {
     public:
 
-      using Type = CODI_DD(
-                      _Type,
-                      TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>, _Type>)
-                    ); ///< See RealTraits::IsTotalZero
-      using Real = typename Type::Real; ///< See codi::LhsExpressionInterface::Real
+      using Type = CODI_DD(_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
+                                                                  _Type>));  ///< See RealTraits::IsTotalZero
+      using Real = typename Type::Real;                                      ///< See codi::LhsExpressionInterface::Real
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalZero()
       static CODI_INLINE bool isTotalZero(Type const& v) {
@@ -186,4 +180,3 @@ namespace codi {
       }
   };
 }
-

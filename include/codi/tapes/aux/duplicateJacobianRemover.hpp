@@ -2,7 +2,6 @@
 
 #include <array>
 
-
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 
@@ -25,9 +24,9 @@ namespace codi {
   struct DuplicateJacobianRemover {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See DuplicateJacobianRemover
-      using Identifier = CODI_DD(_Identifier, int); ///< See DuplicateJacobianRemover
-      using ArgumentSize = Config::ArgumentSize; ///< Definition of ArgumentSize type
+      using Real = CODI_DD(_Real, double);           ///< See DuplicateJacobianRemover
+      using Identifier = CODI_DD(_Identifier, int);  ///< See DuplicateJacobianRemover
+      using ArgumentSize = Config::ArgumentSize;     ///< Definition of ArgumentSize type
 
     private:
       std::array<Identifier, Config::MaxArgumentSize> indices;
@@ -43,14 +42,14 @@ namespace codi {
       CODI_INLINE void pushData(Real const& jacobi, Identifier const& index) {
         bool found = false;
         ArgumentSize pos;
-        for(pos = 0; pos < size; pos += 1) {
-          if(indices[pos] == index) {
+        for (pos = 0; pos < size; pos += 1) {
+          if (indices[pos] == index) {
             found = true;
             break;
           }
         }
 
-        if(!found) {
+        if (!found) {
           size += 1;
           indices[pos] = index;
           jacobies[pos] = jacobi;
@@ -63,7 +62,7 @@ namespace codi {
       /// @tparam Vec  DataInterface with Chunk2<double, int> as data.
       template<typename Vec>
       CODI_INLINE void storeData(Vec& vec) {
-        for(ArgumentSize pos = 0; pos < size; pos += 1) {
+        for (ArgumentSize pos = 0; pos < size; pos += 1) {
           vec.pushData(jacobies[pos], indices[pos]);
         }
 

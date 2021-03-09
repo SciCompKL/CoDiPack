@@ -19,25 +19,26 @@ namespace codi {
    * @tparam _Type  The type of the reference which is captured.
    */
   template<typename _Type>
-  struct ReferenceActiveType : public LhsExpressionInterface<typename _Type::Real, typename _Type::Gradient, typename _Type::Tape, ReferenceActiveType<_Type> >,
+  struct ReferenceActiveType : public LhsExpressionInterface<typename _Type::Real, typename _Type::Gradient,
+                                                             typename _Type::Tape, ReferenceActiveType<_Type>>,
                                public AssignmentOperators<_Type, ReferenceActiveType<_Type>>,
                                public IncrementOperators<_Type, ReferenceActiveType<_Type>> {
     public:
 
       /// See ReferenceActiveType
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Tape = typename Type::Tape; ///< See LhsExpressionInterface.
+      using Tape = typename Type::Tape;  ///< See LhsExpressionInterface.
 
-      using Real = typename Tape::Real;              ///< See LhsExpressionInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;     ///< Basic computation type
-      using Identifier = typename Tape::Identifier;  ///< See LhsExpressionInterface
-      using Gradient = typename Tape::Gradient;      ///< See LhsExpressionInterface
+      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface
+      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface
 
-  private:
+    private:
 
       Type& reference;
 
-  public:
+    public:
 
       // TODO: Implement const variant
 
@@ -45,10 +46,10 @@ namespace codi {
       mutable Real jacobian;
 
       /// Constructor
-      CODI_INLINE ReferenceActiveType(Type & v) : reference(v), jacobian() {}
+      CODI_INLINE ReferenceActiveType(Type& v) : reference(v), jacobian() {}
 
       /// See LhsExpressionInterface::operator =(ExpressionInterface const&)
-      CODI_INLINE ReferenceActiveType<Tape>& operator=(ReferenceActiveType<Tape > const& v) {
+      CODI_INLINE ReferenceActiveType<Tape>& operator=(ReferenceActiveType<Tape> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ReferenceActiveType>&>(*this) = v;
         return *this;
       }
@@ -58,7 +59,7 @@ namespace codi {
       /// @name Implementation of LhsExpressionInterface
       /// @{
 
-      using StoreAs = ReferenceActiveType const&; ///< \copydoc codi::ExpressionInterface::StoreAs
+      using StoreAs = ReferenceActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
 
       /// \copydoc codi::LhsExpressionInterface::getIdentifier()
       CODI_INLINE Identifier& getIdentifier() {

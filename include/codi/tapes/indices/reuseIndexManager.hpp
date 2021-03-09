@@ -26,15 +26,15 @@ namespace codi {
   struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DD(_Index, int); ///< See ReuseIndexManager
-      using Base = IndexManagerInterface<Index>; ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);         ///< See ReuseIndexManager
+      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      static bool constexpr CopyNeedsStatement = true; ///< No copy optimization implemented.
-      static bool constexpr IsLinear = false; ///< Identifiers are not coupled to statements.
+      static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization implemented.
+      static bool constexpr IsLinear = false;           ///< Identifiers are not coupled to statements.
 
       /// @}
 
@@ -52,20 +52,19 @@ namespace codi {
 
     protected:
 
-      bool valid; ///< Prevent index free after destruction.
+      bool valid;  ///< Prevent index free after destruction.
 
     public:
 
       /// Constructor
-      ReuseIndexManager(Index const& reserveIndices) :
-        globalMaximumIndex(reserveIndices + 1),
-        usedIndices(),
-        usedIndicesPos(0),
-        unusedIndices(),
-        unusedIndicesPos(0),
-        indexSizeIncrement(Config::SmallChunkSize),
-        valid(true)
-      {
+      ReuseIndexManager(Index const& reserveIndices)
+          : globalMaximumIndex(reserveIndices + 1),
+            usedIndices(),
+            usedIndicesPos(0),
+            unusedIndices(),
+            unusedIndicesPos(0),
+            indexSizeIncrement(Config::SmallChunkSize),
+            valid(true) {
         increaseIndicesSize(unusedIndices);
         generateNewIndices();
       }
@@ -82,14 +81,13 @@ namespace codi {
       /// \copydoc IndexManagerInterface::addToTapeValues <br><br>
       /// Implementation: Adds max live indices, cur live indices, indices stored, memory used, memory allocated.
       void addToTapeValues(TapeValues& values) const {
-
         unsigned long maximumGlobalIndex = globalMaximumIndex;
-        unsigned long storedIndices      = usedIndicesPos + unusedIndicesPos;
-        unsigned long allocatedIndices   = usedIndices.size() + unusedIndices.size();
-        long currentLiveIndices          = maximumGlobalIndex - storedIndices;
+        unsigned long storedIndices = usedIndicesPos + unusedIndicesPos;
+        unsigned long allocatedIndices = usedIndices.size() + unusedIndices.size();
+        long currentLiveIndices = maximumGlobalIndex - storedIndices;
 
-        double memoryStoredIndices    = (double)storedIndices*(double)(sizeof(Index));
-        double memoryAllocatedIndices = (double)allocatedIndices*(double)(sizeof(Index));
+        double memoryStoredIndices = (double)storedIndices * (double)(sizeof(Index));
+        double memoryAllocatedIndices = (double)allocatedIndices * (double)(sizeof(Index));
 
         values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex);
         values.addLongEntry("Cur. live indices", currentLiveIndices);
@@ -97,7 +95,6 @@ namespace codi {
         values.addDoubleEntry("Memory used", memoryStoredIndices, true, false);
         values.addDoubleEntry("Memory allocated", memoryAllocatedIndices, false, true);
       }
-
 
       /// \copydoc IndexManagerInterface::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
@@ -123,10 +120,10 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::assignUnusedIndex
       CODI_INLINE bool assignUnusedIndex(Index& index) {
-        freeIndex(index); // zero check is performed inside
+        freeIndex(index);  // zero check is performed inside
 
         bool generatedNewIndex = false;
-        if(0 == unusedIndicesPos) {
+        if (0 == unusedIndicesPos) {
           generateNewIndices();
           generatedNewIndex = true;
         }
@@ -139,7 +136,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::copyIndex
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
-        if(Base::UnusedIndex == rhs) {
+        if (Base::UnusedIndex == rhs) {
           freeIndex(lhs);
         } else {
           assignIndex(lhs);
@@ -148,9 +145,9 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
-        if(valid && Base::UnusedIndex != index) { // do not free the zero index
+        if (valid && Base::UnusedIndex != index) {  // do not free the zero index
 
-          if(usedIndicesPos == usedIndices.size()) {
+          if (usedIndicesPos == usedIndices.size()) {
             increaseIndicesSize(usedIndices);
           }
 
@@ -169,18 +166,18 @@ namespace codi {
       /// \copydoc IndexManagerInterface::reset
       CODI_INLINE void reset() {
         size_t totalSize = usedIndicesPos + unusedIndicesPos;
-        if(totalSize > unusedIndices.size()) {
+        if (totalSize > unusedIndices.size()) {
           increaseIndicesSizeTo(unusedIndices, totalSize);
         }
 
-        for(size_t pos = 0; pos < usedIndicesPos; ++pos) {
+        for (size_t pos = 0; pos < usedIndicesPos; ++pos) {
           unusedIndices[unusedIndicesPos + pos] = usedIndices[pos];
         }
         unusedIndicesPos = totalSize;
         usedIndicesPos = 0;
 
-        if(Config::SortIndicesOnReset) {
-          if(totalSize == unusedIndices.size()) {
+        if (Config::SortIndicesOnReset) {
+          if (totalSize == unusedIndices.size()) {
             std::sort(unusedIndices.begin(), unusedIndices.end());
           } else {
             std::sort(&unusedIndices[0], &unusedIndices[unusedIndicesPos]);
@@ -195,7 +192,7 @@ namespace codi {
 
       /// \copydoc EmptyData::resetTo
       void resetTo(Position const& pos) {
-        if(pos == getZeroPosition()) {
+        if (pos == getZeroPosition()) {
           reset();
         }
       }
@@ -212,7 +209,7 @@ namespace codi {
 
         codiAssert(unusedIndices.size() >= indexSizeIncrement);
 
-        for(size_t pos = 0; pos < indexSizeIncrement; ++pos) {
+        for (size_t pos = 0; pos < indexSizeIncrement; ++pos) {
           unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + Index(pos);
         }
 
@@ -227,7 +224,7 @@ namespace codi {
       CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
         codiAssert(v.size() < minimalSize);
 
-        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1; // +1 rounds always up
+        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1;  // +1 rounds always up
         v.resize(v.size() + increaseMul * indexSizeIncrement);
       }
   };

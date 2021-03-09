@@ -12,9 +12,9 @@ namespace codi {
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
    * The interface is the callback interface of values in the program to the tape implementation. Each value in the
-   * program needs to allocate an identifier and this identifier needs to be initialized with a call to initIdentifier().
-   * When the value in the program is destroyed the identifier freed by the tape before it is destroyed by the program.
-   * That is destroyIdentifier() needs to be called before the value is destructed.
+   * program needs to allocate an identifier and this identifier needs to be initialized with a call to
+   * initIdentifier(). When the value in the program is destroyed the identifier freed by the tape before it is
+   * destroyed by the program. That is destroyIdentifier() needs to be called before the value is destructed.
    *
    * The compile time switch AllowJacobianOptimization signals the values that the underlying tape is a Jacobian tape
    * that certain operations can be hidden from the tape recording process.
@@ -31,17 +31,20 @@ namespace codi {
   struct InternalStatementRecordingInterface {
     public:
 
-      using Identifier = CODI_DD(_Identifier, int); ///< See InternalStatementRecordingInterface
+      using Identifier = CODI_DD(_Identifier, int);  ///< See InternalStatementRecordingInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
-      static bool constexpr AllowJacobianOptimization = CODI_UNDEFINED_VALUE; ///< If certain operations can be hidden from the tape.
+      static bool constexpr AllowJacobianOptimization =
+          CODI_UNDEFINED_VALUE;  ///< If certain operations can be hidden from the tape.
 
       template<typename Real>
-      void initIdentifier(Real& value, Identifier& identifier); ///< Needs to be called for each identifier, after it is allocated.
+      void initIdentifier(Real& value,
+                          Identifier& identifier);  ///< Needs to be called for each identifier, after it is allocated.
       template<typename Real>
-      void destroyIdentifier(Real& value, Identifier& identifier); ///< Needs to be called for each identifier, before it is deallocated.
+      void destroyIdentifier(Real& value, Identifier& identifier);  ///< Needs to be called for each identifier, before
+                                                                    ///< it is deallocated.
 
       /**
        * @brief Needs to called by a value every time it is assigned.

@@ -19,12 +19,13 @@ struct CoDi0thOrder : public Driver0thOrderBase<CODI_TYPE> {
       createTests<Number, DRIVER_TESTS>(tests);
     }
 
-    void evaluatePrimal(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs, std::vector<double>& primals) {
+    void evaluatePrimal(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs,
+                        std::vector<double>& primals) {
       codi::CODI_UNUSED(inputs);
 
       info.func(x, y);
 
-      for(size_t curOut = 0; curOut < outputs; curOut += 1) {
+      for (size_t curOut = 0; curOut < outputs; curOut += 1) {
         primals[curOut] = codi::RealTraits::getPassiveValue(y[curOut]);
       }
     }

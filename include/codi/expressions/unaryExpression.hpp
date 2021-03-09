@@ -21,7 +21,7 @@ namespace codi {
   struct UnaryOperation {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See UnaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See UnaryOperation
 
       /// Compute the primal value from the argument.
       ///
@@ -49,24 +49,23 @@ namespace codi {
   struct UnaryExpression : public ExpressionInterface<_Real, UnaryExpression<_Real, _Arg, _Operation> > {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See UnaryExpression
-      using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>)); ///< See UnaryExpression
-      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(UnaryOperation<Real>)); ///< See UnaryExpression
+      using Real = CODI_DD(_Real, double);                                                ///< See UnaryExpression
+      using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>));           ///< See UnaryExpression
+      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(UnaryOperation<Real>));  ///< See UnaryExpression
 
-      typename Arg::StoreAs arg; ///< Argument of the expression
-      Real result; ///< Precomputed result
+      typename Arg::StoreAs arg;  ///< Argument of the expression
+      Real result;                ///< Precomputed result
 
       /// Constructor
       template<typename RealArg>
-      explicit UnaryExpression(ExpressionInterface<RealArg, Arg> const& arg) :
-        arg(arg.cast()),
-        result(Operation::primal(this->arg.getValue())) {}
+      explicit UnaryExpression(ExpressionInterface<RealArg, Arg> const& arg)
+          : arg(arg.cast()), result(Operation::primal(this->arg.getValue())) {}
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = UnaryExpression; ///< \copydoc codi::ExpressionInterface::StoreAs
+      using StoreAs = UnaryExpression;  ///< \copydoc codi::ExpressionInterface::StoreAs
 
       /// \copydoc codi::ExpressionInterface::getValue()
       CODI_INLINE Real const& getValue() const {
@@ -84,17 +83,17 @@ namespace codi {
       /// @name Implementation of NodeInterface
       /// @{
 
-      static bool constexpr EndPoint = false; ///< \copydoc codi::NodeInterface::EndPoint
+      static bool constexpr EndPoint = false;  ///< \copydoc codi::NodeInterface::EndPoint
 
       /// \copydoc codi::NodeInterface::forEachLink
-      template<typename Logic, typename ... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+      template<typename Logic, typename... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
         logic.cast().template link<0>(arg, *this, std::forward<Args>(args)...);
       }
 
       /// \copydoc codi::NodeInterface::forEachLinkConstExpr
-      template<typename CompileTimeLogic, typename ... Args>
-      CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConstExpr(Args&& ... args) {
+      template<typename CompileTimeLogic, typename... Args>
+      CODI_INLINE static typename CompileTimeLogic::ResultType constexpr forEachLinkConstExpr(Args&&... args) {
         return CompileTimeLogic::template link<0, Arg, UnaryExpression>(std::forward<Args>(args)...);
       }
 

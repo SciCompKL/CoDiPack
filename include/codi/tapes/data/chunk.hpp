@@ -51,44 +51,44 @@ namespace codi {
       /// @name Interface: Entry management
       /// @{
 
-      template<typename ... Data>
-      CODI_INLINE void pushData(Data&& ... dataEntries); ///< Add one data item. For each entry one argument has to be provided.
+      template<typename... Data>
+      CODI_INLINE void pushData(Data&&... dataEntries);  ///< Add one data item. For each entry one argument has to be
+                                                         ///< provided.
 
-      template<typename ... Pointers>
-      CODI_INLINE void dataPointer(size_t const& index, Pointers*& ... pointers); ///< Extract pointer to requested position.  For each entry one argument has to be provided.
+      template<typename... Pointers>
+      CODI_INLINE void dataPointer(size_t const& index,
+                                   Pointers*&... pointers);  ///< Extract pointer to requested position.  For each entry
+                                                             ///< one argument has to be provided.
 
       /// @}
       /*******************************************************************************/
       /// @name Interface: Data IO
       /// @{
 
-      virtual void allocateData() = 0; ///< Allocated the data if it was deallocated before.
-      virtual void deleteData() = 0; ///< Delete the allocated data.
-      virtual void readData(FileIo& handle) = 0;  ///< Read data from the FileIo handle
-      virtual void writeData(FileIo& handle) const = 0; ///< Write data to the FileIO handle
+      virtual void allocateData() = 0;                   ///< Allocated the data if it was deallocated before.
+      virtual void deleteData() = 0;                     ///< Delete the allocated data.
+      virtual void readData(FileIo& handle) = 0;         ///< Read data from the FileIo handle
+      virtual void writeData(FileIo& handle) const = 0;  ///< Write data to the FileIO handle
 
       /// @}
       /*******************************************************************************/
       /// @name Interface: Misc
       /// @{
 
-      void swap(CODI_IMPLEMENTATION& other); ///< Swap data with other chunk of the same type.
+      void swap(CODI_IMPLEMENTATION& other);  ///< Swap data with other chunk of the same type.
 
       /// @}
     protected:
-      size_t size;     ///< Maximum size of arrays.
-      size_t usedSize; ///< Currently used size.
+      size_t size;      ///< Maximum size of arrays.
+      size_t usedSize;  ///< Currently used size.
 
     public:
 
       /// Constructor
-      explicit ChunkBase(size_t const& size) :
-        size(size),
-        usedSize(0) {}
+      explicit ChunkBase(size_t const& size) : size(size), usedSize(0) {}
 
       /// Destructor
       virtual ~ChunkBase() {}
-
 
       /*******************************************************************************/
       /// @name Common functionality
@@ -147,7 +147,7 @@ namespace codi {
   struct Chunk1 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase; ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type
 
     private:
 
@@ -156,9 +156,7 @@ namespace codi {
     public:
 
       /// Constructor
-      Chunk1(size_t const& size) : ChunkBase(size),
-        data1(NULL) {
-
+      Chunk1(size_t const& size) : ChunkBase(size), data1(NULL) {
         allocateData();
       }
 
@@ -171,25 +169,25 @@ namespace codi {
       /// @name ChunkBase interface implementation
       /// @{
 
-      static size_t constexpr EntrySize = sizeof(Data1); ///< \copydoc ChunkBase::EntrySize
+      static size_t constexpr EntrySize = sizeof(Data1);  ///< \copydoc ChunkBase::EntrySize
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if(NULL == data1) {
+        if (NULL == data1) {
           data1 = new Data1[size];
         }
       }
 
       /// \copydoc ChunkBase::dataPointer
-      CODI_INLINE void dataPointer(size_t const& index, Data1* &pointer1) {
+      CODI_INLINE void dataPointer(size_t const& index, Data1*& pointer1) {
         codiAssert(index <= ChunkBase::size);
         pointer1 = &data1[index];
       }
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if(NULL != data1) {
-          delete [] data1;
+        if (NULL != data1) {
+          delete[] data1;
           data1 = NULL;
         }
       }
@@ -233,7 +231,7 @@ namespace codi {
   struct Chunk2 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase; ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type
 
     private:
 
@@ -243,10 +241,7 @@ namespace codi {
     public:
 
       /// Constructor
-      Chunk2(size_t const& size) : ChunkBase(size),
-        data1(NULL),
-        data2(NULL) {
-
+      Chunk2(size_t const& size) : ChunkBase(size), data1(NULL), data2(NULL) {
         allocateData();
       }
 
@@ -259,21 +254,21 @@ namespace codi {
       /// @name ChunkBase interface implementation
       /// @{
 
-      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2); ///< \copydoc ChunkBase::EntrySize
+      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2);  ///< \copydoc ChunkBase::EntrySize
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if(NULL == data1) {
+        if (NULL == data1) {
           data1 = new Data1[size];
         }
 
-        if(NULL == data2) {
+        if (NULL == data2) {
           data2 = new Data2[size];
         }
       }
 
       /// \copydoc ChunkBase::dataPointer
-      CODI_INLINE void dataPointer(size_t const& index, Data1* &pointer1, Data2* &pointer2) {
+      CODI_INLINE void dataPointer(size_t const& index, Data1*& pointer1, Data2*& pointer2) {
         codiAssert(index <= ChunkBase::size);
         pointer1 = &data1[index];
         pointer2 = &data2[index];
@@ -281,13 +276,13 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if(NULL != data1) {
-          delete [] data1;
+        if (NULL != data1) {
+          delete[] data1;
           data1 = NULL;
         }
 
-        if(NULL != data2) {
-          delete [] data2;
+        if (NULL != data2) {
+          delete[] data2;
           data2 = NULL;
         }
       }
@@ -336,7 +331,7 @@ namespace codi {
   struct Chunk3 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase; ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type
 
     private:
 
@@ -347,11 +342,7 @@ namespace codi {
     public:
 
       /// Constructor
-      Chunk3(size_t const& size) : ChunkBase(size),
-        data1(NULL),
-        data2(NULL),
-        data3(NULL) {
-
+      Chunk3(size_t const& size) : ChunkBase(size), data1(NULL), data2(NULL), data3(NULL) {
         allocateData();
       }
 
@@ -364,25 +355,26 @@ namespace codi {
       /// @name ChunkBase interface implementation
       /// @{
 
-      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3); ///< \copydoc ChunkBase::EntrySize
+      static size_t constexpr EntrySize =
+          sizeof(Data1) + sizeof(Data2) + sizeof(Data3);  ///< \copydoc ChunkBase::EntrySize
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if(NULL == data1) {
+        if (NULL == data1) {
           data1 = new Data1[size];
         }
 
-        if(NULL == data2) {
+        if (NULL == data2) {
           data2 = new Data2[size];
         }
 
-        if(NULL == data3) {
+        if (NULL == data3) {
           data3 = new Data3[size];
         }
       }
 
       /// \copydoc ChunkBase::dataPointer
-      CODI_INLINE void dataPointer(size_t const& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3) {
+      CODI_INLINE void dataPointer(size_t const& index, Data1*& pointer1, Data2*& pointer2, Data3*& pointer3) {
         codiAssert(index <= ChunkBase::size);
         pointer1 = &data1[index];
         pointer2 = &data2[index];
@@ -391,18 +383,18 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if(NULL != data1) {
-          delete [] data1;
+        if (NULL != data1) {
+          delete[] data1;
           data1 = NULL;
         }
 
-        if(NULL != data2) {
-          delete [] data2;
+        if (NULL != data2) {
+          delete[] data2;
           data2 = NULL;
         }
 
-        if(NULL != data3) {
-          delete [] data3;
+        if (NULL != data3) {
+          delete[] data3;
           data3 = NULL;
         }
       }
@@ -444,7 +436,6 @@ namespace codi {
       /// @}
   };
 
-
   /**
    * @ brief Chunk with four entries per item.
    *
@@ -457,7 +448,7 @@ namespace codi {
   struct Chunk4 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase; ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type
 
     private:
 
@@ -469,12 +460,7 @@ namespace codi {
     public:
 
       /// Constructor
-      Chunk4(size_t const& size) : ChunkBase(size),
-        data1(NULL),
-        data2(NULL),
-        data3(NULL),
-        data4(NULL) {
-
+      Chunk4(size_t const& size) : ChunkBase(size), data1(NULL), data2(NULL), data3(NULL), data4(NULL) {
         allocateData();
       }
 
@@ -487,29 +473,31 @@ namespace codi {
       /// @name ChunkBase interface implementation
       /// @{
 
-      static size_t constexpr EntrySize = sizeof(Data1) + sizeof(Data2) + sizeof(Data3) + sizeof(Data4); ///< \copydoc ChunkBase::EntrySize
+      static size_t constexpr EntrySize =
+          sizeof(Data1) + sizeof(Data2) + sizeof(Data3) + sizeof(Data4);  ///< \copydoc ChunkBase::EntrySize
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if(NULL == data1) {
+        if (NULL == data1) {
           data1 = new Data1[size];
         }
 
-        if(NULL == data2) {
+        if (NULL == data2) {
           data2 = new Data2[size];
         }
 
-        if(NULL == data3) {
+        if (NULL == data3) {
           data3 = new Data3[size];
         }
 
-        if(NULL == data4) {
+        if (NULL == data4) {
           data4 = new Data4[size];
         }
       }
 
       /// \copydoc ChunkBase::dataPointer
-      CODI_INLINE void dataPointer(size_t const& index, Data1* &pointer1, Data2* &pointer2, Data3* &pointer3, Data4* &pointer4) {
+      CODI_INLINE void dataPointer(size_t const& index, Data1*& pointer1, Data2*& pointer2, Data3*& pointer3,
+                                   Data4*& pointer4) {
         codiAssert(index <= ChunkBase::size);
         pointer1 = &data1[index];
         pointer2 = &data2[index];
@@ -519,23 +507,23 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if(NULL != data1) {
-          delete [] data1;
+        if (NULL != data1) {
+          delete[] data1;
           data1 = NULL;
         }
 
-        if(NULL != data2) {
-          delete [] data2;
+        if (NULL != data2) {
+          delete[] data2;
           data2 = NULL;
         }
 
-        if(NULL != data3) {
-          delete [] data3;
+        if (NULL != data3) {
+          delete[] data3;
           data3 = NULL;
         }
 
-        if(NULL != data4) {
-          delete [] data4;
+        if (NULL != data4) {
+          delete[] data4;
           data4 = NULL;
         }
       }
@@ -580,6 +568,5 @@ namespace codi {
 
       /// @}
   };
-
 
 }

@@ -23,22 +23,21 @@ struct TestInterface {
 };
 
 template<typename Number>
-using TestFunc = void(*)(Number* x, Number* y);
+using TestFunc = void (*)(Number* x, Number* y);
 
 template<typename Number>
 struct TestInfo {
-
     TestInterface* test;
     TestFunc<Number> func;
 
     TestInfo() = default;
-    TestInfo(TestInterface* test, TestFunc<Number> func) :
-      test(test),
-      func(func) {}
+    TestInfo(TestInterface* test, TestFunc<Number> func) : test(test), func(func) {}
 };
 
-template<typename Number> using TestVector = std::vector<TestInfo<Number>>;
-template<typename Number> using TestMap    = std::map<std::string, TestInfo<Number>>;
-                          using TestNames  = std::set<std::string>;
+template<typename Number>
+using TestVector = std::vector<TestInfo<Number>>;
+template<typename Number>
+using TestMap = std::map<std::string, TestInfo<Number>>;
+using TestNames = std::set<std::string>;
 
 void listAllNames(TestNames& names);

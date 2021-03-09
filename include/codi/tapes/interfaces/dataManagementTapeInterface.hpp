@@ -37,24 +37,23 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface: File IO
 
-      void writeToFile(std::string const& filename) const ; ///< See \ref fileIO
-      void readFromFile(std::string const& filename); ///< See \ref fileIO
-      void deleteData(); ///< See \ref fileIO
+      void writeToFile(std::string const& filename) const;  ///< See \ref fileIO
+      void readFromFile(std::string const& filename);       ///< See \ref fileIO
+      void deleteData();                                    ///< See \ref fileIO
 
       /*******************************************************************************/
       /// @name Interface: Parameters
 
-      std::set<TapeParameters> const& getAvailableParameters() const; ///< See \ref parameters
-      size_t getParameter(TapeParameters parameter) const; ///< See \ref parameters
-      bool hasParameter(TapeParameters parameter) const; ///< See \ref parameters
-      void setParameter(TapeParameters parameter, size_t value); ///< See \ref parameters
+      std::set<TapeParameters> const& getAvailableParameters() const;  ///< See \ref parameters
+      size_t getParameter(TapeParameters parameter) const;             ///< See \ref parameters
+      bool hasParameter(TapeParameters parameter) const;               ///< See \ref parameters
+      void setParameter(TapeParameters parameter, size_t value);       ///< See \ref parameters
 
       /*******************************************************************************/
       /// @name Interface: Misc
 
-      void swap(DataManagementTapeInterface& other); ///< Swap all data with an other tape.
-      void resetHard(); ///< Delete everything and return to the state after construction, as far as possible.
-      void deleteAdjointVector(); ///< Delete the adjoint vector
-
+      void swap(DataManagementTapeInterface& other);  ///< Swap all data with an other tape.
+      void resetHard();  ///< Delete everything and return to the state after construction, as far as possible.
+      void deleteAdjointVector();  ///< Delete the adjoint vector
   };
 }

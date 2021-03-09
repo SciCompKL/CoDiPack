@@ -5,7 +5,7 @@ struct TestOneArgumentExpr3 : public TestInterface {
     NAME("OneArgumentExpr3")
     IN(1)
     OUT(3)
-    POINTS(39) =
+    POINTS(39) =  // clang-format off
     {
       { -0.9500},
       { -0.9000},
@@ -46,12 +46,12 @@ struct TestOneArgumentExpr3 : public TestInterface {
       {  0.8500},
       {  0.9000},
       {  0.9500}
-    };
-    
+    };  // clang-format on
+
     template<typename Number>
     static void func(Number* x, Number* y) {
       y[0] = atanh(x[0]);  // (-1, 1)
-      y[1] =  asin(x[0]);  // [-1, 1]
-      y[2] =  acos(x[0]);  // [-1, 1]
+      y[1] = asin(x[0]);   // [-1, 1]
+      y[2] = acos(x[0]);   // [-1, 1]
     }
 };

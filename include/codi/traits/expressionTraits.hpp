@@ -32,12 +32,9 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
     template<typename Expr>
     struct IsLhsExpression<
-      Expr,
-      typename enable_if_base_of<
-        LhsExpressionInterface<typename Expr::Real, typename Expr::Gradient, typename Expr::Tape, Expr>,
-        Expr
-      >::type
-    > : std::true_type {};
+        Expr, typename enable_if_base_of<
+                  LhsExpressionInterface<typename Expr::Real, typename Expr::Gradient, typename Expr::Tape, Expr>,
+                  Expr>::type> : std::true_type {};
 
     template<typename Tape>
     struct IsLhsExpression<StaticContextActiveType<Tape>> : std::true_type {};
@@ -120,7 +117,8 @@ namespace codi {
 
     /// Counts the number of types that inherit from ConstantExpression in the expression.
     template<typename Expr>
-    struct NumberOfConstantTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
+    struct NumberOfConstantTypeArguments
+        : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
       public:
 
         /// \copydoc CompileTimeTraversalLogic::term()

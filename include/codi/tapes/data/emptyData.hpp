@@ -20,10 +20,10 @@ namespace codi {
   struct EmptyData : public DataInterface<> {
     public:
 
-      using NestedData = void; ///< No nested data
+      using NestedData = void;  ///< No nested data
 
-      using Position = EmptyPosition;  ///< No positional data
-      using InternalPosHandle = size_t; ///< Will always be zero.
+      using Position = EmptyPosition;    ///< No positional data
+      using InternalPosHandle = size_t;  ///< Will always be zero.
 
       /*******************************************************************************/
       /// @name Adding items
@@ -42,7 +42,9 @@ namespace codi {
       /// @name Size management
 
       /// \copydoc DataInterface::resize
-      void resize(size_t const& totalSize) { CODI_UNUSED(totalSize); }
+      void resize(size_t const& totalSize) {
+        CODI_UNUSED(totalSize);
+      }
 
       /// \copydoc DataInterface::reset
       void reset() {}
@@ -51,7 +53,9 @@ namespace codi {
       void resetHard() {}
 
       /// \copydoc DataInterface::resetTo
-      void resetTo(Position const& pos) { CODI_UNUSED(pos); }
+      void resetTo(Position const& pos) {
+        CODI_UNUSED(pos);
+      }
 
       /*******************************************************************************/
       /// @name Position functions
@@ -87,23 +91,28 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::extractPosition
+      template<typename = void>
       CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }
 
       /// \copydoc DataInterface::setNested <br><br>
       /// Implementation: Does not need to be called.
-      void setNested(NestedData* v) { CODI_UNUSED(v); }
+      void setNested(NestedData* v) {
+        CODI_UNUSED(v);
+      }
 
       /// \copydoc DataInterface::swap
-      void swap(DataInterface& other) { CODI_UNUSED(other); }
+      void swap(DataInterface& other) {
+        CODI_UNUSED(other);
+      }
 
       /*******************************************************************************/
       /// @name Iterator functions
 
       /// \copydoc DataInterface::evaluateForward <br><br>
       /// Implementation: Calls the function object with all arguments except start and end.
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         CODI_UNUSED(start, end);
@@ -112,7 +121,7 @@ namespace codi {
 
       /// \copydoc DataInterface::evaluateReverse <br><br>
       /// Implementation: Calls the function object with all arguments except start and end.
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         CODI_UNUSED(start, end);
@@ -120,20 +129,20 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::forEachChunk
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
         CODI_UNUSED(function, recursive, args...);
       }
 
       /// \copydoc DataInterface::forEachForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);
       }
 
       /// \copydoc DataInterface::forEachReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
                                       Args&&... args) {
         CODI_UNUSED(start, end, function, args...);

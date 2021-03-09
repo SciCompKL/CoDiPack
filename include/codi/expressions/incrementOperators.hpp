@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../config.h"
 #include "../aux/macros.hpp"
+#include "../config.h"
 #include "../tapes/interfaces/internalStatementRecordingInterface.hpp"
 #include "lhsExpressionInterface.hpp"
 
@@ -20,11 +20,12 @@ namespace codi {
   struct IncrementOperators {
     public:
 
-      using Tape = CODI_DD(_Tape, CODI_T(InternalStatementRecordingInterface<int>)); ///< See IncrementOperators
-      using Impl = CODI_DD(_Impl, CODI_T(LhsExpressionInterface<double, int, Tape, _Impl>)); ///< See IncrementOperators
+      using Tape = CODI_DD(_Tape, CODI_T(InternalStatementRecordingInterface<int>));  ///< See IncrementOperators
+      using Impl = CODI_DD(_Impl,
+                           CODI_T(LhsExpressionInterface<double, int, Tape, _Impl>));  ///< See IncrementOperators
 
-      using Real = CODI_DD(typename Tape::Real, double); ///< See InternalStatementRecordingInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>; ///< Basic computation type
+      using Real = CODI_DD(typename Tape::Real, double);  ///< See InternalStatementRecordingInterface
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {

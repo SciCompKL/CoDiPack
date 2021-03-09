@@ -5,7 +5,7 @@ struct TestAssignOperators2 : public TestInterface {
     NAME("AssignOperators2")
     IN(2)
     OUT(3)
-    POINTS(18) =
+    POINTS(18) =  // clang-format off
     {
       {-10.0,   -10},
       {-10.0,    -5},
@@ -25,8 +25,8 @@ struct TestAssignOperators2 : public TestInterface {
       { 10.0,    -5},
       { 10.0,     5},
       { 10.0,    10}
-    };
-    
+    };  // clang-format on
+
     template<typename Number>
     static void func(Number* x, Number* y) {
       y[0] = x[0];

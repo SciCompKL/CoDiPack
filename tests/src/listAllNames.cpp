@@ -1,7 +1,6 @@
+#include "../build/allTests.hpp"
 #include "../include/testInterface.hpp"
 #include "../include/tests/allTests.hpp"
-
-#include "../build/allTests.hpp"
 
 template<typename Dummy>
 void listNames(TestNames& names) {

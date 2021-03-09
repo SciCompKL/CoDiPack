@@ -14,10 +14,8 @@
 #include "interfaces/reverseTapeInterface.hpp"
 #include "jacobianBaseTape.hpp"
 
-
 /** \copydoc codi::Namespace */
 namespace codi {
-
 
   /**
    * @brief Final implementation for a Jacobian tape with a linear index management.
@@ -30,17 +28,17 @@ namespace codi {
   struct JacobianLinearTape : public JacobianBaseTape<_TapeTypes, JacobianLinearTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double,
-                        IndexManagerInterface<int>, DefaultChunkedData>)); ///< See JacobianLinearTape
+      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
+                                                                     DefaultChunkedData>));  ///< See JacobianLinearTape
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>; ///< Base class abbreviation
-      friend Base; ///< Allow the base class to call protected and private methods.
+      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation
+      friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                    ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;            ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;    ///< See TapeTypesInterface.
-      using Identifier = typename TapeTypes::Identifier;        ///< See TapeTypesInterface.
-      using Position = typename Base::Position;                 ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
+      using Position = typename Base::Position;               ///< See TapeTypesInterface.
 
       static_assert(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");
 
@@ -51,7 +49,6 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-
         using IndexPosition = typename IndexManager::Position;
         IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
@@ -59,7 +56,7 @@ namespace codi {
         startIndex = std::min(startIndex, (IndexPosition)this->adjoints.size() - 1);
         endIndex = std::min(endIndex, (IndexPosition)this->adjoints.size() - 1);
 
-        for(IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
+        for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
           this->adjoints[curPos] = Gradient();
         }
       }
@@ -79,30 +76,27 @@ namespace codi {
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobian vector */
-          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
           /* data from statement vector */
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-
         CODI_UNUSED(endJacobianPos, endStmtPos);
 
         size_t curAdjointPos = startAdjointPos;
 
-        while(curAdjointPos < endAdjointPos) {
-
+        while (curAdjointPos < endAdjointPos) {
           curAdjointPos += 1;
 
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-
-          if(Config::StatementInputTag != argsSize) {
+          if (Config::StatementInputTag != argsSize) {
             Adjoint lhsAdjoint = Adjoint();
 
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
           }
-
 
           curStmtPos += 1;
         }
@@ -114,26 +108,29 @@ namespace codi {
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobianData */
-          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians, Identifier const* const rhsIdentifiers ,
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-
         CODI_UNUSED(endJacobianPos, endStmtPos);
 
         size_t curAdjointPos = startAdjointPos;
 
-        while(curAdjointPos > endAdjointPos) {
-
+        while (curAdjointPos > endAdjointPos) {
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          Adjoint const lhsAdjoint = adjointVector[curAdjointPos]; // Adjoint positions are shifted since we do not use the zero index
+          Adjoint const lhsAdjoint =
+              adjointVector[curAdjointPos];  // Adjoint positions are shifted since we do not use the zero index
 
-          if(Config::StatementInputTag != argsSize) {
+          if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation
-            adjointVector[curAdjointPos] = Adjoint();
+
+            if (Config::ReversalZeroesAdjoints) {
+              adjointVector[curAdjointPos] = Adjoint();
+            }
 
             Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
           }
@@ -143,4 +140,3 @@ namespace codi {
       }
   };
 }
-

@@ -6,7 +6,6 @@
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -28,7 +27,7 @@ namespace codi {
       /// See StatementPushHelperBase
       using Impl = CODI_DD(_Impl, CODI_T(StatementPushHelperBase<CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;  ///< See LhsExpressionInterface
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -50,15 +49,13 @@ namespace codi {
 
       /// Push a complete statement where the Jacobians and arguments are provided as iterator objects.
       template<typename ArgIter, typename JacobiIter>
-      CODI_INLINE void pushStatement(Type& lhs, Real const& primal,
-                                     ArgIter const startArg, ArgIter const endArg,
+      CODI_INLINE void pushStatement(Type& lhs, Real const& primal, ArgIter const startArg, ArgIter const endArg,
                                      JacobiIter const startJac) {
-
         cast().startPushStatement();
 
         JacobiIter jacPos = startJac;
         ArgIter argPos = startArg;
-        while(argPos != endArg) {
+        while (argPos != endArg) {
           cast().pushArgument(*argPos, *jacPos);
 
           ++jacPos;
@@ -66,18 +63,15 @@ namespace codi {
         }
 
         cast().endPushStatement(lhs, primal);
-
       }
 
       /// Push a complete statement where the Jacobians and arguments are provided as arrays.
       template<typename ArgVector, typename JacobiVector>
-      CODI_INLINE void pushStatement(Type& lhs, Real const& primal,
-                                     ArgVector const& arguments, JacobiVector const& jacobians,
-                                     size_t const size) {
-
+      CODI_INLINE void pushStatement(Type& lhs, Real const& primal, ArgVector const& arguments,
+                                     JacobiVector const& jacobians, size_t const size) {
         cast().startPushStatement();
 
-        for(size_t i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
           cast().pushArgument(arguments[i], jacobians[i]);
         }
 
@@ -91,8 +85,6 @@ namespace codi {
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
       }
-
-
   };
 
   /**
@@ -115,15 +107,15 @@ namespace codi {
       ///< See StatementPushHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
-      using Identifier = typename Type::Identifier; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
       /// See LhsExpressionInterface
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
 
     protected:
       Identifier indexData[Config::MaxArgumentSize];  ///< Storage for the identifiers of the arguments
       Real jacobianData[Config::MaxArgumentSize];     ///< Storage for the Jacobians of the arguments
-      size_t dataPos; ///< Current number of arguments.
+      size_t dataPos;                                 ///< Current number of arguments.
 
     public:
 
@@ -140,15 +132,14 @@ namespace codi {
       void pushArgument(Type const& arg, Real const& jacobian) {
         Tape& tape = Type::getGlobalTape();
 
-        if(Config::MaxArgumentSize < dataPos ) {
+        if (Config::MaxArgumentSize <= dataPos) {
           CODI_EXCEPTION("Adding more than %zu arguments to a statement.", Config::MaxArgumentSize);
         }
 
-        CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
-          CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier()) {
-            CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
-              CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian)) {
-
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive())) {
+          if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier())) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
+              if (CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian))) {
                 indexData[dataPos] = arg.getIdentifier();
                 jacobianData[dataPos] = jacobian;
                 dataPos += 1;
@@ -162,11 +153,11 @@ namespace codi {
       void endPushStatement(Type& lhs, Real const& primal) {
         Tape& tape = Type::getGlobalTape();
 
-        CODI_ENABLE_CHECK (Config::CheckTapeActivity, tape.isActive()) {
-          if(0 != dataPos) {
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive())) {
+          if (0 != dataPos) {
             tape.storeManual(primal, lhs.getIdentifier(), dataPos);
 
-            for(size_t i = 0; i < dataPos; ++i) {
+            for (size_t i = 0; i < dataPos; ++i) {
               tape.pushJacobiManual(jacobianData[i], 0.0, indexData[i]);
             }
           }
@@ -182,27 +173,25 @@ namespace codi {
 
   /// Specialization for forward tapes.
   template<typename _Type>
-  struct StatementPushHelper<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape> >
-      : public StatementPushHelperBase<_Type, StatementPushHelper<_Type>>
-  {
+  struct StatementPushHelper<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>>
+      : public StatementPushHelperBase<_Type, StatementPushHelper<_Type>> {
     public:
 
       /// See StatementPushHelper
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real; ///< See LhsExpressionInterface
-      using Gradient = typename Type::Gradient; ///< See LhsExpressionInterface
+      using Real = typename Type::Real;          ///< See LhsExpressionInterface
+      using Gradient = typename Type::Gradient;  ///< See LhsExpressionInterface
 
     protected:
 
-      Gradient lhsTangent; ///< Tangent value for the left hand side
+      Gradient lhsTangent;  ///< Tangent value for the left hand side
 
     public:
 
       /*******************************************************************************/
       /// @name Implementation of StatementPushHelperBase
       /// @{
-
 
       /// \copydoc codi::StatementPushHelperBase::startPushStatement()
       void startPushStatement() {
@@ -211,7 +200,7 @@ namespace codi {
 
       /// \copydoc codi::StatementPushHelperBase::pushArgument()
       void pushArgument(Type const& arg, Real const& jacobian) {
-        CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian)) {
+        if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
           lhsTangent += jacobian * arg.getGradient();
         }
       }
@@ -230,8 +219,8 @@ namespace codi {
   struct StatementPushHelper<double, void> {
     public:
 
-      using Type = double; ///< See LhsExpressionInterface
-      using Real = double; ///< See LhsExpressionInterface
+      using Type = double;  ///< See LhsExpressionInterface
+      using Real = double;  ///< See LhsExpressionInterface
 
       /*******************************************************************************/
       /// @name Implementation of StatementPushHelperBase and overwrite of all methods.
@@ -250,20 +239,20 @@ namespace codi {
         lhs = primal;
       }
 
-      /// \copydoc codi::StatementPushHelperBase::pushStatement(Type&, Real const&, ArgIter const, ArgIter const, JacobiIter const)
+      /// \copydoc codi::StatementPushHelperBase::pushStatement(Type&, Real const&, ArgIter const, ArgIter const,
+      /// JacobiIter const)
       template<typename ArgIter, typename JacobiIter>
-      void pushStatement(Type& lhs, Real const& primal,
-                         ArgIter const startArg, ArgIter const endArg,
+      void pushStatement(Type& lhs, Real const& primal, ArgIter const startArg, ArgIter const endArg,
                          JacobiIter const startJac) {
         CODI_UNUSED(startArg, endArg, startJac);
 
         endPushStatement(lhs, primal);
       }
 
-      /// \copydoc codi::StatementPushHelperBase::pushStatement(Type&, Real const&,ArgVector const&, JacobiVector const&, size_t const)
+      /// \copydoc codi::StatementPushHelperBase::pushStatement(Type&, Real const&,ArgVector const&, JacobiVector
+      /// const&, size_t const)
       template<typename ArgVector, typename JacobiVector>
-      void pushStatement(Type& lhs, Real const& primal,
-                         ArgVector const& arguments, JacobiVector const& jacobians,
+      void pushStatement(Type& lhs, Real const& primal, ArgVector const& arguments, JacobiVector const& jacobians,
                          size_t const size) {
         CODI_UNUSED(arguments, jacobians, size);
 

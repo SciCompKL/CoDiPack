@@ -21,8 +21,8 @@ namespace codi {
   struct ExpressionInterface : public NodeInterface<_Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double); ///< See ExpressionInterface
-      using Impl = CODI_DD(_Impl, ExpressionInterface); ///< See ExpressionInterface
+      using Real = CODI_DD(_Real, double);               ///< See ExpressionInterface
+      using Impl = CODI_DD(_Impl, ExpressionInterface);  ///< See ExpressionInterface
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
@@ -33,7 +33,7 @@ namespace codi {
       /// @name Interface definition
       /// @{
 
-      using StoreAs = ExpressionInterface; ///< Defines how this expression is stored in an expression tree.
+      using StoreAs = ExpressionInterface;  ///< Defines how this expression is stored in an expression tree.
 
       /// Compute the primal value that is usually evaluated by the statement/expression.
       CODI_INLINE Real const getValue() const;
