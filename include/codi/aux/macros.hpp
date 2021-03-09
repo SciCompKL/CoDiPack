@@ -87,6 +87,7 @@ namespace codi {
 /// Wrap a function in a function object. Used for speed optimizations.
 #define CODI_WRAP_FUNCTION(NAME, FUNC)        \
   struct NAME {                               \
+    public:                                   \
       /** Empty */                            \
       template<typename... Args>              \
       void operator()(Args&&... args) const { \
@@ -98,6 +99,7 @@ namespace codi {
 #define CODI_WRAP_FUNCTION_TEMPLATE(NAME, FUNC)   \
   template<typename... TT>                        \
   struct NAME {                                   \
+    public:                                       \
       /** Empty */                                \
       template<typename... Args>                  \
       void operator()(Args&&... args) const {     \

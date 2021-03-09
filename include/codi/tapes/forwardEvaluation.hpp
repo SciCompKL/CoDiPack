@@ -65,6 +65,7 @@ namespace codi {
     private:
 
       struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
+        public:
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {

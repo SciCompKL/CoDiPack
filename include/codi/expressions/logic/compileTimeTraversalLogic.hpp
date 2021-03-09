@@ -101,6 +101,7 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
       template<typename TraversalImpl, bool endPoint = false>
       struct CallSwitch {
+        public:
           template<typename Node, typename... Args>
           CODI_INLINE static constexpr ResultType call(Args&&... args) {
             return TraversalImpl::template node<Node>(std::forward<Args>(args)...);
@@ -109,6 +110,7 @@ namespace codi {
 
       template<typename TraversalImpl>
       struct CallSwitch<TraversalImpl, true> {
+        public:
           template<typename Node, typename... Args>
           CODI_INLINE static constexpr ResultType call(Args&&... args) {
             return TraversalImpl::template term<Node>(std::forward<Args>(args)...);
