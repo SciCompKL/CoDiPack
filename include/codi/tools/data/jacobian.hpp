@@ -5,6 +5,7 @@
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
+#include "delayAccessor.hpp"
 #include "dummy.hpp"
 #include "jacobianInterface.hpp"
 #include "staticDummy.hpp"
@@ -66,106 +67,71 @@ namespace codi {
 
     protected:
 
-      ///< Compute index into the storage array.
+      /// Compute index into the storage array.
       CODI_INLINE size_t computeIndex(size_t const i, size_t const j) const {
         return i * n + j;
       }
   };
 
-
-  template <typename Impl>
-  struct DelayAccessor {
-    private:
-      size_t i;
-      size_t j;
-
-      Impl& data;
-
-    public:
-
-      DelayAccessor(size_t const i, size_t const j, Impl& data) : i(i), j(j), data(data) {}
-
-      template<typename T>
-      DelayAccessor& operator =(T const& v) {
-        data.setLogic(i,j, v);
-
-        return *this;
-      }
-
-      operator typename Impl::T() const {
-        return const_cast<Impl const&>(data).operator()(i,j);
-      }
-  };
-
-
   template <typename _T, typename _Store = std::vector<_T>>
   struct JacobianCountNonZerosRow : public Jacobian<_T, _Store> {
     public:
 
-      std::vector<int> nonZerosRow;
+      using Base = Jacobian<_T, _Store>; ///< Base class abbreviation
 
-    public:
-      using T = typename Jacobian<_T, _Store>::T; ///< See Jacobian
-      using Store = typename Jacobian<_T, _Store>::Store; ///< See Jacobian
+      using T = typename Base::T; ///< See Jacobian
+      using Store = typename Base::Store; ///< See Jacobian
 
       using DelayAcc = DelayAccessor<JacobianCountNonZerosRow>;
 
-      /** \copydoc Jacobian::Jacobian */
-      explicit JacobianCountNonZerosRow(size_t m, size_t n) : Jacobian<T, Store>(m, n), nonZerosRow(m) {}
+    private:
+
+      std::vector<int> nonZerosRowVector; ///< Count nonzero entries in each row.
+
+    public:
+
+      /// \copydoc Jacobian::Jacobian
+      explicit JacobianCountNonZerosRow(size_t m, size_t n) : Base(m, n), nonZerosRowVector(m) {}
 
 
-      /** \copydoc Jacobian::operator()(size_t const  i, size_t const j) const */
+      /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j) const
       CODI_INLINE T operator()(size_t const i, size_t const j) const {
-        return Jacobian<T, Store>::operator()(i, j);
+        return Base::operator()(i, j);
       }
 
-      /**
-       * @brief Returns an object for the delayed access. This object calls then the access logic which updates the
-       * number of non zero elements.
-       *
-       * \copydetails Jacobian::operator()(size_t const i, size_t const j)
-       */
+      /// \copydoc JacobianInterface::operator()(size_t const i, size_t const j)
+      /// Implementation: Returns an object for the delayed access. This object calls then the access logic which
+      /// updates the number of non zero elements.
       CODI_INLINE DelayAcc operator()(size_t const i, size_t const j) {
         return DelayAcc(i, j, *this);
       }
 
-      /** \copydoc Jacobian::resize */
+      /// \copydoc JacobianInterface::resize
       CODI_INLINE void resize(size_t const m, size_t const n) {
 
-        Jacobian<T, Store>::resize(m, n);
-        nonZerosRow.resize(m);
+        Base::resize(m, n);
+        nonZerosRowVector.resize(m);
       }
 
-      /** \copydoc Jacobian::reshape */
+      /// \copydoc JacobianInterface::reshape
       CODI_INLINE void reshape(size_t const m, size_t const n) {
-        Jacobian<T, Store>::reshape(m, n);
-        if (nonZerosRow.size() < m) {
-          nonZerosRow.resize(m);
+        Base::reshape(m, n);
+        if (nonZerosRowVector.size() < m) {
+          nonZerosRowVector.resize(m);
         }
       }
-      /**
-       * @brief Reference to the number of non zero entries for the specified row.
-       *
-       * @param[in] i  Output value position. Range: [0, m)
-       *
-       * @return Reference to the non zero count for the specified row.
-       */
-      CODI_INLINE int& nonZeroRow(size_t const i) {
-        return nonZerosRow[i];
+
+      /// Reference to the number of non zero entries for the specified row.
+      CODI_INLINE int& nonZerosRow(size_t const i) {
+        return nonZerosRowVector[i];
       }
 
-      /**
-       * @brief Checks if the element is non zero and updates the counter.
-       *
-       * @param[in] i  Default
-       * @param[in] j  Default
-       * @param[in] v  Default
-       */
+      /// Checks if the element is non zero and updates the counter.
       CODI_INLINE void setLogic(size_t const i, size_t const j, T const& v) {
         if (T() != v) {
-          nonZerosRow[i] += 1;
+          nonZerosRowVector[i] += 1;
         }
-        Jacobian<T, Store>::operator()(i, j) = v;
+        Base::operator()(i, j) = v;
       }
   };
 

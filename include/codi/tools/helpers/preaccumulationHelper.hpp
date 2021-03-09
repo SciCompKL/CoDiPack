@@ -101,7 +101,7 @@ namespace codi {
         }
       }
 
-      /** @brief terminator for the recursive implementation */
+      /// Terminator for the recursive implementation
       void addInputRec() {
         // terminator implementation
       }
@@ -120,7 +120,7 @@ namespace codi {
         }
       }
 
-      /** @brief terminator for the recursive implementation */
+      /// Terminator for the recursive implementation
       void addOutputRec() {
         // terminator implementation
       }
@@ -169,16 +169,16 @@ namespace codi {
                                                  outputData.data(), outputData.size(),
                                                  jacobie);
 
-        // store the Jacobi matrix
+        // store the Jacobian matrix
         tape.resetTo(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
 
           Type& value = *outputValues[curOut];
-          if (0 != jacobie.nonZeroRow(curOut)) {
+          if (0 != jacobie.nonZerosRow(curOut)) {
 
-            int nonZerosLeft = jacobie.nonZeroRow(curOut);
-            jacobie.nonZeroRow(curOut) = 0;
+            int nonZerosLeft = jacobie.nonZerosRow(curOut);
+            jacobie.nonZerosRow(curOut) = 0;
 
             // we need to use here the value of the gradient data such that it is correctly deleted.
             Identifier lastIdentifier = value.getIdentifier();
@@ -190,24 +190,24 @@ namespace codi {
             // statement pushes
             while (nonZerosLeft > 0) {
 
-              // calculate the number of Jacobies for this statement
+              // calculate the number of Jacobians for this statement
               int jacobiesForStatement = nonZerosLeft;
               if (jacobiesForStatement > (int)Config::MaxArgumentSize) {
 
                 jacobiesForStatement = (int)Config::MaxArgumentSize - 1;
-                if (staggeringActive) { /* Space is used up but we need one Jacobi for the staggering */
+                if (staggeringActive) { // Space is used up but we need one Jacobian for the staggering
                   jacobiesForStatement -= 1;
                 }
               }
-              nonZerosLeft -= jacobiesForStatement; /* update non zeros so that we know if it is the last round */
+              nonZerosLeft -= jacobiesForStatement; // Update non zeros so that we know if it is the last round
 
               Identifier storedIdentifier = lastIdentifier;
               tape.storeManual(value.getValue(), lastIdentifier, jacobiesForStatement + (int)staggeringActive);
-              if (staggeringActive) { /* Not the first staggering so push the last output */
+              if (staggeringActive) { // Not the first staggering so push the last output
                 tape.pushJacobiManual(1.0, 0.0, storedIdentifier);
               }
 
-              // push the rest of the Jacobies for the statement
+              // push the rest of the Jacobians for the statement
               while (jacobiesForStatement > 0) {
                 if (Real() != (Real)jacobie(curOut, curIn)) {
                   tape.pushJacobiManual(jacobie(curOut, curIn), 0.0, inputData[curIn]);
@@ -229,75 +229,51 @@ namespace codi {
   };
 
   /**
-   * Helper implementation of the same interface as the PreaccumulationHelper for forward AD tapes.
+   * @brief Helper implementation of the same interface as the PreaccumulationHelper for forward AD tapes.
    *
    * This implementation does nothing in all methods.
    */
   struct PreaccumulationHelperNoOpBase {
+    public:
 
-      /**
-       * @brief Does nothing
-       * @param[in] inputs  Not used
-       * @tparam Inputs  Not used.
-       */
+      /// Does nothing
       template<typename ... Inputs>
       void addInput(Inputs const& ... inputs) {
         CODI_UNUSED(inputs...);
         // do nothing
       }
 
-      /**
-       * @brief Does nothing
-       * @param[in] inputs  Not used
-       * @tparam Inputs  Not used.
-       */
+      /// Does nothing
       template<typename ... Inputs>
       void start(Inputs const& ... inputs) {
         CODI_UNUSED(inputs...);
         // do nothing
       }
 
-      /**
-       * @brief Does nothing
-       * @param[in,out] outputs  Not used
-       * @tparam Outputs  Not used.
-       */
+      /// Does nothing
       template<typename ... Outputs>
       void addOutput(Outputs& ... outputs) {
         CODI_UNUSED(outputs...);
         // do nothing
       }
 
-      /**
-       * @brief Does nothing
-       * @param[in] storeAdjoints  Not used
-       * @param[in,out]   outputs  Not used
-       * @tparam Outputs  Not used.
-       */
+      /// Does nothing
       template<typename ... Outputs>
       void finish(bool const storeAdjoints, Outputs& ... outputs) {
         CODI_UNUSED(storeAdjoints, outputs...);
-
         // do nothing
       }
   };
 
-  /**
-   * Helper implementation of the same interface as the PreaccumulationHelper for forward AD tapes.
-   *
-   * This implementation does nothing in all methods.
-   * @tparam Type
-   */
+#ifndef DOXYGEN_DISABLE
+  /// Spcialize PreaccumulationHelper for forward tapes
   template<typename Type>
   struct PreaccumulationHelper<Type, TapeTraits::EnableIfForwardTape<typename Type::Tape>>
       : public PreaccumulationHelperNoOpBase {};
 
-  /**
-   * Helper implementation of the same interface as the PreaccumulationHelper for double types.
-   *
-   * This implementation does nothing in all methods.
-   */
+  /// Spcialize PreaccumulationHelper for doubles
   template<>
   struct PreaccumulationHelper<double, void>
       : public PreaccumulationHelperNoOpBase {};
+#endif
 }

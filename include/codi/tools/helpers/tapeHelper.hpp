@@ -16,6 +16,7 @@ namespace codi {
   template<typename _Type, typename _Impl>
   struct TapeHelperBase {
     public:
+
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Impl = CODI_DECLARE_DEFAULT(_Impl, TapeHelperBase);
 
@@ -29,6 +30,7 @@ namespace codi {
       using HessianType = Hessian<PassiveReal>;
 
     protected:
+
       using Tape = typename Type::Tape;
 
       Tape& tape;
@@ -258,13 +260,16 @@ namespace codi {
   template<typename _Type>
   struct TapeHelperNoImpl : public TapeHelperBase<_Type, TapeHelperNoImpl<_Type>> {
     public:
+
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;
 
     private:
+
       using Impl = TapeHelperNoImpl<Type>;
 
     public:
+
       virtual void evalPrimal(Real const* x, Real* y = nullptr) = 0;
 
       template<typename Jac = DummyJacobian>
@@ -275,10 +280,12 @@ namespace codi {
   template<typename _Type>
   struct TapeHelperJacobi : public TapeHelperBase<_Type, TapeHelperJacobi<_Type>> {
     public:
+
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;
 
     private:
+
       using Impl = TapeHelperJacobi<Type>;
 
     public:
@@ -305,10 +312,12 @@ namespace codi {
   template<typename _Type>
   struct TapeHelperPrimal : public TapeHelperBase<_Type, TapeHelperPrimal<_Type>> {
     public:
+
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;
 
     private:
+
       using Impl = TapeHelperPrimal<Type>;
 
     public:

@@ -22,12 +22,14 @@ namespace codi {
             >
   struct EvaluationHandleBase {
     public:
+
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void ()(_InputStore const&, _OutputStore&)));
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);
       using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);
 
     protected:
+
       size_t m;
       size_t n;
 
@@ -40,6 +42,7 @@ namespace codi {
       DummyJacobian dummyJacobian;
 
     public:
+
       EvaluationHandleBase(Func& func, size_t m, size_t n) : m(m), n(n), func(func), x(n), y(m),
           dummyVector(), dummyJacobian() {}
 
@@ -59,6 +62,7 @@ namespace codi {
       void computeHessian(VecX const& locX, Hes& hes, VecY& locY, Jac& jac);
 
     protected:
+
       void eval() {
         func(x, y);
       }
@@ -71,6 +75,7 @@ namespace codi {
             >
   struct ForwardHandle : public EvaluationHandleBase<_Func, _Type, _InputStore, _OutputStore> {
     public:
+
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void ()(_InputStore const&, _OutputStore&)));
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);
@@ -213,6 +218,7 @@ namespace codi {
             >
   struct ReverseHandleBase : public EvaluationHandleBase<_Func, _Type, _InputStore, _OutputStore> {
     public:
+
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void ()(_InputStore const&, _OutputStore&)));
       using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);
@@ -221,6 +227,7 @@ namespace codi {
       using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;
 
     protected:
+
       TapeHelper<Type> th;
 
     public:
@@ -382,6 +389,7 @@ namespace codi {
 
   struct EvaluationHelper {
     public:
+
       using JacobianComputationType = RealForwardVec<4>;
       using HessianComputationType = RealForwardGen<RealForwardVec<4>, Direction<RealForwardVec<4>, 4>>;
 

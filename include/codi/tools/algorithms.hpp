@@ -343,45 +343,45 @@ namespace codi {
     private:
 
       template<typename T>
-      static CODI_INLINE void setGradientOnIdentifier(Tape& tape, size_t const pos, Identifier const* values, size_t const size, T value) {
+      static CODI_INLINE void setGradientOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers, size_t const size, T value) {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
-          CODI_ENABLE_CHECK(ActiveChecks, 0 != values[pos + curDim]) {
-            GT::at(tape.gradient(values[pos + curDim]), curDim) = value;
+          CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim]) {
+            GT::at(tape.gradient(identifiers[pos + curDim]), curDim) = value;
           }
         }
       }
 
       template<typename T>
-      static CODI_INLINE void setGradient2ndOnIdentifier(Tape& tape, size_t const pos, Identifier const* values, size_t const size, T value) {
+      static CODI_INLINE void setGradient2ndOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers, size_t const size, T value) {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
-          GT2nd::at(tape.primal(values[pos + curDim]).gradient(), curDim) = value;
+          GT2nd::at(tape.primal(identifiers[pos + curDim]).gradient(), curDim) = value;
         }
       }
 
       template<typename T>
-      static CODI_INLINE void setGradientOnCoDiValue(Tape& tape, size_t const pos, Type* values, size_t const size, T value) {
+      static CODI_INLINE void setGradientOnCoDiValue(Tape& tape, size_t const pos, Type* identifiers, size_t const size, T value) {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
-          CODI_ENABLE_CHECK(ActiveChecks, 0 != values[pos + curDim].getIdentifier()) {
-            GT::at(tape.gradient(values[pos + curDim].getIdentifier()), curDim) = value;
+          CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim].getIdentifier()) {
+            GT::at(tape.gradient(identifiers[pos + curDim].getIdentifier()), curDim) = value;
           }
         }
       }
 
       template<typename T>
-      static CODI_INLINE void setGradient2ndOnCoDiValue(size_t const pos, Type* values, size_t const size, T value) {
+      static CODI_INLINE void setGradient2ndOnCoDiValue(size_t const pos, Type* identifiers, size_t const size, T value) {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
           // No check required since this are forward types.
-          GT2nd::at(values[pos + curDim].value().gradient(), curDim) = value;
+          GT2nd::at(identifiers[pos + curDim].value().gradient(), curDim) = value;
         }
       }
 

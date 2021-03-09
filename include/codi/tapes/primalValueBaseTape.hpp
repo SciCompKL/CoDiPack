@@ -177,9 +177,7 @@ namespace codi {
       static void internalEvaluateReverseStack(Args&& ... args);
 
       /// Reset the primal values to the given position.
-      void internalResetPrimalValues(Position const& pos) {
-        cast().internalResetPrimalValues(pos);
-      }
+      void internalResetPrimalValues(Position const& pos);
 
       /// Add statement specific data to the data streams.
       void pushStmtData(
@@ -948,7 +946,7 @@ namespace codi {
       /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos) {
 
-        internalResetPrimalValues(pos);
+        cast().internalResetPrimalValues(pos);
 
         Base::resetTo(pos);
       }
@@ -975,7 +973,7 @@ namespace codi {
         checkAdjointSize(indexManager.get().getLargestAssignedIndex());
 
         if(!TapeTypes::IsLinearIndexHandler) {
-          internalResetPrimalValues(end);
+          cast().internalResetPrimalValues(end);
         }
 
         internalEvaluateForward<false>(start, end, adjoints.data());
