@@ -14,7 +14,8 @@ endef
 
 VECTOR_DIM = 5
 
-EH_TESTS = $(filter-out TestPreaccumulation% TestReset TestStatementPushHelper, $(ALL_TESTS))
+EH_JACOBI_TAPE_TESTS = $(filter-out TestReset, $(ALL_TESTS))
+EH_PRIMAL_TAPE_TESTS = $(filter-out TestPreaccumulation% TestReset TestStatementPushHelper, $(ALL_TESTS))
 
 # driver definitions
 # First order drivers
@@ -32,19 +33,19 @@ $(eval $(call define_codi_driver,D1_rwsJacIndVec,"drivers/codi/reverse1stOrder.h
 $(eval $(call define_codi_driver,D1_rwsPrimLinVec,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimalVec<$(VECTOR_DIM)>,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D1_rwsPrimIndVec,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimalIndexVec<$(VECTOR_DIM)>,$(ALL_TESTS),-DREVERSE_TAPE))
 
-$(eval $(call define_codi_driver,D1_eh_fwd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealForward,$(EH_TESTS),))
+$(eval $(call define_codi_driver,D1_eh_fwd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealForward,$(ALL_TESTS),))
 
-$(eval $(call define_codi_driver,D1_eh_fwdVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealForwardVec<$(VECTOR_DIM)>,$(EH_TESTS),))
+$(eval $(call define_codi_driver,D1_eh_fwdVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealForwardVec<$(VECTOR_DIM)>,$(ALL_TESTS),))
 
-$(eval $(call define_codi_driver,D1_eh_rwsJacLin,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverse,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D1_eh_rwsJacInd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverseIndex,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D1_eh_rwsPrimLin,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReversePrimal,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D1_eh_rwsPrimInd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReversePrimalIndex,$(EH_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_eh_rwsJacLin,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverse,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_eh_rwsJacInd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverseIndex,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_eh_rwsPrimLin,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReversePrimal,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_eh_rwsPrimInd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReversePrimalIndex,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE))
 
-$(eval $(call define_codi_driver,D1_eh_rwsJacLinVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverseVec<$(VECTOR_DIM)>,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D1_eh_rwsJacIndVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverseIndexVec<$(VECTOR_DIM)>,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D1_eh_rwsPrimLinVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReversePrimalVec<$(VECTOR_DIM)>,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D1_eh_rwsPrimIndVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReversePrimalIndexVec<$(VECTOR_DIM)>,$(EH_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_eh_rwsJacLinVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverseVec<$(VECTOR_DIM)>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_eh_rwsJacIndVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverseIndexVec<$(VECTOR_DIM)>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_eh_rwsPrimLinVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReversePrimalVec<$(VECTOR_DIM)>,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_eh_rwsPrimIndVec,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReversePrimalIndexVec<$(VECTOR_DIM)>,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE))
 
 $(eval $(call define_codi_driver,D1_rwsJacLinCombined,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverse,$(ALL_TESTS),-DREVERSE_TAPE -DCODI_RemoveDuplicateJacobianArguments))
 $(eval $(call define_codi_driver,D1_rwsJacLinUnchecked,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseUnchecked,$(ALL_TESTS),-DREVERSE_TAPE))
@@ -56,8 +57,8 @@ $(eval $(call define_codi_driver,D1_rwsJacLinCustomVectorVec,"drivers/codi/rever
 $(eval $(call define_codi_driver,D1_fwdOFwd,"drivers/codi/forward1stOrder.hpp",CoDiForward1stOrder,codi::RealForwardGen<codi::RealForward>,$(ALL_TESTS),-DSECOND_ORDER))
 $(eval $(call define_codi_driver,D1_rwsOFwd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseGen<codi::RealForward>,$(ALL_TESTS),-DSECOND_ORDER))
 
-$(eval $(call define_codi_driver,D1_eh_fwdOFwd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealForwardGen<codi::RealForward>,$(EH_TESTS),-DSECOND_ORDER))
-$(eval $(call define_codi_driver,D1_eh_rwsOFwd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverseGen<codi::RealForward>,$(EH_TESTS),-DSECOND_ORDER))
+$(eval $(call define_codi_driver,D1_eh_fwdOFwd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealForwardGen<codi::RealForward>,$(ALL_TESTS),-DSECOND_ORDER))
+$(eval $(call define_codi_driver,D1_eh_rwsOFwd,"drivers/codi/evalHelper1stOrder.hpp",CoDiEvalHelper1stOrder,codi::RealReverseGen<codi::RealForward>,$(EH_JACOBI_TAPE_TESTS),-DSECOND_ORDER))
 
 # Primal drivers
 $(eval $(call define_codi_driver,D0_fwd,"drivers/codi/run0thOrder.hpp",CoDi0thOrder,codi::RealForward,$(ALL_TESTS),))
@@ -66,26 +67,26 @@ $(eval $(call define_codi_driver,D0_rwsJacInd,"drivers/codi/run0thOrder.hpp",CoD
 $(eval $(call define_codi_driver,D0_rwsPrimLin,"drivers/codi/run0thOrder.hpp",CoDi0thOrder,codi::RealReversePrimal,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D0_rwsPrimInd,"drivers/codi/run0thOrder.hpp",CoDi0thOrder,codi::RealReversePrimalIndex,$(ALL_TESTS),-DREVERSE_TAPE))
 
-$(eval $(call define_codi_driver,D0_eh_fwd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealForward,$(EH_TESTS),))
-$(eval $(call define_codi_driver,D0_eh_rwsJacLin,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReverse,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D0_eh_rwsJacInd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReverseIndex,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D0_eh_rwsPrimLin,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReversePrimal,$(EH_TESTS),-DREVERSE_TAPE))
-$(eval $(call define_codi_driver,D0_eh_rwsPrimInd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReversePrimalIndex,$(EH_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D0_eh_fwd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealForward,$(ALL_TESTS),))
+$(eval $(call define_codi_driver,D0_eh_rwsJacLin,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReverse,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D0_eh_rwsJacInd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReverseIndex,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D0_eh_rwsPrimLin,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReversePrimal,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D0_eh_rwsPrimInd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReversePrimalIndex,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE))
 
 # second order drivers
 COMMA = ,
 VECTOR_ARG = codi::RealForwardVec<$(VECTOR_DIM)>$(COMMA) codi::Direction<codi::RealForwardVec<$(VECTOR_DIM)>$(COMMA) $(VECTOR_DIM)>
 
-$(eval $(call define_codi_driver,D2_eh_fwd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealForwardGen<codi::RealForward>,$(EH_TESTS),-DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_fwd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealForwardGen<codi::RealForward>,$(ALL_TESTS),-DSECOND_ORDER))
 
-$(eval $(call define_codi_driver,D2_eh_fwdVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealForwardGen<$(VECTOR_ARG)>,$(EH_TESTS),-DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_fwdVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealForwardGen<$(VECTOR_ARG)>,$(ALL_TESTS),-DSECOND_ORDER))
 
-$(eval $(call define_codi_driver,D2_eh_rwsJacLin,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseGen<codi::RealForward>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
-$(eval $(call define_codi_driver,D2_eh_rwsJacInd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseIndexGen<codi::RealForward>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
-$(eval $(call define_codi_driver,D2_eh_rwsPrimLin,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalGen<codi::RealForward>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
-$(eval $(call define_codi_driver,D2_eh_rwsPrimInd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalIndexGen<codi::RealForward>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsJacLin,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseGen<codi::RealForward>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsJacInd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseIndexGen<codi::RealForward>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsPrimLin,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalGen<codi::RealForward>,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsPrimInd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalIndexGen<codi::RealForward>,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
 
-$(eval $(call define_codi_driver,D2_eh_rwsJacLinVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseGen<$(VECTOR_ARG)>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
-$(eval $(call define_codi_driver,D2_eh_rwsJacIndVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseIndexGen<$(VECTOR_ARG)>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
-$(eval $(call define_codi_driver,D2_eh_rwsPrimLinVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalGen<$(VECTOR_ARG)>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
-$(eval $(call define_codi_driver,D2_eh_rwsPrimIndVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalIndexGen<$(VECTOR_ARG)>,$(EH_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsJacLinVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseGen<$(VECTOR_ARG)>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsJacIndVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseIndexGen<$(VECTOR_ARG)>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsPrimLinVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalGen<$(VECTOR_ARG)>,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsPrimIndVec,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalIndexGen<$(VECTOR_ARG)>,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
