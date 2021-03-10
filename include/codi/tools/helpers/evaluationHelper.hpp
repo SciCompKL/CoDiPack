@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../../../codi.hpp"
+#include "../../aux/constructVector.hpp"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../traits/gradientTraits.hpp"
 #include "../../traits/tapeTraits.hpp"
@@ -42,7 +43,7 @@ namespace codi {
     public:
 
       EvaluationHandleBase(Func& func, size_t m, size_t n)
-          : m(m), n(n), func(func), x(n), y(m), dummyVector(), dummyJacobian() {}
+          : m(m), n(n), func(func), x(constructVector<InputStore>(n)), y(constructVector<OutputStore>(m)), dummyVector(), dummyJacobian() {}
 
       template<typename VecX>
       void setAllPrimals(VecX const& locX);

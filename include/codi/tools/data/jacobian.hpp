@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "../../aux/constructVector.hpp"
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
@@ -37,7 +38,7 @@ namespace codi {
     public:
 
       /// m = rows ( output variables), n = columns (input variables)
-      explicit Jacobian(size_t const m, size_t const n) : values(n * m), m(m), n(n) {}
+      explicit Jacobian(size_t const m, size_t const n) : values(constructVector<Store>(n * m)), m(m), n(n) {}
 
       CODI_INLINE size_t getM() const {
         return m;

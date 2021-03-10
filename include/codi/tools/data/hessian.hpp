@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "../../aux/constructVector.hpp"
 #include "../../config.h"
 #include "dummy.hpp"
 #include "hessianInterface.hpp"
@@ -36,7 +37,7 @@ namespace codi {
     public:
 
       /// Constructor
-      explicit Hessian(size_t m, size_t n) : values(n * n * m), m(m), n(n) {}
+      explicit Hessian(size_t m, size_t n) : values(constructVector<Store>(n * n * m)), m(m), n(n) {}
 
       /// \copydoc HessianInterface::getM()
       CODI_INLINE size_t getM() const {
