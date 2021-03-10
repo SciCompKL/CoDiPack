@@ -15,22 +15,39 @@ namespace codi {
    * @brief Data stream interface for tape data. Encapsulates data that is written e.g. for each statement or argument.
    *
    * This interface defines the basic abstraction mechanism of how data is stored in an AD tape. During the recording of
-   * an AD tape, different types of data need to be stored and will be written with a different interval. There can be
-   * e.g data for each statement and data for each argument. Each DataInterface covers the data that is written with one
-   * specific interval. The management of multiple data streams can become quite cumbersome, therefore the
-   * DataInterface is designed in a recursive fashion. Each data stream can be nested with an other data stream, such
+   * an AD tape, different types of data with a varying amount of items need to be stored and associated with each other.
+   * There is e.g. data for each statement and data for each argument. Each DataInterface covers one type of data.
+   * The management of multiple data streams can become quite cumbersome, therefore the
+   * DataInterface is designed in a recursive fashion. Each data stream can be nested with another data stream such
    * that they can exchange position information and synchronize themselves.
    *
-   * A data item on the data stream can consist of multiple entries. That is, a data entry can be an int or it can be an
-   * int and a double. The underlying implementation defines how this data is stored. E.g. as an array of objects or as
-   * an object of arrays. For counting the number of items each call to pushData() counts as one item regardless of how
+   * Note that the recursive implementation is only that - an implementation. The data itself is not recursive. Think
+   * about is as multiple streams of associated data that grow alongside each other in varying speeds.
+   *
+   * current state                  new batch of associated data
+   *
+   * stream 1 ========== * <------ |====
+   * stream 2 =============== * <- |=====
+   * stream 3 === * <------------- |===
+   * stream 4 = * <--------------- |=
+   *
+   * The * mark the current joint position of the streams (end of the last pushed batch of data). A new batch of
+   * associated data is now appended to the streams. The position tracking helps us to recover the individual batches
+   * later.
+   *
+   * A data item on the data stream can consist of multiple entries, e.g., a data entry can be an int or it can be an
+   * int and a double. The underlying implementation defines how this data is stored, e.g. as an array of objects or as
+   * an object of arrays. For counting the number of items, each call to pushData() counts as one item regardless of how
    * many entries each item has.
    *
-   * The getPosition() function will produce a position for this DataInterface and all nested DataInterfaces. All
-   * methods that have the Position type as an argument or will modify the position of the DataInterface will work
+   * The getPosition() function produces a position for this DataInterface and all nested DataInterfaces. All
+   * methods that have the Position type as an argument or modify the position of the DataInterface work
    * recursively on all nested DataInterfaces.
    *
-   * See \ref Developer_Simple_Tape for an usage of this interface.
+   * Typically, implementations will avoid the cost of allocating storage for each individual data item and perform a
+   * smaller number of larger memory allocations instead, which we refer to as "chunks". See \ref ChunkBase for details.
+   *
+   * See \ref Developer_Simple_Tape for a usage of this interface.
    *
    * Example usage:
    *  \code{.cpp}
@@ -50,10 +67,10 @@ namespace codi {
    *    argVector.pushData(2.0);
    *
    *    // Perform some operations on the data
-   *    // How data is provided to func depends on the interface implementations, lets assume start,end and a data
+   *    // How data is provided to func depends on the interface implementations, let's assume start, end, and a data
    *    // pointer
    *    auto func = (startStmt, endStmt, stmt, startArg, endArg, arg) {
-   *        for (int i = startStmt; i < endStmt; i += 1) { std::cout << st,t[i] << ", ";}
+   *        for (int i = startStmt; i < endStmt; i += 1) { std::cout << stmt[i] << ", ";}
    *        for (int i = startArg; i < endArg; i += 1) { std::cout << arg[i] << ", ";}
    *    };
    *    stmtVector.evaluateForward(stmtVector.getZeroPosition(), stmtVector.getPosition(), func);
@@ -76,7 +93,7 @@ namespace codi {
    * Reset:
    *   - reset(): Clear data, but do not delete allocated memory.
    *   - resetHard(): Clear data and free allocated memory.
-   *   - resetTo(): Clear all data up to the specified position
+   *   - resetTo(): Clear all data up to the specified position.
    *
    * Iterating:
    *   - evaluateForward() / evaluateReverse(): Evaluate from start to end and call the function object for each valid
@@ -101,13 +118,13 @@ namespace codi {
       /// @name Adding items
 
       /**
-       * @brief Add data to the allocated data in the implementation. The method can only be called after a call to
+       * @brief Add data to the storage allocated by the implementation. The method can only be called after a call to
        *        reserveItems and only as often as the number of reserved items.
        *
        * pushData() can be called less often than indicated with reserveItems(). The call to reserveItems only
-       * represents the maximum number of data items that might be pushed.
+       * represents the maximum number of data items that can be pushed safely.
        *
-       * After a new call to reserveItems() only this many number of data items can be pushed, leftovers will not
+       * After a new call to reserveItems(), only this many number of data items can be pushed, leftovers will not
        * accumulate.
        *
        * @param[in] data  The number of arguments has to match the number of data stores of the implementation.
@@ -127,7 +144,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Size management
 
-      void resize(size_t const& totalSize); /**< Allocated the requested number of data items. */
+      void resize(size_t const& totalSize); /**< Allocate the requested number of data items. */
 
       void reset();     /**< Reset to the zero position. Data is not deallocated. Also called on nested interfaces. */
       void resetHard(); /**< Reset to the zero position. Data is deallocated and the default size is allocated again.
@@ -140,12 +157,12 @@ namespace codi {
 
       CODI_INLINE size_t getDataSize() const;   /**< @return Total number of data items stored. */
       CODI_INLINE Position getPosition() const; /**< @return The current global position of this DataInterface and all
-                                                             nested interfaces */
+                                                             nested interfaces. */
       CODI_INLINE size_t getPushedDataCount(InternalPosHandle const& startPos); /**< Compute the number of data items
                                                                                      stored after a call to
                                                                                      #reserveItems. */
       CODI_INLINE Position getZeroPosition() const; /**< @return The start position of the DataInterface and all nested
-                                                                 interfaces */
+                                                                 interfaces. */
 
       /*******************************************************************************/
       /// @name Misc functions
@@ -196,7 +213,7 @@ namespace codi {
        * @param[in]    start     Starting position.
        * @param[in]    end       Ending position.
        * @param[in]    function  Function object called.
-       * @param[inout] args      Additional arguments for the function object
+       * @param[inout] args      Additional arguments for the function object.
        *
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
@@ -213,7 +230,7 @@ namespace codi {
        * @param[in]    start     Starting position.
        * @param[in]    end       Ending position.
        * @param[in]    function  Function object called.
-       * @param[inout] args      Additional arguments for the function object
+       * @param[inout] args      Additional arguments for the function object.
        *
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
@@ -233,7 +250,7 @@ namespace codi {
        * Chunk is of the type ChunkBase.
        *
        * @param[in]    function   Function object called.
-       * @param[in]    recursive  True if same call is done for all nested DataInterfaces.
+       * @param[in]    recursive  True if same call should be performed for all nested DataInterfaces.
        * @param[inout] args       Additional arguments for the function object.
        *
        * @tparam FunctionObject  Function object which is called.
