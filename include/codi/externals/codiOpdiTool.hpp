@@ -58,6 +58,15 @@ struct CoDiOpDiTool : public opdi::ToolInterface {
     }
 
   public:
+    void init() {
+      auto id = opdi::backend->getLockIdentifier(Tape::getAdjointsLock());
+      opdi::logic->registerInactiveMutex(opdi::LogicInterface::MutexKind::Lock, id);
+    }
+
+    void finalize() {
+
+    }
+
     void* createTape() {
       return (void*) new Tape;
     }
@@ -144,6 +153,10 @@ struct CoDiOpDiTool : public opdi::ToolInterface {
       Tape* tape = (Tape*) tapePtr;
       Position* start = (Position*) startPtr;
       Position* end = (Position*) endPtr;
+
+      if (tape->isActive()) {
+        std::cerr << "Warning: OpDiLib evaluation of an active tape." << std::endl;
+      }
 
       typename Tape::GradientValue* adjoints = &tape->gradient(0);
       using NonAtomicGradientValue = codi::RemoveAtomic<typename Tape::GradientValue>;

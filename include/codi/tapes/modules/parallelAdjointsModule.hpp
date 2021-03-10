@@ -106,6 +106,12 @@ namespace codi {
         adjointsSize = newSize;
       }
 
+    public:
+
+      static omp_lock_t* getAdjointsLock() {
+        return &adjointsWrapper.lock;
+      }
+
     protected:
 
       ParallelAdjointsModule() {
