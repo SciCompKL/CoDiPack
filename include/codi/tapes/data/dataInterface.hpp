@@ -24,12 +24,14 @@ namespace codi {
    * Note that the recursive implementation is only that - an implementation. The data itself is not recursive. Think
    * about is as multiple streams of associated data that grow alongside each other in varying speeds.
    *
+   * \code{.cpp}
    * current state                  new batch of associated data
    *
    * stream 1 ========== * <------ |====
    * stream 2 =============== * <- |=====
    * stream 3 === * <------------- |===
    * stream 4 = * <--------------- |=
+   * \endcode
    *
    * The * mark the current joint position of the streams (end of the last pushed batch of data). A new batch of
    * associated data is now appended to the streams. The position tracking helps us to recover the individual batches
