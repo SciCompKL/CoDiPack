@@ -48,6 +48,8 @@ digraph Tutorials {
 
   E15 [label="E15 - Preaccumulation of code parts"];
 
+  E16 [label="E16 - Tape helper"];
+
   // Edges (sorted)
   E08:e -> E09:w;
   T01:e -> E01:w;

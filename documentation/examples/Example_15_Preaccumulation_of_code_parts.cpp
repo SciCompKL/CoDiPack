@@ -8,10 +8,10 @@
 using Real = codi::RealReverse;
 using Tape = typename Real::Tape;
 
+//! [Function]
 // time step ode in a explicit euler sheme
 // x'(t) = Ax(t)
 // x_n = x_c + dt * Ax(t)
-//! [Function]
 void ode(const Real* start, Real* end, int steps, Real* A, double dt, size_t n) {
   Real* cur = new Real[n];
 

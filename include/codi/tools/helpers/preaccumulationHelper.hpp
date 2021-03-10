@@ -22,7 +22,7 @@ namespace codi {
    * Jacobian matrix of that section. If the code part is defined by the function \f$ f \f$ then the Jacobian
    * \f$ \frac{df}{dx} \f$ is computed by the Preaccumulation helper and stored on the tape.
    *
-   * The preaccumulation of a code part is benificial if it is complicated to compute but has only a few inputs and
+   * The preaccumulation of a code part is beneficial if it is complicated to compute but has only a few inputs and
    * outputs. If the computation of requires 200 statements with a total of 600 arguments the storage for this is on a
    * Jacobian tape would be 7400 byte. If the function has two input arguments and two output arguments, the storage for
    * the Jacobian matrix of this function would require 50 byte.
@@ -65,7 +65,7 @@ namespace codi {
 
       Position startPos;                       ///< Starting position for the region.
       std::vector<Gradient> storedAdjoints;    ///< If adjoints of inputs should be stored, before the preaccumulation.
-      JacobianCountNonZerosRow<Real> jacobie;  ///< Jacboian for the preaccumulation.
+      JacobianCountNonZerosRow<Real> jacobie;  ///< Jacobian for the preaccumulation.
 
     public:
 
