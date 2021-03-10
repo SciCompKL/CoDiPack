@@ -46,6 +46,8 @@ digraph Tutorials {
 
   E14 [label="E14 - ReferenceActiveReal"];
 
+  E15 [label="E15 - Preaccumulation of code parts"];
+
   // Edges (sorted)
   E08:e -> E09:w;
   T01:e -> E01:w;
@@ -59,6 +61,7 @@ digraph Tutorials {
   T02:e -> E12:w;
   T02:e -> E13:w;
   T02:e -> E14:w;
+  T02:e -> E15:w;
   T02:e -> T03:w;
   T02:e -> T04:w;
   T02:e -> T05:w;

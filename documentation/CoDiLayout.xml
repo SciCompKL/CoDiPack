@@ -30,6 +30,7 @@
       <tab type="user" title="Example 12 - Manual statement creation" url="@ref Example_12_Manual_statement_creation"/>
       <tab type="user" title="Example 13 - MPI communication" url="@ref Example_13_MPI_communication"/>
       <tab type="user" title="Example 14 - ReferenceActiveType" url="@ref Example_14_ReferenceActiveType"/>
+      <tab type="user" title="Example 15 - Preaccumulation of code parts" url="@ref Example_15_Preaccumulation_of_code_parts"/>
     </tab>
     <tab type="user" title="Papers" url="@ref Papers"/>
     <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>

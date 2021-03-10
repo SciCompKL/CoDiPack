@@ -15,42 +15,75 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Stores the Jacobi matrix for a code section.
+   *
+   * The preaccumulation of a code section describes the process of replacing the recorded tape entries with the
+   * Jacobian matrix of that section. If the code part is defined by the function \f$ f \f$ then the Jacobian
+   * \f$ \frac{df}{dx} \f$ is computed by the Preaccumulation helper and stored on the tape.
+   *
+   * The preaccumulation of a code part is benificial if it is complicated to compute but has only a few inputs and
+   * outputs. If the computation of requires 200 statements with a total of 600 arguments the storage for this is on a
+   * Jacobian tape would be 7400 byte. If the function has two input arguments and two output arguments, the storage for
+   * the Jacobian matrix of this function would require 50 byte.
+   *
+   * The procedure for the preaccumulation of a code section is:
+   *
+   * \snippet documentation/examples/Example_15_Preaccumulation_of_code_parts.cpp Preaccumulation region
+   *
+   * The preaccumulation helper can be used multiple times, the start routine resets the state such that multiple
+   * evaluations are possible. This improves the performance of the helper since stack allocations are only performed
+   * once.
+   *
+   * @tparam _Type  A CoDiPack type on which the evaluations take place.
+   */
   template<typename _Type, typename = void>
   struct PreaccumulationHelper {
     public:
 
+      /// See PreaccumulationHelper
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real;
-      using Identifier = typename Type::Identifier;
-      using Gradient = typename Type::Gradient;
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
+      using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface
 
+      /// See LhsExpressionInterface
       using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape,
                                         CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
-      using Position = typename Tape::Position;
+      using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface
 
-      std::vector<Identifier> inputData;
-      std::vector<Identifier> outputData;
-      std::vector<Type*> outputValues;
-      Position startPos;
+      std::vector<Identifier> inputData;   ///< List of input identifiers. Can be added manually after start() was
+                                           ///< called.
+      std::vector<Identifier> outputData;  ///< List of output identifiers. Can be added manually before finish() is
+                                           ///< called. Has to be in sync with outputValues.
+      std::vector<Type*> outputValues;     ///< List of output value pointers. Can be added manually before finish() is
+                                           ///< called. Has to be in sync with outputData.
 
-      std::vector<Gradient> storedAdjoints;
+    protected:
 
-      JacobianCountNonZerosRow<Real> jacobie;
+      Position startPos;                       ///< Starting position for the region.
+      std::vector<Gradient> storedAdjoints;    ///< If adjoints of inputs should be stored, before the preaccumulation.
+      JacobianCountNonZerosRow<Real> jacobie;  ///< Jacboian for the preaccumulation.
 
+    public:
+
+      /// Constructor
       PreaccumulationHelper()
           : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobie(0, 0) {}
 
+      /// Add multiple additional inputs. Inputs need to be of type `Type`. Called after start().
       template<typename... Inputs>
       void addInput(Inputs const&... inputs) {
         Tape& tape = Type::getGlobalTape();
 
         if (tape.isActive()) {
-          addInputRec(inputs...);
+          addInputRecursive(inputs...);
         }
       }
 
+      /// Starts a preaccumulation region. Resets the internal state. See `addInputs()` for inputs.
       template<typename... Inputs>
       void start(Inputs const&... inputs) {
         Tape& tape = Type::getGlobalTape();
@@ -62,25 +95,27 @@ namespace codi {
 
           startPos = tape.getPosition();
 
-          addInputRec(inputs...);
+          addInputRecursive(inputs...);
         }
       }
 
+      /// Add multiple additional outputs. Outputs need to be of type `Type`. Called before finish().
       template<typename... Outputs>
       void addOutput(Outputs&... outputs) {
         Tape& tape = Type::getGlobalTape();
 
         if (tape.isActive()) {
-          addOutputRec(outputs...);
+          addOutputRecursive(outputs...);
         }
       }
 
+      /// Finish the preaccumulation region and perform the preaccumulation. See `addOutput()` for outputs.
       template<typename... Outputs>
       void finish(bool const storeAdjoints, Outputs&... outputs) {
         Tape& tape = Type::getGlobalTape();
 
         if (tape.isActive()) {
-          addOutputRec(outputs...);
+          addOutputRecursive(outputs...);
 
           if (storeAdjoints) {
             storeInputAdjoints();
@@ -104,14 +139,14 @@ namespace codi {
       }
 
       /// Terminator for the recursive implementation
-      void addInputRec() {
+      void addInputRecursive() {
         // terminator implementation
       }
 
       template<typename... Inputs>
-      void addInputRec(Type const& input, Inputs const&... r) {
+      void addInputRecursive(Type const& input, Inputs const&... r) {
         addInputLogic(input);
-        addInputRec(r...);
+        addInputRecursive(r...);
       }
 
       void addOutputLogic(Type& output) {
@@ -123,14 +158,14 @@ namespace codi {
       }
 
       /// Terminator for the recursive implementation
-      void addOutputRec() {
+      void addOutputRecursive() {
         // terminator implementation
       }
 
       template<typename... Outputs>
-      void addOutputRec(Type& output, Outputs&... r) {
+      void addOutputRecursive(Type& output, Outputs&... r) {
         addOutputLogic(output);
-        addOutputRec(r...);
+        addOutputRecursive(r...);
       }
 
       void storeInputAdjoints() {
@@ -224,6 +259,7 @@ namespace codi {
       }
   };
 
+#ifndef DOXYGEN_DISABLE
   /**
    * @brief Helper implementation of the same interface as the PreaccumulationHelper for forward AD tapes.
    *
@@ -261,7 +297,6 @@ namespace codi {
       }
   };
 
-#ifndef DOXYGEN_DISABLE
   /// Spcialize PreaccumulationHelper for forward tapes
   template<typename Type>
   struct PreaccumulationHelper<Type, TapeTraits::EnableIfForwardTape<typename Type::Tape>>
