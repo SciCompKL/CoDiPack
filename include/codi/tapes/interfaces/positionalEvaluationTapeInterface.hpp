@@ -15,8 +15,8 @@ namespace codi {
    * The definitions in the ReverseTapeInterface provide only methods, that operate on the full tape. With the methods
    * in this interface all these operations can be performed on parts of the tape.
    *
-   * An example for a positional tape evaluation (\ref Example_3_Positional_tape_evaluations):
-   * \snippet examples/Example_3_Positional_tape_evaluations.cpp Positional evaluation
+   * An example for a positional tape evaluation (\ref Example_03_Positional_tape_evaluations):
+   * \snippet examples/Example_03_Positional_tape_evaluations.cpp Positional evaluation
    *
    * @tparam _Position  Global tape position usually defined by Tape::Position.
    */

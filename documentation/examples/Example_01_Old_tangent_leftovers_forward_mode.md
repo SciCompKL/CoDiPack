@@ -1,4 +1,4 @@
-Example 1 - Old tangent leftovers in forward mode AD {#Example_1_Old_tangent_leftovers_forward_mode}
+Example 1 - Old tangent leftovers in forward mode AD {#Example_01_Old_tangent_leftovers_forward_mode}
 =======
 
 **Goal:** Learn how side effects can effect the tangent computation.
@@ -6,10 +6,10 @@ Example 1 - Old tangent leftovers in forward mode AD {#Example_1_Old_tangent_lef
 **Prequesties:** \ref Tutorial_1_Forward_mode_AD
 
 **Function:**
-\snippet examples/Example_1_Old_tangent_leftovers_forward_mode.cpp Function
+\snippet examples/Example_01_Old_tangent_leftovers_forward_mode.cpp Function
 
 **Full code:**
-\snippet examples/Example_1_Old_tangent_leftovers_forward_mode.cpp Example 1 - Old tangent leftovers forward mode
+\snippet examples/Example_01_Old_tangent_leftovers_forward_mode.cpp Example 1 - Old tangent leftovers forward mode
 
 The computational path of the function is changed via the parameter `updateGlobal`. If this parameter is `true` then
 `x` also enters the computation of the global variable. If the parameter is `false` then the global value is seen as a

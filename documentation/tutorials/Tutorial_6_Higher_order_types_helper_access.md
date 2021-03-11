@@ -73,5 +73,5 @@ direction need to be set during the recording and 1 direction during the reversa
 
 This tutorial uses the [DerivativeAccess](@ref codi::DerivativeAccess) helper for the management of the derivative
 directions. It provides convinience functions that allow to set all derivatives on a specific order. For a compile time
-interface see the example \ref Example_4_Higher_order_types_helper_access_compile_time. Example
-\ref Example_5_Higher_order_types_direct_access shows how the gradients can be accessd without the helper.
+interface see the example \ref Example_04_Higher_order_types_helper_access_compile_time. Example
+\ref Example_05_Higher_order_types_direct_access shows how the gradients can be accessd without the helper.

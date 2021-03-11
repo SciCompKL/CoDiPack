@@ -16,7 +16,7 @@ __Legend:__
                                  size is used (e.g. `memcpy(y, x, n * sizeof(codi::RealReverse))`.
  - __Vector mode:__ Additional memory consumpition for the vector mode is quite small. Vector modes can either be run
                     with the *Vec [variant](@ref ActiveTypeList) of the type (@ref Tutorial_4_Vector_mode_AD) or with
-                    the codi::CustomAdjointVectorHelper (@ref Example_2_Custom_adjoint_vector_evaluation).
+                    the codi::CustomAdjointVectorHelper (@ref Example_02_Custom_adjoint_vector_evaluation).
  - __Large inactive parts:__ CoDiPack performs an [online activity analysis](@\ref ActivityAnalysis). If variables do not depend on the input
                              variables - registered with calls to `registerInput` (independent variables) - then the
                              sensitivites are not propagated for these _passive_ variables. Jacobian taping approaches

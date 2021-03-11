@@ -19,7 +19,7 @@ The derivative computation with the forward mode of CoDiPack is quite simple and
 The simplicity comes from the implementation. The tangent data is stored in the active types and no tape is recorded.
 All tangent evaluations are directly done in the statement evaluation. This is what ADOL-C calls the ''tapeless'' mode.
 
-If you need to record a tape and evaluate it in a forward manner, please have a look at example \ref Example_6_Forward_tape_evaluation.
+If you need to record a tape and evaluate it in a forward manner, please have a look at example \ref Example_06_Forward_tape_evaluation.
 
 #### Step 1: Set the tangent seeding.
 
@@ -52,4 +52,4 @@ think to keep in mind is that tangent values are only reset by CoDiPack if the v
 that are set on the input values, are not reset and need to be reset by the user.
 
 Left over tangent seedings can also happen if the computational path changes and values from an old evaluation are used.
-See \ref Example_1_Old_tangent_leftovers_forward_mode for an example.
+See \ref Example_01_Old_tangent_leftovers_forward_mode for an example.

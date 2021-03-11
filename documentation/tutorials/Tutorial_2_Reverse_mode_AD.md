@@ -71,7 +71,7 @@ For an access to the gradient data for variables which run out of scope, see \re
 The simplest way to evaluate the full tape is to call the method [evaluate](@ref codi::ReverseTapeInterface::evaluate).
 This will evaluate the full tape from the last recorded statement to the first one.
 
-For a partial evaluation of the tape see \ref Example_3_Positional_tape_evaluations. There are also other evaluation possibilities available, which are
+For a partial evaluation of the tape see \ref Example_03_Positional_tape_evaluations. There are also other evaluation possibilities available, which are
 described in other [Tutorials](@ref TutorialsAndExamples).
 
 #### Step 8: Get the resulting derivatives
