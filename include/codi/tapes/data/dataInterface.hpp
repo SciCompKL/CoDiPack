@@ -24,7 +24,7 @@ namespace codi {
    * Note that the recursive implementation is only that - an implementation. The data itself is not recursive. Think
    * about is as multiple streams of associated data that grow alongside each other in varying speeds.
    *
-   * \code{.cpp}
+   * \code{.txt}
    * current state                  new batch of associated data
    *
    * stream 1 ========== * <------ |====
@@ -34,8 +34,7 @@ namespace codi {
    * \endcode
    *
    * The * mark the current joint position of the streams (end of the last pushed batch of data). A new batch of
-   * associated data is now appended to the streams. The position tracking helps us to recover the individual batches
-   * later.
+   * associated data is now appended to the streams.
    *
    * A data item on the data stream can consist of multiple entries, e.g., a data entry can be an int or it can be an
    * int and a double. The underlying implementation defines how this data is stored, e.g. as an array of objects or as
