@@ -72,6 +72,7 @@ $(eval $(call define_codi_driver,D0_eh_rwsJacLin,"drivers/codi/evalHelper0thOrde
 $(eval $(call define_codi_driver,D0_eh_rwsJacInd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReverseIndex,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D0_eh_rwsPrimLin,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReversePrimal,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D0_eh_rwsPrimInd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::RealReversePrimalIndex,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D0_eh_rwsPrim2nd,"drivers/codi/evalHelper0thOrder.hpp",CoDiEvalHelper0thOrder,codi::HessianComputationType,$(ALL_TESTS),))
 
 # second order drivers
 VECTOR_ARG = codi::RealForwardVec<$(VECTOR_DIM)>,codi::Direction<codi::RealForwardVec<$(VECTOR_DIM)>,$(VECTOR_DIM)>
