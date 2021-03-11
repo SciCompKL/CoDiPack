@@ -9,12 +9,12 @@ or pointers to other features.
 
 |Tutorial | |
 |:--------|:--------|
-| \subpage Tutorial_1_Forward_mode_AD "" | Explains the usage of the codi::RealForward type. |
-| \subpage Tutorial_2_Reverse_mode_AD "" | Explains the usage of the codi::RealReverse type. |
-| \subpage Tutorial_3_Full_jacobian_computation "" | Full Jacobian computation in CoDiPack with the forward and reverse mode. |
-| \subpage Tutorial_4_Vector_mode_AD "" | Vector mode examples with CoDiPack. |
-| \subpage Tutorial_5_Multiple_tape_recordings "" | How different tapes are recorded in in CoDiPack. |
-| \subpage Tutorial_6_Higher_order_types_helper_acces "" | Describes how higher order AD types can be constructed and used. |
+| \subpage Tutorial_01_Forward_mode_AD "" | Explains the usage of the codi::RealForward type. |
+| \subpage Tutorial_02_Reverse_mode_AD "" | Explains the usage of the codi::RealReverse type. |
+| \subpage Tutorial_03_Full_jacobian_computation "" | Full Jacobian computation in CoDiPack with the forward and reverse mode. |
+| \subpage Tutorial_04_Vector_mode_AD "" | Vector mode examples with CoDiPack. |
+| \subpage Tutorial_05_Multiple_tape_recordings "" | How different tapes are recorded in in CoDiPack. |
+| \subpage Tutorial_06_Higher_order_types_helper_acces "" | Describes how higher order AD types can be constructed and used. |
 
 
 | Example | |

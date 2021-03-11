@@ -3,7 +3,7 @@ Example 5 - Higher order derivatives direct access {#Example_05_Higher_order_typ
 
 **Goal:** Demonstation how to set derivatives of higher order types directly.
 
-**Prequesties:** \ref Tutorial_6_Higher_order_types_helper_acces
+**Prequesties:** \ref Tutorial_06_Higher_order_types_helper_acces
 
 **Function:** \ref func_simple1to1_higher
 \snippet examples/Example_05_Higher_order_types_direct_access.cpp Function

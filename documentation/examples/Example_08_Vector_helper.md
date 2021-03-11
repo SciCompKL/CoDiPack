@@ -3,7 +3,7 @@ Example 8 - Custom adjoint vector helper {#Example_08_Vector_helper}
 
 **Goal:** Vector mode with a custom adjoint vector.
 
-**Prequesties:** \ref Tutorial_4_Vector_mode_AD
+**Prequesties:** \ref Tutorial_04_Vector_mode_AD
 
 **Function:** \ref func_simpleNto2
 \snippet examples/Example_08_Vector_helper.cpp Function

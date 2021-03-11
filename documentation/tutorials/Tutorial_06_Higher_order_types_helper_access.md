@@ -1,15 +1,15 @@
-Tutorial 6 - Higher order derivatives {#Tutorial_6_Higher_order_types_helper_acces}
+Tutorial 6 - Higher order derivatives {#Tutorial_06_Higher_order_types_helper_acces}
 ============
 
 **Goal:** Learn how to define higher order types and how to compute higher order derivatives.
 
-**Prequesties:** \ref Tutorial_2_Reverse_mode_AD
+**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_simple1to1_higher
-\snippet tutorials/Tutorial_6_Higher_order_types_helper_access.cpp Function
+\snippet tutorials/Tutorial_06_Higher_order_types_helper_access.cpp Function
 
 **Full code:**
-\snippet tutorials/Tutorial_6_Higher_order_types_helper_access.cpp Tutorial 6 - Higher order derivatives
+\snippet tutorials/Tutorial_06_Higher_order_types_helper_access.cpp Tutorial 6 - Higher order derivatives
 
 #### Defining higher order types ####
 

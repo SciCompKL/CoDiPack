@@ -3,7 +3,7 @@ Example 14 - RefrenceActiveType {#Example_14_ReferenceActiveType}
 
 **Goal:** Optimize statements where the same argument occurs multiple times.
 
-**Prequesties:** \ref Tutorial_2_Reverse_mode_AD
+**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_poly1D
 \snippet examples/Example_14_ReferenceActiveType.cpp Function

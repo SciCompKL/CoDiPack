@@ -1,17 +1,17 @@
-Tutorial 5 - Multiple tape recordings {#Tutorial_5_Multiple_tape_recordings}
+Tutorial 5 - Multiple tape recordings {#Tutorial_05_Multiple_tape_recordings}
 =======
 
 **Goal:** Be aware of possible side effects in multiple reverse evaluations
 
-**Prequesties:** \ref Tutorial_2_Reverse_mode_AD
+**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:**
-\snippet tutorials/Tutorial_5_Multiple_tape_recordings.cpp Function
+\snippet tutorials/Tutorial_05_Multiple_tape_recordings.cpp Function
 
 **Full code:**
-\snippet tutorials/Tutorial_5_Multiple_tape_recordings.cpp Tutorial 5 - Multiple tape recordings
+\snippet tutorials/Tutorial_05_Multiple_tape_recordings.cpp Tutorial 5 - Multiple tape recordings
 
-The example in [Tutorial 2](@ref Tutorial_2_Reverse_mode_AD) shows already everything that is required for multiple 
+The example in [Tutorial 2](@ref Tutorial_02_Reverse_mode_AD) shows already everything that is required for multiple 
 tape recordings. The main thing to know is that a [setActive](@ref codi::ReverseTapeInterface::setActive) call does not
 reset a CoDiPack tape. Only the call to [reset](@ref codi::ReverseTapeInterface::reset) will completely delete the last
 recorded function evaluation. In the context of functions with no side effects this will work without any problems. The

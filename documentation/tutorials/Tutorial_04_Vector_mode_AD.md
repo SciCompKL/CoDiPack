@@ -1,15 +1,15 @@
-Tutorial 4 - Vector mode AD {#Tutorial_4_Vector_mode_AD}
+Tutorial 4 - Vector mode AD {#Tutorial_04_Vector_mode_AD}
 =======
 
 **Goal:** Vector mode with the forward and reverse mode AD CoDiPack types.
 
-**Prequesties:** \ref Tutorial_1_Forward_mode_AD, \ref Tutorial_2_Reverse_mode_AD
+**Prequesties:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_simpleNto2
-\snippet tutorials/Tutorial_4_Vector_mode_AD.cpp Function
+\snippet tutorials/Tutorial_04_Vector_mode_AD.cpp Function
 
 **Full code:**
-\snippet tutorials/Tutorial_4_Vector_mode_AD.cpp Tutorial 4 - Vector mode AD
+\snippet tutorials/Tutorial_04_Vector_mode_AD.cpp Tutorial 4 - Vector mode AD
 
 The vector mode of AD is introduced by using matrices for the adjoint values and tangent values \f$\bar y\f$,
 \f$\bar x\f$, \f$\dot x\f$ and \f$\dot y\f$. If the vector mode dimension is denoted by \f$d\f$, the matrices have the

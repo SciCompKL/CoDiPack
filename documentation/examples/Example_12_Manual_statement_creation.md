@@ -3,7 +3,7 @@ Example 12 - Manual statement creation {#Example_12_Manual_statement_creation}
 
 **Goal:** Add a statement with manually computed primal and Jacobian values to the tape.
 
-**Prequesties:** \ref Tutorial_2_Reverse_mode_AD
+**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_poly2D
 \snippet examples/Example_12_Manual_statement_creation.cpp Function

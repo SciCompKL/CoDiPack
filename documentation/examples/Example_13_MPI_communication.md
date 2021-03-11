@@ -3,7 +3,7 @@ Example 13 - MPI communication {#Example_13_MPI_communication}
 
 **Goal:** Learn how MPI communication is differentiated with CoDiPack and MeDiPack.
 
-**Prequesties:** \ref Tutorial_2_Reverse_mode_AD
+**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
 
 **Full code:**
 \snippet examples/Example_13_MPI_communication.cpp Example 13 - MPI communication

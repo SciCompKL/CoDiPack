@@ -1,4 +1,4 @@
-Tutorial 1 - Forward mode AD {#Tutorial_1_Forward_mode_AD}
+Tutorial 1 - Forward mode AD {#Tutorial_01_Forward_mode_AD}
 =======
 
 **Goal:** Introduction to forward mode AD with CoDiPack.
@@ -6,10 +6,10 @@ Tutorial 1 - Forward mode AD {#Tutorial_1_Forward_mode_AD}
 **Prequesties:** AD forward mode. See \ref sec_forwardAD
 
 **Function:** \ref func_simple1to1
-\snippet tutorials/Tutorial_1_Forward_mode_AD.cpp Function
+\snippet tutorials/Tutorial_01_Forward_mode_AD.cpp Function
 
 **Full code:**
-\snippet tutorials/Tutorial_1_Forward_mode_AD.cpp Tutorial 1 - Forward mode AD
+\snippet tutorials/Tutorial_01_Forward_mode_AD.cpp Tutorial 1 - Forward mode AD
 
 The derivative computation with the forward mode of CoDiPack is quite simple and needs only three steps:
   - Set the direction of the derivative on the input variables.

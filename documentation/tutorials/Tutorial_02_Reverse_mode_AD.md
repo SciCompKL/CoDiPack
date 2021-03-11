@@ -1,4 +1,4 @@
-Tutorial 2 - Reverse mode AD {#Tutorial_2_Reverse_mode_AD}
+Tutorial 2 - Reverse mode AD {#Tutorial_02_Reverse_mode_AD}
 =======
 
 **Goal:** Introduction to reverse mode AD with CoDiPack.
@@ -6,10 +6,10 @@ Tutorial 2 - Reverse mode AD {#Tutorial_2_Reverse_mode_AD}
 **Prequesties:** AD reverse mode. See \ref sec_reverseAD
 
 **Function:** \ref func_simple1to1
-\snippet tutorials/Tutorial_2_Reverse_mode_AD.cpp Function
+\snippet tutorials/Tutorial_02_Reverse_mode_AD.cpp Function
 
 **Full code:**
-\snippet tutorials/Tutorial_2_Reverse_mode_AD.cpp Tutorial 2 - Reverse mode AD
+\snippet tutorials/Tutorial_02_Reverse_mode_AD.cpp Tutorial 2 - Reverse mode AD
 
 The derivative computation with the reverse mode of CoDiPack needs in total nine steps:
   - Start the recording
@@ -89,8 +89,8 @@ and multiples evaluations are performed, then the derivative data will be accumu
 The last step is very important when multiple tape evaluations or recordings are performed during one program execution.
 A tape can be reset via the function [reset](@ref codi::ReverseTapeInterface::reset).
 
-Depending on the use case, a full tape reset might not be necessary. See \ref Tutorial_3_Full_jacobian_computation and
-\ref Tutorial_5_Multiple_tape_recordings for more details.
+Depending on the use case, a full tape reset might not be necessary. See \ref Tutorial_03_Full_jacobian_computation and
+\ref Tutorial_05_Multiple_tape_recordings for more details.
 
 
 
