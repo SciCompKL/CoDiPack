@@ -50,6 +50,12 @@ digraph Tutorials {
 
   E16 [label="E16 - Tape helper"];
 
+  E17 [label="E17 - Evaluation helper"];
+
+  E18 [label="E18 - Evaluation helper function object examples"];
+
+  E19 [label="E19 - Evaluation helper handle creation"];
+
   // Edges (sorted)
   E08:e -> E09:w;
   T01:e -> E01:w;
@@ -72,4 +78,6 @@ digraph Tutorials {
   T04:e -> E08:w;
   T06:e -> E04:w;
   T06:e -> E05:w;
+  E17:e -> E18:w;
+  E17:e -> E19:w;
 }

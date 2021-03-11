@@ -32,6 +32,9 @@
       <tab type="user" title="Example 14 - ReferenceActiveType" url="@ref Example_14_ReferenceActiveType"/>
       <tab type="user" title="Example 15 - Preaccumulation of code parts" url="@ref Example_15_Preaccumulation_of_code_parts"/>
       <tab type="user" title="Example 16 - TapeHelper" url="@ref Example_16_TapeHelper"/>
+      <tab type="user" title="Example 17 - EvaluationHelper" url="@ref Example_17_EvaluationHelper"/>
+      <tab type="user" title="Example 18 - EvaluationHelper function objects" url="@ref Example_19_EvaluationHelper_function_objects"/>
+      <tab type="user" title="Example 19 - EvaluationHelper handles" url="@ref Example_18_EvaluationHelper_handles"/>
     </tab>
     <tab type="user" title="Papers" url="@ref Papers"/>
     <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>

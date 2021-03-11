@@ -3,6 +3,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "aux/exceptions.hpp"
+
 /** @file */
 
 /** \copydoc codi::Namespace */
