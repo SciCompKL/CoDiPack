@@ -20,10 +20,10 @@ namespace codi {
    *
    * See DataInterface documentation for details.
    *
-   * This implementation does not check in #reserveItems if enough space is available it needs to be preallocated with
+   * This implementation does not check in #reserveItems if enough space is available. It needs to be preallocated with
    * #resize.
    *
-   * @tparam _Chunk            Type of the data stored in DataInterface. Needs to extend ChunkBase.
+   * @tparam _Chunk            Type of the data stored in DataInterface. Has to implement ChunkBase.
    * @tparam _NestedData       Nested DataInterface.
    * @tparam _PointerInserter  Defines how data is appended to evaluate* function calls.
    */
@@ -47,12 +47,12 @@ namespace codi {
 
     public:
 
-      /// Allocate chunkSize entries and set the nested DataInterface
+      /// Allocate chunkSize entries and set the nested DataInterface.
       BlockData(size_t const& chunkSize, NestedData* nested) : chunk(chunkSize), nested(NULL) {
         setNested(nested);
       }
 
-      /// Allocate chunkSize entries. Requires a call to #setNested
+      /// Allocate chunkSize entries. Requires a call to #setNested.
       BlockData(size_t const& chunkSize) : chunk(chunkSize), nested(NULL) {}
 
       /*******************************************************************************/

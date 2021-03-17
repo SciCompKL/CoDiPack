@@ -15,14 +15,14 @@
 namespace codi {
 
   /**
-   * @brief Data is stored in chunk wise in this DataInterface implementation. If chunk runs out of space a new chunk
+   * @brief Data is stored chunk-wise in this DataInterface implementation. If a chunk runs out of space, a new chunk
    * is allocated.
    *
    * See DataInterface documentation for details.
    *
    * Each chunk has the size provided in the constructor.
    *
-   * @tparam _Chunk            Type of the data stored in DataInterface. Needs to extend ChunkBase.
+   * @tparam _Chunk            Type of the data stored in DataInterface. Has to implement ChunkBase.
    * @tparam _NestedData       Nested DataInterface.
    * @tparam _PointerInserter  Defines how data is appended to evaluate* function calls.
    */
@@ -52,13 +52,13 @@ namespace codi {
 
     public:
 
-      /// Allocate chunkSize entries and set the nested DataInterface
+      /// Allocate chunkSize entries and set the nested DataInterface.
       ChunkedData(size_t const& chunkSize, NestedData* nested)
           : chunks(), positions(), curChunk(NULL), curChunkIndex(0), chunkSize(chunkSize), nested(NULL) {
         setNested(nested);
       }
 
-      /// Allocate chunkSize entries. Requires a call to #setNested
+      /// Allocate chunkSize entries. Requires a call to #setNested.
       ChunkedData(size_t const& chunkSize)
           : chunks(), positions(), curChunk(NULL), curChunkIndex(0), chunkSize(chunkSize), nested(NULL) {}
 
@@ -177,7 +177,7 @@ namespace codi {
       /// @{
 
       /// \copydoc DataInterface::addToTapeValues <br><br>
-      /// Implementation: Adds: Total number, NUmber of chunks, Memory used, Memory allocated
+      /// Implementation: Adds: Total number, Number of chunks, Memory used, Memory allocated
       void addToTapeValues(TapeValues& values) const {
         size_t numberOfChunks = chunks.size();
         size_t dataEntries = getDataSize();
