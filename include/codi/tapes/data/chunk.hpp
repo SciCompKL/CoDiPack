@@ -17,7 +17,7 @@ namespace codi {
    * The interface implements a structure of arrays approach for the data management. Each item can have multiple
    * entries where each entry is stored in its own array.
    *
-   * E.g. if each item consists two entries (double, int), then we have two arrays:
+   * E.g., if each item consists two entries (double, int), then we have two arrays:
    *
    * \code{.cpp}
    *                     item 0 | item 1 | item 2 | etc.
@@ -25,6 +25,7 @@ namespace codi {
    *   array2 (int)    :   1    |   10   |   2    | ...
    * \endcode
    *
+   * ChunkBase serves both as a base class and as an interface.
    * The base class defines functions for getting and setting the number of used items. The interface defines the
    * functions for the data access.
    *
@@ -57,7 +58,7 @@ namespace codi {
 
       template<typename... Pointers>
       CODI_INLINE void dataPointer(size_t const& index,
-                                   Pointers*&... pointers);  ///< Extract pointer to requested position.  For each entry
+                                   Pointers*&... pointers);  ///< Extract pointer to requested position. For each entry
                                                              ///< one argument has to be provided.
 
       /// @}
@@ -67,8 +68,8 @@ namespace codi {
 
       virtual void allocateData() = 0;                   ///< Allocated the data if it was deallocated before.
       virtual void deleteData() = 0;                     ///< Delete the allocated data.
-      virtual void readData(FileIo& handle) = 0;         ///< Read data from the FileIo handle
-      virtual void writeData(FileIo& handle) const = 0;  ///< Write data to the FileIO handle
+      virtual void readData(FileIo& handle) = 0;         ///< Read data from the FileIo handle.
+      virtual void writeData(FileIo& handle) const = 0;  ///< Write data to the FileIo handle.
 
       /// @}
       /*******************************************************************************/
@@ -109,7 +110,7 @@ namespace codi {
         return usedSize;
       }
 
-      /// Sets number of used items to zero.
+      /// Sets the number of used items to zero.
       CODI_INLINE void reset() {
         usedSize = 0;
       }
@@ -122,7 +123,7 @@ namespace codi {
         allocateData();
       }
 
-      /// Set the used size
+      /// Set the used size.
       CODI_INLINE void setUsedSize(size_t const& usage) {
         usedSize = usage;
       }
@@ -131,7 +132,7 @@ namespace codi {
 
     protected:
 
-      /// Swap the entries of the base class
+      /// Swap the entries of this base class.
       void swap(ChunkBase& other) {
         std::swap(size, other.size);
         std::swap(usedSize, other.usedSize);
@@ -147,7 +148,7 @@ namespace codi {
   struct Chunk1 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase;  ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type.
 
     private:
 
@@ -231,7 +232,7 @@ namespace codi {
   struct Chunk2 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase;  ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type.
 
     private:
 
@@ -331,7 +332,7 @@ namespace codi {
   struct Chunk3 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase;  ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type.
 
     private:
 
@@ -448,7 +449,7 @@ namespace codi {
   struct Chunk4 final : public ChunkBase {
     public:
 
-      using Base = ChunkBase;  ///< Abbreviation for the base class type
+      using Base = ChunkBase;  ///< Abbreviation for the base class type.
 
     private:
 
