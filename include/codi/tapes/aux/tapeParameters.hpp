@@ -6,11 +6,11 @@
 namespace codi {
 
   /**
-   * @brief Possible configuration options for a tape.
+   * @brief Configuration options for a tape.
    *
    * See DataManagementTapeInterface for details.
    *
-   * Access is defined by [A: "access"]. Possible options are:
+   * Access is defined by [A: "access"]. Options are:
    *  - R read only access (getParameter)
    *  - W write only access (setParameter)
    *  - RW read and write access (getParameter and setParameters)
