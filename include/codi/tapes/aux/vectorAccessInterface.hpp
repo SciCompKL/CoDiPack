@@ -22,7 +22,7 @@ namespace codi {
    * All identifiers in this interface are tape identifiers and can be obtained with #codi::ActiveType::getIdentifier.
    *
    * The interface provides different access types for the user which can be separated into five categories (all
-   * functions listed in their typical use order):
+   * functions listed in their typical order of use):
    *
    *  - Indirect adjoint access:
    *    - setLhsAdjoint(): Identify the lhs variable \f$ w \f$ of the forward statement. Create an internal copy of
