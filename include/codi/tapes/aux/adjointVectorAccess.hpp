@@ -14,11 +14,11 @@ namespace codi {
   /**
    * @brief Implementation of VectorAccessInterface for adjoint vectors.
    *
-   * The adjoint vector is used as is, it needs to have the correct size. No bounds checking is performed
+   * The adjoint vector is used as is, it is assumed to have the correct size. No bounds checking is performed.
    *
-   * @tparam _Real        The computation type of a tape usually defined by ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape usually defined by ActiveType::Identifier.
-   * @tparam _Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.
+   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    */
   template<typename _Real, typename _Identifier, typename _Gradient>
   struct AdjointVectorAccess : public VectorAccessInterface<_Real, _Identifier> {
@@ -28,7 +28,7 @@ namespace codi {
 
     private:
 
-      Gradient* adjointVector;  ///< Pointer to the gradient vector
+      Gradient* adjointVector;  ///< Pointer to the gradient vector.
 
       Gradient lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
 
@@ -121,13 +121,13 @@ namespace codi {
       /// @name Primal access
 
       /// \copydoc VectorAccessInterface::setPrimal <br><br>
-      /// Implementation: Not implemented, empty function
+      /// Implementation: Not implemented, empty function.
       void setPrimal(Identifier const& index, Real const& primal) {
         CODI_UNUSED(index, primal);
       }
 
       /// \copydoc VectorAccessInterface::getPrimal <br><br>
-      /// Implementation: Not implemented, returns zero
+      /// Implementation: Not implemented, returns zero.
       Real getPrimal(Identifier const& index) {
         CODI_UNUSED(index);
 
@@ -135,7 +135,7 @@ namespace codi {
       }
 
       /// \copydoc VectorAccessInterface::setPrimal <br><br>
-      /// Implementation: Always returns false
+      /// Implementation: Always returns false.
       bool hasPrimals() {
         return false;
       }
