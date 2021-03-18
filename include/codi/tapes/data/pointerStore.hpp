@@ -29,11 +29,13 @@ namespace codi {
    *                                                    //                                   p1 (double*), p2 (int*));
    * \endcode
    *
-   * @tparam ChunkData  Implementation of ChunkBase.
+   * @tparam _ChunkData  Implementation of ChunkBase.
    */
-  template<typename ChunkData>
+  template<typename _ChunkData>
   struct PointerStore {
     public:
+
+      using ChunkData = CODI_DD(_ChunkData, CODI_T(Chunk1<CODI_ANY>)); ///< See PointerStore.
 
       /// Calls func(pointers, args...);
       template<typename FuncObj, typename... Args>
@@ -47,7 +49,7 @@ namespace codi {
       template<typename Nested, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, Args&&... args);
 
-      /// Sets the internal pointers to the data of the chunk. Afters on of the call functions can be called.
+      /// Sets the internal pointers to the data of the chunk. Afterwards on of the call functions can be called.
       void setPointers(const size_t& dataPos, ChunkData* chunk);
   };
 

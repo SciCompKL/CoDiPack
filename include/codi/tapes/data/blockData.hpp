@@ -23,7 +23,7 @@ namespace codi {
    * This implementation does not check in #reserveItems if enough space is available. It needs to be preallocated with
    * #resize.
    *
-   * @tparam _Chunk            Type of the data stored in DataInterface. Has to implement ChunkBase.
+   * @tparam _Chunk            Has to implement ChunkBase. The chunk defines the data stored in this implementation.
    * @tparam _NestedData       Nested DataInterface.
    * @tparam _PointerInserter  Defines how data is appended to evaluate* function calls.
    */
@@ -31,11 +31,12 @@ namespace codi {
   struct BlockData : public DataInterface<_NestedData> {
     public:
 
-      using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>));                         ///< ChunkBase Interface
-      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< DataInterface interface
-      using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< PointerStore
-      using InternalPosHandle = size_t;                                                ///< Position in the chunk
+      using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>));                         ///< See BlockData
+      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< See BlockData
+      using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< See BlockData
 
+
+      using InternalPosHandle = size_t;                      ///< Position in the chunk
       using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 
       using Position = ArrayPosition<NestedPosition>;  ///< \copydoc DataInterface::Position

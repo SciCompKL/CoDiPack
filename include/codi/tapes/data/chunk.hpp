@@ -14,12 +14,12 @@ namespace codi {
    *
    * See DataInterface for a more general description of the data layout in CoDiPack.
    *
-   * The interface implements a structure of arrays approach for the data management. Each item can have multiple
+   * The chunk classes implement a structure of arrays approach for the data management. Each item can have multiple
    * entries where each entry is stored in its own array.
    *
    * E.g., if each item consists two entries (double, int), then we have two arrays:
    *
-   * \code{.cpp}
+   * \code{.txt}
    *                     item 0 | item 1 | item 2 | etc.
    *   array1 (double) :  0.1   |   3.14 |  2.17  | ...
    *   array2 (int)    :   1    |   10   |   2    | ...
