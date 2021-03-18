@@ -29,7 +29,7 @@ namespace codi {
 
       /// Constructor
       ExternalFunctionInternalData()
-          : funcReverse(NULL), funcForward(NULL), funcPrimal(NULL), funcDelete(NULL), data(NULL) {}
+          : funcReverse(nullptr), funcForward(nullptr), funcPrimal(nullptr), funcDelete(nullptr), data(nullptr) {}
 
     protected:
 
@@ -75,7 +75,7 @@ namespace codi {
                                    VectorAccess* adjointInterface);  ///< Call function definition.
       typedef void (*DeleteFunction)(Tape* tape, void* data);        ///< Delete function definition.
 
-      /// Any arguments can be NULL if not required.
+      /// Any arguments can be nullptr if not required.
       ExternalFunction(CallFunction funcReverse, CallFunction funcForward, CallFunction funcPrimal, void* data,
                        DeleteFunction funcDelete)
           : ExternalFunctionInternalData((ExternalFunctionInternalData::CallFunctionUntyped)funcReverse,
@@ -89,17 +89,17 @@ namespace codi {
         return ExternalFunction(funcReverse, funcForward, funcPrimal, data, funcDelete);
       }
 
-      /// Calls the delete function if not NULL.
+      /// Calls the delete function if not nullptr.
       void deleteData(Tape* tape) {
-        if (funcDelete != NULL) {
+        if (funcDelete != nullptr) {
           funcDelete(tape, data);
-          data = NULL;
+          data = nullptr;
         }
       }
 
-      /// Calls the reverse function if not NULL, otherwise throws a CODI_EXCEPTION.
+      /// Calls the reverse function if not nullptr, otherwise throws a CODI_EXCEPTION.
       void evaluateReverse(Tape* tape, VectorAccess* adjointInterface) {
-        if (NULL != funcReverse) {
+        if (nullptr != funcReverse) {
           funcReverse(tape, data, adjointInterface);
         } else {
           CODI_EXCEPTION(
@@ -107,9 +107,9 @@ namespace codi {
         }
       }
 
-      /// Calls the forward function if not NULL, otherwise throws a CODI_EXCEPTION.
+      /// Calls the forward function if not nullptr, otherwise throws a CODI_EXCEPTION.
       void evaluateForward(Tape* tape, VectorAccess* adjointInterface) {
-        if (NULL != funcForward) {
+        if (nullptr != funcForward) {
           funcForward(tape, data, adjointInterface);
         } else {
           CODI_EXCEPTION(
@@ -117,9 +117,9 @@ namespace codi {
         }
       }
 
-      /// Calls the primal function if not NULL, otherwise throws a CODI_EXCEPTION.
+      /// Calls the primal function if not nullptr, otherwise throws a CODI_EXCEPTION.
       void evaluatePrimal(Tape* tape, VectorAccess* adjointInterface) {
-        if (NULL != funcPrimal) {
+        if (nullptr != funcPrimal) {
           funcPrimal(tape, data, adjointInterface);
         } else {
           CODI_EXCEPTION("Calling an external function in primal mode without providing a primal evaluation function.");

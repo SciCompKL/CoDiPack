@@ -157,7 +157,7 @@ namespace codi {
     public:
 
       /// Constructor
-      Chunk1(size_t const& size) : ChunkBase(size), data1(NULL) {
+      Chunk1(size_t const& size) : ChunkBase(size), data1(nullptr) {
         allocateData();
       }
 
@@ -174,7 +174,7 @@ namespace codi {
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if (NULL == data1) {
+        if (nullptr == data1) {
           data1 = new Data1[size];
         }
       }
@@ -187,9 +187,9 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if (NULL != data1) {
+        if (nullptr != data1) {
           delete[] data1;
-          data1 = NULL;
+          data1 = nullptr;
         }
       }
 
@@ -242,7 +242,7 @@ namespace codi {
     public:
 
       /// Constructor
-      Chunk2(size_t const& size) : ChunkBase(size), data1(NULL), data2(NULL) {
+      Chunk2(size_t const& size) : ChunkBase(size), data1(nullptr), data2(nullptr) {
         allocateData();
       }
 
@@ -259,11 +259,11 @@ namespace codi {
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if (NULL == data1) {
+        if (nullptr == data1) {
           data1 = new Data1[size];
         }
 
-        if (NULL == data2) {
+        if (nullptr == data2) {
           data2 = new Data2[size];
         }
       }
@@ -277,14 +277,14 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if (NULL != data1) {
+        if (nullptr != data1) {
           delete[] data1;
-          data1 = NULL;
+          data1 = nullptr;
         }
 
-        if (NULL != data2) {
+        if (nullptr != data2) {
           delete[] data2;
-          data2 = NULL;
+          data2 = nullptr;
         }
       }
 
@@ -343,7 +343,7 @@ namespace codi {
     public:
 
       /// Constructor
-      Chunk3(size_t const& size) : ChunkBase(size), data1(NULL), data2(NULL), data3(NULL) {
+      Chunk3(size_t const& size) : ChunkBase(size), data1(nullptr), data2(nullptr), data3(nullptr) {
         allocateData();
       }
 
@@ -361,15 +361,15 @@ namespace codi {
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if (NULL == data1) {
+        if (nullptr == data1) {
           data1 = new Data1[size];
         }
 
-        if (NULL == data2) {
+        if (nullptr == data2) {
           data2 = new Data2[size];
         }
 
-        if (NULL == data3) {
+        if (nullptr == data3) {
           data3 = new Data3[size];
         }
       }
@@ -384,19 +384,19 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if (NULL != data1) {
+        if (nullptr != data1) {
           delete[] data1;
-          data1 = NULL;
+          data1 = nullptr;
         }
 
-        if (NULL != data2) {
+        if (nullptr != data2) {
           delete[] data2;
-          data2 = NULL;
+          data2 = nullptr;
         }
 
-        if (NULL != data3) {
+        if (nullptr != data3) {
           delete[] data3;
-          data3 = NULL;
+          data3 = nullptr;
         }
       }
 
@@ -461,7 +461,7 @@ namespace codi {
     public:
 
       /// Constructor
-      Chunk4(size_t const& size) : ChunkBase(size), data1(NULL), data2(NULL), data3(NULL), data4(NULL) {
+      Chunk4(size_t const& size) : ChunkBase(size), data1(nullptr), data2(nullptr), data3(nullptr), data4(nullptr) {
         allocateData();
       }
 
@@ -479,19 +479,19 @@ namespace codi {
 
       /// \copydoc ChunkBase::allocateData()
       void allocateData() {
-        if (NULL == data1) {
+        if (nullptr == data1) {
           data1 = new Data1[size];
         }
 
-        if (NULL == data2) {
+        if (nullptr == data2) {
           data2 = new Data2[size];
         }
 
-        if (NULL == data3) {
+        if (nullptr == data3) {
           data3 = new Data3[size];
         }
 
-        if (NULL == data4) {
+        if (nullptr == data4) {
           data4 = new Data4[size];
         }
       }
@@ -508,24 +508,24 @@ namespace codi {
 
       /// \copydoc ChunkBase::deleteData
       void deleteData() {
-        if (NULL != data1) {
+        if (nullptr != data1) {
           delete[] data1;
-          data1 = NULL;
+          data1 = nullptr;
         }
 
-        if (NULL != data2) {
+        if (nullptr != data2) {
           delete[] data2;
-          data2 = NULL;
+          data2 = nullptr;
         }
 
-        if (NULL != data3) {
+        if (nullptr != data3) {
           delete[] data3;
-          data3 = NULL;
+          data3 = nullptr;
         }
 
-        if (NULL != data4) {
+        if (nullptr != data4) {
           delete[] data4;
-          data4 = NULL;
+          data4 = nullptr;
         }
       }
 

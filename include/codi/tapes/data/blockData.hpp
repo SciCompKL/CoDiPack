@@ -49,12 +49,12 @@ namespace codi {
     public:
 
       /// Allocate chunkSize entries and set the nested DataInterface.
-      BlockData(size_t const& chunkSize, NestedData* nested) : chunk(chunkSize), nested(NULL) {
+      BlockData(size_t const& chunkSize, NestedData* nested) : chunk(chunkSize), nested(nullptr) {
         setNested(nested);
       }
 
       /// Allocate chunkSize entries. Requires a call to #setNested.
-      BlockData(size_t const& chunkSize) : chunk(chunkSize), nested(NULL) {}
+      BlockData(size_t const& chunkSize) : chunk(chunkSize), nested(nullptr) {}
 
       /*******************************************************************************/
       /// @name Adding items
@@ -159,7 +159,7 @@ namespace codi {
       /// \copydoc DataInterface::setNested
       void setNested(NestedData* v) {
         // Set nested is only called once during the initialization.
-        codiAssert(NULL == this->nested);
+        codiAssert(nullptr == this->nested);
         codiAssert(v->getZeroPosition() == v->getPosition());
 
         this->nested = v;

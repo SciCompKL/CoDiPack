@@ -54,13 +54,13 @@ namespace codi {
 
       /// Allocate chunkSize entries and set the nested DataInterface.
       ChunkedData(size_t const& chunkSize, NestedData* nested)
-          : chunks(), positions(), curChunk(NULL), curChunkIndex(0), chunkSize(chunkSize), nested(NULL) {
+          : chunks(), positions(), curChunk(nullptr), curChunkIndex(0), chunkSize(chunkSize), nested(nullptr) {
         setNested(nested);
       }
 
       /// Allocate chunkSize entries. Requires a call to #setNested.
       ChunkedData(size_t const& chunkSize)
-          : chunks(), positions(), curChunk(NULL), curChunkIndex(0), chunkSize(chunkSize), nested(NULL) {}
+          : chunks(), positions(), curChunk(nullptr), curChunkIndex(0), chunkSize(chunkSize), nested(nullptr) {}
 
       /// Destructor
       ~ChunkedData() {
@@ -207,7 +207,7 @@ namespace codi {
       /// \copydoc DataInterface::setNested
       void setNested(NestedData* v) {
         // Set nested is only called once during the initialization.
-        codiAssert(NULL == this->nested);
+        codiAssert(nullptr == this->nested);
         codiAssert(v->getZeroPosition() == v->getPosition());
 
         this->nested = v;
