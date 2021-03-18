@@ -12,13 +12,13 @@ namespace codi {
   /**
    * @brief Implementation of VectorAccessInterface for adjoint and primal vectors.
    *
-   * The both vectors are used as is, they needs to have the correct size. No bounds checking is performed
+   * Both vectors are used as is, they are assumed to have correct sizes. No bounds checking is performed.
    *
-   * Inherits from AdjointVectorAccess and overwrite all methods specific to the primal.
+   * Inherits from AdjointVectorAccess and overwrites all methods specific to the primals.
    *
-   * @tparam _Real        The computation type of a tape usually defined by ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape usually defined by ActiveType::Identifier.
-   * @tparam _Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.
+   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    */
   template<typename _Real, typename _Identifier, typename _Gradient>
   struct PrimalAdjointVectorAccess : public AdjointVectorAccess<_Real, _Identifier, _Gradient> {
@@ -26,15 +26,15 @@ namespace codi {
       using Identifier = CODI_DD(_Identifier, int);  ///< See PrimalAdjointVectorAccess
       using Gradient = CODI_DD(_Gradient, double);   ///< See PrimalAdjointVectorAccess
 
-      using Base = AdjointVectorAccess<Real, Identifier, Gradient>;  ///< Base class abbreviation
+      using Base = AdjointVectorAccess<Real, Identifier, Gradient>;  ///< Base class abbreviation.
 
     private:
 
-      Real* primalVector;  ///< Pointer to the primal vector
+      Real* primalVector;  ///< Pointer to the primal vector.
 
     public:
 
-      /// Size of both vectors needs to be big enough. No bounds checking is performed.
+      /// Both vector are assumed to be as large as needed. No bounds checking is performed.
       PrimalAdjointVectorAccess(Gradient* adjointVector, Real* primalVector)
           : Base(adjointVector), primalVector(primalVector) {}
 
