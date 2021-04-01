@@ -45,8 +45,7 @@ namespace codi {
    * methods that have the Position type as an argument or modify the position of the DataInterface work
    * recursively on all nested DataInterfaces.
    *
-   * Typically, implementations will avoid the cost of allocating storage for each individual data item and perform a
-   * smaller number of larger memory allocations instead, which we refer to as "chunks". See \ref ChunkBase for details.
+   * How the data is stored and allocated is determined by the actual implementation of this interface.
    *
    * See \ref Developer_Simple_Tape for a usage of this interface.
    *

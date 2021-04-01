@@ -10,8 +10,11 @@ namespace codi {
   /**
    * @brief Inserts data pointers at the back of all arguments in the nested call hierarchy.
    *
-   * Used in DataInterface objects for the generalized call to the object functions. This class is mainly used in the
-   * evaluate and forEach method implementations of these classes.
+   * Used in DataInterface implementations for the generalized call to object functions. This class is mainly used in
+   * the evaluate and forEach method implementations of these classes. They have to call the evaluation functions on the
+   * nested DataInterfaces but they do not know about the data layout in the chunks. This class is the bridge for this
+   * call. It stores the data pointers to the chunks and inserts these data pointers in the call to the nested
+   * objects.
    *
    * First a call to setPointers has to made and then either call(), callNestedForward() or callNestedReverse().
    *
@@ -23,9 +26,9 @@ namespace codi {
    *   ps.setPointers(0, data);
    *   // one of
    *   ps.call(func, user); // will call func(p1 (double*), p2 (int*), user);
-   *   ps.callNestedForward(nested, 0, 10, func, user); // will call nested->evaluateForward(func, user, 0, 10,
+   *   ps.callNestedForward(nested, 0, 10, func, user); // will call nested->evaluateForward(0, 10, func, user,
    *                                                    //                                   p1 (double*), p2 (int*));
-   *   ps.callNestedReverse(nested, 10, 0, func, user); // will call nested->evaluateReverse(func, user, 10, 0,
+   *   ps.callNestedReverse(nested, 10, 0, func, user); // will call nested->evaluateReverse(10, 0, func, user,
    *                                                    //                                   p1 (double*), p2 (int*));
    * \endcode
    *
@@ -35,7 +38,7 @@ namespace codi {
   struct PointerStore {
     public:
 
-      using ChunkData = CODI_DD(_ChunkData, CODI_T(Chunk1<CODI_ANY>)); ///< See PointerStore.
+      using ChunkData = CODI_DD(_ChunkData, ChunkBase); ///< See PointerStore.
 
       /// Calls func(pointers, args...);
       template<typename FuncObj, typename... Args>
