@@ -10,6 +10,9 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  template<typename _Real, typename _Impl>
+  struct ExpressionInterface;
+
   template<typename _Real, typename _Gradient, typename _Tape, typename _Impl>
   struct LhsExpressionInterface;
 
@@ -24,6 +27,28 @@ namespace codi {
     /*******************************************************************************/
     /// @name Detection of specific node types
     /// @{
+
+    /// If the expression inherits from ExpressionInterface. Is either std::false_type or std::true_type
+    template<typename Expr, typename = void>
+    struct IsExpression : std::false_type {};
+
+#ifndef DOXYGEN_DISABLE
+    template<typename Expr>
+    struct IsExpression<
+        Expr, typename enable_if_base_of<
+                  ExpressionInterface<typename Expr::Real, Expr>,
+                  Expr>::type> : std::true_type {};
+#endif
+
+#if CODI_IS_CPP14
+    /// Value entry of IsExpression
+    template<typename Expr>
+    bool constexpr isExpression = IsExpression<Expr>::value;
+#endif
+
+    /// Enable if wrapper for IsExpression
+    template<typename Expr>
+    using EnableIfExpression = typename std::enable_if<IsExpression<Expr>::value>::type;
 
     /// If the expression inherits from LhsExpressionInterface. Is either std::false_type or std::true_type
     template<typename Expr, typename = void>
