@@ -60,7 +60,7 @@ namespace codi {
   /**
    * @brief Position with one index for e.g. array access.
    *
-   * Used for data that is allocated en block e.g. BlockData
+   * Used for data that is allocated en bloc, e.g. BlockData.
    *
    * @tparam _NestedPosition  Position implementation
    */
@@ -118,10 +118,10 @@ namespace codi {
   };
 
   /**
-   * @brief Position with two nested indices for e.g. chunked data access.
+   * @brief Position with two indices for e.g. chunked data access.
    *
-   * Used for data that is allocated with multiple chunk e.g. ChunkData.
-   * `chunk` is the major one and provides the chunk index and `Base::data` is the secondary one which provides the
+   * Used for data that is allocated with multiple chunks, e.g. ChunkData.
+   * `chunk` is the major index and identifies the chunk and `Base::data` is the secondary index which refers to the
    * position in the chunk.
    *
    * For `p1 < p2` it is enough that `p1.chunk < p2.chunk`, only in the equality case `Base::data` needs to be checked.

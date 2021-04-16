@@ -10,10 +10,13 @@ namespace codi {
   /**
    * @brief Inserts data pointers at the back of all arguments in the nested call hierarchy.
    *
-   * Used in DataInterface objects for the generalized call to the object functions. This class is mainly used in the
-   * evaluate and forEach method implementations of these classes.
+   * Used in DataInterface implementations for the generalized call to object functions. This class is mainly used in
+   * the evaluate and forEach method implementations of these classes. They have to call the evaluation functions on the
+   * nested DataInterfaces but they do not know about the data layout in the chunks. This class is the bridge for this
+   * call. It stores the data pointers to the chunks and inserts these data pointers in the call to the nested
+   * objects.
    *
-   * First a call to set pointers has to made and then either call(), callNestedForward() or callNestedReverse().
+   * First a call to setPointers has to made and then either call(), callNestedForward() or callNestedReverse().
    *
    * \code{.cpp}
    *   Chunk2<double, int> data(100);
@@ -23,17 +26,19 @@ namespace codi {
    *   ps.setPointers(0, data);
    *   // one of
    *   ps.call(func, user); // will call func(p1 (double*), p2 (int*), user);
-   *   ps.callNestedForward(nested, 0, 10, func, user); // will call nested->evaluateForward(func, user, 0, 10,
+   *   ps.callNestedForward(nested, 0, 10, func, user); // will call nested->evaluateForward(0, 10, func, user,
    *                                                    //                                   p1 (double*), p2 (int*));
-   *   ps.callNestedReverse(nested, 10, 0, func, user); // will call nested->evaluateReverse(func, user, 10, 0,
+   *   ps.callNestedReverse(nested, 10, 0, func, user); // will call nested->evaluateReverse(10, 0, func, user,
    *                                                    //                                   p1 (double*), p2 (int*));
    * \endcode
    *
-   * @tparam ChunkData  Implementation of ChunkBase.
+   * @tparam _ChunkData  Implementation of ChunkBase.
    */
-  template<typename ChunkData>
+  template<typename _ChunkData>
   struct PointerStore {
     public:
+
+      using ChunkData = CODI_DD(_ChunkData, ChunkBase); ///< See PointerStore.
 
       /// Calls func(pointers, args...);
       template<typename FuncObj, typename... Args>
@@ -47,7 +52,7 @@ namespace codi {
       template<typename Nested, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, Args&&... args);
 
-      /// Sets the internal pointers to the data of the chunk. Afters on of the call functions can be called.
+      /// Sets the internal pointers to the data of the chunk. Afterwards on of the call functions can be called.
       void setPointers(const size_t& dataPos, ChunkData* chunk);
   };
 
@@ -62,11 +67,11 @@ namespace codi {
 
       using Data1 = CODI_DD(_Data1, int);  ///< Data entry 1.
 
-      using Chunk = Chunk1<Data1>;  ///< Specialized template
+      using Chunk = Chunk1<Data1>;  ///< Template specialization type.
 
     private:
 
-      Data1* p1;  ///< Internal pointer store
+      Data1* p1;  ///< Internal pointer store.
 
     public:
 
@@ -106,11 +111,11 @@ namespace codi {
       using Data1 = CODI_DD(_Data1, int);  ///< Data entry 1.
       using Data2 = CODI_DD(_Data2, int);  ///< Data entry 2.
 
-      using Chunk = Chunk2<Data1, Data2>;  ///< Specialized template
+      using Chunk = Chunk2<Data1, Data2>;  ///< Template specialization type.
 
     private:
-      Data1* p1;  ///< Internal pointer store
-      Data2* p2;  ///< Internal pointer store
+      Data1* p1;  ///< Internal pointer store.
+      Data2* p2;  ///< Internal pointer store.
 
     public:
 
@@ -151,12 +156,12 @@ namespace codi {
       using Data2 = CODI_DD(_Data2, int);  ///< Data entry 2.
       using Data3 = CODI_DD(_Data3, int);  ///< Data entry 3.
 
-      using Chunk = Chunk3<Data1, Data2, Data3>;  ///< Specialized template
+      using Chunk = Chunk3<Data1, Data2, Data3>;  ///< Template specialization type.
 
     private:
-      Data1* p1;  ///< Internal pointer store
-      Data2* p2;  ///< Internal pointer store
-      Data3* p3;  ///< Internal pointer store
+      Data1* p1;  ///< Internal pointer store.
+      Data2* p2;  ///< Internal pointer store.
+      Data3* p3;  ///< Internal pointer store.
 
     public:
 
@@ -198,13 +203,13 @@ namespace codi {
       using Data3 = CODI_DD(_Data3, int);  ///< Data entry 3.
       using Data4 = CODI_DD(_Data4, int);  ///< Data entry 4.
 
-      using Chunk = Chunk4<Data1, Data2, Data3, Data4>;  ///< Specialized template
+      using Chunk = Chunk4<Data1, Data2, Data3, Data4>;  ///< Template specialization type.
 
     private:
-      Data1* p1;  ///< Internal pointer store
-      Data2* p2;  ///< Internal pointer store
-      Data3* p3;  ///< Internal pointer store
-      Data4* p4;  ///< Internal pointer store
+      Data1* p1;  ///< Internal pointer store.
+      Data2* p2;  ///< Internal pointer store.
+      Data3* p3;  ///< Internal pointer store.
+      Data4* p4;  ///< Internal pointer store.
 
     public:
 

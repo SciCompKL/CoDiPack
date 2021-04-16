@@ -60,7 +60,7 @@ namespace codi {
       ///  Will throw an IoException if file can not be opened.
       FileIo(std::string const& file, bool write) {
         writeMode = write;
-        fileHandle = NULL;
+        fileHandle = nullptr;
 
         if (write) {
           fileHandle = fopen(file.c_str(), "wb");
@@ -68,14 +68,14 @@ namespace codi {
           fileHandle = fopen(file.c_str(), "rb");
         }
 
-        if (NULL == fileHandle) {
+        if (nullptr == fileHandle) {
           throw IoException(IoError::Open, "Could not open file: " + file, true);
         }
       }
 
       /// Destructor
       ~FileIo() {
-        if (NULL != fileHandle) {
+        if (nullptr != fileHandle) {
           fclose(fileHandle);
         }
       }

@@ -98,10 +98,10 @@ namespace codi {
       }
 
       CODI_INLINE void deletePrimalTypeBuffer(void*& b) const {
-        if (NULL != b) {
+        if (nullptr != b) {
           Real* buf = (Real*)b;
           delete[] buf;
-          b = NULL;
+          b = nullptr;
         }
       }
 
@@ -110,10 +110,10 @@ namespace codi {
       }
 
       CODI_INLINE void deleteAdjointTypeBuffer(void*& b) const {
-        if (NULL != b) {
+        if (nullptr != b) {
           Real* buf = (Real*)b;
           delete[] buf;
-          b = NULL;
+          b = nullptr;
         }
       }
   };
@@ -171,7 +171,7 @@ namespace codi {
       }
 
       CODI_INLINE void addToolAction(medi::HandleBase* h) const {
-        if (NULL != h) {
+        if (nullptr != h) {
           getTape().pushExternalFunction(
               ExternalFunction<Tape>::create(callHandleReverse, h, deleteHandle, callHandleForward, callHandlePrimal));
         }
