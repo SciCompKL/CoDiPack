@@ -15,11 +15,11 @@ namespace codi {
    * @brief Data stream interface for tape data. Encapsulates data that is written e.g. for each statement or argument.
    *
    * This interface defines the basic abstraction mechanism of how data is stored in an AD tape. During the recording of
-   * an AD tape, different types of data with a varying amount of items need to be stored and associated with each other.
-   * There is e.g. data for each statement and data for each argument. Each DataInterface covers one type of data.
-   * The management of multiple data streams can become quite cumbersome, therefore the
-   * DataInterface is designed in a recursive fashion. Each data stream can be nested with another data stream such
-   * that they can exchange position information and synchronize themselves.
+   * an AD tape, different types of data with a varying amount of items need to be stored and associated with each
+   * other. There is e.g. data for each statement and data for each argument. Each DataInterface covers one type of
+   * data. The management of multiple data streams can become quite cumbersome, therefore the DataInterface is designed
+   * in a recursive fashion. Each data stream can be nested with another data stream such that they can exchange
+   * position information and synchronize themselves.
    *
    * Note that the recursive implementation is only that - an implementation. The data itself is not recursive. Think
    * about is as multiple streams of associated data that grow alongside each other in varying speeds.

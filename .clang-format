@@ -8,7 +8,7 @@ AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 BreakBeforeBraces: Attach
 ColumnLimit: 120
-EmptyLinesAfterAccessModifier: 1
+EmptyLineAfterAccessModifier: Leave
 FixNamespaceComments: false
 IndentCaseLabels: true
 IndentPPDirectives: BeforeHash

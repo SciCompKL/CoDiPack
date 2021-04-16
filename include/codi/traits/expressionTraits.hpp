@@ -34,10 +34,8 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
     template<typename Expr>
-    struct IsExpression<
-        Expr, typename enable_if_base_of<
-                  ExpressionInterface<typename Expr::Real, Expr>,
-                  Expr>::type> : std::true_type {};
+    struct IsExpression<Expr, typename enable_if_base_of<ExpressionInterface<typename Expr::Real, Expr>, Expr>::type>
+        : std::true_type {};
 #endif
 
 #if CODI_IS_CPP14

@@ -37,20 +37,20 @@ namespace codi {
       /// See EvaluationHandleBase
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>); ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>); ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
 
     protected:
 
-      size_t m; ///< Size of the output variables
-      size_t n; ///< Size of the input variables
+      size_t m;  ///< Size of the output variables
+      size_t n;  ///< Size of the input variables
 
       Func& func;  ///< The function object for the evaluations.
 
-      InputStore x;  ///< Storage for the input arguments.
-      OutputStore y;    ///< Storage for the output arguments.
+      InputStore x;   ///< Storage for the input arguments.
+      OutputStore y;  ///< Storage for the output arguments.
 
-      DummyVector dummyVector;  ///< Used if no output is required
+      DummyVector dummyVector;      ///< Used if no output is required
       DummyJacobian dummyJacobian;  ///< Used if no output is required
 
     public:
@@ -106,10 +106,10 @@ namespace codi {
       /// See EvaluationHandleBase
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>); ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>); ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
 
-      using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>; ///< Abbreviation for the base class.
+      using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;  ///< Abbreviation for the base class.
 
       // Forward constructors of the base.
       using Base::EvaluationHandleBase;
@@ -261,14 +261,14 @@ namespace codi {
       /// See EvaluationHandleBase
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>); ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>); ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
 
-      using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>; ///< Abbreviation for the base class.
+      using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;  ///< Abbreviation for the base class.
 
     protected:
 
-      TapeHelper<Type> th; ///< Manages the evaluations
+      TapeHelper<Type> th;  ///< Manages the evaluations
 
     public:
 
@@ -352,7 +352,8 @@ namespace codi {
    */
   template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
            typename _OutputStore = std::vector<_Type>>
-  struct EvaluationHandleReversePrimalValueTapes : public EvaluationHandleReverseBase<_Func, _Type, _InputStore, _OutputStore> {
+  struct EvaluationHandleReversePrimalValueTapes
+      : public EvaluationHandleReverseBase<_Func, _Type, _InputStore, _OutputStore> {
     public:
 
       /// See EvaluationHandleBase
@@ -360,8 +361,8 @@ namespace codi {
       /// See EvaluationHandleBase
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>); ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>); ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
 
       /// Abbreviation for the base class.
       using Base = EvaluationHandleReverseBase<Func, Type, InputStore, OutputStore>;
@@ -390,15 +391,16 @@ namespace codi {
    */
   template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
            typename _OutputStore = std::vector<_Type>>
-  struct EvaluationHandleReverseJacobianTapes : public EvaluationHandleReverseBase<_Func, _Type, _InputStore, _OutputStore> {
+  struct EvaluationHandleReverseJacobianTapes
+      : public EvaluationHandleReverseBase<_Func, _Type, _InputStore, _OutputStore> {
     public:
       /// See EvaluationHandleBase
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
       /// See EvaluationHandleBase
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>); ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>); ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
 
       /// Abbreviation for the base class.
       using Base = EvaluationHandleReverseBase<Func, Type, InputStore, OutputStore>;
@@ -437,7 +439,8 @@ namespace codi {
   struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore,
                           TapeTraits::EnableIfJacobianTape<typename _Type::Tape>>
       : public EvaluationHandleReverseJacobianTapes<_Func, _Type, _InputStore, _OutputStore> {
-      using EvaluationHandleReverseJacobianTapes<_Func, _Type, _InputStore, _OutputStore>::EvaluationHandleReverseJacobianTapes;
+      using EvaluationHandleReverseJacobianTapes<_Func, _Type, _InputStore,
+                                                 _OutputStore>::EvaluationHandleReverseJacobianTapes;
   };
 
   /// See EvaluationHandleReversePrimalValueTapes
@@ -445,7 +448,8 @@ namespace codi {
   struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore,
                           TapeTraits::EnableIfPrimalValueTape<typename _Type::Tape>>
       : public EvaluationHandleReversePrimalValueTapes<_Func, _Type, _InputStore, _OutputStore> {
-      using EvaluationHandleReversePrimalValueTapes<_Func, _Type, _InputStore, _OutputStore>::EvaluationHandleReversePrimalValueTapes;
+      using EvaluationHandleReversePrimalValueTapes<_Func, _Type, _InputStore,
+                                                    _OutputStore>::EvaluationHandleReversePrimalValueTapes;
   };
 
   /**
@@ -489,8 +493,8 @@ namespace codi {
    *
    * The evaluation helper class provides all combinations of evaluation choices that is: evalPrimal(), evalJacobian(),
    * evalHessian(), evalPrimalAndJacobian(), evalPrimalAndHessian(), evalJacobianAndHessian() and
-   * evalPrimalAndJacobianAndHessian(). Each of these functions uses the default CoDiPack types in the evaluation helper.
-   * In the cases where the primal is not stored, the user has to provide the number of output values manually.
+   * evalPrimalAndJacobianAndHessian(). Each of these functions uses the default CoDiPack types in the evaluation
+   * helper. In the cases where the primal is not stored, the user has to provide the number of output values manually.
    *
    * If the EvaluationHelper is used to evaluate the same function several times, a higher performance can be achieved
    * if a handle for the evaluation is created up front and then used several times. The above example with the handle
@@ -562,16 +566,18 @@ namespace codi {
       /// @tparam    m  The size of the output vector.
       /// @tparam    n  The size of the input vector.
       template<typename Func, size_t m, size_t n>
-      using DefaultHandleFixed = EvaluationHandleForward<Func, JacobianComputationType, std::array<JacobianComputationType, n>,
-                                               std::array<JacobianComputationType, m>>;
+      using DefaultHandleFixed =
+          EvaluationHandleForward<Func, JacobianComputationType, std::array<JacobianComputationType, n>,
+                                  std::array<JacobianComputationType, m>>;
 
       /// Type for the default handle for second order gradient computations with a fixed vector size.
       /// @tparam Func  See FunctorInterface
       /// @tparam    m  The size of the output vector.
       /// @tparam    n  The size of the input vector.
       template<typename Func, size_t m, size_t n>
-      using DefaultHandleFixed2nd = EvaluationHandleForward<Func, HessianComputationType, std::array<HessianComputationType, n>,
-                                                  std::array<HessianComputationType, m>>;
+      using DefaultHandleFixed2nd =
+          EvaluationHandleForward<Func, HessianComputationType, std::array<HessianComputationType, n>,
+                                  std::array<HessianComputationType, m>>;
 
       /**
        * @brief Helper function for the creation of a default first order evaluation handle with a variable vector size.

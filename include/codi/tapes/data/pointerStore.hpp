@@ -38,7 +38,7 @@ namespace codi {
   struct PointerStore {
     public:
 
-      using ChunkData = CODI_DD(_ChunkData, ChunkBase); ///< See PointerStore.
+      using ChunkData = CODI_DD(_ChunkData, ChunkBase);  ///< See PointerStore.
 
       /// Calls func(pointers, args...);
       template<typename FuncObj, typename... Args>

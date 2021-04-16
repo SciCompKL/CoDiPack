@@ -35,7 +35,6 @@ namespace codi {
       using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< See BlockData
       using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< See BlockData
 
-
       using InternalPosHandle = size_t;                      ///< Position in the chunk
       using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 

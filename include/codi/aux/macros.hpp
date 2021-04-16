@@ -58,8 +58,8 @@ namespace codi {
 #define CODI_ANY int
 
 #ifndef DOXYGEN_DISABLE
-/// Placeholer for the implementation of an interface.
-struct _Impl {};
+  /// Placeholer for the implementation of an interface.
+  struct _Impl {};
 #endif
 /// Used in interface declarations to indicate the type of the implementing class.
 #define CODI_IMPLEMENTATION _Impl
