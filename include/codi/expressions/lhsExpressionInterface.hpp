@@ -1,12 +1,9 @@
 #pragma once
 
-#include <iostream>
-
 #include "../aux/macros.hpp"
 #include "../config.h"
 #include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
-#include "../tapes/interfaces/internalStatementRecordingTapeInterface.hpp"
-#include "../traits/expressionTraits.hpp"
+#include "../tapes/interfaces/internalStatementRecordingInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "expressionInterface.hpp"
 
@@ -150,29 +147,4 @@ namespace codi {
 
       /// @}
   };
-
-  /// Write the primal value to the stream.
-  template<typename Real, typename Gradient, typename Tape, typename Impl>
-  std::ostream& operator<<(std::ostream& out, LhsExpressionInterface<Real, Gradient, Tape, Impl> const& v) {
-    return out << v.cast().value();
-  }
-
-#ifndef DOXYGEN_DISABLE
-  template<typename _Type>
-  struct RealTraits::TraitsImplementation<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
-    public:
-
-      using Type = CODI_DD(
-          _Type, CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingTapeInterface<CODI_ANY>, _Type>));
-      using Real = typename Type::Real;
-
-      using PassiveReal = RealTraits::PassiveReal<Real>;
-
-      static int constexpr MaxDerivativeOrder = 1 + RealTraits::MaxDerivativeOrder<Real>();
-
-      static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
-        return RealTraits::getPassiveValue(v.getValue());
-      }
-  };
-#endif
 }
