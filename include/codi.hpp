@@ -19,6 +19,7 @@
 #include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
 #include "codi/tools/data/direction.hpp"
+#include "codi/tools/data/externalFunctionTypeDataExtration.hpp"
 #include "codi/tools/data/externalFunctionUserData.hpp"
 #include "codi/tools/data/jacobian.hpp"
 #include "codi/tools/derivativeAccess.hpp"

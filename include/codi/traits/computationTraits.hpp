@@ -32,8 +32,8 @@ namespace codi {
     template<typename _Jacobian, typename = void>
     struct Transpose {
       public:
-        static_assert (false && std::is_void<_Jacobian>::value, "Instantiation of unspecialized Jacobian transpose.");
-        using Jacobian = CODI_DD(_Jacobian, ANY);
+        static_assert(false && std::is_void<_Jacobian>::value, "Instantiation of unspecialized Jacobian transpose.");
+        using Jacobian = CODI_DD(_Jacobian, CODI_ANY);
 
         using Return = CODI_ANY;
 
@@ -46,24 +46,28 @@ namespace codi {
     }
   }
 
-  #define CODI_CREATE_UPDATE(LhsType, RhsType, up) \
-    template<> \
-    struct ComputationTraits::Update<LhsType, RhsType> { \
-      public: \
-        using Lhs = LhsType; \
-        using Rhs = RhsType; \
-        using Return = LhsType&; \
-        static Return update(Lhs& lhs, Rhs const& rhs) { return up; } \
-    }
+#define CODI_CREATE_UPDATE(LhsType, RhsType, up)       \
+  template<>                                           \
+  struct ComputationTraits::Update<LhsType, RhsType> { \
+    public:                                            \
+      using Lhs = LhsType;                             \
+      using Rhs = RhsType;                             \
+      using Return = LhsType&;                         \
+      static Return update(Lhs& lhs, Rhs const& rhs) { \
+        return up;                                     \
+      }                                                \
+  }
 
-  #define CODI_CREATE_TRANSPOSE(Type, RType, trans) \
-    template<> \
-    struct ComputationTraits::Transpose<Type> { \
-      public: \
-        using Jacobian = Type; \
-        using Return = RType; \
-        static Return transpose(Type const& jacobian) { return trans; } \
-    }
+#define CODI_CREATE_TRANSPOSE(Type, RType, trans)     \
+  template<>                                          \
+  struct ComputationTraits::Transpose<Type> {         \
+    public:                                           \
+      using Jacobian = Type;                          \
+      using Return = RType;                           \
+      static Return transpose(Type const& jacobian) { \
+        return trans;                                 \
+      }                                               \
+  }
 
   template<typename T>
   struct ComputationTraits::Transpose<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
@@ -71,8 +75,9 @@ namespace codi {
       using Jacobian = T;
       using Return = T;
 
-      static Return transpose(Jacobian const& jacobian) { return jacobian;}
-
+      static Return transpose(Jacobian const& jacobian) {
+        return jacobian;
+      }
   };
 
   template<typename Inner>
@@ -81,7 +86,9 @@ namespace codi {
       using Jacobian = std::complex<Inner>;
       using Return = std::complex<Inner>;
 
-      static Return transpose(Jacobian const& jacobian) { return std::conj(jacobian);}
+      static Return transpose(Jacobian const& jacobian) {
+        return std::conj(jacobian);
+      }
   };
 
   template<typename Inner>
