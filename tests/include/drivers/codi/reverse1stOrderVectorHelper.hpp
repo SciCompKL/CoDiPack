@@ -11,12 +11,11 @@ struct CoDiReverse1stOrderVectorHelper : public CoDiReverse1stOrderBase {
 
     using Gradient = Number::Gradient;
 
-
     codi::CustomAdjointVectorHelper<Number, Gradient> helper;
 
     CoDiReverse1stOrderVectorHelper() : Base(), helper() {}
 
-    Gradient& accessGradient(Number &value) {
+    Gradient& accessGradient(Number& value) {
       return helper.gradient(value.getIdentifier());
     }
 

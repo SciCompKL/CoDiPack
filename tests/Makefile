@@ -121,7 +121,7 @@ $(BUILD_DIR)/compare.exe : $(BUILD_DIR)/compare.o $(BUILD_DIR)/compareFiles.o $(
 
 .PHONY: output
 output: $(BUILD_DIR)/compare.exe $(DRIVER_RUNS)
-	$(BUILD_DIR)/compare.exe -t 1e-16 $(patsubst %, -d %, $(SELECTED_DRIVERS))
+	$(BUILD_DIR)/compare.exe -t 1e-14 $(patsubst %, -d %, $(SELECTED_DRIVERS))
 
 .PHONY: all
 all: output

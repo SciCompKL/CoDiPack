@@ -2,6 +2,7 @@
 
 #include <medi/adToolInterface.h>
 #include <medi/ampi/ampiMisc.h>
+
 #include <medi/ampi/typeDefault.hpp>
 #include <medi/ampi/types/indexTypeHelper.hpp>
 
@@ -12,12 +13,14 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+#ifndef DOXYGEN_DISABLE
 
   template<typename _Type>
-  struct CoDiPackForwardTool : public medi::ADToolBase<CoDiPackForwardTool<_Type>, typename _Type::Gradient, typename _Type::PassiveReal, int> {
+  struct CoDiPackForwardTool : public medi::ADToolBase<CoDiPackForwardTool<_Type>, typename _Type::Gradient,
+                                                       typename _Type::PassiveReal, int> {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(_Type, CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using PrimalType = typename Type::Real;
       using AdjointType = void;
@@ -26,21 +29,17 @@ namespace codi {
 
       using Base = medi::ADToolBase<CoDiPackForwardTool, typename Type::Gradient, typename Type::PassiveReal, int>;
 
-      using OpHelper = medi::OperatorHelper<
-                medi::FunctionHelper<
-                    Type, Type, typename Type::PassiveReal, typename Type::Identifier, typename Type::Gradient, CoDiPackForwardTool<Type>
-                >
-              >;
+      using OpHelper =
+          medi::OperatorHelper<medi::FunctionHelper<Type, Type, typename Type::PassiveReal, typename Type::Identifier,
+                                                    typename Type::Gradient, CoDiPackForwardTool<Type> > >;
 
     private:
       OpHelper opHelper;
 
     public:
 
-      CoDiPackForwardTool(MPI_Datatype primalMpiType, MPI_Datatype adjointMpiType) :
-        Base(primalMpiType, adjointMpiType),
-        opHelper()
-      {
+      CoDiPackForwardTool(MPI_Datatype primalMpiType, MPI_Datatype adjointMpiType)
+          : Base(primalMpiType, adjointMpiType), opHelper() {
         opHelper.init();
       }
 
@@ -52,7 +51,7 @@ namespace codi {
         return false;
       }
 
-      CODI_INLINE  bool isHandleRequired() const {
+      CODI_INLINE bool isHandleRequired() const {
         return false;
       }
 
@@ -66,7 +65,6 @@ namespace codi {
 
       CODI_INLINE void startAssembly(medi::HandleBase* h) const {
         CODI_UNUSED(h);
-
       }
 
       CODI_INLINE void addToolAction(medi::HandleBase* h) const {
@@ -81,25 +79,25 @@ namespace codi {
         return opHelper.convertOperator(op);
       }
 
-      CODI_INLINE void createPrimalTypeBuffer(PrimalType* &buf, size_t size) const {
+      CODI_INLINE void createPrimalTypeBuffer(PrimalType*& buf, size_t size) const {
         buf = new PrimalType[size];
       }
 
-      CODI_INLINE void createIndexTypeBuffer(IndexType* &buf, size_t size) const {
+      CODI_INLINE void createIndexTypeBuffer(IndexType*& buf, size_t size) const {
         buf = new IndexType[size];
       }
 
-      CODI_INLINE void deletePrimalTypeBuffer(PrimalType* &buf) const {
-        if(NULL != buf) {
-          delete [] buf;
-          buf = NULL;
+      CODI_INLINE void deletePrimalTypeBuffer(PrimalType*& buf) const {
+        if (nullptr != buf) {
+          delete[] buf;
+          buf = nullptr;
         }
       }
 
-      CODI_INLINE void deleteIndexTypeBuffer(IndexType* &buf) const {
-        if(NULL != buf) {
-          delete [] buf;
-          buf = NULL;
+      CODI_INLINE void deleteIndexTypeBuffer(IndexType*& buf) const {
+        if (nullptr != buf) {
+          delete[] buf;
+          buf = nullptr;
         }
       }
 
@@ -145,4 +143,5 @@ namespace codi {
         CODI_UNUSED(inval, inoutval);
       }
   };
+#endif
 }

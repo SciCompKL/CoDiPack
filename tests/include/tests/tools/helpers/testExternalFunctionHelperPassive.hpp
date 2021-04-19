@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../../testInterface.hpp"
-
 #include "multiplyExternalFunctionHelper.hpp"
 
 struct TestExternalFunctionHelperPassive : public TestInterface {
@@ -18,10 +17,10 @@ struct TestExternalFunctionHelperPassive : public TestInterface {
       Number w[ITER];
 
       w[0] = x[0];
-      for(int i = 1; i < ITER; ++i) {
-        w[i] = MultiplyExternalFunctionHelper<Number>::create(x[1], w[i-1], true);
+      for (int i = 1; i < ITER; ++i) {
+        w[i] = MultiplyExternalFunctionHelper<Number>::create(x[1], w[i - 1], true);
       }
 
-      y[0] = w[ITER - 1]*w[ITER - 1];
+      y[0] = w[ITER - 1] * w[ITER - 1];
     }
 };

@@ -9,39 +9,47 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /// Empty Position with no nested data.
   struct EmptyPosition {
     public:
 
-      bool operator != (EmptyPosition const& o) const {
+      /// Always false
+      bool operator!=(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return false;
       }
 
-      bool operator == (EmptyPosition const& o) const {
+      /// Always true
+      bool operator==(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return true;
       }
 
-      bool operator < (EmptyPosition const& o) const {
+      /// Always false
+      bool operator<(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return false;
       }
 
-      bool operator <= (EmptyPosition const& o) const {
+      /// Always true
+      bool operator<=(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return true;
       }
 
-      bool operator > (EmptyPosition const& o) const {
+      /// Always false
+      bool operator>(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return false;
       }
 
-      bool operator >= (EmptyPosition const& o) const {
+      /// Always true
+      bool operator>=(EmptyPosition const& o) const {
         CODI_UNUSED(o);
         return true;
       }
 
+      /// Stream output
       friend std::ostream& operator<<(std::ostream& stream, EmptyPosition const& pos) {
         CODI_UNUSED(pos);
         stream << "[]";
@@ -49,95 +57,124 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief Position with one index for e.g. array access.
+   *
+   * Used for data that is allocated en bloc, e.g. BlockData.
+   *
+   * @tparam _NestedPosition  Position implementation
+   */
   template<typename _NestedPosition>
   struct ArrayPosition {
     public:
 
-      using NestedPosition = CODI_DECLARE_DEFAULT(_NestedPosition, EmptyPosition);
+      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition);  ///< See ArrayPosition
 
-      size_t data;
+      size_t data;  ///< Array position index.
 
-      NestedPosition inner;
+      NestedPosition inner;  ///< Position of nested data
 
-      ArrayPosition() :
-        data(0),
-        inner() {}
+      /// Constructor
+      ArrayPosition() : data(0), inner() {}
 
-      ArrayPosition(size_t const& data, NestedPosition const& inner) :
-        data(data),
-        inner(inner) {}
+      /// Constructor
+      ArrayPosition(size_t const& data, NestedPosition const& inner) : data(data), inner(inner) {}
 
-      bool operator != (ArrayPosition const& o) const {
+      /// Operator != also compares with nested data
+      bool operator!=(ArrayPosition const& o) const {
         return data != o.data || this->inner != o.inner;
       }
 
-      bool operator == (ArrayPosition const& o) const {
+      /// Operator == also compares with nested data
+      bool operator==(ArrayPosition const& o) const {
         return data == o.data && this->inner == o.inner;
       }
 
-      bool operator < (ArrayPosition const& o) const {
+      /// Operator < also compares with nested data
+      bool operator<(ArrayPosition const& o) const {
         return data < o.data || (data == o.data && inner < o.inner);
       }
 
-      bool operator <= (ArrayPosition const& o) const {
+      /// Operator <= also compares with nested data
+      bool operator<=(ArrayPosition const& o) const {
         return data < o.data || (data == o.data && inner <= o.inner);
       }
 
-      bool operator > (ArrayPosition const& o) const {
+      /// Operator > also compares with nested data
+      bool operator>(ArrayPosition const& o) const {
         return o < *this;
       }
 
-      bool operator >= (ArrayPosition const& o) const {
+      /// Operator >= also compares with nested data
+      bool operator>=(ArrayPosition const& o) const {
         return o <= *this;
       }
 
+      /// Stream output
       friend std::ostream& operator<<(std::ostream& stream, ArrayPosition const& pos) {
         stream << "[" << pos.data << ", " << pos.inner << "]";
         return stream;
       }
   };
 
+  /**
+   * @brief Position with two indices for e.g. chunked data access.
+   *
+   * Used for data that is allocated with multiple chunks, e.g. ChunkData.
+   * `chunk` is the major index and identifies the chunk and `Base::data` is the secondary index which refers to the
+   * position in the chunk.
+   *
+   * For `p1 < p2` it is enough that `p1.chunk < p2.chunk`, only in the equality case `Base::data` needs to be checked.
+   *
+   * @tparam _NestedPosition  Position implementation
+   */
   template<typename _NestedPosition>
   struct ChunkPosition : public ArrayPosition<_NestedPosition> {
     public:
 
-      using NestedPosition = CODI_DECLARE_DEFAULT(_NestedPosition, EmptyPosition);
-      using Base = ArrayPosition<NestedPosition>;
+      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition);  ///< See ChunkPosition
+      using Base = ArrayPosition<NestedPosition>;                      ///< Base abbreviation
 
-      size_t chunk;
+      size_t chunk;  ///< Chunk position index
 
-      ChunkPosition() :
-        Base(),
-        chunk(0) {}
+      /// Constructor
+      ChunkPosition() : Base(), chunk(0) {}
 
-      ChunkPosition(size_t const& chunk, size_t const& data, NestedPosition const& inner) :
-        Base(data, inner),
-        chunk(chunk) {}
+      /// Constructor
+      ChunkPosition(size_t const& chunk, size_t const& data, NestedPosition const& inner)
+          : Base(data, inner), chunk(chunk) {}
 
-      bool operator != (ChunkPosition const& o) const {
-        return chunk != o.chunk || Base::operator !=(static_cast<Base const&>(o));
+      /// Operator != also compares with nested data
+      bool operator!=(ChunkPosition const& o) const {
+        return chunk != o.chunk || Base::operator!=(static_cast<Base const&>(o));
       }
 
-      bool operator == (ChunkPosition const& o) const {
-        return chunk == o.chunk && Base::operator ==(static_cast<Base const&>(o));
+      /// Operator == also compares with nested data
+      bool operator==(ChunkPosition const& o) const {
+        return chunk == o.chunk && Base::operator==(static_cast<Base const&>(o));
       }
 
-      bool operator < (ChunkPosition const& o) const {
-        return chunk < o.chunk || (chunk == o.chunk && Base::operator <(static_cast<Base const&>(o)));
+      /// Operator < also compares with nested data
+      bool operator<(ChunkPosition const& o) const {
+        return chunk < o.chunk || (chunk == o.chunk && Base::operator<(static_cast<Base const&>(o)));
       }
 
-      bool operator <= (ChunkPosition const& o) const {
-        return chunk < o.chunk || (chunk == o.chunk && Base::operator <=(static_cast<Base const&>(o)));
+      /// Operator <= also compares with nested data
+      bool operator<=(ChunkPosition const& o) const {
+        return chunk < o.chunk || (chunk == o.chunk && Base::operator<=(static_cast<Base const&>(o)));
       }
 
-      bool operator > (ChunkPosition const& o) const {
+      /// Operator > also compares with nested data
+      bool operator>(ChunkPosition const& o) const {
         return o < *this;
       }
 
-      bool operator >= (ChunkPosition const& o) const {
+      /// Operator >= also compares with nested data
+      bool operator>=(ChunkPosition const& o) const {
         return o <= *this;
       }
 
+      /// Stream output
       friend std::ostream& operator<<(std::ostream& stream, ChunkPosition const& pos) {
         stream << "[" << pos.chunk << ", " << pos.data << ", " << pos.inner << "]";
         return stream;

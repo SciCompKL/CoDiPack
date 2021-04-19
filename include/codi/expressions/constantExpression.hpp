@@ -9,40 +9,65 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Represents constant values in the expression tree.
+   *
+   * All values that are not a CoDiPack type are considered constant. This are e.g. values like 4.0 or double a.
+   *
+   * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
+   *
+   * @tparam _Real  Original primal value of the statement/expression.
+   */
   template<typename _Real>
   struct ConstantExpression : public ExpressionInterface<_Real, ConstantExpression<_Real>> {
     public:
 
-      using Real = CODI_DECLARE_DEFAULT(_Real, double);
-
-      using StoreAs = ConstantExpression;
-
-      static bool constexpr EndPoint = true;
+      using Real = CODI_DD(_Real, double);  ///< See ConstantExpression
 
     private:
       Real primalValue;
 
     public:
 
+      /// Constructor
       CODI_INLINE ConstantExpression(Real const& v) : primalValue(v) {}
 
+      /*******************************************************************************/
+      /// @name Implementation of ExpressionInterface
+      /// @{
+
+      using StoreAs = ConstantExpression;  ///< codi::ExpressionInterface::StoreAs
+
+      /// \copydoc codi::ExpressionInterface::getValue
       CODI_INLINE Real const& getValue() const {
         return primalValue;
       }
 
+      /// \copydoc codi::ExpressionInterface::getJacobian()
       template<size_t argNumber>
       CODI_INLINE Real getJacobian() const {
         return Real();
       }
 
-      template<typename Logic, typename ... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&& ... args) const {
+      /// @}
+      /*******************************************************************************/
+      /// @name Implementation of NodeInterface
+      /// @{
+
+      static bool constexpr EndPoint = true;  ///< \copydoc codi::NodeInterface::EndPoint
+
+      /// \copydoc codi::NodeInterface::forEachLink()
+      template<typename Logic, typename... Args>
+      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
         CODI_UNUSED(logic, args...);
       }
 
-      template<typename Logic, typename ... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&& ... CODI_UNUSED_ARG(args)) {
+      /// \copydoc codi::NodeInterface::forEachLinkConstExpr()
+      template<typename Logic, typename... Args>
+      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... CODI_UNUSED_ARG(args)) {
         return Logic::NeutralElement;
       }
+
+      /// @}
   };
 }

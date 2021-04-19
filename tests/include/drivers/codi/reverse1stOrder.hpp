@@ -11,7 +11,7 @@ struct CoDiReverse1stOrder : public CoDiReverse1stOrderBase {
 
     using Gradient = Number::Gradient;
 
-    Gradient& accessGradient(Number &value) {
+    Gradient& accessGradient(Number& value) {
       return value.gradient();
     }
 

@@ -5,9 +5,10 @@
 
 #include "../../aux/macros.hpp"
 #include "../../config.h"
+#include "../../traits/aux/enableIfHelpers.hpp"
 #include "chunk.hpp"
-#include "emptyData.hpp"
 #include "dataInterface.hpp"
+#include "emptyData.hpp"
 #include "pointerStore.hpp"
 #include "position.hpp"
 
@@ -19,10 +20,10 @@ namespace codi {
    *
    * See DataInterface documentation for details.
    *
-   * This implementation does not check in #reserveItems if enough space is available it needs to be preallocated with
+   * This implementation does not check in #reserveItems if enough space is available. It needs to be preallocated with
    * #resize.
    *
-   * @tparam _Chunk            Type of the data stored in DataInterface. Needs to extend ChunkBase.
+   * @tparam _Chunk            Has to implement ChunkBase. The chunk defines the data stored in this implementation.
    * @tparam _NestedData       Nested DataInterface.
    * @tparam _PointerInserter  Defines how data is appended to evaluate* function calls.
    */
@@ -30,14 +31,14 @@ namespace codi {
   struct BlockData : public DataInterface<_NestedData> {
     public:
 
-      using Chunk = CODI_DECLARE_DEFAULT(_Chunk, CODI_TEMPLATE(Chunk1<CODI_ANY>)); ///< ChunkBase Interface
-      using NestedData = CODI_DECLARE_DEFAULT(_NestedData, CODI_TEMPLATE(DataInterface<CODI_ANY>)); ///< DataInterface interface
-      using PointerInserter = CODI_DECLARE_DEFAULT(_PointerInserter, CODI_TEMPLATE(PointerStore<Chunk>)); ///< PointerStore
-      using InternalPosHandle = size_t; ///< Position in the chunk
+      using Chunk = CODI_DD(_Chunk, CODI_T(ChunkBase<CODI_ANY>));                      ///< See BlockData
+      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< See BlockData
+      using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< See BlockData
 
+      using InternalPosHandle = size_t;                      ///< Position in the chunk
       using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 
-      using Position = ArrayPosition<NestedPosition>; ///< \copydoc DataInterface::Position
+      using Position = ArrayPosition<NestedPosition>;  ///< \copydoc DataInterface::Position
 
     private:
       Chunk chunk;
@@ -46,26 +47,20 @@ namespace codi {
 
     public:
 
-      /// Allocate chunkSize entries and set the nested DataInterface
-      BlockData(size_t const& chunkSize, NestedData* nested) :
-        chunk(chunkSize),
-        nested(NULL)
-      {
+      /// Allocate chunkSize entries and set the nested DataInterface.
+      BlockData(size_t const& chunkSize, NestedData* nested) : chunk(chunkSize), nested(nullptr) {
         setNested(nested);
       }
 
-      /// Allocate chunkSize entries. Requires a call to #setNested
-      BlockData(size_t const& chunkSize) :
-        chunk(chunkSize),
-        nested(NULL)
-      {}
+      /// Allocate chunkSize entries. Requires a call to #setNested.
+      BlockData(size_t const& chunkSize) : chunk(chunkSize), nested(nullptr) {}
 
       /*******************************************************************************/
       /// @name Adding items
 
       /// \copydoc DataInterface::pushData
-      template<typename ... Data>
-      CODI_INLINE void pushData(Data const& ... data) {
+      template<typename... Data>
+      CODI_INLINE void pushData(Data const&... data) {
         // this method should only be called if reserveItems has been called
         chunk.pushData(data...);
       }
@@ -136,12 +131,12 @@ namespace codi {
       /// \copydoc DataInterface::addToTapeValues <br><br>
       /// Implementation: Adds: Total number, Memory used, Memory allocated
       void addToTapeValues(TapeValues& values) const {
-        size_t allocedSize    = chunk.getSize();
-        size_t dataEntries    = getDataSize();
-        size_t entrySize      = Chunk::EntrySize;
+        size_t allocedSize = chunk.getSize();
+        size_t dataEntries = getDataSize();
+        size_t entrySize = Chunk::EntrySize;
 
-        double  memoryUsed  = (double)dataEntries*(double)entrySize* TapeValues::BYTE_TO_MB;
-        double  memoryAlloc = (double)allocedSize*(double)entrySize* TapeValues::BYTE_TO_MB;
+        double memoryUsed = (double)dataEntries * (double)entrySize;
+        double memoryAlloc = (double)allocedSize * (double)entrySize;
 
         values.addUnsignedLongEntry("Total number", dataEntries);
         values.addDoubleEntry("Memory used", memoryUsed, true, false);
@@ -149,12 +144,13 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::extractPosition
-      template<typename TargetPosition>
+      template<typename TargetPosition, typename = typename enable_if_not_same<TargetPosition, Position>::type>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
         return nested->template extractPosition<TargetPosition>(pos.inner);
       }
 
       /// \copydoc DataInterface::extractPosition
+      template<typename TargetPosition, typename = typename enable_if_same<TargetPosition, Position>::type>
       CODI_INLINE Position extractPosition(Position const& pos) const {
         return pos;
       }
@@ -162,7 +158,7 @@ namespace codi {
       /// \copydoc DataInterface::setNested
       void setNested(NestedData* v) {
         // Set nested is only called once during the initialization.
-        codiAssert(NULL == this->nested);
+        codiAssert(nullptr == this->nested);
         codiAssert(v->getZeroPosition() == v->getPosition());
 
         this->nested = v;
@@ -179,7 +175,7 @@ namespace codi {
       /// @name Iterator functions
 
       /// \copydoc DataInterface::evaluateForward
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
@@ -187,16 +183,16 @@ namespace codi {
 
         size_t dataPos = start.data;
         pHandle.callNestedForward(
-              /* arguments for callNestedForward */
-              nested, dataPos, end.data,
-              /* arguments for nested->evaluateForward */
-              start.inner, end.inner, function, std::forward<Args>(args)...);
+            /* arguments for callNestedForward */
+            nested, dataPos, end.data,
+            /* arguments for nested->evaluateForward */
+            start.inner, end.inner, function, std::forward<Args>(args)...);
 
         codiAssert(dataPos == end.data);
       }
 
       /// \copydoc DataInterface::evaluateReverse
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         PointerInserter pHandle;
@@ -205,48 +201,49 @@ namespace codi {
         pHandle.setPointers(0, &chunk);
 
         pHandle.callNestedReverse(
-              /* arguments for callNestedReverse */
-              nested, dataPos, end.data,
-              /* arguments for nested->evaluateReverse */
-              start.inner, end.inner, function, std::forward<Args>(args)...);
+            /* arguments for callNestedReverse */
+            nested, dataPos, end.data,
+            /* arguments for nested->evaluateReverse */
+            start.inner, end.inner, function, std::forward<Args>(args)...);
 
         codiAssert(dataPos == end.data);
       }
 
       /// \copydoc DataInterface::forEachChunk
-      template<typename FunctionObject, typename ... Args>
+      template<typename FunctionObject, typename... Args>
       CODI_INLINE void forEachChunk(FunctionObject& function, bool recursive, Args&&... args) {
-
         function(&chunk, std::forward<Args>(args)...);
 
-        if(recursive) {
+        if (recursive) {
           nested->forEachChunk(function, recursive, std::forward<Args>(args)...);
         }
       }
 
       /// \copydoc DataInterface::forEachForward
-      template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
+      template<typename FunctionObject, typename... Args>
+      CODI_INLINE void forEachForward(Position const& start, Position const& end, FunctionObject function,
+                                      Args&&... args) {
         codiAssert(start.data <= end.data);
 
         PointerInserter pHandle;
 
-        for(size_t dataPos = start.data; dataPos < end.data; dataPos += 1) {
+        for (size_t dataPos = start.data; dataPos < end.data; dataPos += 1) {
           pHandle.setPointers(dataPos, &chunk);
           pHandle.call(function, std::forward<Args>(args)...);
         }
       }
 
       /// \copydoc DataInterface::forEachReverse
-      template<typename FunctionObject, typename ... Args>
-      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function, Args&&... args) {
+      template<typename FunctionObject, typename... Args>
+      CODI_INLINE void forEachReverse(Position const& start, Position const& end, FunctionObject function,
+                                      Args&&... args) {
         codiAssert(start.data >= end.data);
 
         PointerInserter pHandle;
 
         // we do not initialize dataPos with start - 1 since the type can be unsigned
-        for(size_t dataPos = start.data; dataPos > end.data; /* decrement is done inside the loop */) {
-          dataPos -= 1; // decrement of loop variable
+        for (size_t dataPos = start.data; dataPos > end.data; /* decrement is done inside the loop */) {
+          dataPos -= 1;  // decrement of loop variable
 
           pHandle.setPointers(dataPos, &chunk);
           pHandle.call(function, std::forward<Args>(args)...);

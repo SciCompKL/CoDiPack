@@ -1,0 +1,83 @@
+digraph Tutorials {
+  rankdir=LR;
+  ranksep=2;
+
+  // Tutorial nodes
+  node [shape=box color=blue];
+  T01 [label="T1 - Forward mode AD"];
+
+  T02 [label="T2 - Reverse mode AD"];
+
+  T03 [label="T3 - Full jacobian computation"];
+
+  T04 [label="T4 - Vector mode AD"];
+
+  T05 [label="T5 - Multiple tape recordings"];
+
+  T06 [label="T6 - Higher order types helper acces"];
+
+  // Example nodes
+  node [shape=box color=green];
+  E01 [label="E1 - Old tangent leftovers forward mode"];
+
+  E02 [label="E2 - Custom adjoint vector evaluation"];
+
+  E03 [label="E3 - Positional tape evaluations"];
+
+  E04 [label="E4 - Higher order types helper access compile time"];
+
+  E05 [label="E5 - Higher order types direct access"];
+
+  E06 [label="E6 - Forward tape evaluation"];
+
+  E07 [label="E7 - Primal tape evaluation"];
+
+  E08 [label="E8 - Vector helper"];
+
+  E09 [label="E9 - OpenMP reverse evaluation"];
+
+  E10 [label="E10 - External function helper"];
+
+  E11 [label="E11 - External function user data"];
+
+  E12 [label="E12 - Manual statement creation"];
+
+  E13 [label="E13 - MPI communication"];
+
+  E14 [label="E14 - ReferenceActiveReal"];
+
+  E15 [label="E15 - Preaccumulation of code parts"];
+
+  E16 [label="E16 - Tape helper"];
+
+  E17 [label="E17 - Evaluation helper"];
+
+  E18 [label="E18 - Evaluation helper function object examples"];
+
+  E19 [label="E19 - Evaluation helper handle creation"];
+
+  // Edges (sorted)
+  E08:e -> E09:w;
+  T01:e -> E01:w;
+  T01:e -> T03:w;
+  T01:e -> T04:w;
+  T02:e -> E03:w;
+  T02:e -> E06:w;
+  T02:e -> E07:w;
+  T02:e -> E10:w;
+  T02:e -> E11:w;
+  T02:e -> E12:w;
+  T02:e -> E13:w;
+  T02:e -> E14:w;
+  T02:e -> E15:w;
+  T02:e -> T03:w;
+  T02:e -> T04:w;
+  T02:e -> T05:w;
+  T02:e -> T06:w;
+  T04:e -> E02:w;
+  T04:e -> E08:w;
+  T06:e -> E04:w;
+  T06:e -> E05:w;
+  E17:e -> E18:w;
+  E17:e -> E19:w;
+}

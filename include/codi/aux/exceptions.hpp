@@ -21,19 +21,21 @@ namespace codi {
    * @param[in]            file  The file were the function is defined.
    * @param[in]            line  The line in the file were the assert is defined.
    */
-  inline void checkAndOutputAssert(bool const condition, char const* conditionString, char const* function, char const* file, int line) {
+  inline void checkAndOutputAssert(bool const condition, char const* conditionString, char const* function,
+                                   char const* file, int line) {
     if (!condition) {
-      std::cerr << "codiAssertion failed: " << conditionString << " in function " << function << " at " << file << ":" << line << std::endl;
+      std::cerr << "codiAssertion failed: " << conditionString << " in function " << function << " at " << file << ":"
+                << line << std::endl;
       abort();
     }
   }
 
-  /**
-   * @brief Generates an exception.
-   *
-   * @param ...  Arguments for a printf like output and format.
-   */
-  #define CODI_EXCEPTION(...) outputException( __func__, __FILE__, __LINE__, __VA_ARGS__)
+/**
+ * @brief Generates an exception.
+ *
+ * @param ...  Arguments for a printf like output and format.
+ */
+#define CODI_EXCEPTION(...) outputException(__func__, __FILE__, __LINE__, __VA_ARGS__)
 
   /**
    * @brief Prints the positions and the message of the exception.
@@ -58,4 +60,3 @@ namespace codi {
     exit(-1);
   }
 }
-

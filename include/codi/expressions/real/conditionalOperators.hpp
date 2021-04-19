@@ -9,46 +9,41 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /*******************************************************************************/
+  /// @name Builtin binary comparison operators
+  /// @{
 
-  /*******************************************************************************
-   * Section: Standard binary comparison operators
-   *
-   * Description: TODO
-   *
-   */
+#define OPERATOR ==
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR ==
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR !=
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR !=
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR >
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR >
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR <
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR <
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR >=
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR >=
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR <=
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR <=
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR &&
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR &&
-  #include "conditionalBinaryOverloads.tpp"
+#define OPERATOR ||
+#include "conditionalBinaryOverloads.tpp"
 
-  #define OPERATOR ||
-  #include "conditionalBinaryOverloads.tpp"
+  /// @}
+  /*******************************************************************************/
+  /// @name Builtin unary comparison operators
+  /// @{
 
-  /*******************************************************************************
-   * Section: Standard prefix unary comparison operators
-   *
-   * Description: TODO
-   *
-   */
+#define OPERATOR !
+#include "conditionalUnaryOverloads.tpp"
 
-  #define OPERATOR !
-  #include "conditionalUnaryOverloads.tpp"
+  /// @}
 }
-

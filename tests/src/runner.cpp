@@ -6,9 +6,8 @@
 #include <codi/aux/exceptions.hpp>
 #include <codi/aux/macros.hpp>
 
-
-#include "../include/testInterface.hpp"
 #include "../include/drivers/driverInterface.hpp"
+#include "../include/testInterface.hpp"
 
 #ifndef DRIVER
   #error A driver include needs to be specified
@@ -22,7 +21,6 @@
 
 using Driver = CODI_DECLARE_DEFAULT(DRIVER_NAME, CODI_TEMPLATE(DriverInterface<double>));
 
-
 struct Runner {
   public:
 
@@ -34,7 +32,7 @@ struct Runner {
     void run() {
       TestVector<Number> testInfos = driver.getTestInfos();
 
-      for(auto& curInfo : testInfos) {
+      for (auto& curInfo : testInfos) {
         std::string outFile = generateOutputFile(curInfo.test);
 
         FILE* out = fopen(outFile.c_str(), "w");
@@ -46,17 +44,16 @@ struct Runner {
 
   private:
 
-    int makePath(char const* dir, mode_t mode)
-    {
-        struct stat sb;
+    int makePath(char const* dir, mode_t mode) {
+      struct stat sb;
 
-        if (!stat(dir, &sb)) {
-            return 0;
-        }
+      if (!stat(dir, &sb)) {
+        return 0;
+      }
 
-        makePath(dirname(strdupa(dir)), mode);
+      makePath(dirname(strdupa(dir)), mode);
 
-        return mkdir(dir, mode);
+      return mkdir(dir, mode);
     }
 
     std::string generateOutputFile(TestInterface* test) {

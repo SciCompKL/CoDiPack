@@ -1,0 +1,110 @@
+Expressions {#Expressions}
+=======
+
+The expressions in CoDiPack help to perform operations on a statement level an not on an operator level.
+In an operator overloading framework, the general design of the overlods is like
+\f[
+  \text{Real} \circ \text{Real} \rightarrow \text{Real},
+\f]
+where \f$\text{Real}\f$ is the computation type and \f$\circ\f$ the operator.
+Expressions change this concept such that the return type of the operator is no longer the result itself but a structure
+that contains information about the operator. An example with two different types \f$A\f$ and \f$B\f$ and an expression
+context is
+\f[
+  \text{Expr}_A \circ \text{Expr}_B \rightarrow \text{Expr}_{A \circ B}.
+\f]
+The final return value is now an expression which contains information about the operation, which is indicated by the
+suffix \f$A \circ B\f$.
+
+On the equation
+\f[
+  w = ((a + b) * (c - d))^2
+\f]
+the pure operator overloading approach would create three intermediate statements
+\f{align*}{
+  t_1 = & a + b \\
+  t_2 = & c - d \\
+  t_3 = & t_1 * t_2 \\
+  w = & t_3^2 \eqdot
+\f}
+The expression template approach creates one large expression that is represented by the structure
+\f[
+  \text{SQUARE} < \text{MULT} < \text{ADD} < \text{Real}, \text{Real}>, \text{SUB}<\text{Real}, \text{Real}> > > \eqdot
+\f]
+It can be used to evaluate the result \f$w\f$ and access additional information about the operations. In CoDiPack 2.0
+the functions for each expression are keept rather small. The only direct callable method is `getValue` which evaluates
+the expression. For all other operations the traversal logic classes have to be used.
+
+The current most used expression implementation are:
+ - [ActiveType](@ref codi::ActiveType): LhsExpression implementation for a concrete value
+ - [BinaryExpression](@ref codi::BinaryExpression): Expression with two arguments
+ - [ConstantExpression](@ref codi::ConstantExpression): Represents a constant value in the expression tree like 4.0 or
+                                                        other non CoDiPack types.
+ - [UnaryExpression](@ref codi::UnaryExpression): Expression with one argument
+ - [LhsExpressionInterface](@ref codi::LhsExpressionInterface): General inteface for expression that are lvalues.
+
+Expression traversal (custom operations on expressions) {#customExpressionLogic}
+-------
+
+Custom operations in CoDiPack 2.0 on expression are all implemented with the [TraversalLogic](@ref codi::TraversalLogic)
+or [CompileTimeTraversalLogic](@ref codi::CompileTimeTraversalLogic) classes. The first one enables custom logic in a
+runtime context. Variables and results can be stored in the implementation. The CompileTimeTraversalLogic allows for the
+computation of results in a compile time context. Both classes contain functions for the visit of links, nodes and
+terminators in the expression graph. The terms are explained in the following picture:
+```
+  ┌─┐   ┌─┐   ┌─┐   ┌─┐
+  │a│   │b│   │c│   │d│  # Nodes without arguments are termination nodes, they are first class objects like the
+  └┬┘   └┬┘   └┬┘   └┬┘  # the number implementation
+   │     │     │     │
+   └──┬──┘     └──┬──┘   # Links go from a root to a leaf and describe an argument relation. The leaf is used as an
+      │           │      # argument by the root.
+     ┌┴┐         ┌┴┐
+     │+│         │-│     # Nodes with arguments are regular nodes, they are intermediate objects.
+     └┬┘         └┬┘
+      └─────┬─────┘
+            │
+           ┌┴┐
+           │*│
+           └┬┘
+            │
+           ┌┴┐
+           │²│            # The origin node describes the full expression. It is used to initialize the traversal logic.
+           └─┘
+```
+So a node in the traversal logic are all inermedite operations and terminators are the values on which the operations
+are evalauted. Links are the relations between two objects in the graph structure. The root is the node which received
+the leaf as an argument.
+
+The traversla of the graph is done in a depth-first search (DFS). On each node the first link is visited and then the
+leaf of the link. Afterwards the leaf visits all links and so on. The above example would have the walk:
+```
+Node ²
+Link ², *
+Node *
+Link *, +
+Node +
+Link +, a
+Term a
+Link +, b
+Term b
+Link *, -
+...
+```
+Information can be provided or stored in the implementation or propagated via the arguments of the function calls. The
+default implementation forwards all arguments, from the initial call.
+
+Specializations for some common use cases are available:
+ - [ForEachTermLogic](@ref codi::ForEachTermLogic): Default traversal of the tree with no logic in the nodes and links.
+         Calls the function [handleActive](@ref codi::ForEachTermLogic::handleActive()) for all left hand side
+         expression objects. [handleConstant](@ref codi::ForEachTermLogic::handleConstant()) is called for all constant
+         expression objects.
+ - [JacobianComputationLogic](@ref codi::JacobianComputationLogic): Evaluates the [reverse AD logic](@ref sec_forwardAD)
+          for each link. The first user argument needs to be the seed value for the output of the expression. For each
+          left hand side expression object the method
+          [handleJacobianOnActive](@ref codi::JacobianComputationLogic::handleJacobianOnActive()) is called. The first
+          user argument here contains the derivative of the origin node with respect to the current terminator times the
+          initial seeding.
+
+The [CompileTimeTraversalLogic](@ref codi::CompileTimeTraversalLogic) works in the same way as the
+CompileTimeTraversalLogic and results mainly in the same call order. The only difference is that Binary expressions
+perform a reduction of the results from the two leafs.

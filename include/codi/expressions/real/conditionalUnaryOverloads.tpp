@@ -14,23 +14,24 @@
 #ifndef OPERATOR
   #define PROXY
 
-  #include "../../aux/macros.h"
+  #include "../../aux/macros.hpp"
   #include "../../config.h"
   #include "../expressionInterface.hpp"
   #define OPERATOR !
 
-  namespace codi {
+namespace codi {
 #endif
 
+  /// Function overload for operator OPERATOR
   template<typename Real, typename Arg>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, Arg> const& arg) {
-    return OPERATOR getPassiveValue(arg.cast());
+    return OPERATOR RealTraits::getPassiveValue(arg.cast());
   }
 
 // Create a correct include environment for viewing and programming in an IDE
 #ifdef PROXY
   #undef PROXY
-  }
+}
 #endif
 
 #undef OPERATOR

@@ -1,24 +1,22 @@
-#include "../../../testInterface.hpp"
-
 #include <type_traits>
 #include <vector>
 
 #include "../../../../../include/codi.hpp"
+#include "../../../testInterface.hpp"
 
-struct TestStatementPushHelper: public TestInterface {
+struct TestStatementPushHelper : public TestInterface {
   public:
     NAME("StatementPushHelper")
     IN(2)
     OUT(8)
-    POINTS(1) = {
+    POINTS(1) = {// clang-format off
       {  1.0,     0.5}
-    };
+    };  // clang-format on
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-
-      using Real = codi::PassiveRealType<Number>;
-      Number passiveValue = codi::getPassiveValue(x[0]);
+      using Real = codi::RealTraits::PassiveReal<Number>;
+      Number passiveValue = codi::RealTraits::getPassiveValue(x[0]);
 
       codi::StatementPushHelper<Number> ph;
 

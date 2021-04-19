@@ -1,9 +1,9 @@
-#include <string>
-#include <iostream>
-#include <sstream>
-
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <iostream>
+#include <sstream>
+#include <string>
 
 #include "../../testInterface.hpp"
 
@@ -18,7 +18,7 @@ struct TestIO : public TestInterface {
     static void func(Number* x, Number* y) {
       y[0] = x[0];
 
-    #if REVERSE_TAPE
+#if REVERSE_TAPE
       auto& tape = Number::getGlobalTape();
       std::stringstream filename;
       filename << "test" << getpid() << ".tape";
@@ -28,6 +28,6 @@ struct TestIO : public TestInterface {
       tape.readFromFile(filename.str());
 
       unlink(filename.str().c_str());
-    #endif
+#endif
     }
 };
