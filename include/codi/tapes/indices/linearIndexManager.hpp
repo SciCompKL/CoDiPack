@@ -28,8 +28,8 @@ namespace codi {
   struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
     public:
 
-      using Index = CODI_DD(_Index, int);         ///< See LinearIndexManager
-      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);         ///< See LinearIndexManager.
+      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
@@ -43,9 +43,9 @@ namespace codi {
       /// @name DataInterface: Type declaration
       /// @{
 
-      using Position = Index;            ///< The current maximum index
-      using NestedData = void;           ///< Terminator
-      using InternalPosHandle = size_t;  ///< The current maximum index
+      using Position = Index;            ///< The current maximum index.
+      using NestedData = void;           ///< Terminator.
+      using InternalPosHandle = size_t;  ///< The current maximum index.
 
       /// @}
 
