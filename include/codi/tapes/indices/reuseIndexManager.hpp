@@ -12,28 +12,30 @@
 namespace codi {
 
   /**
-   * @brief Identifiers are reused. Freed identifiers are given out to new variables. Variables with an identifier will
-   * keep this one.
+   * @brief Identifiers are reused. Freed identifiers are assigned to new variables. Variables keep their indices as
+   * long as they are active.
    *
-   * This index manager does not implement a copy optimization. Therefore every copy operation needs a statement, but
-   * variables will keep there identifier if they are always active.
+   * This index manager does not implement an assign optimization. Therefore, every copy operation needs a statement,
+   * but variables will keep their identifier as long as they are active.
    *
-   * For generalization reasons it also extends from the EmptyData DataInterface.
+   * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
-   * @tparam _Index   Type for the identifier usually an integer type.
+   * For generalization reasons, it also extends from the EmptyData DataInterface.
+   *
+   * @tparam _Index   Type for the identifier, usually an integer type.
    */
   template<typename _Index>
   struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DD(_Index, int);         ///< See ReuseIndexManager
-      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);         ///< See ReuseIndexManager.
+      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization implemented.
+      static bool constexpr CopyNeedsStatement = true;  ///< No assign optimization is implemented.
       static bool constexpr IsLinear = false;           ///< Identifiers are not coupled to statements.
 
       /// @}
@@ -202,10 +204,10 @@ namespace codi {
     private:
 
       CODI_NO_INLINE void generateNewIndices() {
-        // method is only called when unused indices are empty
-        // initially it holds a number of unused indices which is
-        // the same amount as we now generate, therefore we do not
-        // check for size
+        // This method is only called when unused indices are empty.
+        // Initially, a number of unused indices is created which
+        // equals the number of indices we generate now, therefore
+        // we do not have to check for size.
 
         codiAssert(unusedIndices.size() >= indexSizeIncrement);
 
@@ -224,7 +226,7 @@ namespace codi {
       CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
         codiAssert(v.size() < minimalSize);
 
-        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1;  // +1 rounds always up
+        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1;  // +1 always rounds up
         v.resize(v.size() + increaseMul * indexSizeIncrement);
       }
   };
