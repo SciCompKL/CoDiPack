@@ -18,12 +18,12 @@ namespace codi {
                                           void* adjointInterface);    ///< Call function definition.
       typedef void (*DeleteFunctionUntyped)(void* tape, void* data);  ///< Delete function definition.
 
-      CallFunctionUntyped funcReverse;   ///< Reverse evaluation function pointer
-      CallFunctionUntyped funcForward;   ///< Forward evaluation function pointer
-      CallFunctionUntyped funcPrimal;    ///< Primal evaluation function pointer
-      DeleteFunctionUntyped funcDelete;  ///< User data deletion function pointer
+      CallFunctionUntyped funcReverse;   ///< Reverse evaluation function pointer.
+      CallFunctionUntyped funcForward;   ///< Forward evaluation function pointer.
+      CallFunctionUntyped funcPrimal;    ///< Primal evaluation function pointer.
+      DeleteFunctionUntyped funcDelete;  ///< User data deletion function pointer.
 
-      void* data;  ///< User data pointer
+      void* data;  ///< User data pointer.
 
     public:
 
@@ -44,7 +44,7 @@ namespace codi {
   };
 
   /**
-   * @brief User defined evaluation functions for the taping process.
+   * @brief User-defined evaluation functions for the taping process.
    *
    * See ExternalFunctionTapeInterface for details.
    *
@@ -52,11 +52,11 @@ namespace codi {
    * the type CallFunction which has the tree arguments:
    *  - tape: The type of the tape on which this object was registered with `registerExternalFunction`
    *          (ExternalFunctionTapeInterface)
-   *  - data: User provided data, type is known by the user.
-   *  - adjointInterface: VectorAccessInterface with <typename Tape::Real, typename Tape::Identifier>
+   *  - data: User-provided data, type is known by the user.
+   *  - adjointInterface: VectorAccessInterface instanciated with <typename Tape::Real, typename Tape::Identifier>
    *
-   * The tape pointer can be used for general access to the tape. For all access to the gradient data the
-   * adjointInterface should be used. If in the application no custom adjoint vectors are used, then the tape pointer
+   * The tape pointer can be used for general access to the tape. For each access to the gradient data, the
+   * adjointInterface should be used. If no custom adjoint vectors are used in the application, then the tape pointer
    * can also be used for the gradient data access.
    *
    * The delete function is called when the entry of the tape for the external function is deleted.
