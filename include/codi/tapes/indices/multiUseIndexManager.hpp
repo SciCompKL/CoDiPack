@@ -10,28 +10,28 @@
 namespace codi {
 
   /**
-   * @brief Extends the ReuseIndexManager with a copy optimization.
+   * @brief Extends the ReuseIndexManager with an assign optimization.
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
-   * Performs a reference counting for each index. If the reference count is zero then it is freed and given to
-   * the ReuseIndexManager.
+   * Performs reference counting for each index. If the reference count is zero, then the index is freed and given back
+   * to the ReuseIndexManager.
    *
-   * @tparam _Index   Type for the identifier usually an integer type.
+   * @tparam _Index   Type for the identifier, usually an integer type.
    */
   template<typename _Index>
   struct MultiUseIndexManager : public ReuseIndexManager<_Index> {
     public:
 
-      using Index = CODI_DD(_Index, int);     ///< See MultiUseIndexManager
-      using Base = ReuseIndexManager<Index>;  ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);     ///< See MultiUseIndexManager.
+      using Base = ReuseIndexManager<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
       /// @{
 
       static bool constexpr CopyNeedsStatement =
-          !Config::CopyOptimization;           ///< Copy optimization only active if configured.
+          !Config::CopyOptimization;           ///< Assign optimization only active if configured.
       static bool constexpr IsLinear = false;  ///< Identifiers are not coupled to statements.
 
       /// @}
@@ -52,7 +52,7 @@ namespace codi {
       /// @{
 
       /// \copydoc ReuseIndexManager::addToTapeValues <br><br>
-      /// Implementation: Additionally adds memory index use vector.
+      /// Implementation: Additionally adds memory consumed by the index use vector.
       void addToTapeValues(TapeValues& values) const {
         Base::addToTapeValues(values);
 
@@ -73,7 +73,7 @@ namespace codi {
           indexUse[index] = 1;
           // index would be freed and used again so we keep it
         } else {
-          index = Base::UnusedIndex;  // Reset index here such that the base class will return a new one
+          index = Base::UnusedIndex;  // reset index here such that the base class will return a new one
           generatedNewIndex = Base::assignIndex(index);
           if (generatedNewIndex) {
             resizeUseVector();
@@ -102,8 +102,8 @@ namespace codi {
       /// \copydoc ReuseIndexManager::copyIndex
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
         if (Config::CopyOptimization) {
-          // skip the logic if the indices are the same.
-          // This also prevents the bug, that if &lhs == &rhs the left hand side will always be deactivated.
+          // Skip the logic if the indices are the same.
+          // This also prevents the bug that if &lhs == &rhs, the left hand side will always be deactivated.
           if (lhs != rhs) {
             freeIndex(lhs);
 
@@ -135,6 +135,7 @@ namespace codi {
       /// @}
 
     private:
+
       CODI_NO_INLINE void resizeUseVector() {
         indexUse.resize(this->getLargestAssignedIndex() + 1);
       }
