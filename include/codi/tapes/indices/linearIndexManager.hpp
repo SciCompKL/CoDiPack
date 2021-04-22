@@ -18,11 +18,11 @@ namespace codi {
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
-   * Since this index manager is tightly coupled to the statements it also implements a simple data interface. It just
+   * Since this index manager is tightly coupled to the statements, it also implements a simple data interface. It just
    * provides the current maximum index as positional information and adds this positional information in the evaluate
    * routines.
    *
-   * @tparam _Index   Type for the identifier usually an integer type.
+   * @tparam _Index   Type for the identifier, usually an integer type.
    */
   template<typename _Index>
   struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
@@ -35,7 +35,7 @@ namespace codi {
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization implemented
+      static bool constexpr CopyNeedsStatement = false;  ///< Assign optimization is implemented.
       static bool constexpr IsLinear = true;             ///< Tightly coupled to statements.
 
       /// @}
@@ -78,7 +78,7 @@ namespace codi {
       /// \copydoc IndexManagerInterface::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
         if (CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1)) {
-          CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
+          CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or a reuse index manager.");
         }
         count += 1;
         index = count;
@@ -108,7 +108,7 @@ namespace codi {
       /// \copydoc DataInterface::extractPosition
       template<typename TargetPosition>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
-        return pos;  // Last in line needs to be this position.
+        return pos;  // This is a terminator, no further recursion.
       }
 
       /// \copydoc DataInterface::getDataSize
