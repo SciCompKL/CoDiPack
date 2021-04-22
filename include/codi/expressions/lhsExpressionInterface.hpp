@@ -2,8 +2,7 @@
 
 #include "../aux/macros.hpp"
 #include "../config.h"
-#include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
-#include "../tapes/interfaces/internalStatementRecordingInterface.hpp"
+#include "../tapes/interfaces/fullTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "expressionInterface.hpp"
 
@@ -20,6 +19,7 @@ namespace codi {
    * @tparam _Real  Original primal value of the statement/expression.
    * @tparam _Gradient  Gradient values computed by the tape implementation.
    * @tparam _Tape  The tape that manages the lvalues of the expression.
+   *                MinimalInterface: InternalStatementRecordingInterface, GradientAccessTapeInterface
    * @tparam _Impl  Class implementing this interface.
    */
   template<typename _Real, typename _Gradient, typename _Tape, typename _Impl>
@@ -29,9 +29,8 @@ namespace codi {
       using Real = CODI_DD(_Real, double);        ///< See LhsExpressionInterface
       using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface
       using Tape =
-          CODI_DD(_Tape, CODI_T(CODI_UNION<InternalStatementRecordingTapeInterface<int>,
-                                           GradientAccessTapeInterface<double, int>>));  ///< See LhsExpressionInterface
-      using Impl = CODI_DD(_Impl, LhsExpressionInterface);                               ///< See LhsExpressionInterface
+          CODI_DD(_Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));  ///< See LhsExpressionInterface
+      using Impl = CODI_DD(_Impl, LhsExpressionInterface);                           ///< See LhsExpressionInterface
 
       using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
