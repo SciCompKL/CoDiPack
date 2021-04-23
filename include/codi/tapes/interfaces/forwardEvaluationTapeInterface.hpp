@@ -9,7 +9,7 @@
 namespace codi {
 
   /**
-   * @brief Forward AD evaluation of recorded tape.
+   * @brief Forward AD evaluation of a recorded tape.
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
