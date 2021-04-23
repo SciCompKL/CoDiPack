@@ -17,11 +17,11 @@ namespace codi {
   struct PrimalTapeStatementFunctions {
     public:
 
-      using Handle = void*;  ///< Function pointer
+      using Handle = void*;  ///< Function pointer.
 
-      Handle forward;  ///< Forward function handle
-      Handle primal;   ///< Primal function handle
-      Handle reverse;  ///< Reverse function handle
+      Handle forward;  ///< Forward function handle.
+      Handle primal;   ///< Primal function handle.
+      Handle reverse;  ///< Reverse function handle.
 
       /// Constructor
       PrimalTapeStatementFunctions(Handle forward, Handle primal, Handle reverse)
@@ -47,13 +47,13 @@ namespace codi {
    *
    * See StatementEvaluatorInterface for details.
    *
-   * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
+   * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
   template<typename _Real>
   struct DirectStatementEvaluator : public StatementEvaluatorInterface<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See DirectStatementEvaluator
+      using Real = CODI_DD(_Real, double);  ///< See DirectStatementEvaluator.
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation
