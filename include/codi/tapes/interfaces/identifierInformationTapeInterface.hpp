@@ -16,12 +16,12 @@ namespace codi {
    * With this interface, the user can check if a variable in the program is active or not. For an explanation of what
    * is an active variable for CoDiPack, please see \ref ActivityAnalysis.
    *
-   * Here is an example that deactivates an identifier (documentation/examples/identifierInformationTapeInterface.cpp):
+   * Here is an example for deactivating an identifier (documentation/examples/identifierInformationTapeInterface.cpp):
    * \snippet examples/identifierInformationTapeInterface.cpp Identifier Activity
    *
    * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
    * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
    */
   template<typename _Real, typename _Gradient, typename _Identifier>
   struct IdentifierInformationTapeInterface {
