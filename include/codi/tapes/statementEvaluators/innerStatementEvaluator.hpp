@@ -19,7 +19,7 @@ namespace codi {
   struct InnerPrimalTapeStatementData : public PrimalTapeStatementFunctions {
     public:
 
-      using Base = PrimalTapeStatementFunctions;  ///< Base class abbreviation
+      using Base = PrimalTapeStatementFunctions;  ///< Base class abbreviation.
 
       size_t maxActiveArguments;    ///< Maximum number of active arguments.
       size_t maxConstantArguments;  ///< Maximum number of constant arguments.
@@ -55,13 +55,13 @@ namespace codi {
    *
    * See StatementEvaluatorInterface for details.
    *
-   * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
+   * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
   template<typename _Real>
   struct InnerStatementEvaluator : public StatementEvaluatorInterface<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See InnerStatementEvaluator
+      using Real = CODI_DD(_Real, double);  ///< See InnerStatementEvaluator.
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation
