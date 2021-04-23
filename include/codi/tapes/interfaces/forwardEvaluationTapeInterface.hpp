@@ -13,10 +13,10 @@ namespace codi {
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
-   * An example for a forward tape evaluation (documentation/examples/forwardEvaluationTapeInterface.cpp):
+   * Here is an example for a forward tape evaluation (documentation/examples/forwardEvaluationTapeInterface.cpp):
    * \snippet examples/forwardEvaluationTapeInterface.cpp Forward tape evaluation
    *
-   * @tparam _Position  Global tape position usually defined by Tape::Position.
+   * @tparam _Position  Global tape position type, usually chosen as Tape::Position.
    */
   template<typename _Position>
   struct ForwardEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<_Position> {
@@ -27,10 +27,10 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// Perform a forward evaluation for a part of the tape. It hast to hold start <= end.
+      /// Perform a forward evaluation of a part of the tape. It hast to hold start <= end.
       void evaluateForward(Position const& start, Position const& end);
 
-      /// Perform a forward evaluation for the full.
+      /// Perform a forward evaluation of the full tape.
       void evaluateForward();
   };
 }
