@@ -29,7 +29,7 @@ namespace codi {
    * performed by a call to reset(). Hence, the user may skip unnecessarys parts of the recording by setting the tape
    * passive for these regions.
    *
-   * An example for using a tape is (documentation/examples/reverseModeAD.cpp):
+   * Here is an example for using a tape (documentation/examples/reverseModeAD.cpp):
    * \snippet examples/reverseModeAD.cpp Reverse mode AD
    *
    * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
