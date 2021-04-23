@@ -20,45 +20,45 @@ namespace codi {
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
-   * For an example on how to uses this interface to perform an AD reverse mode recording and evaluation of a program
-   * pleas see tutorials \ref Tutorial_02_Reverse_mode_AD and \ref Tutorial_05_Multiple_tape_recordings).
+   * For an example on how to uses this interface to perform an AD reverse mode recording and evaluation of a program,
+   * please see tutorials \ref Tutorial_02_Reverse_mode_AD and \ref Tutorial_05_Multiple_tape_recordings).
    *
    * Implementation hints:
-   * A tape should only record information if it is active. That is everything between a call to
-   * setActive() and setPassive(). A call to setActive() is not considered to reset the tape in CoDiPack. This is only
-   * done with a call to reset(). This allows the user to skip unnecessary parts in the application by setting the tape
-   * to passive for these regions.
+   * A tape should only record information if it is active, that is, everything between a call to
+   * setActive() and setPassive(). A call to setActive() does not reset the tape in CoDiPack. A reset can only be
+   * performed by a call to reset(). Hence, the user may skip unnecessarys parts of the recording by setting the tape
+   * passive for these regions.
    *
-   * A example use of a tape is(documentation/examples/reverseModeAD.cpp):
+   * An example for using a tape is (documentation/examples/reverseModeAD.cpp):
    * \snippet examples/reverseModeAD.cpp Reverse mode AD
    *
-   * @tparam _Real        The computation type of a tape usually defined by ActiveType::Real.
-   * @tparam _Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape usually defined by ActiveType::Identifier.
+   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
    */
   template<typename _Real, typename _Gradient, typename _Identifier>
   struct ReverseTapeInterface : public virtual InternalStatementRecordingInterface<_Identifier>,
                                 public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
     public:
-      using Real = CODI_DD(_Real, double);           ///< See ReverseTapeInterface
-      using Gradient = CODI_DD(_Gradient, double);   ///< See ReverseTapeInterface
-      using Identifier = CODI_DD(_Identifier, int);  ///< See ReverseTapeInterface
+      using Real = CODI_DD(_Real, double);           ///< See ReverseTapeInterface.
+      using Gradient = CODI_DD(_Gradient, double);   ///< See ReverseTapeInterface.
+      using Identifier = CODI_DD(_Identifier, int);  ///< See ReverseTapeInterface.
 
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
       /*******************************************************************************/
       /// @name Recording
 
-      /// Mark a value as input (independent) and make it active
+      /// Mark a value as input (independent) and make it active.
       template<typename Lhs>
       void registerInput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
-      /// Mark a value as output (dependent)
+      /// Mark a value as output (dependent).
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
 
-      void setActive();       ///< Start/continue recording of statements
-      void setPassive();      ///< Stop recording of statements
-      bool isActive() const;  ///< Check if the tape is recording
+      void setActive();       ///< Start/continue recording of statements.
+      void setPassive();      ///< Stop/interrupt recording of statements.
+      bool isActive() const;  ///< Check if the tape is recording.
 
       /*******************************************************************************/
       /// @name Reversal
@@ -68,7 +68,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Reset
 
-      void clearAdjoints();                   ///< Clear all adjoint values and set them to zero.
+      void clearAdjoints();                   ///< Clear all adjoint values, that is, set them to zero.
       void reset(bool resetAdjoints = true);  ///< Reset the tape to the initial state for a fresh recording. See
                                               ///< \ref Tutorial_05_Multiple_tape_recordings for remarks on repeated
                                               ///< tape recording in CoDiPack.
@@ -76,13 +76,13 @@ namespace codi {
       /*******************************************************************************/
       /// @name Tape information
 
-      /// Default formatting of TapeValues
+      /// Default formatting of TapeValues.
       template<typename Stream = std::ostream>
       void printStatistics(Stream& out = std::cout) const;
-      /// Table header output of TapeValues
+      /// Table header output of TapeValues.
       template<typename Stream = std::ostream>
       void printTableHeader(Stream& out = std::cout) const;
-      /// Table row output of TapeValues
+      /// Table row output of TapeValues.
       template<typename Stream = std::ostream>
       void printTableRow(Stream& out = std::cout) const;
       /// Get current tape values.
