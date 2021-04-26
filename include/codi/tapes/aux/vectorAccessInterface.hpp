@@ -57,8 +57,8 @@ namespace codi {
   struct VectorAccessInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See VectorAccessInterface
-      using Identifier = CODI_DD(_Identifier, int);  ///< See VectorAccessInterface
+      using Real = CODI_DD(_Real, double);           ///< See VectorAccessInterface.
+      using Identifier = CODI_DD(_Identifier, int);  ///< See VectorAccessInterface.
 
       virtual ~VectorAccessInterface() {}  ///< Destructor
 

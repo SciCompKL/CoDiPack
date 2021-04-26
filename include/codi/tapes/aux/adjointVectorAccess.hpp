@@ -22,9 +22,9 @@ namespace codi {
    */
   template<typename _Real, typename _Identifier, typename _Gradient>
   struct AdjointVectorAccess : public VectorAccessInterface<_Real, _Identifier> {
-      using Real = CODI_DD(_Real, double);           ///< See AdjointVectorAccess
-      using Identifier = CODI_DD(_Identifier, int);  ///< See AdjointVectorAccess
-      using Gradient = CODI_DD(_Gradient, double);   ///< See AdjointVectorAccess
+      using Real = CODI_DD(_Real, double);           ///< See AdjointVectorAccess.
+      using Identifier = CODI_DD(_Identifier, int);  ///< See AdjointVectorAccess.
+      using Gradient = CODI_DD(_Gradient, double);   ///< See AdjointVectorAccess.
 
     private:
 
@@ -34,7 +34,7 @@ namespace codi {
 
     public:
 
-      /// Size of adjointVector needs to big enough to. No bounds checking is performed.
+      /// Constructor. See interface documentation for details about the adjoint vector.
       AdjointVectorAccess(Gradient* adjointVector) : adjointVector(adjointVector), lhs() {}
 
       /*******************************************************************************/

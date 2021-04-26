@@ -24,9 +24,9 @@ namespace codi {
   struct DuplicateJacobianRemover {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See DuplicateJacobianRemover
-      using Identifier = CODI_DD(_Identifier, int);  ///< See DuplicateJacobianRemover
-      using ArgumentSize = Config::ArgumentSize;     ///< Definition of ArgumentSize type
+      using Real = CODI_DD(_Real, double);           ///< See DuplicateJacobianRemover.
+      using Identifier = CODI_DD(_Identifier, int);  ///< See DuplicateJacobianRemover.
+      using ArgumentSize = Config::ArgumentSize;     ///< Definition of ArgumentSize type.
 
     private:
       std::array<Identifier, Config::MaxArgumentSize> indices;
@@ -59,7 +59,7 @@ namespace codi {
       }
 
       /// Add the data to the provided vector. Resets the internal data for a new statement push.
-      /// @tparam Vec  DataInterface with Chunk2<double, int> as data.
+      /// @tparam Vec  DataInterface with Chunk2<Real, Identifier> as data.
       template<typename Vec>
       CODI_INLINE void storeData(Vec& vec) {
         for (ArgumentSize pos = 0; pos < size; pos += 1) {
