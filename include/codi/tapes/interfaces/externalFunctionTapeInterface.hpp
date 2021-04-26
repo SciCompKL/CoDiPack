@@ -11,46 +11,47 @@ namespace codi {
   struct ExternalFunction;
 
   /**
-   * @brief Add user defined function to the tape evaluation.
+   * @brief Add user defined functions to the tape evaluation.
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
    * External functions allow the user to evaluate custom operations during a tape evaluation. Each external function
-   * has pointers for the reverse, forward and primal evaluation of an tape. The function pointer only needs to be not
-   * null if the corresponding mode is called on the tape. If the proper function is not defined in an external
-   * function, then a CODI_EXCEPTION is thrown.
+   * has pointers for the reverse, forward and primal evaluation of a tape. A function pointer may be null if the
+   * corresponding mode is not called on the tape. Otherwise, if the corresponding component is not defined in the
+   * external function, then a CODI_EXCEPTION is thrown.
    *
-   * What kind of operations are evaluated in the external function are up to the user. Usually they are used to define
-   * derivative computations for libraries, that can not be differentiated with operator overloading.
+   * What kind of operations are evaluated in the external function is up to the user. They are usually used to define
+   * derivative computations for libraries that cannot be differentiated with operator overloading.
    *
-   * Variables that are outputs of external functions, need to be registered with registerExternalFunctionOutput. This
-   * will ensure that the variable is considered as active in CoDiPack. For primal value tapes the return value of this
-   * function provides the old value stored under this identifier, that the value has received. This old value needs to
-   * be restored with a call to adjointInterface.setPrimal() during the evaluation of the external function in a reverse
+   * Variables that are outputs of external functions have to be registered with registerExternalFunctionOutput. This
+   * will ensure that the variable is considered as active in CoDiPack. For primal value tapes, the return value of this
+   * function provides the old value stored under the identifier that the variable has received. This old value has to
+   * be restored with a call to adjointInterface.setPrimal() during the evaluation of the external function in reverse
    * mode.
    *
-   * An example is (documentation/examples/externalFunctionTapeInterface.cpp):
+   * Here is an example (documentation/examples/externalFunctionTapeInterface.cpp):
    * \snippet examples/externalFunctionTapeInterface.cpp External function
    *
-   * @tparam _Real        The computation type of a tape usually defined by ActiveType::Real.
-   * @tparam _Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape usually defined by ActiveType::Identifier.
+   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
    */
   template<typename _Real, typename _Gradient, typename _Identifier>
   struct ExternalFunctionTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See ExternalFunctionTapeInterface
-      using Gradient = CODI_DD(_Gradient, double);   ///< See ExternalFunctionTapeInterface
-      using Identifier = CODI_DD(_Identifier, int);  ///< See ExternalFunctionTapeInterface
+      using Real = CODI_DD(_Real, double);           ///< See ExternalFunctionTapeInterface.
+      using Gradient = CODI_DD(_Gradient, double);   ///< See ExternalFunctionTapeInterface.
+      using Identifier = CODI_DD(_Identifier, int);  ///< See ExternalFunctionTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition
 
       /// Register an external function output on the tape.
-      /// @return For primal value tapes the return value needs to be stored by the external function. The value needs
-      ///         to be restored with a call to adjointInterface.setPrimal(). The index is the index value has gained by
-      ///         registering it with this method.
+      /// @return For primal value tapes, the return value has to be stored by the external function. The value has to
+      ///         be restored with a call to adjointInterface.setPrimal() during the evaluation of the external function
+      ///         in reverse mode. For this purpose, the primal value is identified by the index which the variable
+      ///         received when it was registered with registerExternalFunctionOutput.
       template<typename Lhs>
       Real registerExternalFunctionOutput(
           LhsExpressionInterface<Real, Gradient, ExternalFunctionTapeInterface, Lhs>& value);
