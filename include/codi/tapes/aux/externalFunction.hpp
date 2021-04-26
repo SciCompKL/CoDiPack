@@ -53,7 +53,7 @@ namespace codi {
    *  - tape: The type of the tape on which this object was registered with `registerExternalFunction`
    *          (ExternalFunctionTapeInterface)
    *  - data: User-provided data, type is known by the user.
-   *  - adjointInterface: VectorAccessInterface instanciated with <typename Tape::Real, typename Tape::Identifier>
+   *  - adjointInterface: VectorAccessInterface instantiated with <typename Tape::Real, typename Tape::Identifier>
    *
    * The tape pointer can be used for general access to the tape. For each access to the gradient data, the
    * adjointInterface should be used. If no custom adjoint vectors are used in the application, then the tape pointer

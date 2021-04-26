@@ -16,7 +16,7 @@ namespace codi {
    *
    * This structure is generated for tapes with the ReverseTapeInterface::getTapeValues() function. The tape provides
    * the information for all internal data structures and the user can then output this information for further
-   * analysis. To make the output as useful as possible, tape should provide information about all DataInterface
+   * analysis. To make the output as useful as possible, tapes should provide information about all DataInterface
    * members, arrays, and IndexManagerInterface members.
    *
    * - Functions for adding data:
