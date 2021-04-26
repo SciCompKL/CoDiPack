@@ -13,12 +13,12 @@ namespace codi {
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
-   * The two additional evaluate methods allow for the evaluation of the tape with a custom adjoint vector. The type
-   * of the vector must support the following operators:
+   * The two additional evaluate methods allow for the evaluation of the tape with a custom adjoint vector. The type of
+   * the vector must support the following operators:
    *  - operator =
    *  - operator *(Tape::Real, Adjoint) (Scalar multiplication from the left)
    *  - operator +=
-   * It must also specialize #codi::GradientTraits::TraitsImplementation
+   * It must also specialize #codi::GradientTraits::TraitsImplementation.
    *
    * Here is an example for an evaluation with a custom adjoint vector
    * (documentation/examples/customAdjointVectorEvaluationTapeInterface.cpp):
@@ -46,7 +46,7 @@ namespace codi {
       /**
        * \copydoc codi::ForwardEvaluationTapeInterface::evaluate(Position const&, Position const&)
        *
-       * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation
+       * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
       template<typename Adjoint>
       void evaluateForward(Position const& start, Position const& end, Adjoint* data);
