@@ -17,16 +17,20 @@
 namespace codi {
 
   /**
-   * @brief Interface definition for required type definitions in the tapes types of a tape.
+   * @brief Interface for the definition of tape types.
+   *
+   * In CoDiPack, each tape has to define its tape types as a separate struct. As a minimum requirement, tape types have
+   * to make the definitions showcased in this interface.
    */
   struct TapeTypesInterface {
     public:
 
-      using Real = CODI_ANY;        ///< Primal computation type e.g. double
-      using Gradient = CODI_ANY;    ///< Gradient computation type e.g. double or Direction
-      using Identifier = CODI_ANY;  ///< Identifier for the internal management e.g. int
+      using Real = CODI_ANY;        ///< Primal computation type, e.g. double.
+      using Gradient = CODI_ANY;    ///< Gradient computation type, e.g. double or Direction.
+      using Identifier = CODI_ANY;  ///< Identifier for the internal management, e.g. int.
 
-      /// Declaration for the data vector that is used for the internal storage. See DateInterface implementations.
+      /// Indicates the storage strategy that will be used by all data vectors. See DataInterface and its
+      /// implementations.
       template<typename Chunk, typename Nested>
       using Data = DataInterface<Nested>;
 
@@ -37,13 +41,13 @@ namespace codi {
   /**
    * @brief Declares all types used in the CommonTapeImplementation.
    *
-   * @tparam _TapeTypes  Needs to implement to TapeTypesInterface.
+   * @tparam _TapeTypes  Must implement TapeTypesInterface.
    */
   template<typename _TapeTypes>
   struct CommonTapeTypes {
     public:
 
-      using TapeTypes = CODI_DD(_TapeTypes, TapeTypesInterface);  ///< See CommonTapeTypes
+      using TapeTypes = CODI_DD(_TapeTypes, TapeTypesInterface);  ///< See CommonTapeTypes.
 
       using NestedData = typename TapeTypes::NestedData;  ///< See TapeTypesInterface.
       template<typename Chunk, typename Nested>
@@ -59,19 +63,19 @@ namespace codi {
   /**
    * @brief Implementation of all common tape functionality.
    *
-   * This basic implementation provides following functionality:
-   *  - External function support with the external functions stored in externalFunctionData
-   *  - Tape options gathering
-   *  - Activity tracking
+   * This basic implementation provides the following functionality:
+   *  - external function support with the external functions stored in externalFunctionData,
+   *  - tape options gathering,
+   *  - activity tracking.
    *
    * It also provides functionality that can be implemented with other functions:
-   *  - setter and getter methods
-   *  - no positional evaluation methods.
-   *  - registerOutput
-   *  - TapeValues functions.
-   *  - reset functionality
+   *  - setter and getter methods,
+   *  - non-positional evaluation methods,
+   *  - registerOutput,
+   *  - TapeValues functions,
+   *  - reset functionality.
    *
-   * @tparam _ImplTapeTypes needs to implement TapeTypesInterface;
+   * @tparam _ImplTapeTypes must implement TapeTypesInterface.
    * @tparam _Impl Type of the full tape implementation.
    */
   template<typename _ImplTapeTypes, typename _Impl>
@@ -97,7 +101,7 @@ namespace codi {
 
     protected:
 
-      bool active;                       ///< If tape stores statements or not.
+      bool active;                       ///< Whether or not the tape is in recording mode.
       std::set<TapeParameters> options;  ///< All options.
 
       ExternalFunctionData externalFunctionData;  ///< Data vector for external function data.
@@ -472,7 +476,7 @@ namespace codi {
         };
         externalFunctionData.forEachForward(start, end, evalFunc);
 
-        // Iterate over the remainder also covers the case if there have been no external functions.
+        // Iterate over the remainder. Covers also the case of no external functions.
         func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
@@ -490,7 +494,7 @@ namespace codi {
         };
         externalFunctionData.forEachReverse(start, end, evalFunc);
 
-        // Iterate over the remainder also covers the case if there have been no external functions.
+        // Iterate over the remainder. Covers also the case of no external functions.
         func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 
@@ -509,7 +513,7 @@ namespace codi {
         };
         externalFunctionData.forEachForward(start, end, evalFunc);
 
-        // Iterate over the remainder also covers the case if there have been no external functions.
+        // Iterate over the remainder. Covers also the case of no external functions.
         func(curInnerPos, end.inner, std::forward<Args>(args)...);
       }
 

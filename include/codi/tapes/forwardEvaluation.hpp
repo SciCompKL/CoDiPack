@@ -175,7 +175,8 @@ namespace codi {
 
       using Type = CODI_DD(_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
                                                                   _Type>));  ///< See RealTraits::IsTotalZero.
-      using Real = typename Type::Real;                                      ///< See codi::LhsExpressionInterface::Real.
+      using Real = typename Type::Real;                                      ///< See
+                                                                             ///< codi::LhsExpressionInterface::Real.
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalZero()
       static CODI_INLINE bool isTotalZero(Type const& v) {
