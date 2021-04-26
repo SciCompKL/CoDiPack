@@ -27,7 +27,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// Perform a forward evaluation of a part of the tape. It hast to hold start <= end.
+      /// Perform a forward evaluation of a part of the tape. It has to hold start <= end.
       void evaluateForward(Position const& start, Position const& end);
 
       /// Perform a forward evaluation of the full tape.
