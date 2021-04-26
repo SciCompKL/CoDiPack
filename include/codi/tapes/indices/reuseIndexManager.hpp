@@ -15,7 +15,7 @@ namespace codi {
    * @brief Identifiers are reused. Freed identifiers are assigned to new variables. Variables keep their indices as
    * long as they are active.
    *
-   * This index manager does not implement an assign optimization. Therefore, every copy operation needs a statement,
+   * This index manager does not implement a copy optimization. Therefore, every copy operation needs a statement,
    * but variables will keep their identifier as long as they are active.
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
@@ -35,7 +35,7 @@ namespace codi {
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      static bool constexpr CopyNeedsStatement = true;  ///< No assign optimization is implemented.
+      static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization is implemented.
       static bool constexpr IsLinear = false;           ///< Identifiers are not coupled to statements.
 
       /// @}
