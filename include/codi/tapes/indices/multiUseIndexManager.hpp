@@ -10,7 +10,7 @@
 namespace codi {
 
   /**
-   * @brief Extends the ReuseIndexManager with an assign optimization.
+   * @brief Extends the ReuseIndexManager with a copy optimization.
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
@@ -31,7 +31,7 @@ namespace codi {
       /// @{
 
       static bool constexpr CopyNeedsStatement =
-          !Config::CopyOptimization;           ///< Assign optimization only active if configured.
+          !Config::CopyOptimization;           ///< Copy optimization only active if configured.
       static bool constexpr IsLinear = false;  ///< Identifiers are not coupled to statements.
 
       /// @}
@@ -114,7 +114,7 @@ namespace codi {
             }
           }
         } else {
-          // path if assign optimizations are disabled
+          // path if copy optimizations are disabled
           assignIndex(lhs);
         }
       }

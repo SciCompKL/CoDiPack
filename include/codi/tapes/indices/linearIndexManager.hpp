@@ -13,7 +13,7 @@ namespace codi {
   /**
    * @brief Identifiers are created in a linear fashion. Each assign creates a new index which is counted up.
    *
-   * A simple assign optimization is implemented here. Since each index is only bound to one primal value, the index
+   * A simple copy optimization is implemented here. Since each index is only bound to one primal value, the index
    * can simply be copied.
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
@@ -35,7 +35,7 @@ namespace codi {
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      static bool constexpr CopyNeedsStatement = false;  ///< Assign optimization is implemented.
+      static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization is implemented.
       static bool constexpr IsLinear = true;             ///< Tightly coupled to statements.
 
       /// @}

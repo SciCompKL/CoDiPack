@@ -26,9 +26,9 @@ namespace codi {
    * assignUnusedIndex() provides identifiers that have not been used after the last reset. These identifiers can be
    * used for input values of the program because the adjoint will not be overwritten by intermediate variables.
    *
-   * CopyNeedsStatement is a static check if the index manager implements an assign optimization, that is, if it creates
+   * CopyNeedsStatement is a static check if the index manager implements a copy optimization, that is, if it creates
    * a new identifier for the left hand side or copies the right hand side identifier instead. Not all index management
-   * approaches admit an assign optimization.
+   * approaches admit a copy optimization.
    *
    * IsLinear indicates whether the indices are coupled to the statements of a program. The tape needs to be managed
    * accordingly.
@@ -54,7 +54,7 @@ namespace codi {
       /// @name Identifier handling
 
       static bool constexpr CopyNeedsStatement =
-          CODI_UNDEFINED_VALUE;  ///< True if no assign optimization is implemented. See IndexManagerInterface.
+          CODI_UNDEFINED_VALUE;  ///< True if no copy optimization is implemented. See IndexManagerInterface.
       static bool constexpr IsLinear =
           CODI_UNDEFINED_VALUE;  ///< True if identifiers are coupled to the statements. See IndexManagerInterface.
 
