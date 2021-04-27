@@ -60,6 +60,7 @@ namespace codi {
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
+
       }
       using ExpressionInterface<Real, Impl>::cast;
 

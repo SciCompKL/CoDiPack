@@ -20,14 +20,13 @@ where \f$\dot y\f$ represents the directional derivative. This equation describe
 describe how it is done. (The matrix \f$df/dx\f$ is not setup directly.)
 
 The _how_ can be explained by looking at the program evaluation on the CPU. During the compilation process and
-evaluation, the program is broken down in so called elemental operations \f$\phi_i : \R^{n_i} \rightarrow \R \f$. Usually
-these are the binary operations like \f$+\f$, \f$*\f$, etc. and unary functions like \f$sin\f$, \f$exp\f$, etc.. For all
-of these elemental operations, the derivative is known and the program can be seen as big concatenated evaluation of
-these elemental operations. By applying the chain rule and the directional derivative to the chain of elemental
-operations the forward mode AD theory is established. The result is, that alongside each elemental operation \f$\phi_i\f$
-the forward AD equation
-\f[ \dot w = \frac{d\phi_i}{du} \dot u \f]
-needs to be evaluated.
+evaluation, the program is broken down in so called elemental operations \f$\phi_i : \R^{n_i} \rightarrow \R \f$,
+\f$ w = \phi_i(u) \f$. Usually these are the binary operations like \f$+\f$, \f$*\f$, etc. and unary functions like
+\f$sin\f$, \f$exp\f$, etc.. For all of these elemental operations, the derivative is known and the program can be seen
+as big concatenated evaluation of these elemental operations. By applying the chain rule and the directional derivative
+to the chain of elementaloperations the forward mode AD theory is established. The result is, that alongside each
+elemental operation \f$\phi_i\f$ the forward AD equation \f[ \dot w = \frac{d\phi_i}{du} \dot u \f] needs to be
+evaluated.
 
 The computation is done such that for each primal variable (e.g. \f$w\f$) a tangent variable (e.g. \f$\dot w\f$) is also
 allocated. The user can then set the seeding of the tangent variables before the program is run. During the program

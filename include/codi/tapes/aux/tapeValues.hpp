@@ -12,13 +12,14 @@
 namespace codi {
 
   /**
-   * @brief Tape information the can be printed in a pretty print format or a table format.
+   * @brief Tape information that can be printed in a pretty print format or a table format.
    *
    * This structure is generated for tapes with the ReverseTapeInterface::getTapeValues() function. The tape provides
    * the information for all internal data structures and the user can then output this information for further
-   * analysis. Usually the data for all DataInterface members, arrays and IndexManagerInterface members is provided.
+   * analysis. To make the output as useful as possible, tapes should provide information about all DataInterface
+   * members, arrays, and IndexManagerInterface members.
    *
-   * - Add data functions:
+   * - Functions for adding data:
    *   - addDoubleEntry(): Add a double entry. If this a memory entry, it can be added automatically to the global
    *                       counters. Memory is computed in MB.
    *   - addLongEntry(): Add a long entry.
@@ -27,7 +28,7 @@ namespace codi {
    *
    * - Format data:
    *   - formatDefault(): Default human readable format. One row per entry.
-   *   - formatHeader(): Output the header for the table data.
+   *   - formatHeader(): Output the header for the table output.
    *   - formatRow(): Output the data in this object in one row. One column per entry.
    *
    * - Misc:
@@ -88,7 +89,7 @@ namespace codi {
       /// @name Add data
       /// @{
 
-      /// Add double entry. If it is a memory entry it should be in byte.
+      /// Add double entry. If it is a memory entry, it should be in bytes.
       void addDoubleEntry(std::string const& name, double const& value, bool usedMem = false,
                           bool allocatedMem = false) {
         addEntryInternal(name, EntryType::Double, doubleData, value);
@@ -122,7 +123,7 @@ namespace codi {
       /// @name Format data
       /// @{
 
-      /// Out in a human readable format. One row per entry.
+      /// Output in a human readable format. One row per entry.
       template<typename Stream = std::ostream>
       void formatDefault(Stream& out = std::cout) const {
         std::string const hLine = "-------------------------------------\n";
@@ -189,7 +190,7 @@ namespace codi {
       /// @name Misc.
       /// @{
 
-      /// Perform a MPI_Allreduce with MPI_COMM_WORLD.
+      /// Perform an MPI_Allreduce with MPI_COMM_WORLD.
       void combineData() {
 #ifdef MPI_VERSION
         MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
@@ -199,12 +200,12 @@ namespace codi {
 #endif
       }
 
-      /// Get the allocated memory in byte.
+      /// Get the allocated memory in bytes.
       double getAllocatedMemorySize() {
         return doubleData[allocatedMemoryIndex];
       }
 
-      /// Get the used memory in byte.
+      /// Get the used memory in bytes.
       double getUsedMemorySize() {
         return doubleData[usedMemoryIndex];
       }
