@@ -58,7 +58,7 @@ namespace codi {
 
         double memoryindexUseVector = (double)indexUse.size() * (double)(sizeof(Index));
 
-        values.addDoubleEntry("Memory index use vector", memoryindexUseVector, true, true);
+        values.addDoubleEntry("Memory: index use vector", memoryindexUseVector, true, true);
       }
 
       /// \copydoc ReuseIndexManager::assignIndex
