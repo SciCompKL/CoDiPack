@@ -43,16 +43,16 @@ namespace codi {
       /// @name DataInterface: Type declaration
       /// @{
 
-      using Position = Index;            ///< The current maximum index.
-      using NestedData = void;           ///< Terminator.
-      using InternalPosHandle = size_t;  ///< The current maximum index.
+      using Position = Index;            ///< Positions coincide with indices.
+      using NestedData = void;           ///< Terminator, no further nested data.
+      using InternalPosHandle = size_t;  ///< Internal positions coincide with positions.
 
       /// @}
 
     private:
 
-      Index zeroState;
-      Index count;
+      Index zeroState; ///< The smallest index that can be assigned to active AD variables.
+      Index count; ///< The current maximum index.
 
     public:
 
@@ -120,6 +120,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::getPosition
+      /// The current position coincides with the largest created index.
       CODI_INLINE Position getPosition() const {
         return count;
       }
@@ -130,6 +131,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::getZeroPosition
+      /// The zero position coincides with the smallest index that may be assigned to active AD variables.
       CODI_INLINE Position getZeroPosition() const {
         return zeroState;
       }
