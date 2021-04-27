@@ -102,7 +102,7 @@ namespace codi {
       CODI_INLINE bool assignIndex(Index& index) {
         bool generatedNewIndex = false;
 
-        if (Base::UnusedIndex == index) {
+        if (Base::InactiveIndex == index) {
           if (0 == usedIndicesPos) {
             if (0 == unusedIndicesPos) {
               generateNewIndices();
@@ -138,7 +138,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::copyIndex
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
-        if (Base::UnusedIndex == rhs) {
+        if (Base::InactiveIndex == rhs) {
           freeIndex(lhs);
         } else {
           assignIndex(lhs);
@@ -147,7 +147,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
-        if (valid && Base::UnusedIndex != index) {  // do not free the zero index
+        if (valid && Base::InactiveIndex != index) {  // do not free the zero index
 
           if (usedIndicesPos == usedIndices.size()) {
             increaseIndicesSize(usedIndices);
@@ -156,7 +156,7 @@ namespace codi {
           usedIndices[usedIndicesPos] = index;
           usedIndicesPos += 1;
 
-          index = Base::UnusedIndex;
+          index = Base::InactiveIndex;
         }
       }
 

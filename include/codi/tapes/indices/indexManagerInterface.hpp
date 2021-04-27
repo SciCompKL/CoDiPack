@@ -46,7 +46,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Global constants
 
-      static Index constexpr UnusedIndex = 0;  ///< Default inactive index for all index managers.
+      static Index constexpr InactiveIndex = 0;  ///< Default inactive index for all index managers.
       static Index constexpr InvalidIndex =
           -1;  ///< Default invalid index for all index mangers (max value for unsigned types).
 

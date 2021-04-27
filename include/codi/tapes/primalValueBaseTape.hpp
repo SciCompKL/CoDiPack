@@ -242,7 +242,7 @@ namespace codi {
       CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        identifier = IndexManager::UnusedIndex;
+        identifier = IndexManager::InactiveIndex;
       }
 
       /// \copydoc codi::InternalStatementRecordingInterface::destroyIdentifier()
@@ -264,7 +264,7 @@ namespace codi {
           /// \copydoc codi::ForEachTermLogic::handleActive
           template<typename Node>
           CODI_INLINE void handleActive(Node const& node, size_t& numberOfActiveArguments) {
-            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::UnusedIndex != node.getIdentifier())) {
+            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::InactiveIndex != node.getIdentifier())) {
               numberOfActiveArguments += 1;
             }
           }
@@ -282,7 +282,7 @@ namespace codi {
             CODI_UNUSED(constantValueData);
 
             Identifier rhsIndex = node.getIdentifier();
-            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::UnusedIndex == rhsIndex)) {
+            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::InactiveIndex == rhsIndex)) {
               rhsIndex = curPassiveArgument;
 
               curPassiveArgument += 1;

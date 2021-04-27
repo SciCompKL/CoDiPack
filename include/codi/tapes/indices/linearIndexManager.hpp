@@ -72,7 +72,7 @@ namespace codi {
       /// \copydoc IndexManagerInterface::freeIndex <br><br>
       /// Implementation: Freed indices are ignored.
       CODI_INLINE void freeIndex(Index& index) const {
-        index = Base::UnusedIndex;
+        index = Base::InactiveIndex;
       }
 
       /// \copydoc IndexManagerInterface::assignIndex

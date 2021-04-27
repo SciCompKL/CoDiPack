@@ -199,7 +199,7 @@ namespace codi {
       CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        identifier = IndexManager::UnusedIndex;
+        identifier = IndexManager::InactiveIndex;
       }
 
       /// \copydoc codi::InternalStatementRecordingInterface::destroyIdentifier()
