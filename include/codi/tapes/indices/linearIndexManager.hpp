@@ -66,7 +66,7 @@ namespace codi {
       /// \copydoc IndexManagerInterface::addToTapeValues <br><br>
       /// Implementation: Adds maximum live indices.
       void addToTapeValues(TapeValues& values) const {
-        values.addLongEntry("Max. live indices", getLargestAssignedIndex());
+        values.addLongEntry("Max. live indices", getLargestCreatedIndex());
       }
 
       /// \copydoc IndexManagerInterface::freeIndex <br><br>
@@ -95,8 +95,11 @@ namespace codi {
         lhs = rhs;
       }
 
-      /// \copydoc IndexManagerInterface::getLargestAssignedIndex
-      CODI_INLINE Index getLargestAssignedIndex() const {
+      /// \copydoc IndexManagerInterface::getLargestCreatedIndex
+      /// The following properties are specific to the LinearIndexManager:
+      /// 1. tape resets reset the largest created index to zero,
+      /// 2. the largest created index coincides with the largest assigned index.
+      CODI_INLINE Index getLargestCreatedIndex() const {
         return count;
       }
 

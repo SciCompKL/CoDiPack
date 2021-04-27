@@ -160,8 +160,11 @@ namespace codi {
         }
       }
 
-      /// \copydoc IndexManagerInterface::getLargestAssignedIndex
-      CODI_INLINE Index getLargestAssignedIndex() const {
+      /// \copydoc IndexManagerInterface::getLargestCreatedIndex
+      /// The following properties are specific to the ReuseIndexManager and inherited by the MultiUseIndexManager:
+      /// 1. tape resets do not change the largest created index,
+      /// 2. it is not guaranteed that the largest created index has been assigned to a variable already.
+      CODI_INLINE Index getLargestCreatedIndex() const {
         return globalMaximumIndex;
       }
 

@@ -137,7 +137,7 @@ namespace codi {
     private:
 
       CODI_NO_INLINE void resizeUseVector() {
-        indexUse.resize(this->getLargestAssignedIndex() + 1);
+        indexUse.resize(this->getLargestCreatedIndex() + 1);
       }
   };
 }
