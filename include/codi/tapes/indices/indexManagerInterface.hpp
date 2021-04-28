@@ -76,6 +76,11 @@ namespace codi {
        */
       void addToTapeValues(TapeValues& values) const;
 
-      Index getLargestCreatedIndex() const;  ///< Returns the largest created index.
+      /**
+       * @brief Returns the largest created index.
+       *
+       * This is the largest entry in the adjoint vectors from the tapes.
+       */
+      Index getLargestCreatedIndex() const;
   };
 }

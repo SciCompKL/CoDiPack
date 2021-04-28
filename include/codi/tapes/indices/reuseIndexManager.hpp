@@ -60,7 +60,7 @@ namespace codi {
 
       /// Constructor
       ReuseIndexManager(Index const& reservedIndices)
-          : globalMaximumIndex(reservedIndices + 1),
+          : globalMaximumIndex(reservedIndices),
             usedIndices(),
             usedIndicesPos(0),
             unusedIndices(),
@@ -215,7 +215,7 @@ namespace codi {
         codiAssert(unusedIndices.size() >= indexSizeIncrement);
 
         for (size_t pos = 0; pos < indexSizeIncrement; ++pos) {
-          unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + Index(pos);
+          unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + Index(pos) + 1;
         }
 
         unusedIndicesPos = indexSizeIncrement;
