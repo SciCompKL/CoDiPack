@@ -76,11 +76,6 @@ namespace codi {
        */
       void addToTapeValues(TapeValues& values) const;
 
-      /**
-       * @brief Returns the largest created index.
-       *
-       * Some properties of the largest created index are implementation dependent.
-       */
-      Index getLargestCreatedIndex() const;
+      Index getLargestCreatedIndex() const;  ///< Returns the largest created index.
   };
 }

@@ -51,8 +51,8 @@ namespace codi {
 
     private:
 
-      Index zeroState; ///< The smallest index that can be assigned to active AD variables.
-      Index count; ///< The current maximum index.
+      Index zeroState;  ///< The smallest index that can be assigned to active AD variables.
+      Index count;      ///< The current maximum index.
 
     public:
 
