@@ -51,7 +51,7 @@ namespace codi {
 
     private:
 
-      Index reservedIndices;  ///< The largest index that is reserved and can not be assigned to active AD variables.
+      Index reservedIndices;  ///< The largest index that is reserved and cannot be assigned to active AD variables.
       Index count;            ///< The current maximum index.
 
     public:
