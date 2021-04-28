@@ -43,7 +43,7 @@ namespace codi {
     public:
 
       /// Constructor
-      MultiUseIndexManager(Index const& reserveIndices) : Base(reserveIndices), indexUse(Config::SmallChunkSize) {
+      MultiUseIndexManager(Index const& reservedIndices) : Base(reservedIndices), indexUse(Config::SmallChunkSize) {
         resizeUseVector();
       }
 

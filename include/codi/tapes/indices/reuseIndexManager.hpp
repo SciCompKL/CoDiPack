@@ -59,8 +59,8 @@ namespace codi {
     public:
 
       /// Constructor
-      ReuseIndexManager(Index const& reserveIndices)
-          : globalMaximumIndex(reserveIndices + 1),
+      ReuseIndexManager(Index const& reservedIndices)
+          : globalMaximumIndex(reservedIndices + 1),
             usedIndices(),
             usedIndicesPos(0),
             unusedIndices(),

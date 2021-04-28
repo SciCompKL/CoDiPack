@@ -51,13 +51,13 @@ namespace codi {
 
     private:
 
-      Index zeroState;  ///< The smallest index that can be assigned to active AD variables.
-      Index count;      ///< The current maximum index.
+      Index reservedIndices;  ///< The largest index that is reserved and can not be assigned to active AD variables.
+      Index count;            ///< The current maximum index.
 
     public:
 
       /// Constructor
-      LinearIndexManager(Index zeroState) : zeroState(zeroState), count(zeroState) {}
+      LinearIndexManager(Index reservedIndices) : reservedIndices(reservedIndices), count(reservedIndices) {}
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Methods
@@ -133,7 +133,7 @@ namespace codi {
       /// \copydoc DataInterface::getZeroPosition
       /// The zero position coincides with the smallest index that may be assigned to active AD variables.
       CODI_INLINE Position getZeroPosition() const {
-        return zeroState;
+        return reservedIndices;
       }
 
       /// \copydoc DataInterface::pushData
@@ -153,19 +153,19 @@ namespace codi {
 
       /// \copydoc DataInterface::resetTo
       CODI_INLINE void resetTo(Position const& pos) {
-        codiAssert(pos >= zeroState);
+        codiAssert(pos >= reservedIndices);
 
         count = pos;
       }
 
       /// \copydoc DataInterface::reset
       CODI_INLINE void reset() {
-        count = zeroState;
+        count = reservedIndices;
       }
 
       /// \copydoc DataInterface::resetHard
       CODI_INLINE void resetHard() {
-        count = zeroState;
+        count = reservedIndices;
       }
 
       /// \copydoc DataInterface::setNested
@@ -175,7 +175,7 @@ namespace codi {
 
       /// \copydoc DataInterface::swap
       void swap(LinearIndexManager<Index>& other) {
-        std::swap(zeroState, other.zeroState);
+        std::swap(reservedIndices, other.reservedIndices);
         std::swap(count, other.count);
       }
 
