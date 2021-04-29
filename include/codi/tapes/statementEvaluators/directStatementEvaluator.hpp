@@ -48,6 +48,9 @@ namespace codi {
   /**
    * @brief Full evaluation of the expression in the function handle. Storing in static context.
    *
+   * Data loading and evaluation of the expression are all done in the handle. This evaluator will directly evaluate the
+   * full handle for the expression.
+   *
    * See StatementEvaluatorInterface for details.
    *
    * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.

@@ -56,6 +56,10 @@ namespace codi {
    * @brief Expression evaluation in the inner function. Data loading in the compilation context of the tape.
    * Storing in static context.
    *
+   * Data loading is performed in the compilation context of the tape. The tape will then call the handle for the
+   * evaluation of the expression after the data is loaded. This evaluator stores expression specific data and the
+   * inner function handles.
+   *
    * See StatementEvaluatorInterface for details.
    *
    * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
