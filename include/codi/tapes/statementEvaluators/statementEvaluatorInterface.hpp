@@ -10,10 +10,20 @@ namespace codi {
    * @brief Creation of handles for the evaluation of expressions in a context where the expression type is not
    * available.
    *
+   * For primal value taping the expression templates creates a problem. The expression type and value is generated in
+   * the code where the statement is evaluated. The type and value of the expression is required again to evaluate
+   * the reverse or forward mode of the elemental function described by the expression (see
+   * \ref AD_TheoryMathematicalDefinitions). The problem is, that types can not be stored in C++. Also the value of the
+   * expression is context specific and this context is also not available during the tape interpretation. The
+   * generation of handles solves this problem by providing the tape with functions for the evaluation of the
+   * expressions. Since these functions can be instantiated with the type of the expression, inside of the handles, the
+   * expression type is available again. For more details on the topic please see \ref SAG2018Expression.
+   *
    * The creation of the handles is tightly coupled with the implementing tape. The tape defines how the data for the
    * expression is loaded and which functions are evaluated on the expression in order to perform the necessary
-   * operations for the tape. However, how the handles are generated, how the data for the handles is stored and how
-   * they are evaluated is neither tape specific nor is one way optimal for every use case.
+   * operations for the tape. However, how the handles are generated, how the data for the handles is stored (e.g. which
+   * kinds of function pointers) and how they are evaluated is neither tape specific nor is one way optimal for every
+   * use case.
    *
    * The process of evaluating a handle can be separated into multiple steps:
    * - 1. Load statement specific data
@@ -31,9 +41,27 @@ namespace codi {
    * The first approach (handle call between step 1 and 2) is defined by the StatementEvaluatorTapeInterface.
    * The second approach (handle call between step 2 and 3) is defined by the StatementEvaluatorInnerTapeInterface.
    *
+   * In general the tape implements the interfaces mentioned above, but e.g. for the preaccumulation support the handle
+   * creation needs a different generator. For these cases `createHandle` has two template arguments. One for the Tape
+   * and one for the generator.
+   *
    * In general, implementations of this interface need to store functions pointers to the `statementEvaluate*`
    * functions of the StatementEvaluatorTapeInterface or function pointers to the `statementEvaluate*Inner` of the
    * StatementEvaluatorInnerTapeInterface.
+   *
+   * A usual call flow for the first approach is (see also the code for ReverseStatementEvaluator):
+   * \code{.cpp}
+   *   // During recording in tape.store
+   *   // Instantiates e.g Tape::statementEvaluateReverse<Expr>
+   *   auto handle = StatementEvaluatorInterface::createHandle<Tape, Tape, Expr>();
+   *   tapeData.pushHandle(handle);
+   *
+   *   // During reverse interpretation of the tape
+   *   auto handle = tapeData.popHandle(handle);
+   *
+   *   // This calls Tape::statementEvaluateReverse<Expr>(tapeData);
+   *   StatementEvaluatorInterface::callReverse(handle, tapeData);
+   * \endcode
    *
    * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
@@ -65,7 +93,7 @@ namespace codi {
 
       /// @tparam Tape       Usually not required. Access tape specific configurations.
       /// @tparam Generator  Has to implement the StatementEvaluatorTapeInterface or
-      /// StatementEvaluatorInnerTapeInterface.
+      ///                    StatementEvaluatorInnerTapeInterface. Usually, the same as Tape.
       /// @tparam Expr       Instance of ExpressionInterface.
       template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle();
