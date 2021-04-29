@@ -33,11 +33,14 @@ namespace codi {
             maxConstantArguments(maxConstantArguments) {}
   };
 
-  /// Store InnerPrimalTapeStatementData as static variables.
+  /// Store InnerPrimalTapeStatementData as static variables for each combination of generator (tape) and expression
+  /// used in the program.
   template<typename Tape, typename Expr>
   struct InnerStatementEvaluatorStaticStore {
     public:
 
+      /// Static storage. Static construction is done by instantiating the statementEvaluate*Inner functions with Expr
+      /// of the generator. Also evaluates the number of active type arguments and constant type arguments.
       static InnerPrimalTapeStatementData const staticStore;  ///< Static storage.
   };
 

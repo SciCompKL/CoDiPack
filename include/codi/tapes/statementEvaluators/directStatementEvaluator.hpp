@@ -28,12 +28,15 @@ namespace codi {
           : forward(forward), primal(primal), reverse(reverse) {}
   };
 
-  /// Store PrimalTapeStatementFunctions as static variables.
+  /// Store PrimalTapeStatementFunctions as static variables for each combination of generator (tape) and expression
+  /// used in the program.
   template<typename Generator, typename Expr>
   struct DirectStatementEvaluatorStaticStore {
     public:
 
-      static PrimalTapeStatementFunctions const staticStore;  ///< Static storage.
+      /// Static storage. Static construction is done by instantiating the statementEvaluate* functions with Expr of the
+      /// generator.
+      static PrimalTapeStatementFunctions const staticStore;
   };
 
   template<typename Generator, typename Expr>
