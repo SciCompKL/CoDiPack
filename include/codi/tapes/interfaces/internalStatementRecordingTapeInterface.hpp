@@ -28,10 +28,10 @@ namespace codi {
    * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
    */
   template<typename _Identifier>
-  struct InternalStatementRecordingInterface {
+  struct InternalStatementRecordingTapeInterface {
     public:
 
-      using Identifier = CODI_DD(_Identifier, int);  ///< See InternalStatementRecordingInterface.
+      using Identifier = CODI_DD(_Identifier, int);  ///< See InternalStatementRecordingTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

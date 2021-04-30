@@ -29,7 +29,7 @@ namespace codi {
 
       /// See ActiveType.
       /// For reverse AD the tape needs to implement the ReverseTapeInterface
-      /// For forward AD the 'tape' needs to implement the InternalStatementRecordingInterface and
+      /// For forward AD the 'tape' needs to implement the InternalStatementRecordingTapeInterface and
       /// GradientAccessTapeInterface
       using Tape = CODI_DD(_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 

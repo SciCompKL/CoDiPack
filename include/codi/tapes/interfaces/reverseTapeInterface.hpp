@@ -10,7 +10,7 @@
 #include "../../traits/realTraits.hpp"
 #include "../aux/tapeValues.hpp"
 #include "gradientAccessTapeInterface.hpp"
-#include "internalStatementRecordingInterface.hpp"
+#include "internalStatementRecordingTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -37,7 +37,7 @@ namespace codi {
    * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
    */
   template<typename _Real, typename _Gradient, typename _Identifier>
-  struct ReverseTapeInterface : public virtual InternalStatementRecordingInterface<_Identifier>,
+  struct ReverseTapeInterface : public virtual InternalStatementRecordingTapeInterface<_Identifier>,
                                 public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
     public:
       using Real = CODI_DD(_Real, double);           ///< See ReverseTapeInterface.
