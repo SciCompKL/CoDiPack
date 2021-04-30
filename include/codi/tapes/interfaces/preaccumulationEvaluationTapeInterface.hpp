@@ -44,11 +44,11 @@ namespace codi {
       /// @name Interface definition
 
       /// Perform a tape evaluation but restore the state afterwards such that it is the same as when the evaluation
-      /// started.
+      /// started. It hast to hold start >= end.
       void evaluateKeepState(Position const& start, Position const& end);
 
       /// Perform a tape evaluation but restore the state afterwards such that it is the same as when the evaluation
-      /// started.
+      /// started. It hast to hold start <= end.
       void evaluateForwardKeepState(Position const& start, Position const& end);
   };
 }

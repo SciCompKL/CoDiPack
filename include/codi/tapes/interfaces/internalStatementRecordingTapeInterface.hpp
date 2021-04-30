@@ -47,7 +47,7 @@ namespace codi {
                                                                     ///< it is deallocated.
 
       /**
-       * @brief Has to called by an AD variable every time it is assigned.
+       * @brief Has to be called by an AD variable every time it is assigned.
        *
        * Update of the value is performed by the tape. The tape will additionally store information, e.g., for the
        * reversal of the statement.
