@@ -34,8 +34,8 @@ namespace codi {
   struct DirectStatementEvaluatorStaticStore {
     public:
 
-      /// Static storage. Static construction is done by instantiating the statementEvaluate* functions with Expr of the
-      /// generator.
+      /// Static storage. Static construction is done by instantiating the statementEvaluate* functions of the generator
+      /// with Expr.
       static PrimalTapeStatementFunctions const staticStore;
   };
 

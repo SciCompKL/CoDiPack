@@ -39,8 +39,8 @@ namespace codi {
   struct InnerStatementEvaluatorStaticStore {
     public:
 
-      /// Static storage. Static construction is done by instantiating the statementEvaluate*Inner functions with Expr
-      /// of the generator. Also evaluates the number of active type arguments and constant type arguments.
+      /// Static storage. Static construction is done by instantiating the statementEvaluate*Inner functions of the
+      /// generator with Expr. Also evaluates the number of active type arguments and constant type arguments.
       static InnerPrimalTapeStatementData const staticStore;  ///< Static storage.
   };
 
