@@ -38,7 +38,7 @@ namespace codi {
 
     private:
 
-      std::vector<Index> indexUse;
+      std::vector<Index> indexUse; ///< Reference counting for each index.
 
     public:
 
