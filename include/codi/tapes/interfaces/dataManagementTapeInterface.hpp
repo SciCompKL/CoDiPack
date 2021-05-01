@@ -15,11 +15,11 @@ namespace codi {
    *
    * \section fileIO File IO functions
    * This interface offers advanced data management capabilities for the tape. The file IO routines provide
-   * the capability to write the internal tape data to the disk. Management data is usually not written and also
-   * external function data is not written by the tape. With a call to deleteData() all internal data that is written by
-   * writeToFile() is freed so that the tape will require only a minimal amount of RAM. The same tape needs to call
-   * readFromFile() on the file written by writeToFile(). Since the management data is not written it would otherwise
-   * be impossible to read the file.
+   * the capability to write the internal tape data to the disk. The goal of this is moving the tape temporarily from
+   * RAM to disk. After writing the tape with writeToFile(), a call to deleteData() ensures that all internal data that
+   * was written to disk is freed so that the RAM footprint is minimized. Usually, neither management data nor external
+   * function data are exported. This means that the same tape that called writeToFile() has to call readFromFile() and
+   * that offloaded tapes are not meaningful across multiple executions of the application.
    *
    * \section parameters Parameters functions
    * The parameter functions provide access to the sizes of the internal tape implementations. For most of the
