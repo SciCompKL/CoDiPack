@@ -18,7 +18,7 @@ namespace codi {
    * External functions allow the user to evaluate custom operations during a tape evaluation. Each external function
    * has pointers for the reverse, forward and primal evaluation of a tape. A function pointer may be null if the
    * corresponding mode is not called on the tape. Otherwise, if the corresponding pointer is null and the
-   * correspoinding mode is called on the tape, then a CODI_EXCEPTION is thrown.
+   * corresponding mode is called on the tape, then a CODI_EXCEPTION is thrown.
    *
    * What kind of operations are evaluated in the external function is up to the user. They are usually used to define
    * derivative computations for libraries that cannot be differentiated with operator overloading.
