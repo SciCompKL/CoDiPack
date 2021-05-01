@@ -49,16 +49,15 @@ namespace codi {
       /// Push a Jacobian entry to the tape. storeManual() has to be called first and is passed the number of arguments.
       /// Afterwards, this method has to be called once for each argument.
       ///
-      /// @param jacobi  Jacobian \f$ \frac{\d \phi}{\d u_i} \f$ of the argument \f$ u_i \f$
-      /// @param value   Value of the argument \f$ u_i \f$. Usually `u_i.value()`
-      /// @param index   Identifier of the argument \f$ u_i \f$. Usually `u_i.identifier()`
+      /// @param jacobi  Jacobian \f$ \frac{\d \phi}{\d u_i} \f$ of the argument \f$ u_i \f$.
+      /// @param value   Value of the argument \f$ u_i \f$. Usually `u_i.value()`.
+      /// @param index   Identifier of the argument \f$ u_i \f$. Usually `u_i.identifier()`.
       void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index);
 
       /// Initialize the storing of a hand computed statement. The primal value has to be updated already.
-      /// @param lhsValue   Value of the result \f$ w \f$. Usually `w.value()`
-      /// @param lhsIndex   Identifier of the result \f$ w \f$. Usually `w.identifier()`
-      /// @param size       Number of arguments of \f$ \phi \f$
-
+      /// @param lhsValue   Value of the result \f$ w \f$. Usually `w.value()`.
+      /// @param lhsIndex   Identifier of the result \f$ w \f$. Usually `w.identifier()`.
+      /// @param size       Number of arguments of \f$ \phi \f$.
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size);
   };
 }
