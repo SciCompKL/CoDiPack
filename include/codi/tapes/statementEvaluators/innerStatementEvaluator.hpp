@@ -19,7 +19,7 @@ namespace codi {
   struct InnerPrimalTapeStatementData : public PrimalTapeStatementFunctions {
     public:
 
-      using Base = PrimalTapeStatementFunctions;  ///< Base class abbreviation
+      using Base = PrimalTapeStatementFunctions;  ///< Base class abbreviation.
 
       size_t maxActiveArguments;    ///< Maximum number of active arguments.
       size_t maxConstantArguments;  ///< Maximum number of constant arguments.
@@ -33,11 +33,14 @@ namespace codi {
             maxConstantArguments(maxConstantArguments) {}
   };
 
-  /// Store InnerPrimalTapeStatementData as static variables.
+  /// Store InnerPrimalTapeStatementData as static variables for each combination of generator (tape) and expression
+  /// used in the program.
   template<typename Tape, typename Expr>
   struct InnerStatementEvaluatorStaticStore {
     public:
 
+      /// Static storage. Static construction is done by instantiating the statementEvaluate*Inner functions of the
+      /// generator with Expr. Also evaluates the number of active type arguments and constant type arguments.
       static InnerPrimalTapeStatementData const staticStore;  ///< Static storage.
   };
 
@@ -53,15 +56,19 @@ namespace codi {
    * @brief Expression evaluation in the inner function. Data loading in the compilation context of the tape.
    * Storing in static context.
    *
+   * Data loading is performed in the compilation context of the tape. The tape will then call the handle for the
+   * evaluation of the expression after the data is loaded. This evaluator stores expression specific data and the
+   * inner function handles.
+   *
    * See StatementEvaluatorInterface for details.
    *
-   * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
+   * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
   template<typename _Real>
   struct InnerStatementEvaluator : public StatementEvaluatorInterface<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See InnerStatementEvaluator
+      using Real = CODI_DD(_Real, double);  ///< See InnerStatementEvaluator.
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation
