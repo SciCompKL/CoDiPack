@@ -30,6 +30,9 @@ namespace codi {
    * getParameter() and setParameter() will throw a CODI_EXCEPTION if the parameter is not defined for the tape. Which
    * parameters are defined can either be checked with hasParameter() or looked up in the list returned by
    * getAvailableParameters().
+   *
+   * \section misc Misc. functions
+   * Some other functions for tape data management. Please see the function documentation.
    */
   struct DataManagementTapeInterface {
     public:
