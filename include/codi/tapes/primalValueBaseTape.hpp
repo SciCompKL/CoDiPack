@@ -123,7 +123,7 @@ namespace codi {
       using NestedPosition = typename ConstantValueData::Position;  ///< See PrimalValueTapeTypes
       using Position = typename Base::Position;                     ///< See TapeTypesInterface.
 
-      static bool constexpr AllowJacobianOptimization = false;  ///< See InternalStatementRecordingInterface.
+      static bool constexpr AllowJacobianOptimization = false;  ///< See InternalStatementRecordingTapeInterface.
       static bool constexpr HasPrimalValues = true;             ///< See PrimalEvaluationTapeInterface
       static bool constexpr LinearIndexHandling =
           TapeTypes::IsLinearIndexHandler;  ///< See IdentifierInformationTapeInterface
@@ -234,10 +234,10 @@ namespace codi {
 
       /// @}
       /*******************************************************************************/
-      /// @name Functions from InternalStatementRecordingInterface
+      /// @name Functions from InternalStatementRecordingTapeInterface
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingInterface::initIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::initIdentifier()
       template<typename Real>
       CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
@@ -245,7 +245,7 @@ namespace codi {
         identifier = IndexManager::InactiveIndex;
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::destroyIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyIdentifier()
       template<typename Real>
       CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
@@ -307,7 +307,7 @@ namespace codi {
 
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                              ExpressionInterface<Real, Rhs> const& rhs) {
@@ -350,7 +350,7 @@ namespace codi {
         lhs.cast().value() = rhs.cast().getValue();
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Optimization for copy statements.
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
@@ -368,7 +368,7 @@ namespace codi {
         lhs.cast().value() = rhs.cast().getValue();
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, PassiveReal const& rhs) {

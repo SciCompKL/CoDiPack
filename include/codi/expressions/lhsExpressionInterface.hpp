@@ -5,7 +5,7 @@
 #include "../aux/macros.hpp"
 #include "../config.h"
 #include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
-#include "../tapes/interfaces/internalStatementRecordingInterface.hpp"
+#include "../tapes/interfaces/internalStatementRecordingTapeInterface.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
 #include "expressionInterface.hpp"
@@ -32,7 +32,7 @@ namespace codi {
       using Real = CODI_DD(_Real, double);        ///< See LhsExpressionInterface
       using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface
       using Tape =
-          CODI_DD(_Tape, CODI_T(CODI_UNION<InternalStatementRecordingInterface<int>,
+          CODI_DD(_Tape, CODI_T(CODI_UNION<InternalStatementRecordingTapeInterface<int>,
                                            GradientAccessTapeInterface<double, int>>));  ///< See LhsExpressionInterface
       using Impl = CODI_DD(_Impl, LhsExpressionInterface);                               ///< See LhsExpressionInterface
 
@@ -93,20 +93,20 @@ namespace codi {
         cast().value() = v;
       }
 
-      /// Assignment operator for passive values. Calls store on the InternalStatementRecordingInterface.
+      /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
       CODI_INLINE Impl& operator=(PassiveReal const& rhs) {
         Impl::getGlobalTape().store(cast(), rhs);
         return cast();
       }
 
-      /// Assignment operator for expressions. Calls store on the InternalStatementRecordingInterface.
+      /// Assignment operator for expressions. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename Rhs>
       CODI_INLINE Impl& operator=(ExpressionInterface<Real, Rhs> const& rhs) {
         Impl::getGlobalTape().store(cast(), rhs.cast());
         return cast();
       }
 
-      /// Assignment operator for lhs expressions. Calls store on the InternalStatementRecordingInterface.
+      /// Assignment operator for lhs expressions. Calls store on the InternalStatementRecordingTapeInterface.
       CODI_INLINE Impl& operator=(LhsExpressionInterface const& rhs) {
         Impl::getGlobalTape().store(cast(), rhs);
         return cast();
@@ -162,7 +162,7 @@ namespace codi {
     public:
 
       using Type = CODI_DD(
-          _Type, CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingInterface<CODI_ANY>, _Type>));
+          _Type, CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingTapeInterface<CODI_ANY>, _Type>));
       using Real = typename Type::Real;
 
       using PassiveReal = RealTraits::PassiveReal<Real>;
