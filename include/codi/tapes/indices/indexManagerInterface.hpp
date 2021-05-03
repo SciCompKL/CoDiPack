@@ -79,7 +79,7 @@ namespace codi {
       /**
        * @brief Returns the largest created index.
        *
-       * This is the largest entry in the adjoint vectors from the tapes.
+       * This is the largest entry in the adjoint vectors by the tapes.
        */
       Index getLargestCreatedIndex() const;
   };

@@ -42,15 +42,15 @@ namespace codi {
 
     private:
 
-      Index globalMaximumIndex; ///< The largest created index.
+      Index globalMaximumIndex;  ///< The largest created index.
 
-      std::vector<Index> usedIndices; ///< Pool of indices that have already been used in this recording.
-      size_t usedIndicesPos; ///< Number of remaining used indices.
+      std::vector<Index> usedIndices;  ///< Pool of indices that have already been used in this recording.
+      size_t usedIndicesPos;           ///< Number of remaining used indices.
 
-      std::vector<Index> unusedIndices; ///< Pool of indices that have not been used in this recording yet.
-      size_t unusedIndicesPos; ///< Number of remaining unused indices.
+      std::vector<Index> unusedIndices;  ///< Pool of indices that have not been used in this recording yet.
+      size_t unusedIndicesPos;           ///< Number of remaining unused indices.
 
-      size_t indexSizeIncrement; ///< Block size for index pool enlargement.
+      size_t indexSizeIncrement;  ///< Block size for index pool enlargement.
 
     protected:
 
