@@ -199,7 +199,7 @@ namespace codi {
       CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        identifier = IndexManager::UnusedIndex;
+        identifier = IndexManager::InactiveIndex;
       }
 
       /// \copydoc codi::InternalStatementRecordingInterface::destroyIdentifier()
@@ -378,7 +378,7 @@ namespace codi {
         }
         TapeValues values = TapeValues(name);
 
-        size_t nAdjoints = indexManager.get().getLargestAssignedIndex();
+        size_t nAdjoints = indexManager.get().getLargestCreatedIndex();
         double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient));
 
         values.addSection("Adjoint vector");
@@ -512,7 +512,7 @@ namespace codi {
             return jacobianData.getDataSize();
             break;
           case TapeParameters::LargestIdentifier:
-            return indexManager.get().getLargestAssignedIndex();
+            return indexManager.get().getLargestCreatedIndex();
             break;
           case TapeParameters::StatementSize:
             return statementData.getDataSize();
@@ -565,7 +565,7 @@ namespace codi {
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
       void evaluateForward(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
 
         cast().evaluateForward(start, end, adjoints.data());
       }
@@ -602,7 +602,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::evaluate()
       CODI_INLINE void evaluate(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
 
         evaluate(start, end, adjoints.data());
       }
@@ -666,7 +666,7 @@ namespace codi {
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
-        adjoints.resize(indexManager.get().getLargestAssignedIndex() + 1);
+        adjoints.resize(indexManager.get().getLargestCreatedIndex() + 1);
       }
   };
 }
