@@ -19,11 +19,11 @@ namespace codi {
    * that the primal values stored in the tape are always up to date with the state of the program. Only through user
    * interaction this sync in states can be broken, but then the user should know what he is doing.
    *
-   * The primal evaluation is used to reevaluate the primal values stored in the tape at a different position. Note that
-   * this reevaluation follows the control flow that was observed during recording. The control flow statements
-   * themselves, e.g. if constructs or loops, are not treated by CoDiPack. The user cannot expect a reevaluation to
-   * choose different branches in if constructs or different numbers of loop iterations with respect to the code that
-   * was recorded.
+   * The primal evaluation is used to reevaluate the primal values stored in the tape for different values of the
+   * registered inputs. Note that this reevaluation follows the control flow that was observed during recording. The
+   * control flow statements themselves, e.g. if constructs or loops, are not treated by CoDiPack. The user cannot
+   * expect a reevaluation to choose different branches in if constructs or different numbers of loop iterations with
+   * respect to the code that was recorded.
    *
    * Here is an example for a primal reevaluation (documentation/examples/primalEvaluationTapeInterface.cpp):
    * \snippet examples/primalEvaluationTapeInterface.cpp Primal evaluation

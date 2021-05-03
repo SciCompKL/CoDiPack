@@ -23,9 +23,9 @@ namespace codi {
    *
    * \section parameters Parameters functions
    * The parameter functions provide access to the sizes of the internal tape implementations. For most of the
-   * parameters, they also allow the resizing of the underlying data. There are a few parameters that are read only and a
-   * CODI_EXCEPTION is thrown if the user tries to set them. See the documentation of the enumerators in #TapeParameters
-   * for details about each parameters.
+   * parameters, they also allow the resizing of the underlying data. There are a few parameters that are read only and
+   * a CODI_EXCEPTION is thrown if the user tries to set them. See the documentation of the enumerators in
+   * #TapeParameters for details about each parameters.
    *
    * getParameter() and setParameter() will throw a CODI_EXCEPTION if the parameter is not defined for the tape. Which
    * parameters are defined can either be checked with hasParameter() or looked up in the list returned by
