@@ -3,7 +3,7 @@
 #include "../../aux/macros.hpp"
 #include "../../config.h"
 #include "../../tapes/interfaces/gradientAccessTapeInterface.hpp"
-#include "../../tapes/interfaces/internalStatementRecordingInterface.hpp"
+#include "../../tapes/interfaces/internalStatementRecordingTapeInterface.hpp"
 #include "../../traits/realTraits.hpp"
 #include "../expressionInterface.hpp"
 
@@ -23,7 +23,7 @@ namespace codi {
     public:
 
       using Tape = CODI_DD(
-          _Tape, CODI_T(CODI_UNION<InternalStatementRecordingInterface<int>,
+          _Tape, CODI_T(CODI_UNION<InternalStatementRecordingTapeInterface<int>,
                                    GradientAccessTapeInterface<double, int>>));  ///< See StaticContextActiveType
 
       using Real = typename Tape::Real;              ///< See TapeTypesInterface.

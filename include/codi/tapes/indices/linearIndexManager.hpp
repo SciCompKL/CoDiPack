@@ -13,29 +13,29 @@ namespace codi {
   /**
    * @brief Identifiers are created in a linear fashion. Each assign creates a new index which is counted up.
    *
-   * A simple assign optimization is implemented here. Since each index is only bound to one primal value, the index
+   * A simple copy optimization is implemented here. Since each index is only bound to one primal value, the index
    * can simply be copied.
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
-   * Since this index manager is tightly coupled to the statements it also implements a simple data interface. It just
+   * Since this index manager is tightly coupled to the statements, it also implements a simple data interface. It just
    * provides the current maximum index as positional information and adds this positional information in the evaluate
    * routines.
    *
-   * @tparam _Index   Type for the identifier usually an integer type.
+   * @tparam _Index   Type for the identifier, usually an integer type.
    */
   template<typename _Index>
   struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
     public:
 
-      using Index = CODI_DD(_Index, int);         ///< See LinearIndexManager
-      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);         ///< See LinearIndexManager.
+      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization implemented
+      static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization is implemented.
       static bool constexpr IsLinear = true;             ///< Tightly coupled to statements.
 
       /// @}
@@ -43,21 +43,21 @@ namespace codi {
       /// @name DataInterface: Type declaration
       /// @{
 
-      using Position = Index;            ///< The current maximum index
-      using NestedData = void;           ///< Terminator
-      using InternalPosHandle = size_t;  ///< The current maximum index
+      using Position = Index;            ///< Positions coincide with indices.
+      using NestedData = void;           ///< Terminator, no further nested data.
+      using InternalPosHandle = size_t;  ///< Internal positions coincide with positions.
 
       /// @}
 
     private:
 
-      Index zeroState;
-      Index count;
+      Index reservedIndices;  ///< The largest index that is reserved and cannot be assigned to active AD variables.
+      Index count;            ///< The current maximum index.
 
     public:
 
       /// Constructor
-      LinearIndexManager(Index zeroState) : zeroState(zeroState), count(zeroState) {}
+      LinearIndexManager(Index reservedIndices) : reservedIndices(reservedIndices), count(reservedIndices) {}
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Methods
@@ -66,19 +66,19 @@ namespace codi {
       /// \copydoc IndexManagerInterface::addToTapeValues <br><br>
       /// Implementation: Adds maximum live indices.
       void addToTapeValues(TapeValues& values) const {
-        values.addLongEntry("Max. live indices", getLargestAssignedIndex());
+        values.addLongEntry("Max. live indices", getLargestCreatedIndex());
       }
 
       /// \copydoc IndexManagerInterface::freeIndex <br><br>
       /// Implementation: Freed indices are ignored.
       CODI_INLINE void freeIndex(Index& index) const {
-        index = Base::UnusedIndex;
+        index = Base::InactiveIndex;
       }
 
       /// \copydoc IndexManagerInterface::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
         if (CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1)) {
-          CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or an reuse index manager.");
+          CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or a reuse index manager.");
         }
         count += 1;
         index = count;
@@ -95,8 +95,11 @@ namespace codi {
         lhs = rhs;
       }
 
-      /// \copydoc IndexManagerInterface::getLargestAssignedIndex
-      CODI_INLINE Index getLargestAssignedIndex() const {
+      /// \copydoc IndexManagerInterface::getLargestCreatedIndex
+      /// The following properties are specific to the LinearIndexManager:
+      /// 1. tape resets reset the largest created index to zero,
+      /// 2. the largest created index coincides with the largest assigned index.
+      CODI_INLINE Index getLargestCreatedIndex() const {
         return count;
       }
 
@@ -108,7 +111,7 @@ namespace codi {
       /// \copydoc DataInterface::extractPosition
       template<typename TargetPosition>
       CODI_INLINE TargetPosition extractPosition(Position const& pos) const {
-        return pos;  // Last in line needs to be this position.
+        return pos;  // This is a terminator, no further recursion.
       }
 
       /// \copydoc DataInterface::getDataSize
@@ -117,6 +120,7 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::getPosition
+      /// The current position coincides with the largest created index.
       CODI_INLINE Position getPosition() const {
         return count;
       }
@@ -127,8 +131,9 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::getZeroPosition
+      /// The zero position coincides with the smallest index that may be assigned to active AD variables.
       CODI_INLINE Position getZeroPosition() const {
-        return zeroState;
+        return reservedIndices;
       }
 
       /// \copydoc DataInterface::pushData
@@ -148,19 +153,19 @@ namespace codi {
 
       /// \copydoc DataInterface::resetTo
       CODI_INLINE void resetTo(Position const& pos) {
-        codiAssert(pos >= zeroState);
+        codiAssert(pos >= reservedIndices);
 
         count = pos;
       }
 
       /// \copydoc DataInterface::reset
       CODI_INLINE void reset() {
-        count = zeroState;
+        count = reservedIndices;
       }
 
       /// \copydoc DataInterface::resetHard
       CODI_INLINE void resetHard() {
-        count = zeroState;
+        count = reservedIndices;
       }
 
       /// \copydoc DataInterface::setNested
@@ -170,7 +175,7 @@ namespace codi {
 
       /// \copydoc DataInterface::swap
       void swap(LinearIndexManager<Index>& other) {
-        std::swap(zeroState, other.zeroState);
+        std::swap(reservedIndices, other.reservedIndices);
         std::swap(count, other.count);
       }
 

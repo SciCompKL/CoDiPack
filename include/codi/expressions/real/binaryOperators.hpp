@@ -18,7 +18,7 @@ namespace codi {
 
   /// BinaryOperation implementation for operator +
   template<typename _Real>
-  struct Add : public BinaryOperation<_Real> {
+  struct OperationAdd : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -45,13 +45,13 @@ namespace codi {
         return 1.0;
       }
   };
-#define OPERATION_LOGIC Add
+#define OPERATION_LOGIC OperationAdd
 #define FUNCTION operator+
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator -
   template<typename _Real>
-  struct Substract : public BinaryOperation<_Real> {
+  struct OperationSubstract : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -78,13 +78,13 @@ namespace codi {
         return -1.0;
       }
   };
-#define OPERATION_LOGIC Substract
+#define OPERATION_LOGIC OperationSubstract
 #define FUNCTION operator-
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator *
   template<typename _Real>
-  struct Multiply : public BinaryOperation<_Real> {
+  struct OperationMultiply : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -109,13 +109,13 @@ namespace codi {
         return argA;
       }
   };
-#define OPERATION_LOGIC Multiply
+#define OPERATION_LOGIC OperationMultiply
 #define FUNCTION operator*
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator /
   template<typename _Real>
-  struct Divide : public BinaryOperation<_Real> {
+  struct OperationDivide : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -154,7 +154,7 @@ namespace codi {
         }
       }
   };
-#define OPERATION_LOGIC Divide
+#define OPERATION_LOGIC OperationDivide
 #define FUNCTION operator/
 #include "binaryOverloads.tpp"
 
@@ -172,7 +172,7 @@ namespace codi {
 
   /// BinaryOperation implementation for atan2
   template<typename _Real>
-  struct Atan2 : public BinaryOperation<_Real> {
+  struct OperationAtan2 : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -215,13 +215,13 @@ namespace codi {
         }
       }
   };
-#define OPERATION_LOGIC Atan2
+#define OPERATION_LOGIC OperationAtan2
 #define FUNCTION atan2
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for copysign
   template<typename _Real>
-  struct Copysign : public BinaryOperation<_Real> {
+  struct OperationCopysign : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -264,17 +264,17 @@ namespace codi {
       }
   };
 
-#define OPERATION_LOGIC Copysign
+#define OPERATION_LOGIC OperationCopysign
 #define FUNCTION copysign
 #include "binaryOverloads.tpp"
 
-#define OPERATION_LOGIC Copysign
+#define OPERATION_LOGIC OperationCopysign
 #define FUNCTION copysignf
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for max
   template<typename _Real>
-  struct Max : public BinaryOperation<_Real> {
+  struct OperationMax : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -312,17 +312,17 @@ namespace codi {
       }
   };
 
-#define OPERATION_LOGIC Max
+#define OPERATION_LOGIC OperationMax
 #define FUNCTION max
 #include "binaryOverloads.tpp"
 
-#define OPERATION_LOGIC Max
+#define OPERATION_LOGIC OperationMax
 #define FUNCTION fmax
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for min
   template<typename _Real>
-  struct Min : public BinaryOperation<_Real> {
+  struct OperationMin : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -359,17 +359,17 @@ namespace codi {
         }
       }
   };
-#define OPERATION_LOGIC Min
+#define OPERATION_LOGIC OperationMin
 #define FUNCTION min
 #include "binaryOverloads.tpp"
 
-#define OPERATION_LOGIC Min
+#define OPERATION_LOGIC OperationMin
 #define FUNCTION fmin
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for pow
   template<typename _Real>
-  struct Pow : public BinaryOperation<_Real> {
+  struct OperationPow : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -418,7 +418,7 @@ namespace codi {
         }
       }
   };
-#define OPERATION_LOGIC Pow
+#define OPERATION_LOGIC OperationPow
 #define FUNCTION pow
 #include "binaryOverloads.tpp"
 
@@ -426,7 +426,7 @@ namespace codi {
   ///
   /// Derivative implementation based on IEC 60559: remainder = numer - rquot * denom
   template<typename _Real>
-  struct Remainder : public BinaryOperation<_Real> {
+  struct OperationRemainder : public BinaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -466,7 +466,7 @@ namespace codi {
         }
       }
   };
-#define OPERATION_LOGIC Remainder
+#define OPERATION_LOGIC OperationRemainder
 #define FUNCTION remainder
 #include "binaryOverloads.tpp"
 

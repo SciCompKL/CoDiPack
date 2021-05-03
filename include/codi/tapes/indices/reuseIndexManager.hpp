@@ -12,43 +12,45 @@
 namespace codi {
 
   /**
-   * @brief Identifiers are reused. Freed identifiers are given out to new variables. Variables with an identifier will
-   * keep this one.
+   * @brief Identifiers are reused. Freed identifiers are assigned to new variables. Variables keep their indices as
+   * long as they are active.
    *
-   * This index manager does not implement a copy optimization. Therefore every copy operation needs a statement, but
-   * variables will keep there identifier if they are always active.
+   * This index manager does not implement a copy optimization. Therefore, every copy operation needs a statement,
+   * but variables will keep their identifier as long as they are active.
    *
-   * For generalization reasons it also extends from the EmptyData DataInterface.
+   * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
-   * @tparam _Index   Type for the identifier usually an integer type.
+   * For generalization reasons, it also extends from the EmptyData DataInterface.
+   *
+   * @tparam _Index   Type for the identifier, usually an integer type.
    */
   template<typename _Index>
   struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DD(_Index, int);         ///< See ReuseIndexManager
-      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation
+      using Index = CODI_DD(_Index, int);         ///< See ReuseIndexManager.
+      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization implemented.
+      static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization is implemented.
       static bool constexpr IsLinear = false;           ///< Identifiers are not coupled to statements.
 
       /// @}
 
     private:
 
-      Index globalMaximumIndex;
+      Index globalMaximumIndex;  ///< The largest created index.
 
-      std::vector<Index> usedIndices;
-      size_t usedIndicesPos;
+      std::vector<Index> usedIndices;  ///< Pool of indices that have already been used in this recording.
+      size_t usedIndicesPos;           ///< Number of remaining used indices.
 
-      std::vector<Index> unusedIndices;
-      size_t unusedIndicesPos;
+      std::vector<Index> unusedIndices;  ///< Pool of indices that have not been used in this recording yet.
+      size_t unusedIndicesPos;           ///< Number of remaining unused indices.
 
-      size_t indexSizeIncrement;
+      size_t indexSizeIncrement;  ///< Block size for index pool enlargement.
 
     protected:
 
@@ -57,8 +59,8 @@ namespace codi {
     public:
 
       /// Constructor
-      ReuseIndexManager(Index const& reserveIndices)
-          : globalMaximumIndex(reserveIndices + 1),
+      ReuseIndexManager(Index const& reservedIndices)
+          : globalMaximumIndex(reservedIndices),
             usedIndices(),
             usedIndicesPos(0),
             unusedIndices(),
@@ -100,7 +102,7 @@ namespace codi {
       CODI_INLINE bool assignIndex(Index& index) {
         bool generatedNewIndex = false;
 
-        if (Base::UnusedIndex == index) {
+        if (Base::InactiveIndex == index) {
           if (0 == usedIndicesPos) {
             if (0 == unusedIndicesPos) {
               generateNewIndices();
@@ -136,7 +138,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::copyIndex
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
-        if (Base::UnusedIndex == rhs) {
+        if (Base::InactiveIndex == rhs) {
           freeIndex(lhs);
         } else {
           assignIndex(lhs);
@@ -145,7 +147,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
-        if (valid && Base::UnusedIndex != index) {  // do not free the zero index
+        if (valid && Base::InactiveIndex != index) {  // do not free the zero index
 
           if (usedIndicesPos == usedIndices.size()) {
             increaseIndicesSize(usedIndices);
@@ -154,12 +156,15 @@ namespace codi {
           usedIndices[usedIndicesPos] = index;
           usedIndicesPos += 1;
 
-          index = Base::UnusedIndex;
+          index = Base::InactiveIndex;
         }
       }
 
-      /// \copydoc IndexManagerInterface::getLargestAssignedIndex
-      CODI_INLINE Index getLargestAssignedIndex() const {
+      /// \copydoc IndexManagerInterface::getLargestCreatedIndex
+      /// The following properties are specific to the ReuseIndexManager and inherited by the MultiUseIndexManager:
+      /// 1. tape resets do not change the largest created index,
+      /// 2. it is not guaranteed that the largest created index has been assigned to a variable already.
+      CODI_INLINE Index getLargestCreatedIndex() const {
         return globalMaximumIndex;
       }
 
@@ -202,15 +207,15 @@ namespace codi {
     private:
 
       CODI_NO_INLINE void generateNewIndices() {
-        // method is only called when unused indices are empty
-        // initially it holds a number of unused indices which is
-        // the same amount as we now generate, therefore we do not
-        // check for size
+        // This method is only called when unused indices are empty.
+        // Initially, a number of unused indices is created which
+        // equals the number of indices we generate now, therefore
+        // we do not have to check for size.
 
         codiAssert(unusedIndices.size() >= indexSizeIncrement);
 
         for (size_t pos = 0; pos < indexSizeIncrement; ++pos) {
-          unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + Index(pos);
+          unusedIndices[unusedIndicesPos + pos] = globalMaximumIndex + Index(pos) + 1;
         }
 
         unusedIndicesPos = indexSizeIncrement;
@@ -224,7 +229,7 @@ namespace codi {
       CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
         codiAssert(v.size() < minimalSize);
 
-        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1;  // +1 rounds always up
+        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1;  // +1 always rounds up
         v.resize(v.size() + increaseMul * indexSizeIncrement);
       }
   };

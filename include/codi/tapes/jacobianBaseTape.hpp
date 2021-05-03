@@ -97,7 +97,7 @@ namespace codi {
       using NestedPosition = typename JacobianData::Position;  ///< See JacobianTapeTypes.
       using Position = typename Base::Position;                ///< See TapeTypesInterface.
 
-      static bool constexpr AllowJacobianOptimization = true;  ///< See InternalStatementRecordingInterface.
+      static bool constexpr AllowJacobianOptimization = true;  ///< See InternalStatementRecordingTapeInterface.
       static bool constexpr HasPrimalValues = false;           ///< See PrimalEvaluationTapeInterface
       static bool constexpr LinearIndexHandling =
           TapeTypes::IsLinearIndexHandler;                  ///< See IdentifierInformationTapeInterface
@@ -191,18 +191,18 @@ namespace codi {
 
       /// @}
       /*******************************************************************************/
-      /// @name Functions from InternalStatementRecordingInterface
+      /// @name Functions from InternalStatementRecordingTapeInterface
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingInterface::initIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::initIdentifier()
       template<typename Real>
       CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        identifier = IndexManager::UnusedIndex;
+        identifier = IndexManager::InactiveIndex;
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::destroyIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyIdentifier()
       template<typename Real>
       CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
@@ -286,7 +286,7 @@ namespace codi {
 
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                              ExpressionInterface<Real, Rhs> const& rhs) {
@@ -314,7 +314,7 @@ namespace codi {
         lhs.cast().value() = rhs.cast().getValue();
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Optimization for copy statements.
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
@@ -332,7 +332,7 @@ namespace codi {
         lhs.cast().value() = rhs.cast().getValue();
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, PassiveReal const& rhs) {
@@ -378,7 +378,7 @@ namespace codi {
         }
         TapeValues values = TapeValues(name);
 
-        size_t nAdjoints = indexManager.get().getLargestAssignedIndex();
+        size_t nAdjoints = indexManager.get().getLargestCreatedIndex();
         double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient));
 
         values.addSection("Adjoint vector");
@@ -512,7 +512,7 @@ namespace codi {
             return jacobianData.getDataSize();
             break;
           case TapeParameters::LargestIdentifier:
-            return indexManager.get().getLargestAssignedIndex();
+            return indexManager.get().getLargestCreatedIndex();
             break;
           case TapeParameters::StatementSize:
             return statementData.getDataSize();
@@ -565,7 +565,7 @@ namespace codi {
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
       void evaluateForward(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
 
         cast().evaluateForward(start, end, adjoints.data());
       }
@@ -602,7 +602,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::evaluate()
       CODI_INLINE void evaluate(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
 
         evaluate(start, end, adjoints.data());
       }
@@ -666,7 +666,7 @@ namespace codi {
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
-        adjoints.resize(indexManager.get().getLargestAssignedIndex() + 1);
+        adjoints.resize(indexManager.get().getLargestCreatedIndex() + 1);
       }
   };
 }

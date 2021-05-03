@@ -17,23 +17,26 @@ namespace codi {
   struct PrimalTapeStatementFunctions {
     public:
 
-      using Handle = void*;  ///< Function pointer
+      using Handle = void*;  ///< Function pointer.
 
-      Handle forward;  ///< Forward function handle
-      Handle primal;   ///< Primal function handle
-      Handle reverse;  ///< Reverse function handle
+      Handle forward;  ///< Forward function handle.
+      Handle primal;   ///< Primal function handle.
+      Handle reverse;  ///< Reverse function handle.
 
       /// Constructor
       PrimalTapeStatementFunctions(Handle forward, Handle primal, Handle reverse)
           : forward(forward), primal(primal), reverse(reverse) {}
   };
 
-  /// Store PrimalTapeStatementFunctions as static variables.
+  /// Store PrimalTapeStatementFunctions as static variables for each combination of generator (tape) and expression
+  /// used in the program.
   template<typename Generator, typename Expr>
   struct DirectStatementEvaluatorStaticStore {
     public:
 
-      static PrimalTapeStatementFunctions const staticStore;  ///< Static storage.
+      /// Static storage. Static construction is done by instantiating the statementEvaluate* functions of the generator
+      /// with Expr.
+      static PrimalTapeStatementFunctions const staticStore;
   };
 
   template<typename Generator, typename Expr>
@@ -45,15 +48,18 @@ namespace codi {
   /**
    * @brief Full evaluation of the expression in the function handle. Storing in static context.
    *
+   * Data loading and evaluation of the expression are all done in the handle. This evaluator will directly evaluate the
+   * full handle for the expression.
+   *
    * See StatementEvaluatorInterface for details.
    *
-   * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
+   * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
   template<typename _Real>
   struct DirectStatementEvaluator : public StatementEvaluatorInterface<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See DirectStatementEvaluator
+      using Real = CODI_DD(_Real, double);  ///< See DirectStatementEvaluator.
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation
