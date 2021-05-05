@@ -256,7 +256,7 @@ namespace codi {
 
     protected:
 
-      /// Count all arguments that have none zero index.
+      /// Count all arguments that have non-zero index.
       struct CountActiveArguments : public ForEachTermLogic<CountActiveArguments> {
         public:
 
@@ -519,10 +519,10 @@ namespace codi {
           }
       };
 
-      /// Wrapper helper for improved compiler optimizations.
+      /// Additional wrapper that triggers compiler optimizations.
       CODI_WRAP_FUNCTION(Wrap_internalEvaluateForwardStack, Impl::internalEvaluateForwardStack);
 
-      /// Start for forward evaluation between external function.
+      /// Forward evaluation of an inner tape part between two external functions.
       CODI_INLINE static void internalEvaluateForwardVector(NestedPosition const& start, NestedPosition const& end,
                                                             Real* primalData, ADJOINT_VECTOR_TYPE* data,
                                                             ConstantValueData& constantValueData) {
@@ -530,7 +530,7 @@ namespace codi {
         constantValueData.evaluateForward(start, end, evalFunc, primalData, data);
       }
 
-      /// Internal method for the forward evaluation of the whole stack.
+      /// Internal method for the forward evaluation of the whole tape.
       template<bool copyPrimal, typename Adjoint>
       CODI_NO_INLINE void internalEvaluateForward(Position const& start, Position const& end, Adjoint* data) {
         std::vector<Real> primalsCopy(0);
@@ -558,11 +558,11 @@ namespace codi {
                                              dataVector, constantValueData);
       }
 
-      /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes
+      /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes.
       struct IncrementReversalLogic : public JacobianComputationLogic<Real, IncrementReversalLogic> {
         public:
 
-          /// See IncrementReversalLogic
+          /// See IncrementReversalLogic.
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient const& lhsAdjoint,
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
@@ -578,10 +578,10 @@ namespace codi {
           }
       };
 
-      /// Wrapper helper for improved compiler optimizations.
+      /// Additional wrapper that triggers compiler optimizations.
       CODI_WRAP_FUNCTION(Wrap_internalEvaluateReverseStack, Impl::internalEvaluateReverseStack);
 
-      /// Start for reverse evaluation between external function.
+      /// Reverse evaluation of an inner tape part between two external functions.
       CODI_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end,
                                                             Real* primalData, ADJOINT_VECTOR_TYPE* data,
                                                             ConstantValueData& constantValueData) {
@@ -589,7 +589,7 @@ namespace codi {
         constantValueData.evaluateReverse(start, end, evalFunc, primalData, data);
       }
 
-      /// Internal method for the forward evaluation of the whole stack
+      /// Internal method for the reverse evaluation of the whole tape.
       template<bool copyPrimal, typename Adjoint>
       CODI_INLINE void internalEvaluateReverse(Position const& start, Position const& end, Adjoint* data) {
         Real* primalData = primals.data();
