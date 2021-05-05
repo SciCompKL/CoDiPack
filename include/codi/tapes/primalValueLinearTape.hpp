@@ -33,18 +33,18 @@ namespace codi {
       using TapeTypes =
           CODI_DD(_TapeTypes,
                   CODI_T(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface,
-                                              DefaultChunkedData>));  ///< See PrimalValueLinearTape
+                                              DefaultChunkedData>));  ///< See PrimalValueLinearTape.
 
-      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>;  ///< Base class abbreviation
+      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
       using Gradient = typename TapeTypes::Gradient;                      ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;              ///< See PrimalValueTapeTypes
+      using IndexManager = typename TapeTypes::IndexManager;              ///< See PrimalValueTapeTypes.
       using Identifier = typename TapeTypes::Identifier;                  ///< See TapeTypesInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;                  ///< Basic computation type
-      using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes
-      using EvalHandle = typename TapeTypes::EvalHandle;                  ///< See PrimalValueTapeTypes
+      using PassiveReal = RealTraits::PassiveReal<Real>;                  ///< Basic computation type.
+      using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes.
+      using EvalHandle = typename TapeTypes::EvalHandle;                  ///< See PrimalValueTapeTypes.
       using Position = typename Base::Position;                           ///< See TapeTypesInterface.
 
       /// Constructor
@@ -188,14 +188,14 @@ namespace codi {
         }
       }
 
-      /// Empty implementation; primal values are not overwritten with linear index management
+      /// Empty implementation; primal values are not overwritten with linear index management.
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
         CODI_UNUSED(pos);
 
-        // Nothing to do
+        // nothing to do
       }
 
-      /// Only number of arguments is required for linear index managers
+      /// Only the number of arguments is required for linear index managers.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfPassiveArguments,
                                     Real const& oldPrimalValue, EvalHandle evalHandle) {
         CODI_UNUSED(index, oldPrimalValue);
@@ -204,7 +204,7 @@ namespace codi {
       }
 
     public:
-      /// Empty implementation; primal values are not overwritten with linear index management
+      /// Empty implementation; primal values are not overwritten with linear index management.
       void revertPrimals(Position const& pos) {
         CODI_UNUSED(pos);
 
