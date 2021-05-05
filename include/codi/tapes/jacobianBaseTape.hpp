@@ -46,8 +46,8 @@ namespace codi {
       using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
 
       static bool constexpr IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
-      static bool constexpr IsStaticIndexHandler = !IsLinearIndexHandler;   ///< For reuse index mangers, a static
-                                                                            ///< instantiation is used.
+      static bool constexpr IsStaticIndexHandler = !IsLinearIndexHandler;   ///< For reuse index management, a static
+                                                                            ///< index manager is used.
 
       /// Statement chunk is either \<argument size\> (linear management) or \<lhs identifier, argument size\>
       /// (reuse management).
@@ -65,8 +65,8 @@ namespace codi {
    * @brief Base for all standard Jacobian tape implementations.
    *
    * This class provides nearly a full implementation of the FullTapeInterface. There are just a few internal methods
-   * left which have to be implemented by the final classes. These methods depend on the index management scheme used
-   * in the index manager.
+   * left which have to be implemented by the final classes. These methods depend significantly on the index management
+   * scheme and are performance critical.
    *
    * @tparam _TapeTypes has to implement JacobianTapeTypes.
    * @tparam _Impl Type of the final implementation.
@@ -157,7 +157,7 @@ namespace codi {
             indexManager(0),  // reserve the zero index
             statementData(Config::ChunkSize),
             jacobianData(Config::ChunkSize),
-            adjoints(1)  // see gradient() const
+            adjoints(1)  // ensure that adjoint[0] exists, see its use in gradient() const
       {
         statementData.setNested(&indexManager.get());
         jacobianData.setNested(&statementData);
