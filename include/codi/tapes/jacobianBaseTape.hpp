@@ -62,7 +62,7 @@ namespace codi {
   };
 
   /**
-   * @brief Base for all standard Jacobian tape implementations.
+   * @brief Base class for all standard Jacobian tape implementations.
    *
    * This class provides nearly a full implementation of the FullTapeInterface. There are just a few internal methods
    * left which have to be implemented by the final classes. These methods depend significantly on the index management
