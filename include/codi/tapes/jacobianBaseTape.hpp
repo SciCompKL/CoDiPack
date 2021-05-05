@@ -154,7 +154,7 @@ namespace codi {
 #if CODI_RemoveDuplicateJacobianArguments
             jacobianSorter(),
 #endif
-            indexManager(0),
+            indexManager(0),  // reserve the zero index
             statementData(Config::ChunkSize),
             jacobianData(Config::ChunkSize),
             adjoints(1)  // see gradient() const
