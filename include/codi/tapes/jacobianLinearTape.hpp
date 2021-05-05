@@ -29,9 +29,9 @@ namespace codi {
     public:
 
       using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
-                                                                     DefaultChunkedData>));  ///< See JacobianLinearTape
+                                                                     DefaultChunkedData>));  ///< See JacobianLinearTape.
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation
+      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
@@ -63,7 +63,7 @@ namespace codi {
 
     protected:
 
-      /// Only number of arguments is required for linear index managers
+      /// Only the number of arguments is required for linear index managers.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         CODI_UNUSED(index);
 
@@ -123,10 +123,10 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           Adjoint const lhsAdjoint =
-              adjointVector[curAdjointPos];  // Adjoint positions are shifted since we do not use the zero index
+              adjointVector[curAdjointPos];  // Adjoint positions are shifted since we do not use the zero index.
 
           if (Config::StatementInputTag != argsSize) {
-            // No input value, perform regular statement evaluation
+            // No input value, perform regular statement evaluation.
 
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();
