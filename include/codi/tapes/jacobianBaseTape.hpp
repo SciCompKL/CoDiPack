@@ -29,7 +29,7 @@ namespace codi {
    *
    * @tparam _Real          See TapeTypesInterface.
    * @tparam _Gradient      See TapeTypesInterface.
-   * @tparam _IndexManager  Index manager for the tape. Needs to implement IndexManagerInterface.
+   * @tparam _IndexManager  Index manager for the tape. Has to implement IndexManagerInterface.
    * @tparam _Data          See TapeTypesInterface.
    */
   template<typename _Real, typename _Gradient, typename _IndexManager, template<typename, typename> class _Data>
@@ -46,16 +46,16 @@ namespace codi {
       using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
 
       static bool constexpr IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
-      static bool constexpr IsStaticIndexHandler = !IsLinearIndexHandler;   ///< For reuse index mangers a static
+      static bool constexpr IsStaticIndexHandler = !IsLinearIndexHandler;   ///< For reuse index mangers, a static
                                                                             ///< instantiation is used.
 
       /// Statement chunk is either \<argument size\> (linear management) or \<lhs identifier, argument size\>
-      /// (reuse management)
+      /// (reuse management).
       using StatementChunk = typename std::conditional<IsLinearIndexHandler, Chunk1<Config::ArgumentSize>,
                                                        Chunk2<Identifier, Config::ArgumentSize> >::type;
       using StatementData = Data<StatementChunk, IndexManager>;  ///< Statement data vector.
 
-      using JacobianChunk = Chunk2<Real, Identifier>;           ///< Jacobian chunks is \<Jacobian, rhs index\>
+      using JacobianChunk = Chunk2<Real, Identifier>;           ///< Jacobian chunks is \<Jacobian, rhs index\>.
       using JacobianData = Data<JacobianChunk, StatementData>;  ///< Jacobian data vector.
 
       using NestedData = JacobianData;  ///< See TapeTypesInterface.
@@ -65,23 +65,23 @@ namespace codi {
    * @brief Base for all standard Jacobian tape implementations.
    *
    * This class provides nearly a full implementation of the FullTapeInterface. There are just a few internal methods
-   * left which need to be implemented by the final classes. These methods are mainly based on the index management
-   * scheme used in the index manager.
+   * left which have to be implemented by the final classes. These methods depend on the index management scheme used
+   * in the index manager.
    *
-   * @tparam _TapeTypes needs to implement JacobianTapeTypes.
-   * @tparam _Impl Type of the final implementations
+   * @tparam _TapeTypes has to implement JacobianTapeTypes.
+   * @tparam _Impl Type of the final implementation.
    */
   template<typename _TapeTypes, typename _Impl>
   struct JacobianBaseTape : public CommonTapeImplementation<_TapeTypes, _Impl> {
     public:
 
-      /// See JacobianBaseTape
+      /// See JacobianBaseTape.
       using TapeTypes = CODI_DD(
           _TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
-      /// See JacobianBaseTape
+      /// See JacobianBaseTape.
       using Impl = CODI_DD(_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation
+      using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
@@ -92,16 +92,16 @@ namespace codi {
       using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
       using JacobianData = typename TapeTypes::JacobianData;    ///< See JacobianTapeTypes.
 
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
       using NestedPosition = typename JacobianData::Position;  ///< See JacobianTapeTypes.
       using Position = typename Base::Position;                ///< See TapeTypesInterface.
 
       static bool constexpr AllowJacobianOptimization = true;  ///< See InternalStatementRecordingInterface.
-      static bool constexpr HasPrimalValues = false;           ///< See PrimalEvaluationTapeInterface
+      static bool constexpr HasPrimalValues = false;           ///< See PrimalEvaluationTapeInterface.
       static bool constexpr LinearIndexHandling =
-          TapeTypes::IsLinearIndexHandler;                  ///< See IdentifierInformationTapeInterface
-      static bool constexpr RequiresPrimalRestore = false;  ///< See PrimalEvaluationTapeInterface
+          TapeTypes::IsLinearIndexHandler;                  ///< See IdentifierInformationTapeInterface.
+      static bool constexpr RequiresPrimalRestore = false;  ///< See PrimalEvaluationTapeInterface.
 
     protected:
 
@@ -214,7 +214,7 @@ namespace codi {
 
     protected:
 
-      /// Pushes Jacobians and indices to the tape
+      /// Pushes Jacobians and indices to the tape.
       struct PushJacobianLogic : public JacobianComputationLogic<Real, PushJacobianLogic> {
         public:
           /// General implementation. Checks for invalid and passive values/Jacobians.
@@ -236,7 +236,7 @@ namespace codi {
             CODI_UNUSED(dataVector);
 
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
-              // Do a delayed push for these termination nodes, accumulate the jacobian in the local member
+              // Do a delayed push for these termination nodes, accumulate the jacobian in the local member.
               node.jacobian += jacobian;
             }
           }
@@ -253,7 +253,7 @@ namespace codi {
               if (CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(node.jacobian))) {
                 dataVector.pushData(node.jacobian, node.getIdentifier());
 
-                // Reset the jacobian here such that it is not pushed multiple times and ready for the next store
+                // Reset the jacobian here such that it is not pushed multiple times and ready for the next store.
                 node.jacobian = Real();
               }
             }
@@ -489,8 +489,8 @@ namespace codi {
 
       /// \copydoc codi::DataManagementTapeInterface::swap()
       CODI_INLINE void swap(Impl& other) {
-        // Index manager does not need to be swapped, it is either static or swapped in with the vector data
-        // Vectors are swapped recursively in the base class
+        // Index manager does not need to be swapped, it is either static or swapped with the vector data.
+        // Vectors are swapped recursively in the base class.
 
         std::swap(adjoints, other.adjoints);
 
@@ -629,14 +629,14 @@ namespace codi {
 
       using Base::evaluatePrimal;
 
-      /// Not implemented raises exception.
+      /// Not implemented, raises an exception.
       void evaluatePrimal(Position const& start, Position const& end) {
         CODI_UNUSED(start, end);
 
         CODI_EXCEPTION("Accessing primal evaluation of an Jacobian tape.");
       }
 
-      /// Not implemented raises exception.
+      /// Not implemented, raises an exception.
       Real& primal(Identifier const& identifier) {
         CODI_UNUSED(identifier);
 
@@ -646,7 +646,7 @@ namespace codi {
         return temp;
       }
 
-      /// Not implemented raises exception.
+      /// Not implemented, raises an exception.
       Real primal(Identifier const& identifier) const {
         CODI_UNUSED(identifier);
 
