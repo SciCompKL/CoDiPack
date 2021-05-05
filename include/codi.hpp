@@ -2,8 +2,10 @@
 
 #include "codi/config.h"
 #include "codi/expressions/activeType.hpp"
+#include "codi/expressions/readableActiveTypeWrapper.hpp"
 #include "codi/expressions/real/allOperators.hpp"
 #include "codi/expressions/referenceActiveType.hpp"
+#include "codi/expressions/writableActiveTypeWrapper.hpp"
 #include "codi/tapes/data/blockData.hpp"
 #include "codi/tapes/data/chunkedData.hpp"
 #include "codi/tapes/forwardEvaluation.hpp"
