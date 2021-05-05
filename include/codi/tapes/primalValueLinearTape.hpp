@@ -188,6 +188,7 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::PrimalValueBaseTape::internalResetPrimalValues
       /// Empty implementation; primal values are not overwritten with linear index management.
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
         CODI_UNUSED(pos);
@@ -195,6 +196,7 @@ namespace codi {
         // nothing to do
       }
 
+      /// \copydoc codi::PrimalValueBaseTape::pushStmtData
       /// Only the number of arguments is required for linear index managers.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfPassiveArguments,
                                     Real const& oldPrimalValue, EvalHandle evalHandle) {
@@ -204,6 +206,7 @@ namespace codi {
       }
 
     public:
+      /// \copydoc codi::PrimalValueBaseTape::revertPrimals
       /// Empty implementation; primal values are not overwritten with linear index management.
       void revertPrimals(Position const& pos) {
         CODI_UNUSED(pos);
