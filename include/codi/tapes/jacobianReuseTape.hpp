@@ -68,6 +68,7 @@ namespace codi {
 
     protected:
 
+      /// \copydoc codi::JacobianBaseTape::pushStmtData
       /// Both arguments are pushed to the tape.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         this->statementData.pushData(index, numberOfArguments);
