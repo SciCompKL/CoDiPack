@@ -33,20 +33,20 @@ namespace codi {
       using TapeTypes =
           CODI_DD(_TapeTypes,
                   CODI_T(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface,
-                                              DefaultChunkedData>));  ///< See PrimalValueLinearTape
+                                              DefaultChunkedData>));  ///< See PrimalValueReuseTape.
 
-      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueReuseTape<TapeTypes>>;  ///< Base class abbreviation
+      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueReuseTape<TapeTypes>>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
       using Gradient = typename TapeTypes::Gradient;                      ///< See TapeTypesInterface.
       using Identifier = typename TapeTypes::Identifier;                  ///< See TapeTypesInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;                  ///< Basic computation type
-      using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes
-      using EvalHandle = typename TapeTypes::EvalHandle;                  ///< See PrimalValueTapeTypes
+      using PassiveReal = RealTraits::PassiveReal<Real>;                  ///< Basic computation type.
+      using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes.
+      using EvalHandle = typename TapeTypes::EvalHandle;                  ///< See PrimalValueTapeTypes.
       using Position = typename Base::Position;                           ///< See TapeTypesInterface.
 
-      using StatementData = typename TapeTypes::StatementData;  ///< See PrimalValueTapeTypes
+      using StatementData = typename TapeTypes::StatementData;  ///< See PrimalValueTapeTypes.
 
       /// Constructor
       PrimalValueReuseTape() : Base() {}
@@ -194,7 +194,8 @@ namespace codi {
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }
 
-      /// Only number of arguments is required for linear index managers
+      /// \copydoc codi::PrimalValueBaseTape::pushStmtData
+      /// Only the number of arguments is required for linear index managers.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfPassiveArguments,
                                     Real const& oldPrimalValue, EvalHandle evalHandle) {
         Base::statementData.pushData(index, numberOfPassiveArguments, oldPrimalValue, evalHandle);
