@@ -17,7 +17,7 @@ namespace codi {
 
   /// UnaryOperation implementation for operator -
   template<typename _Real>
-  struct UnaryMinus : public UnaryOperation<_Real> {
+  struct OperationUnaryMinus : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -36,7 +36,7 @@ namespace codi {
         return -1.0;
       }
   };
-#define OPERATION_LOGIC UnaryMinus
+#define OPERATION_LOGIC OperationUnaryMinus
 #define FUNCTION operator-
 #include "unaryOverloads.tpp"
 
@@ -81,7 +81,7 @@ namespace codi {
 
   /// UnaryOperation implementation for abs
   template<typename _Real>
-  struct Abs : public UnaryOperation<_Real> {
+  struct OperationAbs : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -105,17 +105,17 @@ namespace codi {
         }
       }
   };
-#define OPERATION_LOGIC Abs
+#define OPERATION_LOGIC OperationAbs
 #define FUNCTION abs
 #include "unaryOverloads.tpp"
 
-#define OPERATION_LOGIC Abs
+#define OPERATION_LOGIC OperationAbs
 #define FUNCTION fabs
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for acos
   template<typename _Real>
-  struct Acos : public UnaryOperation<_Real> {
+  struct OperationAcos : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -138,13 +138,13 @@ namespace codi {
         return -1.0 / sqrt(1.0 - arg * arg);
       }
   };
-#define OPERATION_LOGIC Acos
+#define OPERATION_LOGIC OperationAcos
 #define FUNCTION acos
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for asin
   template<typename _Real>
-  struct Asin : public UnaryOperation<_Real> {
+  struct OperationAsin : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -167,13 +167,13 @@ namespace codi {
         return 1.0 / sqrt(1.0 - arg * arg);
       }
   };
-#define OPERATION_LOGIC Asin
+#define OPERATION_LOGIC OperationAsin
 #define FUNCTION asin
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for atan
   template<typename _Real>
-  struct Atan : public UnaryOperation<_Real> {
+  struct OperationAtan : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -191,13 +191,13 @@ namespace codi {
         return 1.0 / (1 + arg * arg);
       }
   };
-#define OPERATION_LOGIC Atan
+#define OPERATION_LOGIC OperationAtan
 #define FUNCTION atan
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for atanh
   template<typename _Real>
-  struct Atanh : public UnaryOperation<_Real> {
+  struct OperationAtanh : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -220,13 +220,13 @@ namespace codi {
         return 1.0 / (1 - arg * arg);
       }
   };
-#define OPERATION_LOGIC Atanh
+#define OPERATION_LOGIC OperationAtanh
 #define FUNCTION atanh
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for cbrt
   template<typename _Real>
-  struct Cbrt : public UnaryOperation<_Real> {
+  struct OperationCbrt : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -252,7 +252,7 @@ namespace codi {
         }
       }
   };
-#define OPERATION_LOGIC Cbrt
+#define OPERATION_LOGIC OperationCbrt
 #define FUNCTION cbrt
 #include "unaryOverloads.tpp"
 
@@ -264,7 +264,7 @@ namespace codi {
 
   /// UnaryOperation implementation for cos
   template<typename _Real>
-  struct Cos : public UnaryOperation<_Real> {
+  struct OperationCos : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -282,13 +282,13 @@ namespace codi {
         return -sin(arg);
       }
   };
-#define OPERATION_LOGIC Cos
+#define OPERATION_LOGIC OperationCos
 #define FUNCTION cos
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for cosh
   template<typename _Real>
-  struct Cosh : public UnaryOperation<_Real> {
+  struct OperationCosh : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -306,13 +306,13 @@ namespace codi {
         return sinh(arg);
       }
   };
-#define OPERATION_LOGIC Cosh
+#define OPERATION_LOGIC OperationCosh
 #define FUNCTION cosh
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for erf
   template<typename _Real>
-  struct Erf : public UnaryOperation<_Real> {
+  struct OperationErf : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -330,13 +330,13 @@ namespace codi {
         return 1.128379167095513 * exp(-(arg * arg));  // erf'(arg) = 2.0 / sqrt(pi) * exp(-arg^2)
       }
   };
-#define OPERATION_LOGIC Erf
+#define OPERATION_LOGIC OperationErf
 #define FUNCTION erf
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for erfc
   template<typename _Real>
-  struct Erfc : public UnaryOperation<_Real> {
+  struct OperationErfc : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -354,13 +354,13 @@ namespace codi {
         return -1.128379167095513 * exp(-(arg * arg));  // erfc'(arg) = - 2.0 / sqrt(pi) * exp(-arg^2)
       }
   };
-#define OPERATION_LOGIC Erfc
+#define OPERATION_LOGIC OperationErfc
 #define FUNCTION erfc
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for exp
   template<typename _Real>
-  struct Exp : public UnaryOperation<_Real> {
+  struct OperationExp : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -378,7 +378,7 @@ namespace codi {
         return result;
       }
   };
-#define OPERATION_LOGIC Exp
+#define OPERATION_LOGIC OperationExp
 #define FUNCTION exp
 #include "unaryOverloads.tpp"
 
@@ -414,7 +414,7 @@ namespace codi {
 
   /// UnaryOperation implementation for log
   template<typename _Real>
-  struct Log : public UnaryOperation<_Real> {
+  struct OperationLog : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -437,13 +437,13 @@ namespace codi {
         return 1.0 / arg;
       }
   };
-#define OPERATION_LOGIC Log
+#define OPERATION_LOGIC OperationLog
 #define FUNCTION log
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for log10
   template<typename _Real>
-  struct Log10 : public UnaryOperation<_Real> {
+  struct OperationLog10 : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -466,7 +466,7 @@ namespace codi {
         return 0.434294481903252 / arg;
       }
   };
-#define OPERATION_LOGIC Log10
+#define OPERATION_LOGIC OperationLog10
 #define FUNCTION log10
 #include "unaryOverloads.tpp"
 
@@ -478,7 +478,7 @@ namespace codi {
 
   /// UnaryOperation implementation for sin
   template<typename _Real>
-  struct Sin : public UnaryOperation<_Real> {
+  struct OperationSin : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -496,13 +496,13 @@ namespace codi {
         return cos(arg);
       }
   };
-#define OPERATION_LOGIC Sin
+#define OPERATION_LOGIC OperationSin
 #define FUNCTION sin
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for sinh
   template<typename _Real>
-  struct Sinh : public UnaryOperation<_Real> {
+  struct OperationSinh : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -520,13 +520,13 @@ namespace codi {
         return cosh(arg);
       }
   };
-#define OPERATION_LOGIC Sinh
+#define OPERATION_LOGIC OperationSinh
 #define FUNCTION sinh
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for sqrt
   template<typename _Real>
-  struct Sqrt : public UnaryOperation<_Real> {
+  struct OperationSqrt : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -552,13 +552,13 @@ namespace codi {
         }
       }
   };
-#define OPERATION_LOGIC Sqrt
+#define OPERATION_LOGIC OperationSqrt
 #define FUNCTION sqrt
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tan
   template<typename _Real>
-  struct Tan : public UnaryOperation<_Real> {
+  struct OperationTan : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -582,13 +582,13 @@ namespace codi {
         return tmp * tmp;
       }
   };
-#define OPERATION_LOGIC Tan
+#define OPERATION_LOGIC OperationTan
 #define FUNCTION tan
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tanh
   template<typename _Real>
-  struct Tanh : public UnaryOperation<_Real> {
+  struct OperationTanh : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -606,13 +606,13 @@ namespace codi {
         return 1 - result * result;
       }
   };
-#define OPERATION_LOGIC Tanh
+#define OPERATION_LOGIC OperationTanh
 #define FUNCTION tanh
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tgamma
   template<typename _Real>
-  struct Tgamma : public UnaryOperation<_Real> {
+  struct OperationTgamma : public UnaryOperation<_Real> {
     public:
 
       using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
@@ -665,7 +665,7 @@ namespace codi {
         return diGamma * result;
       }
   };
-#define OPERATION_LOGIC Tgamma
+#define OPERATION_LOGIC OperationTgamma
 #define FUNCTION tgamma
 #include "unaryOverloads.tpp"
 

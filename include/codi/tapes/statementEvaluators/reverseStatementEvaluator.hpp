@@ -14,15 +14,15 @@
 namespace codi {
 
   /**
-   * @brief Only stored the function handle for the reverse evaluation.
+   * @brief Only stores the function handle for the reverse evaluation.
    *
    * Uses the StatementEvaluatorTapeInterface.
    *
-   * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
+   * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
   template<typename _Real>
   struct ReverseStatementEvaluator : public StatementEvaluatorInterface<_Real> {
-      using Real = CODI_DD(_Real, double);  ///< See ReverseStatementEvaluator
+      using Real = CODI_DD(_Real, double);  ///< See ReverseStatementEvaluator.
 
     public:
 
@@ -30,7 +30,7 @@ namespace codi {
       /// @name StatementEvaluatorInterface implementation
       /// @{
 
-      using Handle = void*;  ///< Function pointer to the reverse evaluation
+      using Handle = void*;  ///< Function pointer to the reverse evaluation.
 
       /// Throws CODI_EXCEPTION on call.
       template<typename Tape, typename... Args>

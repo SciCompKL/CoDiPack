@@ -11,22 +11,22 @@ namespace codi {
   /**
    * @brief Combines entries of Jacobians with the same identifier.
    *
-   * This class is used in the storing process of the Jacobians for an expression. For each pushData it checks if a
-   * Jacobian with the same identifier has already been pushed. If so then it combines these Jacobians.
+   * This class is used in the storing process of the Jacobians for an expression. For each pushData, it checks if a
+   * Jacobian with the same identifier has already been pushed. If so, then it combines these Jacobians.
    *
    * This behavior can be enabled with `-DCODI_RemoveDuplicateJacobianArguments=1`. See JacobianBaseTape::pushJacobians
    * for details.
    *
-   * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape usually defined by ActiveType::Identifier.
+   * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam _Identifier  The adjoint/tangent identifier type of a tape, usually chosen as ActiveType::Identifier.
    */
   template<typename _Real, typename _Identifier>
   struct DuplicateJacobianRemover {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See DuplicateJacobianRemover
-      using Identifier = CODI_DD(_Identifier, int);  ///< See DuplicateJacobianRemover
-      using ArgumentSize = Config::ArgumentSize;     ///< Definition of ArgumentSize type
+      using Real = CODI_DD(_Real, double);           ///< See DuplicateJacobianRemover.
+      using Identifier = CODI_DD(_Identifier, int);  ///< See DuplicateJacobianRemover.
+      using ArgumentSize = Config::ArgumentSize;     ///< Definition of ArgumentSize type.
 
     private:
       std::array<Identifier, Config::MaxArgumentSize> indices;
@@ -38,7 +38,7 @@ namespace codi {
       /// Constructor
       DuplicateJacobianRemover() = default;
 
-      /// Search through all added items if one matches the identifier. If yes combine, if no append.
+      /// For all added items, check if one matches the identifier. If yes combine, if no append.
       CODI_INLINE void pushData(Real const& jacobi, Identifier const& index) {
         bool found = false;
         ArgumentSize pos;
@@ -59,7 +59,7 @@ namespace codi {
       }
 
       /// Add the data to the provided vector. Resets the internal data for a new statement push.
-      /// @tparam Vec  DataInterface with Chunk2<double, int> as data.
+      /// @tparam Vec  DataInterface with Chunk2<Real, Identifier> as data.
       template<typename Vec>
       CODI_INLINE void storeData(Vec& vec) {
         for (ArgumentSize pos = 0; pos < size; pos += 1) {

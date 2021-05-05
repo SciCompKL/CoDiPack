@@ -123,7 +123,7 @@ namespace codi {
       using NestedPosition = typename ConstantValueData::Position;  ///< See PrimalValueTapeTypes
       using Position = typename Base::Position;                     ///< See TapeTypesInterface.
 
-      static bool constexpr AllowJacobianOptimization = false;  ///< See InternalStatementRecordingInterface.
+      static bool constexpr AllowJacobianOptimization = false;  ///< See InternalStatementRecordingTapeInterface.
       static bool constexpr HasPrimalValues = true;             ///< See PrimalEvaluationTapeInterface
       static bool constexpr LinearIndexHandling =
           TapeTypes::IsLinearIndexHandler;  ///< See IdentifierInformationTapeInterface
@@ -234,18 +234,18 @@ namespace codi {
 
       /// @}
       /*******************************************************************************/
-      /// @name Functions from InternalStatementRecordingInterface
+      /// @name Functions from InternalStatementRecordingTapeInterface
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingInterface::initIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::initIdentifier()
       template<typename Real>
       CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        identifier = IndexManager::UnusedIndex;
+        identifier = IndexManager::InactiveIndex;
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::destroyIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyIdentifier()
       template<typename Real>
       CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
@@ -264,7 +264,7 @@ namespace codi {
           /// \copydoc codi::ForEachTermLogic::handleActive
           template<typename Node>
           CODI_INLINE void handleActive(Node const& node, size_t& numberOfActiveArguments) {
-            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::UnusedIndex != node.getIdentifier())) {
+            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::InactiveIndex != node.getIdentifier())) {
               numberOfActiveArguments += 1;
             }
           }
@@ -282,7 +282,7 @@ namespace codi {
             CODI_UNUSED(constantValueData);
 
             Identifier rhsIndex = node.getIdentifier();
-            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::UnusedIndex == rhsIndex)) {
+            if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::InactiveIndex == rhsIndex)) {
               rhsIndex = curPassiveArgument;
 
               curPassiveArgument += 1;
@@ -307,7 +307,7 @@ namespace codi {
 
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                              ExpressionInterface<Real, Rhs> const& rhs) {
@@ -350,7 +350,7 @@ namespace codi {
         lhs.cast().value() = rhs.cast().getValue();
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Optimization for copy statements.
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
@@ -368,7 +368,7 @@ namespace codi {
         lhs.cast().value() = rhs.cast().getValue();
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, PassiveReal const& rhs) {
@@ -451,10 +451,10 @@ namespace codi {
         }
         TapeValues values = TapeValues(name);
 
-        size_t nAdjoints = indexManager.get().getLargestAssignedIndex();
+        size_t nAdjoints = indexManager.get().getLargestCreatedIndex();
         double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient));
 
-        size_t nPrimals = indexManager.get().getLargestAssignedIndex();
+        size_t nPrimals = indexManager.get().getLargestCreatedIndex();
         double memoryPrimals = static_cast<double>(nPrimals) * static_cast<double>(sizeof(Real));
 
         values.addSection("Adjoint vector");
@@ -667,7 +667,7 @@ namespace codi {
             return constantValueData.getDataSize();
             break;
           case TapeParameters::LargestIdentifier:
-            return indexManager.get().getLargestAssignedIndex();
+            return indexManager.get().getLargestCreatedIndex();
             break;
           case TapeParameters::PassiveValuesSize:
             return passiveValueData.getDataSize();
@@ -735,7 +735,7 @@ namespace codi {
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
       void evaluateForward(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
 
         cast().evaluateForward(start, end, adjoints.data());
       }
@@ -902,7 +902,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::evaluate()
       CODI_INLINE void evaluate(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
 
         evaluate(start, end, adjoints.data());
       }
@@ -921,7 +921,7 @@ namespace codi {
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
       void evaluateKeepState(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
 
         internalEvaluateReverse<false>(start, end, adjoints.data());
 
@@ -932,7 +932,7 @@ namespace codi {
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
       void evaluateForwardKeepState(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestAssignedIndex());
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
 
         if (!TapeTypes::IsLinearIndexHandler) {
           cast().internalResetPrimalValues(end);
@@ -1170,18 +1170,18 @@ namespace codi {
 
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
         if (TapeTypes::IsLinearIndexHandler) {
-          if (indexManager.get().getLargestAssignedIndex() >= (Identifier)primals.size()) {
+          if (indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
             resizePrimalVector(primals.size() + Config::ChunkSize);
           }
         } else {
           if (generatedNewIndex) {
-            resizePrimalVector(indexManager.get().getLargestAssignedIndex() + 1);
+            resizePrimalVector(indexManager.get().getLargestCreatedIndex() + 1);
           }
         }
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
-        adjoints.resize(indexManager.get().getLargestAssignedIndex() + 1);
+        adjoints.resize(indexManager.get().getLargestCreatedIndex() + 1);
       }
 
       CODI_NO_INLINE void resizePrimalVector(size_t newSize) {

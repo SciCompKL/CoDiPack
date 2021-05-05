@@ -8,7 +8,7 @@
 #include "../traits/realTraits.hpp"
 #include "../traits/tapeTraits.hpp"
 #include "interfaces/gradientAccessTapeInterface.hpp"
-#include "interfaces/internalStatementRecordingInterface.hpp"
+#include "interfaces/internalStatementRecordingTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -34,7 +34,7 @@ namespace codi {
 
    */
   template<typename _Real, typename _Gradient>
-  struct ForwardEvaluation : public InternalStatementRecordingInterface<_Gradient>,
+  struct ForwardEvaluation : public InternalStatementRecordingTapeInterface<_Gradient>,
                              public GradientAccessTapeInterface<_Gradient, _Gradient> {
     public:
 
@@ -45,19 +45,19 @@ namespace codi {
       using Identifier = Gradient;  ///< Same as the gradient type. Tangent data is stored in the active types.
 
       /*******************************************************************************/
-      /// @name Implementation of InternalStatementRecordingInterface
+      /// @name Implementation of InternalStatementRecordingTapeInterface
       /// @{
 
-      static bool constexpr AllowJacobianOptimization = true;  ///< See InternalStatementRecordingInterface
+      static bool constexpr AllowJacobianOptimization = true;  ///< See InternalStatementRecordingTapeInterface
 
-      /// \copydoc codi::InternalStatementRecordingInterface::initIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::initIdentifier()
       template<typename Real>
       void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
         identifier = Identifier();
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::destroyIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyIdentifier()
       template<typename Real>
       void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value, identifier);
@@ -81,7 +81,7 @@ namespace codi {
 
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
       template<typename Lhs, typename Rhs>
       void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
                  ExpressionInterface<Real, Rhs> const& rhs) {
@@ -94,7 +94,7 @@ namespace codi {
         lhs.cast().gradient() = newGradient;
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Optimization for copy statements.
       template<typename Lhs, typename Rhs>
       void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
@@ -103,7 +103,7 @@ namespace codi {
         lhs.cast().gradient() = rhs.cast().getGradient();
       }
 
-      /// \copydoc codi::InternalStatementRecordingInterface::store() <br>
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Specialization for passive assignments.
       template<typename Lhs>
       void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs, PassiveReal const& rhs) {

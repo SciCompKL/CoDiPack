@@ -357,7 +357,7 @@ namespace codi {
 
       /// \copydoc codi::IdentifierInformationTapeInterface::getPassiveIndex()
       Identifier getPassiveIndex() const {
-        return IndexManagerInterface<Identifier>::UnusedIndex;
+        return IndexManagerInterface<Identifier>::InactiveIndex;
       }
 
       /// \copydoc codi::IdentifierInformationTapeInterface::getInvalidIndex()
