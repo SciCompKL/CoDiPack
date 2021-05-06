@@ -56,9 +56,12 @@ digraph Tutorials {
 
   E19 [label="E19 - Evaluation helper handle creation"];
 
+  E20 [label="E20 - External function type data extraction"];
+
   // Edges (sorted)
   E02:e -> E08:w;
   E02:e -> E09:w;
+  E11:e -> E20:w;
   E17:e -> E18:w;
   E17:e -> E19:w;
   T01:e -> E01:w;
