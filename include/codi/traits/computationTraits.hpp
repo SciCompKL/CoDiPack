@@ -11,53 +11,74 @@ namespace codi {
 
   namespace ComputationTraits {
 
+    /// @brief Perform the operation lhs += rhs. Default logic uses operator +=.
+    ///
+    /// Simple specialization can be create with the macro CODI_CREATE_UPDATE.
+    ///
+    /// @tparam _Lhs Type of the left hand side.
+    /// @tparam _Rhs Type of the right hand side.
     template<typename _Lhs, typename _Rhs, typename = void>
-    struct Update {
+    struct UpdateImpl {
       public:
-        using Lhs = CODI_DD(_Lhs, double);
-        using Rhs = CODI_DD(_Rhs, double);
+        using Lhs = CODI_DD(_Lhs, double);  ///< See UpdateImpl.
+        using Rhs = CODI_DD(_Rhs, double);  ///< See UpdateImpl.
 
-        using Return = Lhs&;
+        using Return = Lhs&;  ///< Deduced return type.
 
+        /// Perform lhs += rhs
         static Return update(Lhs& lhs, Rhs const& rhs) {
           return lhs += rhs;
         }
     };
 
+    /// Perform lhs += rhs. Logic can be specialized by specializing UpdateImpl.
     template<typename Lhs, typename Rhs>
-    CODI_INLINE typename Update<Lhs, Rhs>::Return update(Lhs& lhs, Rhs const& rhs) {
-      return Update<Lhs, Rhs>::update(lhs, rhs);
+    CODI_INLINE typename UpdateImpl<Lhs, Rhs>::Return update(Lhs& lhs, Rhs const& rhs) {
+      return UpdateImpl<Lhs, Rhs>::update(lhs, rhs);
     }
 
+    /// @brief Perform \f$ a^T \f$. No default implementation available.
+    ///
+    /// Simple specialization can be create with the macro CODI_CREATE_TRANSPOSE.
+    ///
+    /// @tparam _Jacobian  Deduced type of the Jacobian.
     template<typename _Jacobian, typename = void>
-    struct Transpose {
+    struct TransposeImpl {
       public:
         static_assert(false && std::is_void<_Jacobian>::value, "Instantiation of unspecialized Jacobian transpose.");
-        using Jacobian = CODI_DD(_Jacobian, CODI_ANY);
+        using Jacobian = CODI_DD(_Jacobian, CODI_ANY);  ///< See TransposeImpl.
 
-        using Return = CODI_ANY;
+        using Return = CODI_ANY;  ///< Deduced return type.
 
+        /// @brief Perform \f$ a^T \f$.
         static Return transpose(Jacobian const& jacobian);
     };
 
+    /// Perform \f$ a^T \f$. Logic can be specialized by specializing TransposeImpl.
     template<typename Jacobian>
-    CODI_INLINE typename Transpose<Jacobian>::Return transpose(Jacobian const& jacobian) {
-      return Transpose<Jacobian>::transpose(jacobian);
+    CODI_INLINE typename TransposeImpl<Jacobian>::Return transpose(Jacobian const& jacobian) {
+      return TransposeImpl<Jacobian>::transpose(jacobian);
     }
   }
 
-#define CODI_CREATE_UPDATE(LhsType, RhsType, up)       \
-  template<>                                           \
-  struct ComputationTraits::Update<LhsType, RhsType> { \
-    public:                                            \
-      using Lhs = LhsType;                             \
-      using Rhs = RhsType;                             \
-      using Return = LhsType&;                         \
-      static Return update(Lhs& lhs, Rhs const& rhs) { \
-        return up;                                     \
-      }                                                \
+/// Create a specialization of ComputationTraits::UpdateImpl
+///
+/// Has to be used in the codi namespace.
+#define CODI_CREATE_UPDATE(LhsType, RhsType, up)           \
+  template<>                                               \
+  struct ComputationTraits::UpdateImpl<LhsType, RhsType> { \
+    public:                                                \
+      using Lhs = LhsType;                                 \
+      using Rhs = RhsType;                                 \
+      using Return = LhsType&;                             \
+      static Return update(Lhs& lhs, Rhs const& rhs) {     \
+        return up;                                         \
+      }                                                    \
   }
 
+/// Create a specialization of ComputationTraits::TransposeImpl
+///
+/// Has to be used in the codi namespace.
 #define CODI_CREATE_TRANSPOSE(Type, RType, trans)     \
   template<>                                          \
   struct ComputationTraits::Transpose<Type> {         \
@@ -69,8 +90,11 @@ namespace codi {
       }                                               \
   }
 
+#ifndef DOXYGEN_DISABLE
+
+  /// Transpose specialization for floating point numbers.
   template<typename T>
-  struct ComputationTraits::Transpose<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
+  struct ComputationTraits::TransposeImpl<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
     public:
       using Jacobian = T;
       using Return = T;
@@ -80,8 +104,9 @@ namespace codi {
       }
   };
 
+  /// Transpose specialization for complex types.
   template<typename Inner>
-  struct ComputationTraits::Transpose<std::complex<Inner>> {
+  struct ComputationTraits::TransposeImpl<std::complex<Inner>> {
     public:
       using Jacobian = std::complex<Inner>;
       using Return = std::complex<Inner>;
@@ -91,8 +116,11 @@ namespace codi {
       }
   };
 
+  /// Update specialization for double += std::complex<double>
+  ///
+  /// This is the adjoint of std::complex<double> = double;
   template<typename Inner>
-  struct ComputationTraits::Update<Inner, std::complex<Inner>> {
+  struct ComputationTraits::UpdateImpl<Inner, std::complex<Inner>> {
     public:
       using Lhs = Inner;
       using Rhs = std::complex<Inner>;
@@ -103,4 +131,5 @@ namespace codi {
         return lhs += std::real(rhs);
       }
   };
+#endif
 }
