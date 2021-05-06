@@ -28,8 +28,9 @@ namespace codi {
   struct JacobianLinearTape : public JacobianBaseTape<_TapeTypes, JacobianLinearTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
-                                                                     DefaultChunkedData>));  ///< See JacobianLinearTape.
+      using TapeTypes = CODI_DD(_TapeTypes,
+                                CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
+                                                         DefaultChunkedData>));  ///< See JacobianLinearTape.
 
       using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
@@ -123,8 +124,8 @@ namespace codi {
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          Adjoint const lhsAdjoint =
-              adjointVector[curAdjointPos];  // Adjoint positions are shifted since we do not use the zero index.
+          Adjoint const lhsAdjoint = adjointVector[curAdjointPos];  // We do not use the zero index, decrement of
+                                                                    // curAdjointPos at the end of the loop.
 
           if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation.

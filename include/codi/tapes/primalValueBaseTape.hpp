@@ -483,9 +483,9 @@ namespace codi {
        * Protected helper function for CustomAdjointVectorEvaluationTapeInterface
        */
 
-      /// Create the configured wrapper for the adjoint vector, see codi::Config::VariableAdjointInterfaceInPrimalTapes.
+      /// Select the configured adjoint vector, see codi::Config::VariableAdjointInterfaceInPrimalTapes.
       template<typename Adjoint>
-      ADJOINT_VECTOR_TYPE* wrapAdjointVector(VectorAccessInterface<Real, Identifier>* vectorAccess, Adjoint* data) {
+      ADJOINT_VECTOR_TYPE* selectAdjointVector(VectorAccessInterface<Real, Identifier>* vectorAccess, Adjoint* data) {
         CODI_UNUSED(vectorAccess, data);
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
@@ -552,7 +552,7 @@ namespace codi {
           vectorAccess = &primalAdjointAccess;
         }
 
-        ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
+        ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(vectorAccess, data);
 
         Base::internalEvaluateExtFuncForward(start, end, internalEvaluateForwardVector, vectorAccess, primalData,
                                              dataVector, constantValueData);
@@ -610,7 +610,7 @@ namespace codi {
           vectorAccess = &primalAdjointAccess;
         }
 
-        ADJOINT_VECTOR_TYPE* dataVector = wrapAdjointVector(vectorAccess, data);
+        ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(vectorAccess, data);
 
         Base::internalEvaluateExtFunc(start, end, internalEvaluateReverseVector, vectorAccess, primalData, dataVector,
                                       constantValueData);

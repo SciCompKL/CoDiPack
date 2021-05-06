@@ -50,7 +50,6 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-        // clear adjoints
         auto clearFunc = [this](Identifier* index, Config::ArgumentSize* stmtSize) {
           CODI_UNUSED(stmtSize);
 

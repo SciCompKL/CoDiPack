@@ -60,7 +60,6 @@ namespace codi {
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
-
       }
       using ExpressionInterface<Real, Impl>::cast;
 
@@ -163,7 +162,8 @@ namespace codi {
     public:
 
       using Type = CODI_DD(
-          _Type, CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingTapeInterface<CODI_ANY>, _Type>));
+          _Type,
+          CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingTapeInterface<CODI_ANY>, _Type>));
       using Real = typename Type::Real;
 
       using PassiveReal = RealTraits::PassiveReal<Real>;

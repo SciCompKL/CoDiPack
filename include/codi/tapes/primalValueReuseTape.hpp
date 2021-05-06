@@ -55,7 +55,6 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-        // clear adjoints
         auto clearFunc = [this](Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal,
                                 EvalHandle* evalHandle) {
           CODI_UNUSED(passiveArgs, oldPrimal, evalHandle);
