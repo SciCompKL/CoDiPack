@@ -30,12 +30,12 @@ OperatorCode OperatorCodeLookup::get() {
     return OperatorCode:: CODE; \
   }
 
-SPECIALIZE_LOOKUP(Add, ADD)
-SPECIALIZE_LOOKUP(Substract, SUB)
-SPECIALIZE_LOOKUP(Multiply, MUL)
-SPECIALIZE_LOOKUP(Divide, DIV)
-SPECIALIZE_LOOKUP(Sin, SIN)
-SPECIALIZE_LOOKUP(Cos, COS)
+SPECIALIZE_LOOKUP(OperationAdd, ADD)
+SPECIALIZE_LOOKUP(OperationSubstract, SUB)
+SPECIALIZE_LOOKUP(OperationMultiply, MUL)
+SPECIALIZE_LOOKUP(OperationDivide, DIV)
+SPECIALIZE_LOOKUP(OperationSin, SIN)
+SPECIALIZE_LOOKUP(OperationCos, COS)
 
 #undef SPECIALIZE_LOOKUP
 //! [Storing - Operator codes]
