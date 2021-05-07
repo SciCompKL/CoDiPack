@@ -45,8 +45,8 @@ namespace codi {
 #endif
 
     /// Enable if wrapper for IsExpression
-    template<typename Expr>
-    using EnableIfExpression = typename std::enable_if<IsExpression<Expr>::value>::type;
+    template<typename Expr, typename T = void>
+    using EnableIfExpression = typename std::enable_if<IsExpression<Expr>::value, T>::type;
 
     /// If the expression inherits from LhsExpressionInterface. Is either std::false_type or std::true_type
     template<typename Expr, typename = void>
@@ -70,8 +70,8 @@ namespace codi {
 #endif
 
     /// Enable if wrapper for IsLhsExpression
-    template<typename Expr>
-    using EnableIfLhsExpression = typename std::enable_if<IsLhsExpression<Expr>::value>::type;
+    template<typename Expr, typename T = void>
+    using EnableIfLhsExpression = typename std::enable_if<IsLhsExpression<Expr>::value, T>::type;
 
     /// If the expression inherits from ConstantExpression. Is either std::false_type or std::true_type
     template<typename Expr>
@@ -89,8 +89,8 @@ namespace codi {
 #endif
 
     /// Enable if wrapper for IsConstantExpression
-    template<typename Expr>
-    using EnableIfConstantExpression = typename std::enable_if<IsConstantExpression<Expr>::value>::type;
+    template<typename Expr, typename T = void>
+    using EnableIfConstantExpression = typename std::enable_if<IsConstantExpression<Expr>::value, T>::type;
 
     /// If the expression inherits from StaticContextActiveType. Is either std::false_type or std::true_type
     template<typename Expr>
@@ -108,8 +108,8 @@ namespace codi {
 #endif
 
     /// Enable if wrapper for IsStaticContextActiveType
-    template<typename Expr>
-    using EnableIfStaticContextActiveType = typename std::enable_if<IsStaticContextActiveType<Expr>::value>::type;
+    template<typename Expr, typename T = void>
+    using EnableIfStaticContextActiveType = typename std::enable_if<IsStaticContextActiveType<Expr>::value, T>::type;
 
     /// @}
     /*******************************************************************************/

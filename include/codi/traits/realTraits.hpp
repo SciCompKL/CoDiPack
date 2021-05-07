@@ -25,6 +25,7 @@ namespace codi {
 
         using Type = CODI_DD(_Type, double);  ///< See TraitsImplementation
 
+        using Real = Type;         ///< Inner type of the real value.
         using PassiveReal = Type;  ///< The original computation type, that was used in the application.
 
         static int constexpr MaxDerivativeOrder = 0;  ///< CoDiPack derivative order of the type.
@@ -69,6 +70,10 @@ namespace codi {
           return Type() == v;
         }
     };
+
+    /// \copydoc codi::TraitsImplementation::Real
+    template<typename Type>
+    using Real = typename TraitsImplementation<Type>::Real;
 
     /// \copydoc codi::TraitsImplementation::PassiveReal
     template<typename Type>

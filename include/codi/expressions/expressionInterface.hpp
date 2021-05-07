@@ -1,7 +1,11 @@
 #pragma once
 
+#include <iostream>
+
 #include "../aux/macros.hpp"
 #include "../config.h"
+#include "../traits/expressionTraits.hpp"
+#include "../traits/realTraits.hpp"
 #include "logic/nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -49,4 +53,28 @@ namespace codi {
     private:
       ExpressionInterface& operator=(ExpressionInterface const&) = delete;
   };
+
+#ifndef DOXYGEN_DISABLE
+  template<typename _Type>
+  struct RealTraits::TraitsImplementation<_Type, ExpressionTraits::EnableIfExpression<_Type>> {
+    public:
+
+      using Type = CODI_DD(_Type, CODI_T(ExpressionInterface<double, _Type>));
+      using Real = typename Type::Real;
+
+      using PassiveReal = RealTraits::PassiveReal<Real>;
+
+      static int constexpr MaxDerivativeOrder = 1 + RealTraits::MaxDerivativeOrder<Real>();
+
+      static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
+        return RealTraits::getPassiveValue(v.getValue());
+      }
+  };
+#endif
+
+  /// Write the primal value to the stream.
+  template<typename Expr>
+  typename ExpressionTraits::EnableIfExpression<Expr, std::ostream>& operator<<(std::ostream& out, Expr const& v) {
+    return out << v.getValue();
+  }
 }

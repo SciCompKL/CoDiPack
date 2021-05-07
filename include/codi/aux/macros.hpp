@@ -52,7 +52,12 @@ namespace codi {
 #endif
 
 /// Abbreviation for CODI_DECLARE_DEFAULT
-#define CODI_DD(Type, Default) CODI_DECLARE_DEFAULT(CODI_TEMPLATE(Type), CODI_TEMPLATE(Default))
+// Does not work in QT if CODI_DECLARE_DEFAULT is used
+#if CODI_IDE
+  #define CODI_DD(Type, Default) Default
+#else
+  #define CODI_DD(Type, Default) Type
+#endif
 
 /// Used in default declarations of expression templates.
 #define CODI_ANY int
