@@ -59,7 +59,6 @@ namespace codi {
   #define CODI_DD(Type, Default) Type
 #endif
 
-
 /// Used in default declarations of expression templates.
 #define CODI_ANY int
 
