@@ -3,7 +3,9 @@
 #include <set>
 
 #include "../../config.h"
+#include "../../traits/realTraits.hpp"
 #include "../aux/tapeParameters.hpp"
+#include "../aux/vectorAccessInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -31,11 +33,29 @@ namespace codi {
    * parameters are defined can either be checked with hasParameter() or looked up in the list returned by
    * getAvailableParameters().
    *
+   * \section vectorAccess Adjoint vector access
+   * The function createVectorAccess() provides access to the internal vectors of the tape, usually the adjoint vector
+   * and if available the primal value vector. If a generalized adjoint vector should be used, then the function
+   * createCustomAdjointVectorAccess() is used. This is the same functionality that is also used in external function
+   * called from an evaluation with a custom adjoint vector.
+   *
+   * Instances of both methods have to be deleted with the deleteVectorAccess().
+   *
+   * Implementations may return different types, that implement the same interface. Capturing these with auto may
+   * improve the performance by eliminating virtual function calls.
+   *
    * \section misc Misc. functions
    * Some other functions for tape data management. Please see the function documentation.
+   *
+   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
    */
+  template<typename _Real, typename _Identifier>
   struct DataManagementTapeInterface {
     public:
+
+      using Real = CODI_DD(_Real, double);           ///< See DataManagementTapeInterface.
+      using Identifier = CODI_DD(_Identifier, int);  ///< See DataManagementTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface: File IO
@@ -51,6 +71,15 @@ namespace codi {
       size_t getParameter(TapeParameters parameter) const;             ///< See \ref parameters.
       bool hasParameter(TapeParameters parameter) const;               ///< See \ref parameters.
       void setParameter(TapeParameters parameter, size_t value);       ///< See \ref parameters.
+
+      /*******************************************************************************/
+      /// @name Interface: Adjoint vector access
+
+      VectorAccessInterface<Real, Identifier>* createVectorAccess();                     ///< See \ref vectorAccess.
+      template<typename Adjoint>
+      VectorAccessInterface<Real, Identifier>* createCustomVectorAccess(Adjoint* data);  ///< See \ref vectorAccess.
+      void deleteVectorAccess(VectorAccessInterface<Real, Identifier>* access);          ///< See \ref vectorAccess.
+
 
       /*******************************************************************************/
       /// @name Interface: Misc
