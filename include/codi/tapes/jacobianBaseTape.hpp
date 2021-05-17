@@ -68,6 +68,15 @@ namespace codi {
    * left which have to be implemented by the final classes. These methods depend significantly on the index management
    * scheme and are performance critical.
    *
+   * Tape evaluations are performed in three steps with two wrapper steps beforehand. Each methods calls the next
+   * method:
+   * - evaluate
+   * - internalEvaluate*
+   * - internalEvaluate*_Step1_ExtFunc
+   * - internalEvaluate*_Step2_DataExtraction
+   * - internalEvaluate*_Step3_EvalStatements
+   * The placeholder stands for Reverse, Forward and Primal.
+   *
    * @tparam _TapeTypes has to implement JacobianTapeTypes.
    * @tparam _Impl Type of the final implementation.
    */
@@ -135,11 +144,11 @@ namespace codi {
 
       /// Perform a forward evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluateForwardStack(Args&&... args);
+      static void internalEvaluateForward_Step3_EvalStatements(Args&&... args);
 
       /// Perform a reverse evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluateReverseStack(Args&&... args);
+      static void internalEvaluateReverse_Step3_EvalStatements(Args&&... args);
 
       /// Add statement specific data to the data streams.
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
@@ -422,13 +431,13 @@ namespace codi {
       }
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverseStack, Impl::template internalEvaluateReverseStack);
+      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverse_Step3_EvalStatements, Impl::template internalEvaluateReverse_Step3_EvalStatements);
 
       /// Start for reverse evaluation between external function.
       template<typename Adjoint>
-      CODI_NO_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end,
+      CODI_NO_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start, NestedPosition const& end,
                                                                Adjoint* data, JacobianData& jacobianData) {
-        Wrap_internalEvaluateReverseStack<Adjoint> evalFunc;
+        Wrap_internalEvaluateReverse_Step3_EvalStatements<Adjoint> evalFunc;
         jacobianData.evaluateReverse(start, end, evalFunc, data);
       }
 
@@ -447,13 +456,13 @@ namespace codi {
       }
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateForwardStack, Impl::template internalEvaluateForwardStack);
+      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateForward_Step3_EvalStatements, Impl::template internalEvaluateForward_Step3_EvalStatements);
 
       /// Start for forward evaluation between external function.
       template<typename Adjoint>
-      CODI_NO_INLINE static void internalEvaluateForwardVector(NestedPosition const& start, NestedPosition const& end,
+      CODI_NO_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start, NestedPosition const& end,
                                                                Adjoint* data, JacobianData& jacobianData) {
-        Wrap_internalEvaluateForwardStack<Adjoint> evalFunc;
+        Wrap_internalEvaluateForward_Step3_EvalStatements<Adjoint> evalFunc;
         jacobianData.evaluateForward(start, end, evalFunc, data);
       }
 
@@ -469,7 +478,7 @@ namespace codi {
       CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        Base::internalEvaluateExtFunc(start, end, JacobianBaseTape::template internalEvaluateReverseVector<Adjoint>,
+        Base::internalEvaluateReverse_Step1_ExtFunc(start, end, JacobianBaseTape::template internalEvaluateReverse_Step2_DataExtraction<Adjoint>,
                                       &adjointWrapper, data, jacobianData);
       }
 
@@ -478,8 +487,8 @@ namespace codi {
       CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
         AdjointVectorAccess<Real, Identifier, Adjoint> adjointWrapper(data);
 
-        Base::internalEvaluateExtFuncForward(start, end,
-                                             JacobianBaseTape::template internalEvaluateForwardVector<Adjoint>,
+        Base::internalEvaluateForward_Step1_ExtFunc(start, end,
+                                             JacobianBaseTape::template internalEvaluateForward_Step2_DataExtraction<Adjoint>,
                                              &adjointWrapper, data, jacobianData);
       }
 

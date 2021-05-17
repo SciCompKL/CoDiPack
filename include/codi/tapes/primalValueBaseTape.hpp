@@ -85,6 +85,15 @@ namespace codi {
    * left which need to be implemented by the final classes. These methods depend significantly on the index management
    * scheme and are performance critical.
    *
+   * Tape evaluations are performed in three steps with two wrapper steps beforehand. Each methods calls the next
+   * method:
+   * - evaluate
+   * - internalEvaluate*
+   * - internalEvaluate*_Step1_ExtFunc
+   * - internalEvaluate*_Step2_DataExtraction
+   * - internalEvaluate*_Step3_EvalStatements
+   * The placeholder stands for Reverse, Forward and Primal.
+   *
    * @tparam _TapeTypes needs to implement PrimalValueTapeTypes.
    * @tparam _Impl Type of the final implementations
    */
@@ -161,15 +170,15 @@ namespace codi {
 
       /// Perform a forward evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluateForwardStack(Args&&... args);
+      static void internalEvaluateForward_Step3_EvalStatements(Args&&... args);
 
       /// Perform a primal evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluatePrimalStack(Args&&... args);
+      static void internalEvaluatePrimal_Step3_EvalStatements(Args&&... args);
 
       /// Perform a reverse evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluateReverseStack(Args&&... args);
+      static void internalEvaluateReverse_Step3_EvalStatements(Args&&... args);
 
       /// Reset the primal values to the given position.
       void internalResetPrimalValues(Position const& pos);
@@ -520,13 +529,13 @@ namespace codi {
       };
 
       /// Additional wrapper that triggers compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluateForwardStack, Impl::internalEvaluateForwardStack);
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluateForward_Step3_EvalStatements, Impl::internalEvaluateForward_Step3_EvalStatements);
 
       /// Forward evaluation of an inner tape part between two external functions.
-      CODI_INLINE static void internalEvaluateForwardVector(NestedPosition const& start, NestedPosition const& end,
+      CODI_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start, NestedPosition const& end,
                                                             Real* primalData, ADJOINT_VECTOR_TYPE* data,
                                                             ConstantValueData& constantValueData) {
-        Wrap_internalEvaluateForwardStack evalFunc{};
+        Wrap_internalEvaluateForward_Step3_EvalStatements evalFunc{};
         constantValueData.evaluateForward(start, end, evalFunc, primalData, data);
       }
 
@@ -554,7 +563,7 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(vectorAccess, data);
 
-        Base::internalEvaluateExtFuncForward(start, end, internalEvaluateForwardVector, vectorAccess, primalData,
+        Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction, vectorAccess, primalData,
                                              dataVector, constantValueData);
       }
 
@@ -579,13 +588,13 @@ namespace codi {
       };
 
       /// Additional wrapper that triggers compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluateReverseStack, Impl::internalEvaluateReverseStack);
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluateReverse_Step3_EvalStatements, Impl::internalEvaluateReverse_Step3_EvalStatements);
 
       /// Reverse evaluation of an inner tape part between two external functions.
-      CODI_INLINE static void internalEvaluateReverseVector(NestedPosition const& start, NestedPosition const& end,
+      CODI_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start, NestedPosition const& end,
                                                             Real* primalData, ADJOINT_VECTOR_TYPE* data,
                                                             ConstantValueData& constantValueData) {
-        Wrap_internalEvaluateReverseStack evalFunc;
+        Wrap_internalEvaluateReverse_Step3_EvalStatements evalFunc;
         constantValueData.evaluateReverse(start, end, evalFunc, primalData, data);
       }
 
@@ -612,7 +621,7 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(vectorAccess, data);
 
-        Base::internalEvaluateExtFunc(start, end, internalEvaluateReverseVector, vectorAccess, primalData, dataVector,
+        Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction, vectorAccess, primalData, dataVector,
                                       constantValueData);
       }
 
@@ -947,12 +956,12 @@ namespace codi {
        */
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluatePrimalStack, Impl::internalEvaluatePrimalStack);
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluatePrimal_Step3_EvalStatements, Impl::internalEvaluatePrimal_Step3_EvalStatements);
 
       /// Start for primal evaluation between external function.
-      CODI_INLINE static void internalEvaluatePrimalVector(NestedPosition const& start, NestedPosition const& end,
+      CODI_INLINE static void internalEvaluatePrimal_Step2_DataExtraction(NestedPosition const& start, NestedPosition const& end,
                                                            Real* primalData, ConstantValueData& constantValueData) {
-        Wrap_internalEvaluatePrimalStack evalFunc{};
+        Wrap_internalEvaluatePrimal_Step3_EvalStatements evalFunc{};
         constantValueData.evaluateForward(start, end, evalFunc, primalData);
       }
 
@@ -970,7 +979,7 @@ namespace codi {
         // TODO: implement primal value only accessor
         PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals.data());
 
-        Base::internalEvaluateExtFuncPrimal(start, end, PrimalValueBaseTape::internalEvaluatePrimalVector,
+        Base::internalEvaluatePrimal_Step1_ExtFunc(start, end, PrimalValueBaseTape::internalEvaluatePrimal_Step2_DataExtraction,
                                             &primalAdjointAccess, primals.data(), constantValueData);
       }
 

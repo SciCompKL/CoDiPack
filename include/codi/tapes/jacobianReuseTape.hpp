@@ -73,9 +73,9 @@ namespace codi {
         this->statementData.pushData(index, numberOfArguments);
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateForwardStack
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_Step3_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateForwardStack(
+      CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobian vector */
@@ -97,9 +97,9 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverseStack
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_Step3_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateReverseStack(
+      CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobianData */

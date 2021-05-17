@@ -73,8 +73,8 @@ namespace codi {
 
     protected:
 
-      /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForwardStack
-      CODI_INLINE static void internalEvaluateForwardStack(
+      /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_Step3_EvalStatements
+      CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from constantValueData */
@@ -110,8 +110,8 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::PrimalValueBaseTape::internalEvaluatePrimalStack
-      CODI_INLINE static void internalEvaluatePrimalStack(
+      /// \copydoc codi::PrimalValueBaseTape::internalEvaluatePrimal_Step3_EvalStatements
+      CODI_INLINE static void internalEvaluatePrimal_Step3_EvalStatements(
           /* data from call */
           Real* primalVector,
           /* data from constantValueData */
@@ -138,8 +138,8 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::PrimalValueBaseTape::internalEvaluateReverseStack
-      CODI_INLINE static void internalEvaluateReverseStack(
+      /// \copydoc codi::PrimalValueBaseTape::internalEvaluateReverse_Step3_EvalStatements
+      CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
           Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from constantValueData */

@@ -463,7 +463,7 @@ namespace codi {
 
       /// Evaluate all external functions from start to end and call `func` for the regions in between.
       template<typename Function, typename... Args>
-      CODI_INLINE void internalEvaluateExtFuncPrimal(const Position& start, const Position& end, Function func,
+      CODI_INLINE void internalEvaluatePrimal_Step1_ExtFunc(const Position& start, const Position& end, Function func,
                                                      VectorAccessInterface<Real, Identifier>* vectorAccess,
                                                      Args&&... args) {
         NestedPosition curInnerPos = start.inner;
@@ -482,7 +482,7 @@ namespace codi {
 
       /// Evaluate all external functions from start to end and call `func` for the regions in between.
       template<typename Function, typename... Args>
-      CODI_INLINE void internalEvaluateExtFunc(const Position& start, const Position& end, Function func,
+      CODI_INLINE void internalEvaluateReverse_Step1_ExtFunc(const Position& start, const Position& end, Function func,
                                                VectorAccessInterface<Real, Identifier>* vectorAccess, Args&&... args) {
         NestedPosition curInnerPos = start.inner;
         auto evalFunc = [&](ExternalFunctionInternalData* extFunc, const NestedPosition* endInnerPos) {
@@ -500,7 +500,7 @@ namespace codi {
 
       /// Evaluate all external functions from start to end and call `func` for the regions in between.
       template<typename Function, typename... Args>
-      CODI_INLINE void internalEvaluateExtFuncForward(const Position& start, const Position& end, Function func,
+      CODI_INLINE void internalEvaluateForward_Step1_ExtFunc(const Position& start, const Position& end, Function func,
                                                       VectorAccessInterface<Real, Identifier>* vectorAccess,
                                                       Args&&... args) {
         NestedPosition curInnerPos = start.inner;
