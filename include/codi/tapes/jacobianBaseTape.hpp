@@ -116,7 +116,7 @@ namespace codi {
     protected:
 
 #if CODI_RemoveDuplicateJacobianArguments
-      DuplicateJacobianRemover<Real, Identifier> jacobianSorter;  ///< Replacement for jacobianData to remove duplicated
+      DuplicateJacobianRemover<Real, Identifier> jacobianSorter;  ///< Encapsulates jacobianData to remove duplicated
                                                                   ///< Jacobians.
 #endif
 
