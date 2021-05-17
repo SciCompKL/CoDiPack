@@ -39,8 +39,7 @@ namespace codi {
       using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
       using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
-      using Base =
-          LhsExpressionInterface<Real, Gradient, Tape, ImmutableActiveType>;  ///< Base class abbreviation.
+      using Base = LhsExpressionInterface<Real, Gradient, Tape, ImmutableActiveType>;  ///< Base class abbreviation.
 
     private:
 
@@ -51,8 +50,7 @@ namespace codi {
 
       /// The identifier is not initialized. It is assumed to be a valid identifier (either default or assigned by an
       /// expression).
-      CODI_INLINE ImmutableActiveType(Real value, Identifier identifier)
-          : primalValue(value), identifier(identifier) {
+      CODI_INLINE ImmutableActiveType(Real value, Identifier identifier) : primalValue(value), identifier(identifier) {
         // deliberately left empty
       }
 
@@ -70,8 +68,7 @@ namespace codi {
       }
 
       /// This class in immutable, delete all assignment operators.
-      CODI_INLINE ImmutableActiveType<ActiveType>& operator=(ImmutableActiveType<ActiveType> const& v) =
-          delete;
+      CODI_INLINE ImmutableActiveType<ActiveType>& operator=(ImmutableActiveType<ActiveType> const& v) = delete;
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface

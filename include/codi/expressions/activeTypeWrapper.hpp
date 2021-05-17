@@ -23,11 +23,10 @@ namespace codi {
    * @tparam _ActiveType  The type of the active type which is wrapped.
    */
   template<typename _ActiveType>
-  struct ActiveTypeWrapper
-      : public LhsExpressionInterface<typename _ActiveType::Real, typename _ActiveType::Gradient,
-                                      typename _ActiveType::Tape, ActiveTypeWrapper<_ActiveType>>,
-        public AssignmentOperators<typename _ActiveType::Tape, ActiveTypeWrapper<_ActiveType>>,
-        public IncrementOperators<typename _ActiveType::Tape, ActiveTypeWrapper<_ActiveType>> {
+  struct ActiveTypeWrapper : public LhsExpressionInterface<typename _ActiveType::Real, typename _ActiveType::Gradient,
+                                                           typename _ActiveType::Tape, ActiveTypeWrapper<_ActiveType>>,
+                             public AssignmentOperators<typename _ActiveType::Tape, ActiveTypeWrapper<_ActiveType>>,
+                             public IncrementOperators<typename _ActiveType::Tape, ActiveTypeWrapper<_ActiveType>> {
     public:
 
       using ActiveType = CODI_DD(_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See WritableActiveTypeWrapper.
@@ -38,8 +37,7 @@ namespace codi {
       using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
       using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
-      using Base =
-          LhsExpressionInterface<Real, Gradient, Tape, ActiveTypeWrapper>;  ///< Base class abbreviation.
+      using Base = LhsExpressionInterface<Real, Gradient, Tape, ActiveTypeWrapper>;  ///< Base class abbreviation.
 
     private:
 
@@ -50,8 +48,7 @@ namespace codi {
 
       /// The identifier is not initialized. It is assumed to be a valid identifier (either default or assigned by an
       /// expression).
-      CODI_INLINE ActiveTypeWrapper(Real& value, Identifier& identifier)
-          : primalValue(value), identifier(identifier) {
+      CODI_INLINE ActiveTypeWrapper(Real& value, Identifier& identifier) : primalValue(value), identifier(identifier) {
         // deliberately left empty
       }
 

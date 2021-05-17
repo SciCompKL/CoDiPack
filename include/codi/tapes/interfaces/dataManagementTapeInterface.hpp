@@ -75,11 +75,10 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface: Adjoint vector access
 
-      VectorAccessInterface<Real, Identifier>* createVectorAccess();                     ///< See \ref vectorAccess.
+      VectorAccessInterface<Real, Identifier>* createVectorAccess();  ///< See \ref vectorAccess.
       template<typename Adjoint>
       VectorAccessInterface<Real, Identifier>* createCustomVectorAccess(Adjoint* data);  ///< See \ref vectorAccess.
       void deleteVectorAccess(VectorAccessInterface<Real, Identifier>* access);          ///< See \ref vectorAccess.
-
 
       /*******************************************************************************/
       /// @name Interface: Misc

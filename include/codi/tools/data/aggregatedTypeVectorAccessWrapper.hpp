@@ -18,8 +18,8 @@ namespace codi {
    * @brief Generalized wrapper for VectorAccessInterface for aggregated data types,
    * e.g. std::complex<codi::RealReverse>.
    *
-   * This wrapper is instantiated by AggregatedTypeVectorAccessWrapperFactory. It can be specialized for arbitrary types,
-   * that consist of CoDiPack types.
+   * This wrapper is instantiated by AggregatedTypeVectorAccessWrapperFactory. It can be specialized for arbitrary
+   * types, that consist of CoDiPack types.
    *
    * This class helps to write generalized external function, that handles aggregated data types. E.g. for
    * std::complex<codi::RealReverse> the primal value as well as the adjoint value are std::complex<double> and the
@@ -41,7 +41,8 @@ namespace codi {
    */
   template<typename _Type, typename = void>
   struct AggregatedTypeVectorAccessWrapper : public VectorAccessInterface<CODI_ANY, CODI_ANY> {
-      static_assert(false && std::is_void<_Type>::value, "Instantiation of unspecialized AggregatedTypeVectorAccessWrapper.");
+      static_assert(false && std::is_void<_Type>::value,
+                    "Instantiation of unspecialized AggregatedTypeVectorAccessWrapper.");
 
       using Type = CODI_DD(_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
   };
@@ -59,8 +60,8 @@ namespace codi {
       using Real = CODI_DD(_Real, CODI_ANY);              ///< See RealTraits::DataExtraction::Real.
       using Identifier = CODI_DD(_Identifier, CODI_ANY);  ///< See RealTraits::DataExtraction::Identifier.
 
-      using InnerInterface = CODI_DD(_InnerInterface,
-                                     CODI_T(VectorAccessInterface<double, int>));  ///< See AggregatedTypeVectorAccessWrapperBase.
+      using InnerInterface = CODI_DD(
+          _InnerInterface, CODI_T(VectorAccessInterface<double, int>));  ///< See AggregatedTypeVectorAccessWrapperBase.
 
     protected:
 
@@ -165,18 +166,18 @@ namespace codi {
   ///
   /// @tparam _Type See AggregatedTypeVectorAccessWrapper.
   template<typename _Type, typename = void>
-  struct AggregatedTypeVectorAccessWrapperFactory  {
+  struct AggregatedTypeVectorAccessWrapperFactory {
     public:
       using Type = CODI_DD(_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
 
-      using RType = AggregatedTypeVectorAccessWrapper<Type>; ///< Which instances this factory creates.
+      using RType = AggregatedTypeVectorAccessWrapper<Type>;  ///< Which instances this factory creates.
 
       /// Instantiate a AggregatedTypeVectorAccessWrapper class.
       ///
       /// @param access  The vector access interface from underlying tape.
       template<typename Real, typename Identifier>
       static RType* create(VectorAccessInterface<Real, Identifier>* access) {
-       return new RType(access);
+        return new RType(access);
       }
 
       /// Delete the AggregatedTypeVectorAccessWrapper instance create by the crate method.
@@ -184,8 +185,6 @@ namespace codi {
         delete access;
       }
   };
-
-
 
 #ifndef DOXYGEN_DISABLE
   /// Specialization of AggregatedTypeVectorAccessWrapper for std::complex.
@@ -200,18 +199,19 @@ namespace codi {
 
       using InnerType = CODI_DD(
           _InnerType,
-          CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));  ///< See AggregatedTypeVectorAccessWrapper.
-      using Type = std::complex<InnerType>;                                     ///< See AggregatedTypeVectorAccessWrapper.
+          CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));  ///< See
+                                                                                ///< AggregatedTypeVectorAccessWrapper.
+      using Type = std::complex<InnerType>;  ///< See AggregatedTypeVectorAccessWrapper.
 
-      using InnerInterface =
-          VectorAccessInterface<typename InnerType::Real,
-                                typename InnerType::Identifier>;  ///< See AggregatedTypeVectorAccessWrapperBase::InnerInterface.
+      using InnerInterface = VectorAccessInterface<
+          typename InnerType::Real,
+          typename InnerType::Identifier>;  ///< See AggregatedTypeVectorAccessWrapperBase::InnerInterface.
 
-      using Real = std::complex<typename InnerType::Real>;  ///< See RealTraits::DataExtraction::Real.
-      using Identifier =
-          std::complex<typename InnerType::Identifier>;     ///< See RealTraits::DataExtraction::Real.
+      using Real = std::complex<typename InnerType::Real>;              ///< See RealTraits::DataExtraction::Real.
+      using Identifier = std::complex<typename InnerType::Identifier>;  ///< See RealTraits::DataExtraction::Real.
 
-      using Base = AggregatedTypeVectorAccessWrapperBase<Real, Identifier, InnerInterface>;  ///< Base class abbreviation.
+      using Base =
+          AggregatedTypeVectorAccessWrapperBase<Real, Identifier, InnerInterface>;  ///< Base class abbreviation.
 
       /// Constructor
       AggregatedTypeVectorAccessWrapper(InnerInterface* innerInterface) : Base(innerInterface) {}
@@ -262,15 +262,18 @@ namespace codi {
   ///
   /// @tparam _Type  A CoDiPack active type.
   template<typename _Type>
-  struct AggregatedTypeVectorAccessWrapperFactory<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>>  {
+  struct AggregatedTypeVectorAccessWrapperFactory<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
     public:
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See AggregatedTypeVectorAccessWrapperBase.
+      using Type = CODI_DD(
+          _Type,
+          CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See
+                                                                             ///< AggregatedTypeVectorAccessWrapperBase.
 
       using RType = VectorAccessInterface<typename Type::Real, typename Type::Identifier>;
 
       /// \copydoc AggregatedTypeVectorAccessWrapperFactory::create()
       static RType* create(RType* access) {
-       return access;
+        return access;
       }
 
       /// \copydoc AggregatedTypeVectorAccessWrapperFactory::destroy()
