@@ -56,7 +56,7 @@ digraph Tutorials {
 
   E19 [label="E19 - Evaluation helper handle creation"];
 
-  E20 [label="E20 - External function type data extraction"];
+  E20 [label="E20 - Aggregated active type handling"];
 
   // Edges (sorted)
   E02:e -> E08:w;

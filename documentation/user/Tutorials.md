@@ -38,7 +38,7 @@ or pointers to other features.
 | \subpage Example_17_EvaluationHelper "" | Automatic computation of Hessians and Jacobians for function objects. (EvaluationHelper) |
 | \subpage Example_18_EvaluationHelper_function_objects "" | Function object kinds for the EvaluationHelper (Example 17). |
 | \subpage Example_19_EvaluationHelper_handle_creation "" | Handle creation for the EvaluationHelper (Example 17). |
-| \subpage Example_20_External_function_type_data_extraction "" | Generalized data extraction of active types in external functions. |
+| \subpage Example_20_Aggregated_active_type_handling "" | Generalized data extraction of aggregated active types in external functions. |
 
 The graph shows how the tutorials and examples are connected. Usually it is better to understand first the prerequisites
 of a tutorial/example before reading the actual example.
