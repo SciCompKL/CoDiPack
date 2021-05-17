@@ -3,6 +3,7 @@
 #include "../aux/macros.hpp"
 #include "../config.h"
 #include "../tapes/interfaces/fullTapeInterface.hpp"
+#include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
 #include "expressionInterface.hpp"
 
@@ -146,4 +147,57 @@ namespace codi {
 
       /// @}
   };
+
+#ifndef DOXYGEN_DISABLE
+
+  /// Specialization of RealTraits::DataExtraction for CoDiPack types.
+  template<typename _Type>
+  struct RealTraits::DataExtraction<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
+    public:
+      using Type = CODI_DD(_Type,
+                           CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See DataExtraction.
+
+      using Real = typename Type::Real;              ///< See DataExtraction::Real.
+      using Identifier = typename Type::Identifier;  ///< See DataExtraction::Identifier.
+
+      /// \copydoc DataExtraction::getValue()
+      CODI_INLINE static Real getValue(Type const& v) {
+        return v.getValue();
+      }
+
+      /// \copydoc DataExtraction::getIdentifier()
+      CODI_INLINE static Identifier getIdentifier(Type const& v) {
+        return v.getIdentifier();
+      }
+
+      /// \copydoc DataExtraction::setValue()
+      CODI_INLINE static void setValue(Type& v, Real const& value) {
+        v.setValue(value);
+      }
+  };
+
+  /// Specialization of RealTraits::DataRegistration for CoDiPack types.
+  template<typename _Type>
+  struct RealTraits::TapeRegistration<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
+      using Type = CODI_DD(_Type,
+                           CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See DataRegistration.
+
+      using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
+
+      /// \copydoc DataRegistration::registerInput()
+      CODI_INLINE static void registerInput(Type& v) {
+        Type::getGlobalTape().registerInput(v);
+      }
+
+      /// \copydoc DataRegistration::registerOutput()
+      CODI_INLINE static void registerOutput(Type& v) {
+        Type::getGlobalTape().registerOutput(v);
+      }
+
+      /// \copydoc DataRegistration::registerExternalFunctionOutput()
+      CODI_INLINE static Real registerExternalFunctionOutput(Type& v) {
+        return Type::getGlobalTape().registerExternalFunctionOutput(v);
+      }
+  };
+#endif
 }
