@@ -13,9 +13,10 @@
 namespace codi {
 
   /**
-   * @brief Creates a pseudo active type from data references. Can be used to overlay existing data with active types.
+   * @brief Creates a pseudo active type from data value. Can be used to overlay existing data with immutable active
+   * types.
    *
-   * The class stores references to the value and identifier. The identifier is taken as it is and not initialized or
+   * The class stores copies to the value and identifier. The identifier is taken as it is and not initialized or
    * destroyed. The class only wraps the data in a CoDiPack expression.
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
@@ -23,14 +24,14 @@ namespace codi {
    * @tparam _ActiveType  The type of the active type which is wrapped.
    */
   template<typename _ActiveType>
-  struct WritableActiveTypeWrapper
+  struct ImmutableActiveType
       : public LhsExpressionInterface<typename _ActiveType::Real, typename _ActiveType::Gradient,
-                                      typename _ActiveType::Tape, WritableActiveTypeWrapper<_ActiveType>>,
-        public AssignmentOperators<typename _ActiveType::Tape, WritableActiveTypeWrapper<_ActiveType>>,
-        public IncrementOperators<typename _ActiveType::Tape, WritableActiveTypeWrapper<_ActiveType>> {
+                                      typename _ActiveType::Tape, ImmutableActiveType<_ActiveType>>,
+        public AssignmentOperators<typename _ActiveType::Tape, ImmutableActiveType<_ActiveType>>,
+        public IncrementOperators<typename _ActiveType::Tape, ImmutableActiveType<_ActiveType>> {
     public:
 
-      using ActiveType = CODI_DD(_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See WritableActiveTypeWrapper.
+      using ActiveType = CODI_DD(_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See ReadableActiveTypeWrapper.
       using Tape = typename ActiveType::Tape;                                 ///< See ActiveType.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
@@ -39,59 +40,56 @@ namespace codi {
       using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
       using Base =
-          LhsExpressionInterface<Real, Gradient, Tape, WritableActiveTypeWrapper>;  ///< Base class abbreviation.
+          LhsExpressionInterface<Real, Gradient, Tape, ImmutableActiveType>;  ///< Base class abbreviation.
 
     private:
 
-      Real& primalValue;
-      Identifier& identifier;
+      Real primalValue;
+      Identifier identifier;
 
     public:
 
       /// The identifier is not initialized. It is assumed to be a valid identifier (either default or assigned by an
       /// expression).
-      CODI_INLINE WritableActiveTypeWrapper(Real& value, Identifier& identifier)
+      CODI_INLINE ImmutableActiveType(Real value, Identifier identifier)
           : primalValue(value), identifier(identifier) {
         // deliberately left empty
       }
 
-      /// The identifier is not destroyed. It is assumed to be still valid, since this is only a reference to the
-      /// actual value.
-      CODI_INLINE ~WritableActiveTypeWrapper() {
+      /// Create a immutable instance of an active type. It is assumed that the lifespan of the argument is longer than
+      /// the lifespan of the created value.
+      CODI_INLINE ImmutableActiveType(ActiveType const& value)
+          : primalValue(value.getValue()), identifier(value.getIdentifier()) {
         // deliberately left empty
       }
 
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&)
-      CODI_INLINE WritableActiveTypeWrapper<ActiveType>& operator=(WritableActiveTypeWrapper<ActiveType> const& v) {
-        static_cast<LhsExpressionInterface<Real, Gradient, Tape, WritableActiveTypeWrapper>&>(*this) = v;
-        return *this;
+      /// The identifier is not destroyed. It is assumed to be still valid, since this is only an immutable reference to
+      /// the actual value.
+      CODI_INLINE ~ImmutableActiveType() {
+        // deliberately left empty
       }
-      using LhsExpressionInterface<Real, Gradient, Tape, WritableActiveTypeWrapper>::operator=;
+
+      /// This class in immutable, delete all assignment operators.
+      CODI_INLINE ImmutableActiveType<ActiveType>& operator=(ImmutableActiveType<ActiveType> const& v) =
+          delete;
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = WritableActiveTypeWrapper const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using StoreAs = ImmutableActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
 
       /// @}
       /*******************************************************************************/
       /// @name Implementation of LhsExpressionInterface
+      ///
+      /// Only the const access functions are implemented.
+      ///
       /// @{
-
-      /// \copydoc codi::LhsExpressionInterface::getIdentifier()
-      CODI_INLINE Identifier& getIdentifier() {
-        return identifier;
-      }
 
       /// \copydoc codi::LhsExpressionInterface::getIdentifier() const
       CODI_INLINE Identifier const& getIdentifier() const {
         return identifier;
-      }
-
-      /// \copydoc codi::LhsExpressionInterface::value()
-      CODI_INLINE Real& value() {
-        return primalValue;
       }
 
       /// \copydoc codi::LhsExpressionInterface::value() const
