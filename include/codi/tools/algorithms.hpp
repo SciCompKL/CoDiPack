@@ -161,6 +161,9 @@ namespace codi {
             for(size_t i = 0; i < outputSize; i += 1) {
               for(size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
                 jac(i,j + curDim) = GT::at(tape.getGradient(output[i]), curDim);
+                if (output[i] != GradientData()) {
+                  GT::at(tape.gradient(output[i]), curDim) = typename GT::Data();
+                }
               }
             }
 
