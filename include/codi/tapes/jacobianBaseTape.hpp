@@ -13,6 +13,7 @@
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../expressions/referenceActiveType.hpp"
+#include "../traits/computationTraits.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "aux/adjointVectorAccess.hpp"
 #include "aux/duplicateJacobianRemover.hpp"
@@ -232,8 +233,10 @@ namespace codi {
       struct PushJacobianLogic : public JacobianComputationLogic<PushJacobianLogic> {
         public:
           /// General implementation. Checks for invalid and passive values/Jacobians.
-          template<typename Node, typename DataVector>
-          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
+          template<typename Node, typename Jacobian, typename DataVector>
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, DataVector& dataVector) {
+            Real jacobian = ComputationTraits::adjointConversion<Real>(jacobianExpr);
+
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
               if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
                 if (CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian))) {
@@ -244,10 +247,12 @@ namespace codi {
           }
 
           /// Specialization for ReferenceActiveType nodes. Delays Jacobian push.
-          template<typename Type, typename DataVector>
-          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian,
+          template<typename Type, typename Jacobian, typename DataVector>
+          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Jacobian jacobianExpr,
                                                   DataVector& dataVector) {
             CODI_UNUSED(dataVector);
+
+            Real jacobian = ComputationTraits::adjointConversion<Real>(jacobianExpr);
 
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
               // Do a delayed push for these leaf nodes, accumulate the jacobian in the local member.
