@@ -229,7 +229,7 @@ namespace codi {
     protected:
 
       /// Pushes Jacobians and indices to the tape.
-      struct PushJacobianLogic : public JacobianComputationLogic<Real, PushJacobianLogic> {
+      struct PushJacobianLogic : public JacobianComputationLogic<PushJacobianLogic> {
         public:
           /// General implementation. Checks for invalid and passive values/Jacobians.
           template<typename Node, typename DataVector>

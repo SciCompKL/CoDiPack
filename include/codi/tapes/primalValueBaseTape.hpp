@@ -513,7 +513,7 @@ namespace codi {
       }
 
       /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes.
-      struct IncrementForwardLogic : public JacobianComputationLogic<Real, IncrementForwardLogic> {
+      struct IncrementForwardLogic : public JacobianComputationLogic<IncrementForwardLogic> {
         public:
 
           /// \copydoc JacobianComputationLogic::handleJacobianOnActive()
@@ -565,7 +565,7 @@ namespace codi {
       }
 
       /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes.
-      struct IncrementReversalLogic : public JacobianComputationLogic<Real, IncrementReversalLogic> {
+      struct IncrementReversalLogic : public JacobianComputationLogic<IncrementReversalLogic> {
         public:
 
           /// See IncrementReversalLogic.
