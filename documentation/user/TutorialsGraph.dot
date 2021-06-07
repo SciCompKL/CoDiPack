@@ -32,7 +32,7 @@ digraph Tutorials {
 
   E07 [label="E7 - Primal tape evaluation"];
 
-  E08 [label="E8 - Vector helper"];
+  E08 [label="E8 - Vector helper interface access"];
 
   E09 [label="E9 - OpenMP reverse evaluation"];
 
@@ -57,7 +57,10 @@ digraph Tutorials {
   E19 [label="E19 - Evaluation helper handle creation"];
 
   // Edges (sorted)
-  E08:e -> E09:w;
+  E02:e -> E08:w;
+  E02:e -> E09:w;
+  E17:e -> E18:w;
+  E17:e -> E19:w;
   T01:e -> E01:w;
   T01:e -> T03:w;
   T01:e -> T04:w;
@@ -75,9 +78,6 @@ digraph Tutorials {
   T02:e -> T05:w;
   T02:e -> T06:w;
   T04:e -> E02:w;
-  T04:e -> E08:w;
   T06:e -> E04:w;
   T06:e -> E05:w;
-  E17:e -> E18:w;
-  E17:e -> E19:w;
 }

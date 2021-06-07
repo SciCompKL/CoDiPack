@@ -32,7 +32,7 @@ int main(int nargs, char** args) {
   tape.setActive();
 
 //! [Custom Adjoint Vector Helper]
-  // Step 1: Record a regular tape
+  // Step 1: Perform a regular recording
   for(size_t i = 0; i < 5; ++i) {
     tape.registerInput(x[i]);
   }
@@ -44,12 +44,13 @@ int main(int nargs, char** args) {
 
   tape.setPassive();
 
-  // Step 2: Use for the seeding, the evaluation and the retrieval of the gradients the vector helper.
-  codi::CustomAdjointVectorHelper<Real, codi::Direction<double, 2> > vh;
-  vh.gradient(y[0].getIdentifier())[0] = 1.0;
+  codi::CustomAdjointVectorHelper<Real, codi::Direction<double, 2> > vh; // Step 2: Create the vector helper
+  vh.gradient(y[0].getIdentifier())[0] = 1.0;             // Step 3: Set the seeding in the vector helper
   vh.gradient(y[1].getIdentifier())[1] = 1.0;
-  vh.evaluate();
 
+  vh.evaluate();                                          // Step 4: Call evaluate on the vector helper.
+
+  // Step 5: Get the gradients from the vector helper.
   codi::Jacobian<double> jacobian(2,5);
   for(size_t i = 0; i < 5; ++i) {
     jacobian(0,i) = vh.getGradient(x[i].getIdentifier())[0];

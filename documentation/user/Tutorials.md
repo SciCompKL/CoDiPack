@@ -26,7 +26,7 @@ or pointers to other features.
 | \subpage Example_05_Higher_order_types_direct_access "" | Example of higher order AD types accessed with the basic CoDiPack data functions. |
 | \subpage Example_06_Forward_tape_evaluation "" | Demonstrates how a tape can be evaluated in a forward AD mode. |
 | \subpage Example_07_Primal_tape_evaluation "" | Demonstrates how primal value tapes can be reevaluated for a different point without recording a new tape. |
-| \subpage Example_08_Vector_helper "" | Ease of access structure for handling custom adjoint vectors and vector modes. |
+| \subpage Example_08_Vector_helper_interface_access "" | Using a generalized interface for the custom vector access. |
 | \subpage Example_09_OpenMP_reverse_evaluation "" | Shows how OpenMP can be used to evaluate the same tape concurrently with multiple threads. |
 | \subpage Example_10_External_function_helper "" | Ease of access structure for adding custom function to the tape. |
 | \subpage Example_11_External_function_user_data "" | How user data can be added to external functions. |

@@ -11,6 +11,12 @@ Example 2 - Custom adjoint vector evaluation {#Example_02_Custom_adjoint_vector_
 **Full code:**
 \snippet examples/Example_02_Custom_adjoint_vector_evaluation.cpp Example 2 - Custom adjoint vector helper
 
+The custom adjoint vector helper structure ([CustomAdjointVectorHelper](@ref codi::CustomAdjointVectorHelper) allows to
+use a custom type for the adjoint vector, by providing a simple tape like interface.
+
+The biggest change is that all operations for the reverse mode have to be done on the helper structure. That is seeding,
+evaluation and retrieving.
+
 Notes on using the codi::CustomAdjointVectorHelper:
  - Internal adjoint vector is automatically created.
  - The default tape is the global tape. (Can be changed with [setTape](@ref codi::CustomAdjointVectorInterface::setTape)
