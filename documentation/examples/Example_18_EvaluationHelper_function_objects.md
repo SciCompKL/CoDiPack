@@ -3,7 +3,7 @@ Example 18 - EvaluationHelper function object declaration {#Example_18_Evaluatio
 
 **Goal:** Possible definitions of function objects for the codi::EvaluationHelper
 
-**Prequesties:** None
+**Prerequisite:** None
 
 **Function:**
 \snippet examples/Example_18_EvaluationHelper_function_objects.cpp Function

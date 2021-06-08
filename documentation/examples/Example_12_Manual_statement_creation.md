@@ -3,7 +3,7 @@ Example 12 - Manual statement creation {#Example_12_Manual_statement_creation}
 
 **Goal:** Add a statement with manually computed primal and Jacobian values to the tape.
 
-**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_poly2D
 \snippet examples/Example_12_Manual_statement_creation.cpp Function
@@ -25,3 +25,5 @@ functions. These calls will always push a complete statement.
 
 The statement helper can be used to push multiple statements on the tape. It resets itself each time a complete
 statement is pushed.
+
+The tape statistics output in the example shows reduction of stored items on the tape.

@@ -3,7 +3,7 @@ Example 15 - Preaccumulation of code parts {#Example_15_Preaccumulation_of_code_
 
 **Goal:** Reduce the memory consumption of code regions by storing the Jacobian for that region.
 
-**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** 
 \snippet examples/Example_15_Preaccumulation_of_code_parts.cpp Function

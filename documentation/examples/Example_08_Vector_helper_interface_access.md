@@ -3,7 +3,7 @@ Example 8 - Generalized adjoint vector interface {#Example_08_Vector_helper_inte
 
 **Goal:** Use the generialized interface for the adjoint vector access.
 
-**Prequesties:** \ref Example_02_Custom_adjoint_vector_evaluation
+**Prerequisite:** \ref Example_02_Custom_adjoint_vector_evaluation
 
 **Function:** \ref func_simpleNto2
 \snippet examples/Example_08_Vector_helper_interface_access.cpp Function

@@ -3,7 +3,7 @@ Example 2 - Custom adjoint vector evaluation {#Example_02_Custom_adjoint_vector_
 
 **Goal:** Learn to use a custom adjoint vector in a CoDiPack reverse mode tape.
 
-**Prequesties:** \ref Tutorial_04_Vector_mode_AD, [Identifier management](@ref IdentifierManagement).
+**Prerequisite:** \ref Tutorial_04_Vector_mode_AD, [Identifier management](@ref IdentifierManagement).
 
 **Function:** \ref func_simpleNto2
 \snippet examples/Example_02_Custom_adjoint_vector_evaluation.cpp Function

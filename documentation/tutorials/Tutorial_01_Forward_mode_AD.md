@@ -3,7 +3,7 @@ Tutorial 1 - Forward mode AD {#Tutorial_01_Forward_mode_AD}
 
 **Goal:** Introduction to forward mode AD with CoDiPack.
 
-**Prequesties:** AD forward mode. See \ref sec_forwardAD
+**Prerequisite:** AD forward mode. See \ref sec_forwardAD
 
 **Function:** \ref func_simple1to1
 \snippet tutorials/Tutorial_01_Forward_mode_AD.cpp Function

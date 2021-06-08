@@ -3,7 +3,7 @@ Example 10 - External function helper {#Example_10_External_function_helper}
 
 **Goal:** Add external functions to the tape via an helper structure.
 
-**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_linearSystemSolve
 \snippet examples/Example_10_External_function_helper.cpp Function

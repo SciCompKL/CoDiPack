@@ -3,7 +3,7 @@ Tutorial 2 - Reverse mode AD {#Tutorial_02_Reverse_mode_AD}
 
 **Goal:** Introduction to reverse mode AD with CoDiPack.
 
-**Prequesties:** AD reverse mode. See \ref sec_reverseAD
+**Prerequisite:** AD reverse mode. See \ref sec_reverseAD
 
 **Function:** \ref func_simple1to1
 \snippet tutorials/Tutorial_02_Reverse_mode_AD.cpp Function

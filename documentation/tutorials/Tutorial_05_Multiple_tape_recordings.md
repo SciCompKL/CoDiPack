@@ -3,7 +3,7 @@ Tutorial 5 - Multiple tape recordings {#Tutorial_05_Multiple_tape_recordings}
 
 **Goal:** Be aware of possible side effects in multiple reverse evaluations
 
-**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:**
 \snippet tutorials/Tutorial_05_Multiple_tape_recordings.cpp Function

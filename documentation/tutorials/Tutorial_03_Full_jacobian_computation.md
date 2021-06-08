@@ -5,7 +5,7 @@ Tutorial 3 - Full Jacobian computation (Multiple reverse evaluations) {#Tutorial
  - Compute several direction with the AD forward mode to create the Jacobian.
  - Evaluate the reverse tape multiple times to compute the Jacobian.
 
-**Prequesties:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_simpleNto2
 \snippet tutorials/Tutorial_03_Full_jacobian_computation.cpp Function

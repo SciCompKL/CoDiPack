@@ -3,7 +3,7 @@ Example 17 - Hessian and Jacobian computation for function objects {#Example_17_
 
 **Goal:** Lern how to automatically compute Hessians and Jacobians for function objects.
 
-**Prequesties:** None
+**Prerequisite:** None
 
 **Function:**
 \snippet examples/Example_17_EvaluationHelper.cpp Function

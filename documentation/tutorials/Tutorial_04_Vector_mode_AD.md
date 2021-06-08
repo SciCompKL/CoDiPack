@@ -3,7 +3,7 @@ Tutorial 4 - Vector mode AD {#Tutorial_04_Vector_mode_AD}
 
 **Goal:** Vector mode with the forward and reverse mode AD CoDiPack types.
 
-**Prequesties:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_simpleNto2
 \snippet tutorials/Tutorial_04_Vector_mode_AD.cpp Function
