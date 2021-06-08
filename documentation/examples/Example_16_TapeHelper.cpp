@@ -129,7 +129,7 @@ int main(int nargs, char** args) {
   printHesForOutput("Hessian with respect to aNorm: ", hes, 1);
   printHesForOutput("Hessian with respect to bNorm: ", hes, 2);
 
-  // Evaluate gradient
+  // Perform a regular AD reverse mode interpretation of the tape.
 //! [Reverse evaluation]
   TH::Gradient* x_b = th.createGradientVectorInput();
   TH::Gradient* y_b = th.createGradientVectorOutput();

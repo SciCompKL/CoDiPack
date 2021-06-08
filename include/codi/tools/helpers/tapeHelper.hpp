@@ -298,7 +298,7 @@ namespace codi {
       }
 
       /**
-       * @brief Reevaluate the tape at the given position an compute the AD forward mode.
+       * @brief Reevaluate the tape at the given position and compute the AD forward mode.
        *
        * This method is a shortcut for calling evalPrimal and evalForward in succession.
        *
@@ -345,7 +345,7 @@ namespace codi {
       }
 
       /**
-       * @brief Reevaluate the tape at the given position an compute the AD forward mode.
+       * @brief Reevaluate the tape at the given position and compute the AD forward mode.
        *
        * This method is a shortcut for calling evalPrimal and evalReverse in succession.
        *

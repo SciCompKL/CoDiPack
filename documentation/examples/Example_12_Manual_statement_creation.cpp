@@ -8,7 +8,7 @@ using Real = codi::RealReverse;
 using Tape = typename Real::Tape;
 
 //! [Function]
-// Evaluates w = (1 y y^2 ... y^(n-1)) A (1 x x^2 ... x^(n-1))^T
+// Evaluates w = (1 y y^2 ... y^(n-1)) A (1 x x^2 ... x^(n-1))^T (Standard 2D polynomial evaluation)
 template<typename Real>
 Real poly2D( const Real x, const Real y, const double* A, size_t n) {
     Real w = Real();
@@ -77,9 +77,9 @@ void runExample(int mode) {
   tape.setActive();
   tape.registerInput(u);
 
-  double A[9] = { 1.0,    0.5,   0.25,
-                  0.0,    1.0,   0.75,
-                  0.25,   0.0,   1.0};
+  double A[3*3] = { 1.0,    0.5,   0.25,
+                    0.0,    1.0,   0.75,
+                    0.25,   0.0,   1.0};
   Real x = cos(u);
   Real y = sin(u);
 
