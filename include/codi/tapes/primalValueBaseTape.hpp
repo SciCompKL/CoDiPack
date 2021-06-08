@@ -92,7 +92,7 @@ namespace codi {
    * - internalEvaluate*_Step1_ExtFunc
    * - internalEvaluate*_Step2_DataExtraction
    * - internalEvaluate*_Step3_EvalStatements
-   * The placeholder stands for Reverse, Forward and Primal.
+   * The placeholder stands for Reverse, Forward, or Primal.
    *
    * @tparam _TapeTypes needs to implement PrimalValueTapeTypes.
    * @tparam _Impl Type of the final implementations
