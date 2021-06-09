@@ -29,9 +29,9 @@ namespace codi {
     public:
 
       using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
-                                                                     DefaultChunkedData>));  ///< See JacobianReuseTape
+                                                                     DefaultChunkedData>));  ///< See JacobianReuseTape.
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation
+      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                    ///< See TapeTypesInterface.
@@ -39,7 +39,7 @@ namespace codi {
       using IndexManager = typename TapeTypes::IndexManager;    ///< See TapeTypesInterface.
       using Identifier = typename TapeTypes::Identifier;        ///< See TapeTypesInterface.
       using Position = typename Base::Position;                 ///< See TapeTypesInterface.
-      using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes
+      using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
 
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
@@ -50,7 +50,6 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-        // clear adjoints
         auto clearFunc = [this](Identifier* index, Config::ArgumentSize* stmtSize) {
           CODI_UNUSED(stmtSize);
 
@@ -68,14 +67,15 @@ namespace codi {
 
     protected:
 
+      /// \copydoc codi::JacobianBaseTape::pushStmtData
       /// Both arguments are pushed to the tape.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         this->statementData.pushData(index, numberOfArguments);
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateForwardStack
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_Step3_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateForwardStack(
+      CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobian vector */
@@ -97,9 +97,9 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverseStack
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_Step3_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateReverseStack(
+      CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobianData */

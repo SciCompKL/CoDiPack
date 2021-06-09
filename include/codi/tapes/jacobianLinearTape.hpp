@@ -28,10 +28,11 @@ namespace codi {
   struct JacobianLinearTape : public JacobianBaseTape<_TapeTypes, JacobianLinearTape<_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
-                                                                     DefaultChunkedData>));  ///< See JacobianLinearTape
+      using TapeTypes = CODI_DD(_TapeTypes,
+                                CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
+                                                         DefaultChunkedData>));  ///< See JacobianLinearTape.
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation
+      using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
@@ -63,16 +64,17 @@ namespace codi {
 
     protected:
 
-      /// Only number of arguments is required for linear index managers
+      /// \copydoc codi::JacobianBaseTape::pushStmtData
+      /// Only the number of arguments is required for linear index managers.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         CODI_UNUSED(index);
 
         this->statementData.pushData(numberOfArguments);
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateForwardStack
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_Step3_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateForwardStack(
+      CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobian vector */
@@ -102,9 +104,9 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverseStack
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_Step3_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateReverseStack(
+      CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
           Adjoint* adjointVector,
           /* data from jacobianData */
@@ -122,11 +124,11 @@ namespace codi {
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          Adjoint const lhsAdjoint =
-              adjointVector[curAdjointPos];  // Adjoint positions are shifted since we do not use the zero index
+          Adjoint const lhsAdjoint = adjointVector[curAdjointPos];  // We do not use the zero index, decrement of
+                                                                    // curAdjointPos at the end of the loop.
 
           if (Config::StatementInputTag != argsSize) {
-            // No input value, perform regular statement evaluation
+            // No input value, perform regular statement evaluation.
 
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();

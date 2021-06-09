@@ -14,7 +14,7 @@
 namespace codi {
 
   /**
-   * @brief Implementation of a forward AD mode through the internal expression interfaces.
+   * @brief Implementation of a tape-free forward AD mode through the internal expression interfaces.
    *
    * For an explanation of the forward AD mode please see the Section \ref sec_forwardAD "forward AD".
    *
@@ -23,6 +23,9 @@ namespace codi {
    *
    * The identifier data in the LhsExpressionInterface implementations is used by this class to store the tangent data
    * for each value.
+   *
+   * This way, a tape-free foward mode is implemented in a manner that is consistent with CoDiPack's taping interface,
+   * even if no tape is actually recorded.
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
@@ -35,10 +38,10 @@ namespace codi {
                              public GradientAccessTapeInterface<_Gradient, _Gradient> {
     public:
 
-      using Real = CODI_DD(_Real, double);          ///< See ForwardEvaluation
-      using Gradient = CODI_DD(_Gradient, double);  ///< See ForwardEvaluation
+      using Real = CODI_DD(_Real, double);          ///< See ForwardEvaluation.
+      using Gradient = CODI_DD(_Gradient, double);  ///< See ForwardEvaluation.
 
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
       using Identifier = Gradient;  ///< Same as the gradient type. Tangent data is stored in the active types.
 
       /*******************************************************************************/
@@ -149,13 +152,13 @@ namespace codi {
   };
 
   /// \copydoc codi::RealTraits::IsTotalFinite <br>
-  /// Value and gradient are tested if they are finite.
+  /// Tests whether both value and gradient are finite.
   template<typename _Type>
   struct RealTraits::IsTotalFinite<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> {
     public:
 
       using Type = CODI_DD(_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
-                                                                  _Type>));  ///< See RealTraits::IsTotalFinite
+                                                                  _Type>));  ///< See RealTraits::IsTotalFinite.
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalFinite()
       static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -165,14 +168,15 @@ namespace codi {
   };
 
   /// \copydoc codi::RealTraits::IsTotalZero <br>
-  /// Value and gradient are tested if they are zero.
+  /// Tests whether both value and gradient are zero.
   template<typename _Type>
   struct RealTraits::IsTotalZero<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>> {
     public:
 
       using Type = CODI_DD(_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
-                                                                  _Type>));  ///< See RealTraits::IsTotalZero
-      using Real = typename Type::Real;                                      ///< See codi::LhsExpressionInterface::Real
+                                                                  _Type>));  ///< See RealTraits::IsTotalZero.
+      using Real = typename Type::Real;                                      ///< See
+                                                                             ///< codi::LhsExpressionInterface::Real.
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalZero()
       static CODI_INLINE bool isTotalZero(Type const& v) {
