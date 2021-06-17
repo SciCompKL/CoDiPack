@@ -39,7 +39,7 @@ The calculation type can then be changed during compile time and different execu
 
 #### Step 3: Get the directional derivative
 
-In the reverse AD equation, the variable \f$y\f$ describes the vector of output variables. During the function
+In the forward AD equation, the variable \f$y\f$ describes the vector of output variables. During the function
 evaluation, CoDiPack computed the directional derivative for these variables which is the vector \f$\dot y\f$. For a
 single variable, the tangent information can be extracted with the functions
 [gradient](@ref codi::LhsExpressionInterface::gradient() const) and

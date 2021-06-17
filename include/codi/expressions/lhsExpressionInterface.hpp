@@ -43,8 +43,9 @@ namespace codi {
       Real& value();              ///< Get a reference to the lvalue represented by the expression.
 
       Identifier const& getIdentifier() const;  ///< Get a constant reference to the identifier of the tape for this
-                                                ///< expression.
-      Identifier& getIdentifier();  ///< Get a constant reference to the identifier of the tape for this expression.
+                                                ///< expression. See also @ref IdentifierManagement
+      Identifier& getIdentifier();  ///< Get a reference to the identifier of the tape for this expression. See also
+                                    ///< @ref IdentifierManagement
 
       static Tape& getGlobalTape();  ///< Get a reference to the tape which manages this expression.
 
