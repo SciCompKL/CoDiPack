@@ -33,8 +33,8 @@
       <tab type="user" title="Example 15 - Preaccumulation of code parts" url="@ref Example_15_Preaccumulation_of_code_parts"/>
       <tab type="user" title="Example 16 - TapeHelper" url="@ref Example_16_TapeHelper"/>
       <tab type="user" title="Example 17 - EvaluationHelper" url="@ref Example_17_EvaluationHelper"/>
-      <tab type="user" title="Example 18 - EvaluationHelper function objects" url="@ref Example_19_EvaluationHelper_function_objects"/>
-      <tab type="user" title="Example 19 - EvaluationHelper handles" url="@ref Example_18_EvaluationHelper_handles"/>
+      <tab type="user" title="Example 18 - EvaluationHelper function object declaration" url="@ref Example_18_EvaluationHelper_function_objects"/>
+      <tab type="user" title="Example 19 - EvaluationHelper handle creation" url="@ref Example_19_EvaluationHelper_handle_creation"/>
     </tab>
     <tab type="user" title="Papers" url="@ref Papers"/>
     <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>

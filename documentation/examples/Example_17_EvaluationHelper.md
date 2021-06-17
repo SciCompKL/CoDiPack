@@ -1,7 +1,7 @@
 Example 17 - Hessian and Jacobian computation for function objects {#Example_17_EvaluationHelper}
 =======
 
-**Goal:** Lern how to automatically compute Hessians and Jacobians for function objects.
+**Goal:** Learn how to automatically compute Hessians and Jacobians for function objects.
 
 **Prerequisite:** None
 
