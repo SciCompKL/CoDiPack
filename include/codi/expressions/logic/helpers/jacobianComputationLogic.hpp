@@ -20,8 +20,8 @@ namespace codi {
   struct JacobianComputationLogic : public TraversalLogic<_Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double);                            ///< See JacobianComputationLogic
-      using Impl = CODI_DD(_Impl, CODI_T(TraversalLogic<CODI_ANY>));  ///< See JacobianComputationLogic
+      using Real = CODI_DD(_Real, double);                            ///< See JacobianComputationLogic.
+      using Impl = CODI_DD(_Impl, CODI_T(TraversalLogic<CODI_ANY>));  ///< See JacobianComputationLogic.
 
       /*******************************************************************************/
       /// @name Interface definition
