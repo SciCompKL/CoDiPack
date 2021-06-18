@@ -14,7 +14,7 @@ namespace codi {
    *
    * For a detailed explanation of the traversal structure please see \ref customExpressionLogic "Expression traversal".
    *
-   * Implementing classes can have members which can store information required for the traversal.
+   * Implementing classes can have members which store information required for the traversal.
    *
    * @tparam _Impl  Class implementing this interface.
    */
@@ -22,7 +22,7 @@ namespace codi {
   struct TraversalLogic {
     public:
 
-      using Impl = CODI_DD(_Impl, TraversalLogic);  ///< See TraversalLogic
+      using Impl = CODI_DD(_Impl, TraversalLogic);  ///< See TraversalLogic.
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {

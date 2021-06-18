@@ -14,7 +14,7 @@ namespace codi {
    *
    * For a detailed explanation of the traversal structure please see \ref customExpressionLogic "Expression traversal".
    *
-   * All information needs to be provided as arguments and all computations must be constexpr.
+   * All information must be provided as arguments and all computations must be constexpr.
    *
    * @tparam _ResultType  Type of the computed result.
    * @tparam _Impl  Class implementing this interface.
@@ -23,8 +23,8 @@ namespace codi {
   struct CompileTimeTraversalLogic {
     public:
 
-      using ResultType = CODI_DD(_ResultType, size_t);         ///< See CompileTimeTraversalLogic
-      using Impl = CODI_DD(_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic
+      using ResultType = CODI_DD(_ResultType, size_t);         ///< See CompileTimeTraversalLogic.
+      using Impl = CODI_DD(_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic.
 
       static constexpr ResultType NeutralElement = {};  ///< Neutral element of the reduction.
 
@@ -43,9 +43,9 @@ namespace codi {
       /**
        * @brief Reduction operation for the results of two links.
        *
-       * Needs to be a constexpr.
+       * Must be a constexpr.
        *
-       * Default: summation
+       * Default: summation.
        */
       CODI_INLINE static constexpr ResultType reduce(ResultType a, ResultType b) {
         return a + b;
@@ -56,7 +56,7 @@ namespace codi {
        *
        * Implementations can call the toLinks method in order to evaluate all links of the node.
        *
-       * Needs to be a constexpr.
+       * Must be a constexpr.
        *
        * Default: Call each link of the node and forward all arguments.
        */
@@ -69,9 +69,9 @@ namespace codi {
       /**
        * @brief Called for all termination nodes in the expression.
        *
-       * Needs to be a constexpr.
+       * Must be a constexpr.
        *
-       * Default: Returns NeutralElement
+       * Default: Returns NeutralElement.
        */
       template<typename Node, typename... Args>
       CODI_INLINE static constexpr ResultType term(Args&&... CODI_UNUSED_ARG(args)) {
@@ -84,7 +84,7 @@ namespace codi {
        *
        * Implementations can call the toNode method in order to evaluate either term or node depending on the leaf.
        *
-       * Needs to be a constexpr.
+       * Must be a constexpr.
        *
        * Default: Call the leaf node and forward all arguments.
        */

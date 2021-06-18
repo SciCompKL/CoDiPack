@@ -22,7 +22,7 @@ namespace codi {
   struct NodeInterface {
     public:
 
-      using Impl = CODI_DD(_Impl, NodeInterface);  ///< See NodeInterface
+      using Impl = CODI_DD(_Impl, NodeInterface);  ///< See NodeInterface.
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
@@ -34,11 +34,13 @@ namespace codi {
 
       static bool constexpr EndPoint = CODI_UNDEFINED_VALUE;  ///< If this expression is handled as a termination point.
 
-      /// Call the link method on the logic for all arguments of this node.
+      /// Call the link method of the given logic for all arguments (links) of this node (not to be confused with args).
+      /// Pass args to each call.
       template<typename Logic, typename... Args>
       CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const;
 
-      /// Call the link method on the logic for all arguments of this node.
+      /// Call the link method of the given logic for all arguments (links) of this node (not to be confused with args).
+      /// Pass args to each call.
       template<typename Logic, typename... Args>
       CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... args);
   };
