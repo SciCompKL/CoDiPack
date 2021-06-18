@@ -25,14 +25,14 @@ namespace codi {
                                public IncrementOperators<_Type, ReferenceActiveType<_Type>> {
     public:
 
-      /// See ReferenceActiveType
+      /// See ReferenceActiveType.
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Tape = typename Type::Tape;  ///< See LhsExpressionInterface.
 
-      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
-      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface
-      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface
+      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
+      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
+      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
     private:
 
@@ -48,7 +48,7 @@ namespace codi {
       /// Constructor
       CODI_INLINE ReferenceActiveType(Type& v) : reference(v), jacobian() {}
 
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&)
+      /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
       CODI_INLINE ReferenceActiveType<Tape>& operator=(ReferenceActiveType<Tape> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ReferenceActiveType>&>(*this) = v;
         return *this;

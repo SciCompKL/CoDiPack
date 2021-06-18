@@ -14,7 +14,7 @@ namespace codi {
   /**
    * @brief Represents a concrete lvalue in the CoDiPack expression tree.
    *
-   * The class uses members for the storing the value and the identifier.
+   * The class uses members for storing the value and the identifier.
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
@@ -28,17 +28,17 @@ namespace codi {
     public:
 
       /// See ActiveType.
-      /// For reverse AD the tape needs to implement the ReverseTapeInterface
-      /// For forward AD the 'tape' needs to implement the InternalStatementRecordingTapeInterface and
-      /// GradientAccessTapeInterface
+      /// For reverse AD, the tape must implement ReverseTapeInterface.
+      /// For forward AD, the 'tape' (that is not a tape, technically) must implement
+      /// InternalStatementRecordingTapeInterface and GradientAccessTapeInterface.
       using Tape = CODI_DD(_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
-      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
-      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface
-      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface
+      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
+      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
+      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
-      using Base = LhsExpressionInterface<Real, Gradient, Tape, ActiveType>;  ///< Base class abbreviation
+      using Base = LhsExpressionInterface<Real, Gradient, Tape, ActiveType>;  ///< Base class abbreviation.
 
     private:
 
@@ -77,7 +77,7 @@ namespace codi {
         Base::destroy();
       }
 
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&)
+      /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
       CODI_INLINE ActiveType<Tape>& operator=(ActiveType<Tape> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ActiveType>&>(*this) = v;
         return *this;
