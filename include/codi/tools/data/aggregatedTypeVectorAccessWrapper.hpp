@@ -19,7 +19,7 @@ namespace codi {
    * e.g. std::complex<codi::RealReverse>.
    *
    * This wrapper is instantiated by AggregatedTypeVectorAccessWrapperFactory. It can be specialized for arbitrary
-   * types, that consist of CoDiPack types.
+   * types that consist of CoDiPack types.
    *
    * This class helps to write generalized external function, that handles aggregated data types. E.g. for
    * std::complex<codi::RealReverse> the primal value as well as the adjoint value are std::complex<double> and the

@@ -112,13 +112,13 @@ namespace codi {
     /// @{
 
     /**
-     * @brief Data handling methods for aggregated types, that contain CoDiPack active types.
+     * @brief Data handling methods for aggregated types that contain CoDiPack active types.
      *
      * An aggregated type is for example std::complex<codi::RealReverse>, which contains two CoDiPack values. The
-     * methods in this class access each of these value in order to generate the information. For `getValue` a complex
-     * type of the inner value from the CoDiPack type is generated.
+     * accessor methods in this class access each of these value. For `getValue`, for example, a complex type of the
+     * CoDiPack type's inner value is generated.
      *
-     * @tparam _Type  Any type that may contain a CoDiPack types.
+     * @tparam _Type  Any type that contains a CoDiPack type.
      */
     template<typename _Type, typename = void>
     struct DataExtraction {
@@ -143,13 +143,13 @@ namespace codi {
     };
 
     /**
-     * @brief Tape registration methods for aggregated types, that contain CoDiPack active types.
+     * @brief Tape registration methods for aggregated types that contain CoDiPack active types.
      *
      * An aggregated type is for example std::complex<codi::RealReverse>, which contains two CoDiPack values. The
-     * methods in this class access each of these value in order to register the active types. For `registerInput` the
-     * real and imaginary part of the complex type is registered.
+     * methods in this class access each of these values in order to register the active types. For `registerInput`, the
+     * real and imaginary part of the complex type are registered.
      *
-     * @tparam _Type  Any type that may contain a CoDiPack types.
+     * @tparam _Type  Any type that contains a CoDiPack type.
      */
     template<typename _Type, typename = void>
     struct TapeRegistration {

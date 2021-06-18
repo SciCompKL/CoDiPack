@@ -54,7 +54,7 @@ namespace codi {
 
       /// Create a reference to an active type. It is assumed that the lifespan of the argument is longer than
       /// the lifespan of the created value.
-      CODI_INLINE ImmutableActiveType(ActiveType const& value)
+      CODI_INLINE ActiveTypeWrapper(ActiveType const& value)
           : primalValue(value.value()), identifier(value.getIdentifier()) {
         // deliberately left empty
       }

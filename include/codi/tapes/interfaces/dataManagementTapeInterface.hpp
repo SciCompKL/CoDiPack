@@ -36,12 +36,12 @@ namespace codi {
    * \section vectorAccess Adjoint vector access
    * The function createVectorAccess() provides access to the internal vectors of the tape, usually the adjoint vector
    * and if available the primal value vector. If a generalized adjoint vector should be used, then the function
-   * createCustomAdjointVectorAccess() is used. This is the same functionality that is also used in external function
+   * createCustomAdjointVectorAccess() is used. This is the same functionality that is also used in external functions
    * called from an evaluation with a custom adjoint vector.
    *
    * Instances of both methods have to be deleted with the deleteVectorAccess().
    *
-   * Implementations may return different types, that implement the same interface. Capturing these with auto may
+   * Implementations may return different types that implement the same interface. Capturing these with auto may
    * improve the performance by eliminating virtual function calls.
    *
    * \section misc Misc. functions

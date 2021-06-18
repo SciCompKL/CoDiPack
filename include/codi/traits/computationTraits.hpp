@@ -13,7 +13,7 @@ namespace codi {
 
     /// @brief Perform the operation lhs += rhs. Default logic uses operator +=.
     ///
-    /// Simple specialization can be create with the macro CODI_CREATE_UPDATE.
+    /// Simple specializations can be created with the macro CODI_CREATE_UPDATE.
     ///
     /// @tparam _Lhs Type of the left hand side.
     /// @tparam _Rhs Type of the right hand side.
@@ -25,7 +25,7 @@ namespace codi {
 
         using Return = Lhs&;  ///< Deduced return type.
 
-        /// Perform lhs += rhs
+        /// Perform lhs += rhs.
         static Return update(Lhs& lhs, Rhs const& rhs) {
           return lhs += rhs;
         }
@@ -39,7 +39,7 @@ namespace codi {
 
     /// @brief Perform \f$ a^T \f$. No default implementation available.
     ///
-    /// Simple specialization can be create with the macro CODI_CREATE_TRANSPOSE.
+    /// Simple specializations can be created with the macro CODI_CREATE_TRANSPOSE.
     ///
     /// @tparam _Jacobian  Deduced type of the Jacobian.
     template<typename _Jacobian, typename = void>

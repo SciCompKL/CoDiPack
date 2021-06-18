@@ -43,8 +43,8 @@ namespace codi {
 
     private:
 
-      Real primalValue;
-      Identifier identifier;
+      Real const primalValue;
+      Identifier const identifier;
 
     public:
 
@@ -67,7 +67,7 @@ namespace codi {
         // deliberately left empty
       }
 
-      /// This class in immutable, delete all assignment operators.
+      /// This class is immutable, delete all assignment operators.
       CODI_INLINE ImmutableActiveType<ActiveType>& operator=(ImmutableActiveType<ActiveType> const& v) = delete;
 
       /*******************************************************************************/
