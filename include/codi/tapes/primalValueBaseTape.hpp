@@ -715,12 +715,12 @@ namespace codi {
 
       /// \copydoc codi::DataManagementTapeInterface::createVectorAccess()
       VectorAccess<Gradient>* createVectorAccess() {
-        return createCustomVectorAccess(adjoints.data());
+        return createVectorAccessCustomAdjoints(adjoints.data());
       }
 
-      /// \copydoc codi::DataManagementTapeInterface::createCustomVectorAccess()
+      /// \copydoc codi::DataManagementTapeInterface::createVectorAccessCustomAdjoints()
       template<typename Adjoint>
-      VectorAccess<Adjoint>* createCustomVectorAccess(Adjoint* data) {
+      VectorAccess<Adjoint>* createVectorAccessCustomAdjoints(Adjoint* data) {
         return new VectorAccess<Adjoint>(data, primals.data());
       }
 

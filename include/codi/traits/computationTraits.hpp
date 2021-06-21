@@ -37,7 +37,7 @@ namespace codi {
       return UpdateImpl<Lhs, Rhs>::update(lhs, rhs);
     }
 
-    /// @brief Perform \f$ a^T \f$. No default implementation available.
+    /// @brief Perform \f$ a^T \f$ or \f$ a^H \f$ if entries are complex. No default implementation available.
     ///
     /// Simple specializations can be created with the macro CODI_CREATE_TRANSPOSE.
     ///
@@ -50,11 +50,12 @@ namespace codi {
 
         using Return = CODI_ANY;  ///< Deduced return type.
 
-        /// @brief Perform \f$ a^T \f$.
+        /// @brief Perform \f$ a^T \f$ or \f$ a^H \f$ if entries are complex.
         static Return transpose(Jacobian const& jacobian);
     };
 
-    /// Perform \f$ a^T \f$. Logic can be specialized by specializing TransposeImpl.
+    /// Perform \f$ a^T \f$ or \f$ a^H \f$ if entries are complex. Logic can be specialized by specializing
+    /// TransposeImpl.
     template<typename Jacobian>
     CODI_INLINE typename TransposeImpl<Jacobian>::Return transpose(Jacobian const& jacobian) {
       return TransposeImpl<Jacobian>::transpose(jacobian);
