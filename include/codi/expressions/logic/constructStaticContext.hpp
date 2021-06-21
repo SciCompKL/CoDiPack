@@ -28,7 +28,7 @@ namespace codi {
    * NumberOfConstantTypeArguments. They are evaluated on each sub graph.
    *
    * @tparam _Rhs  The expression type. Needs to implement ExpressionInterface.
-   * @tparam _Tape  The tape which stored the expression (Used for the definition of the primal tapes
+   * @tparam _Tape  The tape which stored the expression.
    *
    */
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset, typename = void>
