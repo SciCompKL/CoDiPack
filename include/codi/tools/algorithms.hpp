@@ -93,7 +93,10 @@ namespace codi {
 
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
-                jac(i, j + curDim) = GT::at(tape.getGradient(output[i]), curDim);
+                jac(outputSize - i - 1, j + curDim) = GT::at(tape.getGradient(output[outputSize - i - 1]), curDim);
+                if (GradientData() != output[i]) {
+                  GT::at(tape.gradient(output[outputSize - i - 1]), curDim) = typename GT::Real();
+                }
               }
             }
 
