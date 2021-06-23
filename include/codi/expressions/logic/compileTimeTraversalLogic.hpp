@@ -67,14 +67,14 @@ namespace codi {
       }
 
       /**
-       * @brief Called for all termination nodes in the expression.
+       * @brief Called for all leaf nodes in the expression.
        *
        * Must be a constexpr.
        *
        * Default: Returns NeutralElement.
        */
       template<typename Node, typename... Args>
-      CODI_INLINE static constexpr ResultType term(Args&&... CODI_UNUSED_ARG(args)) {
+      CODI_INLINE static constexpr ResultType leaf(Args&&... CODI_UNUSED_ARG(args)) {
         // Default logic does nothing
         return Impl::NeutralElement;
       }
@@ -82,7 +82,7 @@ namespace codi {
       /**
        * @brief Called for all links in the expression.
        *
-       * Implementations can call the toNode method in order to evaluate either term or node depending on the child.
+       * Implementations can call the toNode method in order to evaluate either leaf or node depending on the child.
        *
        * Must be a constexpr.
        *
@@ -113,12 +113,12 @@ namespace codi {
         public:
           template<typename Node, typename... Args>
           CODI_INLINE static constexpr ResultType call(Args&&... args) {
-            return TraversalImpl::template term<Node>(std::forward<Args>(args)...);
+            return TraversalImpl::template leaf<Node>(std::forward<Args>(args)...);
           }
       };
 #endif
 
-      /// Helper method to distinguish between termination nodes and normal nodes.
+      /// Helper method to distinguish between leaf nodes and normal nodes.
       template<typename Node, typename... Args>
       CODI_INLINE static constexpr ResultType toNode(Args&&... args) {
         return CallSwitch<Impl, Node::EndPoint>::template call<Node>(std::forward<Args>(args)...);

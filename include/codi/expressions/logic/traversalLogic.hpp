@@ -55,12 +55,12 @@ namespace codi {
       }
 
       /**
-       * @brief Called for all termination nodes in the expression.
+       * @brief Called for all leaf nodes in the expression.
        *
        * Default: Does nothing.
        */
       template<typename Node, typename... Args>
-      CODI_INLINE void term(Node const& node, Args&&... args) {
+      CODI_INLINE void leaf(Node const& node, Args&&... args) {
         CODI_UNUSED(node, args...);
         // Default logic does nothing
       }
@@ -68,7 +68,7 @@ namespace codi {
       /**
        * @brief Called for all links in the expression.
        *
-       * Implementations can call the toNode method in order to evaluate either term or node depending on the child.
+       * Implementations can call the toNode method in order to evaluate either leaf or node depending on the child.
        *
        * Default: Call the child node and forward all arguments.
        */
@@ -98,12 +98,12 @@ namespace codi {
         public:
           template<typename... Args>
           CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
-            impl.term(std::forward<Args>(args)...);
+            impl.leaf(std::forward<Args>(args)...);
           }
       };
 #endif
 
-      /// Helper method to distinguish between termination nodes and normal nodes.
+      /// Helper method to distinguish between leaf nodes and normal nodes.
       template<typename Node, typename... Args>
       CODI_INLINE void toNode(Node const& node, Args&&... args) {
         CallSwitch<Impl, Node::EndPoint>::call(cast(), node, std::forward<Args>(args)...);

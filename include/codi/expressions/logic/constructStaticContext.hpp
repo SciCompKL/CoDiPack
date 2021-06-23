@@ -16,7 +16,7 @@ namespace codi {
   /**
    * @brief Helper class for the construction of an expression in a different context.
    *
-   * Converts the termination nodes of the expression into the static context replacements. The initialization is
+   * Converts the leaf nodes of the expression into the static context replacements. The initialization is
    * performed via three arrays.
    *
    * Conversion and initialization is done for:

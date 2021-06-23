@@ -32,7 +32,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      static bool constexpr EndPoint = CODI_UNDEFINED_VALUE;  ///< If this expression is handled as a termination point.
+      static bool constexpr EndPoint = CODI_UNDEFINED_VALUE;  ///< If this expression is handled as a leaf in the tree.
 
       /// Call the link method of the given logic for all arguments (links) of this node (not to be confused with args).
       /// Pass args to each call.

@@ -121,12 +121,12 @@ namespace codi {
     struct NumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>> {
       public:
 
-        /// \copydoc CompileTimeTraversalLogic::term()
+        /// \copydoc CompileTimeTraversalLogic::leaf()
         template<typename Node, typename = ExpressionTraits::EnableIfLhsExpression<Node>>
-        CODI_INLINE static size_t constexpr term() {
+        CODI_INLINE static size_t constexpr leaf() {
           return 1;
         }
-        using CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments>::term;
+        using CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments>::leaf;
 
         /// See NumberOfActiveTypeArguments
         static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
@@ -144,12 +144,12 @@ namespace codi {
         : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
       public:
 
-        /// \copydoc CompileTimeTraversalLogic::term()
+        /// \copydoc CompileTimeTraversalLogic::leaf()
         template<typename Node, typename = EnableIfConstantExpression<Node>>
-        CODI_INLINE static size_t constexpr term() {
+        CODI_INLINE static size_t constexpr leaf() {
           return 1;
         }
-        using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::term;
+        using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::leaf;
 
         /// See NumberOfConstantTypeArguments
         static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();

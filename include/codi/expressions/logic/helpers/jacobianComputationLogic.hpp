@@ -27,7 +27,7 @@ namespace codi {
       /// @name Interface definition
       /// @{
 
-      /// Called for termination nodes which implement LhsExpressionInterface.
+      /// Called for leaf nodes which implement LhsExpressionInterface.
       template<typename Node, typename... Args>
       void handleJacobianOnActive(Node const& node, Real jacobian, Args&&... args);
 
@@ -36,13 +36,13 @@ namespace codi {
       /// @name Overwrites from TraversalLogic
       /// @{
 
-      /// \copydoc codi::TraversalLogic::term()
+      /// \copydoc codi::TraversalLogic::leaf()
       template<typename Node, typename... Args>
-      CODI_INLINE ExpressionTraits::EnableIfLhsExpression<Node> term(Node const& node, Real jacobian, Args&&... args) {
+      CODI_INLINE ExpressionTraits::EnableIfLhsExpression<Node> leaf(Node const& node, Real jacobian, Args&&... args) {
         cast().handleJacobianOnActive(node, jacobian, std::forward<Args>(args)...);
       }
 
-      using TraversalLogic<Impl>::term;
+      using TraversalLogic<Impl>::leaf;
 
       /// Computes the \ref sec_reverseAD "reverse" AD equation for this link.
       ///

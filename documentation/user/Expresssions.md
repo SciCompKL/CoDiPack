@@ -50,10 +50,10 @@ Custom operations in CoDiPack 2.0 on expression are all implemented with the [Tr
 or [CompileTimeTraversalLogic](@ref codi::CompileTimeTraversalLogic) classes. The first one enables custom logic in a
 runtime context. Variables and results can be stored in the implementation. The CompileTimeTraversalLogic allows for the
 computation of results in a compile time context. Both classes contain functions for the visit of links, nodes and
-terminators in the expression graph. The terms are explained in the following picture:
+leafs in the expression graph. The terms are explained in the following picture:
 ```
   ┌─┐   ┌─┐   ┌─┐   ┌─┐
-  │a│   │b│   │c│   │d│  # Nodes without arguments are termination nodes, they are first class objects like the
+  │a│   │b│   │c│   │d│  # Nodes without arguments are leaf nodes, they are first class objects like the
   └┬┘   └┬┘   └┬┘   └┬┘  # the number implementation
    │     │     │     │
    └──┬──┘     └──┬──┘   # Links go from a root to a child and describe an argument relation. The child is used as an
@@ -71,7 +71,7 @@ terminators in the expression graph. The terms are explained in the following pi
            │²│            # The origin node describes the full expression. It is used to initialize the traversal logic.
            └─┘
 ```
-So a node in the traversal logic are all inermedite operations and terminators are the values on which the operations
+So a node in the traversal logic are all inermedite operations and leafs are the values on which the operations
 are evalauted. Links are the relations between two objects in the graph structure. The root is the node which received
 the child as an argument.
 
@@ -84,9 +84,9 @@ Node *
 Link *, +
 Node +
 Link +, a
-Term a
+Leaf a
 Link +, b
-Term b
+Leaf b
 Link *, -
 ...
 ```
@@ -94,15 +94,15 @@ Information can be provided or stored in the implementation or propagated via th
 default implementation forwards all arguments, from the initial call.
 
 Specializations for some common use cases are available:
- - [ForEachTermLogic](@ref codi::ForEachTermLogic): Default traversal of the tree with no logic in the nodes and links.
-         Calls the function [handleActive](@ref codi::ForEachTermLogic::handleActive()) for all left hand side
-         expression objects. [handleConstant](@ref codi::ForEachTermLogic::handleConstant()) is called for all constant
+ - [ForEachLeafLogic](@ref codi::ForEachLeafLogic): Default traversal of the tree with no logic in the nodes and links.
+         Calls the function [handleActive](@ref codi::ForEachLeafLogic::handleActive()) for all left hand side
+         expression objects. [handleConstant](@ref codi::ForEachLeafLogic::handleConstant()) is called for all constant
          expression objects.
  - [JacobianComputationLogic](@ref codi::JacobianComputationLogic): Evaluates the [reverse AD logic](@ref sec_forwardAD)
           for each link. The first user argument needs to be the seed value for the output of the expression. For each
           left hand side expression object the method
           [handleJacobianOnActive](@ref codi::JacobianComputationLogic::handleJacobianOnActive()) is called. The first
-          user argument here contains the derivative of the origin node with respect to the current terminator times the
+          user argument here contains the derivative of the origin node with respect to the current leaf times the
           initial seeding.
 
 The [CompileTimeTraversalLogic](@ref codi::CompileTimeTraversalLogic) works in the same way as the
