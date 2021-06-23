@@ -38,7 +38,7 @@ forward vector mode. In addition, if the vector size is known a priori, the comp
 reverse vector mode even further by using e.g. SIMD instructions.
 
 In the reverse mode, it is possible to introduce a run time decision on the vector size by using the custom evaluation
-methods described in \ref Example_08_Vector_helper and \ref Example_02_Custom_adjoint_vector_evaluation
+methods described in \ref Example_08_Vector_helper_interface_access and \ref Example_02_Custom_adjoint_vector_evaluation
 
 
 
