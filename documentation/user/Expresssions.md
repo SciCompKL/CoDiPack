@@ -56,7 +56,7 @@ terminators in the expression graph. The terms are explained in the following pi
   │a│   │b│   │c│   │d│  # Nodes without arguments are termination nodes, they are first class objects like the
   └┬┘   └┬┘   └┬┘   └┬┘  # the number implementation
    │     │     │     │
-   └──┬──┘     └──┬──┘   # Links go from a root to a leaf and describe an argument relation. The leaf is used as an
+   └──┬──┘     └──┬──┘   # Links go from a root to a child and describe an argument relation. The child is used as an
       │           │      # argument by the root.
      ┌┴┐         ┌┴┐
      │+│         │-│     # Nodes with arguments are regular nodes, they are intermediate objects.
@@ -73,10 +73,10 @@ terminators in the expression graph. The terms are explained in the following pi
 ```
 So a node in the traversal logic are all inermedite operations and terminators are the values on which the operations
 are evalauted. Links are the relations between two objects in the graph structure. The root is the node which received
-the leaf as an argument.
+the child as an argument.
 
 The traversla of the graph is done in a depth-first search (DFS). On each node the first link is visited and then the
-leaf of the link. Afterwards the leaf visits all links and so on. The above example would have the walk:
+child of the link. Afterwards the child visits all links and so on. The above example would have the walk:
 ```
 Node ²
 Link ², *
@@ -107,4 +107,4 @@ Specializations for some common use cases are available:
 
 The [CompileTimeTraversalLogic](@ref codi::CompileTimeTraversalLogic) works in the same way as the
 CompileTimeTraversalLogic and results mainly in the same call order. The only difference is that Binary expressions
-perform a reduction of the results from the two leafs.
+perform a reduction of the results from the two children.

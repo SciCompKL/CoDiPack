@@ -68,15 +68,15 @@ namespace codi {
       /**
        * @brief Called for all links in the expression.
        *
-       * Implementations can call the toNode method in order to evaluate either term or node depending on the leaf.
+       * Implementations can call the toNode method in order to evaluate either term or node depending on the child.
        *
-       * Default: Call the leaf node and forward all arguments.
+       * Default: Call the child node and forward all arguments.
        */
-      template<size_t LeafNumber, typename Leaf, typename Root, typename... Args>
-      CODI_INLINE void link(Leaf const& leaf, Root const& root, Args&&... args) {
+      template<size_t ChildNumber, typename Child, typename Root, typename... Args>
+      CODI_INLINE void link(Child const& child, Root const& root, Args&&... args) {
         CODI_UNUSED(root, args...);
         // Default logic forwards to node evaluation
-        toNode(leaf, std::forward<Args>(args)...);
+        toNode(child, std::forward<Args>(args)...);
       }
 
       /// @}

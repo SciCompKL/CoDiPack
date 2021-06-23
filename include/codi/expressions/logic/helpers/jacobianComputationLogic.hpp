@@ -46,12 +46,12 @@ namespace codi {
 
       /// Computes the \ref sec_reverseAD "reverse" AD equation for this link.
       ///
-      /// The Jacobian is multiplied with the Jacobian of the link. The result is forwarded to the leaf.
-      template<size_t LeafNumber, typename Leaf, typename Root, typename... Args>
-      CODI_INLINE void link(Leaf const& leaf, Root const& root, Real const& jacobian, Args&&... args) {
-        Real curJacobian = root.template getJacobian<LeafNumber>() * jacobian;
+      /// The Jacobian is multiplied with the Jacobian of the link. The result is forwarded to the child.
+      template<size_t ChildNumber, typename Child, typename Root, typename... Args>
+      CODI_INLINE void link(Child const& child, Root const& root, Real const& jacobian, Args&&... args) {
+        Real curJacobian = root.template getJacobian<ChildNumber>() * jacobian;
 
-        cast().toNode(leaf, curJacobian, std::forward<Args>(args)...);
+        cast().toNode(child, curJacobian, std::forward<Args>(args)...);
       }
 
       /// @}

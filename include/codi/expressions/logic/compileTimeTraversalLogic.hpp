@@ -82,16 +82,16 @@ namespace codi {
       /**
        * @brief Called for all links in the expression.
        *
-       * Implementations can call the toNode method in order to evaluate either term or node depending on the leaf.
+       * Implementations can call the toNode method in order to evaluate either term or node depending on the child.
        *
        * Must be a constexpr.
        *
-       * Default: Call the leaf node and forward all arguments.
+       * Default: Call the child node and forward all arguments.
        */
-      template<size_t LeafNumber, typename Leaf, typename Root, typename... Args>
+      template<size_t ChildNumber, typename Child, typename Root, typename... Args>
       CODI_INLINE static constexpr ResultType link(Args&&... args) {
         // Default logic forwards to node evaluation
-        return toNode<Leaf>(std::forward<Args>(args)...);
+        return toNode<Child>(std::forward<Args>(args)...);
       }
 
       /// @}
