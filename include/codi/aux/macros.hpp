@@ -7,33 +7,34 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /// Disable unused warnings for arbitrary number of arguments.
+  /// Disable unused warnings for an arbitrary number of arguments.
   template<typename... Args>
   void CODI_UNUSED(Args const&...) {}
 
-/// used in a constant context, where using CODI_UNUSED spoils the constantness
+/// Used in a constexpr context, where using CODI_UNUSED spoils the constexpr.
 #define CODI_UNUSED_ARG(arg) /* arg */
 
-/// Enable the if only if the option is true otherwise the code block is always evaluated
+/// Check the condition only if the option is true, otherwise the result is always true.
+/// Used like if(CODI_ENABLE_CHECK(option, condition)) {...}, option == false means that the if body is always executed.
 #define CODI_ENABLE_CHECK(option, condition) (!(option) || (condition))
 
-/// Conversion macro
+/// Conversion macro.
 #define CODI_TO_STRING2(expression) #expression
 
-/// Conversion macro
+/// Conversion macro.
 #define CODI_TO_STRING(expression) CODI_TO_STRING2(expression)
 
-/// Check for CPP 14 standard
+/// Check for CPP 14 standard.
 #define CODI_IS_CPP14 (201402L <= __cplusplus)
 
-/// Check for CPP 17 standard
+/// Check for CPP 17 standard.
 #define CODI_IS_CPP17 (201703L <= __cplusplus)
 
 /*******************************************************************************/
 /** @name Default template type declarations
  *  @anchor TemplateDeclarationHelpers
  *
- * These template are used to employ the design guide line for the default definitions of template
+ * These templates are used to employ the design guideline for the default definitions of template
  * arguments. See \ref TemplateDeclaration for Details.
  *
  * @{
@@ -82,18 +83,18 @@ namespace codi {
 #define CODI_UNDEFINED_VALUE false
 
 #ifndef DOXYGEN_DISABLE
-  /// Creates a union of interface definitions
+  /// Creates a union of interface definitions.
   template<typename First, typename... Tail>
   struct CODI_UNION : public First, public CODI_UNION<Tail...> {};
 #endif
 
-  /// Creates a union of interface definitions
+  /// Creates a union of interface definitions.
   template<typename First>
   struct CODI_UNION<First> : public First {};
 
 /// @}
 
-/// Wrap a function in a function object. Used for speed optimizations.
+/// Wrap a function in a function object. Used for performance optimizations.
 #define CODI_WRAP_FUNCTION(NAME, FUNC)        \
   struct NAME {                               \
     public:                                   \
@@ -104,7 +105,7 @@ namespace codi {
       }                                       \
   }
 
-/// Wrap a function in a function object. Used for speed optimizations.
+/// Wrap a function in a function object. Used for performance optimizations.
 #define CODI_WRAP_FUNCTION_TEMPLATE(NAME, FUNC)   \
   template<typename... TT>                        \
   struct NAME {                                   \

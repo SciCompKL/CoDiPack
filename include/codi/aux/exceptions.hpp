@@ -13,7 +13,8 @@ namespace codi {
   /**
    * @brief Checks the assert statement and aborts the program if the statement is false.
    *
-   * The method prints an error message that contains the failed expression, the function name, the file and the line.
+   * The method prints an error message that contains the failed expression, the function name, the file, and the line.
+   * This method is usually accessed via the codiAssert macro, see codi::Config::EnableAssert.
    *
    * @param[in]       condition  The evaluated value of the condition.
    * @param[in] conditionString  The condition as a string value.
@@ -40,7 +41,7 @@ namespace codi {
   /**
    * @brief Prints the positions and the message of the exception.
    *
-   * The position and function where the exceptions occurred is printed. The message will be handled
+   * The position and function where the exceptions occurred are printed. The message will be handled
    * and formatted by a printf like function.
    *
    * @param[in] function  Name of the function from which the exception is generated.
