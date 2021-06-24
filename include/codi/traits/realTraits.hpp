@@ -8,6 +8,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /// Traits for values that can be used as real values e.g. double, float, codi::RealReverse etc..
   namespace RealTraits {
 
     /*******************************************************************************/

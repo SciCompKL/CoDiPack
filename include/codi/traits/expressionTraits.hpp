@@ -22,6 +22,7 @@ namespace codi {
   template<typename _Tape>
   struct StaticContextActiveType;
 
+  /// Traits for everything that can be an expression e.g. codi::RealReverse, a + b, etc..
   namespace ExpressionTraits {
 
     /*******************************************************************************/
