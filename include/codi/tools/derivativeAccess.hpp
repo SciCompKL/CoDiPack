@@ -217,7 +217,7 @@ namespace codi {
    * time constants.
    * Also the setDerivatives method which sets all derivatives of one order may not be used if different primal
    * and gradient types are used. The provided objects needs to be convertible into all possible types, that
-   * are used at the termination points of the recursion.
+   * are used at the leaf points of the recursion.
    *
    * @tparam _Type  The AD type for which the derivatives are selected. The type needs to be an LhsExpressionInterface.
    */

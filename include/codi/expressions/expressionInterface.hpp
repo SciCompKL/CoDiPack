@@ -12,7 +12,7 @@
 namespace codi {
 
   /**
-   * @brief Base class for all CoDiPack expression.
+   * @brief Base class for all CoDiPack expressions.
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
@@ -25,8 +25,8 @@ namespace codi {
   struct ExpressionInterface : public NodeInterface<_Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double);               ///< See ExpressionInterface
-      using Impl = CODI_DD(_Impl, ExpressionInterface);  ///< See ExpressionInterface
+      using Real = CODI_DD(_Real, double);               ///< See ExpressionInterface.
+      using Impl = CODI_DD(_Impl, ExpressionInterface);  ///< See ExpressionInterface.
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
@@ -44,7 +44,7 @@ namespace codi {
 
       /// Get the Jacobian with respect to the given argument.
       ///
-      /// This is just the local Jacobian and not the one from the whole expression tree.
+      /// This is just the local Jacobian and not the one for the whole expression tree.
       template<size_t argNumber>
       CODI_INLINE Real getJacobian() const;
 

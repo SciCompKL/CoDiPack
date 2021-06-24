@@ -12,7 +12,7 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/constructStaticContext.hpp"
-#include "../expressions/logic/helpers/forEachTermLogic.hpp"
+#include "../expressions/logic/helpers/forEachLeafLogic.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../traits/expressionTraits.hpp"
@@ -266,10 +266,10 @@ namespace codi {
     protected:
 
       /// Count all arguments that have non-zero index.
-      struct CountActiveArguments : public ForEachTermLogic<CountActiveArguments> {
+      struct CountActiveArguments : public ForEachLeafLogic<CountActiveArguments> {
         public:
 
-          /// \copydoc codi::ForEachTermLogic::handleActive
+          /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
           CODI_INLINE void handleActive(Node const& node, size_t& numberOfActiveArguments) {
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::InactiveIndex != node.getIdentifier())) {
@@ -279,10 +279,10 @@ namespace codi {
       };
 
       /// Push all data for each argument.
-      struct PushIdentfierPassiveAndConstant : public ForEachTermLogic<PushIdentfierPassiveAndConstant> {
+      struct PushIdentfierPassiveAndConstant : public ForEachLeafLogic<PushIdentfierPassiveAndConstant> {
         public:
 
-          /// \copydoc codi::ForEachTermLogic::handleActive
+          /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
           CODI_INLINE void handleActive(Node const& node, RhsIdentifierData& rhsIdentiferData,
                                         PassiveValueData& passiveValueData, ConstantValueData& constantValueData,
@@ -300,7 +300,7 @@ namespace codi {
             rhsIdentiferData.pushData(rhsIndex);
           }
 
-          /// \copydoc codi::ForEachTermLogic::handleConstant
+          /// \copydoc codi::ForEachLeafLogic::handleConstant
           template<typename Node>
           CODI_INLINE void handleConstant(Node const& node, RhsIdentifierData& rhsIdentiferData,
                                           PassiveValueData& passiveValueData, ConstantValueData& constantValueData,

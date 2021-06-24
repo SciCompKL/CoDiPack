@@ -20,12 +20,12 @@ namespace codi {
   struct AssignmentOperators {
     public:
 
-      using Tape = CODI_DD(_Tape, CODI_T(InternalStatementRecordingTapeInterface<int>));  ///< See AssignmentOperators
+      using Tape = CODI_DD(_Tape, CODI_T(InternalStatementRecordingTapeInterface<int>));  ///< See AssignmentOperators.
       using Impl = CODI_DD(_Impl,
-                           CODI_T(LhsExpressionInterface<double, int, Tape, _Impl>));  ///< See AssignmentOperators
+                           CODI_T(LhsExpressionInterface<double, int, Tape, _Impl>));  ///< See AssignmentOperators.
 
-      using Real = CODI_DD(typename Tape::Real, double);  ///< See InternalStatementRecordingTapeInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using Real = CODI_DD(typename Tape::Real, double);  ///< See InternalStatementRecordingTapeInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {

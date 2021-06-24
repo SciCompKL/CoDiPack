@@ -16,7 +16,7 @@ namespace codi {
   /**
    * @brief Helper class for the construction of an expression in a different context.
    *
-   * Converts the termination nodes of the expression into the static context replacements. The initialization is
+   * Converts the leaf nodes of the expression into the static context replacements. The initialization is
    * performed via three arrays.
    *
    * Conversion and initialization is done for:
@@ -27,24 +27,24 @@ namespace codi {
    * The offsets are computed from the corresponding expression traits NumberOfActiveTypeArguments and
    * NumberOfConstantTypeArguments. They are evaluated on each sub graph.
    *
-   * @tparam _Rhs  The expression type. Needs to implement the expression ExpressionInterface.
-   * @tparam _Tape  The tape which stored the expression (Used for the definition of the primal tapes
+   * @tparam _Rhs  The expression type. Needs to implement ExpressionInterface.
+   * @tparam _Tape  The tape which stored the expression.
    *
    */
   template<typename _Rhs, typename _Tape, size_t _primalValueOffset, size_t _constantValueOffset, typename = void>
   struct ConstructStaticContextLogic {
     public:
 
-      using Rhs = CODI_DD(_Rhs, CODI_T(ExpressionInterface<double, CODI_ANY>));  ///< See ConstructStaticContextLogic
+      using Rhs = CODI_DD(_Rhs, CODI_T(ExpressionInterface<double, CODI_ANY>));  ///< See ConstructStaticContextLogic.
       using Tape =
-          CODI_DD(_Tape, CODI_T(ReverseTapeInterface<double, double, CODI_ANY>));  ///< See ConstructStaticContextLogic
-      static constexpr size_t primalValueOffset = CODI_DD(_primalValueOffset, 0);  ///< See ConstructStaticContextLogic
+          CODI_DD(_Tape, CODI_T(ReverseTapeInterface<double, double, CODI_ANY>));  ///< See ConstructStaticContextLogic.
+      static constexpr size_t primalValueOffset = CODI_DD(_primalValueOffset, 0);  ///< See ConstructStaticContextLogic.
       static constexpr size_t constantValueOffset =
-          CODI_DD(_constantValueOffset, 0);  ///< See ConstructStaticContextLogic
+          CODI_DD(_constantValueOffset, 0);  ///< See ConstructStaticContextLogic.
 
       using Real = typename Tape::Real;                ///< See TapeTypesInterface.
       using Identifier = typename Tape::Identifier;    ///< See TapeTypesInterface.
-      using PassiveReal = typename Tape::PassiveReal;  ///< Basic computation type
+      using PassiveReal = typename Tape::PassiveReal;  ///< Basic computation type.
 
       /// The resulting expression type after all nodes are replaced.
       using ResultType = CODI_DD(_Rhs, CODI_T(ExpressionInterface<double, CODI_ANY>));
@@ -74,10 +74,10 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      /// Conversion from LhsExpressionInterface to StaticContextActiveType
+      /// Conversion from LhsExpressionInterface to StaticContextActiveType.
       using ResultType = StaticContextActiveType<Tape>;
 
-      /// Uses primalVector[identifiers[primalValueOffset]] and identifiers[primalValueOffset]
+      /// Uses primalVector[identifiers[primalValueOffset]] and identifiers[primalValueOffset].
       static ResultType construct(Real* primalVector, Identifier const* const identifiers,
                                   PassiveReal const* const constantData) {
         CODI_UNUSED(constantData);
@@ -103,10 +103,10 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      /// Conversion from ConstantExpression to ConstantExpression
+      /// Conversion from ConstantExpression to ConstantExpression.
       using ResultType = ConstantExpression<PassiveReal>;
 
-      /// Uses constantData[constantValueOffset]
+      /// Uses constantData[constantValueOffset].
       static ResultType construct(Real* primalVector, Identifier const* const identifiers,
                                   PassiveReal const* const constantData) {
         CODI_UNUSED(primalVector, identifiers);
@@ -134,7 +134,7 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      /// Unmodified offsets for first argument
+      /// Unmodified offsets for first argument.
       using ArgAConstructor = ConstructStaticContextLogic<ArgA, Tape, primalValueOffset, constantValueOffset>;
       using ArgAMod = typename ArgAConstructor::ResultType;
 
@@ -173,7 +173,7 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      /// Unmodified offsets since there is just one sub tree
+      /// Unmodified offsets since there is just one sub tree.
       using ArgConstructor = ConstructStaticContextLogic<Arg, Tape, primalValueOffset, constantValueOffset>;
       using ArgMod = typename ArgConstructor::ResultType;
 

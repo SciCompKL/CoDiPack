@@ -14,7 +14,7 @@ namespace codi {
    *
    * For a detailed explanation of the traversal structure please see \ref customExpressionLogic "Expression traversal".
    *
-   * All information needs to be provided as arguments and all computations must be constexpr.
+   * All information must be provided as arguments and all computations must be constexpr.
    *
    * @tparam _ResultType  Type of the computed result.
    * @tparam _Impl  Class implementing this interface.
@@ -23,8 +23,8 @@ namespace codi {
   struct CompileTimeTraversalLogic {
     public:
 
-      using ResultType = CODI_DD(_ResultType, size_t);         ///< See CompileTimeTraversalLogic
-      using Impl = CODI_DD(_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic
+      using ResultType = CODI_DD(_ResultType, size_t);         ///< See CompileTimeTraversalLogic.
+      using Impl = CODI_DD(_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic.
 
       static constexpr ResultType NeutralElement = {};  ///< Neutral element of the reduction.
 
@@ -43,9 +43,9 @@ namespace codi {
       /**
        * @brief Reduction operation for the results of two links.
        *
-       * Needs to be a constexpr.
+       * Must be a constexpr.
        *
-       * Default: summation
+       * Default: summation.
        */
       CODI_INLINE static constexpr ResultType reduce(ResultType a, ResultType b) {
         return a + b;
@@ -56,7 +56,7 @@ namespace codi {
        *
        * Implementations can call the toLinks method in order to evaluate all links of the node.
        *
-       * Needs to be a constexpr.
+       * Must be a constexpr.
        *
        * Default: Call each link of the node and forward all arguments.
        */
@@ -67,14 +67,14 @@ namespace codi {
       }
 
       /**
-       * @brief Called for all termination nodes in the expression.
+       * @brief Called for all leaf nodes in the expression.
        *
-       * Needs to be a constexpr.
+       * Must be a constexpr.
        *
-       * Default: Returns NeutralElement
+       * Default: Returns NeutralElement.
        */
       template<typename Node, typename... Args>
-      CODI_INLINE static constexpr ResultType term(Args&&... CODI_UNUSED_ARG(args)) {
+      CODI_INLINE static constexpr ResultType leaf(Args&&... CODI_UNUSED_ARG(args)) {
         // Default logic does nothing
         return Impl::NeutralElement;
       }
@@ -82,16 +82,16 @@ namespace codi {
       /**
        * @brief Called for all links in the expression.
        *
-       * Implementations can call the toNode method in order to evaluate either term or node depending on the leaf.
+       * Implementations can call the toNode method in order to evaluate either leaf or node depending on the child.
        *
-       * Needs to be a constexpr.
+       * Must be a constexpr.
        *
-       * Default: Call the leaf node and forward all arguments.
+       * Default: Call the child node and forward all arguments.
        */
-      template<size_t LeafNumber, typename Leaf, typename Root, typename... Args>
+      template<size_t ChildNumber, typename Child, typename Root, typename... Args>
       CODI_INLINE static constexpr ResultType link(Args&&... args) {
         // Default logic forwards to node evaluation
-        return toNode<Leaf>(std::forward<Args>(args)...);
+        return toNode<Child>(std::forward<Args>(args)...);
       }
 
       /// @}
@@ -113,12 +113,12 @@ namespace codi {
         public:
           template<typename Node, typename... Args>
           CODI_INLINE static constexpr ResultType call(Args&&... args) {
-            return TraversalImpl::template term<Node>(std::forward<Args>(args)...);
+            return TraversalImpl::template leaf<Node>(std::forward<Args>(args)...);
           }
       };
 #endif
 
-      /// Helper method to distinguish between termination nodes and normal nodes.
+      /// Helper method to distinguish between leaf nodes and normal nodes.
       template<typename Node, typename... Args>
       CODI_INLINE static constexpr ResultType toNode(Args&&... args) {
         return CallSwitch<Impl, Node::EndPoint>::template call<Node>(std::forward<Args>(args)...);

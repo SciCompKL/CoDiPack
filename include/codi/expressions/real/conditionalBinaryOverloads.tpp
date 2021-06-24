@@ -10,7 +10,7 @@
   #error Please define the name of the operator.
 #endif
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef OPERATOR
   #define PROXY
 
@@ -22,7 +22,7 @@
 namespace codi {
 #endif
 
-  /// Function overload for operator OPERATOR
+  /// Function overload for operator OPERATOR.
   template<typename Real, typename ArgA, typename ArgB>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, ArgA> const& argA,
                                      ExpressionInterface<Real, ArgB> const& argB) {
@@ -50,7 +50,7 @@ namespace codi {
 #define PASSIVE_TYPE unsigned long long
 #include "conditionalBinaryPassiveOverloads.tpp"
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifdef PROXY
   #undef PROXY
 }
