@@ -15,8 +15,8 @@ namespace codi {
    *  \binom{n}{k} = \frac{n!}{k!(n-k)!} = \binom{n-1}{k} + \binom{n-1}{k-1}
    * \f]
    *
-   * @param[in] n  Number of choices
-   * @param[in] k  Number of draws
+   * @param[in] n  Number of choices.
+   * @param[in] k  Number of draws.
    * @return Binomial coefficient.
    */
   CODI_INLINE size_t constexpr binomial(size_t n, size_t k) {

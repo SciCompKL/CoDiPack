@@ -11,7 +11,7 @@
 namespace codi {
 
   /**
-   * @brief Implements the logic for a UnaryExpression.
+   * @brief Interface for implementing the logic for a UnaryExpression.
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
@@ -21,17 +21,17 @@ namespace codi {
   struct UnaryOperation {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See UnaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See UnaryOperation.
 
       /// Compute the primal value from the argument.
       ///
-      /// The type of the argument is the result of a getValue call on the expression.
+      /// The type of the argument is the type of the result of a getValue call on the expression.
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg);
 
       /// Compute the gradient with respect to the argument
       ///
-      /// The type of the argument is the result of a getValue call on the expression.
+      /// The type of the argument is the type of the result of a getValue call on the expression.
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result);
   };
@@ -43,18 +43,18 @@ namespace codi {
    *
    * @tparam _Real  Original primal value of the statement/expression.
    * @tparam _Arg  The ExpressionInterface type of the argument.
-   * @tparam _Operation  The logic for computing the primal value and Jacobian. Needs to implement UnaryOperation.
+   * @tparam _Operation  The logic for computing the primal value and Jacobian. Must implement UnaryOperation.
    */
   template<typename _Real, typename _Arg, template<typename> class _Operation>
   struct UnaryExpression : public ExpressionInterface<_Real, UnaryExpression<_Real, _Arg, _Operation> > {
     public:
 
-      using Real = CODI_DD(_Real, double);                                                ///< See UnaryExpression
-      using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>));           ///< See UnaryExpression
-      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(UnaryOperation<Real>));  ///< See UnaryExpression
+      using Real = CODI_DD(_Real, double);                                                ///< See UnaryExpression.
+      using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>));           ///< See UnaryExpression.
+      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(UnaryOperation<Real>));  ///< See UnaryExpression.
 
-      typename Arg::StoreAs arg;  ///< Argument of the expression
-      Real result;                ///< Precomputed result
+      typename Arg::StoreAs arg;  ///< Argument of the expression.
+      Real result;                ///< Precomputed result.
 
       /// Constructor
       template<typename RealArg>

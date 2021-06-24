@@ -14,7 +14,7 @@ namespace codi {
    *
    * For a detailed explanation of the traversal structure please see \ref customExpressionLogic "Expression traversal".
    *
-   * Implementing classes can have members which can store information required for the traversal.
+   * Implementing classes can have members which store information required for the traversal.
    *
    * @tparam _Impl  Class implementing this interface.
    */
@@ -22,7 +22,7 @@ namespace codi {
   struct TraversalLogic {
     public:
 
-      using Impl = CODI_DD(_Impl, TraversalLogic);  ///< See TraversalLogic
+      using Impl = CODI_DD(_Impl, TraversalLogic);  ///< See TraversalLogic.
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {
@@ -55,12 +55,12 @@ namespace codi {
       }
 
       /**
-       * @brief Called for all termination nodes in the expression.
+       * @brief Called for all leaf nodes in the expression.
        *
        * Default: Does nothing.
        */
       template<typename Node, typename... Args>
-      CODI_INLINE void term(Node const& node, Args&&... args) {
+      CODI_INLINE void leaf(Node const& node, Args&&... args) {
         CODI_UNUSED(node, args...);
         // Default logic does nothing
       }
@@ -68,15 +68,15 @@ namespace codi {
       /**
        * @brief Called for all links in the expression.
        *
-       * Implementations can call the toNode method in order to evaluate either term or node depending on the leaf.
+       * Implementations can call the toNode method in order to evaluate either leaf or node depending on the child.
        *
-       * Default: Call the leaf node and forward all arguments.
+       * Default: Call the child node and forward all arguments.
        */
-      template<size_t LeafNumber, typename Leaf, typename Root, typename... Args>
-      CODI_INLINE void link(Leaf const& leaf, Root const& root, Args&&... args) {
+      template<size_t ChildNumber, typename Child, typename Root, typename... Args>
+      CODI_INLINE void link(Child const& child, Root const& root, Args&&... args) {
         CODI_UNUSED(root, args...);
         // Default logic forwards to node evaluation
-        toNode(leaf, std::forward<Args>(args)...);
+        toNode(child, std::forward<Args>(args)...);
       }
 
       /// @}
@@ -98,12 +98,12 @@ namespace codi {
         public:
           template<typename... Args>
           CODI_INLINE static void call(TraversalImpl& impl, Args&&... args) {
-            impl.term(std::forward<Args>(args)...);
+            impl.leaf(std::forward<Args>(args)...);
           }
       };
 #endif
 
-      /// Helper method to distinguish between termination nodes and normal nodes.
+      /// Helper method to distinguish between leaf nodes and normal nodes.
       template<typename Node, typename... Args>
       CODI_INLINE void toNode(Node const& node, Args&&... args) {
         CallSwitch<Impl, Node::EndPoint>::call(cast(), node, std::forward<Args>(args)...);

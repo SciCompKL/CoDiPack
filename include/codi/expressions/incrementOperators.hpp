@@ -11,7 +11,7 @@ namespace codi {
   /**
    * @brief Implementation of increment operators for LhsExpressionInterface implementations.
    *
-   * Implements: prefix ++, postfix, ++ prefix --, postfix --
+   * Implements: prefix ++, postfix ++, prefix --, postfix --
    *
    * @tparam _Tape  The tape of the lvalue implementation.
    * @tparam _Impl  The lvalue LhsExpressionInterface implementation.
@@ -20,12 +20,12 @@ namespace codi {
   struct IncrementOperators {
     public:
 
-      using Tape = CODI_DD(_Tape, CODI_T(InternalStatementRecordingTapeInterface<int>));  ///< See IncrementOperators
+      using Tape = CODI_DD(_Tape, CODI_T(InternalStatementRecordingTapeInterface<int>));  ///< See IncrementOperators.
       using Impl = CODI_DD(_Impl,
-                           CODI_T(LhsExpressionInterface<double, int, Tape, _Impl>));  ///< See IncrementOperators
+                           CODI_T(LhsExpressionInterface<double, int, Tape, _Impl>));  ///< See IncrementOperators.
 
-      using Real = CODI_DD(typename Tape::Real, double);  ///< See InternalStatementRecordingTapeInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using Real = CODI_DD(typename Tape::Real, double);  ///< See InternalStatementRecordingTapeInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {

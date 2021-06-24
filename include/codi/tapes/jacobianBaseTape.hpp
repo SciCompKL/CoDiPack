@@ -9,7 +9,7 @@
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
-#include "../expressions/logic/helpers/forEachTermLogic.hpp"
+#include "../expressions/logic/helpers/forEachLeafLogic.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../expressions/referenceActiveType.hpp"
@@ -246,14 +246,14 @@ namespace codi {
             CODI_UNUSED(dataVector);
 
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
-              // Do a delayed push for these termination nodes, accumulate the jacobian in the local member.
+              // Do a delayed push for these leaf nodes, accumulate the jacobian in the local member.
               node.jacobian += jacobian;
             }
           }
       };
 
       /// Pushes all delayed Jacobians.
-      struct PushDelayedJacobianLogic : public ForEachTermLogic<PushDelayedJacobianLogic> {
+      struct PushDelayedJacobianLogic : public ForEachLeafLogic<PushDelayedJacobianLogic> {
         public:
 
           /// Specialization for ReferenceActiveType nodes. Pushes the delayed Jacobian.
@@ -269,7 +269,7 @@ namespace codi {
             }
           }
 
-          using ForEachTermLogic<PushDelayedJacobianLogic>::handleActive;
+          using ForEachLeafLogic<PushDelayedJacobianLogic>::handleActive;
       };
 
       /// Push Jacobians and delayed Jacobians to the tape.

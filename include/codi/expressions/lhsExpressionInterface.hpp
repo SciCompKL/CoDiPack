@@ -19,21 +19,21 @@ namespace codi {
    * @tparam _Real  Original primal value of the statement/expression.
    * @tparam _Gradient  Gradient values computed by the tape implementation.
    * @tparam _Tape  The tape that manages the lvalues of the expression.
-   *                Minimal interface: InternalStatementRecordingInterface, GradientAccessTapeInterface
+   *                Minimal interface: InternalStatementRecordingTapeInterface, GradientAccessTapeInterface
    * @tparam _Impl  Class implementing this interface.
    */
   template<typename _Real, typename _Gradient, typename _Tape, typename _Impl>
   struct LhsExpressionInterface : public ExpressionInterface<_Real, _Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double);        ///< See LhsExpressionInterface
-      using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface
+      using Real = CODI_DD(_Real, double);        ///< See LhsExpressionInterface.
+      using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface.
       using Tape = CODI_DD(_Tape,
-                           CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));  ///< See LhsExpressionInterface
-      using Impl = CODI_DD(_Impl, LhsExpressionInterface);                             ///< See LhsExpressionInterface
+                           CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));  ///< See LhsExpressionInterface.
+      using Impl = CODI_DD(_Impl, LhsExpressionInterface);                             ///< See LhsExpressionInterface.
 
-      using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type
+      using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -44,7 +44,7 @@ namespace codi {
 
       Identifier const& getIdentifier() const;  ///< Get a constant reference to the identifier of the tape for this
                                                 ///< expression.
-      Identifier& getIdentifier();  ///< Get a constant reference to the identifier of the tape for this expression.
+      Identifier& getIdentifier();  ///< Get a reference to the identifier of the tape for this expression.
 
       static Tape& getGlobalTape();  ///< Get a reference to the tape which manages this expression.
 
@@ -59,32 +59,32 @@ namespace codi {
       }
       using ExpressionInterface<Real, Impl>::cast;
 
-      /// Get the gradient of this lvalue from the tape
+      /// Get the gradient of this lvalue from the tape.
       CODI_INLINE Gradient& gradient() {
         return Impl::getGlobalTape().gradient(cast().getIdentifier());
       }
 
-      /// Get the gradient of this lvalue from the tape
+      /// Get the gradient of this lvalue from the tape.
       CODI_INLINE Gradient const& gradient() const {
         return const_cast<Tape const&>(Impl::getGlobalTape()).gradient(cast().getIdentifier());
       }
 
-      /// Get the gradient of this lvalue from the tape
+      /// Get the gradient of this lvalue from the tape.
       CODI_INLINE Gradient getGradient() const {
         return cast().gradient();
       }
 
-      /// Set the gradient of this lvalue in the tape
+      /// Set the gradient of this lvalue in the tape.
       CODI_INLINE void setGradient(Gradient const& g) {
         cast().gradient() = g;
       }
 
-      /// Get the primal value of this lvalue
+      /// Get the primal value of this lvalue.
       CODI_INLINE Real const& getValue() const {
         return cast().value();
       }
 
-      /// Set the primal value of this lvalue
+      /// Set the primal value of this lvalue.
       CODI_INLINE void setValue(Real const& v) {
         cast().value() = v;
       }
@@ -131,14 +131,14 @@ namespace codi {
 
       /// Helper function to initialize the primal value and the identifier by the tape.
       ///
-      /// Only needs to be called if the members are freshly created.
+      /// To be called in constructors of the implementing class.
       CODI_INLINE void init() {
         Impl::getGlobalTape().initIdentifier(cast().value(), cast().getIdentifier());
       }
 
       /// Helper function to deconstruct the primal value and the identifier by the tape.
       ///
-      /// Only needs to be called if the members will get destroyed.
+      /// To be called in the destructor of the implementing class.
       CODI_INLINE void destroy() {
         Impl::getGlobalTape().destroyIdentifier(cast().value(), cast().getIdentifier());
       }

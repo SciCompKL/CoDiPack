@@ -20,7 +20,7 @@ namespace codi {
   struct CompileTimeLoop {
     public:
 
-      static size_t constexpr pos = _pos;  ///< See CompileTimeLoop
+      static size_t constexpr pos = _pos;  ///< See CompileTimeLoop.
 
       /// Func is evaluated with args as func(pos, args...)
       template<typename Func, typename... Args>
@@ -31,14 +31,14 @@ namespace codi {
       }
   };
 
-  /// Termination of loop evaluation
+  /// Termination of loop evaluation.
   template<>
   struct CompileTimeLoop<0> {
     public:
 
-      static size_t constexpr pos = 0;  ///< See CompileTimeLoop
+      static size_t constexpr pos = 0;  ///< See CompileTimeLoop.
 
-      /// Nothing is evaluated
+      /// Nothing is evaluated.
       template<typename... Args>
       static CODI_INLINE void eval(Args&&... args) {
         CODI_UNUSED(args...);

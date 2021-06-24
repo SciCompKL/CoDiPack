@@ -10,7 +10,7 @@
   #error Please define the name of the operator.
 #endif
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef OPERATOR
   #define PROXY
 
@@ -22,13 +22,13 @@
 namespace codi {
 #endif
 
-  /// Function overload for operator OPERATOR
+  /// Function overload for operator OPERATOR.
   template<typename Real, typename Arg>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<Real, Arg> const& arg) {
     return OPERATOR RealTraits::getPassiveValue(arg.cast());
   }
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifdef PROXY
   #undef PROXY
 }
