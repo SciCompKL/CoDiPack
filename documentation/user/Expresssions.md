@@ -50,7 +50,7 @@ Custom operations in CoDiPack 2.0 on expression are all implemented with the [Tr
 or [CompileTimeTraversalLogic](@ref codi::CompileTimeTraversalLogic) classes. The first one enables custom logic in a
 runtime context. Variables and results can be stored in the implementation. The CompileTimeTraversalLogic allows for the
 computation of results in a compile time context. Both classes contain functions for the visit of links, nodes and
-leafs in the expression graph. The terms are explained in the following picture:
+leaves in the expression graph. The terms are explained in the following picture:
 ```
   ┌─┐   ┌─┐   ┌─┐   ┌─┐
   │a│   │b│   │c│   │d│  # Nodes without arguments are leaf nodes, they are first class objects like the
@@ -71,7 +71,7 @@ leafs in the expression graph. The terms are explained in the following picture:
            │²│            # The origin node describes the full expression. It is used to initialize the traversal logic.
            └─┘
 ```
-So a node in the traversal logic are all inermedite operations and leafs are the values on which the operations
+So a node in the traversal logic are all intermediate operations and leaves are the values on which the operations
 are evalauted. Links are the relations between two objects in the graph structure. The root is the node which received
 the child as an argument.
 
