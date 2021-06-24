@@ -70,7 +70,7 @@ namespace codi {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ActiveTypeWrapper>&>(*this) = v;
         return *this;
       }
-      using LhsExpressionInterface<Real, Gradient, Tape, WritableActiveTypeWrapper>::operator=;
+      using LhsExpressionInterface<Real, Gradient, Tape, ActiveTypeWrapper>::operator=;
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface
