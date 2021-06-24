@@ -54,14 +54,14 @@ namespace codi {
         // deliberately left empty
       }
 
-      /// Create a immutable instance of an active type. It is assumed that the lifespan of the argument is longer than
-      /// the lifespan of the created value.
+      /// Create an immutable copy of an active type. It is assumed that the identifier is valid throughout the lifespan
+      /// of this object.
       CODI_INLINE ImmutableActiveType(ActiveType const& value)
           : primalValue(value.getValue()), identifier(value.getIdentifier()) {
         // deliberately left empty
       }
 
-      /// The identifier is not destroyed. It is assumed to be still valid, since this is only an immutable reference to
+      /// The identifier is not destroyed. It is assumed to be still valid, since this is only an immutable copy of
       /// the actual value.
       CODI_INLINE ~ImmutableActiveType() {
         // deliberately left empty
