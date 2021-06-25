@@ -510,7 +510,7 @@ namespace codi {
         }
       }
 
-      /// Sets the gradient for order vector modes. Seeds the next GT:dim dimensions.
+      /// Sets the gradient for 1st order vector modes. Seeds the next GT:dim dimensions.
       template<typename T>
       static CODI_INLINE void setGradientOnCoDiValue(Tape& tape, size_t const pos, Type* identifiers, size_t const size,
                                                      T value) {
