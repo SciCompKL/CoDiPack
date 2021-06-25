@@ -78,14 +78,16 @@ namespace codi {
        * The function has the following behavior.
        * - After return, the gradient for every input identifier, output identifier and all identifiers used in the tape
        *   section [start, end] on a left hand side are zero.
-       * - If an output identifier is specified multiple times and the forward mode is used, every row of the Jacobian
-       *   corresponding to that output identifier except for the last one is zero.
-       * - If an output identifier is specified multiple times and the reverse mode is used, every row of the Jacobian
-       *   corresponding to that output identifier is identical.
-       * - If an input identifier is specified multiple times and the forward mode is used, every column of the Jacobian
-       *   corresponding to that input identifier is identical.
-       * - If an input identifier is specified multiple times and the reverse mode is used, every column of the Jacobian
-       *   corresponding to that input identifier except for the first one is zero.
+       * - If an output identifier is specified multiple times
+       *   - and the forward mode is used, every row of the Jacobian corresponding to that output identifier except for
+       *     the last one is zero.
+       *   - and the reverse mode is used, every row of the Jacobian corresponding to that output identifier is
+       *     identical.
+       * - If an input identifier is specified multiple times
+       *   - and the forward mode is used, every column of the Jacobian corresponding to that input identifier is
+       *     identical.
+       *   - and the reverse mode is used, every column of the Jacobian corresponding to that input identifier except
+       *     for the first one is zero.
        *
        * The following usage is recommended.
        * - There should be no duplicate identifiers among the specified inputs.
