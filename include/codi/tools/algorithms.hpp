@@ -75,7 +75,7 @@ namespace codi {
        * - Every output of the tape section [start, end] that depends on the specified inputs is contained in the
        *   specified outputs.
        *
-       * The function has the following behaviour.
+       * The function has the following behavior.
        * - After return, the gradient for every input identifier, output identifier and all identifiers used in the tape
        *   section [start, end] on a left hand side are zero.
        * - If an output identifier is specified multiple times and the forward mode is used, every row of the Jacobian
@@ -506,6 +506,7 @@ namespace codi {
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
+          // no activity check on the identifier required since forward types are used
           GT2nd::at(tape.primal(identifiers[pos + curDim]).gradient(), curDim) = value;
         }
       }
@@ -531,7 +532,7 @@ namespace codi {
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
-          // no check required since forward types are used
+          // no activity check on the identifier required since forward types are used
           GT2nd::at(identifiers[pos + curDim].value().gradient(), curDim) = value;
         }
       }
