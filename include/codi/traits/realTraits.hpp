@@ -155,7 +155,7 @@ namespace codi {
     struct TapeRegistration {
       public:
         static_assert(false && std::is_void<_Type>::value,
-                      "Instantiation of unspecialized RealTraits::DataRegistration.");
+                      "Instantiation of unspecialized RealTraits::TapeRegistration.");
 
         using Type = CODI_DD(_Type, CODI_ANY);  ///< See DataRegistration.
 
@@ -249,12 +249,16 @@ namespace codi {
 
         /// \copydoc DataExtraction::getValue()
         CODI_INLINE static Real getValue(Type const& v) {
-          return Real(InnerExtraction::getValue(std::real(v)), InnerExtraction::getValue(std::imag(v)));
+          InnerType const* vArray = reinterpret_cast<InnerType const*>(&v);
+
+          return Real(InnerExtraction::getValue(vArray[0]), InnerExtraction::getValue(vArray[1]));
         }
 
         /// \copydoc DataExtraction::getIdentifier()
         CODI_INLINE static Identifier getIdentifier(Type const& v) {
-          return Real(InnerExtraction::getIdentifier(std::real(v)), InnerExtraction::getIdentifier(std::imag(v)));
+          InnerType const* vArray = reinterpret_cast<InnerType const*>(&v);
+
+          return Real(InnerExtraction::getIdentifier(vArray[0]), InnerExtraction::getIdentifier(vArray[1]));
         }
 
         /// \copydoc DataExtraction::setValue()
