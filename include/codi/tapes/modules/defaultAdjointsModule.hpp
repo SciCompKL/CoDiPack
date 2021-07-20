@@ -81,6 +81,12 @@ namespace codi {
         adjointsSize = newSize;
       }
 
+    public:
+      static void lockForUse() {}
+      static void unlockAfterUse() {}
+      static void lockForRealloc() {}
+      static void unlockAfterRealloc() {}
+
     protected:
 
       DefaultAdjointsModule() : adjoints(NULL), adjointsSize(0) {

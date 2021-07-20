@@ -59,8 +59,6 @@ struct CoDiOpDiTool : public opdi::ToolInterface {
 
   public:
     void init() {
-      auto id = opdi::backend->getLockIdentifier(Tape::getAdjointsLock());
-      opdi::logic->registerInactiveMutex(opdi::LogicInterface::MutexKind::Lock, id);
     }
 
     void finalize() {

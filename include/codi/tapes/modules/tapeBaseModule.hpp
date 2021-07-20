@@ -293,7 +293,10 @@ namespace codi {
       CODI_NO_INLINE void evaluate(const Position& start, const Position& end) {
         cast().resizeAdjointsToIndexSize();
 
-        evaluate(start, end, cast().getAdjoints());
+        auto adjoints = cast().getAdjoints();
+        cast().lockForUse();
+        evaluate(start, end, adjoints);
+        cast().unlockAfterUse();
       }
 
       /**
@@ -330,7 +333,10 @@ namespace codi {
       CODI_NO_INLINE void evaluateForward(const Position& start, const Position& end) {
         cast().resizeAdjointsToIndexSize();
 
-        evaluateForward(start, end, cast().getAdjoints());
+        auto adjoints = cast().getAdjoints();
+        cast().lockForUse();
+        evaluateForward(start, end, adjoints);
+        cast().unlockAfterUse();
       }
 
       /**

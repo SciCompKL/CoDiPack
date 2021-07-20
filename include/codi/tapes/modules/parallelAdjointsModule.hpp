@@ -84,7 +84,8 @@ namespace codi {
        */
       struct AdjointsWrapper {
         GradientValue* adjoints;
-        omp_lock_t lock;
+        int lockForUse;
+        int lockForRealloc;
 
         AdjointsWrapper() : adjoints(NULL) {
         }
@@ -108,9 +109,85 @@ namespace codi {
 
     public:
 
-      static omp_lock_t* getAdjointsLock() {
-        return &adjointsWrapper.lock;
+      static void lockForUse() {
+        int numReallocators;
+        while (true) {
+          // wait until there are no reallocators
+          do {
+            #pragma omp atomic read
+            numReallocators = adjointsWrapper.lockForRealloc;
+          } while (numReallocators > 0);
+
+          // increment lock for use
+          #pragma omp atomic update
+          ++adjointsWrapper.lockForUse;
+
+          // check if there are still no reallocators
+          #pragma omp atomic read
+          numReallocators = adjointsWrapper.lockForRealloc;
+
+          // if so, let reallocators go first and try again
+          if (numReallocators > 0) {
+            #pragma omp atomic update
+            --adjointsWrapper.lockForUse;
+            continue;
+          }
+          break;
+        }
       }
+
+      static void unlockAfterUse() {
+        #pragma omp atomic update
+        --adjointsWrapper.lockForUse;
+      }
+
+      static void lockForRealloc() {
+        // wait until there is exactly one lock for realloc
+        int numReallocators;
+        while (true) {
+          #pragma omp atomic capture
+          numReallocators = ++adjointsWrapper.lockForRealloc;
+
+          if (numReallocators != 1) {
+            #pragma omp atomic update
+            --adjointsWrapper.lockForRealloc;
+            continue;
+          }
+          break;
+        }
+
+        // wait until there are no users
+        int users;
+        do {
+          #pragma omp atomic read
+          users = adjointsWrapper.lockForUse;
+        } while (users != 0);
+      }
+
+      static void unlockAfterRealloc() {
+        #pragma omp atomic update
+        --adjointsWrapper.lockForRealloc;
+      }
+
+      struct LockUse {
+          LockUse() {
+            lockForUse();
+          }
+
+          ~LockUse() {
+            unlockAfterUse();
+          }
+      };
+
+      struct LockRealloc {
+          LockRealloc() {
+            lockForRealloc();
+          }
+
+          ~LockRealloc() {
+            unlockAfterRealloc();
+          }
+      };
 
     protected:
 
@@ -125,20 +202,16 @@ namespace codi {
       }
 
       void initializeAdjointsModule() {
-        omp_init_lock(&(adjointsWrapper.lock));
       }
 
       void finalizeAdjointsModule() {
-        omp_destroy_lock(&(adjointsWrapper.lock));
       }
 
     protected:
 
       CODI_INLINE GradientValue* getAdjoints() const {
-        omp_set_lock(&(adjointsWrapper.lock));
-        GradientValue* result = adjointsWrapper.adjoints;
-        omp_unset_lock(&(adjointsWrapper.lock));
-        return result;
+        LockUse lock;
+        return adjointsWrapper.adjoints;
       }
 
     // ----------------------------------------------------------------------
@@ -172,7 +245,7 @@ namespace codi {
        */
       static CODI_NO_INLINE void resizeAdjoints(const Index& size) {
 
-        omp_set_lock(&(adjointsWrapper.lock));
+        LockRealloc lock;
         Index oldSize = adjointsSize;
 
         if (size > oldSize) {
@@ -192,7 +265,6 @@ namespace codi {
             new (adjointsWrapper.adjoints + i) GradientValue();
           }
         }
-        omp_unset_lock(&(adjointsWrapper.lock));
       }
 
     protected:
@@ -210,19 +282,16 @@ namespace codi {
        */
       static CODI_NO_INLINE void cleanAdjoints() {
         if(adjointsValid()) {
-          omp_set_lock(&(adjointsWrapper.lock));
+          LockRealloc lock;
           free(adjointsWrapper.adjoints);
           adjointsWrapper.adjoints = NULL;
           setAdjointsSize(0);
-          omp_unset_lock(&(adjointsWrapper.lock));
         }
       }
 
       static CODI_INLINE bool adjointsValid() {
-        omp_set_lock(&(adjointsWrapper.lock));
-        bool result = adjointsWrapper.adjoints != NULL;
-        omp_unset_lock(&(adjointsWrapper.lock));
-        return result;
+        LockUse lock;
+        return adjointsWrapper.adjoints != NULL;
       }
 
       /**
@@ -239,10 +308,8 @@ namespace codi {
     public:
       // access to adjoints
       static CODI_INLINE Index getAdjointsSize() {
-        omp_set_lock(&(adjointsWrapper.lock));
-        Index result = adjointsSize;
-        omp_unset_lock(&(adjointsWrapper.lock));
-        return result;
+        LockUse lock;
+        return adjointsSize;
       }
 
     public:
@@ -254,6 +321,7 @@ namespace codi {
       }
 
       static CODI_INLINE void setAdjoint(const Index& index, const GradientValue& value) {
+        LockUse lock;
         setAdjoint(index, value, adjointsWrapper.adjoints);
       }
 
@@ -291,6 +359,7 @@ namespace codi {
         if(0 == index || getAdjointsSize() <= index) {
           return GradientValue();
         } else {
+          LockUse lock;
           return adjointsWrapper.adjoints[index];
         }
       }
@@ -312,6 +381,7 @@ namespace codi {
           resizeAdjoints(cast().indexHandler.getMaximumGlobalIndex() + 1);
         }
 
+        LockUse lock;
         return adjointsWrapper.adjoints[index];
       }
 
@@ -336,8 +406,10 @@ namespace codi {
        */
       CODI_INLINE const GradientValue& gradient(const Index& index) const {
         if(getAdjointsSize() <= index) {
+          LockUse lock;
           return adjointsWrapper.adjoints[0];
         } else {
+          LockUse lock;
           return adjointsWrapper.adjoints[index];
         }
       }
@@ -350,11 +422,10 @@ namespace codi {
 
           Index adjointsSize = getAdjointsSize();
 
-          omp_set_lock(&(adjointsWrapper.lock));
+          LockUse lock;
           for(Index i = 0; i < adjointsSize; ++i) {
             clearAdjoint(i);
           }
-          omp_unset_lock(&(adjointsWrapper.lock));
         }
       }
 
