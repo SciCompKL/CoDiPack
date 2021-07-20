@@ -1,4 +1,4 @@
-//! [Tutorial 5 - Multiple tape recordings]
+//! [Tutorial 5 - Repeated tape recordings]
 
 #include <codi.hpp>
 #include <iostream>
@@ -89,4 +89,4 @@ int main(int nargs, char** args) {
 
   return 0;
 }
-//! [Tutorial 5 - Multiple tape recordings]
+//! [Tutorial 5 - Repeated tape recordings]
