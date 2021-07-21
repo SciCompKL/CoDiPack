@@ -3,7 +3,7 @@ Tutorial 6 - Higher order derivatives {#Tutorial_06_Higher_order_types_helper_ac
 
 **Goal:** Learn how to define higher order types and how to compute higher order derivatives.
 
-**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_simple1to1_higher
 \snippet tutorials/Tutorial_06_Higher_order_types_helper_access.cpp Function

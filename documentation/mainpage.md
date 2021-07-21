@@ -35,7 +35,7 @@ The file `codi.hpp` defines several datatypes. The most important ones are:
 We recommend to use the codi::RealReverse type when AD is first introduced to an application.
 After that there should be no difficulties in replacing the codi::RealReverse type with other types.
 
-For the handling of libraries and the memory optimization of the tape exist several helper structures.
+For the handling of libraries and the memory optimization of the tape there exist several helper structures.
 Most of them are introduced in the tutorial section:
  - codi::ExternalFunctionHelper
    - Handle external libraries which can not be handled with AD
@@ -85,6 +85,8 @@ for the gcc compiler or with
   icpc  -I<path to codi>/include -std=c++11 -g -o forward forward.cpp
 ~~~~
 for the intel compiler.
+
+You can get CoDiPack from https://www.scicomp.uni-kl.de/software/codi.
 
 ## Citation
 

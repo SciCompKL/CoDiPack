@@ -16,37 +16,7 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
 
   /**
-   * See DerivativeAccess for details about the number for each derivative order.
-   *
-   * The selection algorithm walks along the nodes in the nested classes. From the specified order and the derivative
-   * number l the algorithm checks if the derivative l is in the lower (value) or upper (gradient) branch of the nested
-   * classes. The value is compared against the number of derivatives of that order in the lower branch. If smaller
-   * the lower branch is taken. If larger or equal the upper branch is taken.
-   * For a third order type the graph looks like:
-   *
-   * \code{.cpp}
-   *  t3s  t2s  t1s  double | order  index
-   *                        |
-   *               ,---o    |  3     0
-   *              /         |
-   *            ,o-----o    |  2     2
-   *           /            |
-   *          /    ,---o    |  2     1
-   *         /    /         |
-   *        o----o-----o    |  1     2
-   *       /                |
-   *      /        ,---o    |  2     0
-   *     /        /         |
-   *    /       ,o-----o    |  1     1
-   *   /       /            |
-   *   |      /    ,---o    |  1     0
-   *   |     /    /         |
-   *   o----o----o-----o    |  0     0
-   * \endcode
-   *
-   * The two columns at the end show the derivative order under the column 'order' and the index in that order
-   * class under the column 'index'. It can be seen that the different derivative values of the same order are
-   * not continuously ordered in the graph.
+   * See DerivativeAccess for details about the number for each derivative order and the iteration order.
    */
   namespace DerivativeAccessImpl {
     CODI_INLINE size_t constexpr maximumDerivatives(size_t selectionDepth, size_t order) {
@@ -200,12 +170,12 @@ namespace codi {
    * \endcode
    * then the second order type t2s has 4 possible values \f$(n = 2)\f$ and the third order type has 8
    * possible values \f$(n = 3)\f$. The number of derivatives per derivative order can be computed via
-   * the binomial coefficient \f$(n over k)\f$ where \f$k\f$ is the derivative order. For a second order type
+   * the binomial coefficient \f$\binom{n}{k}\f$ where \f$k\f$ is the derivative order. For a second order type
    * this yields 1 derivative of zero order (the primal value) two derivatives of the first order and one
    * derivative of the second order. For a third order type this is 0:1, 1:3, 2:3, 3:1.
    *
    * The algorithm in the class will now select the appropriate derivative. The user provides the values
-   * k and the number of the derivative he wants to select i.e. \f$0, ... (n over k) - 1\f$.
+   * k and the number of the derivative he wants to select i.e. \f$0, ... \binom{n}{k} - 1\f$.
    *
    * The class provides  methods for the run time selection of the derivatives. If theses methods are
    * used, then the AD types need to be defined such that all primal and derivative values have the same type.
@@ -218,6 +188,43 @@ namespace codi {
    * Also the setDerivatives method which sets all derivatives of one order may not be used if different primal
    * and gradient types are used. The provided objects needs to be convertible into all possible types, that
    * are used at the leaf points of the recursion.
+   *
+   * The selection algorithm walks along the nodes in the nested classes. From the specified order and the derivative
+   * number l the algorithm checks if the derivative l is in the lower (value) or upper (gradient) branch of the nested
+   * classes. The value is compared against the number of derivatives of that order in the lower branch. If smaller
+   * the lower branch is taken. If larger or equal the upper branch is taken.
+   * For a third order type the graph looks like:
+   *
+   * \code{.cpp}
+   *  t3s  t2s  t1s  double | order  index
+   *                        |
+   *               ,---o    |  3     0
+   *              /         |
+   *            ,o-----o    |  2     2
+   *           /            |
+   *          /    ,---o    |  2     1
+   *         /    /         |
+   *        o----o-----o    |  1     2
+   *       /                |
+   *      /        ,---o    |  2     0
+   *     /        /         |
+   *    /       ,o-----o    |  1     1
+   *   /       /            |
+   *   |      /    ,---o    |  1     0
+   *   |     /    /         |
+   *   o----o----o-----o    |  0     0
+   * \endcode
+   *
+   * The two columns at the end show the derivative order under the column 'order' and the index in that order
+   * class under the column 'index'. It can be seen that the different derivative values of the same order are
+   * not continuously ordered in the graph. For the 2nd order derivatives in the above example the indices correspond
+   * to the calls:
+   *
+   * \code{.cpp}
+   *   DA::derivative<2,0>(v) == v.value().gradient().gradient();
+   *   DA::derivative<2,1>(v) == v.gradient().value().gradient();
+   *   DA::derivative<2,2>(v) == v.gradient().gradient().value();
+   * \endcode
    *
    * @tparam _Type  The AD type for which the derivatives are selected. The type needs to be an LhsExpressionInterface.
    */
@@ -236,7 +243,7 @@ namespace codi {
       template<bool constant, size_t selectionDepth, size_t order, size_t l>
       using SelectCompileTime = DerivativeAccessImpl::SelectCompileTime<Type, constant, selectionDepth, order, l>;
 
-      /// Run time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... ((selectionDepth over order) - 1).
+      /// Run time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... (\binom{selectionDepth}{order} - 1).
       template<size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectRunTime<true, selectionDepth>::RType const& derivative(Type const& v, size_t order,
                                                                                    size_t l) {
@@ -245,7 +252,7 @@ namespace codi {
         return SelectRunTime<true, selectionDepth>::select(v, order, l);
       }
 
-      /// Run time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... ((selectionDepth over order) - 1).
+      /// Run time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... (\binom{selectionDepth}{order} - 1).
       template<size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectRunTime<false, selectionDepth>::RType& derivative(Type& v, size_t order, size_t l) {
         checkRuntimeSelection<selectionDepth>(order, l);
@@ -276,14 +283,14 @@ namespace codi {
             v.gradient(), order - 1, d);
       }
 
-      /// Compile time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... ((selectionDepth over order) -
+      /// Compile time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... (\binom{selectionDepth}{order} -
       /// 1).
       template<size_t order, size_t l, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectCompileTime<true, selectionDepth, order, l>::RType const& derivative(Type const& v) {
         return SelectCompileTime<true, selectionDepth, order, l>::select(v);
       }
 
-      /// Compile time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... ((selectionDepth over order) -
+      /// Compile time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... (\binom{selectionDepth}{order} -
       /// 1).
       template<size_t order, size_t l, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectCompileTime<false, selectionDepth, order, l>::RType& derivative(Type& v) {

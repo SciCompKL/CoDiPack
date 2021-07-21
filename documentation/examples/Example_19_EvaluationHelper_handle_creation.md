@@ -3,7 +3,7 @@ Example 19 - EvaluationHelper handle creation {#Example_19_EvaluationHelper_hand
 
 **Goal:** Possible definitions of function objects for the codi::EvaluationHelper
 
-**Prequesties:** None
+**Prerequisite:** None
 
 **Function:**
 \snippet examples/Example_19_EvaluationHelper_handle_creation.cpp Function

@@ -44,7 +44,7 @@ namespace codi {
       void evaluate(Position const& start, Position const& end, Adjoint* data);
 
       /**
-       * \copydoc codi::ForwardEvaluationTapeInterface::evaluate(Position const&, Position const&)
+       * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(Position const&, Position const&)
        *
        * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */

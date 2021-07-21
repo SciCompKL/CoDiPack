@@ -3,7 +3,7 @@ Example 6 - Forward mode tape evaluation {#Example_06_Forward_tape_evaluation}
 
 **Goal:** Evaluate a tape with forward AD mode.
 
-**Prequesties:** \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_02_Reverse_mode_AD
 
 **Function:**
 \snippet examples/Example_06_Forward_tape_evaluation.cpp Function

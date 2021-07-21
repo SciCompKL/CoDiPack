@@ -14,7 +14,7 @@
       <tab type="user" title="Tutorial 2 - Reverse mode AD" url="@ref Tutorial_02_Reverse_mode_AD"/>
       <tab type="user" title="Tutorial 3 - Full Jacobian computation" url="@ref Tutorial_03_Full_jacobian_computation"/>
       <tab type="user" title="Tutorial 4 - Vector mode AD" url="@ref Tutorial_04_Vector_mode_AD"/>
-      <tab type="user" title="Tutorial 5 - Multiple tape recordings" url="@ref Tutorial_05_Multiple_tape_recordings"/>
+      <tab type="user" title="Tutorial 5 - Repeated tape recordings" url="@ref Tutorial_05_Repeated_tape_recordings"/>
       <tab type="user" title="Tutorial 6 - Higher order derivatives" url="@ref Tutorial_06_Higher_order_types_helper_acces"/>
       <tab type="user" title="Example 1 - Old tangent leftovers in forward mode AD" url="@ref Example_01_Old_tangent_leftovers_forward_mode"/>
       <tab type="user" title="Example 2 - Custom adjoint vector evaluation" url="@ref Example_02_Custom_adjoint_vector_evaluation"/>
@@ -33,8 +33,8 @@
       <tab type="user" title="Example 15 - Preaccumulation of code parts" url="@ref Example_15_Preaccumulation_of_code_parts"/>
       <tab type="user" title="Example 16 - TapeHelper" url="@ref Example_16_TapeHelper"/>
       <tab type="user" title="Example 17 - EvaluationHelper" url="@ref Example_17_EvaluationHelper"/>
-      <tab type="user" title="Example 18 - EvaluationHelper function objects" url="@ref Example_19_EvaluationHelper_function_objects"/>
-      <tab type="user" title="Example 19 - EvaluationHelper handles" url="@ref Example_18_EvaluationHelper_handles"/>
+      <tab type="user" title="Example 18 - EvaluationHelper function object declaration" url="@ref Example_18_EvaluationHelper_function_objects"/>
+      <tab type="user" title="Example 19 - EvaluationHelper handle creation" url="@ref Example_19_EvaluationHelper_handle_creation"/>
     </tab>
     <tab type="user" title="Papers" url="@ref Papers"/>
     <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>
