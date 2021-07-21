@@ -10,3 +10,6 @@ Example 9 - OpenMP reverse evaluation {#Example_09_OpenMP_reverse_evaluation}
 
 **Full code:**
 \snippet examples/Example_09_OpenMP_reverse_evaluation.cpp Example 9 - OpenMP reverse evaluation
+
+`tape.evaluate()` can not be used with OpenMP since both threads would use the internal adjoint vector of the tape
+concurrently.

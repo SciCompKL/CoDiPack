@@ -11,7 +11,7 @@ Example 8 - Generalized adjoint vector interface {#Example_08_Vector_helper_inte
 **Full code:**
 \snippet examples/Example_08_Vector_helper_interface_access.cpp Example 8 - Vector helper interface access
 
-Since the ([CustomAdjointVectorHelper](@ref codi::CustomAdjointVectorHelper) is hardcoded to the adjoint vector type,
+Since the ([CustomAdjointVectorHelper](@ref codi::CustomAdjointVectorHelper)) is hardcoded to the adjoint vector type,
 there is also a codi::CustomAdjointVectorInterface definition. This interface allows to program for an arbitrary
 vector dimension. In order to access the vector with this interface the codi::VectorAccessInterface needs to be used.
 It can be obtained via the method [getVectorInterface](@ref codi::CustomAdjointVectorInterface::getVectorInterface()).
