@@ -3,6 +3,7 @@
 #include <complex>
 #include <type_traits>
 
+#include "expressionTraits.hpp"
 #include "../aux/macros.hpp"
 #include "../config.h"
 
@@ -184,6 +185,24 @@ namespace codi {
 
       static Return adjointConversion(Inner const& jacobian) {
         return jacobian;
+      }
+  };
+
+  /// Adjoint conversion specialization for Inner == codi::Expression
+  template<typename _Outer, typename _Inner>
+  struct ComputationTraits::AdjointConversionImpl<_Outer, _Inner, typename std::enable_if<!std::is_same<_Outer, _Inner>::value & ExpressionTraits::IsExpression<_Inner>::value>::type> {
+    public:
+
+      using Outer = _Outer;
+      using Inner = _Inner;
+
+      using InnerActive = typename Inner::ActiveResult;
+      using InnerActiveConversion = ComputationTraits::AdjointConversionImpl<Outer, InnerActive>;
+
+      using Return = typename InnerActiveConversion::Return;
+
+      static Return adjointConversion(Inner const& jacobian) {
+        return InnerActiveConversion::adjointConversion(jacobian);
       }
   };
 
