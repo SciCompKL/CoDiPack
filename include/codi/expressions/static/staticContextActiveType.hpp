@@ -29,6 +29,8 @@ namespace codi {
       using Real = typename Tape::Real;              ///< See TapeTypesInterface.
       using Identifier = typename Tape::Identifier;  ///< See TapeTypesInterface.
 
+      using ActiveResult = StaticContextActiveType;  ///< See ExpressionInterface.
+
     private:
 
       Real const primal;

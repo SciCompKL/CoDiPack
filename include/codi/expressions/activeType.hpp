@@ -33,6 +33,8 @@ namespace codi {
       /// InternalStatementRecordingTapeInterface and GradientAccessTapeInterface.
       using Tape = CODI_DD(_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
+      using ActiveResult = ActiveType;  ///< See ExpressionInterface.
+
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
       using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.

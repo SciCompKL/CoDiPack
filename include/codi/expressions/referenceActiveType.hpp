@@ -29,6 +29,8 @@ namespace codi {
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Tape = typename Type::Tape;  ///< See LhsExpressionInterface.
 
+      using ActiveResult = typename Type::ActiveResult;  ///< See ExpressionInterface.
+
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
       using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.

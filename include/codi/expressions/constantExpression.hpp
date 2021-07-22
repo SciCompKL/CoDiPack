@@ -24,6 +24,8 @@ namespace codi {
 
       using Real = CODI_DD(_Real, double);  ///< See ConstantExpression.
 
+      using ActiveResult = void;  ///< See ExpressionInterface.
+
     private:
       Real primalValue;
 
