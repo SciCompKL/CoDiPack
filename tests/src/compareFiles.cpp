@@ -157,9 +157,9 @@ class ResultDiff {
           }
         } else {
           // compare values
-          double base = std::stod(tokens[0]);
+          double base = parseDouble(tokens[0]);
           for (size_t curFile = 1; curFile < fileCount; curFile += 1) {
-            double curValue = std::stod(tokens[curFile]);
+            double curValue = parseDouble(tokens[curFile]);
 
             if (getDeviation(base, curValue) > settings.threshold) {
               diffPos = curToken;
@@ -269,6 +269,14 @@ class ResultDiff {
 
     std::string errorFileOutput(int filePos) {
       return settings.fileNames[0] + " " + settings.fileNames[filePos];
+    }
+
+    double parseDouble(std::string const& str) {
+      try {
+        return std::stod(str);
+      } catch (std::out_of_range const&) {
+        return 0.0;
+      }
     }
 };
 
