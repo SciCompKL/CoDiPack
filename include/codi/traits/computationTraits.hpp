@@ -3,9 +3,9 @@
 #include <complex>
 #include <type_traits>
 
-#include "expressionTraits.hpp"
 #include "../aux/macros.hpp"
 #include "../config.h"
+#include "expressionTraits.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -190,7 +190,10 @@ namespace codi {
 
   /// Adjoint conversion specialization for Inner == codi::Expression
   template<typename _Outer, typename _Inner>
-  struct ComputationTraits::AdjointConversionImpl<_Outer, _Inner, typename std::enable_if<!std::is_same<_Outer, _Inner>::value & ExpressionTraits::IsExpression<_Inner>::value>::type> {
+  struct ComputationTraits::AdjointConversionImpl<
+      _Outer, _Inner,
+      typename std::enable_if<!std::is_same<_Outer, _Inner>::value &
+                              ExpressionTraits::IsExpression<_Inner>::value>::type> {
     public:
 
       using Outer = _Outer;

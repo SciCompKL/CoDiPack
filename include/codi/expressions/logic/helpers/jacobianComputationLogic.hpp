@@ -49,7 +49,7 @@ namespace codi {
       template<size_t ChildNumber, typename Child, typename Root, typename Jacobian, typename... Args>
       CODI_INLINE void link(Child const& child, Root const& root, Jacobian const& jacobian, Args&&... args) {
         auto linkJacobian = root.template getJacobian<ChildNumber>();
-        auto curJacobian =  linkJacobian * jacobian;
+        auto curJacobian = linkJacobian * jacobian;
 
         cast().toNode(child, curJacobian, std::forward<Args>(args)...);
       }

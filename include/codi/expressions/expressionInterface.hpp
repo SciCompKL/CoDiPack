@@ -28,8 +28,8 @@ namespace codi {
       using Real = CODI_DD(_Real, double);               ///< See ExpressionInterface.
       using Impl = CODI_DD(_Impl, ExpressionInterface);  ///< See ExpressionInterface.
 
-      using ActiveResult = CODI_UNDEFINED; ///< Type into which the expression can be converted. Usually also the type
-                                           ///< from which is constructed.
+      using ActiveResult = CODI_UNDEFINED;  ///< Type into which the expression can be converted. Usually also the type
+                                            ///< from which is constructed.
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {

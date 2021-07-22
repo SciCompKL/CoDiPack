@@ -274,9 +274,7 @@ class ResultDiff {
     double parseDouble(std::string const& str) {
       try {
         return std::stod(str);
-      } catch (std::out_of_range const&) {
-        return 0.0;
-      }
+      } catch (std::out_of_range const&) { return 0.0; }
     }
 };
 
