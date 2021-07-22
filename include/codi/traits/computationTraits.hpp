@@ -181,7 +181,7 @@ namespace codi {
       using Outer = Type;
       using Inner = Type;
 
-      using Return = Type const&;
+      using Return = Type;
 
       static Return adjointConversion(Inner const& jacobian) {
         return jacobian;

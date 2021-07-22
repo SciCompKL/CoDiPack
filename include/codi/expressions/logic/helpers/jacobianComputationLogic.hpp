@@ -48,7 +48,8 @@ namespace codi {
       /// The Jacobian is multiplied with the Jacobian of the link. The result is forwarded to the child.
       template<size_t ChildNumber, typename Child, typename Root, typename Jacobian, typename... Args>
       CODI_INLINE void link(Child const& child, Root const& root, Jacobian const& jacobian, Args&&... args) {
-        auto curJacobian = root.template getJacobian<ChildNumber>() * jacobian;
+        auto linkJacobian = root.template getJacobian<ChildNumber>();
+        auto curJacobian =  linkJacobian * jacobian;
 
         cast().toNode(child, curJacobian, std::forward<Args>(args)...);
       }
