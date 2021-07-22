@@ -77,12 +77,12 @@ namespace codi {
         using Return = CODI_ANY;  ///< Deduced return type.
 
         /// @brief Perform the adjoint of Outer(Inner).
-        static Return adjointConversion(Outer const& jacobian);
+        static Return adjointConversion(Inner const& jacobian);
     };
 
     /// Perform the adjoint of Outer(Inner). Logic can be specialized via AdjointConversionImpl.
-    template<typename Inner, typename Outer>
-    CODI_INLINE typename AdjointConversionImpl<Outer, Inner>::Return adjointConversion(Outer const& jacobian) {
+    template<typename Outer, typename Inner>
+    CODI_INLINE typename AdjointConversionImpl<Outer, Inner>::Return adjointConversion(Inner const& jacobian) {
       return AdjointConversionImpl<Outer, Inner>::adjointConversion(jacobian);
     }
   }
@@ -126,7 +126,7 @@ namespace codi {
       using Outer = OuteType;                                                   \
       using Inner = InnerType;                                                  \
       using Return = RType;                                                     \
-      static Return adjointConversion(Outer const& jacobian) {                  \
+      static Return adjointConversion(Inner const& jacobian) {                  \
         return conversion;                                                      \
       }                                                                         \
   }
@@ -182,21 +182,21 @@ namespace codi {
 
       using Return = Type const&;
 
-      static Return adjointConversion(Outer const& jacobian) {
+      static Return adjointConversion(Inner const& jacobian) {
         return jacobian;
       }
   };
 
   /// Adjoint conversion specialization for Outer == std::complex<Inner>
   template<typename Type>
-  struct ComputationTraits::AdjointConversionImpl<std::complex<Type>, Type> {
+  struct ComputationTraits::AdjointConversionImpl<Type, std::complex<Type>> {
     public:
-      using Outer = std::complex<Type>;
-      using Inner = Type;
+      using Outer = Type;
+      using Inner = std::complex<Type>;
 
       using Return = Type;
 
-      static Return adjointConversion(Outer const& jacobian) {
+      static Return adjointConversion(Inner const& jacobian) {
         return std::real(jacobian);
       }
   };
