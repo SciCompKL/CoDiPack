@@ -15,7 +15,7 @@ namespace codi {
   struct JacobianDelayAccessor {
     public:
 
-      using Impl = CODI_DD(_Impl, CODI_ANY);  ///< See DelayAccessor
+      using Impl = CODI_DD(_Impl, CODI_ANY);  ///< See DelayAccessor.
 
     private:
 
@@ -29,7 +29,7 @@ namespace codi {
       /// Constructor
       JacobianDelayAccessor(size_t const i, size_t const j, Impl& data) : i(i), j(j), data(data) {}
 
-      /// Forwards to `data.setLogic(i, j, v)`
+      /// Forwards to `data.setLogic(i, j, v)`.
       template<typename T>
       JacobianDelayAccessor& operator=(T const& v) {
         data.setLogic(i, j, v);
