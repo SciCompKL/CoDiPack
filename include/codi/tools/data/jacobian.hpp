@@ -26,18 +26,18 @@ namespace codi {
   struct Jacobian : public JacobianInterface<_T> {
     public:
 
-      using T = CODI_DD(_T, double);                       ///< See Jacobian
-      using Store = CODI_DD(_Store, std::vector<double>);  ///< See Jacobian
+      using T = CODI_DD(_T, double);                       ///< See Jacobian.
+      using Store = CODI_DD(_Store, std::vector<double>);  ///< See Jacobian.
 
     protected:
       Store values;  ///< Array store for the data.
 
-      size_t m;  ///< Number of row (output variables)
-      size_t n;  ///< Number of columns (input variables);
+      size_t m;  ///< Number of rows (output variables).
+      size_t n;  ///< Number of columns (input variables).
 
     public:
 
-      /// m = rows ( output variables), n = columns (input variables)
+      /// m = rows (output variables), n = columns (input variables)
       explicit Jacobian(size_t const m, size_t const n) : values(constructVector<Store>(n * m)), m(m), n(n) {}
 
       CODI_INLINE size_t getM() const {
@@ -74,14 +74,14 @@ namespace codi {
 
     protected:
 
-      /// Compute index into the storage array.
+      /// Convert row and column to an index in the storage array.
       CODI_INLINE size_t computeIndex(size_t const i, size_t const j) const {
         return i * n + j;
       }
   };
 
   /**
-   * @brief Adds counting of non zero entries.
+   * @brief Adds counting of nonzero entries.
    *
    * The user has to manually reset the count.
    *
@@ -92,10 +92,10 @@ namespace codi {
   struct JacobianCountNonZerosRow : public Jacobian<_T, _Store> {
     public:
 
-      using Base = Jacobian<_T, _Store>;  ///< Base class abbreviation
+      using Base = Jacobian<_T, _Store>;  ///< Base class abbreviation.
 
-      using T = typename Base::T;          ///< See Jacobian
-      using Store = typename Base::Store;  ///< See Jacobian
+      using T = typename Base::T;          ///< See Jacobian.
+      using Store = typename Base::Store;  ///< See Jacobian.
 
       using DelayAcc = JacobianDelayAccessor<JacobianCountNonZerosRow>;  ///< Delayed accessor for reference access.
 
@@ -115,7 +115,7 @@ namespace codi {
 
       /// \copydoc JacobianInterface::operator()(size_t const i, size_t const j)
       /// Implementation: Returns an object for the delayed access. This object calls then the access logic which
-      /// updates the number of non zero elements.
+      /// updates the number of nonzero elements.
       CODI_INLINE DelayAcc operator()(size_t const i, size_t const j) {
         return DelayAcc(i, j, *this);
       }
@@ -126,7 +126,7 @@ namespace codi {
         nonZerosRowVector.resize(m);
       }
 
-      /// Reference to the number of non zero entries for the specified row.
+      /// Reference to the number of nonzero entries for the specified row.
       CODI_INLINE int& nonZerosRow(size_t const i) {
         return nonZerosRowVector[i];
       }
@@ -148,8 +148,8 @@ namespace codi {
   template<typename _Nested>
   struct JacobianConvertWrapper {
     public:
-      using Nested = CODI_DECLARE_DEFAULT(_Nested, JacobianInterface<double>);  ///< See JacobianConvertWrapper
-      using T = typename Nested::T;                                             ///< See JacobianInterface
+      using Nested = CODI_DECLARE_DEFAULT(_Nested, JacobianInterface<double>);  ///< See JacobianConvertWrapper.
+      using T = typename Nested::T;                                             ///< See JacobianInterface.
       using DelayAcc = JacobianDelayAccessor<JacobianConvertWrapper>;           ///< Return type for reference access.
 
     private:
@@ -178,7 +178,7 @@ namespace codi {
       }
   };
 
-  /// Dummy Jacobian. Has size zero and no logic in all calls.
+  /// Dummy Jacobian. Has size zero and no logic in any calls.
   struct DummyJacobian : public JacobianInterface<DummyValue> {
     public:
 
