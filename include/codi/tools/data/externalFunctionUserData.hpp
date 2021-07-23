@@ -9,13 +9,15 @@
 namespace codi {
 
   /**
-   * @brief Ease of access structure for used data on the tape for external functions. See
+   * @brief Ease of access structure for user-provided data on the tape for external functions. See
    * ExternalFunctionTapeInterface.
    *
-   * The structure clones all data that is stored via the put methods.
+   * Stores copies of the data provided to the add methods, either a single value or an entire array.
    *
-   * Each get will retrieve the data in the same order as it was put into the structure. After the last data element is
-   * accessed the first one will be returned on the next get.
+   * The data can be retrieved in two different manners. Subsequent calls to get* methods provide the data elements in
+   * the order in which they were added. The get*ByIndex methods can be used to query the pos-th added item explicitly.
+   *
+   * After the last data element is accessed by a get* method, the next get* call will return the first one.
    *
    * The direct access function will not change the internal positioning.
    */
@@ -99,7 +101,7 @@ namespace codi {
         return *this;
       }
 
-      /// Delete all data entries
+      /// Delete all data entries.
       void clear() {
         for (size_t i = 0; i < store.size(); ++i) {
           delete store[i];
@@ -107,9 +109,9 @@ namespace codi {
         store.clear();
       }
 
-      /// Add a value to the store.
+      /// Add a value to the store. The value is copied.
       ///
-      /// @return index of the value for direct access
+      /// @return Index of the value for direct access.
       template<typename Type>
       size_t addData(Type const& value) {
         store.push_back(new DataItem<Type>(value));
@@ -118,34 +120,38 @@ namespace codi {
 
       /// Add an array to the store. The array is copied.
       ///
-      /// @return index of the array for direct access
+      /// @return Index of the array for direct access.
       template<typename Type>
       size_t addData(Type const* value, int const size) {
         store.push_back(new DataArray<Type>(value, size));
         return store.size() - 1;
       }
 
-      /// Get the next data item and copy it into the value.
+      /*******************************************************************************/
+      /// @name Sequential accessors
+      /// @{
+
+      /// Get a copy of the next data item.
       template<typename Type>
       void getData(Type& value) {
         getData<Type>(&value, 1);
       }
 
-      /// Get the next data item and return a constant reference
+      /// Get a constant reference to the next data item.
       template<typename Type>
       Type const& getData() {
         Type* data = nextStore<Type>();
         return *data;
       }
 
-      /// Get a writable reference to the next data item.
+      /// Get a reference to the next data item.
       template<typename Type>
       Type& getDataRef() {
         Type* data = nextStore<Type>();
         return *data;
       }
 
-      /// Get the next data item and copy the array. The target array must have the correct size.
+      /// Get the next data item and copy it as an array. The target array must have the correct size.
       template<typename Type>
       void getData(Type* value, int const size) {
         Type* convPointer = nextStore<Type>();
@@ -153,35 +159,68 @@ namespace codi {
         std::copy(convPointer, &convPointer[size], value);
       }
 
-      /// The the next data item and return a constant reference
+      /// Get the address of the next data item. Intended for reference access to array items.
       template<typename Type>
       Type const* getDataArray() {
         Type* data = nextStore<Type>();
         return *data;
       }
 
-      /// Get a data item based on the index.
+      /// @}
+
+      /// Manually reset the position.
+      void resetPos() {
+        storePos = 0;
+      }
+
+      /*******************************************************************************/
+      /// @name Direct accessors
+      /// @{
+
+      /// Get a copy of a data item based on the index.
       ///
       /// The internal position is not modified.
       template<typename Type>
       void getDataByIndex(Type& value, size_t pos) {
-        getDataArrayByIndex<Type>(&value, 1, pos);
+        getDataByIndex<Type>(&value, 1, pos);
       }
 
-      /// Get a data array based on the index. The target array must have the correct size.
+      /// Get a constant reference to a data item based on the index.
       ///
       /// The internal position is not modified.
       template<typename Type>
-      void getDataArrayByIndex(Type* value, int const size, size_t pos) {
+      Type const& getDataByIndex(size_t pos) {
+        Type* data = getStore<Type>(pos);
+        return *data;
+      }
+
+      /// Get a reference to a item based on the index.
+      ///
+      /// The internal position is not modified.
+      template<typename Type>
+      Type& getDataRefByIndex(size_t pos) {
+        Type* data = getStore<Type>(pos);
+        return *data;
+      }
+
+      /// Get a data item based on the index and copy it as an array. The target array must have the correct size.
+      ///
+      /// The internal position is not modified.
+      template<typename Type>
+      void getDataByIndex(Type* value, int const size, size_t pos) {
         Type* convPointer = getStore<Type>(pos);
 
         std::copy(convPointer, &convPointer[size], value);
       }
 
-      /// Manually reset the position
-      void resetPos() {
-        storePos = 0;
+      /// Get the address of a data item based on the index. Intended for reference access to array items.
+      template<typename Type>
+      Type const* getDataArrayByIndex() {
+        Type* data = nextStore<Type>();
+        return *data;
       }
+
+      /// @}
 
     private:
 
