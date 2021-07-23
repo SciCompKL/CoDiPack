@@ -172,10 +172,10 @@ namespace codi {
        * @brief Compute the Hessian with multiple tape sweeps.
        *
        * This algorithm is only available if the tape implements the PrimalEvaluationTapeInterface. It performs repeated
-       * primal evaluations to change original seeding of the tape. It also requires that the tape can compute second
-       * order derivatives via a nested first order forward type.
+       * primal evaluations to change the original seeding of the tape. It also requires that the tape can compute
+       * second order derivatives via a nested first order forward type.
        *
-       * The algorithm expects that no gradient data has been seeded with non zero values.
+       * The algorithm expects that no gradient data has been seeded with nonzero values.
        * It also expects that the current tape state was just recorded, that is, the primal values in the tape represent
        * the output values of f.
        * At return, it is ensured that all gradient data have zero values.
@@ -223,7 +223,7 @@ namespace codi {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
-        // asume that the tape was just recorded
+        // assume that the tape was just recorded
         tape.revertPrimals(start);
 
         for (size_t j = 0; j < inputSize; j += gradDim2nd) {
@@ -386,7 +386,7 @@ namespace codi {
           // propagate the new derivative information
           recordTape(func, input, output);
 
-          // the k = j init is no problem, it will evaluated slightly more elements around the diagonal
+          // the k = j init is no problem, it will evaluate slightly more elements around the diagonal
           for (size_t k = j; k < input.size(); k += gradDim1st) {
             setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT1st::Real(1.0));
 
@@ -424,7 +424,7 @@ namespace codi {
        * One input variable is seeded with gradient information and then a tape is recorded.
        * Afterwards an output variable is seeded with gradient information and the tape is evaluated once in the reverse
        * mode.
-       * Before each recording the global tape is reset.
+       * Before each recording, the global tape is reset.
        *
        * The algorithm will record n tapes and perform m * n reverse tape evaluations.
        * Vector gradient values for the first and second order derivatives will reduce the tape evaluations accordingly.
