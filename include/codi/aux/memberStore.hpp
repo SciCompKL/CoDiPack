@@ -10,7 +10,7 @@
 namespace codi {
 
   /**
-   * @brief Defines a member, that can either be static or local to the struct.
+   * @brief Defines a member that can either be static or local to the struct.
    *
    * Initialization of the static member is done on a first touch basis.
    *
@@ -24,9 +24,9 @@ namespace codi {
 
       ///< See MemberStore
       using Type = _Type;                         // default declaration breaks auto completion
-      using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore
+      using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore.
 
-      static bool constexpr storeStatic = _storeStatic;  ///< See MemberStore
+      static bool constexpr storeStatic = _storeStatic;  ///< See MemberStore.
 
     private:
 
@@ -34,7 +34,7 @@ namespace codi {
 
     public:
 
-      /// Arguments are forwarded to the constructor of the member
+      /// Arguments are forwarded to the constructor of the member.
       template<typename... Args>
       MemberStore(Args&&... args) : member(std::forward<Args>(args)...) {}
 
@@ -54,10 +54,10 @@ namespace codi {
   struct MemberStore<_Type, _Parent, true> {
     public:
 
-      using Type = CODI_DD(_Type, CODI_ANY);      ///< See MemberStore
-      using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore
+      using Type = CODI_DD(_Type, CODI_ANY);      ///< See MemberStore.
+      using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore.
 
-      static bool constexpr storeStatic = true;  ///< See MemberStore
+      static bool constexpr storeStatic = true;  ///< See MemberStore.
 
     private:
 

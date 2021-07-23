@@ -11,7 +11,7 @@
 namespace codi {
 
   /**
-   * @brief Implements the logic for a BinaryExpression.
+   * @brief Interface for implementing the logic for a BinaryExpression.
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
@@ -21,7 +21,7 @@ namespace codi {
   struct BinaryOperation {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// Compute the primal value from the arguments.
       ///
@@ -31,13 +31,13 @@ namespace codi {
 
       /// Compute the gradient with respect to the first argument
       ///
-      /// The type of the arguments is the result of a getValue call on the expressions.
+      /// The type of the arguments is the type of the result of a getValue call on the expressions.
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result);
 
       /// Compute the gradient with respect to the second argument
       ///
-      /// The type of the arguments is the result of a getValue call on the expressions.
+      /// The type of the arguments is the type of the result of a getValue call on the expressions.
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result);
   };
@@ -50,19 +50,19 @@ namespace codi {
    * @tparam _Real  Original primal value of the statement/expression.
    * @tparam _ArgA  The ExpressionInterface type of the first argument.
    * @tparam _ArgB  The ExpressionInterface type of the second argument.
-   * @tparam _Operation  The logic for computing the primal value and Jacobians. Needs to implement BinaryOperation.
+   * @tparam _Operation  The logic for computing the primal value and Jacobians. Must implement BinaryOperation.
    */
   template<typename _Real, typename _ArgA, typename _ArgB, template<typename> class _Operation>
   struct BinaryExpression : public ExpressionInterface<_Real, BinaryExpression<_Real, _ArgA, _ArgB, _Operation> > {
     public:
-      using Real = CODI_DD(_Real, double);                                                 ///< See BinaryExpression
-      using ArgA = CODI_DD(_ArgA, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression
-      using ArgB = CODI_DD(_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression
-      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(BinaryOperation<Real>));  ///< See BinaryExpression
+      using Real = CODI_DD(_Real, double);                                                 ///< See BinaryExpression.
+      using ArgA = CODI_DD(_ArgA, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
+      using ArgB = CODI_DD(_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
+      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(BinaryOperation<Real>));  ///< See BinaryExpression.
 
-      typename ArgA::StoreAs argA;  ///< First argument of the expression
-      typename ArgB::StoreAs argB;  ///< Second argument of the expression
-      Real result;                  ///< Precomputed result
+      typename ArgA::StoreAs argA;  ///< First argument of the expression.
+      typename ArgB::StoreAs argB;  ///< Second argument of the expression.
+      Real result;                  ///< Precomputed result.
 
       /// Constructor
       template<typename RealA, typename RealB>

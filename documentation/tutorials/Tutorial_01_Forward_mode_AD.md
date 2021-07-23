@@ -3,7 +3,7 @@ Tutorial 1 - Forward mode AD {#Tutorial_01_Forward_mode_AD}
 
 **Goal:** Introduction to forward mode AD with CoDiPack.
 
-**Prequesties:** AD forward mode. See \ref sec_forwardAD
+**Prerequisite:** AD forward mode. See \ref sec_forwardAD
 
 **Function:** \ref func_simple1to1
 \snippet tutorials/Tutorial_01_Forward_mode_AD.cpp Function
@@ -39,7 +39,7 @@ The calculation type can then be changed during compile time and different execu
 
 #### Step 3: Get the directional derivative
 
-In the reverse AD equation, the variable \f$y\f$ describes the vector of output variables. During the function
+In the forward AD equation, the variable \f$y\f$ describes the vector of output variables. During the function
 evaluation, CoDiPack computed the directional derivative for these variables which is the vector \f$\dot y\f$. For a
 single variable, the tangent information can be extracted with the functions
 [gradient](@ref codi::LhsExpressionInterface::gradient() const) and

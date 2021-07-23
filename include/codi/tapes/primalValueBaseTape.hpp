@@ -12,7 +12,7 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/constructStaticContext.hpp"
-#include "../expressions/logic/helpers/forEachTermLogic.hpp"
+#include "../expressions/logic/helpers/forEachLeafLogic.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../traits/expressionTraits.hpp"
@@ -266,10 +266,10 @@ namespace codi {
     protected:
 
       /// Count all arguments that have non-zero index.
-      struct CountActiveArguments : public ForEachTermLogic<CountActiveArguments> {
+      struct CountActiveArguments : public ForEachLeafLogic<CountActiveArguments> {
         public:
 
-          /// \copydoc codi::ForEachTermLogic::handleActive
+          /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
           CODI_INLINE void handleActive(Node const& node, size_t& numberOfActiveArguments) {
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::InactiveIndex != node.getIdentifier())) {
@@ -279,10 +279,10 @@ namespace codi {
       };
 
       /// Push all data for each argument.
-      struct PushIdentfierPassiveAndConstant : public ForEachTermLogic<PushIdentfierPassiveAndConstant> {
+      struct PushIdentfierPassiveAndConstant : public ForEachLeafLogic<PushIdentfierPassiveAndConstant> {
         public:
 
-          /// \copydoc codi::ForEachTermLogic::handleActive
+          /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
           CODI_INLINE void handleActive(Node const& node, RhsIdentifierData& rhsIdentiferData,
                                         PassiveValueData& passiveValueData, ConstantValueData& constantValueData,
@@ -300,7 +300,7 @@ namespace codi {
             rhsIdentiferData.pushData(rhsIndex);
           }
 
-          /// \copydoc codi::ForEachTermLogic::handleConstant
+          /// \copydoc codi::ForEachLeafLogic::handleConstant
           template<typename Node>
           CODI_INLINE void handleConstant(Node const& node, RhsIdentifierData& rhsIdentiferData,
                                           PassiveValueData& passiveValueData, ConstantValueData& constantValueData,
@@ -529,12 +529,14 @@ namespace codi {
       };
 
       /// Additional wrapper that triggers compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluateForward_Step3_EvalStatements, Impl::internalEvaluateForward_Step3_EvalStatements);
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluateForward_Step3_EvalStatements,
+                         Impl::internalEvaluateForward_Step3_EvalStatements);
 
       /// Forward evaluation of an inner tape part between two external functions.
-      CODI_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start, NestedPosition const& end,
-                                                            Real* primalData, ADJOINT_VECTOR_TYPE* data,
-                                                            ConstantValueData& constantValueData) {
+      CODI_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start,
+                                                                           NestedPosition const& end, Real* primalData,
+                                                                           ADJOINT_VECTOR_TYPE* data,
+                                                                           ConstantValueData& constantValueData) {
         Wrap_internalEvaluateForward_Step3_EvalStatements evalFunc{};
         constantValueData.evaluateForward(start, end, evalFunc, primalData, data);
       }
@@ -563,8 +565,8 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(vectorAccess, data);
 
-        Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction, vectorAccess, primalData,
-                                             dataVector, constantValueData);
+        Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
+                                                    vectorAccess, primalData, dataVector, constantValueData);
       }
 
       /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes.
@@ -588,12 +590,14 @@ namespace codi {
       };
 
       /// Additional wrapper that triggers compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluateReverse_Step3_EvalStatements, Impl::internalEvaluateReverse_Step3_EvalStatements);
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluateReverse_Step3_EvalStatements,
+                         Impl::internalEvaluateReverse_Step3_EvalStatements);
 
       /// Reverse evaluation of an inner tape part between two external functions.
-      CODI_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start, NestedPosition const& end,
-                                                            Real* primalData, ADJOINT_VECTOR_TYPE* data,
-                                                            ConstantValueData& constantValueData) {
+      CODI_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start,
+                                                                           NestedPosition const& end, Real* primalData,
+                                                                           ADJOINT_VECTOR_TYPE* data,
+                                                                           ConstantValueData& constantValueData) {
         Wrap_internalEvaluateReverse_Step3_EvalStatements evalFunc;
         constantValueData.evaluateReverse(start, end, evalFunc, primalData, data);
       }
@@ -621,8 +625,8 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(vectorAccess, data);
 
-        Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction, vectorAccess, primalData, dataVector,
-                                      constantValueData);
+        Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction,
+                                                    vectorAccess, primalData, dataVector, constantValueData);
       }
 
     public:
@@ -956,11 +960,13 @@ namespace codi {
        */
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluatePrimal_Step3_EvalStatements, Impl::internalEvaluatePrimal_Step3_EvalStatements);
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluatePrimal_Step3_EvalStatements,
+                         Impl::internalEvaluatePrimal_Step3_EvalStatements);
 
       /// Start for primal evaluation between external function.
-      CODI_INLINE static void internalEvaluatePrimal_Step2_DataExtraction(NestedPosition const& start, NestedPosition const& end,
-                                                           Real* primalData, ConstantValueData& constantValueData) {
+      CODI_INLINE static void internalEvaluatePrimal_Step2_DataExtraction(NestedPosition const& start,
+                                                                          NestedPosition const& end, Real* primalData,
+                                                                          ConstantValueData& constantValueData) {
         Wrap_internalEvaluatePrimal_Step3_EvalStatements evalFunc{};
         constantValueData.evaluateForward(start, end, evalFunc, primalData);
       }
@@ -979,8 +985,9 @@ namespace codi {
         // TODO: implement primal value only accessor
         PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals.data());
 
-        Base::internalEvaluatePrimal_Step1_ExtFunc(start, end, PrimalValueBaseTape::internalEvaluatePrimal_Step2_DataExtraction,
-                                            &primalAdjointAccess, primals.data(), constantValueData);
+        Base::internalEvaluatePrimal_Step1_ExtFunc(start, end,
+                                                   PrimalValueBaseTape::internalEvaluatePrimal_Step2_DataExtraction,
+                                                   &primalAdjointAccess, primals.data(), constantValueData);
       }
 
       /// \copydoc codi::PrimalEvaluationTapeInterface::primal(Identifier const&)

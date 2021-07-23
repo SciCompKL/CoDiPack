@@ -12,7 +12,7 @@ namespace codi {
   /**
    * @brief Represents constant values in the expression tree.
    *
-   * All values that are not a CoDiPack type are considered constant. This are e.g. values like 4.0 or double a.
+   * All values that are not a CoDiPack type are considered constant, for example values like 4.0 or double a.
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
@@ -22,7 +22,7 @@ namespace codi {
   struct ConstantExpression : public ExpressionInterface<_Real, ConstantExpression<_Real>> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See ConstantExpression
+      using Real = CODI_DD(_Real, double);  ///< See ConstantExpression.
 
     private:
       Real primalValue;
@@ -36,7 +36,7 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = ConstantExpression;  ///< codi::ExpressionInterface::StoreAs
+      using StoreAs = ConstantExpression;  ///< \copydoc codi::ExpressionInterface::StoreAs
 
       /// \copydoc codi::ExpressionInterface::getValue
       CODI_INLINE Real const& getValue() const {

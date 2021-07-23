@@ -21,7 +21,7 @@ namespace codi {
   struct OperationAdd : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -54,7 +54,7 @@ namespace codi {
   struct OperationSubstract : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -87,7 +87,7 @@ namespace codi {
   struct OperationMultiply : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -118,7 +118,7 @@ namespace codi {
   struct OperationDivide : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -175,7 +175,7 @@ namespace codi {
   struct OperationAtan2 : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -224,7 +224,7 @@ namespace codi {
   struct OperationCopysign : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -277,7 +277,7 @@ namespace codi {
   struct OperationMax : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -325,7 +325,7 @@ namespace codi {
   struct OperationMin : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -372,7 +372,7 @@ namespace codi {
   struct OperationPow : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -429,7 +429,7 @@ namespace codi {
   struct OperationRemainder : public BinaryOperation<_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>

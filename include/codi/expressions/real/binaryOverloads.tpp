@@ -16,7 +16,7 @@
   #error Please define the primal function representation.
 #endif
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef FUNCTION
   #define PROXY
 
@@ -32,14 +32,14 @@
 namespace codi {
 #endif
 
-  /// Function overload for FUNCTION
+  /// Function overload for FUNCTION.
   template<typename Real, typename ArgA, typename ArgB>
   CODI_INLINE BinaryExpression<Real, ArgA, ArgB, OPERATION_LOGIC> FUNCTION(
       ExpressionInterface<Real, ArgA> const& argA, ExpressionInterface<Real, ArgB> const& argB) {
     return BinaryExpression<Real, ArgA, ArgB, OPERATION_LOGIC>(argA, argB);
   }
 
-  /// Function overload for FUNCTION
+  /// Function overload for FUNCTION.
   template<typename Real, typename ArgA>
   CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<RealTraits::PassiveReal<Real>>, OPERATION_LOGIC> FUNCTION(
       ExpressionInterface<Real, ArgA> const& argA, RealTraits::PassiveReal<Real> const& argB) {
@@ -47,7 +47,7 @@ namespace codi {
         argA, ConstantExpression<RealTraits::PassiveReal<Real>>(argB));
   }
 
-  /// Function overload for FUNCTION
+  /// Function overload for FUNCTION.
   template<typename Real, typename ArgB>
   CODI_INLINE BinaryExpression<Real, ConstantExpression<RealTraits::PassiveReal<Real>>, ArgB, OPERATION_LOGIC> FUNCTION(
       RealTraits::PassiveReal<Real> const& argA, ExpressionInterface<Real, ArgB> const& argB) {
@@ -55,7 +55,7 @@ namespace codi {
         ConstantExpression<RealTraits::PassiveReal<Real>>(argA), argB);
   }
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifdef PROXY
   #undef PROXY
 }

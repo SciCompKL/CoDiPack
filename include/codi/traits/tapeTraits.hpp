@@ -13,6 +13,8 @@ namespace codi {
   template<typename _Real, typename _Gradient>
   struct ForwardEvaluation;
 
+  /// Traits for everything that can be a CoDiPack tape usually the template argument of codi::ActiveType.
+  /// Possible types are codi::JacobianLinearTape, codi::ForwardEvaluation, codi::PrimalValueReuseTape, etc..
   namespace TapeTraits {
 
     /*******************************************************************************/

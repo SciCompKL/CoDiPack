@@ -9,25 +9,25 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /// Vector construction helper
+  /// Vector construction helper.
   ///
   /// @tparam A vector type
   template<typename _V, typename = void>
   struct ConstructVectorImpl {
     public:
 
-      using V = CODI_DD(_V, CODI_T(std::vector<CODI_ANY>));  ///< See ConstructVectorImpl
+      using V = CODI_DD(_V, CODI_T(std::vector<CODI_ANY>));  ///< See ConstructVectorImpl.
 
-      /// Default implementation calls one argument constructor.
+      /// Default implementation assumes that there is a constructor that takes the vector size as its single argument.
       static V construct(size_t const size) {
         return V(size);
       }
   };
 
-  /// Specialization for std::array
+  /// Specialization for std::array.
   ///
-  /// @tparam _T  Any type
-  /// @tparam _n  array size.
+  /// @tparam _T  Any type.
+  /// @tparam _n  Array size.
   template<typename _T, size_t _n>
   struct ConstructVectorImpl<std::array<_T, _n>> {
     public:

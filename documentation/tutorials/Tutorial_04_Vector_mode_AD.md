@@ -3,7 +3,7 @@ Tutorial 4 - Vector mode AD {#Tutorial_04_Vector_mode_AD}
 
 **Goal:** Vector mode with the forward and reverse mode AD CoDiPack types.
 
-**Prequesties:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_simpleNto2
 \snippet tutorials/Tutorial_04_Vector_mode_AD.cpp Function
@@ -38,7 +38,7 @@ forward vector mode. In addition, if the vector size is known a priori, the comp
 reverse vector mode even further by using e.g. SIMD instructions.
 
 In the reverse mode, it is possible to introduce a run time decision on the vector size by using the custom evaluation
-methods described in \ref Example_08_Vector_helper and \ref Example_02_Custom_adjoint_vector_evaluation
+methods described in \ref Example_08_Vector_helper_interface_access and \ref Example_02_Custom_adjoint_vector_evaluation
 
 
 

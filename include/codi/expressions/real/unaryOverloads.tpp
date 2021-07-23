@@ -16,7 +16,7 @@
   #error Please define the primal function representation.
 #endif
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef FUNCTION
   #define PROXY
 
@@ -30,13 +30,13 @@
 namespace codi {
 #endif
 
-  /// Function overload for FUNCTION
+  /// Function overload for FUNCTION.
   template<typename Real, typename Arg>
   CODI_INLINE UnaryExpression<Real, Arg, OPERATION_LOGIC> FUNCTION(ExpressionInterface<Real, Arg> const& arg) {
     return UnaryExpression<Real, Arg, OPERATION_LOGIC>(arg);
   }
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifdef PROXY
   #undef PROXY
 }

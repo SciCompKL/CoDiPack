@@ -23,12 +23,12 @@ namespace codi {
     Read
   };
 
-  /// IoException for CoDiPack
+  /// IoException for CoDiPack.
   struct IoException {
     public:
 
-      std::string text;  ///< Textual description
-      IoError id;        ///< Exception ID
+      std::string text;  ///< Textual description.
+      IoError id;        ///< Exception ID.
 
       /// Constructor
       IoException(IoError id, std::string const& text, bool appendErrno) : text(text), id(id) {
@@ -44,9 +44,9 @@ namespace codi {
    * @brief Helper structure for writing binary data.
    *
    * Exceptions are thrown if:
-   *  - File could not be opened
-   *  - File is used in the wrong mode
-   *  - Number read/written bytes is wrong
+   *  - file could not be opened,
+   *  - file is used in the wrong mode,
+   *  - number of bytes read/written is wrong.
    */
   struct FileIo {
     private:
@@ -57,7 +57,7 @@ namespace codi {
     public:
 
       /// Constructor
-      ///  Will throw an IoException if file can not be opened.
+      /// Will throw an IoException if file cannot be opened.
       FileIo(std::string const& file, bool write) {
         writeMode = write;
         fileHandle = nullptr;
@@ -81,7 +81,7 @@ namespace codi {
       }
 
       /// Write data to a file.
-      /// Will throw an IoException if not in write mode or if number of bytes written is wrong.
+      /// Will throw an IoException if not in write mode or if the number of bytes written is wrong.
       template<typename Data>
       void writeData(Data const* data, size_t const length) {
         if (writeMode) {
@@ -96,7 +96,7 @@ namespace codi {
       }
 
       /// Read data from a file.
-      /// Will throw an IoException if not in read mode or if number of bytes read is wrong.
+      /// Will throw an IoException if not in read mode or if the number of bytes read is wrong.
       template<typename Data>
       void readData(Data* data, size_t const length) {
         if (!writeMode) {

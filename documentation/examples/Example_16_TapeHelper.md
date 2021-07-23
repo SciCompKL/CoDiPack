@@ -3,7 +3,7 @@ Example 16 - TapeHelper {#Example_16_TapeHelper}
 
 **Goal:** Demonstration of a simplified tape interface.
 
-**Prequesties:** None
+**Prerequisite:** None
 
 **Function:**
 \snippet examples/Example_16_TapeHelper.cpp Function

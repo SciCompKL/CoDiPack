@@ -3,7 +3,7 @@ Tutorial 2 - Reverse mode AD {#Tutorial_02_Reverse_mode_AD}
 
 **Goal:** Introduction to reverse mode AD with CoDiPack.
 
-**Prequesties:** AD reverse mode. See \ref sec_reverseAD
+**Prerequisite:** AD reverse mode. See \ref sec_reverseAD
 
 **Function:** \ref func_simple1to1
 \snippet tutorials/Tutorial_02_Reverse_mode_AD.cpp Function
@@ -90,7 +90,7 @@ The last step is very important when multiple tape evaluations or recordings are
 A tape can be reset via the function [reset](@ref codi::ReverseTapeInterface::reset).
 
 Depending on the use case, a full tape reset might not be necessary. See \ref Tutorial_03_Full_jacobian_computation and
-\ref Tutorial_05_Multiple_tape_recordings for more details.
+\ref Tutorial_05_Repeated_tape_recordings for more details.
 
 
 

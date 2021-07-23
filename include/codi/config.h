@@ -24,6 +24,7 @@ namespace codi {
    */
   struct Namespace {};
 
+  /// Configuration options for CoDiPack.
   namespace Config {
 
     /*******************************************************************************/

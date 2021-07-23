@@ -5,7 +5,7 @@ Tutorial 3 - Full Jacobian computation (Multiple reverse evaluations) {#Tutorial
  - Compute several direction with the AD forward mode to create the Jacobian.
  - Evaluate the reverse tape multiple times to compute the Jacobian.
 
-**Prequesties:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
+**Prerequisite:** \ref Tutorial_01_Forward_mode_AD, \ref Tutorial_02_Reverse_mode_AD
 
 **Function:** \ref func_simpleNto2
 \snippet tutorials/Tutorial_03_Full_jacobian_computation.cpp Function
@@ -23,14 +23,14 @@ the basic tutorials.
 
 #### Forward mode ####
 
-For a Jacobian evaluation in the forward mode, an iteration over the input dimension is required (**Step 1**). Then a
+For a Jacobian evaluation in the forward mode an iteration over the input dimension is required (**Step 1**). Then a
 regular forwad mode evaluation follows (**Step 2** and **Step 3**). The new element is **Step 4**. Here, the tangent
 seeding from **Step 1** is cleared so that only unit vectors are set as tangent direction.
 
 #### Reverse mode ####
 
-The Jacobian evaluation in the reverse mode, differs a little bit form the procedure in
-\ref Tutorial_02_Reverse_mode_AD. The tape is recorded as usual, but only once (**Step 1**). Afterwards a regular seeding
+The Jacobian evaluation in the reverse mode differs a little bit form the procedure in
+\ref Tutorial_02_Reverse_mode_AD. The tape is recorded as usual, but only once (**Step 1**). Afterwards, a regular seeding
 of the output values is performed and the tape is evaluated (**Step 3** and **Step 4**). The additional function call is
 required in **Step 5**. Here, the adjoint vector of CoDiPack is cleared, such that no adjoint values from the previous 
 tape evaluation disturb the result. The function [clearAdjoints](@ref codi::ReverseTapeInterface::clearAdjoints) only 
@@ -41,8 +41,8 @@ The optional parameter on the tape reset function allows to skip the clear of th
 
 CoDiPack clears the adjoints of all intermediate variables automatically, only the ones from input variables are left in
 place. (Adjoints of output variables are also cleared.) Therefore a complete reset of the adjoint vector is not necessary.
-After the adjoint of an output value is accessed, the adjoint value can be cleared manually with `x[j].setGradient(0.0)`
-in **Step 4**. Then **Step 5** is no longer necessary. If not all input variables are cleared this way, 
+After the adjoint of an output value is accessed, the adjoint value can be cleared manually with `x[j].gradient() = 0.0`
+in **Step 4**. Then **Step 5** is no longer necessary. If not all input variables are cleared this way,
 subsequent results will be wrong.
 
 

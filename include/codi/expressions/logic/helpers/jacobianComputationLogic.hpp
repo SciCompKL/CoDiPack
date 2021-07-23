@@ -20,14 +20,14 @@ namespace codi {
   struct JacobianComputationLogic : public TraversalLogic<_Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double);                            ///< See JacobianComputationLogic
-      using Impl = CODI_DD(_Impl, CODI_T(TraversalLogic<CODI_ANY>));  ///< See JacobianComputationLogic
+      using Real = CODI_DD(_Real, double);                            ///< See JacobianComputationLogic.
+      using Impl = CODI_DD(_Impl, CODI_T(TraversalLogic<CODI_ANY>));  ///< See JacobianComputationLogic.
 
       /*******************************************************************************/
       /// @name Interface definition
       /// @{
 
-      /// Called for termination nodes which implement LhsExpressionInterface.
+      /// Called for leaf nodes which implement LhsExpressionInterface.
       template<typename Node, typename... Args>
       void handleJacobianOnActive(Node const& node, Real jacobian, Args&&... args);
 
@@ -36,22 +36,22 @@ namespace codi {
       /// @name Overwrites from TraversalLogic
       /// @{
 
-      /// \copydoc codi::TraversalLogic::term()
+      /// \copydoc codi::TraversalLogic::leaf()
       template<typename Node, typename... Args>
-      CODI_INLINE ExpressionTraits::EnableIfLhsExpression<Node> term(Node const& node, Real jacobian, Args&&... args) {
+      CODI_INLINE ExpressionTraits::EnableIfLhsExpression<Node> leaf(Node const& node, Real jacobian, Args&&... args) {
         cast().handleJacobianOnActive(node, jacobian, std::forward<Args>(args)...);
       }
 
-      using TraversalLogic<Impl>::term;
+      using TraversalLogic<Impl>::leaf;
 
       /// Computes the \ref sec_reverseAD "reverse" AD equation for this link.
       ///
-      /// The Jacobian is multiplied with the Jacobian of the link. The result is forwarded to the leaf.
-      template<size_t LeafNumber, typename Leaf, typename Root, typename... Args>
-      CODI_INLINE void link(Leaf const& leaf, Root const& root, Real const& jacobian, Args&&... args) {
-        Real curJacobian = root.template getJacobian<LeafNumber>() * jacobian;
+      /// The Jacobian is multiplied with the Jacobian of the link. The result is forwarded to the child.
+      template<size_t ChildNumber, typename Child, typename Root, typename... Args>
+      CODI_INLINE void link(Child const& child, Root const& root, Real const& jacobian, Args&&... args) {
+        Real curJacobian = root.template getJacobian<ChildNumber>() * jacobian;
 
-        cast().toNode(leaf, curJacobian, std::forward<Args>(args)...);
+        cast().toNode(child, curJacobian, std::forward<Args>(args)...);
       }
 
       /// @}

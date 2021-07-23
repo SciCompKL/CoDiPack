@@ -11,6 +11,8 @@ namespace codi {
   template<typename Real, size_t dim>
   struct Direction;
 
+  /// Traits for everything that can be an used as a gradient (adjoint, tangent) usually the second template argument
+  /// of CoDi Gen types codi::RealReverseGen. Possible types are double, codi::RealReverse, codi::Direction etc..
   namespace GradientTraits {
 
     /*******************************************************************************/

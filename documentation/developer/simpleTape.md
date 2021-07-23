@@ -3,7 +3,7 @@ Example tape implementation with CoDiPack {#Developer_Simple_Tape}
 
 **Goal:** Get to know how a simple operator taping approach can be implemented with CoDiPack
 
-**Prequesties:** AD reverse mode, see \ref sec_reverseAD; [Identifier management](@ref IdentifierManagement)
+**Prerequisite:** AD reverse mode, see \ref sec_reverseAD; [Identifier management](@ref IdentifierManagement)
 
 **Full code:**
 \snippet developer/simpleTape.cpp Simple Tape
