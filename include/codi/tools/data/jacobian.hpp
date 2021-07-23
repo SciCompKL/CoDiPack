@@ -178,7 +178,7 @@ namespace codi {
       }
   };
 
-  /// Dummy Jacobian. Has size zero and no logic in any calls.
+  /// Dummy Jacobian. Has size zero and no logic in any call.
   struct DummyJacobian : public JacobianInterface<DummyValue> {
     public:
 
