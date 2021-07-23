@@ -72,8 +72,6 @@ namespace codi {
        * - The gradient for every identifier used in the tape section [start, end] is seeded with zero.
        * - Every input to the tape section [start, end] that is a computational dependency of the specified outputs is
        *   contained in the specified inputs.
-       * - Every output of the tape section [start, end] that depends on the specified inputs is contained in the
-       *   specified outputs.
        *
        * The function has the following behavior.
        * - After return, the gradient for every input identifier, output identifier and all identifiers used in the tape
