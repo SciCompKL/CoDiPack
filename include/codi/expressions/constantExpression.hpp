@@ -24,8 +24,6 @@ namespace codi {
 
       using Real = CODI_DD(_Real, double);  ///< See ConstantExpression.
 
-      using ActiveResult = void;  ///< See ExpressionInterface.
-
     private:
       Real primalValue;
 
@@ -39,6 +37,7 @@ namespace codi {
       /// @{
 
       using StoreAs = ConstantExpression;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult = void;           ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// \copydoc codi::ExpressionInterface::getValue
       CODI_INLINE Real const& getValue() const {

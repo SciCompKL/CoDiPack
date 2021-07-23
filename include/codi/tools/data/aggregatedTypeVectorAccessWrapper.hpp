@@ -15,16 +15,16 @@
 namespace codi {
 
   /**
-   * @brief Generalized wrapper for VectorAccessInterface for aggregated data types,
+   * @brief Generalized wrapper of the VectorAccessInterface for aggregated data types,
    * e.g. std::complex<codi::RealReverse>.
    *
    * This wrapper is instantiated by AggregatedTypeVectorAccessWrapperFactory. It can be specialized for arbitrary
    * types that consist of CoDiPack types.
    *
    * This class helps to write generalized external function, that handles aggregated data types. E.g. for
-   * std::complex<codi::RealReverse> the primal value as well as the adjoint value are std::complex<double> and the
-   * identifier type is std::complex<int>. Since this can be different for other types like vectors or matrices, this
-   * wrapper can be used to write generalized code, that works for arbitrary aggregated types. See
+   * std::complex<codi::RealReverse> the primal value as well as the adjoint value are defined as std::complex<double>
+   * and the identifier type is defined as std::complex<int>. Since this can be different for other types like vectors
+   * or matrices, this wrapper can be used to write generalized code, that works for arbitrary aggregated types. See
    * RealTraits::DataExtraction for a generalized access to the primal and identifier data of aggregated types.
    *
    * Here is an example for a generalized external function routine
@@ -47,12 +47,14 @@ namespace codi {
       using Type = CODI_DD(_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
   };
 
-  /// @brief Implements all methods from AggregatedTypeVectorAccessWrapper, that can be implemented with combinations of
-  /// other methods.
-  ///
-  /// @tparam _Real  Primal value type of the combined type.
-  /// @tparam _Identifier  Identifier type type of the combined type.
-  /// @tparam _InnerInterface  The VectorAccessInterface of the underlying tape.
+  /**
+   * @brief Implements all methods from AggregatedTypeVectorAccessWrapper, that can be implemented with combinations of
+   * other methods.
+   *
+   * @tparam _Real  Primal value type of the combined type.
+   * @tparam _Identifier  Identifier type type of the combined type.
+   * @tparam _InnerInterface  The VectorAccessInterface of the underlying tape.
+   */
   template<typename _Real, typename _Identifier, typename _InnerInterface>
   struct AggregatedTypeVectorAccessWrapperBase : public VectorAccessInterface<_Real, _Identifier> {
     public:
@@ -156,15 +158,17 @@ namespace codi {
       }
   };
 
-  /// @brief Factory for the creation of AggregatedTypeVectorAccessWrapper instances.
-  ///
-  /// This factory is specialized for CoDiPack types to return the provided interface, thus removing the overhead of
-  /// a wrapped interface.
-  ///
-  /// User can specialize this factory if the default construction of AggregatedTypeVectorAccessWrapper needs to be
-  /// specialized.
-  ///
-  /// @tparam _Type See AggregatedTypeVectorAccessWrapper.
+  /**
+   * @brief Factory for the creation of AggregatedTypeVectorAccessWrapper instances.
+   *
+   * This factory is specialized for CoDiPack types to return the provided interface, thus removing the overhead of
+   * a wrapped interface.
+   *
+   * User can specialize this factory if the default construction of AggregatedTypeVectorAccessWrapper needs to be
+   * specialized.
+   *
+   * @tparam _Type See AggregatedTypeVectorAccessWrapper.
+   */
   template<typename _Type, typename = void>
   struct AggregatedTypeVectorAccessWrapperFactory {
     public:
@@ -180,7 +184,7 @@ namespace codi {
         return new RType(access);
       }
 
-      /// Delete the AggregatedTypeVectorAccessWrapper instance create by the crate method.
+      /// Delete the AggregatedTypeVectorAccessWrapper instance created by the crate method.
       static void destroy(RType* access) {
         delete access;
       }

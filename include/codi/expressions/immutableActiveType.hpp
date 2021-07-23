@@ -13,7 +13,7 @@
 namespace codi {
 
   /**
-   * @brief Creates a pseudo active type from data value. Can be used to overlay existing data with immutable active
+   * @brief Creates a pseudo active type from a data value. Can be used to overlay existing data with immutable active
    * types.
    *
    * The class stores copies to the value and identifier. The identifier is taken as it is and not initialized or
@@ -33,8 +33,6 @@ namespace codi {
 
       using ActiveType = CODI_DD(_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See ImmutableActiveType.
       using Tape = typename ActiveType::Tape;                                 ///< See ActiveType.
-
-      using ActiveResult = typename ActiveType::ActiveResult;  ///< See ExpressionInterface.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
@@ -76,7 +74,8 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = ImmutableActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using StoreAs = ImmutableActiveType const&;              ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult = typename ActiveType::ActiveResult;  ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// @}
       /*******************************************************************************/

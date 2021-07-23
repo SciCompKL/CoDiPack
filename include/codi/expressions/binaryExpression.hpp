@@ -61,9 +61,6 @@ namespace codi {
       using ArgB = CODI_DD(_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
       using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(BinaryOperation<Real>));  ///< See BinaryExpression.
 
-      using ActiveResult = typename ExpressionTraits::ValidateResult<
-          typename ArgA::ActiveResult, typename ArgB::ActiveResult>::ActiveResult;  ///< See ExpressionInterface.
-
       typename ArgA::StoreAs argA;  ///< First argument of the expression.
       typename ArgB::StoreAs argB;  ///< Second argument of the expression.
       Real result;                  ///< Precomputed result.
@@ -81,6 +78,9 @@ namespace codi {
       /// @{
 
       using StoreAs = BinaryExpression;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult =
+          typename ExpressionTraits::ValidateResult<typename ArgA::ActiveResult, typename ArgB::ActiveResult>::
+              ActiveResult;  ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// \copydoc codi::ExpressionInterface::getValue()
       CODI_INLINE Real const& getValue() const {
