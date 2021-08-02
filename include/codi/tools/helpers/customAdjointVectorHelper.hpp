@@ -21,7 +21,7 @@ namespace codi {
    *
    * Access to the adjoint vector is gained through the VectorAccessInterface.
    *
-   * @tparam _Type  A CoDiPack type on which the evaluations take place.
+   * @tparam _Type  The underlying CoDiPack type.
    */
   template<typename _Type>
   struct CustomAdjointVectorInterface {
@@ -94,45 +94,48 @@ namespace codi {
   /**
    * @brief Allows for an arbitrary adjoint evaluation of a recorded tape.
    *
-   * The evaluation of a reverse AD tape is independent of the recording of the tape.
-   * That is, the reverse evaluation can be performed simultaneously multiple times or with a different vector mode.
+   * The evaluation of a reverse AD tape is independent of the recording of the tape. For example, the reverse
+   * evaluation can be performed simultaneously on differtent adjoint vectors or with a vector mode that is not the same
+   * as the vector mode implied by the CoDiPack type.
    *
    * An example for a different vector mode and the general usage is:
    * \snippet documentation/examples/Example_02_Custom_adjoint_vector_evaluation.cpp Custom Adjoint Vector Helper
    *
-   * The major difference in using the vector helper is that the adjoints need to be set on the helper instead of the
-   * tape. Therefore, the #codi::LhsExpressionInterface::getIdentifier() functions need to be used. It returns the
-   * identifier for the tape and this identifier can be used to set the adjoint values in the vector helper.
+   * The major difference in using the vector helper is that you cannot interact with the adjoints directly, e.g. via
+   * the #codi::LhsExpressionInterface::getGradient or #codi::LhsExpressionInterface::setGradient functions.
+   * Instead, you extract the identifier from the AD variable via the #codi::LhsExpressionInterface::getIdentifier()
+   * functions. The identifier is then used to access the adjoint values via the vector helper, e.g. for seeding or
+   * extraction.
    *
    * For details on custom vector evaluations see CustomAdjointVectorEvaluationTapeInterface.
    *
-   * @tparam _Type  A CoDiPack type on which the evaluations take place.
-   * @tparam _Gradient  The gradient data for each value.
+   * @tparam _Type  The underlying CoDiPack type.
+   * @tparam _Gradient  Type of the entries of the custom adjoint vector.
    */
   template<typename _Type, typename _Gradient>
   struct CustomAdjointVectorHelper : public CustomAdjointVectorInterface<_Type> {
     public:
 
-      ///< See CustomAdjointVectorHelper
+      ///< See CustomAdjointVectorHelper.
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Gradient = CODI_DD(_Gradient, double);  ///< See CustomAdjointVectorHelper
+      using Gradient = CODI_DD(_Gradient, double);  ///< See CustomAdjointVectorHelper.
 
-      using Base = CustomAdjointVectorInterface<Type>;  ///< Abbreviation for the base class
+      using Base = CustomAdjointVectorInterface<Type>;  ///< Abbreviation for the base class.
 
-      using Real = typename Type::Real;              ///< See LhsExpressionInterface
-      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface.
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
 
       /// See LhsExpressionInterface
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
-      using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface
+      using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface.
 
     protected:
-      std::vector<Gradient> adjointVector;  ///< Custom adjoint vector
+      std::vector<Gradient> adjointVector;  ///< Custom adjoint vector.
 
-      Gradient zeroValue;             ///< Temporary zero value
+      Gradient zeroValue;             ///< Temporary zero value.
       Gradient const constZeroValue;  ///< Temporary constant zero value.
 
-      AdjointVectorAccess<Real, Identifier, Gradient>* adjointInterface;  ///< Last provided adjoint interface.
+      AdjointVectorAccess<Real, Identifier, Gradient>* adjointInterface;  ///< Last created adjoint interface.
 
     public:
 
@@ -196,22 +199,22 @@ namespace codi {
       /// @name Gradient access methods
       /// @{
 
-      /// Get gradient element as value.
+      /// Get a constant reference to the gradient.
       Gradient const& getGradient(Identifier const& identifier) const {
         return gradient(identifier);
       }
 
-      /// Get reference to the gradient value. Unchecked access.
+      /// Get a reference to the gradient. Unchecked access.
       Gradient& gradientAt(Identifier const& identifier) {
         return adjointVector[identifier];
       }
 
-      /// Get value to the gradient data. Unchecked access.
+      /// Get a constant reference to the gradient. Unchecked access.
       Gradient const& gradientAt(Identifier const& identifier) const {
         return adjointVector[identifier];
       }
 
-      /// Get reference to the gradient value. Checked access.
+      /// Get a reference to the gradient. Checked access.
       Gradient& gradient(Identifier const& identifier) {
         checkAdjointVectorSize();
 
@@ -223,7 +226,7 @@ namespace codi {
         }
       }
 
-      /// Get value to the gradient data. Checked access.
+      /// Get a constant reference to the gradient. Checked access.
       Gradient const& gradient(Identifier const& identifier) const {
         if (0 != identifier && identifier < (Identifier)adjointVector.size()) {
           return adjointVector[identifier];
@@ -232,7 +235,7 @@ namespace codi {
         }
       }
 
-      /// Set the gradient value. Checked access.
+      /// Set the gradient. Checked access.
       void setGradient(Identifier& identifier, Gradient const& gradientValue) {
         gradient(identifier) = gradientValue;
       }
