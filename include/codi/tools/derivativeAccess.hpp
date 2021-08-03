@@ -35,10 +35,10 @@ namespace codi {
     struct CheckCompileTimeValues {
       public:
         static_assert(selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
-                      "Selection depth can not be higher than the maximum derivative order.");
-        static_assert(order <= selectionDepth, "Derivative order can not be higher than the selection depth.");
+                      "Selection depth must not be higher than the maximum derivative order.");
+        static_assert(order <= selectionDepth, "Derivative order must not be higher than the selection depth.");
         static_assert(l < maximumDerivatives(selectionDepth, order),
-                      "Selected derivative can not be greater than the number of available derivatives for that"
+                      "Selected derivative must not be greater than the number of available derivatives for that"
                       "order.");
 
         static bool constexpr isValid = true;
@@ -126,7 +126,7 @@ namespace codi {
                       "CoDiPack type needs to have the same real and gradient value for run time derivative "
                       "selection.");
         static_assert(selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
-                      "Selection depth can not be higher than the maximum derivative order");
+                      "Selection depth must not be higher than the maximum derivative order");
 
         using Inner = SelectRunTime<typename Type::Real, constant, selectionDepth - 1>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
