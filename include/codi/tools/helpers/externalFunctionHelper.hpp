@@ -306,7 +306,7 @@ namespace codi {
         return this->data->userData;
       }
 
-      /// This is intended for primal functions that are implemented with the AD type.It is ensured that no data is
+      /// This is intended for primal functions that are implemented with the AD type. It is ensured that no data is
       /// recorded on the tape. All output values are registered as outputs of this external function.
       template<typename FuncObj, typename... Args>
       void callPrimalFuncWithADType(FuncObj& func, Args&&... args) {
