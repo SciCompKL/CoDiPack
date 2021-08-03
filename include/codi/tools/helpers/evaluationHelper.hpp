@@ -19,10 +19,10 @@ namespace codi {
   /**
    * @brief Basic interface and data storage for all EvaluationHandle implementations.
    *
-   * The class performs no resizing of the vectors. The initial size needs to be adequate for all calls to the
+   * The class performs no resizing of the vectors. The initial sizes need to be adequate for all calls to the
    * function object that the user will perform.
    *
-   * @tparam _Func  The type for the function object which defines the evaluation logic.
+   * @tparam _Func  The type of the function object which defines the evaluation logic.
    * @tparam _Type  The CoDiPack type that is used for the derivative evaluation.
    * @tparam _InputStore  Vector used for the storage of input arguments.
    * @tparam _OutputStore  Vector used for the storage of output arguments.
@@ -32,26 +32,26 @@ namespace codi {
   struct EvaluationHandleBase {
     public:
 
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
     protected:
 
-      size_t m;  ///< Size of the output variables
-      size_t n;  ///< Size of the input variables
+      size_t m;  ///< Size of the output vector.
+      size_t n;  ///< Size of the input vector.
 
       Func& func;  ///< The function object for the evaluations.
 
       InputStore x;   ///< Storage for the input arguments.
       OutputStore y;  ///< Storage for the output arguments.
 
-      DummyVector dummyVector;      ///< Used if no output is required
-      DummyJacobian dummyJacobian;  ///< Used if no output is required
+      DummyVector dummyVector;      ///< Used if no output is required.
+      DummyJacobian dummyJacobian;  ///< Used if no output is required.
 
     public:
 
@@ -73,27 +73,27 @@ namespace codi {
       template<typename VecY>
       void getAllPrimals(VecY& locY);
 
-      /// Perform a primal evaluation at the position provided in locX and store the result in locY.
+      /// Perform a primal evaluation with the inputs provided in locX and store the result in locY.
       template<typename VecX, typename VecY>
       void computePrimal(VecX const& locX, VecY& locY);
 
-      /// Perform a Jacobian evaluation at the position provided in locX and store the result in jac and locY.
+      /// Perform a Jacobian evaluation with the inputs provided in locX and store the result in jac and locY.
       template<typename VecX, typename Jac, typename VecY>
       void computeJacobian(VecX const& locX, Jac& jac, VecY& locY);
 
-      /// Perform a Hessian evaluation at the position provided in locX and store the result in hes, jac and locY.
+      /// Perform a Hessian evaluation with the inputs provided in locX and store the result in hes, jac and locY.
       template<typename VecX, typename Hes, typename VecY, typename Jac>
       void computeHessian(VecX const& locX, Hes& hes, VecY& locY, Jac& jac);
 
     protected:
 
-      /// Helper for the evaluation of the function object with the CoDiPack vectors.
+      /// Helper for the evaluation of the function object with the internal input and output vector.
       void eval() {
         func(x, y);
       }
   };
 
-  /// Implementation for forward mode CoDiPack types of EvaluationHandleBase.
+  /// Implementation of EvaluationHandleBase for forward mode CoDiPack types.
   ///
   /// \copydetails EvaluationHandleBase
   template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
@@ -101,13 +101,13 @@ namespace codi {
   struct EvaluationHandleForward : public EvaluationHandleBase<_Func, _Type, _InputStore, _OutputStore> {
     public:
 
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;  ///< Abbreviation for the base class.
 
@@ -151,7 +151,7 @@ namespace codi {
 
         JacobianConvertWrapper<Jac> wrapper(jac);
 
-        // First order derivatives should always exist
+        // first order derivatives should always exist
         using GradientTraits1st = GradientTraits::TraitsImplementation<typename Type::Gradient>;
         size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim;
 
@@ -180,29 +180,29 @@ namespace codi {
 
       /// \copydoc codi::EvaluationHandleBase::computeHessian
       ///
-      /// The vectorization is performed twice over the input vector. This evaluates the Hessian in a block wise fashion
+      /// The vectorization is performed twice over the input vector. This evaluates the Hessian in a blockwise fashion
       /// for all output values. The function object is evaluated n*n/(vecSize1 * vecSize2) times.
       template<typename VecX, typename Hes, typename VecY, typename Jac>
       void computeHessian(VecX const& locX, Hes& hes, VecY& locY, Jac& jac) {
         setAllPrimals(locX);
 
-        // First order derivatives should always exist
+        // first order derivatives should always exist
         using GradientTraits1st = GradientTraits::TraitsImplementation<typename Type::Gradient>;
         size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim;
 
-        // Define these here since not all types have second order derivatives
+        // define these here since not all types have second order derivatives
         using GradientTraits2nd = GradientTraits::TraitsImplementation<typename Type::Real::Gradient>;
         size_t constexpr VectorSizeSecondOrder = GradientTraits2nd::dim;
 
         for (size_t k = 0; k < locX.size(); k += VectorSizeFirstOrder) {
-          // Set derivatives from k to k + vecSize_k
+          // set derivatives from k to k + vecSize_k
           for (size_t vecPos = 0; vecPos < VectorSizeFirstOrder && k + vecPos < locX.size(); vecPos += 1) {
             GradientTraits1st::at(this->x[k + vecPos].gradient(), vecPos).value() = 1.0;
           }
 
-          // The j = k init is no problem, it will evaluated slightly more elements around the diagonal
+          // the j = k init is no problem, it will evaluate slightly more elements around the diagonal
           for (size_t j = k; j < locX.size(); j += VectorSizeSecondOrder) {
-            // Set derivatives from j to j + vecSize_j
+            // set derivatives from j to j + vecSize_j
             for (size_t vecPos = 0; vecPos < VectorSizeSecondOrder && j + vecPos < locX.size(); vecPos += 1) {
               GradientTraits2nd::at(this->x[j + vecPos].value().gradient(), vecPos) = 1.0;
             }
@@ -213,7 +213,7 @@ namespace codi {
               getAllPrimals(locY);
             }
 
-            // Extract all Hessian values, this populates the Hessian from (j,k) to (j + vecSize_j, k + vecSize_k).
+            // extract all Hessian values, this populates the Hessian from (j,k) to (j + vecSize_j, k + vecSize_k)
             for (size_t i = 0; i < this->y.size(); i += 1) {
               for (size_t vecPos1st = 0; vecPos1st < VectorSizeFirstOrder && k + vecPos1st < locX.size();
                    vecPos1st += 1) {
@@ -234,13 +234,13 @@ namespace codi {
               }
             }
 
-            // Reset the derivative seeding
+            // reset the derivative seeding
             for (size_t vecPos = 0; vecPos < VectorSizeSecondOrder && j + vecPos < locX.size(); vecPos += 1) {
               GradientTraits2nd::at(this->x[j + vecPos].value().gradient(), vecPos) = 0.0;
             }
           }
 
-          // Reset the derivative seeding
+          // reset the derivative seeding
           for (size_t vecPos = 0; vecPos < VectorSizeFirstOrder && k + vecPos < locX.size(); vecPos += 1) {
             GradientTraits1st::at(this->x[k + vecPos].gradient(), vecPos).value() = 0.0;
           }
@@ -256,19 +256,19 @@ namespace codi {
   struct EvaluationHandleReverseBase : public EvaluationHandleBase<_Func, _Type, _InputStore, _OutputStore> {
     public:
 
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;  ///< Abbreviation for the base class.
 
     protected:
 
-      TapeHelper<Type> th;  ///< Manages the evaluations
+      TapeHelper<Type> th;  ///< Manages the evaluations.
 
     public:
 
@@ -313,9 +313,9 @@ namespace codi {
 
       /// \copydoc codi::EvaluationHandleBase::computeJacobian
       ///
-      /// The best mode is selected for the evaluation of the Jacobian. If \f$ n < m \f$ the the forward mode is used
+      /// The best mode is selected for the evaluation of the Jacobian. If \f$ n < m \f$, the forward mode is used
       /// for the Jacobian evaluation and the function object is called \f$ n/vecSize \f$ times.
-      /// If \f$ m < n \f$ the reverse mode is used and the function object is called \f$ m/vecSize \f$ times.
+      /// If \f$ m < n \f$, the reverse mode is used and the function object is called \f$ m/vecSize \f$ times.
       template<typename VecX, typename Jac, typename VecY>
       void computeJacobian(VecX const& locX, Jac& jac, VecY& locY) {
         recordTape(locX, locY);
@@ -343,7 +343,7 @@ namespace codi {
   };
 
   /**
-   * @brief Implementation for primal value reverse mode CoDiPack types of EvaluationHandleBase.
+   * @brief Implementation of EvaluationHandleBase for primal value reverse mode CoDiPack types.
    *
    * This tape records the logic behind the function object once and then performs only primal, forward and reverse
    * tape evaluations.
@@ -356,13 +356,13 @@ namespace codi {
       : public EvaluationHandleReverseBase<_Func, _Type, _InputStore, _OutputStore> {
     public:
 
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       /// Abbreviation for the base class.
       using Base = EvaluationHandleReverseBase<Func, Type, InputStore, OutputStore>;
@@ -384,7 +384,7 @@ namespace codi {
   /**
    * @brief Implementation for Jacobian reverse mode CoDiPack types of EvaluationHandleBase.
    *
-   * This tape records the logic behind the function object new for every primal, forward and reverse
+   * This tape re-records the logic behind the function object for every primal, forward and reverse
    * tape evaluations.
    *
    * \copydetails EvaluationHandleBase
@@ -394,13 +394,13 @@ namespace codi {
   struct EvaluationHandleReverseJacobianTapes
       : public EvaluationHandleReverseBase<_Func, _Type, _InputStore, _OutputStore> {
     public:
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
-      /// See EvaluationHandleBase
+      /// See EvaluationHandleBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase
+      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       /// Abbreviation for the base class.
       using Base = EvaluationHandleReverseBase<Func, Type, InputStore, OutputStore>;
@@ -421,12 +421,12 @@ namespace codi {
       }
   };
 
-  /// See EvaluationHandleBase
+  /// See EvaluationHandleBase.
   template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
            typename _OutputStore = std::vector<_Type>, typename = void>
   struct EvaluationHandle : public EvaluationHandleBase<_Func, _Type, _InputStore, _OutputStore> {};
 
-  /// See EvaluationHandleForward
+  /// See EvaluationHandleForward.
   template<typename _Func, typename _Type, typename _InputStore, typename _OutputStore>
   struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore,
                           TapeTraits::EnableIfForwardTape<typename _Type::Tape>>
@@ -434,7 +434,7 @@ namespace codi {
       using EvaluationHandleForward<_Func, _Type, _InputStore, _OutputStore>::EvaluationHandleForward;
   };
 
-  /// See EvaluationHandleReverseJacobianTapes
+  /// See EvaluationHandleReverseJacobianTapes.
   template<typename _Func, typename _Type, typename _InputStore, typename _OutputStore>
   struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore,
                           TapeTraits::EnableIfJacobianTape<typename _Type::Tape>>
@@ -443,7 +443,7 @@ namespace codi {
                                                  _OutputStore>::EvaluationHandleReverseJacobianTapes;
   };
 
-  /// See EvaluationHandleReversePrimalValueTapes
+  /// See EvaluationHandleReversePrimalValueTapes.
   template<typename _Func, typename _Type, typename _InputStore, typename _OutputStore>
   struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore,
                           TapeTraits::EnableIfPrimalValueTape<typename _Type::Tape>>
@@ -455,14 +455,14 @@ namespace codi {
   /**
    * @brief Evaluate the primal, Jacobian and Hessian of function objects.
    *
-   * This helper provides the means to easily evaluate derivatives for arbitrary function objects. These function
-   * objects can be regular functions, lambda functions or structures were operator() is implemented.
+   * This helper provides the means to easily evaluate derivatives of arbitrary function objects. These function
+   * objects can be regular functions, lambda functions or structures where operator() is implemented.
    *
-   * The nomenclature and mathematical definitions for the function, the Jacobian and the Hessian can be found in the
+   * The nomenclature and mathematical definitions for the function, the Jacobian, and the Hessian can be found in the
    * \ref sec_namingConventions documentation. Function arguments in this class follow the same naming scheme.
    *
    * The algorithms will call the function objects with the vector of inputs and with the vector of outputs as
-   * arguments. The function object has to resemble the interface defined with FunctorInterface.
+   * arguments. The function object has to resemble the interface defined by FunctorInterface.
    * An example function definition is:
    * \code{.cpp}
    *  void func1(std::vector<ADType> const& x, std::vector<ADType>& y) { ... }
@@ -471,54 +471,54 @@ namespace codi {
    * \endcode
    *
    * x is the vector of input values and y is the vector of output values. ADType is the chosen CoDiPack type for the
-   * function. For most users this definition will be enough. For more general examples please go to section
+   * function. For most users, this definition will be enough. For more general examples please go to section
    * \ref AdvFuncObjDef.
    *
    * The CoDiPack type can be any ActiveType type from CoDiPack, for example all types that are defined in codi.hpp. The
    * evaluation helper provides the default CoDiPack type definitions EvaluationHelper::JacobianComputationType and
    * EvaluationHelper::HessianComputationType. These two use the forward mode of algorithmic differentiation and are
    * more appropriate if \f$ m \f$ and \f$ n \f$ are small. They can also be used if \f$ n \f$ is smaller than
-   * \f$ m \f$. For cases in in which the dimensions are larger and \f$ m \f$ is smaller than \f$ n \f$ the types
+   * \f$ m \f$. For cases in in which the dimensions are larger and \f$ m \f$ is smaller than \f$ n \f$, the types
    * codi::JacobianComputationType and codi::HessianComputationType can be used. They use the reverse AD mode for the
-   * computation.
+   * computation. Please refer to \ref AdvFuncObjDef to see how these types can be used.
    *
    * The most simple example of using the EvaluationHelper is:
    * \snippet examples/evaluationHelper_minimal.cpp EvaluationHelper minimal
    *
    * Since we want to evaluate the Hessian, we use the Hessian type of the EvaluationHelper. The function is defined
-   * with this type and the standard vector classes. In the main function we create the vector where we want to call the
-   * function and then use the helper to create the storage functions for the Jacobian and Hessian. With
+   * with this type and the standard vector classes. In the main function, we create the vector on which we want to call
+   * the function and then use the helper to create the storage for the Jacobian and Hessian. With
    * \f$ jac(j,i) \f$  the values can be accessed. For the Hessian the values can be accessed with \f$ hes(j,i,k) \f$
    * where \f$ j \f$ is the output dimension and \f$ i \f$ as well as \f$ k \f$ are the input dimensions.
    *
-   * The evaluation helper class provides all combinations of evaluation choices that is: evalPrimal(), evalJacobian(),
+   * The evaluation helper class provides all combinations of evaluation choices, that is: evalPrimal(), evalJacobian(),
    * evalHessian(), evalPrimalAndJacobian(), evalPrimalAndHessian(), evalJacobianAndHessian() and
    * evalPrimalAndJacobianAndHessian(). Each of these functions uses the default CoDiPack types in the evaluation
    * helper. In the cases where the primal is not stored, the user has to provide the number of output values manually.
    *
    * If the EvaluationHelper is used to evaluate the same function several times, a higher performance can be achieved
    * if a handle for the evaluation is created up front and then used several times. The above example with the handle
-   * creation would look like:
+   * creation would look like this:
    * \snippet examples/evaluationHelper_handle.cpp EvaluationHelper changes
    *
-   * The evaluation logic nearly stayed the same, but instead of providing the function to the evaluation routine we
-   * create a handle upfront and then use this handle in the evalHandle method. Each of the above mentioned eval
+   * The evaluation logic nearly stayed the same, but instead of providing the function to the evaluation routine, we
+   * create a handle up front and then use this handle in the evalHandle method. Each of the above mentioned eval
    * routines has a corresponding evalHandle method.
    *
    * Each of the create methods has similar create..Fixed method which uses the std::array type instead of the
    * std::vector type for the data management. An example with these methods would be:
    * \snippet examples/evaluationHelper_fixed.cpp EvaluationHelper fixed
    *
-   * Until now the default definition for the used CoDiPack types have been used. In order to use an arbitrary CoDiPack
-   * type the createHandle(), createHandleFixed() and createHandleFull() methods can be used. The first one uses
-   * std::vectors for the storage, the second method std::array and in the third the user can provide the storage class
-   * as a template parameter. The use case for the createHandle() method would look like:
+   * Until now, the default definition for the used CoDiPack types have been used. In order to use an arbitrary CoDiPack
+   * type, the createHandle(), createHandleFixed(), and createHandleFull() methods can be used. The first one uses
+   * std::vectors for the storage, the second method std::array, and in the third the user can provide the storage class
+   * as a template parameter. The use case for the createHandle() method would look like this:
    * \code{.cpp}
    *  auto handle = eh.createHandle<codi::RealReverse>(func, 4, 2);
    * \endcode
    *
    * \section AdvFuncObjDef Advanced function object definitions
-   * The function object can also have a template argument for the evaluation type e.g.:
+   * The function object can also have a template argument for the evaluation type, e.g.:
    * \code{.cpp}
    *  struct Func {
    *    template<typename T>
@@ -526,7 +526,7 @@ namespace codi {
    *  };
    * \endcode
    *
-   * There is also no need to specify std::vector as the array class e.g.:
+   * There is also no need to specify std::vector as the array class, e.g.:
    * \code{.cpp}
    *  struct Func {
    *    template<typename InVec, typename OutVec>
@@ -539,29 +539,29 @@ namespace codi {
     public:
 
       /// Function object syntax for all Func template arguments.
-      /// @tparam VecIn   User defined (Default: std::vector)
-      /// @tparam VecOut  User defined (Default: std::vector)
+      /// @tparam VecIn   User defined (default: std::vector).
+      /// @tparam VecOut  User defined (default: std::vector).
       template<typename VecIn, typename VecOut>
       using FunctorInterface = void (*)(VecIn const& x, VecOut& y);
 
-      /// The default type used for first order gradient computation. It is defined as forward vector AD mode of size 4.
+      /// The default type used for first order derivative computation. It is defined as forward vector AD mode of size 4.
       using JacobianComputationType = RealForwardVec<4>;
 
-      /// The default type used for second order gradient computation. It is defined as forward vector over forward
+      /// The default type used for second order derivative computation. It is defined as forward vector over forward
       /// vector AD mode of size 4 and 4. */
       using HessianComputationType = RealForwardGen<RealForwardVec<4>, Direction<RealForwardVec<4>, 4>>;
 
-      /// Type for the default handle for first order gradient computations with a variable vector size.
-      /// @tparam Func  See FunctorInterface
+      /// Type for the default handle for first order derivative computations with a variable vector size.
+      /// @tparam Func  See FunctorInterface.
       template<typename Func>
       using DefaultHandle = EvaluationHandleForward<Func, JacobianComputationType>;
 
-      /// Type for the default handle for second order gradient computations with a variable vector size.
-      /// @tparam Func  See FunctorInterface
+      /// Type for the default handle for second order derivative computations with a variable vector size.
+      /// @tparam Func  See FunctorInterface.
       template<typename Func>
       using DefaultHandle2nd = EvaluationHandleForward<Func, HessianComputationType>;
 
-      /// Type for the default handle for first order gradient computations with a fixed vector size.
+      /// Type for the default handle for first order derivative computations with a fixed vector size.
       /// @tparam Func  See FunctorInterface
       /// @tparam    m  The size of the output vector.
       /// @tparam    n  The size of the input vector.
@@ -570,7 +570,7 @@ namespace codi {
           EvaluationHandleForward<Func, JacobianComputationType, std::array<JacobianComputationType, n>,
                                   std::array<JacobianComputationType, m>>;
 
-      /// Type for the default handle for second order gradient computations with a fixed vector size.
+      /// Type for the default handle for second order derivative computations with a fixed vector size.
       /// @tparam Func  See FunctorInterface
       /// @tparam    m  The size of the output vector.
       /// @tparam    n  The size of the input vector.
@@ -582,11 +582,11 @@ namespace codi {
       /**
        * @brief Helper function for the creation of a default first order evaluation handle with a variable vector size.
        *
-       * @param[in] func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in] func  The function object for the evaluation (see FunctorInterface).
        * @param[in]    m  The size of the output vector.
        * @param[in]    n  The size of the input vector.
        *
-       * @tparam Func  See FunctorInterface
+       * @tparam Func  See FunctorInterface.
        */
       template<typename Func>
       static CODI_INLINE DefaultHandle<Func> createHandleDefault(Func& func, size_t m, size_t n) {
@@ -596,11 +596,11 @@ namespace codi {
       /**
        * @brief Helper function for the creation of a default first order evaluation handle with a fixed vector size.
        *
-       * @param[in] func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in] func  The function object for the evaluation (see FunctorInterface).
        *
        * @tparam    m  The size of the output vector.
        * @tparam    n  The size of the input vector.
-       * @tparam Func  See FunctorInterface
+       * @tparam Func  See FunctorInterface.
        */
       template<size_t m, size_t n, typename Func>
       static CODI_INLINE DefaultHandleFixed<Func, m, n> createHandleDefaultFixed(Func& func) {
@@ -611,11 +611,11 @@ namespace codi {
        * @brief Helper function for the creation of a default second order evaluation handle with a variable vector
        *        size.
        *
-       * @param[in] func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in] func  The function object for the evaluation (see FunctorInterface).
        * @param[in]    m  The size of the output vector.
        * @param[in]    n  The size of the input vector.
        *
-       * @tparam Func  See FunctorInterface
+       * @tparam Func  See FunctorInterface.
        */
       template<typename Func>
       static CODI_INLINE DefaultHandle2nd<Func> createHandleDefault2nd(Func& func, size_t m, size_t n) {
@@ -625,11 +625,11 @@ namespace codi {
       /**
        * @brief Helper function for the creation of a default second order evaluation handle with a fixed vector size.
        *
-       * @param[in] func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in] func  The function object for the evaluation (see FunctorInterface).
        *
        * @tparam    m  The size of the output vector.
        * @tparam    n  The size of the input vector.
-       * @tparam Func  See FunctorInterface
+       * @tparam Func  See FunctorInterface.
        */
       template<size_t m, size_t n, typename Func>
       static CODI_INLINE DefaultHandleFixed2nd<Func, m, n> createHandleDefaultFixed2nd(Func& func) {
@@ -645,13 +645,13 @@ namespace codi {
        *  auto handle = codi::EvaluationHelper::createHandle<codi::RealReverse>(func, m, n);
        * \endcode
        *
-       * @param[in] func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in] func  The function object for the evaluation (see FunctorInterface).
        * @param[in]    m  The size of the output vector.
        * @param[in]    n  The size of the input vector.
        *
        * @tparam CoDiType  An arbitrary CoDiPack type based on ActiveType. All definitions in codi.hpp are supported.
-       *                   For user developed tapes some sub classes need to be specialized.
-       * @tparam     Func  See FunctorInterface
+       *                   For user developed tapes, some subclasses have to be specialized.
+       * @tparam     Func  See FunctorInterface.
        */
       template<typename Type, typename Func>
       static CODI_INLINE EvaluationHandle<Func, Type> createHandle(Func& func, size_t m, size_t n) {
@@ -667,11 +667,11 @@ namespace codi {
        *  auto handle = codi::EvaluationHelper::createHandleFixed<codi::RealReverse, m, n>(func);
        * \endcode
        *
-       * @param[in] func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in] func  The function object for the evaluation (see FunctorInterface).
        *
        * @tparam CoDiType  An arbitrary CoDiPack type based on ActiveType. All definitions in codi.hpp are supported.
-       *                   For user developed tapes some sub classes need to be specialized.
-       * @tparam     Func  See FunctorInterface
+       *                   For user developed tapes, some subclasses have to be specialized.
+       * @tparam     Func  See FunctorInterface.
        * @tparam        m  The size of the output vector.
        * @tparam        n  The size of the input vector.
        */
@@ -682,26 +682,26 @@ namespace codi {
       }
 
       /**
-       * @brief Helper function for the creation of an evaluation handle with the specified CoDiPack type and a vector
-       *        type specified by the user.
+       * @brief Helper function for the creation of an evaluation handle with the specified CoDiPack type and storage
+       *        types.
        *
-       * The CoDiPack type can be an arbitrary one, the vector types need have the same CoDiPack type as an element
-       * type.
+       * The CoDiPack type can be an arbitrary one and the storage types must use it for their elements.
+       *
        * \code{.cpp}
        *   auto handle = codi::EvaluationHelper::createHandleFull<codi::RealReverse,
        *                                                          std::vector<codi::RealReverse>,
        *                                                          std::array<<codi::RealReverse, m>>(func, m, n);
        * \endcode
        *
-       * @param[in] func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in] func  The function object for the evaluation (see FunctorInterface).
        * @param[in]    m  The size of the output vector.
        * @param[in]    n  The size of the input vector.
        *
        * @tparam     CoDiType  An arbitrary CoDiPack type based on ActiveType. All definitions in codi.hpp are
-       *                       supported. For user developed tapes some sub classes need to be specialized.
+       *                       supported. For user developed tapes, some subclasses have to be specialized.
        * @tparam        Func  See FunctorInterface
-       * @tparam  InputStore  The vector type for vectors of input variables.
-       * @tparam OutputStore  The vector type for vectors of output variables.
+       * @tparam  InputStore  The storage type for vectors of input variables.
+       * @tparam OutputStore  The storage type for vectors of output variables.
        */
       template<typename Type, typename InputStore, typename OutputStore, typename Func>
       static CODI_INLINE EvaluationHandle<Func, Type, InputStore, OutputStore> createHandleFull(Func& func, size_t m,
@@ -762,14 +762,14 @@ namespace codi {
       /**
        * @brief Perform a primal evaluation of the function object with the default first order type.
        *
-       * @param[in] func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in] func  The function object for the evaluation (see FunctorInterface).
        * @param[in]    x  The vector with the primal values where the function object is evaluated.
-       * @param[out]   y  The vector for the result of the primal function evaluation. The vector needs to have the
+       * @param[out]   y  The vector for the result of the primal function evaluation. The vector must have the
        *                  correct size allocated.
        *
-       * @tparam  Func  See FunctorInterface
+       * @tparam  Func  See FunctorInterface.
        * @tparam  VecX  The vector type for the input values. Element type is e.g. double.
-       * @tparam  VecY  The vector type for the output values. Element type is  e.g. double.
+       * @tparam  VecY  The vector type for the output values. Element type is e.g. double.
        */
       template<typename Func, typename VecX, typename VecY>
       static CODI_INLINE void evalPrimal(Func& func, VecX const& x, VecY& y) {
@@ -778,16 +778,16 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Jacobian of the evaluation procedure in the function object.
+       * @brief Compute the Jacobian of the function object.
        *
-       * @param[in]  func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in]  func  The function object for the evaluation (see FunctorInterface).
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
        * @param[in] ySize  The size of the output vector.
        * @param[out]  jac  The Jacobian in which the values are stored.
        *
-       * @tparam  Func  See FunctorInterface
+       * @tparam  Func  See FunctorInterface.
        * @tparam  VecX  The vector type for the input values. Element type is e.g. double.
-       * @tparam   Jac  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam   Jac  The storage type of the Jacobian. Element type is e.g. double.
        */
       template<typename Func, typename VecX, typename Jac>
       static CODI_INLINE void evalJacobian(Func& func, VecX const& x, size_t const ySize, Jac& jac) {
@@ -796,16 +796,16 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Hessian of the evaluation procedure in the function object.
+       * @brief Compute the Hessian of the function object.
        *
-       * @param[in]  func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in]  func  The function object for the evaluation (see FunctorInterface).
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
        * @param[in] ySize  The size of the output vector.
        * @param[out]  hes  The Hessian in which the values are stored.
        *
-       * @tparam  Func  See FunctorInterface
+       * @tparam  Func  See FunctorInterface.
        * @tparam  VecX  The vector type for the input values. Element type is e.g. double.
-       * @tparam   Hes  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam   Hes  The storage type of the Hessian. Element type is e.g. double.
        */
       template<typename Func, typename VecX, typename Hes>
       static CODI_INLINE void evalHessian(Func& func, VecX const& x, size_t const ySize, Hes& hes) {
@@ -814,20 +814,18 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Jacobian of the evaluation procedure in the function object.
+       * @brief Compute the primal result and Jacobian of the function object.
        *
-       * In this method the primal values are also stored.
-       *
-       * @param[in]  func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in]  func  The function object for the evaluation (see FunctorInterface).
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
-       * @param[out]    y  The vector for the result of the primal function evaluation. The vector needs to have the
+       * @param[out]    y  The vector for the result of the primal function evaluation. The vector must have the
        *                   correct size allocated.
        * @param[out]  jac  The Jacobian in which the values are stored.
        *
-       * @tparam  Func  See FunctorInterface
+       * @tparam  Func  See FunctorInterface.
        * @tparam  VecX  The vector type for the input values. Element type is e.g. double.
        * @tparam  VecY  The vector type for the output values. Element type is e.g. double.
-       * @tparam   Jac  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam   Jac  The storage type of the Jacobian. Element type is e.g. double.
        */
       template<typename Func, typename VecX, typename VecY, typename Jac>
       static CODI_INLINE void evalPrimalAndJacobian(Func& func, VecX const& x, VecY& y, Jac& jac) {
@@ -836,20 +834,18 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Hessian of the evaluation procedure in the function object.
+       * @brief Compute the primal result and Hessian of the function object.
        *
-       * In this method the primal values are also stored.
-       *
-       * @param[in]  func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in]  func  The function object for the evaluation (see FunctorInterface).
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
-       * @param[out]    y  The vector for the result of the primal function evaluation. The vector needs to have the
+       * @param[out]    y  The vector for the result of the primal function evaluation. The vector must have the
        *                   correct size allocated.
        * @param[out]  hes  The Hessian in which the values are stored.
        *
-       * @tparam  Func  See FunctorInterface
+       * @tparam  Func  See FunctorInterface.
        * @tparam  VecX  The vector type for the input values. Element type is e.g. double.
        * @tparam  VecY  The vector type for the output values. Element type is e.g. double.
-       * @tparam   Hes  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam   Hes  The storage type of the Hessian. Element type is e.g. double.
        */
       template<typename Func, typename VecX, typename VecY, typename Hes>
       static CODI_INLINE void evalPrimalAndHessian(Func& func, VecX const& x, VecY& y, Hes& hes) {
@@ -858,22 +854,20 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Hessian of the evaluation procedure in the function object.
+       * @brief Compute the primal result, Jacobian, and Hessian of the function object.
        *
-       * In this method the primal values and the Jacobian are also stored.
-       *
-       * @param[in]  func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in]  func  The function object for the evaluation (see FunctorInterface).
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
-       * @param[out]    y  The vector for the result of the primal function evaluation. The vector needs to have the
+       * @param[out]    y  The vector for the result of the primal function evaluation. The vector must have the
        *                   correct size allocated.
        * @param[out]  jac  The Jacobian in which the values are stored.
        * @param[out]  hes  The Hessian in which the values are stored.
        *
-       * @tparam  Func  See FunctorInterface
+       * @tparam  Func  See FunctorInterface.
        * @tparam  VecX  The vector type for the input values. Element type is e.g. double.
        * @tparam  VecY  The vector type for the output values. Element type is e.g. double.
-       * @tparam   Jac  The type of the Jacobian where the results are stored. Element type is e.g. double.
-       * @tparam   Hes  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam   Jac  The storage type of the Jacobian. Element type is e.g. double.
+       * @tparam   Hes  The storage type of the Hessian. Element type is e.g. double.
        */
       template<typename Func, typename VecX, typename VecY, typename Jac, typename Hes>
       static CODI_INLINE void evalPrimalAndJacobianAndHessian(Func& func, VecX const& x, VecY& y, Jac& jac, Hes& hes) {
@@ -882,11 +876,9 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Hessian of the evaluation procedure in the function object.
+       * @brief Compute the Jacobian and Hessian of the function object.
        *
-       * In this method the Jacobian is also stored.
-       *
-       * @param[in]  func  The function object for the evaluation. (See FunctorInterface)
+       * @param[in]  func  The function object for the evaluation (see FunctorInterface).
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
        * @param[in] ySize  The size of the output vector.
        * @param[out]  jac  The Jacobian in which the values are stored.
@@ -894,8 +886,8 @@ namespace codi {
        *
        * @tparam  Func  See FunctorInterface
        * @tparam  VecX  The vector type for the input values. Element type is e.g. double.
-       * @tparam   Jac  The type of the Jacobian where the results are stored. Element type is e.g. double.
-       * @tparam   Hes  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam   Jac  The storage type of the Jacobian. Element type is e.g. double.
+       * @tparam   Hes  The storage type of the Hessian. Element type is e.g. double.
        */
       template<typename Func, typename VecX, typename Jac, typename Hes>
       static CODI_INLINE void evalJacobianAndHessian(Func& func, VecX const& x, size_t ySize, Jac& jac, Hes& hes) {
@@ -908,7 +900,7 @@ namespace codi {
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
-       * @param[out]    y  The vector for the result of the primal function evaluation. The vector needs to have the
+       * @param[out]    y  The vector for the result of the primal function evaluation. The vector must have the
        *                   correct size allocated.
        *
        * @tparam  Handle  The handle type for the data storage and the evaluation.
@@ -921,7 +913,7 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Jacobian of the evaluation procedure in the function object.
+       * @brief Compute the Jacobian of the function object stored in the handle.
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
@@ -929,7 +921,7 @@ namespace codi {
        *
        * @tparam  Handle  The handle type for the data storage and the evaluation.
        * @tparam    VecX  The vector type for the input values. Element type is e.g. double.
-       * @tparam     Jac  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam     Jac  The storage type of the Jacobian. Element type is e.g. double.
        */
       template<typename Handle, typename VecX, typename Jac>
       static CODI_INLINE void evalHandleJacobian(Handle& handle, VecX const& x, Jac& jac) {
@@ -938,7 +930,7 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Hessian of the evaluation procedure in the function object.
+       * @brief Compute the Hessian of the function object stored in the handle.
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
@@ -946,7 +938,7 @@ namespace codi {
        *
        * @tparam  Handle  The handle type for the data storage and the evaluation.
        * @tparam    VecX  The vector type for the input values. Element type is e.g. double.
-       * @tparam     Hes  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam     Hes  The storage type of the Hessian. Element type is e.g. double.
        */
       template<typename Handle, typename VecX, typename Hes>
       static CODI_INLINE void evalHandleHessian(Handle& handle, VecX const& x, Hes& hes) {
@@ -956,20 +948,18 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Jacobian of the evaluation procedure in the function object.
-       *
-       * In this method the primal values are also stored.
+       * @brief Compute the primal result and Jacobian of the function object stored in the handle.
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
-       * @param[out]    y  The vector for the result of the primal function evaluation. The vector needs to have the
+       * @param[out]    y  The vector for the result of the primal function evaluation. The vector must have the
        *                   correct size allocated.
        * @param[out]  jac  The Jacobian in which the values are stored.
        *
        * @tparam  Handle  The handle type for the data storage and the evaluation.
        * @tparam    VecX  The vector type for the input values. Element type is e.g. double.
        * @tparam    VecY  The vector type for the output values. Element type is e.g. double.
-       * @tparam     Jac  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam     Jac  The storage type of the Jacobian. Element type is e.g. double.
        */
       template<typename Handle, typename VecX, typename VecY, typename Jac>
       static CODI_INLINE void evalHandlePrimalAndJacobian(Handle& handle, VecX const& x, VecY& y, Jac& jac) {
@@ -977,20 +967,18 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Hessian of the evaluation procedure in the function object.
-       *
-       * In this method the primal values are also stored.
+       * @brief Compute the primal result and Hessian of the function object.
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
-       * @param[out]    y  The vector for the result of the primal function evaluation. The vector needs to have the
+       * @param[out]    y  The vector for the result of the primal function evaluation. The vector must have the
        *                   correct size allocated.
        * @param[out]  hes  The Hessian in which the values are stored.
        *
        * @tparam  Handle  The handle type for the data storage and the evaluation.
        * @tparam    VecX  The vector type for the input values. Element type is e.g. double.
        * @tparam    VecY  The vector type for the output values. Element type is e.g. double.
-       * @tparam     Hes  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam     Hes  The storage type of the Hessian. Element type is e.g. double.
        */
       template<typename Handle, typename VecX, typename VecY, typename Hes>
       static CODI_INLINE void evalHandlePrimalAndHessian(Handle& handle, VecX const& x, VecY& y, Hes& hes) {
@@ -999,13 +987,11 @@ namespace codi {
       }
 
       /**
-       * @brief Compute the Hessian of the evaluation procedure in the function object.
-       *
-       * In this method the primal values and the Jacobian are also stored.
+       * @brief Compute the primal result, Jacobian, and Hessian of the function object.
        *
        * @param[in] handle  The handle with all data for the evaluation.
        * @param[in]     x  The vector with the primal values where the function object is evaluated.
-       * @param[out]    y  The vector for the result of the primal function evaluation. The vector needs to have the
+       * @param[out]    y  The vector for the result of the primal function evaluation. The vector must have the
        *                   correct size allocated.
        * @param[out]  jac  The Jacobian in which the values are stored.
        * @param[out]  hes  The Hessian in which the values are stored.
@@ -1013,8 +999,8 @@ namespace codi {
        * @tparam  Handle  The handle type for the data storage and the evaluation.
        * @tparam    VecX  The vector type for the input values. Element type is e.g. double.
        * @tparam    VecY  The vector type for the output values. Element type is e.g. double.
-       * @tparam     Jac  The type of the Jacobian where the results are stored. Element type is e.g. double.
-       * @tparam     Hes  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam     Jac  The storage type of the Jacobian. Element type is e.g. double.
+       * @tparam     Hes  The storage type of the Hessian. Element type is e.g. double.
        */
       template<typename Handle, typename VecX, typename VecY, typename Jac, typename Hes>
       static CODI_INLINE void evalHandlePrimalAndJacobianAndHessian(Handle& handle, VecX const& x, VecY& y, Jac& jac,
@@ -1034,8 +1020,8 @@ namespace codi {
        *
        * @tparam  Handle  The handle type for the data storage and the evaluation.
        * @tparam    VecX  The vector type for the input values. Element type is e.g. double.
-       * @tparam     Jac  The type of the Jacobian where the results are stored. Element type is e.g. double.
-       * @tparam     Hes  The type of the Jacobian where the results are stored. Element type is e.g. double.
+       * @tparam     Jac  The storage type of the Jacobian. Element type is e.g. double.
+       * @tparam     Hes  The storage type of the Hessian. Element type is e.g. double.
        */
       template<typename Handle, typename VecX, typename Jac, typename Hes>
       static CODI_INLINE void evalHandleJacobianAndHessian(Handle& handle, VecX const& x, Jac& jac, Hes& hes) {
