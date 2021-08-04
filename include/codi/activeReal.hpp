@@ -122,7 +122,7 @@ namespace codi {
      */
     GradientData gradientData;
 
-#if defined(_OPENMP)
+#if defined(_OPENMP) && !CODI_DisableThreadSafety
     /**
      * @brief Tapes used by the active type.
      *

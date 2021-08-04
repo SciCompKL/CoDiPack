@@ -54,7 +54,7 @@
 #include "codi/tools/statementPushHelper.hpp"
 #include "codi/tools/tapeVectorHelper.hpp"
 
-#if defined(_OPENMP)
+#if defined(_OPENMP) && !CODI_DisableThreadSafety
   #include "codi/atomic.hpp"
   #include "codi/tapes/indices/parallelGlobalIndexHandler.hpp"
   #include "codi/tapes/modules/parallelAdjointsModule.hpp"
@@ -238,7 +238,7 @@ namespace codi {
    */
   typedef RealReverseIndexGen<double, double> RealReverseIndex;
 
-  #if defined(_OPENMP)
+  #if defined(_OPENMP) && !CODI_DisableThreadSafety
 
     template<typename Real, typename Gradient = Real>
     using RealReverseIndexParallelGen = ActiveReal<JacobiIndexTape<JacobiIndexTapeTypes<ReverseTapeTypes<Real, Gradient, ReuseIndexHandler<int, ParallelGlobalIndexHandler<int> >, ParallelAdjointsModule>, ChunkVector> > >;

@@ -541,4 +541,8 @@ namespace codi {
       #endif
     #endif
   #endif
+
+  #ifndef CODI_DisableThreadSafety
+    #define CODI_DisableThreadSafety false
+  #endif
 }

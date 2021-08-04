@@ -36,7 +36,7 @@
 #include "../adjointInterface.hpp"
 #include "../tapes/tapeTraits.hpp"
 
-#if _OPENMP
+#if defined(_OPENMP) && !CODI_DisableThreadSafety
   #include <omp.h>
 #endif
 
@@ -276,28 +276,28 @@ namespace codi {
             y_b[i] = ra->getAdjoint(outputIndices[i], dim);
           }
 
-          #if _OPENMP
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
             #pragma omp barrier
           #endif
 
-          #if _OPENMP
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
             #pragma omp master
             {
           #endif
           for(size_t i = 0; i < outputIndices.size(); ++i) {
             ra->resetAdjoint(outputIndices[i], dim);
           }
-          #if _OPENMP
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
             }
           #endif
 
-          #if _OPENMP
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
             #pragma omp barrier
           #endif
 
           revFunc(inputValues.data(), x_b, inputIndices.size(), outputValues.data(), y_b, outputIndices.size(), &userData);
 
-          #if _OPENMP
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
             #pragma omp barrier
           #endif
 
@@ -305,7 +305,7 @@ namespace codi {
             ra->updateAdjoint(inputIndices[i], dim, x_b[i]);
           }
 
-          #if _OPENMP
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
             #pragma omp barrier
           #endif
         }
@@ -646,7 +646,7 @@ namespace codi {
             data->inputValues.clear();
           }
 
-          #if _OPENMP
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
             // make sure that the delete handle is pushed onto only one tape in a parallel context
             if (omp_in_parallel() && omp_get_thread_num() != 0) {
               CoDiType::getGlobalTape().pushExternalFunctionHandle(ExternalFunctionData<CoDiType>::evalRevFuncStatic, data, nullptr, ExternalFunctionData<CoDiType>::evalForwFuncStatic, ExternalFunctionData<CoDiType>::evalPrimFuncStatic);
