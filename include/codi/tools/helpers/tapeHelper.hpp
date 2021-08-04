@@ -17,11 +17,12 @@ namespace codi {
    * @brief A helper class that allows for a simpler access and management of a CoDiPack tape.
    *
    * This class provides helper functionality to record a tape and to evaluate the forward and reverse mode of AD as
-   * well as the capability to compute the full Jacobian and Hessian. Some functionality is only available with specific
-   * CoDiPack types. For Hessian computations a second order primal value type is required (e.g. HessianComputationType)
-   * and for primal reevaluations a primal value type is required (e.g. RealReversePrimalIndex).
+   * well as capabilities to compute the full Jacobian and Hessian. Some functionality is only available with specific
+   * CoDiPack types. For Hessian computations, a second order primal value type is required (e.g.
+   * HessianComputationType) and for primal re-evaluations a primal value type is required (e.g.
+   * RealReversePrimalIndex).
    *
-   * The nomenclature and mathematical definitions for the function, the Jacobian and the Hessian can be found in the
+   * The nomenclature and mathematical definitions for the function, the Jacobian, and the Hessian can be found in the
    * section \ref sec_namingConventions. Function arguments in this class follow the same naming scheme
    * as in the referenced documentation.
    *
@@ -29,7 +30,7 @@ namespace codi {
    * \snippet examples/Example_16_TapeHelper.cpp Tape recording
    *
    * The function `func` represents the implementation of \f$ f \f$ and before the function is called all inputs of that
-   * function need to be registered to the tape. The same is true for all outputs after the function is called. The
+   * function need to be registered on the tape. The same is true for all outputs after the function is called. The
    * methods startRecording() and stopRecording() define the region that will be recorded on the tape and are mandatory.
    * They prepare the helper and the tape structure of CoDiPack for the recording and the evaluation and ensure that
    * everything has the correct state.
@@ -38,48 +39,49 @@ namespace codi {
    * by the first entry, the second, etc. in the gradient vector, primal vector, Jacobian etc.
    *
    * The computation of derivatives can then be done with the functions evalForward(), evalReverse(), evalJacobian(),
-   * and evalHessian(). For each of these functions an `eval...At` method is also available, that will first reevaluate
-   * the tape at the given position (only for primal value tapes) and then perform the evaluation.
+   * and evalHessian(). For each of these functions, there is an `eval...At` equivalent that will first perform a primal
+   * re-evaluation of the tape on the given inputs (only for primal value tapes) and then performs the reverse
+   * evaluation.
    *
-   * The function evalPrimal() is used in the `eval...At` methods and can be used to manually reevaluate the tape at the
-   * given position.
+   * The function evalPrimal() is used in the `eval...At` methods and can be used to manually re-evaluate for a
+   * different choice of input variables.
    *
-   * All arguments for the method can either be created with the corresponding create method or can be created manually.
-   * The methods available for that are createGradientVectorInput(), createGradientVectorOutput(), createJacobian(),
-   * createHessian(), createPrimalVectorInput() and createPrimalVectorOutput(). Each create function has a corresponding
-   * delete function that deletes the objects.
+   * All arguments for the methods can either be created with the corresponding create method or can be created
+   * manually. The methods available for that are createGradientVectorInput(), createGradientVectorOutput(),
+   * createJacobian(), createHessian(), createPrimalVectorInput() and createPrimalVectorOutput(). Each create function
+   * has a corresponding delete function that deletes the objects.
    *
-   * The computation of the Hessian could then be done as:
+   * The computation of the Hessian could be performed as follows.
    * \snippet examples/Example_16_TapeHelper.cpp Hessian evaluation
    *
-   * A simple reverse evaluation is done as:
+   * A simple reverse evaluation works like this.
    * \snippet examples/Example_16_TapeHelper.cpp Reverse evaluation
    *
-   * The tape helper can be used to record multiple different tapes. Each time startRecording() is called the old
+   * The tape helper can be used to record multiple different tapes. Each time startRecording() is called, the old
    * recording is deleted and a new one is started.
    *
    * For a more detailed example see \ref Example_16_TapeHelper.
    *
-   * @tparam _Type  A CoDiPack type on which the evaluations take place.
+   * @tparam _Type  The CoDiPack type on which the evaluations take place.
    * @tparam _Impl  The type of the implementing class for the virtual template methods.
    */
   template<typename _Type, typename _Impl>
   struct TapeHelperBase {
     public:
 
-      /// See TapeHelperBase
+      /// See TapeHelperBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, TapeHelperBase);  ///< See TapeHelperBase
+      using Impl = CODI_DECLARE_DEFAULT(_Impl, TapeHelperBase);  ///< See TapeHelperBase.
 
-      using Real = typename Type::Real;              ///< See LhsExpressionInterface
-      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
-      using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface.
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
+      using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface.
 
-      using PassiveReal = typename RealTraits::PassiveReal<Real>;  ///< Passive base of the CoDiPack type
+      using PassiveReal = typename RealTraits::PassiveReal<Real>;  ///< Passive base of the CoDiPack type.
 
-      using JacobianType = Jacobian<PassiveReal>;  ///< Type of the Jacobian
-      using HessianType = Hessian<PassiveReal>;    ///< Type of the Hessian
+      using JacobianType = Jacobian<PassiveReal>;  ///< Type of the Jacobian.
+      using HessianType = Hessian<PassiveReal>;    ///< Type of the Hessian.
 
     protected:
 
@@ -87,10 +89,10 @@ namespace codi {
 
       Tape& tape;  ///< Reference to the global tape.
 
-      std::vector<Identifier> inputValues;   ///< Input value identifiers
-      std::vector<Identifier> outputValues;  ///< Input value identifiers
+      std::vector<Identifier> inputValues;   ///< Input value identifiers.
+      std::vector<Identifier> outputValues;  ///< Input value identifiers.
 
-      bool wasForwardEvaluated;  ///< State of the last evaluation
+      bool wasForwardEvaluated;  ///< State of the last evaluation.
 
     public:
 
@@ -106,7 +108,7 @@ namespace codi {
        * Should only be called after the tape has been recorded.
        * Needs to be deleted with deleteGradientVector.
        *
-       * @return Vector of size n
+       * @return Vector of size n.
        */
       Gradient* createGradientVectorInput() {
         return new Gradient[getInputSize()];
@@ -118,7 +120,7 @@ namespace codi {
        * Should only be called after the tape has been recorded.
        * Needs to be deleted with deleteGradientVector.
        *
-       * @return Vector of size m
+       * @return Vector of size m.
        */
       Gradient* createGradientVectorOutput() {
         return new Gradient[getOutputSize()];
@@ -130,7 +132,7 @@ namespace codi {
        * Should only be called after the tape has been recorded.
        * Needs to be deleted with deleteJacobian.
        *
-       * @return A Jacobian with the size m,n
+       * @return A Jacobian with the size m,n.
        */
       JacobianType& createJacobian() {
         JacobianType* jacPointer = new JacobianType(getOutputSize(), getInputSize());
@@ -144,7 +146,7 @@ namespace codi {
        * Should only be called after the tape has been recorded.
        * Needs to be deleted with deleteHessian.
        *
-       * @return A Hessian with the size m,n
+       * @return A Hessian with the size m,n.
        */
       HessianType& createHessian() {
         HessianType* hesPointer = new HessianType(getOutputSize(), getInputSize());
@@ -158,7 +160,7 @@ namespace codi {
        * Should only be called after the tape has been recorded.
        * Needs to be deleted with deletePrimalVector.
        *
-       * @return Vector of size n
+       * @return Vector of size n.
        */
       Real* createPrimalVectorInput() {
         return new Real[getInputSize()];
@@ -170,7 +172,7 @@ namespace codi {
        * Should only be called after the tape has been recorded.
        * Needs to be deleted with deletePrimalVector.
        *
-       * @return Vector of size m
+       * @return Vector of size m.
        */
       Real* createPrimalVectorOutput() {
         return new Real[getOutputSize()];
@@ -204,13 +206,13 @@ namespace codi {
         vec = nullptr;
       }
 
-      /// Get the number of registered inputs. Call after stopRecording()
+      /// Get the number of registered inputs. Call after stopRecording().
       /// @return n
       size_t getInputSize() {
         return inputValues.size();
       }
 
-      /// Get the number of registered outputs. Call after stopRecording()
+      /// Get the number of registered outputs. Call after stopRecording().
       /// @return m
       size_t getOutputSize() {
         return outputValues.size();
@@ -219,13 +221,13 @@ namespace codi {
       /**
        * @brief Add an input variable to the tape.
        *
-       * Also know as and independent variable in the context of AD or ADOL-c
+       * Input variables are also known as independent variables.
        *
        * The value is modified such that CoDiPack will recognize it as an active variable. For all variables registered
-       * with the method the derivative is computed.
+       * with the method, the derivative is computed.
        *
-       * With this tape helper the sequence of the registerInput calls is important. All primal and derivative vectors
-       * will use the first entry for the first value registered. The second for the second one etc.
+       * With this tape helper, the sequence of the registerInput calls is important. All primal and derivative vectors
+       * will use the first entry for the first value registered, the second for the second one, and so on.
        */
       void registerInput(Type& value) {
         tape.registerInput(value);
@@ -235,20 +237,20 @@ namespace codi {
       /**
        * @brief Add an output variable to the tape.
        *
-       * Also know as and dependent variable in the context of AD or ADOL-c
+       * Output variables are also known as dependent variables.
        *
        * The value is modified such that it is safe to use the variable as an output for which the reverse seed can be
        * set.
        *
-       * With this tape helper the sequence of the registerOutput calls is important. All primal and derivative vectors
-       * will use the first entry for the first value registered. The second for the second one etc
+       * With this tape helper, the sequence of the registerOutput calls is important. All primal and derivative vectors
+       * will use the first entry for the first value registered, the second for the second one, and so on.
        */
       void registerOutput(Type& value) {
         tape.registerOutput(value);
         outputValues.push_back(value.getIdentifier());
       }
 
-      /// Start the recording process of the function. Deletes the old tape.
+      /// Start the recording process. Deletes the old tape.
       void startRecording() {
         tape.reset();
         inputValues.clear();
@@ -257,27 +259,27 @@ namespace codi {
         tape.setActive();
       }
 
-      /// Stop the recording process of the function.
+      /// Stop the recording process.
       void stopRecording() {
         tape.setPassive();
       }
 
       /**
-       * @brief Perform a primal reevaluation of the tape.
+       * @brief Perform a primal re-evaluation of the tape.
        *
-       * The reevaluation will change the internally stored primal variables of the tape.
+       * The re-evaluation will change the internally stored primal variables of the tape.
        *
        * @param[in] x  The new seeding vector for the primal input variables. The sequence of variables is the same as
        *               for the register input call. The vector should be created with createPrimalVectorInput.
        * @param[out] y  The result of the primal evaluation. The sequence of variables is the same as for the register
-       *               output call. If the pointer is a null pointer then the result is not stored.  The vector should
+       *               output call. If the pointer is a null pointer then the result is not stored. The vector should
        *               be created with createPrimalVectorOutput.
        */
       virtual void evalPrimal(Real const* x, Real* y = nullptr) = 0;
 
       /**
        * @brief Perform a forward (tangent) evaluation of the recorded tape.
-       * @param[in]  x_d  The seeding vector for the input variables (independent variables)
+       * @param[in]  x_d  The seeding vector for the input variables (independent variables).
        *                  The vector should be created with createGradientVectorInput.
        * @param[out] y_d  The result vector for the output variables (dependent variables).
        *                  The vector should be created with createGradientVectorOutput.
@@ -298,15 +300,15 @@ namespace codi {
       }
 
       /**
-       * @brief Reevaluate the tape at the given position and compute the AD forward mode.
+       * @brief Re-evaluate the tape with new input variables and compute the AD forward mode.
        *
        * This method is a shortcut for calling evalPrimal and evalForward in succession.
        *
        * @param[in]    x  The new seeding vector for the primal input variables. The sequence of variables is the same
        *                  as for the register input call. The vector should be created with createPrimalVectorInput.
-       * @param[in]  x_d  The seeding vector for the input variables (independent variables)
+       * @param[in]  x_d  The seeding vector for the input variables (independent variables).
        *                  The vector should be created with createGradientVectorInput.
-       * @param[out] y_d  The result vector for the output variables (dependent variables)
+       * @param[out] y_d  The result vector for the output variables (dependent variables).
        *                  The vector should be created with createGradientVectorOutput.
        * @param[out]   y  The result of the primal evaluation. The sequence of variables is the same as for the register
        *                  output call. If the pointer is a null pointer then the result is not stored. The vector should
@@ -322,7 +324,7 @@ namespace codi {
        * @brief Perform a reverse (adjoint) evaluation of the recorded tape.
        * @param[in]  y_b  The seeding vector for the output variables (dependent variables).
        *                  The vector should be created with createGradientVectorOutput.
-       * @param[out] x_b  The result vector for the input variables (independent variables)
+       * @param[out] x_b  The result vector for the input variables (independent variables).
        *                  The vector should be created with createGradientVectorInput.
        */
       CODI_INLINE void evalReverse(Gradient const* y_b, Gradient* x_b) {
@@ -345,15 +347,15 @@ namespace codi {
       }
 
       /**
-       * @brief Reevaluate the tape at the given position and compute the AD forward mode.
+       * @brief Re-evaluate the tape with new input variables and compute the AD forward mode.
        *
        * This method is a shortcut for calling evalPrimal and evalReverse in succession.
        *
        * @param[in]    x  The new seeding vector for the primal input variables. The sequence of variables is the same
        *                  as for the register input call. The vector should be created with createPrimalVectorInput.
-       * @param[out] y_b  The seeding vector for the output variables (dependent variables)
+       * @param[out] y_b  The seeding vector for the output variables (dependent variables).
        *                  The vector should be created with createGradientVectorOutput.
-       * @param[in]  x_b  The result vector for the input variables (independent variables)
+       * @param[in]  x_b  The result vector for the input variables (independent variables).
        *                  The vector should be created with createGradientVectorInput.
        * @param[out]   y  The result of the primal evaluation. The sequence of variables is the same as for the register
        *                  output call. If the pointer is a null pointer then the result is not stored. The vector should
@@ -368,11 +370,11 @@ namespace codi {
       /**
        * @brief Evaluates the full Jacobian of the recorded tape.
        *
-       * The algorithm will select the best choice for the evaluation. Either a forward mode or reverse mode evaluation.
+       * The algorithm will select the best choice for the evaluation, either a forward mode or reverse mode evaluation.
        * It will also use the vector mode if the underlying tape was configured with such a mode.
        *
-       * @param[out] jac  The storage for the Jacobian which is evaluated. Needs to have the correct size and should
-       *                  be created with createJacobian.
+       * @param[out] jac  The storage for the Jacobian which is evaluated. Must have the correct size and should be
+       *                  created with createJacobian.
        */
       CODI_INLINE void evalJacobian(JacobianType& jac) {
         JacobianConvertWrapper<JacobianType> wrapper(jac);
@@ -381,14 +383,14 @@ namespace codi {
       }
 
       /**
-       * @brief Reevaluate the tape at a given position and compute the full Jacobian at the new position.
+       * @brief Re-evaluate the tape with new input variables and compute the full Jacobian at the new inputs.
        *
-       * This method is a shortcut for calling evalPrimal and evalJacobian
+       * This method is a shortcut for calling evalPrimal and evalJacobian in succession.
        *
        * @param[in]    x  The new seeding vector for the primal input variables. The sequence of variables is the same
        *                  as for the register input call. The vector should be created with createPrimalVectorInput.
-       * @param[out] jac  The storage for the Jacobian which is evaluated. Needs to have the correct size and should
-       *                  be created with createJacobian.
+       * @param[out] jac  The storage for the Jacobian which is evaluated. Must have the correct size and should be
+       *                  created with createJacobian.
        * @param[out]   y  The result of the primal evaluation. The sequence of variables is the same as for the register
        *                  output call. If the pointer is a null pointer then the result is not stored. The vector should
        *                  be created with createPrimalVectorOutput.
@@ -400,11 +402,11 @@ namespace codi {
       }
 
       /**
-       * @brief Evaluates the full Jacobian of the recorded tape with a custom Jacobian type from the user.
+       * @brief Evaluates the full Jacobian of the recorded tape with a custom Jacobian type chosen by the user.
        *
        * \copydetails evalJacobian
        *
-       * @tparam Jac  Needs to implement the access operators (e.g. operator()) as in the Jacobian class.
+       * @tparam Jac  Has to implement JacobianInterface.
        */
       template<typename Jac>
       CODI_INLINE void evalJacobianGen(Jac& jac) {
@@ -427,21 +429,21 @@ namespace codi {
       /**
        * @brief Evaluates the full Hessian of the recorded tape.
        *
-       * The algorithm will select the best choice for the evaluation. Either a forward mode or reverse mode evaluation.
+       * The algorithm will select the best choice for the evaluation, either a forward mode or reverse mode evaluation.
        * It will also use the vector mode if the underlying tape was configured with such a mode.
        *
-       * @param[out] hes  The storage for the Hessian which is evaluated. Needs to have the correct size and should
-       *                  be created with createHessian.
+       * @param[out] hes  The storage for the Hessian which is evaluated. Must have the correct size and should be
+       *                  created with createHessian.
        * @param[out] jac  If also the Jacobian should be computed alongside the Hessian, a storage for the Jacobian can
-       *                  be provided. Needs to have the correct size and should be created with createJacobian.
+       *                  be provided. Must have the correct size and should be created with createJacobian.
        *
-       * @tparam Jac  Needs to implement the access operators (e.g. operator()) as in the Jacobian class.
+       * @tparam Jac  Has to implement JacobianInterface.
        */
       template<typename Jac = DummyJacobian>
       void evalHessian(HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy);
 
       /**
-       * @brief Reevaluate the tape at a given position and compute the full Hessian at the new position.
+       * @brief Re-evaluate the tape with new input variables and compute the full Hessian at the new inputs.
        *
        * This method is a shortcut for calling evalPrimal and evalHessian
        *
@@ -455,7 +457,7 @@ namespace codi {
        * @param[out] jac  If also the Jacobian should be computed alongside the Hessian, a storage for the Jacobian can
        *                  be provided. Needs to have the correct size and should be created with createJacobian.
        *
-       * @tparam Jac  Needs to implement the access operators (e.g. operator()) as in the Jacobian class.
+       * @tparam Jac  Has to implement JacobianInterface.
        */
       template<typename Jac = DummyJacobian>
       CODI_INLINE void evalHessianAt(Real const* x, HessianType& hes, Real* y = nullptr,
@@ -472,17 +474,17 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
-      /// Change state
+      /// Change state.
       void changeStateToForwardEvaluation() {
         wasForwardEvaluated = true;
 
-        // No cleanup to do
+        // no cleanup to do
       }
 
       /// Change state and clear the adjoints.
       void changeStateToReverseEvaluation() {
         if (wasForwardEvaluated) {
-          // Forward evaluation leaves the adjoint vector dirty.
+          // forward evaluation leaves the adjoint vector dirty
 
           tape.clearAdjoints();
         }
@@ -491,47 +493,47 @@ namespace codi {
       }
   };
 
-  /// TapeHelper for a CoDiPack type that currently not a TapeHelper implementation. Will generate errors.
+  /// TapeHelper for a CoDiPack type that currently do not support a TapeHelper implementation. Will generate errors.
   ///
-  /// See TapeHelperBase for details
+  /// See TapeHelperBase for details.
   ///
-  /// @tparam _Type  A CoDiPack type on which the evaluations take place.
+  /// @tparam _Type  A CoDiPack type that does not support TapeHelper.
   template<typename _Type>
   struct TapeHelperNoImpl : public TapeHelperBase<_Type, TapeHelperNoImpl<_Type>> {
     public:
 
-      /// See TapeHelperBase
+      /// See TapeHelperBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Real = typename Type::Real;  ///< See TapeHelperBase
+      using Real = typename Type::Real;  ///< See TapeHelperBase.
 
-      using Base = TapeHelperBase<Type, TapeHelperNoImpl<Type>>;  ///< Base class abbreviation
+      using Base = TapeHelperBase<Type, TapeHelperNoImpl<Type>>;  ///< Base class abbreviation.
 
-      /// No implementation will yield linker errors
+      /// Missing implementation will yield linker errors.
       virtual void evalPrimal(Real const* x, Real* y = nullptr) = 0;
 
-      /// No implementation will yield linker errors
+      /// Missing implementation will yield linker errors.
       template<typename Jac = DummyJacobian>
       void evalHessian(typename Base::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy);
   };
 
   /// TapeHelper implementation for the Jacobian taping strategy.
   ///
-  /// See TapeHelperBase for details
+  /// See TapeHelperBase for details.
   ///
-  /// @tparam _Type  A CoDiPack type on which the evaluations take place.
+  /// @tparam _Type  The CoDiPack type on which the evaluations take place.
   template<typename _Type>
   struct TapeHelperJacobi : public TapeHelperBase<_Type, TapeHelperJacobi<_Type>> {
     public:
 
-      /// See TapeHelperBase
+      /// See TapeHelperBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Real = typename Type::Real;  ///< See TapeHelperBase
+      using Real = typename Type::Real;  ///< See TapeHelperBase.
 
-      using Base = TapeHelperBase<Type, TapeHelperJacobi<Type>>;  ///< Base class abbreviation
+      using Base = TapeHelperBase<Type, TapeHelperJacobi<Type>>;  ///< Base class abbreviation.
 
-      /// Throws an exception since primal evaluations are not support for Jacobian tapes.
+      /// Throws an exception since primal evaluations are not support by Jacobian tapes.
       virtual void evalPrimal(Real const* x, Real* y = nullptr) {
         CODI_UNUSED(x, y);
 
@@ -540,7 +542,7 @@ namespace codi {
             "Please use codi::RealReversePrimal or codi::RealReversePrimalIndex types for this kind of functionality.");
       }
 
-      /// Throws an exception since primal evaluations are not support for Jacobian tapes.
+      /// Throws an exception since primal evaluations are not supported by Jacobian tapes.
       template<typename Jac = DummyJacobian>
       void evalHessian(typename Base::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         CODI_UNUSED(hes, jac);
@@ -554,19 +556,19 @@ namespace codi {
 
   /// TapeHelper implementation for the Jacobian taping strategy.
   ///
-  /// See TapeHelperBase for details
+  /// See TapeHelperBase for details.
   ///
-  /// @tparam _Type  A CoDiPack type on which the evaluations take place.
+  /// @tparam _Type  The CoDiPack type on which the evaluations take place.
   template<typename _Type>
   struct TapeHelperPrimal : public TapeHelperBase<_Type, TapeHelperPrimal<_Type>> {
     public:
 
-      /// See TapeHelperBase
+      /// See TapeHelperBase.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Real = typename Type::Real;  ///< See TapeHelperBase
+      using Real = typename Type::Real;  ///< See TapeHelperBase.
 
-      using Base = TapeHelperBase<Type, TapeHelperPrimal<Type>>;  ///< Base class abbreviation
+      using Base = TapeHelperBase<Type, TapeHelperPrimal<Type>>;  ///< Base class abbreviation.
 
       /// \copydoc TapeHelperBase::evalPrimal
       virtual void evalPrimal(Real const* x, Real* y = nullptr) {
@@ -604,16 +606,16 @@ namespace codi {
       }
   };
 
-  /// See TapeHelperBase
+  /// See TapeHelperBase.
   template<typename Type, typename = void>
   struct TapeHelper : public TapeHelperBase<Type, TapeHelperNoImpl<Type>> {};
 
 #ifndef DOXYGEN_DISABLE
-  /// See TapeHelperBase
+  /// See TapeHelperBase.
   template<typename Type>
   struct TapeHelper<Type, TapeTraits::EnableIfJacobianTape<typename Type::Tape>> : public TapeHelperJacobi<Type> {};
 
-  /// See TapeHelperBase
+  /// See TapeHelperBase.
   template<typename Type>
   struct TapeHelper<Type, TapeTraits::EnableIfPrimalValueTape<typename Type::Tape>> : public TapeHelperPrimal<Type> {};
 #endif
