@@ -175,10 +175,10 @@ namespace codi {
        * primal evaluations to change the original seeding of the tape. It also requires that the tape can compute
        * second order derivatives via a nested first order forward type.
        *
-       * The algorithm expects that no gradient data has been seeded with nonzero values.
+       * The algorithm expects that no gradients have been seeded with nonzero values.
        * It also expects that the current tape state was just recorded, that is, the primal values in the tape represent
        * the output values of f.
-       * At return, it is ensured that all gradient data have zero values.
+       * At return, it is ensured that all gradients have zero values.
        *
        * It has to hold start < end.
        *
