@@ -26,6 +26,12 @@ namespace codi {
         return DummyValue();
       }
 
+      /// Return a dummy value.
+      CODI_INLINE DummyValue operator[](size_t const i) const {
+        CODI_UNUSED(i);
+        return DummyValue();
+      }
+
       /// Vector is always zero size.
       CODI_INLINE size_t size() const {
         return (size_t)0;

@@ -65,14 +65,6 @@ namespace codi {
             dummyVector(),
             dummyJacobian() {}
 
-      /// Set the primal values from the user provided vector into the CoDiPack ones.
-      template<typename VecX>
-      void setAllPrimals(VecX const& locX);
-
-      /// Store the primal values from the CoDiPack vector into the user vector.
-      template<typename VecY>
-      void getAllPrimals(VecY& locY);
-
       /// Perform a primal evaluation with the inputs provided in locX and store the result in locY.
       template<typename VecX, typename VecY>
       void computePrimal(VecX const& locX, VecY& locY);
@@ -86,6 +78,14 @@ namespace codi {
       void computeHessian(VecX const& locX, Hes& hes, VecY& locY, Jac& jac);
 
     protected:
+
+      /// Set the primal values from the user provided vector into the CoDiPack ones.
+      template<typename VecX>
+      void setPrimalInputs(VecX const& locX);
+
+      /// Store the primal values from the CoDiPack vector into the user vector.
+      template<typename VecY>
+      void getPrimalOutputs(VecY& locY);
 
       /// Helper for the evaluation of the function object with the internal input and output vector.
       void eval() {
@@ -114,18 +114,18 @@ namespace codi {
       // Forward constructors of the base.
       using Base::EvaluationHandleBase;
 
-      /// \copydoc codi::EvaluationHandleBase::setAllPrimals
+      /// \copydoc codi::EvaluationHandleBase::setPrimalInputs
       template<typename VecX>
-      void setAllPrimals(VecX const& locX) {
+      void setPrimalInputs(VecX const& locX) {
         codiAssert(locX.size() <= this->x.size());
         for (size_t j = 0; j < locX.size(); j += 1) {
           this->x[j] = locX[j];
         }
       }
 
-      /// \copydoc codi::EvaluationHandleBase::getAllPrimals
+      /// \copydoc codi::EvaluationHandleBase::getPrimalOutputs
       template<typename VecY>
-      void getAllPrimals(VecY& locY) {
+      void getPrimalOutputs(VecY& locY) {
         codiAssert(locY.size() <= this->y.size());
         for (size_t i = 0; i < locY.size(); i += 1) {
           locY[i] = RealTraits::getPassiveValue(this->y[i].getValue());
@@ -135,11 +135,11 @@ namespace codi {
       /// \copydoc codi::EvaluationHandleBase::computePrimal
       template<typename VecX, typename VecY>
       void computePrimal(VecX const& locX, VecY& locY) {
-        setAllPrimals(locX);
+        setPrimalInputs(locX);
 
         this->eval();
 
-        getAllPrimals(locY);
+        getPrimalOutputs(locY);
       }
 
       /// \copydoc codi::EvaluationHandleBase::computeJacobian
@@ -147,11 +147,10 @@ namespace codi {
       /// The vectorization is performed over the input vector. The function object is evaluated n/vecSize times.
       template<typename VecX, typename Jac, typename VecY>
       void computeJacobian(VecX const& locX, Jac& jac, VecY& locY) {
-        setAllPrimals(locX);
+        setPrimalInputs(locX);
 
         JacobianConvertWrapper<Jac> wrapper(jac);
 
-        // first order derivatives should always exist
         using GradientTraits1st = GradientTraits::TraitsImplementation<typename Type::Gradient>;
         size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim;
 
@@ -163,7 +162,7 @@ namespace codi {
           this->eval();
 
           if (0 == j) {
-            getAllPrimals(locY);
+            getPrimalOutputs(locY);
           }
 
           for (size_t i = 0; i < this->y.size(); i += 1) {
@@ -184,13 +183,11 @@ namespace codi {
       /// for all output values. The function object is evaluated n*n/(vecSize1 * vecSize2) times.
       template<typename VecX, typename Hes, typename VecY, typename Jac>
       void computeHessian(VecX const& locX, Hes& hes, VecY& locY, Jac& jac) {
-        setAllPrimals(locX);
+        setPrimalInputs(locX);
 
-        // first order derivatives should always exist
         using GradientTraits1st = GradientTraits::TraitsImplementation<typename Type::Gradient>;
         size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim;
 
-        // define these here since not all types have second order derivatives
         using GradientTraits2nd = GradientTraits::TraitsImplementation<typename Type::Real::Gradient>;
         size_t constexpr VectorSizeSecondOrder = GradientTraits2nd::dim;
 
@@ -210,7 +207,7 @@ namespace codi {
             this->eval();
 
             if (0 == j && 0 == k) {
-              getAllPrimals(locY);
+              getPrimalOutputs(locY);
             }
 
             // extract all Hessian values, this populates the Hessian from (j,k) to (j + vecSize_j, k + vecSize_k)
@@ -275,9 +272,9 @@ namespace codi {
       /// Constructor
       EvaluationHandleReverseBase(Func& func, size_t m, size_t n) : Base(func, m, n), th() {}
 
-      /// \copydoc codi::EvaluationHandleBase::setAllPrimals
+      /// \copydoc codi::EvaluationHandleBase::setPrimalInputs
       template<typename VecX>
-      void setAllPrimals(VecX const& locX, bool reg) {
+      void setPrimalInputs(VecX const& locX, bool reg) {
         codiAssert(locX.size() <= this->x.size());
         for (size_t j = 0; j < locX.size(); j += 1) {
           this->x[j] = locX[j];
@@ -288,9 +285,9 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::EvaluationHandleBase::getAllPrimals
+      /// \copydoc codi::EvaluationHandleBase::getPrimalOutputs
       template<typename VecY>
-      void getAllPrimals(VecY& locY, bool reg) {
+      void getPrimalOutputs(VecY& locY, bool reg) {
         codiAssert(locY.size() <= this->y.size());
         for (size_t i = 0; i < this->y.size(); i += 1) {
           if (reg) {
@@ -304,11 +301,11 @@ namespace codi {
       /// \copydoc codi::EvaluationHandleBase::computePrimal
       template<typename VecX, typename VecY>
       void computePrimal(VecX const& locX, VecY& locY) {
-        setAllPrimals(locX, false);
+        setPrimalInputs(locX, false);
 
         this->eval();
 
-        getAllPrimals(locY, false);
+        getPrimalOutputs(locY, false);
       }
 
       /// \copydoc codi::EvaluationHandleBase::computeJacobian
@@ -333,11 +330,11 @@ namespace codi {
       template<typename VecX, typename VecY>
       void recordTape(VecX const& locX, VecY& locY) {
         th.startRecording();
-        setAllPrimals(locX, true);
+        setPrimalInputs(locX, true);
 
         this->eval();
 
-        getAllPrimals(locY, true);
+        getPrimalOutputs(locY, true);
         th.stopRecording();
       }
   };
@@ -345,8 +342,10 @@ namespace codi {
   /**
    * @brief Implementation of EvaluationHandleBase for primal value reverse mode CoDiPack types.
    *
-   * This tape records the logic behind the function object once and then performs only primal, forward and reverse
-   * tape evaluations.
+   * This tape records the logic behind the function object once for each primal evaluation point. Afterwards,
+   * only primal, forward and reverse tape evaluations are preformed until the next primal evaluation point.
+   *
+   * Primal evaluations without derivative computations are not recorded.
    *
    * \copydetails EvaluationHandleBase
    */
@@ -384,8 +383,8 @@ namespace codi {
   /**
    * @brief Implementation for Jacobian reverse mode CoDiPack types of EvaluationHandleBase.
    *
-   * This tape re-records the logic behind the function object for every primal, forward and reverse
-   * tape evaluations.
+   * This tape re-records the logic behind the function object for every forward and reverse
+   * tape evaluations. Primal evaluations are not recorded.
    *
    * \copydetails EvaluationHandleBase
    */
@@ -413,11 +412,11 @@ namespace codi {
       /// For the Jacobian tape implementation, a new tape is recorded for every evaluation.
       template<typename VecX, typename Hes, typename VecY, typename Jac>
       void computeHessian(VecX const& locX, Hes& hes, VecY& locY, Jac& jac) {
-        this->setAllPrimals(locX, false);
+        this->setPrimalInputs(locX, false);
 
         Algorithms<Type>::computeHessian(this->func, this->x, this->y, hes, jac);
 
-        this->getAllPrimals(locY, false);
+        this->getPrimalOutputs(locY, false);
       }
   };
 
@@ -506,7 +505,8 @@ namespace codi {
    * routines has a corresponding evalHandle method.
    *
    * Each of the create methods has similar create..Fixed method which uses the std::array type instead of the
-   * std::vector type for the data management. An example with these methods would be:
+   * std::vector type for the data management. These methods can be used if the size is known at compile time. An
+   * example with these methods would be:
    * \snippet examples/evaluationHelper_fixed.cpp EvaluationHelper fixed
    *
    * Until now, the default definition for the used CoDiPack types have been used. In order to use an arbitrary CoDiPack
@@ -561,7 +561,7 @@ namespace codi {
       template<typename Func>
       using DefaultHandle2nd = EvaluationHandleForward<Func, HessianComputationType>;
 
-      /// Type for the default handle for first order derivative computations with a fixed vector size.
+      /// Type for the default handle for first order derivative computations with a compile time vector size.
       /// @tparam Func  See FunctorInterface
       /// @tparam    m  The size of the output vector.
       /// @tparam    n  The size of the input vector.
@@ -570,7 +570,7 @@ namespace codi {
           EvaluationHandleForward<Func, JacobianComputationType, std::array<JacobianComputationType, n>,
                                   std::array<JacobianComputationType, m>>;
 
-      /// Type for the default handle for second order derivative computations with a fixed vector size.
+      /// Type for the default handle for second order derivative computations with a compile time vector size.
       /// @tparam Func  See FunctorInterface
       /// @tparam    m  The size of the output vector.
       /// @tparam    n  The size of the input vector.
@@ -594,7 +594,8 @@ namespace codi {
       }
 
       /**
-       * @brief Helper function for the creation of a default first order evaluation handle with a fixed vector size.
+       * @brief Helper function for the creation of a default first order evaluation handle with a compile time vector
+       * size.
        *
        * @param[in] func  The function object for the evaluation (see FunctorInterface).
        *
@@ -623,7 +624,8 @@ namespace codi {
       }
 
       /**
-       * @brief Helper function for the creation of a default second order evaluation handle with a fixed vector size.
+       * @brief Helper function for the creation of a default second order evaluation handle with a compile time vector
+       * size.
        *
        * @param[in] func  The function object for the evaluation (see FunctorInterface).
        *
@@ -650,7 +652,7 @@ namespace codi {
        * @param[in]    n  The size of the input vector.
        *
        * @tparam CoDiType  An arbitrary CoDiPack type based on ActiveType. All definitions in codi.hpp are supported.
-       *                   For user developed tapes, some subclasses have to be specialized.
+       *                   For user developed tapes, EvaluationHandle has to be specialized.
        * @tparam     Func  See FunctorInterface.
        */
       template<typename Type, typename Func>
@@ -659,8 +661,8 @@ namespace codi {
       }
 
       /**
-       * @brief Helper function for the creation of an evaluation handle with the specified CoDiPack type and a fixed
-       *        vector size.
+       * @brief Helper function for the creation of an evaluation handle with the specified CoDiPack type and a compile
+       * time vector size.
        *
        * The CoDiPack type can be an arbitrary one:
        * \code{.cpp}
@@ -670,7 +672,7 @@ namespace codi {
        * @param[in] func  The function object for the evaluation (see FunctorInterface).
        *
        * @tparam CoDiType  An arbitrary CoDiPack type based on ActiveType. All definitions in codi.hpp are supported.
-       *                   For user developed tapes, some subclasses have to be specialized.
+       *                   For user developed tapes, EvaluationHandle has to be specialized.
        * @tparam     Func  See FunctorInterface.
        * @tparam        m  The size of the output vector.
        * @tparam        n  The size of the input vector.
@@ -698,7 +700,7 @@ namespace codi {
        * @param[in]    n  The size of the input vector.
        *
        * @tparam     CoDiType  An arbitrary CoDiPack type based on ActiveType. All definitions in codi.hpp are
-       *                       supported. For user developed tapes, some subclasses have to be specialized.
+       *                       supported. For user developed tapes, EvaluationHandle has to be specialized.
        * @tparam        Func  See FunctorInterface
        * @tparam  InputStore  The storage type for vectors of input variables.
        * @tparam OutputStore  The storage type for vectors of output variables.
@@ -723,7 +725,7 @@ namespace codi {
       }
 
       /**
-       * @brief Create a Jacobian with a fixed size.
+       * @brief Create a Jacobian with a compile time size.
        *
        * @tparam T  The storage type of the Jacobian.
        * @tparam m  The size of the output vector.
@@ -748,7 +750,7 @@ namespace codi {
       }
 
       /**
-       * @brief Create a Hessian with a fixed size.
+       * @brief Create a Hessian with a compile time size.
        *
        * @tparam T  The storage type of the Hessian.
        * @tparam        m  The size of the output vector.

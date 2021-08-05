@@ -213,7 +213,7 @@ namespace codi {
             int nonZerosLeft = jacobie.nonZerosRow(curOut);
             jacobie.nonZerosRow(curOut) = 0;
 
-            // we need to use here the value of the gradient data such that it is correctly deleted.
+            // we need to use here the value of the gradient data such that it is correctly deleted in storeManual
             Identifier lastIdentifier = value.getIdentifier();
             bool staggeringActive = false;
             int curIn = 0;
@@ -221,6 +221,14 @@ namespace codi {
             // push statements as long as there are nonzeros left
             // if there are more than MaxStatementIntValue nonzeros, then we need to stagger the
             // statement pushes
+            // e.g. The reverse mode of w = f(u1, ..., u300) which is \bar u_i += df/du_i * \bar w for i = 1 ... 300 is
+            //      separated into
+            //        Statement 1:
+            //          \bar u_i += df/du_i * \bar t_1 for i = 1 ... 256
+            //        Statement 2:
+            //          \bar t_1 += \bar w
+            //          \bar u_i ++ df/du_i * \bar w for i = 257 ... 300
+            //
             while (nonZerosLeft > 0) {
               // calculate the number of Jacobians for this statement
               int jacobiesForStatement = nonZerosLeft;

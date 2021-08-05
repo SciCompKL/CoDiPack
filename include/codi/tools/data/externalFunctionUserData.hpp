@@ -15,7 +15,8 @@ namespace codi {
    * Stores copies of the data provided to the add methods, either a single value or an entire array.
    *
    * The data can be retrieved in two different manners. Subsequent calls to get* methods provide the data elements in
-   * the order in which they were added. The get*ByIndex methods can be used to query the pos-th added item explicitly.
+   * the order in which they were added (In order access.). The get*ByIndex methods can be used to query the pos-th added
+   * item explicitly (Out of order access.).
    *
    * After the last data element is accessed by a get* method, the next get* call will return the first one.
    *
@@ -128,7 +129,7 @@ namespace codi {
       }
 
       /*******************************************************************************/
-      /// @name Sequential accessors
+      /// @name In order accessors
       /// @{
 
       /// Get a copy of the next data item.
@@ -166,15 +167,15 @@ namespace codi {
         return *data;
       }
 
-      /// @}
-
       /// Manually reset the position.
       void resetPos() {
         storePos = 0;
       }
 
+      /// @}
+
       /*******************************************************************************/
-      /// @name Direct accessors
+      /// @name Out of order accessors
       /// @{
 
       /// Get a copy of a data item based on the index.

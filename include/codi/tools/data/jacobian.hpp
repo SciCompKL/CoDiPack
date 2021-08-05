@@ -40,12 +40,15 @@ namespace codi {
       /// m = rows (output variables), n = columns (input variables)
       explicit Jacobian(size_t const m, size_t const n) : values(constructVector<Store>(n * m)), m(m), n(n) {}
 
+      /// \copydoc codi::JacobianInterface::getM()
       CODI_INLINE size_t getM() const {
         return m;
-      }  ///< \copydoc codi::JacobianInterface::getM()
+      }
+
+      /// \copydoc codi::JacobianInterface::getN()
       CODI_INLINE size_t getN() const {
         return n;
-      }  ///< \copydoc codi::JacobianInterface::getN()
+      }
 
       /// \copydoc codi::JacobianInterface::operator()(size_t const, size_t const) const
       CODI_INLINE T operator()(size_t const i, size_t const j) const {

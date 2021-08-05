@@ -205,12 +205,12 @@ namespace codi {
       }
 
       /// Get a reference to the gradient. Unchecked access.
-      Gradient& gradientAt(Identifier const& identifier) {
+      Gradient& gradientUnchecked(Identifier const& identifier) {
         return adjointVector[identifier];
       }
 
       /// Get a constant reference to the gradient. Unchecked access.
-      Gradient const& gradientAt(Identifier const& identifier) const {
+      Gradient const& gradientUnchecked(Identifier const& identifier) const {
         return adjointVector[identifier];
       }
 

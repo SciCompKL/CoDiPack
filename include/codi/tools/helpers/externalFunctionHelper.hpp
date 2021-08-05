@@ -225,8 +225,8 @@ namespace codi {
 
       std::vector<Type*> outputValues;  ///< References to output values.
 
-      bool storeInputPrimals;     ///< If input primals are stored.
-      bool storeOutputPrimals;    ///< If output primals are stored.
+      bool storeInputPrimals;     ///< If input primals are stored, can be disabled by the user.
+      bool storeOutputPrimals;    ///< If output primals are stored, can be disabled by the user.
       bool primalFuncUsesADType;  ///< If a primal call with a self implemented function will be done
 
       EvalData* data;  ///< External function data.
@@ -264,8 +264,8 @@ namespace codi {
           data->inputIndices.push_back(input.getIdentifier());
         }
 
-        // ignore the setting at this place and the active check
-        // We might need the values for the evaluation.
+        // Ignore the setting at this place and the active check,
+        // we might need the values for the evaluation.
         if (!primalFuncUsesADType || storeInputPrimals) {
           data->inputValues.push_back(input.getValue());
         }
