@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cmath>
+#include <complex>
 
 #include "../aux/macros.hpp"
 #include "../config.h"
+#include "expressionTraits.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -103,6 +105,208 @@ namespace codi {
     CODI_INLINE bool isTotalZero(Type const& v) {
       return IsTotalZero<Type>::isTotalZero(v);
     }
+
+    /// @}
+    /*******************************************************************************/
+    /// @name Traits for generalized data extraction
+    /// @{
+
+    /**
+     * @brief Data handling methods for aggregated types that contain CoDiPack active types.
+     *
+     * An aggregated type is for example std::complex<codi::RealReverse>, which contains two CoDiPack values. The
+     * accessor methods in this class access each of these value. For `getValue`, for example, a complex type of the
+     * CoDiPack type's inner value is generated.
+     *
+     * @tparam _Type  Any type that contains a CoDiPack type.
+     */
+    template<typename _Type, typename = void>
+    struct DataExtraction {
+      public:
+        static_assert(false && std::is_void<_Type>::value,
+                      "Instantiation of unspecialized RealTraits::DataExtraction.");
+
+        using Type = CODI_DD(_Type, CODI_ANY);  ///< See DataExtraction.
+
+        using Real = typename Type::Real;  ///< Type of primal values extracted from the type with AD values.
+        using Identifier =
+            typename Type::Identifier;  ///< Type of identifier values extracted from the type with AD values.
+
+        /// Extract the primal values from a type of aggregated active types.
+        CODI_INLINE static Real getValue(Type const& v);
+
+        /// Extract the identifiers from a type of aggregated active types.
+        CODI_INLINE static Identifier getIdentifier(Type const& v);
+
+        /// Set the primal values of a type of aggregated active types.
+        CODI_INLINE static void setValue(Type& v, Real const& value);
+    };
+
+    /**
+     * @brief Tape registration methods for aggregated types that contain CoDiPack active types.
+     *
+     * An aggregated type is for example std::complex<codi::RealReverse>, which contains two CoDiPack values. The
+     * methods in this class access each of these values in order to register the active types. For `registerInput`, the
+     * real and imaginary part of the complex type are registered.
+     *
+     * @tparam _Type  Any type that contains a CoDiPack type.
+     */
+    template<typename _Type, typename = void>
+    struct TapeRegistration {
+      public:
+        static_assert(false && std::is_void<_Type>::value,
+                      "Instantiation of unspecialized RealTraits::TapeRegistration.");
+
+        using Type = CODI_DD(_Type, CODI_ANY);  ///< See DataRegistration.
+
+        using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
+
+        /// Register all active types of a aggregated type as tape input.
+        CODI_INLINE static void registerInput(Type& v);
+
+        /// Register all active types of a aggregated type as tape output.
+        CODI_INLINE static void registerOutput(Type& v);
+
+        /// Register all active types of a aggregated type as external function outputs.
+        CODI_INLINE static Real registerExternalFunctionOutput(Type& v);
+    };
+
+    /// \copydoc codi::DataExtraction::getValue()
+    template<typename Type>
+    typename DataExtraction<Type>::Real getValue(Type const& v) {
+      return DataExtraction<Type>::getValue(v);
+    }
+
+    /// \copydoc codi::DataExtraction::getIdentifier()
+    template<typename Type>
+    typename DataExtraction<Type>::Identifier getIdentifier(Type const& v) {
+      return DataExtraction<Type>::getIdentifier(v);
+    }
+
+    /// \copydoc codi::DataExtraction::setValue()
+    template<typename Type>
+    void setValue(Type& v, typename DataExtraction<Type>::Real const& value) {
+      return DataExtraction<Type>::setValue(v, value);
+    }
+
+    /// \copydoc codi::DataRegistration::registerInput()
+    template<typename Type>
+    void registerInput(Type& v) {
+      return TapeRegistration<Type>::registerInput(v);
+    }
+
+    /// \copydoc codi::DataRegistration::registerOutput()
+    template<typename Type>
+    void registerOutput(Type& v) {
+      return TapeRegistration<Type>::registerOutput(v);
+    }
+
+    /// \copydoc codi::DataRegistration::registerExternalFunctionOutput()
+    template<typename Type>
+    typename DataExtraction<Type>::Identifier registerExternalFunctionOutput(Type& v) {
+      return TapeRegistration<Type>::registerExternalFunctionOutput(v);
+    }
+
+#ifndef DOXYGEN_DISABLE
+
+    /// Specialization of DataExtraction for floating point types.
+    template<typename _Type>
+    struct DataExtraction<_Type, typename std::enable_if<std::is_floating_point<_Type>::value>::type> {
+      public:
+        using Type = CODI_DD(_Type, double);  ///< See DataExtraction.
+
+        using Real = double;     ///< See DataExtraction::Real.
+        using Identifier = int;  ///< See DataExtraction::Identifier.
+
+        /// \copydoc DataExtraction::getValue()
+        CODI_INLINE static Real getValue(Type const& v) {
+          return v;
+        }
+
+        /// \copydoc DataExtraction::getIdentifier()
+        CODI_INLINE static Identifier getIdentifier(Type const& v) {
+          return 0;
+        }
+
+        /// \copydoc DataExtraction::setValue()
+        CODI_INLINE static void setValue(Type& v, Real const& value) {
+          v = value;
+        }
+    };
+
+    /// Specialization of DataExtraction for complex types.
+    template<typename _InnerType>
+    struct DataExtraction<std::complex<_InnerType>> {
+      public:
+
+        using InnerType = CODI_DD(_InnerType, CODI_ANY);
+        using Type = std::complex<_InnerType>;  ///< See DataExtraction.
+
+        using InnerExtraction = DataExtraction<InnerType>;
+
+        using Real = std::complex<typename InnerExtraction::Real>;              ///< See DataExtraction::Real.
+        using Identifier = std::complex<typename InnerExtraction::Identifier>;  ///< See DataExtraction::Identifier.
+
+        /// \copydoc DataExtraction::getValue()
+        CODI_INLINE static Real getValue(Type const& v) {
+          InnerType const* vArray = reinterpret_cast<InnerType const*>(&v);
+
+          return Real(InnerExtraction::getValue(vArray[0]), InnerExtraction::getValue(vArray[1]));
+        }
+
+        /// \copydoc DataExtraction::getIdentifier()
+        CODI_INLINE static Identifier getIdentifier(Type const& v) {
+          InnerType const* vArray = reinterpret_cast<InnerType const*>(&v);
+
+          return Real(InnerExtraction::getIdentifier(vArray[0]), InnerExtraction::getIdentifier(vArray[1]));
+        }
+
+        /// \copydoc DataExtraction::setValue()
+        CODI_INLINE static void setValue(Type& v, Real const& value) {
+          InnerType* vArray = reinterpret_cast<InnerType*>(&v);
+
+          InnerExtraction::setValue(vArray[0], std::real(value));
+          InnerExtraction::setValue(vArray[1], std::imag(value));
+        }
+    };
+
+    /// Specialization of DataRegistration for complex types.
+    template<typename _InnerType>
+    struct TapeRegistration<std::complex<_InnerType>> {
+      public:
+
+        using InnerType = CODI_DD(_InnerType, CODI_ANY);
+        using Type = std::complex<_InnerType>;  ///< See DataExtraction.
+
+        using InnerRegistration = TapeRegistration<InnerType>;
+
+        using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
+
+        /// \copydoc DataRegistration::registerInput()
+        CODI_INLINE static void registerInput(Type& v) {
+          InnerType* vArray = reinterpret_cast<InnerType*>(&v);
+
+          InnerRegistration::registerInput(vArray[0]);
+          InnerRegistration::registerInput(vArray[1]);
+        }
+
+        /// \copydoc DataRegistration::registerOutput()
+        CODI_INLINE static void registerOutput(Type& v) {
+          InnerType* vArray = reinterpret_cast<InnerType*>(&v);
+
+          InnerRegistration::registerOutput(vArray[0]);
+          InnerRegistration::registerOutput(vArray[1]);
+        }
+
+        /// \copydoc DataRegistration::registerExternalFunctionOutput()
+        CODI_INLINE static Real registerExternalFunctionOutput(Type& v) {
+          InnerType* vArray = reinterpret_cast<InnerType*>(&v);
+
+          return Real(InnerRegistration::registerExternalFunctionOutput(vArray[0]),
+                      InnerRegistration::registerExternalFunctionOutput(vArray[1]));
+        }
+    };
+#endif
 
     /// @}
     /*******************************************************************************/

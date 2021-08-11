@@ -89,6 +89,7 @@ namespace codi {
       /// @{
 
       using StoreAs = ActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult = ActiveType;    ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// @}
       /*******************************************************************************/

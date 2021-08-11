@@ -37,6 +37,7 @@ namespace codi {
       /// @{
 
       using StoreAs = ConstantExpression;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult = void;           ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// \copydoc codi::ExpressionInterface::getValue
       CODI_INLINE Real const& getValue() const {

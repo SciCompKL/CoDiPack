@@ -67,7 +67,7 @@ namespace codi {
 
     private:
 
-      struct LocalReverseLogic : public JacobianComputationLogic<Real, LocalReverseLogic> {
+      struct LocalReverseLogic : public JacobianComputationLogic<LocalReverseLogic> {
         public:
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsGradient) {

@@ -2,6 +2,7 @@
 
 #include "../aux/macros.hpp"
 #include "../config.h"
+#include "../traits/expressionTraits.hpp"
 #include "expressionInterface.hpp"
 #include "logic/compileTimeTraversalLogic.hpp"
 #include "logic/nodeInterface.hpp"
@@ -77,6 +78,9 @@ namespace codi {
       /// @{
 
       using StoreAs = BinaryExpression;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult =
+          typename ExpressionTraits::ValidateResult<typename ArgA::ActiveResult, typename ArgB::ActiveResult>::
+              ActiveResult;  ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// \copydoc codi::ExpressionInterface::getValue()
       CODI_INLINE Real const& getValue() const {

@@ -165,6 +165,7 @@ namespace codi {
 
   using std::atan2;
   using std::copysign;
+  using std::hypot;
   using std::max;
   using std::min;
   using std::pow;
@@ -270,6 +271,67 @@ namespace codi {
 
 #define OPERATION_LOGIC OperationCopysign
 #define FUNCTION copysignf
+#include "binaryOverloads.tpp"
+
+  /// BinaryOperation implementation for hypot
+  template<typename _Real>
+  struct OperationHypot : public BinaryOperation<_Real> {
+    public:
+
+      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc codi::BinaryOperation::primal()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
+        return hypot(argA, argB);
+      }
+
+      /// \copydoc codi::BinaryOperation::gradientA()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+        CODI_UNUSED(argB);
+
+        checkResult(result);
+        if(result != 0.0) {
+          return argA / result;
+        } else {
+          return Real();
+        }
+      }
+
+      /// \copydoc codi::BinaryOperation::gradientB()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+        CODI_UNUSED(argA);
+
+        checkResult(result);
+        if(result != 0.0) {
+          return argB / result;
+        } else {
+          return Real();
+        }
+      }
+
+    private:
+      static CODI_INLINE void checkResult(Real const& result) {
+        if (Config::CheckExpressionArguments) {
+          if (RealTraits::getPassiveValue(result) == 0.0) {
+            CODI_EXCEPTION("Zero divisor for hypot derivative.");
+          }
+        }
+      }
+  };
+
+#define OPERATION_LOGIC OperationHypot
+#define FUNCTION hypot
+#include "binaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationHypot
+#define FUNCTION hypotl
+#include "binaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationHypot
+#define FUNCTION hypotf
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for max
@@ -479,6 +541,9 @@ namespace std {
   using codi::copysignf;
   using codi::fmax;
   using codi::fmin;
+  using codi::hypot;
+  using codi::hypotl;
+  using codi::hypotf;
   using codi::max;
   using codi::min;
   using codi::pow;

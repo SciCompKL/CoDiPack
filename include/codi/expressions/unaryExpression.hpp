@@ -53,6 +53,8 @@ namespace codi {
       using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>));           ///< See UnaryExpression.
       using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(UnaryOperation<Real>));  ///< See UnaryExpression.
 
+      using ActiveResult = typename Arg::ActiveResult;  ///< See ExpressionInterface.
+
       typename Arg::StoreAs arg;  ///< Argument of the expression.
       Real result;                ///< Precomputed result.
 
