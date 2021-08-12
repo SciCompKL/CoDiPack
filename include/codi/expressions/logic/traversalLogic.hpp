@@ -50,7 +50,7 @@ namespace codi {
        */
       template<typename Node, typename... Args>
       CODI_INLINE void node(Node const& node, Args&&... args) {
-        // Default logic forwards to all links
+        // Default logic forwards to all links.
         toLinks(node, std::forward<Args>(args)...);
       }
 
@@ -62,7 +62,7 @@ namespace codi {
       template<typename Node, typename... Args>
       CODI_INLINE void leaf(Node const& node, Args&&... args) {
         CODI_UNUSED(node, args...);
-        // Default logic does nothing
+        // Default logic does nothing.
       }
 
       /**
@@ -75,7 +75,7 @@ namespace codi {
       template<size_t ChildNumber, typename Child, typename Root, typename... Args>
       CODI_INLINE void link(Child const& child, Root const& root, Args&&... args) {
         CODI_UNUSED(root, args...);
-        // Default logic forwards to node evaluation
+        // Default logic forwards to node evaluation.
         toNode(child, std::forward<Args>(args)...);
       }
 

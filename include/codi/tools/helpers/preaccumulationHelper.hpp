@@ -140,7 +140,7 @@ namespace codi {
 
       /// Terminator for the recursive implementation.
       void addInputRecursive() {
-        // terminator implementation
+        // Terminator implementation.
       }
 
       template<typename... Inputs>
@@ -159,7 +159,7 @@ namespace codi {
 
       /// Terminator for the recursive implementation.
       void addOutputRecursive() {
-        // terminator implementation
+        // Terminator implementation.
       }
 
       template<typename... Outputs>
@@ -193,7 +193,7 @@ namespace codi {
       }
 
       void doPreaccumulation() {
-        // perform the accumulation of the tape part
+        // Perform the accumulation of the tape part.
         Tape& tape = Type::getGlobalTape();
 
         Position endPos = tape.getPosition();
@@ -204,7 +204,7 @@ namespace codi {
         Algorithms<Type, false>::computeJacobian(startPos, endPos, inputData.data(), inputData.size(),
                                                  outputData.data(), outputData.size(), jacobie);
 
-        // store the Jacobian matrix
+        // Store the Jacobian matrix.
         tape.resetTo(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
@@ -213,14 +213,14 @@ namespace codi {
             int nonZerosLeft = jacobie.nonZerosRow(curOut);
             jacobie.nonZerosRow(curOut) = 0;
 
-            // we need to use here the value of the gradient data such that it is correctly deleted in storeManual
+            // We need to use here the value of the gradient data such that it is correctly deleted in storeManual.
             Identifier lastIdentifier = value.getIdentifier();
             bool staggeringActive = false;
             int curIn = 0;
 
-            // push statements as long as there are nonzeros left
-            // if there are more than MaxStatementIntValue nonzeros, then we need to stagger the
-            // statement pushes
+            // Push statements as long as there are nonzeros left.
+            // If there are more than MaxStatementIntValue nonzeros, then we need to stagger the
+            // statement pushes:
             // e.g. The reverse mode of w = f(u1, ..., u300) which is \bar u_i += df/du_i * \bar w for i = 1 ... 300 is
             //      separated into
             //        Statement 1:
@@ -230,23 +230,23 @@ namespace codi {
             //          \bar u_i ++ df/du_i * \bar w for i = 257 ... 300
             //
             while (nonZerosLeft > 0) {
-              // calculate the number of Jacobians for this statement
+              // Calculate the number of Jacobians for this statement.
               int jacobiesForStatement = nonZerosLeft;
               if (jacobiesForStatement > (int)Config::MaxArgumentSize) {
                 jacobiesForStatement = (int)Config::MaxArgumentSize - 1;
-                if (staggeringActive) {  // except in the first round, one Jacobian is reserved for the staggering
+                if (staggeringActive) {  // Except in the first round, one Jacobian is reserved for the staggering.
                   jacobiesForStatement -= 1;
                 }
               }
-              nonZerosLeft -= jacobiesForStatement;  // update nonzeros so that we know if it is the last round
+              nonZerosLeft -= jacobiesForStatement;  // Update nonzeros so that we know if it is the last round.
 
               Identifier storedIdentifier = lastIdentifier;
               tape.storeManual(value.getValue(), lastIdentifier, jacobiesForStatement + (int)staggeringActive);
-              if (staggeringActive) {  // not the first staggering so push the last output
+              if (staggeringActive) {  // Not the first staggering so push the last output.
                 tape.pushJacobiManual(1.0, 0.0, storedIdentifier);
               }
 
-              // push the rest of the Jacobians for the statement
+              // Push the rest of the Jacobians for the statement.
               while (jacobiesForStatement > 0) {
                 if (Real() != (Real)jacobie(curOut, curIn)) {
                   tape.pushJacobiManual(jacobie(curOut, curIn), 0.0, inputData[curIn]);
@@ -260,7 +260,7 @@ namespace codi {
 
             value.getIdentifier() = lastIdentifier; /* now set gradient data for the real output value */
           } else {
-            // disable tape index since there is no dependency
+            // Disable tape index since there is no dependency.
             tape.destroyIdentifier(value.value(), value.getIdentifier());
           }
         }
@@ -280,28 +280,28 @@ namespace codi {
       template<typename... Inputs>
       void addInput(Inputs const&... inputs) {
         CODI_UNUSED(inputs...);
-        // do nothing
+        // Do nothing.
       }
 
       /// Does nothing.
       template<typename... Inputs>
       void start(Inputs const&... inputs) {
         CODI_UNUSED(inputs...);
-        // do nothing
+        // Do nothing.
       }
 
       /// Does nothing.
       template<typename... Outputs>
       void addOutput(Outputs&... outputs) {
         CODI_UNUSED(outputs...);
-        // do nothing
+        // Do nothing.
       }
 
       /// Does nothing.
       template<typename... Outputs>
       void finish(bool const storeAdjoints, Outputs&... outputs) {
         CODI_UNUSED(storeAdjoints, outputs...);
-        // do nothing
+        // Do nothing.
       }
   };
 

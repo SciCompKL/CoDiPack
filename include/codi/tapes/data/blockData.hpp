@@ -61,7 +61,7 @@ namespace codi {
       /// \copydoc DataInterface::pushData
       template<typename... Data>
       CODI_INLINE void pushData(Data const&... data) {
-        // this method should only be called if reserveItems has been called
+        // This method should only be called if reserveItems has been called.
         chunk.pushData(data...);
       }
 
@@ -241,9 +241,9 @@ namespace codi {
 
         PointerInserter pHandle;
 
-        // we do not initialize dataPos with start - 1 since the type can be unsigned
+        // We do not initialize dataPos with start - 1 since the type can be unsigned.
         for (size_t dataPos = start.data; dataPos > end.data; /* decrement is done inside the loop */) {
-          dataPos -= 1;  // decrement of loop variable
+          dataPos -= 1;  // Decrement of loop variable.
 
           pHandle.setPointers(dataPos, &chunk);
           pHandle.call(function, std::forward<Args>(args)...);

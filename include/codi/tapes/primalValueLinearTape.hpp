@@ -193,7 +193,7 @@ namespace codi {
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
         CODI_UNUSED(pos);
 
-        // nothing to do
+        // Nothing to do.
       }
 
       /// \copydoc codi::PrimalValueBaseTape::pushStmtData
@@ -211,7 +211,7 @@ namespace codi {
       void revertPrimals(Position const& pos) {
         CODI_UNUSED(pos);
 
-        // primal values do not need to be reset
+        // Primal values do not need to be reset.
       }
   };
 }

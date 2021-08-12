@@ -23,7 +23,7 @@ namespace codi {
     public:
 
       ///< See MemberStore
-      using Type = _Type;                         // default declaration breaks auto completion
+      using Type = _Type;                         // Default declaration breaks auto completion.
       using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore.
 
       static bool constexpr storeStatic = _storeStatic;  ///< See MemberStore.

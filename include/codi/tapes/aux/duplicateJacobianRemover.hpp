@@ -66,7 +66,7 @@ namespace codi {
           vec.pushData(jacobies[pos], indices[pos]);
         }
 
-        // Reset the data for the next statement
+        // Reset the data for the next statement.
         size = 0;
       }
   };

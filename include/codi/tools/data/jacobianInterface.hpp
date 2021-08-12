@@ -48,7 +48,7 @@ namespace codi {
     out << "[";
     for (size_t i = 0; i < jacobian.getM(); ++i) {
       if (i != 0) {
-        out << " ";  // padding for the '['
+        out << " ";  // Padding for the '['.
       }
 
       for (size_t j = 0; j < jacobian.getN(); ++j) {

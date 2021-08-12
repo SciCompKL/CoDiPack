@@ -23,7 +23,7 @@ namespace codi {
     // clang-format off
     return
         k == 0 ? 1 : (
-        n < k  ? 0 : ( // outside of the domain we assume zero values
+        n < k  ? 0 : ( // Outside of the domain we assume zero values.
         n == k ? 1 : (
         /* default */ binomial(n - 1, k - 1) + binomial(n - 1, k)
         )));

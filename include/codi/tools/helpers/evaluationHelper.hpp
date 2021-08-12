@@ -192,14 +192,14 @@ namespace codi {
         size_t constexpr VectorSizeSecondOrder = GradientTraits2nd::dim;
 
         for (size_t k = 0; k < locX.size(); k += VectorSizeFirstOrder) {
-          // set derivatives from k to k + vecSize_k
+          // Set derivatives from k to k + vecSize_k.
           for (size_t vecPos = 0; vecPos < VectorSizeFirstOrder && k + vecPos < locX.size(); vecPos += 1) {
             GradientTraits1st::at(this->x[k + vecPos].gradient(), vecPos).value() = 1.0;
           }
 
-          // the j = k init is no problem, it will evaluate slightly more elements around the diagonal
+          // The j = k init is no problem, it will evaluate slightly more elements around the diagonal.
           for (size_t j = k; j < locX.size(); j += VectorSizeSecondOrder) {
-            // set derivatives from j to j + vecSize_j
+            // Set derivatives from j to j + vecSize_j.
             for (size_t vecPos = 0; vecPos < VectorSizeSecondOrder && j + vecPos < locX.size(); vecPos += 1) {
               GradientTraits2nd::at(this->x[j + vecPos].value().gradient(), vecPos) = 1.0;
             }
@@ -210,7 +210,7 @@ namespace codi {
               getPrimalOutputs(locY);
             }
 
-            // extract all Hessian values, this populates the Hessian from (j,k) to (j + vecSize_j, k + vecSize_k)
+            // Extract all Hessian values, this populates the Hessian from (j,k) to (j + vecSize_j, k + vecSize_k).
             for (size_t i = 0; i < this->y.size(); i += 1) {
               for (size_t vecPos1st = 0; vecPos1st < VectorSizeFirstOrder && k + vecPos1st < locX.size();
                    vecPos1st += 1) {
@@ -220,7 +220,7 @@ namespace codi {
                   auto& secondGrad = GradientTraits2nd::at(firstGrad.gradient(), vecPos2nd);
 
                   hes(i, j + vecPos2nd, k + vecPos1st) = secondGrad;
-                  hes(i, k + vecPos1st, j + vecPos2nd) = secondGrad;  // symmetry
+                  hes(i, k + vecPos1st, j + vecPos2nd) = secondGrad;  // Symmetry
                 }
               }
 
@@ -231,13 +231,13 @@ namespace codi {
               }
             }
 
-            // reset the derivative seeding
+            // Reset the derivative seeding.
             for (size_t vecPos = 0; vecPos < VectorSizeSecondOrder && j + vecPos < locX.size(); vecPos += 1) {
               GradientTraits2nd::at(this->x[j + vecPos].value().gradient(), vecPos) = 0.0;
             }
           }
 
-          // reset the derivative seeding
+          // Reset the derivative seeding.
           for (size_t vecPos = 0; vecPos < VectorSizeFirstOrder && k + vecPos < locX.size(); vecPos += 1) {
             GradientTraits1st::at(this->x[k + vecPos].gradient(), vecPos).value() = 0.0;
           }

@@ -51,7 +51,7 @@ namespace codi {
       /// Constructor
       CODI_INLINE Direction(std::initializer_list<Real> l) : vector() {
         size_t size = std::min(dim, l.size());
-        Real const* array = l.begin();  // this is possible because the standard requires an array storage
+        Real const* array = l.begin();  // This is possible because the standard requires an array storage.
         for (size_t i = 0; i < size; ++i) {
           vector[i] = array[i];
         }

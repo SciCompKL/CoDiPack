@@ -331,15 +331,15 @@ namespace codi {
       /// outputs and registered as outputs of this external functions.
       void callPrimalFunc(PrimalFunc func) {
         if (!primalFuncUsesADType) {
-          // store the primal function in the external function data so that it can be used for primal evaluations of
-          // the tape
+          // Store the primal function in the external function data so that it can be used for primal evaluations of
+          // the tape.
           data->primalFunc = func;
 
           Real* y = new Real[outputValues.size()];
 
           func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
 
-          // set the primal values on the output values and add them to the data for the reverse evaluation
+          // Set the primal values on the output values and add them to the data for the reverse evaluation.
           for (size_t i = 0; i < outputValues.size(); ++i) {
             outputValues[i]->setValue(y[i]);
 
@@ -364,12 +364,12 @@ namespace codi {
           data->forwardFunc = forwardFunc;
 
           if (nullptr != primalFunc) {
-            // only overwrite the primal function if the user provides one, otherwise it is set in the callPrimalFunc
-            // method
+            // Only overwrite the primal function if the user provides one, otherwise it is set in the callPrimalFunc
+            // method.
             data->primalFunc = primalFunc;
           }
 
-          // clear the primal values if they are not required
+          // Clear the primal values if they are not required.
           if (!storeInputPrimals) {
             data->inputValues.clear();
           }
@@ -380,11 +380,11 @@ namespace codi {
 
           data = nullptr;
         } else {
-          // clear the assembled data
+          // Clear the assembled data.
           delete data;
         }
 
-        // create a new data object for the next call
+        // Create a new data object for the next call.
         data = new EvalData();
         outputValues.clear();
       }

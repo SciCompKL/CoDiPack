@@ -478,13 +478,13 @@ namespace codi {
       void changeStateToForwardEvaluation() {
         wasForwardEvaluated = true;
 
-        // no cleanup to do
+        // No cleanup to do.
       }
 
       /// Change state and clear the adjoints.
       void changeStateToReverseEvaluation() {
         if (wasForwardEvaluated) {
-          // forward evaluation leaves the adjoint vector dirty
+          // Forward evaluation leaves the adjoint vector dirty.
 
           tape.clearAdjoints();
         }

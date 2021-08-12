@@ -194,12 +194,12 @@ namespace codi {
       /// Constructor
       PrimalValueBaseTape()
           : Base(),
-            indexManager(Config::MaxArgumentSize),  // reserve first items for passive values
+            indexManager(Config::MaxArgumentSize),  // Reserve first items for passive values.
             statementData(Config::ChunkSize),
             rhsIdentiferData(Config::ChunkSize),
             passiveValueData(Config::ChunkSize),
             constantValueData(Config::ChunkSize),
-            adjoints(1),  // ensure that adjoint[0] exists, see its use in gradient() const
+            adjoints(1),  // Ensure that adjoint[0] exists, see its use in gradient() const.
             primals(0),
             primalsCopy(0) {
         checkPrimalSize(true);
@@ -1039,7 +1039,7 @@ namespace codi {
         Real ret = evalInner(primalVector, adjointVector, lhsTangent, curConstantPos, constantValues,
                              curRhsIdentifiersPos, rhsIdentifiers);
 
-        // adapt vector positions
+        // Adapt vector positions.
         curConstantPos += maxConstantArgs;
         curPassivePos += numberOfPassiveArguments;
         curRhsIdentifiersPos += maxActiveArgs;
@@ -1075,7 +1075,7 @@ namespace codi {
 
         Real ret = evalInner(primalVector, curConstantPos, constantValues, curRhsIdentifiersPos, rhsIdentifiers);
 
-        // adapt vector positions
+        // Adapt vector positions.
         curConstantPos += maxConstantArgs;
         curPassivePos += numberOfPassiveArguments;
         curRhsIdentifiersPos += maxActiveArgs;
@@ -1108,7 +1108,7 @@ namespace codi {
           ADJOINT_VECTOR_TYPE* adjointVector, Gradient lhsAdjoint, Config::ArgumentSize numberOfPassiveArguments,
           size_t& curConstantPos, PassiveReal const* const constantValues, size_t& curPassivePos,
           Real const* const passiveValues, size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers) {
-        // Adapt vector positions
+        // Adapt vector positions.
         curConstantPos -= maxConstantArgs;
         curPassivePos -= numberOfPassiveArguments;
         curRhsIdentifiersPos -= maxActiveArgs;

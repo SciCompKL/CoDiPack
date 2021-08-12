@@ -147,7 +147,7 @@ namespace codi {
         return cast().gradient(identifier);
       }
 
-      // gradient functions are not implemented
+      // Gradient functions are not implemented.
 
       /// @}
       /*******************************************************************************/
@@ -221,7 +221,7 @@ namespace codi {
         externalFunctionData.reset();
       }
 
-      // clearAdjoints and reset(Position) are not implemented
+      // clearAdjoints and reset(Position) are not implemented.
 
       /// @}
       /*******************************************************************************/
@@ -319,7 +319,7 @@ namespace codi {
         }
       }
 
-      // deleteAdjointVector is not implemented
+      // deleteAdjointVector is not implemented.
 
       /// @}
       /*******************************************************************************/
@@ -336,7 +336,7 @@ namespace codi {
         }
       }
 
-      // registerExternalFunctionOutput is not implemented
+      // registerExternalFunctionOutput is not implemented.
 
       /// @}
       /*******************************************************************************/
@@ -397,7 +397,7 @@ namespace codi {
 
       /// Delete all external function data up to `pos`.
       void deleteExternalFunctionUserData(Position const& pos) {
-        // clear external function data
+        // Clear external function data.
         auto deleteFunc = [this](ExternalFunctionInternalData* extFunc, NestedPosition const* endInnerPos) {
           CODI_UNUSED(endInnerPos);
 
@@ -424,7 +424,7 @@ namespace codi {
         externalFunctionData.resetTo(pos);
       }
 
-      // clearAdjoints and evaluate are not implemented
+      // clearAdjoints and evaluate are not implemented.
 
       /// @}
       /*******************************************************************************/

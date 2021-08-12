@@ -639,12 +639,12 @@ namespace codi {
         // Differentation is Gamma'(arg) = Gamma(arg) * DiGamma(arg)
 
         Real diGamma = 0.0;
-        if (arg <= 0.000001) {  // special case for small numbers
+        if (arg <= 0.000001) {  // Special case for small numbers.
           const Real eulerMascheroni = 0.57721566490153286060;
           diGamma = -eulerMascheroni - 1.0 / arg + 1.6449340668482264365 * arg;
         } else {
-          // shift DiGamma(arg) = DiGamma(arg + 1) - 1/arg
-          // we require arg large such that the approximation below is more accurate
+          // Shift DiGamma(arg) = DiGamma(arg + 1) - 1/arg
+          // We require arg large such that the approximation below is more accurate.
           Real shiftBound = 8.5;
 
           Real shiftedValue = arg;
@@ -653,7 +653,7 @@ namespace codi {
             shiftedValue += 1.0;
           }
 
-          // Now compute the approximation via an asymptotic series
+          // Now compute the approximation via an asymptotic series.
           Real r = 1.0 / shiftedValue;
           diGamma += log(shiftedValue) - 0.5 * r;
 

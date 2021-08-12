@@ -24,11 +24,11 @@ namespace codi {
    *   PointerStore<Chunk2<double, int>> ps;
    *
    *   ps.setPointers(0, data);
-   *   // one of
-   *   ps.call(func, user); // will call func(p1 (double*), p2 (int*), user);
-   *   ps.callNestedForward(nested, 0, 10, func, user); // will call nested->evaluateForward(0, 10, func, user,
+   *   // One of:
+   *   ps.call(func, user); // Will call func(p1 (double*), p2 (int*), user);
+   *   ps.callNestedForward(nested, 0, 10, func, user); // Will call nested->evaluateForward(0, 10, func, user,
    *                                                    //                                   p1 (double*), p2 (int*));
-   *   ps.callNestedReverse(nested, 10, 0, func, user); // will call nested->evaluateReverse(10, 0, func, user,
+   *   ps.callNestedReverse(nested, 10, 0, func, user); // Will call nested->evaluateReverse(10, 0, func, user,
    *                                                    //                                   p1 (double*), p2 (int*));
    * \endcode
    *

@@ -223,13 +223,13 @@ namespace codi {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
-        // assume that the tape was just recorded
+        // Assume that the tape was just recorded.
         tape.revertPrimals(start);
 
         for (size_t j = 0; j < inputSize; j += gradDim2nd) {
           setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT2nd::Real(1.0));
 
-          // the k = j init is no problem, it will evaluate slightly more elements around the diagonal
+          // The k = j init is no problem, it will evaluate slightly more elements around the diagonal.
           for (size_t k = j; k < inputSize; k += gradDim1st) {
             setGradientOnIdentifier(tape, k, input, inputSize, typename GT1st::Real(1.0));
 
@@ -240,7 +240,7 @@ namespace codi {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < inputSize; vecPos2nd += 1) {
                   hes(i, j + vecPos2nd, k + vecPos1st) =
                       GT2nd::at(GT1st::at(tape.getGradient(output[i]), vecPos1st).gradient(), vecPos2nd);
-                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st);  // symmetry
+                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st);  // Symmetry
                 }
               }
 
@@ -280,19 +280,19 @@ namespace codi {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
-        // assume that the tape was just recorded
+        // Assume that the tape was just recorded.
         tape.revertPrimals(start);
 
         for (size_t j = 0; j < inputSize; j += gradDim2nd) {
           setGradient2ndOnIdentifier(tape, j, input, inputSize, typename GT2nd::Real(1.0));
 
-          // propagate the new derivative information
+          // Propagate the new derivative information.
           tape.evaluatePrimal(start, end);
 
           for (size_t i = 0; i < outputSize; i += gradDim1st) {
             setGradientOnIdentifier(tape, i, output, outputSize, typename GT1st::Real(1.0));
 
-            // propagate the derivatives backward for second order derivatives
+            // Propagate the derivatives backward for second order derivatives.
             tape.evaluateKeepState(end, start);
 
             for (size_t k = 0; k < inputSize; k += 1) {
@@ -383,14 +383,14 @@ namespace codi {
         for (size_t j = 0; j < input.size(); j += gradDim2nd) {
           setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real(1.0));
 
-          // propagate the new derivative information
+          // Propagate the new derivative information.
           recordTape(func, input, output);
 
-          // the k = j init is no problem, it will evaluate slightly more elements around the diagonal
+          // The k = j init is no problem, it will evaluate slightly more elements around the diagonal.
           for (size_t k = j; k < input.size(); k += gradDim1st) {
             setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT1st::Real(1.0));
 
-            // propagate the derivatives forward for second order derivatives
+            // Propagate the derivatives forward for second order derivatives.
             tape.evaluateForwardKeepState(tape.getZeroPosition(), tape.getPosition());
 
             for (size_t i = 0; i < output.size(); i += 1) {
@@ -398,7 +398,7 @@ namespace codi {
                 for (size_t vecPos2nd = 0; vecPos2nd < gradDim2nd && j + vecPos2nd < input.size(); vecPos2nd += 1) {
                   hes(i, j + vecPos2nd, k + vecPos1st) = GT2nd::at(
                       GT1st::at(tape.getGradient(output[i].getIdentifier()), vecPos1st).gradient(), vecPos2nd);
-                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st);  // symmetry
+                  hes(i, k + vecPos1st, j + vecPos2nd) = hes(i, j + vecPos2nd, k + vecPos1st);  // Symmetry
                 }
               }
 
@@ -444,13 +444,13 @@ namespace codi {
         for (size_t j = 0; j < input.size(); j += gradDim2nd) {
           setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real(1.0));
 
-          // propagate the new derivative information
+          // Propagate the new derivative information.
           recordTape(func, input, output);
 
           for (size_t i = 0; i < output.size(); i += gradDim1st) {
             setGradientOnCoDiValue(tape, i, output.data(), output.size(), typename GT1st::Real(1.0));
 
-            // propagate the derivatives backward for second order derivatives
+            // Propagate the derivatives backward for second order derivatives.
             tape.evaluateKeepState(tape.getPosition(), tape.getZeroPosition());
 
             for (size_t k = 0; k < input.size(); k += 1) {
@@ -506,7 +506,7 @@ namespace codi {
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
-          // no activity check on the identifier required since forward types are used
+          // No activity check on the identifier required since forward types are used.
           GT2nd::at(tape.primal(identifiers[pos + curDim]).gradient(), curDim) = value;
         }
       }
@@ -532,7 +532,7 @@ namespace codi {
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
-          // no activity check on the identifier required since forward types are used
+          // No activity check on the identifier required since forward types are used.
           GT2nd::at(identifiers[pos + curDim].value().gradient(), curDim) = value;
         }
       }
