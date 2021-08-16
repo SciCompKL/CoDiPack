@@ -670,6 +670,19 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// @}
+  /*******************************************************************************/
+  /// @name Additional standard library unary operators
+  /// @{
+
+  /// Function overload for to_string
+  template<typename Real, typename Arg>
+  CODI_INLINE std::string to_string(ExpressionInterface<Real, Arg> const& arg) {
+    using std::to_string;
+
+    return to_string(RealTraits::getPassiveValue(arg.cast()));
+  }
+
+  /// @}
 }
 
 namespace std {
@@ -701,4 +714,6 @@ namespace std {
   using codi::tan;
   using codi::tanh;
   using codi::tgamma;
+
+  using codi::to_string;
 }

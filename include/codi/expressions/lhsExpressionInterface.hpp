@@ -148,6 +148,18 @@ namespace codi {
       /// @}
   };
 
+  /// Read the primal value from a stream
+  template<typename Expr>
+  ExpressionTraits::EnableIfLhsExpression<Expr, std::istream>& operator>>(std::istream& stream, Expr& v){
+    typename Expr::Real temp;
+
+    stream >> temp;
+    v.setValue(temp);
+
+    return stream;
+  }
+
+
 #ifndef DOXYGEN_DISABLE
 
   /// Specialization of RealTraits::DataExtraction for CoDiPack types.

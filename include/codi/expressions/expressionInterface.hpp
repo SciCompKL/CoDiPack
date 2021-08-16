@@ -77,7 +77,9 @@ namespace codi {
 
   /// Write the primal value to the stream.
   template<typename Expr>
-  typename ExpressionTraits::EnableIfExpression<Expr, std::ostream>& operator<<(std::ostream& out, Expr const& v) {
-    return out << v.getValue();
+  ExpressionTraits::EnableIfExpression<Expr, std::ostream>& operator<<(std::ostream& out, Expr const& v) {
+    out << v.getValue();
+
+    return out;
   }
 }
