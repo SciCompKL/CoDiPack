@@ -343,7 +343,7 @@ namespace codi {
    * @brief Implementation of EvaluationHandleBase for primal value reverse mode CoDiPack types.
    *
    * This tape records the logic behind the function object once for each primal evaluation point. Afterwards,
-   * only primal, forward and reverse tape evaluations are preformed until the next primal evaluation point.
+   * only primal, forward and reverse tape evaluations are performed until the next primal evaluation point.
    *
    * Primal evaluations without derivative computations are not recorded.
    *

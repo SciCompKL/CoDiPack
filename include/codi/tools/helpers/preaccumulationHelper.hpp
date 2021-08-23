@@ -227,7 +227,7 @@ namespace codi {
             //          \bar u_i += df/du_i * \bar t_1 for i = 1 ... 256
             //        Statement 2:
             //          \bar t_1 += \bar w
-            //          \bar u_i ++ df/du_i * \bar w for i = 257 ... 300
+            //          \bar u_i += df/du_i * \bar w for i = 257 ... 300
             //
             while (nonZerosLeft > 0) {
               // Calculate the number of Jacobians for this statement.

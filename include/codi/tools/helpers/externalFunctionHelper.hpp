@@ -225,9 +225,9 @@ namespace codi {
 
       std::vector<Type*> outputValues;  ///< References to output values.
 
-      bool storeInputPrimals;     ///< If input primals are stored, can be disabled by the user.
-      bool storeOutputPrimals;    ///< If output primals are stored, can be disabled by the user.
-      bool primalFuncUsesADType;  ///< If a primal call with a self implemented function will be done
+      bool storeInputPrimals;     ///< If input primals are stored. Can be disabled by the user.
+      bool storeOutputPrimals;    ///< If output primals are stored. Can be disabled by the user.
+      bool primalFuncUsesADType;  ///< If a primal call with a self-implemented function will be done.
 
       EvalData* data;  ///< External function data.
 

@@ -28,7 +28,7 @@ namespace codi {
   struct CoDiMpiTypes {
     public:
 
-      /// See CoDiMpiTypes
+      /// See CoDiMpiTypes.
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Tool = CODI_DD(_Tool, medi::ADToolInterface);  ///< See CoDiMpiTypes.
 
