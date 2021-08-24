@@ -178,7 +178,7 @@ namespace codi {
 
       /// \copydoc codi::PrimalValueBaseTape::internalResetPrimalValues
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
-        // reset primals
+        // Reset primals.
         auto clearFunc = [this](Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal,
                                 EvalHandle* evalHandle) {
           CODI_UNUSED(passiveArgs, evalHandle);

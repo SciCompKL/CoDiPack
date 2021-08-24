@@ -52,30 +52,30 @@ namespace codi {
    * Example usage:
    *  \code{.cpp}
    *    ArgDataInterface argVector = ...;
-   *    StmtDataInterface<ArgDataInterface> stmtVector = ...;  // argVector is nested into the stmtVector
+   *    StmtDataInterface<ArgDataInterface> stmtVector = ...;  // argVector is nested into the stmtVector.
    *
-   *    stmtVector.setNested(&argVector);  // Set the pointer to the nested vector
+   *    stmtVector.setNested(&argVector);  // Set the pointer to the nested vector.
    *
-   *    // Record some data
-   *    // 1. Request space, from child to parent
+   *    // Record some data.
+   *    // 1. Request space, from child to parent.
    *    argVector.reserveItems(2);
    *    stmtVector.reserveItems(1);
    *
-   *    // 2. Add the data, any order
+   *    // 2. Add the data, any order.
    *    argVector.pushData(1.0);
    *    stmtVector.pushData(100);
    *    argVector.pushData(2.0);
    *
-   *    // Perform some operations on the data
+   *    // Perform some operations on the data.
    *    // How data is provided to func depends on the interface implementations, let's assume start, end, and a data
-   *    // pointer
+   *    // pointer.
    *    auto func = (startStmt, endStmt, stmt, startArg, endArg, arg) {
    *        for (int i = startStmt; i < endStmt; i += 1) { std::cout << stmt[i] << ", ";}
    *        for (int i = startArg; i < endArg; i += 1) { std::cout << arg[i] << ", ";}
    *    };
    *    stmtVector.evaluateForward(stmtVector.getZeroPosition(), stmtVector.getPosition(), func);
    *
-   *    // Clear all data vectors
+   *    // Clear all data vectors.
    *    stmtVector.reset();
    *  \endcode
    *

@@ -62,7 +62,7 @@ namespace codi {
        */
       template<typename Node, typename... Args>
       CODI_INLINE static constexpr ResultType node(Args&&... args) {
-        // Default logic forwards to all links
+        // Default logic forwards to all links.
         return toLinks<Node>(std::forward<Args>(args)...);
       }
 
@@ -75,7 +75,7 @@ namespace codi {
        */
       template<typename Node, typename... Args>
       CODI_INLINE static constexpr ResultType leaf(Args&&... CODI_UNUSED_ARG(args)) {
-        // Default logic does nothing
+        // Default logic does nothing.
         return Impl::NeutralElement;
       }
 
@@ -90,7 +90,7 @@ namespace codi {
        */
       template<size_t ChildNumber, typename Child, typename Root, typename... Args>
       CODI_INLINE static constexpr ResultType link(Args&&... args) {
-        // Default logic forwards to node evaluation
+        // Default logic forwards to node evaluation.
         return toNode<Child>(std::forward<Args>(args)...);
       }
 

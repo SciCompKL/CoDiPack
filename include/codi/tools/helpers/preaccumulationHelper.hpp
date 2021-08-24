@@ -18,16 +18,16 @@ namespace codi {
   /**
    * @brief Stores the Jacobi matrix for a code section.
    *
-   * The preaccumulation of a code section describes the process of replacing the recorded tape entries with the
-   * Jacobian matrix of that section. If the code part is defined by the function \f$ f \f$ then the Jacobian
+   * The preaccumulation of a code section corresponds to the process of replacing the recorded tape entries with the
+   * Jacobian matrix of that section. If the code part is defined by the function \f$ f \f$, then the Jacobian
    * \f$ \frac{df}{dx} \f$ is computed by the Preaccumulation helper and stored on the tape.
    *
    * The preaccumulation of a code part is beneficial if it is complicated to compute but has only a few inputs and
-   * outputs. If the computation of requires 200 statements with a total of 600 arguments the storage for this is on a
-   * Jacobian tape would be 7400 byte. If the function has two input arguments and two output arguments, the storage for
-   * the Jacobian matrix of this function would require 50 byte.
+   * outputs. If the computation requires 200 statements with a total of 600 arguments, the storage for this would be
+   * 7400 byte on a Jacobian tape. If the function has only two input arguments and two output arguments, the storage
+   * for the Jacobian matrix of this function would require 50 byte.
    *
-   * The procedure for the preaccumulation of a code section is:
+   * The procedure for the preaccumulation of a code section is as follows.
    *
    * \snippet documentation/examples/Example_15_Preaccumulation_of_code_parts.cpp Preaccumulation region
    *
@@ -35,24 +35,24 @@ namespace codi {
    * evaluations are possible. This improves the performance of the helper since stack allocations are only performed
    * once.
    *
-   * @tparam _Type  A CoDiPack type on which the evaluations take place.
+   * @tparam _Type  The CoDiPack type on which the evaluations take place.
    */
   template<typename _Type, typename = void>
   struct PreaccumulationHelper {
     public:
 
-      /// See PreaccumulationHelper
+      /// See PreaccumulationHelper.
       using Type = CODI_DECLARE_DEFAULT(_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real;              ///< See LhsExpressionInterface
-      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
-      using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface.
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
+      using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface.
 
-      /// See LhsExpressionInterface
+      /// See LhsExpressionInterface.
       using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape,
                                         CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
-      using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface
+      using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface.
 
       std::vector<Identifier> inputData;   ///< List of input identifiers. Can be added manually after start() was
                                            ///< called.
@@ -138,9 +138,9 @@ namespace codi {
         }
       }
 
-      /// Terminator for the recursive implementation
+      /// Terminator for the recursive implementation.
       void addInputRecursive() {
-        // terminator implementation
+        // Terminator implementation.
       }
 
       template<typename... Inputs>
@@ -157,9 +157,9 @@ namespace codi {
         }
       }
 
-      /// Terminator for the recursive implementation
+      /// Terminator for the recursive implementation.
       void addOutputRecursive() {
-        // terminator implementation
+        // Terminator implementation.
       }
 
       template<typename... Outputs>
@@ -193,7 +193,7 @@ namespace codi {
       }
 
       void doPreaccumulation() {
-        // perform the accumulation of the tape part
+        // Perform the accumulation of the tape part.
         Tape& tape = Type::getGlobalTape();
 
         Position endPos = tape.getPosition();
@@ -204,7 +204,7 @@ namespace codi {
         Algorithms<Type, false>::computeJacobian(startPos, endPos, inputData.data(), inputData.size(),
                                                  outputData.data(), outputData.size(), jacobie);
 
-        // store the Jacobian matrix
+        // Store the Jacobian matrix.
         tape.resetTo(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
@@ -213,32 +213,46 @@ namespace codi {
             int nonZerosLeft = jacobie.nonZerosRow(curOut);
             jacobie.nonZerosRow(curOut) = 0;
 
-            // we need to use here the value of the gradient data such that it is correctly deleted.
+            // We need to initialize with the output's current identifier such that it is correctly deleted in
+            // storeManual.
             Identifier lastIdentifier = value.getIdentifier();
             bool staggeringActive = false;
             int curIn = 0;
 
-            // push statements as long as there are non zeros left
-            // if there are more than MaxStatementIntValue non zeros, then we need to stagger the
-            // statement pushes
+            // Push statements as long as there are nonzeros left.
+            // If there are more than MaxStatementIntValue nonzeros, then we need to stagger the
+            // statement pushes:
+            // e.g. The reverse mode of w = f(u0, ..., u530) which is \bar u_i += df/du_i * \bar w for i = 0 ... 530 is
+            //      separated into
+            //        Statement 1:
+            //          \bar u_i += df/du_i * \bar t_1 for i = 0 ... 253   (254 entries)
+            //        Statement 2:
+            //          \bar t_1 += \bar w                                 (1 entry)
+            //          \bar u_i += df/du_i * \bar t_2 for i = 254 ... 506 (253 entries)
+            //        Statement 3:
+            //          \bar t_2 += \bar w                                 (1 entry)
+            //          \bar u_i += df/du_i * \bar w for i = 507 ... 530   (24 entries)
+            //
             while (nonZerosLeft > 0) {
-              // calculate the number of Jacobians for this statement
+              // Calculate the number of Jacobians for this statement.
               int jacobiesForStatement = nonZerosLeft;
               if (jacobiesForStatement > (int)Config::MaxArgumentSize) {
                 jacobiesForStatement = (int)Config::MaxArgumentSize - 1;
-                if (staggeringActive) {  // Space is used up but we need one Jacobian for the staggering
+                if (staggeringActive) {  // Except in the first round, one Jacobian is reserved for the staggering.
                   jacobiesForStatement -= 1;
                 }
               }
-              nonZerosLeft -= jacobiesForStatement;  // Update non zeros so that we know if it is the last round
+              nonZerosLeft -= jacobiesForStatement;  // Update nonzeros so that we know if it is the last round.
 
               Identifier storedIdentifier = lastIdentifier;
+              // storeManual creates a new identifier which is either the identifier of the output w or the temporary
+              // staggering variables t_1, t_2, ...
               tape.storeManual(value.getValue(), lastIdentifier, jacobiesForStatement + (int)staggeringActive);
-              if (staggeringActive) {  // Not the first staggering so push the last output
+              if (staggeringActive) {  // Not the first staggering so push the last output.
                 tape.pushJacobiManual(1.0, 0.0, storedIdentifier);
               }
 
-              // push the rest of the Jacobians for the statement
+              // Push the rest of the Jacobians for the statement.
               while (jacobiesForStatement > 0) {
                 if (Real() != (Real)jacobie(curOut, curIn)) {
                   tape.pushJacobiManual(jacobie(curOut, curIn), 0.0, inputData[curIn]);
@@ -252,7 +266,7 @@ namespace codi {
 
             value.getIdentifier() = lastIdentifier; /* now set gradient data for the real output value */
           } else {
-            // disable tape index since there is no dependency
+            // Disable tape index since there is no dependency.
             tape.destroyIdentifier(value.value(), value.getIdentifier());
           }
         }
@@ -261,48 +275,48 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
   /**
-   * @brief Helper implementation of the same interface as the PreaccumulationHelper for forward AD tapes.
+   * @brief Helper implementation of the PreaccumulationHelper interface for forward AD tapes.
    *
    * This implementation does nothing in all methods.
    */
   struct PreaccumulationHelperNoOpBase {
     public:
 
-      /// Does nothing
+      /// Does nothing.
       template<typename... Inputs>
       void addInput(Inputs const&... inputs) {
         CODI_UNUSED(inputs...);
-        // do nothing
+        // Do nothing.
       }
 
-      /// Does nothing
+      /// Does nothing.
       template<typename... Inputs>
       void start(Inputs const&... inputs) {
         CODI_UNUSED(inputs...);
-        // do nothing
+        // Do nothing.
       }
 
-      /// Does nothing
+      /// Does nothing.
       template<typename... Outputs>
       void addOutput(Outputs&... outputs) {
         CODI_UNUSED(outputs...);
-        // do nothing
+        // Do nothing.
       }
 
-      /// Does nothing
+      /// Does nothing.
       template<typename... Outputs>
       void finish(bool const storeAdjoints, Outputs&... outputs) {
         CODI_UNUSED(storeAdjoints, outputs...);
-        // do nothing
+        // Do nothing.
       }
   };
 
-  /// Spcialize PreaccumulationHelper for forward tapes
+  /// Specialize PreaccumulationHelper for forward tapes.
   template<typename Type>
   struct PreaccumulationHelper<Type, TapeTraits::EnableIfForwardTape<typename Type::Tape>>
       : public PreaccumulationHelperNoOpBase {};
 
-  /// Spcialize PreaccumulationHelper for doubles
+  /// Specialize PreaccumulationHelper for doubles.
   template<>
   struct PreaccumulationHelper<double, void> : public PreaccumulationHelperNoOpBase {};
 #endif

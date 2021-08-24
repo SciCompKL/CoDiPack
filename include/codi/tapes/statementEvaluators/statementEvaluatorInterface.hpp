@@ -51,12 +51,12 @@ namespace codi {
    *
    * A usual call flow for the first approach is (see also the code for ReverseStatementEvaluator):
    * \code{.cpp}
-   *   // During recording in tape.store
+   *   // During recording in tape.store.
    *   // Instantiates e.g Tape::statementEvaluateReverse<Expr>
    *   auto handle = StatementEvaluatorInterface::createHandle<Tape, Tape, Expr>();
    *   tapeData.pushHandle(handle);
    *
-   *   // During reverse interpretation of the tape
+   *   // During reverse interpretation of the tape.
    *   auto handle = tapeData.popHandle(handle);
    *
    *   // This calls Tape::statementEvaluateReverse<Expr>(tapeData);

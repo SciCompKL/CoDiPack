@@ -67,7 +67,7 @@ namespace codi {
 #endif
     /// Add MPI and MeDiPack specific headers
     bool constexpr EnableMPI = CODI_EnableMPI;
-    // Do not undefine
+    // Do not undefine.
 
 #ifndef CODI_CheckExpressionArguments
   /// See codi::Config::CheckExpressionArguments
@@ -115,7 +115,7 @@ namespace codi {
 #endif
     /// Extra pass in Jacobian tapes that combines arguments with the same identifier.
     bool constexpr RemoveDuplicateJacobianArguments = CODI_RemoveDuplicateJacobianArguments;
-    // Do not undefine
+    // Do not undefine.
 
 #ifndef CODI_IgnoreInvalidJacobies
   /// See codi::Config::IgnoreInvalidJacobies
@@ -161,7 +161,7 @@ namespace codi {
   /// See codi::Config::VariableAdjointInterfaceInPrimalTapes
   #define ADJOINT_VECTOR_TYPE Gradient
 #endif
-    // Do not undefine
+    // Do not undefine.
 
 #ifndef CODI_ReversalZeroesAdjoints
   /// See codi::Config::ReversalZeroesAdjoints
@@ -201,7 +201,7 @@ namespace codi {
   /// See codi::Config::EnableAssert
   #define CODI_EnableAssert false
 #endif
-#ifndef codiAssert  // Can also be defined by the user before including codi.hpp
+#ifndef codiAssert  // Can also be defined by the user before including codi.hpp.
   #if CODI_EnableAssert
     #define codiAssert(x) ::codi::checkAndOutputAssert(x, CODI_TO_STRING(x), __PRETTY_FUNCTION__, __FILE__, __LINE__)
   #else

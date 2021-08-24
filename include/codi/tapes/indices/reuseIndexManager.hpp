@@ -122,7 +122,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::assignUnusedIndex
       CODI_INLINE bool assignUnusedIndex(Index& index) {
-        freeIndex(index);  // zero check is performed inside
+        freeIndex(index);  // Zero check is performed inside.
 
         bool generatedNewIndex = false;
         if (0 == unusedIndicesPos) {
@@ -147,7 +147,7 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
-        if (valid && Base::InactiveIndex != index) {  // do not free the zero index
+        if (valid && Base::InactiveIndex != index) {  // Do not free the zero index.
 
           if (usedIndicesPos == usedIndices.size()) {
             increaseIndicesSize(usedIndices);
@@ -229,7 +229,7 @@ namespace codi {
       CODI_NO_INLINE void increaseIndicesSizeTo(std::vector<Index>& v, size_t minimalSize) {
         codiAssert(v.size() < minimalSize);
 
-        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1;  // +1 always rounds up
+        size_t increaseMul = (minimalSize - v.size()) / indexSizeIncrement + 1;  // +1 always rounds up.
         v.resize(v.size() + increaseMul * indexSizeIncrement);
       }
   };

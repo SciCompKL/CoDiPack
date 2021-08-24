@@ -14,45 +14,51 @@
 namespace codi {
 
   /**
-   * @brief Helper class for the simple implementation of an external function in CoDiPack.
+   * @brief Helper class for the implementation of an external function in CoDiPack.
    *
-   * The class helps the user to handle parts where the CoDiPack types can not be applied or where a more efficient
+   * The class helps the user to handle parts where the CoDiPack types cannot be applied or where a more efficient
    * gradient computation is available.
    *
-   * In general the user has to specify first all input and output variables. Afterwards the primal function can be
-   * called with two different modes. Finally, the user has to provide the manual reverse implementation of the function
-   * which pushes also the external function to the tape and makes the helper ready for the next external function push.
+   * The procedure of pushing an external function with the helper is as follows.
+   * 1. All function inputs and outputs are specified.
+   * 2. The primal function is called. There are two modes for this, which are explained below.
+   * 3. The manual reverse implementation is provided to the helper, which embeds it into the tape and prepares itself
+   *    for the next external function push.
    *
-   * The first mode of operation assumes that also the primal function has an implementation without a CoDiPack type.
-   * It needs to call the method callPrimalFunc. An example is:
+   * The first mode of operation assumes that the primal function has an implementation without a CoDiPack type.
+   * To use this mode, invoke the primal function via callPrimalFunc. An example is:
    * \snippet examples/externalFunctionHelper.cpp Mode 1: Implemented primal function
    *
-   * The second mode of operation assumes that the primal function is evaluated with the CoDiPack type. The constructor
-   * needs to be called with the option true and the primal call has to be done via callPrimalFuncWithADType.
-   * An example is:
+   * The second mode of operation assumes that the primal function is evaluated with the CoDiPack type. To use it, the
+   * helper's constructor has to be called with the option true and the primal call is performed via
+   * callPrimalFuncWithADType. An example is:
    * \snippet examples/externalFunctionHelper.cpp Mode 2: Passive primal function
    *
-   * The function implementations need to follow the definitions of ExternalFunctionHelper::ReverseFunc,
-   * ExternalFunctionHelper::ForwardFunc and ExternalFunctionHelper::PrimalFunc. The implementations from the examples
-   * above are:
+   * The function implementations must follow the definitions of ExternalFunctionHelper::ReverseFunc,
+   * ExternalFunctionHelper::ForwardFunc and ExternalFunctionHelper::PrimalFunc, with an exception for the latter if the
+   * second mode is used. The implementations from the examples above are:
    * \snippet examples/externalFunctionHelper.cpp Function implementations
    *
    * The ExternalFunctionHelper works with all tapes. It is also able to handle situations where the tape is currently
    * not recording. All necessary operations are performed in such a case but no external function is recorded.
    *
-   * @tparam _Type  The CoDiPack that is used outside of the external function.
+   * The storing of primal inputs and outputs can be disabled. Outputs can be discarded if they are recomputed in the
+   * derivative computation or if the derivative does not depend on them. Inputs can be discarded if the derivative does
+   * not depend on them.
+   *
+   * @tparam _Type  The CoDiPack type that is used outside of the external function.
    */
   template<typename _Type>
   struct ExternalFunctionHelper {
     public:
 
-      /// See ExternalFunctionHelper
+      /// See ExternalFunctionHelper.
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Type::Real;              ///< See LhsExpressionInterface
-      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
+      using Real = typename Type::Real;              ///< See LhsExpressionInterface.
+      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
 
-      /// See LhsExpressionInterface
+      /// See LhsExpressionInterface.
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
 
       /// Function interface for the reverse AD call of an external function.
@@ -221,13 +227,13 @@ namespace codi {
 
     protected:
 
-      std::vector<Type*> outputValues;  ///< References to output values
+      std::vector<Type*> outputValues;  ///< References to output values.
 
-      bool storeInputPrimals;     ///< If input primals are stored
-      bool storeOutputPrimals;    ///< If output primal are stored
-      bool primalFuncUsesADType;  ///< If a primal call with a self implemented function will be done
+      bool storeInputPrimals;     ///< If input primals are stored. Can be disabled by the user.
+      bool storeOutputPrimals;    ///< If output primals are stored. Can be disabled by the user.
+      bool primalFuncUsesADType;  ///< If a primal call with a self-implemented function will be done.
 
-      EvalData* data;  ///< External function data
+      EvalData* data;  ///< External function data.
 
     public:
 
@@ -246,12 +252,12 @@ namespace codi {
         delete data;
       }
 
-      /// Do not store primal input values. Pointers in function calls will be null.
+      /// Do not store primal input values. In function calls, pointers to primal inputs will be null.
       void disableInputPrimalStore() {
         storeInputPrimals = false;
       }
 
-      /// Do not store primal output values. Pointers in function calls will be null.
+      /// Do not store primal output values. In function calls, pointers to primal outputs will be null.
       void disableOutputPrimalStore() {
         storeOutputPrimals = false;
       }
@@ -262,8 +268,8 @@ namespace codi {
           data->inputIndices.push_back(input.getIdentifier());
         }
 
-        // ignore the setting at this place and the active check
-        // We might need the values for the evaluation.
+        // Ignore the setting at this place and the active check,
+        // we might need the values for the evaluation.
         if (!primalFuncUsesADType || storeInputPrimals) {
           data->inputValues.push_back(input.getValue());
         }
@@ -298,14 +304,14 @@ namespace codi {
         this->data->userData.addData(data);
       }
 
-      /// Get a pointer to the full user data created for this external function.
+      /// Get a reference to the full user data created for this external function.
       /// See ExternalFunctionUserData for details.
       ExternalFunctionUserData& getExternalFunctionUserData() {
         return this->data->userData;
       }
 
-      /// Call the provided function such that no data is recorded on the tape. All output values will be registered
-      /// as outputs of this external function.
+      /// This is intended for primal functions that are implemented with the AD type. It is ensured that no data is
+      /// recorded on the tape. All output values are registered as outputs of this external function.
       template<typename FuncObj, typename... Args>
       void callPrimalFuncWithADType(FuncObj& func, Args&&... args) {
         bool isTapeActive = Type::getGlobalTape().isActive();
@@ -325,11 +331,11 @@ namespace codi {
         }
       }
 
-      /// Call the primal function with the extracted values from the inputs. The output values are set on the specified
+      /// Call the primal function with the values extracted from the inputs. The output values are set on the specified
       /// outputs and registered as outputs of this external functions.
       void callPrimalFunc(PrimalFunc func) {
         if (!primalFuncUsesADType) {
-          // First set the function here in the external function data so that it can be used for primal evaluation of
+          // Store the primal function in the external function data so that it can be used for primal evaluations of
           // the tape.
           data->primalFunc = func;
 
@@ -337,7 +343,7 @@ namespace codi {
 
           func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
 
-          // ok now set the primal values on the output values and add them to the data for the reverse evaluation
+          // Set the primal values on the output values and add them to the data for the reverse evaluation.
           for (size_t i = 0; i < outputValues.size(); ++i) {
             outputValues[i]->setValue(y[i]);
 
@@ -362,11 +368,12 @@ namespace codi {
           data->forwardFunc = forwardFunc;
 
           if (nullptr != primalFunc) {
-            // Only overwrite if the user provides one. Otherwise it is set in the callPrimalFunc method
+            // Only overwrite the primal function if the user provides one, otherwise it is set in the callPrimalFunc
+            // method.
             data->primalFunc = primalFunc;
           }
 
-          // clear now the primal values if they are not required
+          // Clear the primal values if they are not required.
           if (!storeInputPrimals) {
             data->inputValues.clear();
           }
@@ -377,11 +384,11 @@ namespace codi {
 
           data = nullptr;
         } else {
-          // clear the assembled data
+          // Clear the assembled data.
           delete data;
         }
 
-        // create a new data object for the next call
+        // Create a new data object for the next call.
         data = new EvalData();
         outputValues.clear();
       }

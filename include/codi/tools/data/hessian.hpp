@@ -14,7 +14,7 @@ namespace codi {
   /**
    * @brief Default implementation of the Hessian interface.
    *
-   * Running index speed: j(fastest), i, k(slowest)
+   * Running index speed: j (fastest), i, k (slowest).
    *
    * Data is stored in an array of row-major matrices.
    *
@@ -25,14 +25,14 @@ namespace codi {
   struct Hessian : public HessianInterface<_T> {
     public:
 
-      using T = CODI_DECLARE_DEFAULT(_T, double);                       ///< See Hessian
-      using Store = CODI_DECLARE_DEFAULT(_Store, std::vector<double>);  ///< See Hessian
+      using T = CODI_DECLARE_DEFAULT(_T, double);                       ///< See Hessian.
+      using Store = CODI_DECLARE_DEFAULT(_Store, std::vector<double>);  ///< See Hessian.
 
     protected:
-      Store values;  ///< Storage for the data
+      Store values;  ///< Storage for the data.
 
-      size_t m;  ///< Number of function outputs
-      size_t n;  ///< Number of function inputs
+      size_t m;  ///< Number of function outputs.
+      size_t n;  ///< Number of function inputs.
 
     public:
 
@@ -78,7 +78,7 @@ namespace codi {
       }
   };
 
-  /// Dummy Hessian. Has size zero and no logic in all calls.
+  /// Dummy Hessian. Has size zero and no logic in any call.
   struct DummyHessian : public HessianInterface<DummyValue> {
     public:
 

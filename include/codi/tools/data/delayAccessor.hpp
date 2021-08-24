@@ -6,16 +6,17 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /// Helper class for the delayed access of a reference.
+  /// Helper class for the delayed write access of a reference.
   ///
-  /// The class will forward assign calls to `data.setLogic(i,j, v)`.
+  /// This class can be returned instead of a reference when the owner of the reference wants to be informed about write
+  /// actions to the reference. Each assign call is forwarded to `data.setLogic(i,j, v)`.
   ///
   /// @tparam _Impl  The issuing class of the delay accessor.
   template<typename _Impl>
   struct JacobianDelayAccessor {
     public:
 
-      using Impl = CODI_DD(_Impl, CODI_ANY);  ///< See DelayAccessor
+      using Impl = CODI_DD(_Impl, CODI_ANY);  ///< See DelayAccessor.
 
     private:
 
@@ -29,7 +30,7 @@ namespace codi {
       /// Constructor
       JacobianDelayAccessor(size_t const i, size_t const j, Impl& data) : i(i), j(j), data(data) {}
 
-      /// Forwards to `data.setLogic(i, j, v)`
+      /// Forwards to `data.setLogic(i, j, v)`.
       template<typename T>
       JacobianDelayAccessor& operator=(T const& v) {
         data.setLogic(i, j, v);

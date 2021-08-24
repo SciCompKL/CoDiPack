@@ -15,16 +15,16 @@ namespace codi {
    *
    * Can be used as the gradient template argument in active CoDiPack types.
    *
-   * @tparam _Real  Value of the gradients
+   * @tparam _Real  Type of the vector entries.
    * @tparam _dim  Dimension of the vector mode.
    */
   template<typename _Real, size_t _dim>
   struct Direction {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See Direction
+      using Real = CODI_DD(_Real, double);  ///< See Direction.
 
-      static size_t constexpr dim = _dim;  ///< See Direction
+      static size_t constexpr dim = _dim;  ///< See Direction.
 
     private:
       Real vector[dim];
@@ -51,7 +51,7 @@ namespace codi {
       /// Constructor
       CODI_INLINE Direction(std::initializer_list<Real> l) : vector() {
         size_t size = std::min(dim, l.size());
-        Real const* array = l.begin();  // this is possible because the standard requires an array storage
+        Real const* array = l.begin();  // This is possible because the standard requires an array storage.
         for (size_t i = 0; i < size; ++i) {
           vector[i] = array[i];
         }
@@ -67,7 +67,7 @@ namespace codi {
         return vector[i];
       }
 
-      /// Assignment operator
+      /// Assignment operator.
       CODI_INLINE Direction& operator=(Direction const& v) {
         for (size_t i = 0; i < dim; ++i) {
           this->vector[i] = v.vector[i];
@@ -76,7 +76,7 @@ namespace codi {
         return *this;
       }
 
-      /// Update operator
+      /// Update operator.
       CODI_INLINE Direction& operator+=(Direction const& v) {
         for (size_t i = 0; i < dim; ++i) {
           this->vector[i] += v.vector[i];
@@ -85,7 +85,7 @@ namespace codi {
         return *this;
       }
 
-      /// Update operator
+      /// Update operator.
       CODI_INLINE Direction& operator-=(Direction const& v) {
         for (size_t i = 0; i < dim; ++i) {
           this->vector[i] -= v.vector[i];
@@ -98,7 +98,7 @@ namespace codi {
   template<typename Real, size_t dim>
   size_t constexpr Direction<Real, dim>::dim;
 
-  /// Multiplication with scalar
+  /// Multiplication with a scalar.
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator*(Real const& s, Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
@@ -109,7 +109,7 @@ namespace codi {
     return r;
   }
 
-  /// Multiplication with passive scalar
+  /// Multiplication with a passive scalar.
   template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator*(RealTraits::PassiveReal<Real> const& s, Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
@@ -120,19 +120,19 @@ namespace codi {
     return r;
   }
 
-  /// Multiplication with scalar
+  /// Multiplication with a scalar.
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator*(Direction<Real, dim> const& v, Real const& s) {
     return s * v;
   }
 
-  /// Multiplication with passive scalar
+  /// Multiplication with passive a scalar.
   template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator*(Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     return s * v;
   }
 
-  /// Division with scalar
+  /// Division by a scalar.
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator/(Direction<Real, dim> const& v, Real const& s) {
     Direction<Real, dim> r;
@@ -143,7 +143,7 @@ namespace codi {
     return r;
   }
 
-  /// Division with passive scalar
+  /// Division by a passive scalar.
   template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator/(Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
     Direction<Real, dim> r;
@@ -154,7 +154,7 @@ namespace codi {
     return r;
   }
 
-  /// Summation of two vectors
+  /// Summation of two vectors.
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator+(Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
     Direction<Real, dim> r;
@@ -165,7 +165,7 @@ namespace codi {
     return r;
   }
 
-  /// Subtraction of two vectors
+  /// Subtraction of two vectors.
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator-(Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
     Direction<Real, dim> r;
@@ -176,7 +176,7 @@ namespace codi {
     return r;
   }
 
-  /// Negation
+  /// Negation.
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator-(Direction<Real, dim> const& v) {
     Direction<Real, dim> r;
@@ -187,25 +187,25 @@ namespace codi {
     return r;
   }
 
-  /// True if one element differs.
+  /// Component-wise test for inequality. True if at least one component differs.
   template<typename Real, size_t dim>
   CODI_INLINE bool operator!=(Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
     return !(v1 == v2);
   }
 
-  /// True if one element differs.
+  /// Component-wise test for inequality with scalar. True if at least one component differs.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator!=(A const& s, Direction<Real, dim> const& v) {
     return !(s == v);
   }
 
-  /// True if one element differs.
+  /// Component-wise test for inequality with scalar. True if at least one component differs.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator!=(Direction<Real, dim> const& v, A const& s) {
     return s != v;
   }
 
-  /// True if all elements are the same.
+  /// Component-wise test for equality. True if all components match.
   template<typename Real, size_t dim>
   CODI_INLINE bool operator==(Direction<Real, dim> const& v1, Direction<Real, dim> const& v2) {
     for (size_t i = 0; i < dim; ++i) {
@@ -217,7 +217,7 @@ namespace codi {
     return true;
   }
 
-  /// True if all elements are the same.
+  /// Component-wise test for equality with scalar. True if all components match.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator==(A const& s, Direction<Real, dim> const& v) {
     for (size_t i = 0; i < dim; ++i) {
@@ -229,7 +229,7 @@ namespace codi {
     return true;
   }
 
-  /// True if all elements are the same.
+  /// Component-wise test for equality with scalar. True if all components match.
   template<typename A, typename Real, size_t dim>
   CODI_INLINE bool operator==(Direction<Real, dim> const& v, A const& s) {
     return s == v;

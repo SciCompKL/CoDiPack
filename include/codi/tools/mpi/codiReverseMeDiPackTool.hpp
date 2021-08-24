@@ -124,14 +124,14 @@ namespace codi {
                                       typename _Type::Gradient, typename _Type::Real, typename _Type::Identifier> {
     public:
 
-      // All type definitions for the interface
+      // All type definitions for the interface.
       using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using PrimalType = typename Type::Real;
       using AdjointType = void;
       using ModifiedType = Type;
       using IndexType = typename Type::Identifier;
 
-      // Helper definition for CoDiPack
+      // Helper definition for CoDiPack.
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
 
       using OpHelper =
@@ -142,7 +142,7 @@ namespace codi {
                                           typename Type::Gradient, PrimalType, IndexType>;
 
     private:
-      // Private structures for the implementation
+      // Private structures for the implementation.
 
       OpHelper opHelper;
 
@@ -156,7 +156,7 @@ namespace codi {
         opHelper.finalize();
       }
 
-      // Implementation of the interface
+      // Implementation of the interface.
 
       CODI_INLINE bool isHandleRequired() const {
         // Handle creation is based on the CoDiPack tape activity. Only if the tape is recording the adjoint
@@ -167,7 +167,7 @@ namespace codi {
       CODI_INLINE void startAssembly(medi::HandleBase* h) const {
         CODI_UNUSED(h);
 
-        // No preparation required for CoDiPack
+        // No preparation required for CoDiPack.
       }
 
       CODI_INLINE void addToolAction(medi::HandleBase* h) const {
@@ -184,7 +184,7 @@ namespace codi {
       CODI_INLINE void stopAssembly(medi::HandleBase* h) const {
         CODI_UNUSED(h);
 
-        // No preparation required for CoDiPack
+        // No preparation required for CoDiPack.
       }
 
       static CODI_INLINE IndexType getIndex(Type const& value) {
@@ -195,13 +195,13 @@ namespace codi {
         bool wasActive = getTape().isIdentifierActive(value.getIdentifier());
         value.getIdentifier() = IndexType();
 
-        // make the value active again if it has been active before on the other processor
+        // Make the value active again if it has been active before on the other processor.
         if (wasActive) {
           if (Tape::LinearIndexHandling) {
-            // value has been registered in createIndices
+            // Value has been registered in createIndices.
             value.getIdentifier() = index;
 
-            // in createIndices the primal value has been set to zero. So set now the correct value
+            // In createIndices the primal value has been set to zero. So set now the correct value.
             if (Tape::HasPrimalValues) {
               getTape().setPrimal(index, value.getValue());
             }
@@ -228,8 +228,8 @@ namespace codi {
       static CODI_INLINE void clearIndex(Type& value) {
         IndexType oldIndex = value.getIdentifier();
         value.~Type();
-        value.getIdentifier() = oldIndex;  // restore the index here so that the other side can decide of the
-                                           // communication was active or not
+        value.getIdentifier() = oldIndex;  // Restore the index here so that the other side can decide of the
+                                           // communication was active or not.
       }
 
       static CODI_INLINE void createIndex(Type& value, IndexType& index) {

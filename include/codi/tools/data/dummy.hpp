@@ -9,7 +9,7 @@ namespace codi {
   struct DummyValue {
     public:
 
-      /// Ignore the assignment
+      /// Ignore the assignment.
       template<typename T>
       CODI_INLINE void operator=(T const& v) {
         CODI_UNUSED(v);
@@ -22,6 +22,12 @@ namespace codi {
 
       /// Return a dummy value.
       CODI_INLINE DummyValue operator[](size_t const i) {
+        CODI_UNUSED(i);
+        return DummyValue();
+      }
+
+      /// Return a dummy value.
+      CODI_INLINE DummyValue operator[](size_t const i) const {
         CODI_UNUSED(i);
         return DummyValue();
       }

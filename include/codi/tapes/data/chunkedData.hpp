@@ -75,7 +75,7 @@ namespace codi {
       /// \copydoc DataInterface::pushData
       template<typename... Data>
       CODI_INLINE void pushData(Data const&... data) {
-        // this method should only be called if reserveItems has been called
+        // This method should only be called if reserveItems has been called.
         curChunk->pushData(data...);
       }
 
@@ -246,7 +246,7 @@ namespace codi {
 
         size_t curChunk = start.chunk;
         for (;;) {
-          // Update of end conditions
+          // Update of end conditions.
           if (curChunk != end.chunk) {
             endInnerPos = positions[curChunk + 1];
             endDataPos = chunks[curChunk]->getUsedSize();
@@ -262,7 +262,7 @@ namespace codi {
               /* arguments for nested->evaluateForward */
               curInnerPos, endInnerPos, function, std::forward<Args>(args)...);
 
-          // After a full chunk is evaluated, the data position needs to be at the end data position
+          // After a full chunk is evaluated, the data position needs to be at the end data position.
           codiAssert(curDataPos == endDataPos);
 
           if (curChunk != end.chunk) {
@@ -288,7 +288,7 @@ namespace codi {
 
         size_t curChunk = start.chunk;
         for (;;) {
-          // Update of end conditions
+          // Update of end conditions.
           if (curChunk != end.chunk) {
             endInnerPos = positions[curChunk];
             endDataPos = 0;
@@ -304,11 +304,11 @@ namespace codi {
               /* arguments for nested->evaluateReverse */
               curInnerPos, endInnerPos, function, std::forward<Args>(args)...);
 
-          // After a full chunk is evaluated, the data position needs to be at the end data position
+          // After a full chunk is evaluated, the data position needs to be at the end data position.
           codiAssert(curDataPos == endDataPos);
 
           if (curChunk != end.chunk) {
-            // Update of loop variables
+            // Update of loop variables.
             curChunk -= 1;
             curInnerPos = endInnerPos;
             curDataPos = chunks[curChunk]->getUsedSize();
@@ -378,7 +378,7 @@ namespace codi {
           if (chunkPos == end.chunk) {
             break;
           } else {
-            // decrement of loop variable
+            // Decrement of loop variable.
             chunkPos -= 1;
             dataStart = chunks[chunkPos]->getUsedSize();
           }
@@ -415,7 +415,7 @@ namespace codi {
         // dataPos >= end which only breaks if dataPos == -1 when end == 0. The minus one is not possible
         // for unsigned types.
         for (size_t dataPos = start; dataPos > end; /* decrement is done inside the loop */) {
-          dataPos -= 1;  // decrement of loop variable
+          dataPos -= 1;  // Decrement of loop variable.
 
           pHandle.setPointers(dataPos, chunks[chunkPos]);
           pHandle.call(function, std::forward<Args>(args)...);

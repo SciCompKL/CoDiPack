@@ -168,10 +168,10 @@ namespace codi {
 #if CODI_RemoveDuplicateJacobianArguments
             jacobianSorter(),
 #endif
-            indexManager(0),  // reserve the zero index
+            indexManager(0),  // Reserve the zero index.
             statementData(Config::ChunkSize),
             jacobianData(Config::ChunkSize),
-            adjoints(1)  // ensure that adjoint[0] exists, see its use in gradient() const
+            adjoints(1)  // Ensure that adjoint[0] exists, see its use in gradient() const.
       {
         statementData.setNested(&indexManager.get());
         jacobianData.setNested(&statementData);
