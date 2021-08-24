@@ -23,8 +23,8 @@ namespace codi {
    * RealReversePrimalIndex).
    *
    * The nomenclature and mathematical definitions for the function, the Jacobian, and the Hessian can be found in the
-   * section \ref sec_namingConventions. Function arguments in this class follow the same naming scheme
-   * as in the referenced documentation.
+   * section \ref sec_namingConventions. For example, n denotes the number of inputs and m denotes the number of
+   * outputs. Function arguments in this class follow the same naming scheme as in the referenced documentation.
    *
    * The general workflow for this class to record the representation of \f$ f \f$ is:
    * \snippet examples/Example_16_TapeHelper.cpp Tape recording
