@@ -28,6 +28,9 @@ namespace codi {
       using Real = CODI_DD(_Real, double);               ///< See ExpressionInterface.
       using Impl = CODI_DD(_Impl, ExpressionInterface);  ///< See ExpressionInterface.
 
+      using ActiveResult = CODI_UNDEFINED;  ///< Type into which the expression can be converted. Usually also the type
+                                            ///< from which is constructed.
+
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);
@@ -74,7 +77,9 @@ namespace codi {
 
   /// Write the primal value to the stream.
   template<typename Expr>
-  typename ExpressionTraits::EnableIfExpression<Expr, std::ostream>& operator<<(std::ostream& out, Expr const& v) {
-    return out << v.getValue();
+  ExpressionTraits::EnableIfExpression<Expr, std::ostream>& operator<<(std::ostream& out, Expr const& v) {
+    out << v.getValue();
+
+    return out;
   }
 }

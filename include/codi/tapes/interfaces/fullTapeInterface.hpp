@@ -33,7 +33,7 @@ namespace codi {
   template<typename _Real, typename _Gradient, typename _Identifier, typename _Position>
   struct FullTapeInterface
       : public virtual CustomAdjointVectorEvaluationTapeInterface<_Position>,
-        public virtual DataManagementTapeInterface,
+        public virtual DataManagementTapeInterface<_Real, _Identifier>,
         public virtual ExternalFunctionTapeInterface<_Real, _Gradient, _Identifier>,
         public virtual ForwardEvaluationTapeInterface<_Position>,
         public virtual GradientAccessTapeInterface<_Gradient, _Identifier>,

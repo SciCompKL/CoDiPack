@@ -54,7 +54,8 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = StaticContextActiveType;  ///< \copydoc codi::ExpressionInterface::EndPoint
+      using StoreAs = StaticContextActiveType;       ///< \copydoc codi::ExpressionInterface::EndPoint
+      using ActiveResult = StaticContextActiveType;  ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// \copydoc codi::ExpressionInterface::getValue()
       CODI_INLINE Real const getValue() const {

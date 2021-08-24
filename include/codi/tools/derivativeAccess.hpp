@@ -242,8 +242,8 @@ namespace codi {
       template<bool constant, size_t selectionDepth, size_t order, size_t l>
       using SelectCompileTime = DerivativeAccessImpl::SelectCompileTime<Type, constant, selectionDepth, order, l>;
 
-      /// Run time selection of derivatives. \f$order\in\{0, ..., selectionDepth\}\f$.
-      /// \f$l\in\{0, ..., \binom{selectionDepth}{order} - 1\}\f$.
+      /// Run time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... (\binom{selectionDepth}{order} -
+      /// 1).
       template<size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectRunTime<true, selectionDepth>::RType const& derivative(Type const& v, size_t order,
                                                                                    size_t l) {
@@ -252,8 +252,8 @@ namespace codi {
         return SelectRunTime<true, selectionDepth>::select(v, order, l);
       }
 
-      /// Run time selection of derivatives. \f$order\in\{0, ..., selectionDepth\}\f$.
-      /// \f$l\in\{0, ..., \binom{selectionDepth}{order} - 1\}\f$.
+      /// Run time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... (\binom{selectionDepth}{order} -
+      /// 1).
       template<size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectRunTime<false, selectionDepth>::RType& derivative(Type& v, size_t order, size_t l) {
         checkRuntimeSelection<selectionDepth>(order, l);
@@ -286,15 +286,15 @@ namespace codi {
             v.gradient(), order - 1, d);
       }
 
-      /// Compile time selection of derivatives. \f$order\in\{0, ..., selectionDepth\}\f$.
-      /// \f$l\in\{0, ..., \binom{selectionDepth}{order} - 1\}\f$.
+      /// Compile time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... (\binom{selectionDepth}{order}
+      /// - 1).
       template<size_t order, size_t l, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectCompileTime<true, selectionDepth, order, l>::RType const& derivative(Type const& v) {
         return SelectCompileTime<true, selectionDepth, order, l>::select(v);
       }
 
-      /// Compile time selection of derivatives. \f$order\in\{0, ..., selectionDepth\}\f$.
-      /// \f$l\in\{0, ..., \binom{selectionDepth}{order} - 1\}\f$.
+      /// Compile time selection of derivatives. order = 0 ... selectionDepth. l = 0 ... (\binom{selectionDepth}{order}
+      /// - 1).
       template<size_t order, size_t l, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static typename SelectCompileTime<false, selectionDepth, order, l>::RType& derivative(Type& v) {
         return SelectCompileTime<false, selectionDepth, order, l>::select(v);

@@ -2,6 +2,8 @@
 
 #include "codi/config.h"
 #include "codi/expressions/activeType.hpp"
+#include "codi/expressions/activeTypeWrapper.hpp"
+#include "codi/expressions/immutableActiveType.hpp"
 #include "codi/expressions/real/allOperators.hpp"
 #include "codi/expressions/referenceActiveType.hpp"
 #include "codi/tapes/data/blockData.hpp"
@@ -16,6 +18,7 @@
 #include "codi/tapes/statementEvaluators/directStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
+#include "codi/tools/data/aggregatedTypeVectorAccessWrapper.hpp"
 #include "codi/tools/data/direction.hpp"
 #include "codi/tools/data/externalFunctionUserData.hpp"
 #include "codi/tools/data/jacobian.hpp"
@@ -26,6 +29,7 @@
 #include "codi/tools/helpers/preaccumulationHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
 #include "codi/tools/helpers/tapeHelper.hpp"
+#include "codi/traits/computationTraits.hpp"
 #include "codi/traits/numericLimits.hpp"
 #include "codi/traits/tapeTraits.hpp"
 

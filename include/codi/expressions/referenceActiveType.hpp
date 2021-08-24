@@ -59,7 +59,8 @@ namespace codi {
       /// @name Implementation of LhsExpressionInterface
       /// @{
 
-      using StoreAs = ReferenceActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using StoreAs = ReferenceActiveType const&;        ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult = typename Type::ActiveResult;  ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// \copydoc codi::LhsExpressionInterface::getIdentifier()
       CODI_INLINE Identifier& getIdentifier() {

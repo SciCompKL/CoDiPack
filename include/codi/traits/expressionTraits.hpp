@@ -26,6 +26,33 @@ namespace codi {
   namespace ExpressionTraits {
 
     /*******************************************************************************/
+    /// @name Expression traits.
+    /// @{
+
+    /// Validates if the active type results of two expressions are the same or compatible. `void` results are
+    /// interpreted as the active type result of a constant expression.
+    template<typename ResultA, typename ResultB, typename = void>
+    struct ValidateResultImpl {
+      private:
+        static bool constexpr isAVoid = std::is_same<void, ResultA>::value;
+        static bool constexpr isBVoid = std::is_same<void, ResultB>::value;
+        static bool constexpr isBothVoid = isAVoid & isBVoid;
+        static bool constexpr isBothSame = std::is_same<ResultA, ResultB>::value;
+
+        // Either one can be void (aka. constant value) but not both otherwise both need to be the same.
+        static_assert((!isBothVoid) & (!isAVoid | !isBVoid | isBothSame), "Result types need to be the same.");
+
+      public:
+
+        using ActiveResult = typename std::conditional<isBVoid, ResultA, ResultB>::type;
+    };
+
+    /// \copydoc ValidateResultImpl
+    template<typename ResultA, typename ResultB>
+    using ValidateResult = ValidateResultImpl<ResultA, ResultB>;
+
+    /// @}
+    /*******************************************************************************/
     /// @name Detection of specific node types
     /// @{
 
