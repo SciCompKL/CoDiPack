@@ -213,7 +213,8 @@ namespace codi {
             int nonZerosLeft = jacobie.nonZerosRow(curOut);
             jacobie.nonZerosRow(curOut) = 0;
 
-            // We need to use here the value of the gradient data such that it is correctly deleted in storeManual.
+            // We need to initialize with the output's current identifier such that it is correctly deleted in
+            // storeManual.
             Identifier lastIdentifier = value.getIdentifier();
             bool staggeringActive = false;
             int curIn = 0;
@@ -221,13 +222,16 @@ namespace codi {
             // Push statements as long as there are nonzeros left.
             // If there are more than MaxStatementIntValue nonzeros, then we need to stagger the
             // statement pushes:
-            // e.g. The reverse mode of w = f(u1, ..., u300) which is \bar u_i += df/du_i * \bar w for i = 1 ... 300 is
+            // e.g. The reverse mode of w = f(u0, ..., u530) which is \bar u_i += df/du_i * \bar w for i = 0 ... 530 is
             //      separated into
             //        Statement 1:
-            //          \bar u_i += df/du_i * \bar t_1 for i = 1 ... 256
+            //          \bar u_i += df/du_i * \bar t_1 for i = 0 ... 253   (254 entries)
             //        Statement 2:
-            //          \bar t_1 += \bar w
-            //          \bar u_i += df/du_i * \bar w for i = 257 ... 300
+            //          \bar t_1 += \bar w                                 (1 entry)
+            //          \bar u_i += df/du_i * \bar t_2 for i = 254 ... 506 (253 entries)
+            //        Statement 3:
+            //          \bar t_2 += \bar w                                 (1 entry)
+            //          \bar u_i += df/du_i * \bar w for i = 507 ... 530   (24 entries)
             //
             while (nonZerosLeft > 0) {
               // Calculate the number of Jacobians for this statement.
@@ -241,6 +245,8 @@ namespace codi {
               nonZerosLeft -= jacobiesForStatement;  // Update nonzeros so that we know if it is the last round.
 
               Identifier storedIdentifier = lastIdentifier;
+              // storeManual creates a new identifier which is either the identifier of the output w or the temporary
+              // staggering variables t_1, t_2, ...
               tape.storeManual(value.getValue(), lastIdentifier, jacobiesForStatement + (int)staggeringActive);
               if (staggeringActive) {  // Not the first staggering so push the last output.
                 tape.pushJacobiManual(1.0, 0.0, storedIdentifier);

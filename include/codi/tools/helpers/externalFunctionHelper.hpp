@@ -42,6 +42,10 @@ namespace codi {
    * The ExternalFunctionHelper works with all tapes. It is also able to handle situations where the tape is currently
    * not recording. All necessary operations are performed in such a case but no external function is recorded.
    *
+   * The storing of primal inputs and outputs can be disabled. Outputs can be discarded if they are recomputed in the
+   * derivative computation or if the derivative does not depend on them. Inputs can be discarded if the derivative does
+   * not depend on them.
+   *
    * @tparam _Type  The CoDiPack type that is used outside of the external function.
    */
   template<typename _Type>
