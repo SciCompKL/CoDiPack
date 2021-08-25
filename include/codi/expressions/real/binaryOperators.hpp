@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <utility>
 
 #include "../../aux/exceptions.hpp"
 #include "../../aux/macros.hpp"
@@ -8,6 +9,7 @@
 #include "../../traits/realTraits.hpp"
 #include "../binaryExpression.hpp"
 #include "../constantExpression.hpp"
+#include "../lhsExpressionInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -533,6 +535,20 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// @}
+  /// /*******************************************************************************/
+  /// @name Additional standard library binary operators
+  /// @{
+
+  using std::swap;
+
+  /// Optimized swap for lhs expressions that does not call the copy constructor.
+  template<>
+  void swap(LhsExpressionInterface& lhs, LhsExpressionInterface& rhs) {
+    std::swap(lhs.value(), rhs.value());
+    std::swap(lhs.getIdentifier(), rhs.getIdentifier());
+  }
+
+  /// @}
 }
 
 namespace std {
@@ -548,4 +564,5 @@ namespace std {
   using codi::min;
   using codi::pow;
   using codi::remainder;
+  using codi::swap;
 }
