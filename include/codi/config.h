@@ -117,6 +117,36 @@ namespace codi {
     bool constexpr CopyOptimization = CODI_CopyOptimization;
 #undef CODI_CopyOptimization
 
+#ifndef CODI_ImplicitConversion
+  /// See codi::Config::ImplicitConversion
+  #define CODI_ImplicitConversion false
+#endif
+    /// Enables the implicit conversion operator to the primal value in the active types.
+    /// This will give a warning every time an implicit conversion is instantiated. This
+    /// warning can be disabled with the compiler flag -DCODI_ImplicitConversionWarning=0
+    bool constexpr ImplicitConversion = CODI_ImplicitConversion;
+    // Do not undefine.
+
+#ifndef CODI_ImplicitConversionWarning
+  /// See codi::Config::ImplicitConversionWarning
+  #define CODI_ImplicitConversionWarning true
+#endif
+    /// Warn about implicit conversions in the code.
+    bool constexpr ImplicitConversionWarning = CODI_ImplicitConversionWarning;
+#undef CODI_ImplicitConversionWarning
+
+#ifndef CODI_IgnoreIntelNoInlineWarning
+  /// See codi::Config::IgnoreIntelNoInlineWarning
+  #define CODI_IgnoreIntelNoInlineWarning true
+#endif
+    /// Disables warnings of the sort:  warning #2196: routine is both "inline" and "noinline"
+    bool constexpr IgnoreIntelNoInlineWarning = CODI_IgnoreIntelNoInlineWarning;
+#if CODI_IgnoreIntelNoInlineWarning
+  #ifdef __INTEL_COMPILER
+    #pragma warning disable 2196
+  #endif
+#endif
+
 #ifndef CODI_RemoveDuplicateJacobianArguments
   /// See codi::Config::RemoveDuplicateJacobianArguments
   #define CODI_RemoveDuplicateJacobianArguments 0

@@ -188,7 +188,7 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
-        return 1.0 / (1 + arg * arg);
+        return 1.0 / (1.0 + arg * arg);
       }
   };
 #define OPERATION_LOGIC OperationAtan
@@ -217,7 +217,7 @@ namespace codi {
             CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
-        return 1.0 / (1 - arg * arg);
+        return 1.0 / (1.0 - arg * arg);
       }
   };
 #define OPERATION_LOGIC OperationAtanh
@@ -603,7 +603,7 @@ namespace codi {
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
-        return 1 - result * result;
+        return 1.0 - result * result;
       }
   };
 #define OPERATION_LOGIC OperationTanh
