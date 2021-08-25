@@ -6,6 +6,7 @@
 #include <iostream>
 #include <limits>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -67,7 +68,6 @@ class ResultDiff {
 
     bool openFiles() {
       bool allFilesAvail = true;
-      files.resize(fileCount);
 
       for (size_t i = 0; i < fileCount; ++i) {
         nextLine[i] = "";

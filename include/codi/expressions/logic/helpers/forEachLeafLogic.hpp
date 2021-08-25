@@ -61,8 +61,6 @@ namespace codi {
         cast().handleConstant(node, std::forward<Args>(args)...);
       }
 
-      using TraversalLogic<Impl>::leaf;
-
       /// @}
 
     private:
