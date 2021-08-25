@@ -282,6 +282,8 @@ namespace codi {
 
       /// \copydoc AggregatedTypeVectorAccessWrapperFactory::destroy()
       static void destroy(RType* access) {
+        CODI_UNUSED(access);
+
         // Do nothing
       }
   };

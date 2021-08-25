@@ -225,6 +225,8 @@ namespace codi {
 
         /// \copydoc DataExtraction::getIdentifier()
         CODI_INLINE static Identifier getIdentifier(Type const& v) {
+          CODI_UNUSED(v);
+
           return 0;
         }
 
