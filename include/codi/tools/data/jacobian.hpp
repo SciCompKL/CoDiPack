@@ -108,22 +108,22 @@ namespace codi {
 
     public:
 
-      /// \copydoc Jacobian::Jacobian
+      /// \copydoc codi::Jacobian::Jacobian
       explicit JacobianCountNonZerosRow(size_t m, size_t n) : Base(m, n), nonZerosRowVector(m) {}
 
-      /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j) const
+      /// \copydoc codi::JacobianInterface::operator()(size_t const  i, size_t const j) const
       CODI_INLINE T operator()(size_t const i, size_t const j) const {
         return Base::operator()(i, j);
       }
 
-      /// \copydoc JacobianInterface::operator()(size_t const i, size_t const j)
+      /// \copydoc codi::JacobianInterface::operator()(size_t const i, size_t const j)
       /// Implementation: Returns an object for the delayed access. This object calls then the access logic which
       /// updates the number of nonzero elements.
       CODI_INLINE DelayAcc operator()(size_t const i, size_t const j) {
         return DelayAcc(i, j, *this);
       }
 
-      /// \copydoc JacobianInterface::resize
+      /// \copydoc codi::JacobianInterface::resize
       CODI_INLINE void resize(size_t const m, size_t const n) {
         Base::resize(m, n);
         nonZerosRowVector.resize(m);

@@ -74,33 +74,33 @@ namespace codi {
         }
     };
 
-    /// \copydoc codi::TraitsImplementation::Real
+    /// \copydoc codi::RealTraits::TraitsImplementation::Real
     template<typename Type>
     using Real = typename TraitsImplementation<Type>::Real;
 
-    /// \copydoc codi::TraitsImplementation::PassiveReal
+    /// \copydoc codi::RealTraits::TraitsImplementation::PassiveReal
     template<typename Type>
     using PassiveReal = typename TraitsImplementation<Type>::PassiveReal;
 
-    /// \copydoc codi::TraitsImplementation::MaxDerivativeOrder
+    /// \copydoc codi::RealTraits::TraitsImplementation::MaxDerivativeOrder
     template<typename Type>
     CODI_INLINE size_t constexpr MaxDerivativeOrder() {
       return TraitsImplementation<Type>::MaxDerivativeOrder;
     }
 
-    /// \copydoc codi::TraitsImplementation::getPassiveValue()
+    /// \copydoc codi::RealTraits::TraitsImplementation::getPassiveValue()
     template<typename Type>
     CODI_INLINE PassiveReal<Type> const& getPassiveValue(Type const& v) {
       return TraitsImplementation<Type>::getPassiveValue(v);
     }
 
-    /// \copydoc codi::IsTotalFinite
+    /// \copydoc codi::RealTraits::IsTotalFinite
     template<typename Type>
     CODI_INLINE bool isTotalFinite(Type const& v) {
       return IsTotalFinite<Type>::isTotalFinite(v);
     }
 
-    /// \copydoc codi::IsTotalZero
+    /// \copydoc codi::RealTraits::IsTotalZero
     template<typename Type>
     CODI_INLINE bool isTotalZero(Type const& v) {
       return IsTotalZero<Type>::isTotalZero(v);
@@ -157,7 +157,7 @@ namespace codi {
         static_assert(false && std::is_void<_Type>::value,
                       "Instantiation of unspecialized RealTraits::TapeRegistration.");
 
-        using Type = CODI_DD(_Type, CODI_ANY);  ///< See DataRegistration.
+        using Type = CODI_DD(_Type, CODI_ANY);  ///< See TapeRegistration.
 
         using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
 
@@ -171,37 +171,37 @@ namespace codi {
         CODI_INLINE static Real registerExternalFunctionOutput(Type& v);
     };
 
-    /// \copydoc codi::DataExtraction::getValue()
+    /// \copydoc codi::RealTraits::DataExtraction::getValue()
     template<typename Type>
     typename DataExtraction<Type>::Real getValue(Type const& v) {
       return DataExtraction<Type>::getValue(v);
     }
 
-    /// \copydoc codi::DataExtraction::getIdentifier()
+    /// \copydoc codi::RealTraits::DataExtraction::getIdentifier()
     template<typename Type>
     typename DataExtraction<Type>::Identifier getIdentifier(Type const& v) {
       return DataExtraction<Type>::getIdentifier(v);
     }
 
-    /// \copydoc codi::DataExtraction::setValue()
+    /// \copydoc codi::RealTraits::DataExtraction::setValue()
     template<typename Type>
     void setValue(Type& v, typename DataExtraction<Type>::Real const& value) {
       return DataExtraction<Type>::setValue(v, value);
     }
 
-    /// \copydoc codi::DataRegistration::registerInput()
+    /// \copydoc codi::RealTraits::TapeRegistration::registerInput()
     template<typename Type>
     void registerInput(Type& v) {
       return TapeRegistration<Type>::registerInput(v);
     }
 
-    /// \copydoc codi::DataRegistration::registerOutput()
+    /// \copydoc codi::RealTraits::TapeRegistration::registerOutput()
     template<typename Type>
     void registerOutput(Type& v) {
       return TapeRegistration<Type>::registerOutput(v);
     }
 
-    /// \copydoc codi::DataRegistration::registerExternalFunctionOutput()
+    /// \copydoc codi::RealTraits::TapeRegistration::registerExternalFunctionOutput()
     template<typename Type>
     typename DataExtraction<Type>::Identifier registerExternalFunctionOutput(Type& v) {
       return TapeRegistration<Type>::registerExternalFunctionOutput(v);
@@ -270,7 +270,7 @@ namespace codi {
         }
     };
 
-    /// Specialization of DataRegistration for complex types.
+    /// Specialization of TapeRegistration for complex types.
     template<typename _InnerType>
     struct TapeRegistration<std::complex<_InnerType>> {
       public:
@@ -282,7 +282,7 @@ namespace codi {
 
         using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
 
-        /// \copydoc DataRegistration::registerInput()
+        /// \copydoc TapeRegistration::registerInput()
         CODI_INLINE static void registerInput(Type& v) {
           InnerType* vArray = reinterpret_cast<InnerType*>(&v);
 
@@ -290,7 +290,7 @@ namespace codi {
           InnerRegistration::registerInput(vArray[1]);
         }
 
-        /// \copydoc DataRegistration::registerOutput()
+        /// \copydoc TapeRegistration::registerOutput()
         CODI_INLINE static void registerOutput(Type& v) {
           InnerType* vArray = reinterpret_cast<InnerType*>(&v);
 
@@ -298,7 +298,7 @@ namespace codi {
           InnerRegistration::registerOutput(vArray[1]);
         }
 
-        /// \copydoc DataRegistration::registerExternalFunctionOutput()
+        /// \copydoc TapeRegistration::registerExternalFunctionOutput()
         CODI_INLINE static Real registerExternalFunctionOutput(Type& v) {
           InnerType* vArray = reinterpret_cast<InnerType*>(&v);
 

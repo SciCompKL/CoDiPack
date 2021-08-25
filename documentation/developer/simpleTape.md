@@ -106,9 +106,9 @@ on the input values. How this is done is explaned in the next section.
 #### Storing of expressions/operators
 
 The entry point for the storing of expressions is defined in the codi::InternalStatementRecordingInterface. The method
-[store](@ref codi::InternalStatementRecordingInterface::store) is called every time a new value is assigned to a CoDiPack
-type. The implementation in the tape performs the basic activity checking of the tape. If the tape is currently in
-recording mode, then it forwards the data to the method `storeOperator`:
+[store](@ref codi::InternalStatementRecordingTapeInterface::store) is called every time a new value is assigned to a
+CoDiPack type. The implementation in the tape performs the basic activity checking of the tape. If the tape is currently
+in recording mode, then it forwards the data to the method `storeOperator`:
 \snippet developer/simpleTape.cpp Storing - Entry
 
 `storeOperator` is the entry point for storing the expressions. Since CoDiPack usually employs a statement taping

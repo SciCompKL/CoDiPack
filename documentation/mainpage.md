@@ -91,7 +91,7 @@ You can get CoDiPack from https://www.scicomp.uni-kl.de/software/codi.
 ## Citation
 
 If you use CoDiPack in one of your applications and write a paper it would be nice if you could cite the paper
-[High-Performance Derivative Computations using CoDiPack](https://arxiv.org/abs/1709.07229) (submitted to ACM TOMS).
+[High-Performance Derivative Computations using CoDiPack](https://dl.acm.org/doi/abs/10.1145/3356900).
 ~~~~{.txt}
 @article{SaAlGauTOMS2019,
   title = {High-Performance Derivative Computations using CoDiPack},

@@ -516,7 +516,7 @@ namespace codi {
       struct IncrementForwardLogic : public JacobianComputationLogic<IncrementForwardLogic> {
         public:
 
-          /// \copydoc JacobianComputationLogic::handleJacobianOnActive()
+          /// \copydoc codi::JacobianComputationLogic::handleJacobianOnActive()
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsTangent,
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
