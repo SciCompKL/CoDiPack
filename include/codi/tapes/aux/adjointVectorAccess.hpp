@@ -60,8 +60,8 @@ namespace codi {
       }
 
       /// \copydoc codi::VectorAccessInterface::updateAdjointWithLhs
-      void updateAdjointWithLhs(Identifier const& index, Real const& jacobi) {
-        adjointVector[index] += jacobi * lhs;
+      void updateAdjointWithLhs(Identifier const& index, Real const& jacobian) {
+        adjointVector[index] += jacobian * lhs;
       }
 
       /*******************************************************************************/
@@ -74,8 +74,8 @@ namespace codi {
       }
 
       /// \copydoc codi::VectorAccessInterface::updateTangentWithLhs
-      void updateTangentWithLhs(Identifier const& index, Real const& jacobi) {
-        lhs += jacobi * adjointVector[index];
+      void updateTangentWithLhs(Identifier const& index, Real const& jacobian) {
+        lhs += jacobian * adjointVector[index];
       }
 
       /*******************************************************************************/

@@ -77,13 +77,13 @@ namespace codi {
     bool constexpr CheckExpressionArguments = CODI_CheckExpressionArguments;
 #undef CODI_CheckExpressionArguments
 
-#ifndef CODI_CheckJacobiIsZero
-  /// See codi::Config::CheckJacobiIsZero
-  #define CODI_CheckJacobiIsZero true
+#ifndef CODI_CheckJacobianIsZero
+  /// See codi::Config::CheckJacobianIsZero
+  #define CODI_CheckJacobianIsZero true
 #endif
-    /// Ignore Jacobian that are zero in Jacobian based tapes.
-    bool constexpr CheckJacobiIsZero = CODI_CheckJacobiIsZero;
-#undef CODI_CheckJacobiIsZero
+    /// Ignore Jacobians that are zero in Jacobian based tapes.
+    bool constexpr CheckJacobianIsZero = CODI_CheckJacobianIsZero;
+#undef CODI_CheckJacobianIsZero
 
 #ifndef CODI_CheckTapeActivity
   /// See codi::Config::CheckTapeActivity
@@ -117,13 +117,13 @@ namespace codi {
     bool constexpr RemoveDuplicateJacobianArguments = CODI_RemoveDuplicateJacobianArguments;
     // Do not undefine.
 
-#ifndef CODI_IgnoreInvalidJacobies
-  /// See codi::Config::IgnoreInvalidJacobies
-  #define CODI_IgnoreInvalidJacobies false
+#ifndef CODI_IgnoreInvalidJacobians
+  /// See codi::Config::IgnoreInvalidJacobians
+  #define CODI_IgnoreInvalidJacobians false
 #endif
     /// Ignore invalid Jacobians like NaN or Inf
-    bool constexpr IgnoreInvalidJacobies = CODI_IgnoreInvalidJacobies;
-#undef CODI_IgnoreInvalidJacobies
+    bool constexpr IgnoreInvalidJacobians = CODI_IgnoreInvalidJacobians;
+#undef CODI_IgnoreInvalidJacobians
 
 #ifndef CODI_OverflowCheck
   /// See codi::Config::OverflowCheck

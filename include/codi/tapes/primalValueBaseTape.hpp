@@ -522,7 +522,7 @@ namespace codi {
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsTangent);
 
-            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateTangentWithLhs(node.getIdentifier(), jacobian);
 #else
@@ -574,7 +574,7 @@ namespace codi {
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsAdjoint);
 
-            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateAdjointWithLhs(node.getIdentifier(), jacobian);
 #else
@@ -885,10 +885,10 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobiManual()
-      void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index) {
+      void pushJacobiManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
-        passiveValueData.pushData(jacobi);
+        passiveValueData.pushData(jacobian);
         rhsIdentiferData.pushData(index);
       }
 

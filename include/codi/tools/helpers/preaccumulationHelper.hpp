@@ -16,7 +16,7 @@
 namespace codi {
 
   /**
-   * @brief Stores the Jacobi matrix for a code section.
+   * @brief Stores the Jacobian matrix for a code section.
    *
    * The preaccumulation of a code section corresponds to the process of replacing the recorded tape entries with the
    * Jacobian matrix of that section. If the code part is defined by the function \f$ f \f$, then the Jacobian
@@ -65,13 +65,13 @@ namespace codi {
 
       Position startPos;                       ///< Starting position for the region.
       std::vector<Gradient> storedAdjoints;    ///< If adjoints of inputs should be stored, before the preaccumulation.
-      JacobianCountNonZerosRow<Real> jacobie;  ///< Jacobian for the preaccumulation.
+      JacobianCountNonZerosRow<Real> jacobiean;  ///< Jacobian for the preaccumulation.
 
     public:
 
       /// Constructor
       PreaccumulationHelper()
-          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobie(0, 0) {}
+          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobiean(0, 0) {}
 
       /// Add multiple additional inputs. Inputs need to be of type `Type`. Called after start().
       template<typename... Inputs>
@@ -197,21 +197,21 @@ namespace codi {
         Tape& tape = Type::getGlobalTape();
 
         Position endPos = tape.getPosition();
-        if (jacobie.getM() != outputData.size() || jacobie.getN() != inputData.size()) {
-          jacobie.resize(outputData.size(), inputData.size());
+        if (jacobiean.getM() != outputData.size() || jacobiean.getN() != inputData.size()) {
+          jacobiean.resize(outputData.size(), inputData.size());
         }
 
         Algorithms<Type, false>::computeJacobian(startPos, endPos, inputData.data(), inputData.size(),
-                                                 outputData.data(), outputData.size(), jacobie);
+                                                 outputData.data(), outputData.size(), jacobiean);
 
         // Store the Jacobian matrix.
         tape.resetTo(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
           Type& value = *outputValues[curOut];
-          if (0 != jacobie.nonZerosRow(curOut)) {
-            int nonZerosLeft = jacobie.nonZerosRow(curOut);
-            jacobie.nonZerosRow(curOut) = 0;
+          if (0 != jacobiean.nonZerosRow(curOut)) {
+            int nonZerosLeft = jacobiean.nonZerosRow(curOut);
+            jacobiean.nonZerosRow(curOut) = 0;
 
             // We need to initialize with the output's current identifier such that it is correctly deleted in
             // storeManual.
@@ -235,28 +235,28 @@ namespace codi {
             //
             while (nonZerosLeft > 0) {
               // Calculate the number of Jacobians for this statement.
-              int jacobiesForStatement = nonZerosLeft;
-              if (jacobiesForStatement > (int)Config::MaxArgumentSize) {
-                jacobiesForStatement = (int)Config::MaxArgumentSize - 1;
+              int jacobiansForStatement = nonZerosLeft;
+              if (jacobiansForStatement > (int)Config::MaxArgumentSize) {
+                jacobiansForStatement = (int)Config::MaxArgumentSize - 1;
                 if (staggeringActive) {  // Except in the first round, one Jacobian is reserved for the staggering.
-                  jacobiesForStatement -= 1;
+                  jacobiansForStatement -= 1;
                 }
               }
-              nonZerosLeft -= jacobiesForStatement;  // Update nonzeros so that we know if it is the last round.
+              nonZerosLeft -= jacobiansForStatement;  // Update nonzeros so that we know if it is the last round.
 
               Identifier storedIdentifier = lastIdentifier;
               // storeManual creates a new identifier which is either the identifier of the output w or the temporary
               // staggering variables t_1, t_2, ...
-              tape.storeManual(value.getValue(), lastIdentifier, jacobiesForStatement + (int)staggeringActive);
+              tape.storeManual(value.getValue(), lastIdentifier, jacobiansForStatement + (int)staggeringActive);
               if (staggeringActive) {  // Not the first staggering so push the last output.
                 tape.pushJacobiManual(1.0, 0.0, storedIdentifier);
               }
 
               // Push the rest of the Jacobians for the statement.
-              while (jacobiesForStatement > 0) {
-                if (Real() != (Real)jacobie(curOut, curIn)) {
-                  tape.pushJacobiManual(jacobie(curOut, curIn), 0.0, inputData[curIn]);
-                  jacobiesForStatement -= 1;
+              while (jacobiansForStatement > 0) {
+                if (Real() != (Real)jacobiean(curOut, curIn)) {
+                  tape.pushJacobiManual(jacobiean(curOut, curIn), 0.0, inputData[curIn]);
+                  jacobiansForStatement -= 1;
                 }
                 curIn += 1;
               }

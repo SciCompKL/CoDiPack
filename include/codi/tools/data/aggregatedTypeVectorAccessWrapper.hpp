@@ -106,9 +106,9 @@ namespace codi {
       }
 
       /// \copydoc VectorAccessInterface::updateAdjointWithLhs()
-      void updateAdjointWithLhs(Identifier const& index, Real const& jacobi) {
+      void updateAdjointWithLhs(Identifier const& index, Real const& jacobian) {
         for (size_t curDim = 0; curDim < lhs.size(); curDim += 1) {
-          Real update = jacobi * lhs[curDim];
+          Real update = jacobian * lhs[curDim];
           this->updateAdjoint(index, curDim, update);
         }
       }
@@ -126,9 +126,9 @@ namespace codi {
       }
 
       /// \copydoc VectorAccessInterface::updateTangentWithLhs()
-      void updateTangentWithLhs(Identifier const& index, Real const& jacobi) {
+      void updateTangentWithLhs(Identifier const& index, Real const& jacobian) {
         for (size_t curDim = 0; curDim < lhs.size(); curDim += 1) {
-          lhs[curDim] += jacobi * this->getAdjoint(index, curDim);
+          lhs[curDim] += jacobian * this->getAdjoint(index, curDim);
         }
       }
 

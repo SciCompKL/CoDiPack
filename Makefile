@@ -21,7 +21,7 @@ CODI_VERSION = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
 
 CODI_DIR := .
 
-FLAGS = -Wall -pedantic -DCODI_OptIgnoreInvalidJacobies=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
+FLAGS = -Wall -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
 
 ifndef CLANG_FORMAT
   CLANG_FORMAT := clang-format

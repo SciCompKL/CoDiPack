@@ -30,7 +30,7 @@ namespace codi {
 
     private:
       std::array<Identifier, Config::MaxArgumentSize> indices;
-      std::array<Real, Config::MaxArgumentSize> jacobies;
+      std::array<Real, Config::MaxArgumentSize> jacobians;
       ArgumentSize size;
 
     public:
@@ -39,7 +39,7 @@ namespace codi {
       DuplicateJacobianRemover() = default;
 
       /// For all added items, check if one matches the identifier. If yes combine, if no append.
-      CODI_INLINE void pushData(Real const& jacobi, Identifier const& index) {
+      CODI_INLINE void pushData(Real const& jacobian, Identifier const& index) {
         bool found = false;
         ArgumentSize pos;
         for (pos = 0; pos < size; pos += 1) {
@@ -52,9 +52,9 @@ namespace codi {
         if (!found) {
           size += 1;
           indices[pos] = index;
-          jacobies[pos] = jacobi;
+          jacobians[pos] = jacobian;
         } else {
-          jacobies[pos] += jacobi;
+          jacobians[pos] += jacobian;
         }
       }
 
@@ -63,7 +63,7 @@ namespace codi {
       template<typename Vec>
       CODI_INLINE void storeData(Vec& vec) {
         for (ArgumentSize pos = 0; pos < size; pos += 1) {
-          vec.pushData(jacobies[pos], indices[pos]);
+          vec.pushData(jacobians[pos], indices[pos]);
         }
 
         // Reset the data for the next statement.
