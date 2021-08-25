@@ -542,8 +542,9 @@ namespace codi {
   using std::swap;
 
   /// Optimized swap for lhs expressions that does not call the copy constructor.
-  template<>
-  void swap(LhsExpressionInterface& lhs, LhsExpressionInterface& rhs) {
+  template<typename Real, typename Gradient, typename Tape, typename Impl>
+  void swap(LhsExpressionInterface<Real, Gradient, Tape, Impl>& lhs,
+            LhsExpressionInterface<Real, Gradient, Tape, Impl>& rhs) {
     std::swap(lhs.value(), rhs.value());
     std::swap(lhs.getIdentifier(), rhs.getIdentifier());
   }
