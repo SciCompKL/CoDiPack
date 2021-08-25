@@ -320,7 +320,7 @@ namespace codi {
           pushJacobians(rhs);
 
           size_t numberOfArguments = jacobianData.getPushedDataCount(jacobianStart);
-          if (0 != numberOfArguments) {
+          if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments)) {
             indexManager.get().assignIndex(lhs.cast().getIdentifier());
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
           } else {

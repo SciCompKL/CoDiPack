@@ -77,6 +77,14 @@ namespace codi {
     bool constexpr CheckExpressionArguments = CODI_CheckExpressionArguments;
 #undef CODI_CheckExpressionArguments
 
+#ifndef CODI_CheckEmptyStatements
+  /// codi::Config::CheckEmptyStatements
+  #define CODI_CheckEmptyStatements true
+#endif
+    /// Tapes push statements only if at least one Jacobian was pushed.
+    const bool CheckEmptyStatements = CODI_CheckEmptyStatements;
+#undef CODI_CheckEmptyStatements
+
 #ifndef CODI_CheckJacobianIsZero
   /// See codi::Config::CheckJacobianIsZero
   #define CODI_CheckJacobianIsZero true

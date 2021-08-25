@@ -335,7 +335,7 @@ namespace codi {
           size_t activeArguments = 0;
           countActiveArguments.eval(rhs.cast(), activeArguments);
 
-          if (0 != activeArguments) {
+          if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != activeArguments)) {
             statementData.reserveItems(1);
             rhsIdentiferData.reserveItems(MaxActiveArgs);
             passiveValueData.reserveItems(MaxActiveArgs - activeArguments);
