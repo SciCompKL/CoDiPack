@@ -15,7 +15,7 @@ Real func(const Real& x) {
 int main(int nargs, char** args) {
   Real x = 4.0;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   // Step 2: Do a normal recording and evaluation
   tape.setActive();
 

@@ -48,7 +48,7 @@ namespace codi {
       Identifier& getIdentifier();  ///< Get a reference to the identifier of the tape for this expression. See also
                                     ///< @ref IdentifierManagement
 
-      static Tape& getGlobalTape();  ///< Get a reference to the tape which manages this expression.
+      static Tape& getTape();  ///< Get a reference to the tape which manages this expression.
 
       /// @}
       /*******************************************************************************/
@@ -63,12 +63,12 @@ namespace codi {
 
       /// Get the gradient of this lvalue from the tape.
       CODI_INLINE Gradient& gradient() {
-        return Impl::getGlobalTape().gradient(cast().getIdentifier());
+        return Impl::getTape().gradient(cast().getIdentifier());
       }
 
       /// Get the gradient of this lvalue from the tape.
       CODI_INLINE Gradient const& gradient() const {
-        return const_cast<Tape const&>(Impl::getGlobalTape()).gradient(cast().getIdentifier());
+        return const_cast<Tape const&>(Impl::getTape()).gradient(cast().getIdentifier());
       }
 
       /// Get the gradient of this lvalue from the tape.
@@ -93,20 +93,20 @@ namespace codi {
 
       /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
       CODI_INLINE Impl& operator=(PassiveReal const& rhs) {
-        Impl::getGlobalTape().store(cast(), rhs);
+        Impl::getTape().store(cast(), rhs);
         return cast();
       }
 
       /// Assignment operator for expressions. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename Rhs>
       CODI_INLINE Impl& operator=(ExpressionInterface<Real, Rhs> const& rhs) {
-        Impl::getGlobalTape().store(cast(), rhs.cast());
+        Impl::getTape().store(cast(), rhs.cast());
         return cast();
       }
 
       /// Assignment operator for lhs expressions. Calls store on the InternalStatementRecordingTapeInterface.
       CODI_INLINE Impl& operator=(LhsExpressionInterface const& rhs) {
-        Impl::getGlobalTape().store(cast(), rhs);
+        Impl::getTape().store(cast(), rhs);
         return cast();
       }
 
@@ -135,14 +135,14 @@ namespace codi {
       ///
       /// To be called in constructors of the implementing class.
       CODI_INLINE void init() {
-        Impl::getGlobalTape().initIdentifier(cast().value(), cast().getIdentifier());
+        Impl::getTape().initIdentifier(cast().value(), cast().getIdentifier());
       }
 
       /// Helper function to deconstruct the primal value and the identifier by the tape.
       ///
       /// To be called in the destructor of the implementing class.
       CODI_INLINE void destroy() {
-        Impl::getGlobalTape().destroyIdentifier(cast().value(), cast().getIdentifier());
+        Impl::getTape().destroyIdentifier(cast().value(), cast().getIdentifier());
       }
 
       /// @}
@@ -198,17 +198,17 @@ namespace codi {
 
       /// \copydoc DataRegistration::registerInput()
       CODI_INLINE static void registerInput(Type& v) {
-        Type::getGlobalTape().registerInput(v);
+        Type::getTape().registerInput(v);
       }
 
       /// \copydoc DataRegistration::registerOutput()
       CODI_INLINE static void registerOutput(Type& v) {
-        Type::getGlobalTape().registerOutput(v);
+        Type::getTape().registerOutput(v);
       }
 
       /// \copydoc DataRegistration::registerExternalFunctionOutput()
       CODI_INLINE static Real registerExternalFunctionOutput(Type& v) {
-        return Type::getGlobalTape().registerExternalFunctionOutput(v);
+        return Type::getTape().registerExternalFunctionOutput(v);
       }
   };
 #endif

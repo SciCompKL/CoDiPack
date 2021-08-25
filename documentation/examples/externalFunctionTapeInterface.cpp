@@ -25,7 +25,7 @@ void deleteSomething(Tape* tape, void* data) {
 
 int main(int nargs, char** args) {
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   // Recording
   Real x = 10.0;

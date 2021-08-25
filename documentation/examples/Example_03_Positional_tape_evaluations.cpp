@@ -26,7 +26,7 @@ Real funcInner(Real x, Real y) {
 
 void positionalExample() {
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   // Recording
   Real a = 10.0;
@@ -81,7 +81,7 @@ void positionalExample() {
 
 void validation() {
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   // Recording
   Real a = 10.0;

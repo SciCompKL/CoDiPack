@@ -28,7 +28,7 @@ int main(int nargs, char** args) {
   Real x = 3.14;
   Real y;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   std::cout << "Func with standard codi type." << std::endl;
   tape.setActive();

@@ -54,7 +54,7 @@ int main() {
   {
     using DH = codi::DerivativeAccess<r6s>;
 
-    r6s::Tape& tape = r6s::getGlobalTape();
+    r6s::Tape& tape = r6s::getTape();
     r6s aRev = 2.0;
     // set all first order directions on the primal value
     DH::setAllDerivativesForward(aRev, 1, 1.0);

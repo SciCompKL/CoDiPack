@@ -18,7 +18,7 @@ struct CoDiReverse1stOrder : public CoDiReverse1stOrderBase {
     void cleanup() {}
 
     void evaluate() {
-      Number::getGlobalTape().evaluate();
+      Number::getTape().evaluate();
     }
 
     void prepare() {}

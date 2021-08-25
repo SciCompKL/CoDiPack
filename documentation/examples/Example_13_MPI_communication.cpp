@@ -27,7 +27,7 @@ int main(int nargs, char** args) {
     std::cout << "Please start the tutorial with two processes." << std::endl;
   } else {
 
-    Tape& tape = Real::getGlobalTape();
+    Tape& tape = Real::getTape();
     tape.setActive();
 
     Real a = 3.0;

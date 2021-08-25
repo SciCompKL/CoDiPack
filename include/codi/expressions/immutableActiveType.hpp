@@ -95,9 +95,9 @@ namespace codi {
         return primalValue;
       }
 
-      /// \copydoc codi::LhsExpressionInterface::getGlobalTape()
-      static CODI_INLINE Tape& getGlobalTape() {
-        return ActiveType::getGlobalTape();
+      /// \copydoc codi::LhsExpressionInterface::getTape()
+      static CODI_INLINE Tape& getTape() {
+        return ActiveType::getTape();
       }
 
       /// @}

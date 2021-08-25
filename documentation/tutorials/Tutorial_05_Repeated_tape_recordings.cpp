@@ -24,7 +24,7 @@ void run() {
 
   Real x = 4.0;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
 
   // Step 1: Compute the gradient and update the global variable

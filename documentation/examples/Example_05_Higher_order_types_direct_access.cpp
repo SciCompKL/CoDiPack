@@ -54,7 +54,7 @@ int main() {
   }
 
   {
-    r6s::Tape& tape = r6s::getGlobalTape();
+    r6s::Tape& tape = r6s::getTape();
     r6s aRev = 2.0;
     // set all first order directions on the primal value
     aRev.value().value().value().value().value().gradient() = 1.0;

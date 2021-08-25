@@ -13,8 +13,8 @@ struct TestSwap : public TestInterface {
 
 #if REVERSE_TAPE
       typename Number::Tape other;
-      Number::getGlobalTape().swap(other);
-      Number::getGlobalTape().swap(other);
+      Number::getTape().swap(other);
+      Number::getTape().swap(other);
 #endif
     }
 };

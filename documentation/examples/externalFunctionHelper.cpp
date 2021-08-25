@@ -26,7 +26,7 @@ int main(int nargs, char** args) {
   using Real = codi::RealReverse;
   using Tape = typename Real::Tape;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   Real x = 10.0;
   Real y[3];

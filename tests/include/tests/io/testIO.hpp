@@ -19,7 +19,7 @@ struct TestIO : public TestInterface {
       y[0] = x[0];
 
 #if REVERSE_TAPE
-      auto& tape = Number::getGlobalTape();
+      auto& tape = Number::getTape();
       std::stringstream filename;
       filename << "test" << getpid() << ".tape";
 

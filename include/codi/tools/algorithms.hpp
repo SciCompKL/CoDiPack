@@ -165,7 +165,7 @@ namespace codi {
       static CODI_INLINE void computeJacobian(Position const& start, Position const& end, Identifier const* input,
                                               size_t const inputSize, Identifier const* output, size_t const outputSize,
                                               Jac& jac) {
-        computeJacobian(Type::getGlobalTape(), start, end, input, inputSize, output, outputSize, jac);
+        computeJacobian(Type::getTape(), start, end, input, inputSize, output, outputSize, jac);
       }
 
       /**
@@ -378,7 +378,7 @@ namespace codi {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         for (size_t j = 0; j < input.size(); j += gradDim2nd) {
           setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real(1.0));
@@ -439,7 +439,7 @@ namespace codi {
         using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         for (size_t j = 0; j < input.size(); j += gradDim2nd) {
           setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real(1.0));
@@ -540,7 +540,7 @@ namespace codi {
       /// Record an evalaution of the function.
       template<typename Func, typename VecIn, typename VecOut>
       static CODI_INLINE void recordTape(Func func, VecIn& input, VecOut& output) {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
         tape.setActive();
         for (size_t curIn = 0; curIn < input.size(); curIn += 1) {
           tape.registerInput(input[curIn]);

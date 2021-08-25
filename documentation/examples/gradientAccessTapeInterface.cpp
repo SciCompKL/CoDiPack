@@ -8,7 +8,7 @@ int main(int nargs, char** args) {
   using Tape = typename Real::Tape;
   using Identifier = typename Tape::Identifier;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   Identifier x_in;
   Identifier x_out;

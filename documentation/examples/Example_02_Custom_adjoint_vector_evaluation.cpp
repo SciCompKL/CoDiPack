@@ -28,7 +28,7 @@ int main(int nargs, char** args) {
   x[3] = 4.0;
   x[4] = 5.0;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
 
 //! [Custom Adjoint Vector Helper]

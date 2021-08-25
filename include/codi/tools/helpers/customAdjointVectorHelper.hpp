@@ -39,12 +39,12 @@ namespace codi {
 
     protected:
 
-      Tape& tape;  ///< Current tape for evaluations. Default: globalTape
+      Tape& tape;  ///< Current tape for evaluations. Default: the Type's current tape.
 
     public:
 
       /// Constructor
-      CustomAdjointVectorInterface() : tape(Type::getGlobalTape()) {}
+      CustomAdjointVectorInterface() : tape(Type::getTape()) {}
 
       /// Destructor
       virtual ~CustomAdjointVectorInterface() {}

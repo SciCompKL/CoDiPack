@@ -307,7 +307,7 @@ namespace codi {
       }
 
       static Tape& getTape() {
-        return Type::getGlobalTape();
+        return Type::getTape();
       }
   };
 #endif

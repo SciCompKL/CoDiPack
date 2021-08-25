@@ -64,7 +64,7 @@ void reverseModeJacobianComputation() {
 
   codi::Jacobian<double> jacobian(2,5);
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
 
   // Step 1: Record the tape

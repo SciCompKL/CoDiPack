@@ -45,7 +45,7 @@ namespace codi {
       Real primalValue;
       Identifier identifier;
 
-      static Tape globalTape;
+      static Tape tape;
 
     public:
 
@@ -57,7 +57,7 @@ namespace codi {
       /// Constructor
       CODI_INLINE ActiveType(ActiveType<Tape> const& v) : primalValue(), identifier() {
         Base::init();
-        this->getGlobalTape().store(*this, v);
+        this->getTape().store(*this, v);
       }
 
       /// Constructor
@@ -69,7 +69,7 @@ namespace codi {
       template<class Rhs>
       CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
         Base::init();
-        this->getGlobalTape().store(*this, rhs.cast());
+        this->getTape().store(*this, rhs.cast());
       }
 
       /// Destructor
@@ -116,14 +116,14 @@ namespace codi {
         return primalValue;
       }
 
-      /// \copydoc codi::LhsExpressionInterface::getGlobalTape()
-      static CODI_INLINE Tape& getGlobalTape() {
-        return globalTape;
+      /// \copydoc codi::LhsExpressionInterface::getTape()
+      static CODI_INLINE Tape& getTape() {
+        return tape;
       }
 
       /// @}
   };
 
   template<typename Tape>
-  Tape ActiveType<Tape>::globalTape = Tape();
+  Tape ActiveType<Tape>::tape = Tape();
 }

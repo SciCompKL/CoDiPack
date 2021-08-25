@@ -32,7 +32,7 @@ struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
       using Gradient = typename Number::Gradient;
       size_t constexpr gradDim = codi::GradientTraits::dim<Gradient>();
 
-      Number::Tape& tape = Number::getGlobalTape();
+      Number::Tape& tape = Number::getTape();
 
       // Set sizes for Jacobian tapes
       if (tape.hasParameter(codi::TapeParameters::JacobianSize)) {

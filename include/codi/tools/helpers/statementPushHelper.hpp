@@ -130,7 +130,7 @@ namespace codi {
 
       /// \copydoc codi::StatementPushHelperBase::pushArgument()
       void pushArgument(Type const& arg, Real const& jacobian) {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         if (Config::MaxArgumentSize <= dataPos) {
           CODI_EXCEPTION("Adding more than %zu arguments to a statement.", Config::MaxArgumentSize);
@@ -151,7 +151,7 @@ namespace codi {
 
       /// \copydoc codi::StatementPushHelperBase::endPushStatement()
       void endPushStatement(Type& lhs, Real const& primal) {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive())) {
           if (0 != dataPos) {

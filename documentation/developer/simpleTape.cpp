@@ -478,7 +478,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 template<typename Real>
 void eval() {
   using Tape = typename Real::Tape;
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   Real a = 3.0;
   Real b = 4.0;

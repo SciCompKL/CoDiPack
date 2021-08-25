@@ -18,7 +18,7 @@ struct TestIndices : public TestInterface {
       Number d = 2.72;
 
 #if REVERSE_TAPE
-      Number::getGlobalTape().registerInput(d);
+      Number::getTape().registerInput(d);
 #endif
 
       y[0] = d * c;

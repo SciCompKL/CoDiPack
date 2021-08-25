@@ -39,7 +39,7 @@ void extFunc_del(Tape* t, void* d) {
 int main(int nargs, char** args) {
   Real x = 4.0;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
 
   tape.registerInput(x);

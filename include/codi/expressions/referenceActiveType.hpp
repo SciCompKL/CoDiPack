@@ -82,9 +82,9 @@ namespace codi {
         return reference.value();
       }
 
-      /// \copydoc codi::LhsExpressionInterface::getGlobalTape()
-      static CODI_INLINE Tape& getGlobalTape() {
-        return Type::getGlobalTape();
+      /// \copydoc codi::LhsExpressionInterface::getTape()
+      static CODI_INLINE Tape& getTape() {
+        return Type::getTape();
       }
   };
 }

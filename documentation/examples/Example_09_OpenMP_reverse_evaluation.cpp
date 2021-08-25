@@ -30,7 +30,7 @@ int main(int nargs, char** args) {
   x[4] = 5.0;
 
   // Step 1: Perform a regular recording
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
 
   for(size_t i = 0; i < 5; ++i) {

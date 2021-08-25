@@ -76,7 +76,7 @@ namespace codi {
       /// Add multiple additional inputs. Inputs need to be of type `Type`. Called after start().
       template<typename... Inputs>
       void addInput(Inputs const&... inputs) {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         if (tape.isActive()) {
           addInputRecursive(inputs...);
@@ -86,7 +86,7 @@ namespace codi {
       /// Starts a preaccumulation region. Resets the internal state. See `addInputs()` for inputs.
       template<typename... Inputs>
       void start(Inputs const&... inputs) {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         if (tape.isActive()) {
           inputData.clear();
@@ -102,7 +102,7 @@ namespace codi {
       /// Add multiple additional outputs. Outputs need to be of type `Type`. Called before finish().
       template<typename... Outputs>
       void addOutput(Outputs&... outputs) {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         if (tape.isActive()) {
           addOutputRecursive(outputs...);
@@ -112,7 +112,7 @@ namespace codi {
       /// Finish the preaccumulation region and perform the preaccumulation. See `addOutput()` for outputs.
       template<typename... Outputs>
       void finish(bool const storeAdjoints, Outputs&... outputs) {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         if (tape.isActive()) {
           addOutputRecursive(outputs...);
@@ -169,7 +169,7 @@ namespace codi {
       }
 
       void storeInputAdjoints() {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         if (storedAdjoints.size() < inputData.size()) {
           storedAdjoints.resize(inputData.size());
@@ -184,7 +184,7 @@ namespace codi {
       }
 
       void restoreInputAdjoints() {
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         for (size_t i = 0; i < inputData.size(); ++i) {
           Identifier index = inputData[i];
@@ -194,7 +194,7 @@ namespace codi {
 
       void doPreaccumulation() {
         // Perform the accumulation of the tape part.
-        Tape& tape = Type::getGlobalTape();
+        Tape& tape = Type::getTape();
 
         Position endPos = tape.getPosition();
         if (jacobie.getM() != outputData.size() || jacobie.getN() != inputData.size()) {

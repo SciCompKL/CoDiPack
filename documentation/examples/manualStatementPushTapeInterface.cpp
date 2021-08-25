@@ -22,7 +22,7 @@ Primal func_dy(Primal x, Primal y) {
 
 int main(int nargs, char** args) {
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   // Recording
   Real u1 = 10.0;

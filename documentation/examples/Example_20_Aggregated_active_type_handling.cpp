@@ -56,7 +56,7 @@ void extFunc_del(Tape* t, void* d) {
 template<typename Type>
 Type addExternalFunc(Type const& x) {
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   // Step 1: Perform the passive function evaluation.
   tape.setPassive();
@@ -79,7 +79,7 @@ Type addExternalFunc(Type const& x) {
 int main(int nargs, char** args) {
   Real x = 3.0;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
 
   tape.registerInput(x);

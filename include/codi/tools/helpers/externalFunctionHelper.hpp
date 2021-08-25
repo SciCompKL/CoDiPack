@@ -264,7 +264,7 @@ namespace codi {
 
       /// Add an input value.
       void addInput(Type const& input) {
-        if (Type::getGlobalTape().isActive()) {
+        if (Type::getTape().isActive()) {
           data->inputIndices.push_back(input.getIdentifier());
         }
 
@@ -278,7 +278,7 @@ namespace codi {
     private:
 
       void addOutputToData(Type& output) {
-        Real oldPrimal = Type::getGlobalTape().registerExternalFunctionOutput(output);
+        Real oldPrimal = Type::getTape().registerExternalFunctionOutput(output);
 
         data->outputIndices.push_back(output.getIdentifier());
         if (storeOutputPrimals) {
@@ -293,7 +293,7 @@ namespace codi {
 
       /// Add an output value.
       void addOutput(Type& output) {
-        if (Type::getGlobalTape().isActive()) {
+        if (Type::getTape().isActive()) {
           outputValues.push_back(&output);
         }
       }
@@ -314,16 +314,16 @@ namespace codi {
       /// recorded on the tape. All output values are registered as outputs of this external function.
       template<typename FuncObj, typename... Args>
       void callPrimalFuncWithADType(FuncObj& func, Args&&... args) {
-        bool isTapeActive = Type::getGlobalTape().isActive();
+        bool isTapeActive = Type::getTape().isActive();
 
         if (isTapeActive) {
-          Type::getGlobalTape().setPassive();
+          Type::getTape().setPassive();
         }
 
         func(std::forward<Args>(args)...);
 
         if (isTapeActive) {
-          Type::getGlobalTape().setActive();
+          Type::getTape().setActive();
 
           for (size_t i = 0; i < outputValues.size(); ++i) {
             addOutputToData(*outputValues[i]);
@@ -347,7 +347,7 @@ namespace codi {
           for (size_t i = 0; i < outputValues.size(); ++i) {
             outputValues[i]->setValue(y[i]);
 
-            if (Type::getGlobalTape().isActive()) {
+            if (Type::getTape().isActive()) {
               addOutputToData(*outputValues[i]);
             }
           }
@@ -363,7 +363,7 @@ namespace codi {
 
       /// Add the external function to the tape.
       void addToTape(ReverseFunc reverseFunc, ForwardFunc forwardFunc = nullptr, PrimalFunc primalFunc = nullptr) {
-        if (Type::getGlobalTape().isActive()) {
+        if (Type::getTape().isActive()) {
           data->reverseFunc = reverseFunc;
           data->forwardFunc = forwardFunc;
 
@@ -378,7 +378,7 @@ namespace codi {
             data->inputValues.clear();
           }
 
-          Type::getGlobalTape().pushExternalFunction(
+          Type::getTape().pushExternalFunction(
               ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data, EvalData::delFunc,
                                              EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
 

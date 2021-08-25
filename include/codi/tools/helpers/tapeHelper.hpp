@@ -97,7 +97,7 @@ namespace codi {
     public:
 
       /// Constructor
-      TapeHelperBase() : tape(Type::getGlobalTape()), inputValues(), outputValues(), wasForwardEvaluated(false) {}
+      TapeHelperBase() : tape(Type::getTape()), inputValues(), outputValues(), wasForwardEvaluated(false) {}
 
       /// Destructor
       virtual ~TapeHelperBase() {}

@@ -49,7 +49,7 @@ void ode(const Real* start, Real* end, int steps, Real* A, double dt, size_t n) 
 void compute(bool performPreAcc) {
   Real u = 3.0;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
   tape.registerInput(u);
 

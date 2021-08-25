@@ -107,7 +107,7 @@ struct MultiplyExternalFunction<_Number, codi::TapeTraits::EnableIfReverseTape<t
     }
 
     static Number create(Number const& x1, Number const& x2) {
-      Tape& tape = Number::getGlobalTape();
+      Tape& tape = Number::getTape();
       codi::ExternalFunctionUserData* data = new codi::ExternalFunctionUserData;
       Number w;
       tape.setPassive();

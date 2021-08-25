@@ -10,7 +10,7 @@ struct TestReset : public TestInterface {
     template<typename Number>
     static void func(Number* x, Number* y) {
 #if REVERSE_TAPE
-      typename Number::Tape& tape = Number::getGlobalTape();
+      typename Number::Tape& tape = Number::getTape();
 #endif
 
       Number a = x[0] * x[1];

@@ -9,7 +9,7 @@ int main(int nargs, char** args) {
   using Identifier = typename Real::Identifier;
   using Tape = typename Real::Tape;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
 
   Identifier x_i;
   Identifier y_i;

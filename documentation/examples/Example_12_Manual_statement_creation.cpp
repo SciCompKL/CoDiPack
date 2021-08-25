@@ -73,7 +73,7 @@ Real poly2D_dy( const Real x, const Real y, const double* A, size_t n) {
 void runExample(int mode) {
   Real u = 3.0;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
   tape.registerInput(u);
 

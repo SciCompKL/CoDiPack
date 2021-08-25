@@ -45,7 +45,7 @@ void solve2_rev(const BaseReal* x, BaseReal* x_b, size_t m, const BaseReal* y, c
 void runExample(int mode) {
   Real u = 3.0;
 
-  Tape& tape = Real::getGlobalTape();
+  Tape& tape = Real::getTape();
   tape.setActive();
   tape.registerInput(u);
 
