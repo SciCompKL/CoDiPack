@@ -66,7 +66,7 @@ namespace codi {
 #elif defined(_MSC_VER)
   #define DEPRECATE(foo, msg) __declspec(deprecated(msg)) foo
 #else
-  #error This compiler is not supported
+  #error This compiler is not supported.
 #endif
 
   /// Presents presenting compile time warnings to the user.
