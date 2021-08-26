@@ -35,7 +35,7 @@ Incomplete list of major user interface changes.
 | CoDiPack 1.9 | CoDiPack 2.0 |
 |:--------|:--------|
 | ActiveReal | ActiveType |
-| getGradientData() | getIdentifier |
+| getGradientData | getIdentifier |
 | TapeType | Tape |
 | GradientData | Identifier |
 | GradientValue | Gradient |
@@ -51,9 +51,9 @@ overview of the new interface.
 |:--------|:--------|
 | callPassiveFunc | callPrimalFuncWithADType |
 
-### Configure options
+### Configuration options
 
-Configure options are renamed to have better indicate their meaning. In general, the `Opt`, `Enable`, `Disable` prefixes
+Configuration options are renamed to have better indicate their meaning. In general, the `Opt`, `Enable`, `Disable` prefixes
 are dropped. See below a full list of the changes.
 
 | CoDiPack 1.9 | CoDiPack 2.0 |
