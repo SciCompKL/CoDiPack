@@ -545,8 +545,8 @@ namespace codi {
   template<typename Real, typename Gradient, typename Tape, typename Impl>
   void swap(LhsExpressionInterface<Real, Gradient, Tape, Impl>& lhs,
             LhsExpressionInterface<Real, Gradient, Tape, Impl>& rhs) {
-    std::swap(lhs.value(), rhs.value());
-    std::swap(lhs.getIdentifier(), rhs.getIdentifier());
+    swap(lhs.value(), rhs.value());
+    swap(lhs.getIdentifier(), rhs.getIdentifier());
   }
 
   /// @}
