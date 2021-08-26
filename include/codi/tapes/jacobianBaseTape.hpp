@@ -238,8 +238,8 @@ namespace codi {
             Real jacobian = ComputationTraits::adjointConversion<Real>(jacobianExpr);
 
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
-              if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
-                if (CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(jacobian))) {
+              if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
+                if (CODI_ENABLE_CHECK(Config::CheckJacobianIsZero, !RealTraits::isTotalZero(jacobian))) {
                   dataVector.pushData(jacobian, node.getIdentifier());
                 }
               }
@@ -254,7 +254,7 @@ namespace codi {
 
             Real jacobian = ComputationTraits::adjointConversion<Real>(jacobianExpr);
 
-            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
               // Do a delayed push for these leaf nodes, accumulate the jacobian in the local member.
               node.jacobian += jacobian;
             }
@@ -269,7 +269,7 @@ namespace codi {
           template<typename Type, typename DataVector>
           CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, DataVector& dataVector) {
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
-              if (CODI_ENABLE_CHECK(Config::CheckJacobiIsZero, !RealTraits::isTotalZero(node.jacobian))) {
+              if (CODI_ENABLE_CHECK(Config::CheckJacobianIsZero, !RealTraits::isTotalZero(node.jacobian))) {
                 dataVector.pushData(node.jacobian, node.getIdentifier());
 
                 // Reset the jacobian here such that it is not pushed multiple times and ready for the next store.
@@ -320,7 +320,7 @@ namespace codi {
           pushJacobians(rhs);
 
           size_t numberOfArguments = jacobianData.getPushedDataCount(jacobianStart);
-          if (0 != numberOfArguments) {
+          if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments)) {
             indexManager.get().assignIndex(lhs.cast().getIdentifier());
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
           } else {
@@ -616,10 +616,10 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobiManual()
-      void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index) {
+      void pushJacobiManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
-        jacobianData.pushData(jacobi, index);
+        jacobianData.pushData(jacobian, index);
       }
 
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()

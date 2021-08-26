@@ -36,6 +36,9 @@ namespace codi {
       using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
+      LhsExpressionInterface() = default;  ///< Constructor
+      LhsExpressionInterface(LhsExpressionInterface const& other) = default; ///< Constructor
+
       /*******************************************************************************/
       /// @name Interface definition
       /// @{

@@ -335,7 +335,7 @@ namespace codi {
           size_t activeArguments = 0;
           countActiveArguments.eval(rhs.cast(), activeArguments);
 
-          if (0 != activeArguments) {
+          if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != activeArguments)) {
             statementData.reserveItems(1);
             rhsIdentiferData.reserveItems(MaxActiveArgs);
             passiveValueData.reserveItems(MaxActiveArgs - activeArguments);
@@ -516,13 +516,13 @@ namespace codi {
       struct IncrementForwardLogic : public JacobianComputationLogic<IncrementForwardLogic> {
         public:
 
-          /// \copydoc JacobianComputationLogic::handleJacobianOnActive()
+          /// \copydoc codi::JacobianComputationLogic::handleJacobianOnActive()
           template<typename Node>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsTangent,
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsTangent);
 
-            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateTangentWithLhs(node.getIdentifier(), jacobian);
 #else
@@ -574,7 +574,7 @@ namespace codi {
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsAdjoint);
 
-            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobies, RealTraits::isTotalFinite(jacobian))) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateAdjointWithLhs(node.getIdentifier(), jacobian);
 #else
@@ -885,10 +885,10 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobiManual()
-      void pushJacobiManual(Real const& jacobi, Real const& value, Identifier const& index) {
+      void pushJacobiManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
-        passiveValueData.pushData(jacobi);
+        passiveValueData.pushData(jacobian);
         rhsIdentiferData.pushData(index);
       }
 

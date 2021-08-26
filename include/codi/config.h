@@ -77,13 +77,21 @@ namespace codi {
     bool constexpr CheckExpressionArguments = CODI_CheckExpressionArguments;
 #undef CODI_CheckExpressionArguments
 
-#ifndef CODI_CheckJacobiIsZero
-  /// See codi::Config::CheckJacobiIsZero
-  #define CODI_CheckJacobiIsZero true
+#ifndef CODI_CheckEmptyStatements
+  /// codi::Config::CheckEmptyStatements
+  #define CODI_CheckEmptyStatements true
 #endif
-    /// Ignore Jacobian that are zero in Jacobian based tapes.
-    bool constexpr CheckJacobiIsZero = CODI_CheckJacobiIsZero;
-#undef CODI_CheckJacobiIsZero
+    /// Tapes push statements only if at least one Jacobian was pushed.
+    const bool CheckEmptyStatements = CODI_CheckEmptyStatements;
+#undef CODI_CheckEmptyStatements
+
+#ifndef CODI_CheckJacobianIsZero
+  /// See codi::Config::CheckJacobianIsZero
+  #define CODI_CheckJacobianIsZero true
+#endif
+    /// Ignore Jacobians that are zero in Jacobian based tapes.
+    bool constexpr CheckJacobianIsZero = CODI_CheckJacobianIsZero;
+#undef CODI_CheckJacobianIsZero
 
 #ifndef CODI_CheckTapeActivity
   /// See codi::Config::CheckTapeActivity
@@ -109,6 +117,36 @@ namespace codi {
     bool constexpr CopyOptimization = CODI_CopyOptimization;
 #undef CODI_CopyOptimization
 
+#ifndef CODI_ImplicitConversion
+  /// See codi::Config::ImplicitConversion
+  #define CODI_ImplicitConversion false
+#endif
+    /// Enables the implicit conversion operator to the primal value in the active types.
+    /// This will give a warning every time an implicit conversion is instantiated. This
+    /// warning can be disabled with the compiler flag -DCODI_ImplicitConversionWarning=0
+    bool constexpr ImplicitConversion = CODI_ImplicitConversion;
+    // Do not undefine.
+
+#ifndef CODI_ImplicitConversionWarning
+  /// See codi::Config::ImplicitConversionWarning
+  #define CODI_ImplicitConversionWarning true
+#endif
+    /// Warn about implicit conversions in the code.
+    bool constexpr ImplicitConversionWarning = CODI_ImplicitConversionWarning;
+#undef CODI_ImplicitConversionWarning
+
+#ifndef CODI_IgnoreIntelNoInlineWarning
+  /// See codi::Config::IgnoreIntelNoInlineWarning
+  #define CODI_IgnoreIntelNoInlineWarning true
+#endif
+    /// Disables warnings of the sort:  warning #2196: routine is both "inline" and "noinline"
+    bool constexpr IgnoreIntelNoInlineWarning = CODI_IgnoreIntelNoInlineWarning;
+#if CODI_IgnoreIntelNoInlineWarning
+  #ifdef __INTEL_COMPILER
+    #pragma warning disable 2196
+  #endif
+#endif
+
 #ifndef CODI_RemoveDuplicateJacobianArguments
   /// See codi::Config::RemoveDuplicateJacobianArguments
   #define CODI_RemoveDuplicateJacobianArguments 0
@@ -117,13 +155,13 @@ namespace codi {
     bool constexpr RemoveDuplicateJacobianArguments = CODI_RemoveDuplicateJacobianArguments;
     // Do not undefine.
 
-#ifndef CODI_IgnoreInvalidJacobies
-  /// See codi::Config::IgnoreInvalidJacobies
-  #define CODI_IgnoreInvalidJacobies false
+#ifndef CODI_IgnoreInvalidJacobians
+  /// See codi::Config::IgnoreInvalidJacobians
+  #define CODI_IgnoreInvalidJacobians false
 #endif
     /// Ignore invalid Jacobians like NaN or Inf
-    bool constexpr IgnoreInvalidJacobies = CODI_IgnoreInvalidJacobies;
-#undef CODI_IgnoreInvalidJacobies
+    bool constexpr IgnoreInvalidJacobians = CODI_IgnoreInvalidJacobians;
+#undef CODI_IgnoreInvalidJacobians
 
 #ifndef CODI_OverflowCheck
   /// See codi::Config::OverflowCheck

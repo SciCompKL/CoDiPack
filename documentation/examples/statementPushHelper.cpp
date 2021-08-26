@@ -26,18 +26,18 @@ int main(int nargs, char** args) {
 
   // Iterator based push
   std::vector<Real> valuesIter;
-  std::vector<double> jacobiesIter;
+  std::vector<double> jacobiansIter;
   valuesIter.push_back(x);
-  jacobiesIter.push_back(2.0 * x.value());
+  jacobiansIter.push_back(2.0 * x.value());
 
-  sh.pushStatement(y[2], x.value() * x.value(), valuesIter.begin(), valuesIter.end(), jacobiesIter.begin());
+  sh.pushStatement(y[2], x.value() * x.value(), valuesIter.begin(), valuesIter.end(), jacobiansIter.begin());
 
   // Array based push
 
   Real valuesArray[] = {x};
-  double jacobiesArray[] = {2.0 * x.value()};
+  double jacobiansArray[] = {2.0 * x.value()};
 
-  sh.pushStatement(y[3], x.value() * x.value(), valuesArray, jacobiesArray, 1);
+  sh.pushStatement(y[3], x.value() * x.value(), valuesArray, jacobiansArray, 1);
 //! [Statement push helper]
 
   for(int i = 0; i < 4; i += 1) {

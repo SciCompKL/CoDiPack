@@ -36,6 +36,15 @@ namespace codi {
         return static_cast<Impl const&>(*this);
       }
 
+#if CODI_ImplicitConversion
+      /// Implicit cast for CoDiPack expressions.
+      CODI_INLINE operator const Real() const {
+        Warning::implicitCast<Config::ImplicitConversionWarning>();
+
+        return cast().getValue();
+      }
+#endif
+
       /*******************************************************************************/
       /// @name Interface definition
       /// @{

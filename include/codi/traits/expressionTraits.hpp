@@ -44,6 +44,7 @@ namespace codi {
 
       public:
 
+        /// The resulting active type of an expression.
         using ActiveResult = typename std::conditional<isBVoid, ResultA, ResultB>::type;
     };
 

@@ -40,12 +40,12 @@ namespace codi {
       /*******************************************************************************/
       /// @name Misc
 
-      /// \copydoc VectorAccessInterface::getVectorSize
+      /// \copydoc codi::VectorAccessInterface::getVectorSize
       size_t getVectorSize() const {
         return GradientTraits::dim<Gradient>();
       }
 
-      /// \copydoc VectorAccessInterface::isLhsZero
+      /// \copydoc codi::VectorAccessInterface::isLhsZero
       bool isLhsZero() {
         return RealTraits::isTotalZero(lhs);
       }
@@ -53,64 +53,64 @@ namespace codi {
       /*******************************************************************************/
       /// @name Indirect adjoint access
 
-      /// \copydoc VectorAccessInterface::setLhsAdjoint
+      /// \copydoc codi::VectorAccessInterface::setLhsAdjoint
       void setLhsAdjoint(Identifier const& index) {
         lhs = adjointVector[index];
         adjointVector[index] = Gradient();
       }
 
-      /// \copydoc VectorAccessInterface::updateAdjointWithLhs
-      void updateAdjointWithLhs(Identifier const& index, Real const& jacobi) {
-        adjointVector[index] += jacobi * lhs;
+      /// \copydoc codi::VectorAccessInterface::updateAdjointWithLhs
+      void updateAdjointWithLhs(Identifier const& index, Real const& jacobian) {
+        adjointVector[index] += jacobian * lhs;
       }
 
       /*******************************************************************************/
       /// @name Indirect tangent access
 
-      /// \copydoc VectorAccessInterface::setLhsTangent
+      /// \copydoc codi::VectorAccessInterface::setLhsTangent
       void setLhsTangent(Identifier const& index) {
         adjointVector[index] = lhs;
         lhs = Gradient();
       }
 
-      /// \copydoc VectorAccessInterface::updateTangentWithLhs
-      void updateTangentWithLhs(Identifier const& index, Real const& jacobi) {
-        lhs += jacobi * adjointVector[index];
+      /// \copydoc codi::VectorAccessInterface::updateTangentWithLhs
+      void updateTangentWithLhs(Identifier const& index, Real const& jacobian) {
+        lhs += jacobian * adjointVector[index];
       }
 
       /*******************************************************************************/
       /// @name Direct adjoint access
 
-      /// \copydoc VectorAccessInterface::resetAdjoint
+      /// \copydoc codi::VectorAccessInterface::resetAdjoint
       void resetAdjoint(Identifier const& index, size_t dim) {
         GradientTraits::at(adjointVector[index], dim) = typename GradientTraits::Real<Gradient>();
       }
 
-      /// \copydoc VectorAccessInterface::resetAdjointVec
+      /// \copydoc codi::VectorAccessInterface::resetAdjointVec
       void resetAdjointVec(Identifier const& index) {
         adjointVector[index] = Gradient();
       }
 
-      /// \copydoc VectorAccessInterface::getAdjoint
+      /// \copydoc codi::VectorAccessInterface::getAdjoint
       Real getAdjoint(Identifier const& index, size_t dim) {
         CODI_UNUSED(dim);
 
         return (Real)GradientTraits::at(adjointVector[index], dim);
       }
 
-      /// \copydoc VectorAccessInterface::getAdjointVec
+      /// \copydoc codi::VectorAccessInterface::getAdjointVec
       void getAdjointVec(Identifier const& index, Real* const vec) {
         for (size_t i = 0; i < getVectorSize(); ++i) {
           vec[i] = (Real)GradientTraits::at(adjointVector[index], i);
         }
       }
 
-      /// \copydoc VectorAccessInterface::updateAdjoint
+      /// \copydoc codi::VectorAccessInterface::updateAdjoint
       void updateAdjoint(Identifier const& index, size_t dim, Real const& adjoint) {
         GradientTraits::at(adjointVector[index], dim) += adjoint;
       }
 
-      /// \copydoc VectorAccessInterface::updateAdjointVec
+      /// \copydoc codi::VectorAccessInterface::updateAdjointVec
       void updateAdjointVec(Identifier const& index, Real const* const vec) {
         for (size_t i = 0; i < getVectorSize(); ++i) {
           GradientTraits::at(adjointVector[index], i) += vec[i];
@@ -120,13 +120,13 @@ namespace codi {
       /*******************************************************************************/
       /// @name Primal access
 
-      /// \copydoc VectorAccessInterface::setPrimal <br><br>
+      /// \copydoc codi::VectorAccessInterface::setPrimal <br><br>
       /// Implementation: Not implemented, empty function.
       void setPrimal(Identifier const& index, Real const& primal) {
         CODI_UNUSED(index, primal);
       }
 
-      /// \copydoc VectorAccessInterface::getPrimal <br><br>
+      /// \copydoc codi::VectorAccessInterface::getPrimal <br><br>
       /// Implementation: Not implemented, returns zero.
       Real getPrimal(Identifier const& index) {
         CODI_UNUSED(index);
@@ -134,7 +134,7 @@ namespace codi {
         return Real();
       }
 
-      /// \copydoc VectorAccessInterface::setPrimal <br><br>
+      /// \copydoc codi::VectorAccessInterface::setPrimal <br><br>
       /// Implementation: Always returns false.
       bool hasPrimals() {
         return false;
