@@ -16,7 +16,7 @@ namespace codi {
   template<typename T_Real, typename T_Gradient, typename T_Tape, typename T_Impl>
   struct LhsExpressionInterface;
 
-  template<typename T_Real>
+  template<typename T_Real, template <typename> class T_ConversionOperator>
   struct ConstantExpression;
 
   template<typename T_Tape>
@@ -107,8 +107,8 @@ namespace codi {
     struct IsConstantExpression : std::false_type {};
 
 #ifndef DOXYGEN_DISABLE
-    template<typename Real>
-    struct IsConstantExpression<ConstantExpression<Real>> : std::true_type {};
+    template<typename Real, template<typename> class ConversionOperator>
+    struct IsConstantExpression<ConstantExpression<Real, ConversionOperator>> : std::true_type {};
 #endif
 
 #if CODI_IS_CPP14
