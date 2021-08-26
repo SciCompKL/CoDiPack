@@ -18,20 +18,20 @@ namespace codi {
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * @tparam _Tape  The tape that manages all expressions created with this type.
+   * @tparam T_Tape  The tape that manages all expressions created with this type.
    */
-  template<typename _Tape>
+  template<typename T_Tape>
   struct ActiveType
-      : public LhsExpressionInterface<typename _Tape::Real, typename _Tape::Gradient, _Tape, ActiveType<_Tape>>,
-        public AssignmentOperators<_Tape, ActiveType<_Tape>>,
-        public IncrementOperators<_Tape, ActiveType<_Tape>> {
+      : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape, ActiveType<T_Tape>>,
+        public AssignmentOperators<T_Tape, ActiveType<T_Tape>>,
+        public IncrementOperators<T_Tape, ActiveType<T_Tape>> {
     public:
 
       /// See ActiveType.
       /// For reverse AD, the tape must implement ReverseTapeInterface.
       /// For forward AD, the 'tape' (that is not a tape, technically) must implement
       /// InternalStatementRecordingTapeInterface and GradientAccessTapeInterface.
-      using Tape = CODI_DD(_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.

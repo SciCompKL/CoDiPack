@@ -16,14 +16,14 @@ namespace codi {
    * See ConstructStaticContext for detailed information.
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * @tparam _Tape  The tape that create the original expression.
+   * @tparam T_Tape  The tape that create the original expression.
    */
-  template<typename _Tape>
-  struct StaticContextActiveType : public ExpressionInterface<typename _Tape::Real, StaticContextActiveType<_Tape>> {
+  template<typename T_Tape>
+  struct StaticContextActiveType : public ExpressionInterface<typename T_Tape::Real, StaticContextActiveType<T_Tape>> {
     public:
 
       using Tape = CODI_DD(
-          _Tape, CODI_T(CODI_UNION<InternalStatementRecordingTapeInterface<int>,
+          T_Tape, CODI_T(CODI_UNION<InternalStatementRecordingTapeInterface<int>,
                                    GradientAccessTapeInterface<double, int>>));  ///< See StaticContextActiveType.
 
       using Real = typename Tape::Real;              ///< See TapeTypesInterface.

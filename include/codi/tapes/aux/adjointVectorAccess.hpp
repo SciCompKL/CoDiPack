@@ -16,15 +16,15 @@ namespace codi {
    *
    * The adjoint vector is used as is, it is assumed to have the correct size. No bounds checking is performed.
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
-   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    */
-  template<typename _Real, typename _Identifier, typename _Gradient>
-  struct AdjointVectorAccess : public VectorAccessInterface<_Real, _Identifier> {
-      using Real = CODI_DD(_Real, double);           ///< See AdjointVectorAccess.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See AdjointVectorAccess.
-      using Gradient = CODI_DD(_Gradient, double);   ///< See AdjointVectorAccess.
+  template<typename T_Real, typename T_Identifier, typename T_Gradient>
+  struct AdjointVectorAccess : public VectorAccessInterface<T_Real, T_Identifier> {
+      using Real = CODI_DD(T_Real, double);           ///< See AdjointVectorAccess.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See AdjointVectorAccess.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See AdjointVectorAccess.
 
     private:
 

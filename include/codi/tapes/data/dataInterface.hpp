@@ -102,15 +102,15 @@ namespace codi {
    *   - forEachForward() / forEachReverse(): Call a function for each data item in this DataInterface.
    *
    *
-   * @tparam _NestedData         Nested data vector needs to implement this DataInterface.
-   * @tparam _InternalPosHandle  Position handle of the the implementing class for internal size computations.
+   * @tparam T_NestedData         Nested data vector needs to implement this DataInterface.
+   * @tparam T_InternalPosHandle  Position handle of the the implementing class for internal size computations.
    */
-  template<typename _NestedData = void, typename _InternalPosHandle = size_t>
+  template<typename T_NestedData = void, typename T_InternalPosHandle = size_t>
   struct DataInterface {
     public:
 
-      using NestedData = CODI_DD(_NestedData, DataInterface);         ///< See DataInterface
-      using InternalPosHandle = CODI_DD(_InternalPosHandle, size_t);  ///< See DataInterface
+      using NestedData = CODI_DD(T_NestedData, DataInterface);         ///< See DataInterface
+      using InternalPosHandle = CODI_DD(T_InternalPosHandle, size_t);  ///< See DataInterface
 
       using Position = EmptyPosition;  ///< Contains position data for this DataInterface and all nested interfaces
 

@@ -16,15 +16,15 @@ namespace codi {
    *
    * All information must be provided as arguments and all computations must be constexpr.
    *
-   * @tparam _ResultType  Type of the computed result.
-   * @tparam _Impl  Class implementing this interface.
+   * @tparam T_ResultType  Type of the computed result.
+   * @tparam T_Impl  Class implementing this interface.
    */
-  template<typename _ResultType, typename _Impl>
+  template<typename T_ResultType, typename T_Impl>
   struct CompileTimeTraversalLogic {
     public:
 
-      using ResultType = CODI_DD(_ResultType, size_t);         ///< See CompileTimeTraversalLogic.
-      using Impl = CODI_DD(_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic.
+      using ResultType = CODI_DD(T_ResultType, size_t);         ///< See CompileTimeTraversalLogic.
+      using Impl = CODI_DD(T_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic.
 
       static constexpr ResultType NeutralElement = {};  ///< Neutral element of the reduction.
 

@@ -21,14 +21,14 @@ namespace codi {
    *
    * Access to the adjoint vector is gained through the VectorAccessInterface.
    *
-   * @tparam _Type  The underlying CoDiPack type.
+   * @tparam T_Type  The underlying CoDiPack type.
    */
-  template<typename _Type>
+  template<typename T_Type>
   struct CustomAdjointVectorInterface {
     public:
 
       /// See CustomAdjointVectorInterface
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface
@@ -109,16 +109,16 @@ namespace codi {
    *
    * For details on custom vector evaluations see CustomAdjointVectorEvaluationTapeInterface.
    *
-   * @tparam _Type  The underlying CoDiPack type.
-   * @tparam _Gradient  Type of the entries of the custom adjoint vector.
+   * @tparam T_Type  The underlying CoDiPack type.
+   * @tparam T_Gradient  Type of the entries of the custom adjoint vector.
    */
-  template<typename _Type, typename _Gradient>
-  struct CustomAdjointVectorHelper : public CustomAdjointVectorInterface<_Type> {
+  template<typename T_Type, typename T_Gradient>
+  struct CustomAdjointVectorHelper : public CustomAdjointVectorInterface<T_Type> {
     public:
 
       ///< See CustomAdjointVectorHelper.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Gradient = CODI_DD(_Gradient, double);  ///< See CustomAdjointVectorHelper.
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Gradient = CODI_DD(T_Gradient, double);  ///< See CustomAdjointVectorHelper.
 
       using Base = CustomAdjointVectorInterface<Type>;  ///< Abbreviation for the base class.
 

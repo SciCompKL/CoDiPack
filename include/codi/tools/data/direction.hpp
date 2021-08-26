@@ -15,16 +15,16 @@ namespace codi {
    *
    * Can be used as the gradient template argument in active CoDiPack types.
    *
-   * @tparam _Real  Type of the vector entries.
-   * @tparam _dim  Dimension of the vector mode.
+   * @tparam T_Real  Type of the vector entries.
+   * @tparam T_dim  Dimension of the vector mode.
    */
-  template<typename _Real, size_t _dim>
+  template<typename T_Real, size_t T_dim>
   struct Direction {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See Direction.
+      using Real = CODI_DD(T_Real, double);  ///< See Direction.
 
-      static size_t constexpr dim = _dim;  ///< See Direction.
+      static size_t constexpr dim = T_dim;  ///< See Direction.
 
     private:
       Real vector[dim];
@@ -251,11 +251,11 @@ namespace codi {
   }
 
 #ifndef DOXYGEN_DISABLE
-  template<typename _Type>
-  struct RealTraits::IsTotalZero<_Type, GradientTraits::EnableIfDirection<_Type>> {
+  template<typename T_Type>
+  struct RealTraits::IsTotalZero<T_Type, GradientTraits::EnableIfDirection<T_Type>> {
     public:
 
-      using Type = CODI_DD(_Type, TEMPLATE(Direction<double, 1>));
+      using Type = CODI_DD(T_Type, TEMPLATE(Direction<double, 1>));
       using Real = typename GradientTraits::Real<Type>;
 
       static CODI_INLINE bool isTotalZero(Type const& v) {
@@ -268,11 +268,11 @@ namespace codi {
       }
   };
 
-  template<typename _Type>
-  struct RealTraits::IsTotalFinite<_Type, GradientTraits::EnableIfDirection<_Type>> {
+  template<typename T_Type>
+  struct RealTraits::IsTotalFinite<T_Type, GradientTraits::EnableIfDirection<T_Type>> {
     public:
 
-      using Type = CODI_DD(_Type, TEMPLATE(Direction<double, 1>));
+      using Type = CODI_DD(T_Type, TEMPLATE(Direction<double, 1>));
 
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         for (size_t i = 0; i < GradientTraits::dim<Type>(); ++i) {
@@ -286,11 +286,11 @@ namespace codi {
 
   namespace GradientTraits {
 
-    template<typename _Gradient>
-    struct TraitsImplementation<_Gradient, EnableIfDirection<_Gradient>> {
+    template<typename T_Gradient>
+    struct TraitsImplementation<T_Gradient, EnableIfDirection<T_Gradient>> {
       public:
 
-        using Gradient = CODI_DD(_Gradient, TEMPLATE(Direction<double, 1>));
+        using Gradient = CODI_DD(T_Gradient, TEMPLATE(Direction<double, 1>));
         using Real = typename Gradient::Real;
 
         static size_t constexpr dim = Gradient::dim;

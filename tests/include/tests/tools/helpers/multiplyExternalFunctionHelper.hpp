@@ -2,10 +2,10 @@
 
 #include "../../../../../include/codi.hpp"
 
-template<typename _Number, typename = void>
+template<typename T_Number, typename = void>
 struct MultiplyExternalFunctionHelper {
   public:
-    using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
+    using Number = CODI_DECLARE_DEFAULT(T_Number, codi::ActiveType<CODI_ANY>);
 
     static Number create(Number const& x1, Number const& x2, bool passive) {
       codi::CODI_UNUSED(passive);
@@ -14,10 +14,10 @@ struct MultiplyExternalFunctionHelper {
     }
 };
 
-template<typename _Number>
-struct MultiplyExternalFunctionHelper<_Number, codi::TapeTraits::EnableIfReverseTape<typename _Number::Tape>> {
+template<typename T_Number>
+struct MultiplyExternalFunctionHelper<T_Number, codi::TapeTraits::EnableIfReverseTape<typename T_Number::Tape>> {
   public:
-    using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
+    using Number = CODI_DECLARE_DEFAULT(T_Number, codi::ActiveType<CODI_ANY>);
 
     using Real = typename Number::Real;
 

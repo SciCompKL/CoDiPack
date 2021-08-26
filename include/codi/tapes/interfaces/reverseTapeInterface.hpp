@@ -32,17 +32,17 @@ namespace codi {
    * Here is an example for using a tape (documentation/examples/reverseModeAD.cpp):
    * \snippet examples/reverseModeAD.cpp Reverse mode AD
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
    */
-  template<typename _Real, typename _Gradient, typename _Identifier>
-  struct ReverseTapeInterface : public virtual InternalStatementRecordingTapeInterface<_Identifier>,
-                                public virtual GradientAccessTapeInterface<_Gradient, _Gradient> {
+  template<typename T_Real, typename T_Gradient, typename T_Identifier>
+  struct ReverseTapeInterface : public virtual InternalStatementRecordingTapeInterface<T_Identifier>,
+                                public virtual GradientAccessTapeInterface<T_Gradient, T_Gradient> {
     public:
-      using Real = CODI_DD(_Real, double);           ///< See ReverseTapeInterface.
-      using Gradient = CODI_DD(_Gradient, double);   ///< See ReverseTapeInterface.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See ReverseTapeInterface.
+      using Real = CODI_DD(T_Real, double);           ///< See ReverseTapeInterface.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See ReverseTapeInterface.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See ReverseTapeInterface.
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 

@@ -25,30 +25,30 @@ namespace codi {
    *
    * A tape that implements this interface correctly can be used in all helper structures of CoDiPack.
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
-   * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
-   * @tparam _Position  Global tape position, usually chosen as Tape::Position.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
    */
-  template<typename _Real, typename _Gradient, typename _Identifier, typename _Position>
+  template<typename T_Real, typename T_Gradient, typename T_Identifier, typename T_Position>
   struct FullTapeInterface
-      : public virtual CustomAdjointVectorEvaluationTapeInterface<_Position>,
-        public virtual DataManagementTapeInterface<_Real, _Identifier>,
-        public virtual ExternalFunctionTapeInterface<_Real, _Gradient, _Identifier>,
-        public virtual ForwardEvaluationTapeInterface<_Position>,
-        public virtual GradientAccessTapeInterface<_Gradient, _Identifier>,
-        public virtual IdentifierInformationTapeInterface<_Real, _Gradient, _Identifier>,
-        public virtual InternalStatementRecordingTapeInterface<_Identifier>,
-        public virtual ManualStatementPushTapeInterface<_Real, _Gradient, _Identifier>,
-        public virtual PositionalEvaluationTapeInterface<_Position>,
-        public virtual PreaccumulationEvaluationTapeInterface<_Real, _Gradient, _Identifier, _Position>,
-        public virtual PrimalEvaluationTapeInterface<_Real, _Identifier, _Position>,
-        public virtual ReverseTapeInterface<_Real, _Gradient, _Identifier> {
+      : public virtual CustomAdjointVectorEvaluationTapeInterface<T_Position>,
+        public virtual DataManagementTapeInterface<T_Real, T_Identifier>,
+        public virtual ExternalFunctionTapeInterface<T_Real, T_Gradient, T_Identifier>,
+        public virtual ForwardEvaluationTapeInterface<T_Position>,
+        public virtual GradientAccessTapeInterface<T_Gradient, T_Identifier>,
+        public virtual IdentifierInformationTapeInterface<T_Real, T_Gradient, T_Identifier>,
+        public virtual InternalStatementRecordingTapeInterface<T_Identifier>,
+        public virtual ManualStatementPushTapeInterface<T_Real, T_Gradient, T_Identifier>,
+        public virtual PositionalEvaluationTapeInterface<T_Position>,
+        public virtual PreaccumulationEvaluationTapeInterface<T_Real, T_Gradient, T_Identifier, T_Position>,
+        public virtual PrimalEvaluationTapeInterface<T_Real, T_Identifier, T_Position>,
+        public virtual ReverseTapeInterface<T_Real, T_Gradient, T_Identifier> {
     public:
 
-      using Real = CODI_DD(_Real, double);                 ///< See FullTapeInterface.
-      using Gradient = CODI_DD(_Gradient, double);         ///< See FullTapeInterface.
-      using Identifier = CODI_DD(_Identifier, int);        ///< See FullTapeInterface.
-      using Position = CODI_DD(_Position, EmptyPosition);  ///< See FullTapeInterface.
+      using Real = CODI_DD(T_Real, double);                 ///< See FullTapeInterface.
+      using Gradient = CODI_DD(T_Gradient, double);         ///< See FullTapeInterface.
+      using Identifier = CODI_DD(T_Identifier, int);        ///< See FullTapeInterface.
+      using Position = CODI_DD(T_Position, EmptyPosition);  ///< See FullTapeInterface.
   };
 }

@@ -2,20 +2,20 @@
 
 #include "../../../../include/codi.hpp"
 
-template<typename _Number, typename = void>
+template<typename T_Number, typename = void>
 struct MultiplyExternalFunction {
   public:
-    using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
+    using Number = CODI_DECLARE_DEFAULT(T_Number, codi::ActiveType<CODI_ANY>);
 
     static Number create(Number const& x1, Number const& x2) {
       return x1 * x2;
     }
 };
 
-template<typename _Number>
-struct MultiplyExternalFunction<_Number, codi::TapeTraits::EnableIfReverseTape<typename _Number::Tape>> {
+template<typename T_Number>
+struct MultiplyExternalFunction<T_Number, codi::TapeTraits::EnableIfReverseTape<typename T_Number::Tape>> {
   public:
-    using Number = CODI_DECLARE_DEFAULT(_Number, codi::ActiveType<CODI_ANY>);
+    using Number = CODI_DECLARE_DEFAULT(T_Number, codi::ActiveType<CODI_ANY>);
 
     using Tape = CODI_DECLARE_DEFAULT(typename Number::Tape,
                                       CODI_TEMPLATE(codi::FullTapeInterface<double, double, int, codi::EmptyPosition>));

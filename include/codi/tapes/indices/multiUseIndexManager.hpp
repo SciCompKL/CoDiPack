@@ -17,13 +17,13 @@ namespace codi {
    * Performs reference counting for each index. If the reference count is zero, then the index is freed and given back
    * to the ReuseIndexManager.
    *
-   * @tparam _Index   Type for the identifier, usually an integer type.
+   * @tparam T_Index   Type for the identifier, usually an integer type.
    */
-  template<typename _Index>
-  struct MultiUseIndexManager : public ReuseIndexManager<_Index> {
+  template<typename T_Index>
+  struct MultiUseIndexManager : public ReuseIndexManager<T_Index> {
     public:
 
-      using Index = CODI_DD(_Index, int);     ///< See MultiUseIndexManager.
+      using Index = CODI_DD(T_Index, int);     ///< See MultiUseIndexManager.
       using Base = ReuseIndexManager<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/

@@ -31,17 +31,17 @@ namespace codi {
    * Here is an example for manual statement push (documentation/examples/manualStatementPushTapeInterface.cpp):
    * \snippet examples/manualStatementPushTapeInterface.cpp Manual statement push
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
-   * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
    */
-  template<typename _Real, typename _Gradient, typename _Identifier>
+  template<typename T_Real, typename T_Gradient, typename T_Identifier>
   struct ManualStatementPushTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See ManualStatementPushTapeInterface.
-      using Gradient = CODI_DD(_Gradient, double);   ///< See ManualStatementPushTapeInterface.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See ManualStatementPushTapeInterface.
+      using Real = CODI_DD(T_Real, double);           ///< See ManualStatementPushTapeInterface.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See ManualStatementPushTapeInterface.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See ManualStatementPushTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

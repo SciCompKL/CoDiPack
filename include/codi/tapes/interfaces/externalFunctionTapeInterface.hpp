@@ -7,7 +7,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Tape>
+  template<typename T_Tape>
   struct ExternalFunction;
 
   /**
@@ -32,17 +32,17 @@ namespace codi {
    * Here is an example (documentation/examples/externalFunctionTapeInterface.cpp):
    * \snippet examples/externalFunctionTapeInterface.cpp External function
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
-   * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
    */
-  template<typename _Real, typename _Gradient, typename _Identifier>
+  template<typename T_Real, typename T_Gradient, typename T_Identifier>
   struct ExternalFunctionTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See ExternalFunctionTapeInterface.
-      using Gradient = CODI_DD(_Gradient, double);   ///< See ExternalFunctionTapeInterface.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See ExternalFunctionTapeInterface.
+      using Real = CODI_DD(T_Real, double);           ///< See ExternalFunctionTapeInterface.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See ExternalFunctionTapeInterface.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See ExternalFunctionTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

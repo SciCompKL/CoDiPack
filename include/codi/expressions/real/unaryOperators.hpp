@@ -16,11 +16,11 @@ namespace codi {
   /// @{
 
   /// UnaryOperation implementation for operator -
-  template<typename _Real>
-  struct OperationUnaryMinus : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationUnaryMinus : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -80,11 +80,11 @@ namespace codi {
   using std::tgamma;
 
   /// UnaryOperation implementation for abs
-  template<typename _Real>
-  struct OperationAbs : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationAbs : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -114,11 +114,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for acos
-  template<typename _Real>
-  struct OperationAcos : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationAcos : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -143,11 +143,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for asin
-  template<typename _Real>
-  struct OperationAsin : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationAsin : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -172,11 +172,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for atan
-  template<typename _Real>
-  struct OperationAtan : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationAtan : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -196,11 +196,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for atanh
-  template<typename _Real>
-  struct OperationAtanh : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationAtanh : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -225,11 +225,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for cbrt
-  template<typename _Real>
-  struct OperationCbrt : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationCbrt : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -263,11 +263,11 @@ namespace codi {
   }
 
   /// UnaryOperation implementation for cos
-  template<typename _Real>
-  struct OperationCos : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationCos : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -287,11 +287,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for cosh
-  template<typename _Real>
-  struct OperationCosh : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationCosh : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -311,11 +311,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for erf
-  template<typename _Real>
-  struct OperationErf : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationErf : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -335,11 +335,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for erfc
-  template<typename _Real>
-  struct OperationErfc : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationErfc : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -359,11 +359,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for exp
-  template<typename _Real>
-  struct OperationExp : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationExp : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -413,11 +413,11 @@ namespace codi {
   }
 
   /// UnaryOperation implementation for log
-  template<typename _Real>
-  struct OperationLog : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationLog : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -442,11 +442,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for log10
-  template<typename _Real>
-  struct OperationLog10 : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationLog10 : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -477,11 +477,11 @@ namespace codi {
   }
 
   /// UnaryOperation implementation for sin
-  template<typename _Real>
-  struct OperationSin : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationSin : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -501,11 +501,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for sinh
-  template<typename _Real>
-  struct OperationSinh : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationSinh : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -525,11 +525,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for sqrt
-  template<typename _Real>
-  struct OperationSqrt : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationSqrt : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -557,11 +557,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tan
-  template<typename _Real>
-  struct OperationTan : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationTan : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -587,11 +587,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tanh
-  template<typename _Real>
-  struct OperationTanh : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationTanh : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
@@ -611,11 +611,11 @@ namespace codi {
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for tgamma
-  template<typename _Real>
-  struct OperationTgamma : public UnaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationTgamma : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>

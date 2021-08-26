@@ -14,18 +14,18 @@ namespace codi {
    *
    * See StatementPushHelper for details.
    *
-   * @tparam _Type  The CoDiPack type on whose tape the statements are pushed.
-   * @tparam _Impl  The actual implementation.
+   * @tparam T_Type  The CoDiPack type on whose tape the statements are pushed.
+   * @tparam T_Impl  The actual implementation.
    */
-  template<typename _Type, typename _Impl>
+  template<typename T_Type, typename T_Impl>
   struct StatementPushHelperBase {
     public:
 
       /// See StatementPushHelperBase.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       /// See StatementPushHelperBase.
-      using Impl = CODI_DD(_Impl, CODI_T(StatementPushHelperBase<CODI_ANY, CODI_ANY>));
+      using Impl = CODI_DD(T_Impl, CODI_T(StatementPushHelperBase<CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;  ///< See LhsExpressionInterface.
 
@@ -98,14 +98,14 @@ namespace codi {
    *
    * After a statement is pushed, the helper can be used again for the next statement.
    *
-   * @tparam _Type  The CoDiPack type on whose tape the statements are pushed.
+   * @tparam T_Type  The CoDiPack type on whose tape the statements are pushed.
    */
-  template<typename _Type, typename = void>
-  struct StatementPushHelper : public StatementPushHelperBase<_Type, StatementPushHelper<_Type>> {
+  template<typename T_Type, typename = void>
+  struct StatementPushHelper : public StatementPushHelperBase<T_Type, StatementPushHelper<T_Type>> {
     public:
 
       ///< See StatementPushHelper.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
@@ -172,13 +172,13 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
 
   /// Specialization for forward tapes.
-  template<typename _Type>
-  struct StatementPushHelper<_Type, TapeTraits::EnableIfForwardTape<typename _Type::Tape>>
-      : public StatementPushHelperBase<_Type, StatementPushHelper<_Type>> {
+  template<typename T_Type>
+  struct StatementPushHelper<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>>
+      : public StatementPushHelperBase<T_Type, StatementPushHelper<T_Type>> {
     public:
 
       /// See StatementPushHelper.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;          ///< See LhsExpressionInterface.
       using Gradient = typename Type::Gradient;  ///< See LhsExpressionInterface.

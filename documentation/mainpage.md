@@ -20,8 +20,8 @@ will enhance and extend CoDiPack in the future.
 CoDiPack is a header only library.
 The only file the user needs to include is `codi.hpp`.
 The only other requirement is a c++11 compliant compiler
-where one usually needs to specify '--std=c++11' in compiler arguments.
-CoDiPack is tested with gcc and the intel compiler.
+where one usually needs to specify '-std=c++11' in compiler arguments.
+CoDiPack is tested with gcc, clang, and the Intel compiler.
 
 The file `codi.hpp` defines several datatypes. The most important ones are:
  - Implementations of the forward mode of AD:
@@ -84,7 +84,7 @@ for the gcc compiler or with
 ~~~~{.txt}
   icpc  -I<path to codi>/include -std=c++11 -g -o forward forward.cpp
 ~~~~
-for the intel compiler.
+for the Intel compiler.
 
 You can get CoDiPack from https://www.scicomp.uni-kl.de/software/codi.
 

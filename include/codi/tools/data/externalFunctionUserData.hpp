@@ -34,10 +34,10 @@ namespace codi {
           virtual DataItemBase* clone() = 0;
       };
 
-      template<typename _Type>
+      template<typename T_Type>
       struct DataItem : public DataItemBase {
         public:
-          using Type = CODI_DD(_Type, CODI_ANY);
+          using Type = CODI_DD(T_Type, CODI_ANY);
 
           explicit DataItem(Type const& value) {
             data = (void*)new Type(value);

@@ -14,13 +14,13 @@ namespace codi {
    *
    * Called range is: (0,pos]
    *
-   * @tparam _pos  Starting value for the loop. Counted downwards.
+   * @tparam T_pos  Starting value for the loop. Counted downwards.
    */
-  template<size_t _pos>
+  template<size_t T_pos>
   struct CompileTimeLoop {
     public:
 
-      static size_t constexpr pos = _pos;  ///< See CompileTimeLoop.
+      static size_t constexpr pos = T_pos;  ///< See CompileTimeLoop.
 
       /// Func is evaluated with args as func(pos, args...)
       template<typename Func, typename... Args>

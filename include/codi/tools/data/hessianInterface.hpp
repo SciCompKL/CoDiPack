@@ -15,7 +15,7 @@ namespace codi {
    *  - j: Input value of the function. First derivative direction. Range: [0,n).
    *  - k: Input value of the function. Second derivative direction. Range: [0,n).
    *
-   * @tparam _T  Data type.
+   * @tparam T_T  Data type.
    */
   /**
    * @brief General interface for Hessian access in CoDiPack.
@@ -24,13 +24,13 @@ namespace codi {
    *
    * See \ref sec_namingConventions for the mathematical nomenclature of the arguments and components.
    *
-   * @tparam _T  The data type in the Hessian.
+   * @tparam T_T  The data type in the Hessian.
    */
-  template<typename _T>
+  template<typename T_T>
   struct HessianInterface {
     public:
 
-      using T = CODI_DECLARE_DEFAULT(_T, double);  ///< See HessianInterface.
+      using T = CODI_DECLARE_DEFAULT(T_T, double);  ///< See HessianInterface.
 
       virtual ~HessianInterface() {}  ///< Destructor
 

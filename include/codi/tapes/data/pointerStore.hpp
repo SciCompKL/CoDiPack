@@ -32,13 +32,13 @@ namespace codi {
    *                                                    //                                   p1 (double*), p2 (int*));
    * \endcode
    *
-   * @tparam _ChunkData  Implementation of ChunkBase.
+   * @tparam T_ChunkData  Implementation of ChunkBase.
    */
-  template<typename _ChunkData>
+  template<typename T_ChunkData>
   struct PointerStore {
     public:
 
-      using ChunkData = CODI_DD(_ChunkData, ChunkBase);  ///< See PointerStore.
+      using ChunkData = CODI_DD(T_ChunkData, ChunkBase);  ///< See PointerStore.
 
       /// Calls func(pointers, args...);
       template<typename FuncObj, typename... Args>
@@ -61,11 +61,11 @@ namespace codi {
    *
    * See PointerStore for details.
    */
-  template<typename _Data1>
-  struct PointerStore<Chunk1<_Data1> > {
+  template<typename T_Data1>
+  struct PointerStore<Chunk1<T_Data1> > {
     public:
 
-      using Data1 = CODI_DD(_Data1, int);  ///< Data entry 1.
+      using Data1 = CODI_DD(T_Data1, int);  ///< Data entry 1.
 
       using Chunk = Chunk1<Data1>;  ///< Template specialization type.
 
@@ -104,12 +104,12 @@ namespace codi {
    *
    * See PointerStore for details.
    */
-  template<typename _Data1, typename _Data2>
-  struct PointerStore<Chunk2<_Data1, _Data2> > {
+  template<typename T_Data1, typename T_Data2>
+  struct PointerStore<Chunk2<T_Data1, T_Data2> > {
     public:
 
-      using Data1 = CODI_DD(_Data1, int);  ///< Data entry 1.
-      using Data2 = CODI_DD(_Data2, int);  ///< Data entry 2.
+      using Data1 = CODI_DD(T_Data1, int);  ///< Data entry 1.
+      using Data2 = CODI_DD(T_Data2, int);  ///< Data entry 2.
 
       using Chunk = Chunk2<Data1, Data2>;  ///< Template specialization type.
 
@@ -148,13 +148,13 @@ namespace codi {
    *
    * See PointerStore for details.
    */
-  template<typename _Data1, typename _Data2, typename _Data3>
-  struct PointerStore<Chunk3<_Data1, _Data2, _Data3> > {
+  template<typename T_Data1, typename T_Data2, typename T_Data3>
+  struct PointerStore<Chunk3<T_Data1, T_Data2, T_Data3> > {
     public:
 
-      using Data1 = CODI_DD(_Data1, int);  ///< Data entry 1.
-      using Data2 = CODI_DD(_Data2, int);  ///< Data entry 2.
-      using Data3 = CODI_DD(_Data3, int);  ///< Data entry 3.
+      using Data1 = CODI_DD(T_Data1, int);  ///< Data entry 1.
+      using Data2 = CODI_DD(T_Data2, int);  ///< Data entry 2.
+      using Data3 = CODI_DD(T_Data3, int);  ///< Data entry 3.
 
       using Chunk = Chunk3<Data1, Data2, Data3>;  ///< Template specialization type.
 
@@ -194,14 +194,14 @@ namespace codi {
    *
    * See PointerStore for details.
    */
-  template<typename _Data1, typename _Data2, typename _Data3, typename _Data4>
-  struct PointerStore<Chunk4<_Data1, _Data2, _Data3, _Data4> > {
+  template<typename T_Data1, typename T_Data2, typename T_Data3, typename T_Data4>
+  struct PointerStore<Chunk4<T_Data1, T_Data2, T_Data3, T_Data4> > {
     public:
 
-      using Data1 = CODI_DD(_Data1, int);  ///< Data entry 1.
-      using Data2 = CODI_DD(_Data2, int);  ///< Data entry 2.
-      using Data3 = CODI_DD(_Data3, int);  ///< Data entry 3.
-      using Data4 = CODI_DD(_Data4, int);  ///< Data entry 4.
+      using Data1 = CODI_DD(T_Data1, int);  ///< Data entry 1.
+      using Data2 = CODI_DD(T_Data2, int);  ///< Data entry 2.
+      using Data3 = CODI_DD(T_Data3, int);  ///< Data entry 3.
+      using Data4 = CODI_DD(T_Data4, int);  ///< Data entry 4.
 
       using Chunk = Chunk4<Data1, Data2, Data3, Data4>;  ///< Template specialization type.
 

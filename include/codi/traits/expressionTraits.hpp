@@ -10,16 +10,16 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Real, typename _Impl>
+  template<typename T_Real, typename T_Impl>
   struct ExpressionInterface;
 
-  template<typename _Real, typename _Gradient, typename _Tape, typename _Impl>
+  template<typename T_Real, typename T_Gradient, typename T_Tape, typename T_Impl>
   struct LhsExpressionInterface;
 
-  template<typename _Real>
+  template<typename T_Real>
   struct ConstantExpression;
 
-  template<typename _Tape>
+  template<typename T_Tape>
   struct StaticContextActiveType;
 
   /// Traits for everything that can be an expression e.g. codi::RealReverse, a + b, etc..

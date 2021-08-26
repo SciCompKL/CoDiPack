@@ -16,13 +16,13 @@ namespace codi {
    *
    * Implementations need to call the link methods for each argument of the node.
    *
-   * @tparam _Impl
+   * @tparam T_Impl
    */
-  template<typename _Impl>
+  template<typename T_Impl>
   struct NodeInterface {
     public:
 
-      using Impl = CODI_DD(_Impl, NodeInterface);  ///< See NodeInterface.
+      using Impl = CODI_DD(T_Impl, NodeInterface);  ///< See NodeInterface.
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
