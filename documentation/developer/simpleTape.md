@@ -8,16 +8,16 @@ Example tape implementation with CoDiPack {#Developer_Simple_Tape}
 **Full code:**
 \snippet developer/simpleTape.cpp Simple Tape
 
-The implementation of CoDiPack tape starts with two things:
+The implementation of CoDiPack tape starts with two things,
  - deciding on a taping strategy and the data layout as well as
- - the codi:ReverseTapeInterface
+ - the codi:ReverseTapeInterface.
 
-Here we start first with the discussion about the data layout. In order to keep things simple we want to implement an
+We start with the discussion of the data layout. In order to keep things simple we want to implement an
 operator taping approach that stores the primal input values of each operation. The
 identifiers are not managed, we will simply generate a new one whenever required.
 
-An operator taping approach will break down all statements in the program to its operations for the AD tool. A statement
-like `w = sqrt( a * a + b * b)` will be broken down into the single assignment code
+An operator taping approach will break down all statements in the program to their operations for the AD tool. A statement
+like `w = sqrt(a * a + b * b)` will be broken down into the single assignment code
 ```
   t1 = a * a;
   t2 = b * b;
@@ -27,12 +27,12 @@ like `w = sqrt( a * a + b * b)` will be broken down into the single assignment c
 
 With this consideration we only need to handle binary and unary operations. For each of these operations we need to
 store the necessary data in order to be able to evaluate the reverse AD equation. For a binary operation
-\f$ y = f_{bin}(x, z)\f$ the required data is:
+\f$ y = f_{bin}(x, z)\f$ the required data consists of
  - the primal values of \f$x\f$ and \f$z\f$,
  - the identifiers of \f$x\f$, \f$z\f$ and \f$y\f$ as well as
  - an enumerator to identify the operation \f$f_{bin}\f$.
 
-The same data is required for an unary operation \f$ y = f_{un}(x)\f$, only that the data items with respect to \f$z\f$
+The same data is required for an unary operation \f$ y = f_{un}(x)\f$ except that the data items with respect to \f$z\f$
 are omitted. Each type of data in the above list will be stored in a separate data stream (codi::DataInterface). That
 is, we have one data stream for primal values, one for identifiers and one for the operators.
 

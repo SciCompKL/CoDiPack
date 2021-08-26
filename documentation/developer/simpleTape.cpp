@@ -14,6 +14,7 @@ enum class OperatorCode {
 };
 
 struct OperatorCodeLookup {
+  public:
     template<typename Op>
     static OperatorCode get();
 };
@@ -41,7 +42,7 @@ SPECIALIZE_LOOKUP(OperationCos, COS)
 //! [Storing - Operator codes]
 
 struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
-
+  public:
     using Real = double;
     using Gradient = double;
     using Identifier = int;
@@ -93,7 +94,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
 //! [Identifiers - Registration]
     template<typename Lhs> void registerInput(codi::LhsExpressionInterface<Real, Gradient, SimpleTape, Lhs>& value) {
-      if(active) {
+      if (active) {
         value.cast().getIdentifier() = generateIdentifier();
       } else {
         value.cast().getIdentifier() = 0;
@@ -187,7 +188,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 //! [Storing - Entry]
     template<typename Lhs, typename Rhs>
     void store(Lhs& lhs, Rhs const& rhs) {
-      if(active) {
+      if (active) {
         storeOperator(rhs, lhs.value(), lhs.getIdentifier(), true);
       } else {
         lhs.value() = rhs.getValue();
@@ -214,7 +215,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
     }
 
     Gradient const& gradient(Identifier const& identifier) const {
-      if(identifier < (int)adjointVec.size()) {
+      if (identifier < (int)adjointVec.size()) {
         return adjointVec[identifier];
       } else {
         return adjointVec[0];
@@ -226,10 +227,10 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
 //! [Identifiers - Helper]
     void checkAndResizeAdjoints(int const& identifier) {
-      if(identifier > maxIdentifier) {
+      if (identifier > maxIdentifier) {
         std::cerr << "Error: Tryinig to access an identifier which was not distributed." << std::endl;
       }
-      if(identifier >= (int)adjointVec.size()) { // Only resize if necessary
+      if (identifier >= (int)adjointVec.size()) { // Only resize if necessary
         adjointVec.resize(maxIdentifier + 1);
       }
     }
@@ -244,6 +245,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 //! [Storing - Helper class]
     template<typename Operation, typename = void>
     struct StoreOperator_Impl {
+      public:
         template<typename Exp>
         static void store(
             Exp const& exp,
@@ -257,6 +259,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 //! [Storing - Unary operator]
     template<typename Arg, template<typename> class Op>
     struct StoreOperator_Impl<codi::UnaryExpression<double, Arg, Op>> {
+      public:
         static void store(
             codi::UnaryExpression<double, Arg, Op> const& exp, SimpleTape& tape,
             double& resultValue, int& resultIdentifier, bool copy)
@@ -267,7 +270,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
           tape.storeOperator(exp.arg, argValue, argIdentifier, false);
 
-          if(argIdentifier != 0) {
+          if (argIdentifier != 0) {
             // Active argument or branch => store the operator
             tape.operatorData.reserveItems(1);
             tape.identifierData.reserveItems(2);
@@ -292,6 +295,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 //! [Storing - Other operators]
     template<typename Arg1, typename Arg2, template<typename> class Op>
     struct StoreOperator_Impl<codi::BinaryExpression<double, Arg1, Arg2, Op>> {
+      public:
         static void store(
             codi::BinaryExpression<double, Arg1, Arg2, Op> const& exp, SimpleTape& tape,
             double& resultValue, int& resultIdentifier, bool copy)
@@ -305,7 +309,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
           tape.storeOperator(exp.argA, argAValue, argAIdentifier, false);
           tape.storeOperator(exp.argB, argBValue, argBIdentifier, false);
 
-          if(argAIdentifier != 0 || argBIdentifier != 0) {
+          if (argAIdentifier != 0 || argBIdentifier != 0) {
             // Active argument or branch => store the operator
             tape.operatorData.reserveItems(1);
             tape.identifierData.reserveItems(3);
@@ -331,6 +335,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
     template<typename Exp>
     struct StoreOperator_Impl<Exp, codi::ExpressionTraits::EnableIfConstantExpression<Exp>> {
+      public:
         static void store(
             codi::ConstantExpression<double> const& exp, SimpleTape& tape,
             double& resultValue, int& resultIdentifier, bool copy)
@@ -342,11 +347,12 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
     template<typename Exp>
     struct StoreOperator_Impl<Exp, codi::ExpressionTraits::EnableIfLhsExpression<Exp>> {
+      public:
         static void store(
             Exp const& exp, SimpleTape& tape,
             double& resultValue, int& resultIdentifier, bool copy)
         {
-          if(copy && 0 != exp.getIdentifier()) {
+          if (copy && 0 != exp.getIdentifier()) {
             // Active argument and a copy operation => store the operator
             tape.operatorData.reserveItems(1);
             tape.identifierData.reserveItems(2);
@@ -384,7 +390,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
         /* operator data */
         size_t& curOperatorPos, size_t const& endOperatorPos, OperatorCode const* const operatorData) {
 
-      while(curOperatorPos > endOperatorPos) {
+      while (curOperatorPos > endOperatorPos) {
         curOperatorPos -= 1;
 
         int resultIdentifier = 0;
