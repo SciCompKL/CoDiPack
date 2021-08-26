@@ -1,7 +1,6 @@
-CoDiPack: Fast gradient evaluation in C++ based on Expression Templates.   {#mainpage}
-============
+# CoDiPack
 
-CoDiPack (Code Differentiation Package) is a tool for gradient evaluation in computer programs. It supports the features:
+[CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) (Code Differentiation Package) is a tool for gradient evaluation in computer programs. It supports the features:
   - Forward mode of Algorithmic Differentiation(AD)
   - Reverse mode of Algorithmic Differentiation(AD)
   - Different tape implementations
@@ -12,8 +11,11 @@ CoDiPack (Code Differentiation Package) is a tool for gradient evaluation in com
 The design principle for CoDiPack is that it is easy to use.
 However, it also gives experienced AD developers the full access to all the data structures.
 
-The Scientific Computing Group at the TU Kaiserslautern develops CoDiPack and
-will enhance and extend CoDiPack in the future.
+The [Scientific Computing Group](http://www.scicomp.uni-kl.de) at the TU Kaiserslautern develops CoDiPack and will enhance and extend CoDiPack in the future.
+There is a newsletter available at [codi-info@uni-kl.de](https://lists.uni-kl.de/uni-kl/subscribe/codi-info) and if you want to contact us please write a mail to [codi@scicomp.uni-kl.de](mailto:codi@scicomp.uni-kl.de).
+
+[![Build Status](https://travis-ci.org/SciCompKL/CoDiPack.svg?branch=develop)](https://travis-ci.org/SciCompKL/CoDiPack)
+[![DOI](https://zenodo.org/badge/37602249.svg)](https://zenodo.org/badge/latestdoi/37602249)
 
 ## Usage
 
@@ -35,25 +37,27 @@ The file `codi.hpp` defines several datatypes. The most important ones are:
 We recommend to use the codi::RealReverse type when AD is first introduced to an application.
 After that there should be no difficulties in replacing the codi::RealReverse type with other types.
 
-For the handling of libraries and the memory optimization of the tape there exist several helper structures.
-Most of them are introduced in the tutorial section:
- - codi::ExternalFunctionHelper
-   - Handle external libraries which can not be handled with AD
-   - Optimize large code regions
- - codi::PreaccumulationHelper
-   - Reduce memory for code section that have few input and output values but
-     are expensive to compute
- - codi::StatementPushHelper
-   - Reduce the memory for small code fragments where the derivatives are available from an external source
- - codi::CustomAdjointVectorHelper
-   - Evaluate reverse tapes with different vector settings
-   - No recompilation of the whole application on a vector dimension change
- - codi::DerivativeAccess
-   - More intuitive handling of higher order derivatives
+For further details please visit our [CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) web page.
 
-Please visit the \ref TutorialsAndExamples "tutorial page" for further information.
+## Miscellaneous information
 
-For a full type list of the file 'codi.hpp' please see \ref ActiveTypeList.
+### Debugging with gdb
+
+The ActiveReal type contains the tape as a static member.
+GDB prints the information of these members in its default settings, which makes the output quite verbose.
+We recommend to disable the output of the static class members.
+This can be done with
+~~~~{.txt}
+set print static-members off
+~~~~
+
+### Intel compiler options
+
+Because CoDiPack relies on inlining of the compiler the performance can drop if it is not done or ignored.
+Therefore we recomend to force inlining of CoDiPack with the option
+~~~~{.txt}
+-DCODI_UseForcedInlines 
+~~~~
 
 ## Hello World Example
 
@@ -86,7 +90,7 @@ for the gcc compiler or with
 ~~~~
 for the intel compiler.
 
-You can get CoDiPack from https://www.scicomp.uni-kl.de/software/codi.
+Please visit the [tutorial page](http://www.scicomp.uni-kl.de/codi/db/d3c/tutorialPage.html) for further information.
 
 ## Citation
 
