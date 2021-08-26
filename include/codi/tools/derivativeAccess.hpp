@@ -49,9 +49,9 @@ namespace codi {
      *
      * Calls itself recursively.
      *
-     * @tparam _Type CoDiPack type.
+     * @tparam T_Type CoDiPack type.
      * @tparam constant  If the argument has the constant modifier.
-     * @tparam selectionDepth  Maximum derivative order of _Type.
+     * @tparam selectionDepth  Maximum derivative order of T_Type.
      * @tparam order  Order of the derivative.
      * @tparam l  Index of the derivative of the chosen order.
      * @tparam primalBranch  Compile time selection of the primal or derivative branch.
@@ -61,10 +61,10 @@ namespace codi {
     struct SelectCompileTime;
 
     /// \copydoc SelectCompileTime
-    template<typename _Type, bool constant, size_t selectionDepth, size_t order, size_t l>
-    struct SelectCompileTime<_Type, constant, selectionDepth, order, l, true> {
+    template<typename T_Type, bool constant, size_t selectionDepth, size_t order, size_t l>
+    struct SelectCompileTime<T_Type, constant, selectionDepth, order, l, true> {
       public:
-        using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
         using Inner = SelectCompileTime<typename Type::Real, constant, selectionDepth - 1, order, l>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
@@ -78,10 +78,10 @@ namespace codi {
     };
 
     /// \copydoc SelectCompileTime
-    template<typename _Type, bool constant, size_t selectionDepth, size_t order, size_t l>
-    struct SelectCompileTime<_Type, constant, selectionDepth, order, l, false> {
+    template<typename T_Type, bool constant, size_t selectionDepth, size_t order, size_t l>
+    struct SelectCompileTime<T_Type, constant, selectionDepth, order, l, false> {
       public:
-        using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
         using Inner = SelectCompileTime<typename Type::Gradient, constant, selectionDepth - 1, order - 1,
                                         l - maximumDerivativesPrimalBranch(selectionDepth, order)>;
@@ -112,15 +112,15 @@ namespace codi {
      *
      * Calls itself recursively.
      *
-     * @tparam _Type CoDiPack type.
+     * @tparam T_Type CoDiPack type.
      * @tparam constant  If the argument has the constant modifier.
-     * @tparam _selectionDepth  Maximum derivative order of _Type.
+     * @tparam T_selectionDepth  Maximum derivative order of T_Type.
      */
-    template<typename _Type, bool constant, size_t _selectionDepth>
+    template<typename T_Type, bool constant, size_t T_selectionDepth>
     struct SelectRunTime {
       public:
-        using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-        static size_t constexpr selectionDepth = CODI_DD(_selectionDepth, CODI_UNDEFINED_VALUE);
+        using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        static size_t constexpr selectionDepth = CODI_DD(T_selectionDepth, CODI_UNDEFINED_VALUE);
 
         static_assert(std::is_same<typename Type::Real, typename Type::Gradient>::value,
                       "CoDiPack type needs to have the same real and gradient value for run time derivative "
@@ -143,10 +143,10 @@ namespace codi {
     };
 
     /// Terminator of selection recursion.
-    template<typename _Type, bool constant>
-    struct SelectRunTime<_Type, constant, 0> {
+    template<typename T_Type, bool constant>
+    struct SelectRunTime<T_Type, constant, 0> {
       public:
-        using Type = CODI_DD(_Type, double);
+        using Type = CODI_DD(T_Type, double);
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
         using RType = ArgType;
 
@@ -225,14 +225,14 @@ namespace codi {
    *   DA::derivative<2,2>(v) == v.gradient().gradient().value();
    * \endcode
    *
-   * @tparam _Type  The AD type for which the derivatives are selected. The type must implement LhsExpressionInterface.
+   * @tparam T_Type  The AD type for which the derivatives are selected. The type must implement LhsExpressionInterface.
    */
-  template<typename _Type>
+  template<typename T_Type>
   struct DerivativeAccess {
     public:
 
       /// See DerivativeAccess.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       /// Helper for the run time selection of derivatives.
       template<bool constant, size_t selectionDepth>

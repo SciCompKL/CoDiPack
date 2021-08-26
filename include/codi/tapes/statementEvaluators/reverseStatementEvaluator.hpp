@@ -18,11 +18,11 @@ namespace codi {
    *
    * Uses the StatementEvaluatorTapeInterface.
    *
-   * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
-  template<typename _Real>
-  struct ReverseStatementEvaluator : public StatementEvaluatorInterface<_Real> {
-      using Real = CODI_DD(_Real, double);  ///< See ReverseStatementEvaluator.
+  template<typename T_Real>
+  struct ReverseStatementEvaluator : public StatementEvaluatorInterface<T_Real> {
+      using Real = CODI_DD(T_Real, double);  ///< See ReverseStatementEvaluator.
 
     public:
 

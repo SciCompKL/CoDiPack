@@ -21,17 +21,17 @@ namespace codi {
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * @tparam _ActiveType  The type of the active type which is wrapped.
+   * @tparam T_ActiveType  The type of the active type which is wrapped.
    */
-  template<typename _ActiveType>
+  template<typename T_ActiveType>
   struct ImmutableActiveType
-      : public LhsExpressionInterface<typename _ActiveType::Real, typename _ActiveType::Gradient,
-                                      typename _ActiveType::Tape, ImmutableActiveType<_ActiveType>>,
-        public AssignmentOperators<typename _ActiveType::Tape, ImmutableActiveType<_ActiveType>>,
-        public IncrementOperators<typename _ActiveType::Tape, ImmutableActiveType<_ActiveType>> {
+      : public LhsExpressionInterface<typename T_ActiveType::Real, typename T_ActiveType::Gradient,
+                                      typename T_ActiveType::Tape, ImmutableActiveType<T_ActiveType>>,
+        public AssignmentOperators<typename T_ActiveType::Tape, ImmutableActiveType<T_ActiveType>>,
+        public IncrementOperators<typename T_ActiveType::Tape, ImmutableActiveType<T_ActiveType>> {
     public:
 
-      using ActiveType = CODI_DD(_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See ImmutableActiveType.
+      using ActiveType = CODI_DD(T_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See ImmutableActiveType.
       using Tape = typename ActiveType::Tape;                                 ///< See ActiveType.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.

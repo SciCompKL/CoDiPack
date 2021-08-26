@@ -46,14 +46,14 @@ namespace codi {
    * derivative computation or if the derivative does not depend on them. Inputs can be discarded if the derivative does
    * not depend on them.
    *
-   * @tparam _Type  The CoDiPack type that is used outside of the external function.
+   * @tparam T_Type  The CoDiPack type that is used outside of the external function.
    */
-  template<typename _Type>
+  template<typename T_Type>
   struct ExternalFunctionHelper {
     public:
 
       /// See ExternalFunctionHelper.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.

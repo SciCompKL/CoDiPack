@@ -47,15 +47,15 @@ namespace codi {
    * \section misc Misc. functions
    * Some other functions for tape data management. Please see the function documentation.
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
    */
-  template<typename _Real, typename _Identifier>
+  template<typename T_Real, typename T_Identifier>
   struct DataManagementTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See DataManagementTapeInterface.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See DataManagementTapeInterface.
+      using Real = CODI_DD(T_Real, double);           ///< See DataManagementTapeInterface.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See DataManagementTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface: File IO

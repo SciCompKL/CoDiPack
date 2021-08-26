@@ -387,11 +387,11 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
       while(curOperatorPos > endOperatorPos) {
         curOperatorPos -= 1;
 
-        int resultIdentifier;
-        int arg1Identifier;
-        int arg2Identifier;
-        double arg1Value;
-        double arg2Value;
+        int resultIdentifier = 0;
+        int arg1Identifier = 0;
+        int arg2Identifier = 0;
+        double arg1Value = 0.0;
+        double arg2Value = 0.0;
 
         // Get the data from the stacks
         switch (operatorData[curOperatorPos]) {

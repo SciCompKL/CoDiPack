@@ -15,13 +15,13 @@ namespace codi {
    * - 1. Load expression specific data
    * - 2. Call expression specific function
    *
-   * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
+   * @tparam T_Real  The computation type of a tape usually defined by ActiveType::Real.
    */
-  template<typename _Real>
+  template<typename T_Real>
   struct StatementEvaluatorTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See StatementEvaluatorTapeInterface
+      using Real = CODI_DD(T_Real, double);  ///< See StatementEvaluatorTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -51,13 +51,13 @@ namespace codi {
    * This performs the step `Load expression specific data` in an inline context. `inner` is the stored function pointer
    * in the handle.
    *
-   * @tparam _Real  The computation type of a tape usually defined by ActiveType::Real.
+   * @tparam T_Real  The computation type of a tape usually defined by ActiveType::Real.
    */
-  template<typename _Real>
+  template<typename T_Real>
   struct StatementEvaluatorInnerTapeInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See StatementEvaluatorInnerTapeInterface
+      using Real = CODI_DD(T_Real, double);  ///< See StatementEvaluatorInnerTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition

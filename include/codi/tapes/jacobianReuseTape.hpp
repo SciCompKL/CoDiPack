@@ -22,13 +22,13 @@ namespace codi {
    *
    * This class implements the interface methods from the JacobianBaseTape.
    *
-   * @tparam _TapeTypes  JacobianTapeTypes definition.
+   * @tparam T_TapeTypes  JacobianTapeTypes definition.
    */
-  template<typename _TapeTypes>
-  struct JacobianReuseTape : public JacobianBaseTape<_TapeTypes, JacobianReuseTape<_TapeTypes>> {
+  template<typename T_TapeTypes>
+  struct JacobianReuseTape : public JacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DD(_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
+      using TapeTypes = CODI_DD(T_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
                                                                      DefaultChunkedData>));  ///< See JacobianReuseTape.
 
       using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.

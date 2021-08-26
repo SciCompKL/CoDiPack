@@ -24,14 +24,14 @@ namespace codi {
    *
    * This class implements the interface methods from the PrimalValueBaseTape.
    *
-   * @tparam _TapeTypes  JacobianTapeTypes definition.
+   * @tparam T_TapeTypes  JacobianTapeTypes definition.
    */
-  template<typename _TapeTypes>
-  struct PrimalValueReuseTape : public PrimalValueBaseTape<_TapeTypes, PrimalValueReuseTape<_TapeTypes>> {
+  template<typename T_TapeTypes>
+  struct PrimalValueReuseTape : public PrimalValueBaseTape<T_TapeTypes, PrimalValueReuseTape<T_TapeTypes>> {
     public:
 
       using TapeTypes =
-          CODI_DD(_TapeTypes,
+          CODI_DD(T_TapeTypes,
                   CODI_T(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface,
                                               DefaultChunkedData>));  ///< See PrimalValueReuseTape.
 

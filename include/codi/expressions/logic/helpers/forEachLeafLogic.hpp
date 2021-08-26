@@ -20,13 +20,13 @@ namespace codi {
    *
    * For details about the expression traversal see TraversalLogic.
    *
-   * @tparam _Impl  Class implementing this interface.
+   * @tparam T_Impl  Class implementing this interface.
    */
-  template<typename _Impl>
-  struct ForEachLeafLogic : public TraversalLogic<_Impl> {
+  template<typename T_Impl>
+  struct ForEachLeafLogic : public TraversalLogic<T_Impl> {
     public:
 
-      using Impl = CODI_DD(_Impl, CODI_T(TraversalLogic<CODI_ANY>));  ///< See ForEachLeafLogic.
+      using Impl = CODI_DD(T_Impl, CODI_T(TraversalLogic<CODI_ANY>));  ///< See ForEachLeafLogic.
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -60,8 +60,6 @@ namespace codi {
       CODI_INLINE ExpressionTraits::EnableIfConstantExpression<Node> leaf(Node const& node, Args&&... args) {
         cast().handleConstant(node, std::forward<Args>(args)...);
       }
-
-      using TraversalLogic<Impl>::leaf;
 
       /// @}
 

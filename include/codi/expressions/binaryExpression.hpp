@@ -16,13 +16,13 @@ namespace codi {
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * @tparam _Real  Original primal value of the statement/expression.
+   * @tparam T_Real  Original primal value of the statement/expression.
    */
-  template<typename _Real>
+  template<typename T_Real>
   struct BinaryOperation {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// Compute the primal value from the arguments.
       ///
@@ -48,18 +48,18 @@ namespace codi {
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * @tparam _Real  Original primal value of the statement/expression.
-   * @tparam _ArgA  The ExpressionInterface type of the first argument.
-   * @tparam _ArgB  The ExpressionInterface type of the second argument.
-   * @tparam _Operation  The logic for computing the primal value and Jacobians. Must implement BinaryOperation.
+   * @tparam T_Real  Original primal value of the statement/expression.
+   * @tparam T_ArgA  The ExpressionInterface type of the first argument.
+   * @tparam T_ArgB  The ExpressionInterface type of the second argument.
+   * @tparam T_Operation  The logic for computing the primal value and Jacobians. Must implement BinaryOperation.
    */
-  template<typename _Real, typename _ArgA, typename _ArgB, template<typename> class _Operation>
-  struct BinaryExpression : public ExpressionInterface<_Real, BinaryExpression<_Real, _ArgA, _ArgB, _Operation> > {
+  template<typename T_Real, typename T_ArgA, typename T_ArgB, template<typename> class T_Operation>
+  struct BinaryExpression : public ExpressionInterface<T_Real, BinaryExpression<T_Real, T_ArgA, T_ArgB, T_Operation> > {
     public:
-      using Real = CODI_DD(_Real, double);                                                 ///< See BinaryExpression.
-      using ArgA = CODI_DD(_ArgA, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
-      using ArgB = CODI_DD(_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
-      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(BinaryOperation<Real>));  ///< See BinaryExpression.
+      using Real = CODI_DD(T_Real, double);                                                 ///< See BinaryExpression.
+      using ArgA = CODI_DD(T_ArgA, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
+      using ArgB = CODI_DD(T_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
+      using Operation = CODI_DD(CODI_T(T_Operation<Real>), CODI_T(BinaryOperation<Real>));  ///< See BinaryExpression.
 
       typename ArgA::StoreAs argA;  ///< First argument of the expression.
       typename ArgB::StoreAs argB;  ///< Second argument of the expression.

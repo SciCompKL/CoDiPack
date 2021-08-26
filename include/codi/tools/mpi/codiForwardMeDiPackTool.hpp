@@ -15,12 +15,12 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
 
-  template<typename _Type>
-  struct CoDiPackForwardTool : public medi::ADToolBase<CoDiPackForwardTool<_Type>, typename _Type::Gradient,
-                                                       typename _Type::PassiveReal, int> {
+  template<typename T_Type>
+  struct CoDiPackForwardTool : public medi::ADToolBase<CoDiPackForwardTool<T_Type>, typename T_Type::Gradient,
+                                                       typename T_Type::PassiveReal, int> {
     public:
 
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using PrimalType = typename Type::Real;
       using AdjointType = void;

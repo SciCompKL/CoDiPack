@@ -62,13 +62,13 @@ namespace codi {
    *
    * Used for data that is allocated en bloc, e.g. BlockData.
    *
-   * @tparam _NestedPosition  Position implementation
+   * @tparam T_NestedPosition  Position implementation
    */
-  template<typename _NestedPosition>
+  template<typename T_NestedPosition>
   struct ArrayPosition {
     public:
 
-      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition);  ///< See ArrayPosition
+      using NestedPosition = CODI_DD(T_NestedPosition, EmptyPosition);  ///< See ArrayPosition
 
       size_t data;  ///< Array position index.
 
@@ -126,13 +126,13 @@ namespace codi {
    *
    * For `p1 < p2` it is enough that `p1.chunk < p2.chunk`, only in the equality case `Base::data` needs to be checked.
    *
-   * @tparam _NestedPosition  Position implementation
+   * @tparam T_NestedPosition  Position implementation
    */
-  template<typename _NestedPosition>
-  struct ChunkPosition : public ArrayPosition<_NestedPosition> {
+  template<typename T_NestedPosition>
+  struct ChunkPosition : public ArrayPosition<T_NestedPosition> {
     public:
 
-      using NestedPosition = CODI_DD(_NestedPosition, EmptyPosition);  ///< See ChunkPosition
+      using NestedPosition = CODI_DD(T_NestedPosition, EmptyPosition);  ///< See ChunkPosition
       using Base = ArrayPosition<NestedPosition>;                      ///< Base abbreviation
 
       size_t chunk;  ///< Chunk position index

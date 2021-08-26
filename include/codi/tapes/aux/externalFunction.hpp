@@ -61,11 +61,11 @@ namespace codi {
    *
    * The delete function is called when the entry of the tape for the external function is deleted.
    */
-  template<typename _Tape>
+  template<typename T_Tape>
   struct ExternalFunction : public ExternalFunctionInternalData {
     public:
 
-      using Tape = CODI_DD(_Tape,
+      using Tape = CODI_DD(T_Tape,
                            CODI_T(ExternalFunctionTapeInterface<double, double, int>));  ///< See ExternalFunction
 
       using VectorAccess =

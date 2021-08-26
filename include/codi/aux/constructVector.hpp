@@ -12,11 +12,11 @@ namespace codi {
   /// Vector construction helper.
   ///
   /// @tparam A vector type
-  template<typename _V, typename = void>
+  template<typename T_V, typename = void>
   struct ConstructVectorImpl {
     public:
 
-      using V = CODI_DD(_V, CODI_T(std::vector<CODI_ANY>));  ///< See ConstructVectorImpl.
+      using V = CODI_DD(T_V, CODI_T(std::vector<CODI_ANY>));  ///< See ConstructVectorImpl.
 
       /// Default implementation assumes that there is a constructor that takes the vector size as its single argument.
       static V construct(size_t const size) {
@@ -26,14 +26,14 @@ namespace codi {
 
   /// Specialization for std::array.
   ///
-  /// @tparam _T  Any type.
-  /// @tparam _n  Array size.
-  template<typename _T, size_t _n>
-  struct ConstructVectorImpl<std::array<_T, _n>> {
+  /// @tparam T_T  Any type.
+  /// @tparam T_n  Array size.
+  template<typename T_T, size_t T_n>
+  struct ConstructVectorImpl<std::array<T_T, T_n>> {
     public:
 
-      using T = CODI_DD(_T, CODI_ANY);  ///< See ConstructVectorImpl
-      static size_t constexpr n = _n;   ///< See ConstructVectorImpl
+      using T = CODI_DD(T_T, CODI_ANY);  ///< See ConstructVectorImpl
+      static size_t constexpr n = T_n;   ///< See ConstructVectorImpl
 
       /// Only asserts the argument for the correct size.
       static std::array<T, n> construct(size_t const size) {

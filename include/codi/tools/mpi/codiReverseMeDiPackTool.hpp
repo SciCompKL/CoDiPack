@@ -20,11 +20,11 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
 
-  template<typename _Type>
+  template<typename T_Type>
   struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
     public:
 
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
@@ -118,14 +118,14 @@ namespace codi {
       }
   };
 
-  template<typename _Type>
+  template<typename T_Type>
   struct CoDiPackReverseTool
-      : public medi::ADToolImplCommon<CoDiPackReverseTool<_Type>, _Type::Tape::RequiresPrimalRestore, false, _Type,
-                                      typename _Type::Gradient, typename _Type::Real, typename _Type::Identifier> {
+      : public medi::ADToolImplCommon<CoDiPackReverseTool<T_Type>, T_Type::Tape::RequiresPrimalRestore, false, T_Type,
+                                      typename T_Type::Gradient, typename T_Type::Real, typename T_Type::Identifier> {
     public:
 
       // All type definitions for the interface.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using PrimalType = typename Type::Real;
       using AdjointType = void;
       using ModifiedType = Type;

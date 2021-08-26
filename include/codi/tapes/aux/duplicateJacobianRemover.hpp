@@ -17,15 +17,15 @@ namespace codi {
    * This behavior can be enabled with `-DCODI_RemoveDuplicateJacobianArguments=1`. See JacobianBaseTape::pushJacobians
    * for details.
    *
-   * @tparam _Real  The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identifier type of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Real  The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier  The adjoint/tangent identifier type of a tape, usually chosen as ActiveType::Identifier.
    */
-  template<typename _Real, typename _Identifier>
+  template<typename T_Real, typename T_Identifier>
   struct DuplicateJacobianRemover {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See DuplicateJacobianRemover.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See DuplicateJacobianRemover.
+      using Real = CODI_DD(T_Real, double);           ///< See DuplicateJacobianRemover.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See DuplicateJacobianRemover.
       using ArgumentSize = Config::ArgumentSize;     ///< Definition of ArgumentSize type.
 
     private:

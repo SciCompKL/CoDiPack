@@ -35,13 +35,13 @@ namespace codi {
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
-   * @tparam _Index  Type for the identifier, usually an integer type.
+   * @tparam T_Index  Type for the identifier, usually an integer type.
    */
-  template<typename _Index>
+  template<typename T_Index>
   struct IndexManagerInterface {
     public:
 
-      using Index = CODI_DD(_Index, int);  ///< See IndexManagerInterface.
+      using Index = CODI_DD(T_Index, int);  ///< See IndexManagerInterface.
 
       /*******************************************************************************/
       /// @name Global constants

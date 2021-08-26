@@ -136,8 +136,8 @@ namespace codi {
 #undef CODI_ImplicitConversionWarning
 
 #ifndef CODI_IgnoreIntelNoInlineWarning
-  /// See codi::Config::IgnoreIntelNoInlineWarning.
-  #define CODI_IgnoreIntelNoInlineWarning true
+  /// See codi::Config::IgnoreIntelNoInlineWarning
+  #define CODI_IgnoreIntelNoInlineWarning false
 #endif
     /// Disables warnings of the sort:  warning #2196: routine is both "inline" and "noinline".
     bool constexpr IgnoreIntelNoInlineWarning = CODI_IgnoreIntelNoInlineWarning;

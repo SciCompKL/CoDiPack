@@ -80,7 +80,7 @@ int main(int nargs, char** args) {
   } else if(2 == mode) { // C++11 lambda
 
     std::cout << "Using a C++11 lambda." << std::endl;
-    auto lambdaWrapDotWithNorms = [n](std::vector<EH::HessianComputationType> const &x, std::vector<EH::HessianComputationType> &y) {
+    auto lambdaWrapDotWithNorms = [](std::vector<EH::HessianComputationType> const &x, std::vector<EH::HessianComputationType> &y) {
       dotWithNorms(&x[0], &x[n], n, y[0], y[1], y[2]);
     };
 

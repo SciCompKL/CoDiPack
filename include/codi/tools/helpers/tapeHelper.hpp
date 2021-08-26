@@ -62,17 +62,17 @@ namespace codi {
    *
    * For a more detailed example see \ref Example_16_TapeHelper.
    *
-   * @tparam _Type  The CoDiPack type on which the evaluations take place.
-   * @tparam _Impl  The type of the implementing class for the virtual template methods.
+   * @tparam T_Type  The CoDiPack type on which the evaluations take place.
+   * @tparam T_Impl  The type of the implementing class for the virtual template methods.
    */
-  template<typename _Type, typename _Impl>
+  template<typename T_Type, typename T_Impl>
   struct TapeHelperBase {
     public:
 
       /// See TapeHelperBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Impl = CODI_DECLARE_DEFAULT(_Impl, TapeHelperBase);  ///< See TapeHelperBase.
+      using Impl = CODI_DECLARE_DEFAULT(T_Impl, TapeHelperBase);  ///< See TapeHelperBase.
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
@@ -497,13 +497,13 @@ namespace codi {
   ///
   /// See TapeHelperBase for details.
   ///
-  /// @tparam _Type  A CoDiPack type that does not support TapeHelper.
-  template<typename _Type>
-  struct TapeHelperNoImpl : public TapeHelperBase<_Type, TapeHelperNoImpl<_Type>> {
+  /// @tparam T_Type  A CoDiPack type that does not support TapeHelper.
+  template<typename T_Type>
+  struct TapeHelperNoImpl : public TapeHelperBase<T_Type, TapeHelperNoImpl<T_Type>> {
     public:
 
       /// See TapeHelperBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;  ///< See TapeHelperBase.
 
@@ -521,13 +521,13 @@ namespace codi {
   ///
   /// See TapeHelperBase for details.
   ///
-  /// @tparam _Type  The CoDiPack type on which the evaluations take place.
-  template<typename _Type>
-  struct TapeHelperJacobi : public TapeHelperBase<_Type, TapeHelperJacobi<_Type>> {
+  /// @tparam T_Type  The CoDiPack type on which the evaluations take place.
+  template<typename T_Type>
+  struct TapeHelperJacobi : public TapeHelperBase<T_Type, TapeHelperJacobi<T_Type>> {
     public:
 
       /// See TapeHelperBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;  ///< See TapeHelperBase.
 
@@ -558,13 +558,13 @@ namespace codi {
   ///
   /// See TapeHelperBase for details.
   ///
-  /// @tparam _Type  The CoDiPack type on which the evaluations take place.
-  template<typename _Type>
-  struct TapeHelperPrimal : public TapeHelperBase<_Type, TapeHelperPrimal<_Type>> {
+  /// @tparam T_Type  The CoDiPack type on which the evaluations take place.
+  template<typename T_Type>
+  struct TapeHelperPrimal : public TapeHelperBase<T_Type, TapeHelperPrimal<T_Type>> {
     public:
 
       /// See TapeHelperBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Real = typename Type::Real;  ///< See TapeHelperBase.
 

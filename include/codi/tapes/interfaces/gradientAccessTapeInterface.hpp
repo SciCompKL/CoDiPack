@@ -27,15 +27,15 @@ namespace codi {
    *
    * Implementation hint: Size of the gradient vector should be checked before access.
    *
-   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
    */
-  template<typename _Gradient, typename _Identifier>
+  template<typename T_Gradient, typename T_Identifier>
   struct GradientAccessTapeInterface {
     public:
 
-      using Gradient = CODI_DD(_Gradient, double);   ///< See GradientAccessTapeInterface.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See GradientAccessTapeInterface.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See GradientAccessTapeInterface.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See GradientAccessTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

@@ -41,13 +41,13 @@ namespace codi {
   /**
    * @brief Declares all types used in the CommonTapeImplementation.
    *
-   * @tparam _TapeTypes  Must implement TapeTypesInterface.
+   * @tparam T_TapeTypes  Must implement TapeTypesInterface.
    */
-  template<typename _TapeTypes>
+  template<typename T_TapeTypes>
   struct CommonTapeTypes {
     public:
 
-      using TapeTypes = CODI_DD(_TapeTypes, TapeTypesInterface);  ///< See CommonTapeTypes.
+      using TapeTypes = CODI_DD(T_TapeTypes, TapeTypesInterface);  ///< See CommonTapeTypes.
 
       using NestedData = typename TapeTypes::NestedData;  ///< See TapeTypesInterface.
       template<typename Chunk, typename Nested>
@@ -75,19 +75,19 @@ namespace codi {
    *  - TapeValues functions,
    *  - reset functionality.
    *
-   * @tparam _ImplTapeTypes must implement TapeTypesInterface.
-   * @tparam _Impl Type of the full tape implementation.
+   * @tparam T_ImplTapeTypes must implement TapeTypesInterface.
+   * @tparam T_Impl Type of the full tape implementation.
    */
-  template<typename _ImplTapeTypes, typename _Impl>
+  template<typename T_ImplTapeTypes, typename T_Impl>
   struct CommonTapeImplementation
-      : public FullTapeInterface<typename _ImplTapeTypes::Real, typename _ImplTapeTypes::Gradient,
-                                 typename _ImplTapeTypes::Identifier,
-                                 typename CommonTapeTypes<_ImplTapeTypes>::Position> {
+      : public FullTapeInterface<typename T_ImplTapeTypes::Real, typename T_ImplTapeTypes::Gradient,
+                                 typename T_ImplTapeTypes::Identifier,
+                                 typename CommonTapeTypes<T_ImplTapeTypes>::Position> {
     public:
 
-      using ImplTapeTypes = CODI_DD(_ImplTapeTypes, TapeTypesInterface);  ///< See CommonTapeImplementation.
+      using ImplTapeTypes = CODI_DD(T_ImplTapeTypes, TapeTypesInterface);  ///< See CommonTapeImplementation.
       using Impl = CODI_DD(
-          _Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See CommonTapeImplementation.
+          T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See CommonTapeImplementation.
 
       using Real = typename ImplTapeTypes::Real;              ///< See TapeTypesInterface.
       using Gradient = typename ImplTapeTypes::Gradient;      ///< See TapeTypesInterface.

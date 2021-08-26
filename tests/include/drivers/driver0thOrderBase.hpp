@@ -5,11 +5,11 @@
 #include "../output.hpp"
 #include "driverBase.hpp"
 
-template<typename _Number>
-struct Driver0thOrderBase : public DriverBase<_Number> {
+template<typename T_Number>
+struct Driver0thOrderBase : public DriverBase<T_Number> {
   public:
 
-    using Number = CODI_DECLARE_DEFAULT(_Number, double);
+    using Number = CODI_DECLARE_DEFAULT(T_Number, double);
     using Base = DriverBase<Number>;
 
     virtual void evaluatePrimal(TestInfo<Number>& info, Number* x, size_t inputs, Number* y, size_t outputs,

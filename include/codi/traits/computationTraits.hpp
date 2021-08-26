@@ -20,15 +20,15 @@ namespace codi {
      *
      * Simple specialization can be create with the macro CODI_CREATE_ADJOINT_CONVERSION.
      *
-     * @tparam _Outer  Type into which was converted.
-     * @tparam _Inner  Type from which was converted.
+     * @tparam T_Outer  Type into which was converted.
+     * @tparam T_Inner  Type from which was converted.
      */
-    template<typename _Outer, typename _Inner, typename = void>
+    template<typename T_Outer, typename T_Inner, typename = void>
     struct AdjointConversionImpl {
       public:
-        static_assert(false && std::is_void<_Outer>::value, "Instantiation of unspecialized adjoint conversion.");
-        using Outer = CODI_DD(_Outer, CODI_ANY);  ///< See ReduceImpl.
-        using Inner = CODI_DD(_Inner, CODI_ANY);  ///< See ReduceImpl.
+        static_assert(false && std::is_void<T_Outer>::value, "Instantiation of unspecialized adjoint conversion.");
+        using Outer = CODI_DD(T_Outer, CODI_ANY);  ///< See ReduceImpl.
+        using Inner = CODI_DD(T_Inner, CODI_ANY);  ///< See ReduceImpl.
 
         using Return = CODI_ANY;  ///< Deduced return type.
 
@@ -51,13 +51,13 @@ namespace codi {
      *
      * Simple specializations can be created with the macro CODI_CREATE_TRANSPOSE.
      *
-     * @tparam _Jacobian  Deduced type of the Jacobian.
+     * @tparam T_Jacobian  Deduced type of the Jacobian.
      */
-    template<typename _Jacobian, typename = void>
+    template<typename T_Jacobian, typename = void>
     struct TransposeImpl {
       public:
-        static_assert(false && std::is_void<_Jacobian>::value, "Instantiation of unspecialized Jacobian transpose.");
-        using Jacobian = CODI_DD(_Jacobian, CODI_ANY);  ///< See TransposeImpl.
+        static_assert(false && std::is_void<T_Jacobian>::value, "Instantiation of unspecialized Jacobian transpose.");
+        using Jacobian = CODI_DD(T_Jacobian, CODI_ANY);  ///< See TransposeImpl.
 
         using Return = CODI_ANY;  ///< Deduced return type.
 
@@ -77,14 +77,14 @@ namespace codi {
      *
      * Simple specializations can be created with the macro CODI_CREATE_UPDATE.
      *
-     * @tparam _Lhs Type of the left hand side.
-     * @tparam _Rhs Type of the right hand side.
+     * @tparam T_Lhs Type of the left hand side.
+     * @tparam T_Rhs Type of the right hand side.
      */
-    template<typename _Lhs, typename _Rhs, typename = void>
+    template<typename T_Lhs, typename T_Rhs, typename = void>
     struct UpdateImpl {
       public:
-        using Lhs = CODI_DD(_Lhs, double);  ///< See UpdateImpl.
-        using Rhs = CODI_DD(_Rhs, double);  ///< See UpdateImpl.
+        using Lhs = CODI_DD(T_Lhs, double);  ///< See UpdateImpl.
+        using Rhs = CODI_DD(T_Rhs, double);  ///< See UpdateImpl.
 
         using Return = Lhs&;  ///< Deduced return type.
 
@@ -162,15 +162,15 @@ namespace codi {
   };
 
   /// Adjoint conversion specialization for Inner == codi::Expression
-  template<typename _Outer, typename _Inner>
+  template<typename T_Outer, typename T_Inner>
   struct ComputationTraits::AdjointConversionImpl<
-      _Outer, _Inner,
-      typename std::enable_if<!std::is_same<_Outer, _Inner>::value &
-                              ExpressionTraits::IsExpression<_Inner>::value>::type> {
+      T_Outer, T_Inner,
+      typename std::enable_if<!std::is_same<T_Outer, T_Inner>::value &
+                              ExpressionTraits::IsExpression<T_Inner>::value>::type> {
     public:
 
-      using Outer = _Outer;
-      using Inner = _Inner;
+      using Outer = T_Outer;
+      using Inner = T_Inner;
 
       using InnerActive = typename Inner::ActiveResult;
       using InnerActiveConversion = ComputationTraits::AdjointConversionImpl<Outer, InnerActive>;

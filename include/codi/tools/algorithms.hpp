@@ -25,18 +25,18 @@ namespace codi {
    *
    * Hessians have to implement the HessianInterface and Jacobians have to implement the JacobianInterface.
    *
-   * @tparam _Type  An ActiveReal type that has a tape which implements the ReverseTapeInterface
+   * @tparam T_Type  An ActiveReal type that has a tape which implements the ReverseTapeInterface
    * @tparam ActiveChecks  If activity checks for the seeding of gradient data should be performed. [Default: true]
    */
-  template<typename _Type, bool _ActiveChecks = true>
+  template<typename T_Type, bool T_ActiveChecks = true>
   struct Algorithms {
     public:
 
       /// See Algorithms.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-      static bool constexpr ActiveChecks = _ActiveChecks;  ///< See Algorithms.
+      static bool constexpr ActiveChecks = T_ActiveChecks;  ///< See Algorithms.
 
       using Tape = typename Type::Tape;              ///< See LhsExpressionInterface.
       using Position = typename Tape::Position;      ///< See LhsExpressionInterface.

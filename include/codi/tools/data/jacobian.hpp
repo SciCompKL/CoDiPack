@@ -19,15 +19,15 @@ namespace codi {
    *
    * Data is stored in a row-major format.
    *
-   * @tparam _T  The data type in the Jacobian.
-   * @tparam _Store  Storage allocator. Should implement the standard vector interface.
+   * @tparam T_T  The data type in the Jacobian.
+   * @tparam T_Store  Storage allocator. Should implement the standard vector interface.
    */
-  template<typename _T, typename _Store = std::vector<_T>>
-  struct Jacobian : public JacobianInterface<_T> {
+  template<typename T_T, typename T_Store = std::vector<T_T>>
+  struct Jacobian : public JacobianInterface<T_T> {
     public:
 
-      using T = CODI_DD(_T, double);                       ///< See Jacobian.
-      using Store = CODI_DD(_Store, std::vector<double>);  ///< See Jacobian.
+      using T = CODI_DD(T_T, double);                       ///< See Jacobian.
+      using Store = CODI_DD(T_Store, std::vector<double>);  ///< See Jacobian.
 
     protected:
       Store values;  ///< Array store for the data.
@@ -88,14 +88,14 @@ namespace codi {
    *
    * The user has to manually reset the count.
    *
-   * @tparam _T  The data type in the Jacobian.
-   * @tparam _Store  Storage allocator. Should implement the standard vector interface.
+   * @tparam T_T  The data type in the Jacobian.
+   * @tparam T_Store  Storage allocator. Should implement the standard vector interface.
    */
-  template<typename _T, typename _Store = std::vector<_T>>
-  struct JacobianCountNonZerosRow : public Jacobian<_T, _Store> {
+  template<typename T_T, typename T_Store = std::vector<T_T>>
+  struct JacobianCountNonZerosRow : public Jacobian<T_T, T_Store> {
     public:
 
-      using Base = Jacobian<_T, _Store>;  ///< Base class abbreviation.
+      using Base = Jacobian<T_T, T_Store>;  ///< Base class abbreviation.
 
       using T = typename Base::T;          ///< See Jacobian.
       using Store = typename Base::Store;  ///< See Jacobian.
@@ -146,12 +146,12 @@ namespace codi {
   /**
    * @brief Wrapper for JacboianInterfaces that requires a passive value conversion.
    *
-   * @tparam _Nested  The nested Jacobian, that has a passive value storage.
+   * @tparam T_Nested  The nested Jacobian, that has a passive value storage.
    */
-  template<typename _Nested>
+  template<typename T_Nested>
   struct JacobianConvertWrapper {
     public:
-      using Nested = CODI_DECLARE_DEFAULT(_Nested, JacobianInterface<double>);  ///< See JacobianConvertWrapper.
+      using Nested = CODI_DECLARE_DEFAULT(T_Nested, JacobianInterface<double>);  ///< See JacobianConvertWrapper.
       using T = typename Nested::T;                                             ///< See JacobianInterface.
       using DelayAcc = JacobianDelayAccessor<JacobianConvertWrapper>;           ///< Return type for reference access.
 

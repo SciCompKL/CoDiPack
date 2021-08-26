@@ -14,13 +14,13 @@ namespace codi {
    *
    * See \ref sec_namingConventions for the mathematical nomenclature of the arguments and components.
    *
-   * @tparam _T  The data type in the Jacobian.
+   * @tparam T_T  The data type in the Jacobian.
    */
-  template<typename _T>
+  template<typename T_T>
   struct JacobianInterface {
     public:
 
-      using T = CODI_DECLARE_DEFAULT(_T, double);  ///< See JacobianInterface.
+      using T = CODI_DECLARE_DEFAULT(T_T, double);  ///< See JacobianInterface.
 
       size_t getM() const;  ///< Get size of rows (output variables).
       size_t getN() const;  ///< Get size of columns (input variables).

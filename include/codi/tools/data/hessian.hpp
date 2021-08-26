@@ -18,15 +18,15 @@ namespace codi {
    *
    * Data is stored in an array of row-major matrices.
    *
-   * @tparam _T  Data type in the Hessian.
-   * @tparam _Store  Storage allocator. Should implement the standard vector interface.
+   * @tparam T_T  Data type in the Hessian.
+   * @tparam T_Store  Storage allocator. Should implement the standard vector interface.
    */
-  template<typename _T, typename _Store = std::vector<_T>>
-  struct Hessian : public HessianInterface<_T> {
+  template<typename T_T, typename T_Store = std::vector<T_T>>
+  struct Hessian : public HessianInterface<T_T> {
     public:
 
-      using T = CODI_DECLARE_DEFAULT(_T, double);                       ///< See Hessian.
-      using Store = CODI_DECLARE_DEFAULT(_Store, std::vector<double>);  ///< See Hessian.
+      using T = CODI_DECLARE_DEFAULT(T_T, double);                       ///< See Hessian.
+      using Store = CODI_DECLARE_DEFAULT(T_Store, std::vector<double>);  ///< See Hessian.
 
     protected:
       Store values;  ///< Storage for the data.
