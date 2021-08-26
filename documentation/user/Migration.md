@@ -1,9 +1,6 @@
 Migration from 1.9 to 2.0 {#Migration_1_9_2_0}
 =======
 
-TempalteArgumente 
-Externalfunction
-
 ### General usage
 
 In general we tried to keep the main user interface intact. For a simple _Hello World_ case only the access to the tape
@@ -34,7 +31,7 @@ are:
    general meaning of what the gradient data always has been, the identifier of the active types for the reverse tapes.
    This naming makes now less sence for the forward mode, but in general it should improve the understandability.
 
-None comprehensive list of major user interface changes.
+Incomplete list of major user interface changes.
 | CoDiPack 1.9 | CoDiPack 2.0 |
 |:--------|:--------|
 | ActiveReal | ActiveType |
@@ -46,8 +43,8 @@ None comprehensive list of major user interface changes.
 
 ### External functions
 
-The interface of the codi::ExternalFunctionHelper is nearly the same only the passive evaluation function got renamed.
-The manual push of external functions changed a lot please see \ref Example_11_External_function_user_data for an
+The interface of the codi::ExternalFunctionHelper is nearly the same, only the passive evaluation function got renamed.
+The manual push of external functions changed a lot, please see \ref Example_11_External_function_user_data for an
 overview of the new interface.
 
 | CoDiPack 1.9 | CoDiPack 2.0 |
@@ -56,8 +53,8 @@ overview of the new interface.
 
 ### Configure options
 
-Configure options are renamed to have an improved reflection on their meaning from the name. In general the `Opt`,
-`Enable`, `Disable` prefixes are dropped. See below a full list of the changes.
+Configure options are renamed to have better indicate their meaning. In general, the `Opt`, `Enable`, `Disable` prefixes
+are dropped. See below a full list of the changes.
 
 | CoDiPack 1.9 | CoDiPack 2.0 |
 |:--------|:--------|
@@ -77,11 +74,11 @@ Configure options are renamed to have an improved reflection on their meaning fr
 | CODI_EnableVariableAdjointInterfaceInPrimalTapes | CODI_VariableAdjointInterfaceInPrimalTapes |
 | CODI_EnableCombineJacobianArguments | CODI_RemoveDuplicateJacobianArguments |
 | CODI_DisableCalcGradientSpecialization | removed |
-| CODI_AdjointHandle_Jacobi | later release |
-| CODI_AdjointHandle_Jacobi_Reverse | later release |
-| CODI_AdjointHandle_Primal | later release |
-| CODI_AdjointHandle_Tangent | later release |
-| CODI_IndexHandle | later release |
+| CODI_AdjointHandle_Jacobi | future release |
+| CODI_AdjointHandle_Jacobi_Reverse | future release |
+| CODI_AdjointHandle_Primal | future release |
+| CODI_AdjointHandle_Tangent | future release |
+| CODI_IndexHandle | future release |
 | DisableIntelNoInlineWarning | CODI_IgnoreIntelNoInlineWarning |
 
 
