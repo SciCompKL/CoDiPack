@@ -44,7 +44,7 @@ namespace codi {
  * CODI_IDE can be defined to use the default declaration of type names. This enables auto completion in the IDEs.
  *
  * Every using declaration in all CoDiPack classes should declare its variables as:
- *  using TYPE = CODI_DECLARE_DEFAULT(_TYPE, Default);
+ *  using TYPE = CODI_DECLARE_DEFAULT(T_TYPE, Default);
  */
 #if CODI_IDE
   #define CODI_DECLARE_DEFAULT(Type, Default) Default
@@ -65,10 +65,10 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
   /// Placeholer for the implementation of an interface.
-  struct _Impl {};
+  struct ImplProxy {};
 #endif
 /// Used in interface declarations to indicate the type of the implementing class.
-#define CODI_IMPLEMENTATION _Impl
+#define CODI_IMPLEMENTATION ImplProxy
 
 /// Expand template types in preprocessor macros.
 #define CODI_TEMPLATE(...) __VA_ARGS__

@@ -17,11 +17,11 @@ namespace codi {
   /// @{
 
   /// BinaryOperation implementation for operator +
-  template<typename _Real>
-  struct OperationAdd : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationAdd : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -50,11 +50,11 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator -
-  template<typename _Real>
-  struct OperationSubstract : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationSubstract : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -83,11 +83,11 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator *
-  template<typename _Real>
-  struct OperationMultiply : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationMultiply : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -114,11 +114,11 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for operator /
-  template<typename _Real>
-  struct OperationDivide : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationDivide : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -172,11 +172,11 @@ namespace codi {
   using std::remainder;
 
   /// BinaryOperation implementation for atan2
-  template<typename _Real>
-  struct OperationAtan2 : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationAtan2 : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -221,11 +221,11 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for copysign
-  template<typename _Real>
-  struct OperationCopysign : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationCopysign : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -274,11 +274,11 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for hypot
-  template<typename _Real>
-  struct OperationHypot : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationHypot : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -335,11 +335,11 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for max
-  template<typename _Real>
-  struct OperationMax : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationMax : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -383,11 +383,11 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for min
-  template<typename _Real>
-  struct OperationMin : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationMin : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -430,11 +430,11 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for pow
-  template<typename _Real>
-  struct OperationPow : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationPow : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -487,11 +487,11 @@ namespace codi {
   /// BinaryOperation implementation for remainder
   ///
   /// Derivative implementation based on IEC 60559: remainder = numer - rquot * denom
-  template<typename _Real>
-  struct OperationRemainder : public BinaryOperation<_Real> {
+  template<typename T_Real>
+  struct OperationRemainder : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>

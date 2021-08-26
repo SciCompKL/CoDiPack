@@ -19,18 +19,18 @@ namespace codi {
    * Use the member MPI_TYPE as the type for the communication in MeDiPack wrapped MPI routines or
    * MPI_INT_TYPE for pairs of CoDiPack and an int.
    *
-   * @tparam _Type  CoDiPack active type. Must implement LhsExpressionInterface.
-   * @tparam _Tool  Actual tool implementation of the MeDiPack interface.
+   * @tparam T_Type  CoDiPack active type. Must implement LhsExpressionInterface.
+   * @tparam T_Tool  Actual tool implementation of the MeDiPack interface.
    */
-  template<typename _Type,
-           typename _Tool = typename std::conditional<codi::TapeTraits::IsForwardTape<typename _Type::Tape>::value,
-                                                      CoDiPackForwardTool<_Type>, CoDiPackReverseTool<_Type> >::type>
+  template<typename T_Type,
+           typename T_Tool = typename std::conditional<codi::TapeTraits::IsForwardTape<typename T_Type::Tape>::value,
+                                                      CoDiPackForwardTool<T_Type>, CoDiPackReverseTool<T_Type> >::type>
   struct CoDiMpiTypes {
     public:
 
       /// See CoDiMpiTypes.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Tool = CODI_DD(_Tool, medi::ADToolInterface);  ///< See CoDiMpiTypes.
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Tool = CODI_DD(T_Tool, medi::ADToolInterface);  ///< See CoDiMpiTypes.
 
       using MPIType = medi::MpiTypeDefault<Tool>;  ///< MeDiPack default implementation.
 

@@ -9,7 +9,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Tape>
+  template<typename T_Tape>
   struct ActiveType;
 }
 

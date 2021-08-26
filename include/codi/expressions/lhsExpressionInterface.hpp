@@ -17,21 +17,21 @@ namespace codi {
    *
    * This interface resembles an lvalue in C++.
    *
-   * @tparam _Real  Original primal value of the statement/expression.
-   * @tparam _Gradient  Gradient values computed by the tape implementation.
-   * @tparam _Tape  The tape that manages the lvalues of the expression.
+   * @tparam T_Real  Original primal value of the statement/expression.
+   * @tparam T_Gradient  Gradient values computed by the tape implementation.
+   * @tparam T_Tape  The tape that manages the lvalues of the expression.
    *                Minimal interface: InternalStatementRecordingTapeInterface, GradientAccessTapeInterface
-   * @tparam _Impl  Class implementing this interface.
+   * @tparam T_Impl  Class implementing this interface.
    */
-  template<typename _Real, typename _Gradient, typename _Tape, typename _Impl>
-  struct LhsExpressionInterface : public ExpressionInterface<_Real, _Impl> {
+  template<typename T_Real, typename T_Gradient, typename T_Tape, typename T_Impl>
+  struct LhsExpressionInterface : public ExpressionInterface<T_Real, T_Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double);        ///< See LhsExpressionInterface.
-      using Gradient = CODI_DD(_Gradient, Real);  ///< See LhsExpressionInterface.
-      using Tape = CODI_DD(_Tape,
+      using Real = CODI_DD(T_Real, double);        ///< See LhsExpressionInterface.
+      using Gradient = CODI_DD(T_Gradient, Real);  ///< See LhsExpressionInterface.
+      using Tape = CODI_DD(T_Tape,
                            CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));  ///< See LhsExpressionInterface.
-      using Impl = CODI_DD(_Impl, LhsExpressionInterface);                             ///< See LhsExpressionInterface.
+      using Impl = CODI_DD(T_Impl, LhsExpressionInterface);                             ///< See LhsExpressionInterface.
 
       using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
@@ -166,10 +166,10 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
 
   /// Specialization of RealTraits::DataExtraction for CoDiPack types.
-  template<typename _Type>
-  struct RealTraits::DataExtraction<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
+  template<typename T_Type>
+  struct RealTraits::DataExtraction<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
     public:
-      using Type = CODI_DD(_Type,
+      using Type = CODI_DD(T_Type,
                            CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See DataExtraction.
 
       using Real = typename Type::Real;              ///< See DataExtraction::Real.
@@ -192,9 +192,9 @@ namespace codi {
   };
 
   /// Specialization of RealTraits::DataRegistration for CoDiPack types.
-  template<typename _Type>
-  struct RealTraits::TapeRegistration<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
-      using Type = CODI_DD(_Type,
+  template<typename T_Type>
+  struct RealTraits::TapeRegistration<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
+      using Type = CODI_DD(T_Type,
                            CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See DataRegistration.
 
       using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.

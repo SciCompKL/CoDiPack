@@ -16,17 +16,17 @@ namespace codi {
    *
    * See the \ref Example_14_ReferenceActiveType for an example use.
    *
-   * @tparam _Type  The type of the reference which is captured.
+   * @tparam T_Type  The type of the reference which is captured.
    */
-  template<typename _Type>
-  struct ReferenceActiveType : public LhsExpressionInterface<typename _Type::Real, typename _Type::Gradient,
-                                                             typename _Type::Tape, ReferenceActiveType<_Type>>,
-                               public AssignmentOperators<_Type, ReferenceActiveType<_Type>>,
-                               public IncrementOperators<_Type, ReferenceActiveType<_Type>> {
+  template<typename T_Type>
+  struct ReferenceActiveType : public LhsExpressionInterface<typename T_Type::Real, typename T_Type::Gradient,
+                                                             typename T_Type::Tape, ReferenceActiveType<T_Type>>,
+                               public AssignmentOperators<T_Type, ReferenceActiveType<T_Type>>,
+                               public IncrementOperators<T_Type, ReferenceActiveType<T_Type>> {
     public:
 
       /// See ReferenceActiveType.
-      using Type = CODI_DD(_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
       using Tape = typename Type::Tape;  ///< See LhsExpressionInterface.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.

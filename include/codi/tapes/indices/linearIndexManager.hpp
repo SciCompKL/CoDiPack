@@ -22,13 +22,13 @@ namespace codi {
    * provides the current maximum index as positional information and adds this positional information in the evaluate
    * routines.
    *
-   * @tparam _Index   Type for the identifier, usually an integer type.
+   * @tparam T_Index   Type for the identifier, usually an integer type.
    */
-  template<typename _Index>
-  struct LinearIndexManager : public IndexManagerInterface<_Index>, public DataInterface<> {
+  template<typename T_Index>
+  struct LinearIndexManager : public IndexManagerInterface<T_Index>, public DataInterface<> {
     public:
 
-      using Index = CODI_DD(_Index, int);         ///< See LinearIndexManager.
+      using Index = CODI_DD(T_Index, int);         ///< See LinearIndexManager.
       using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/

@@ -16,15 +16,15 @@ namespace codi {
    *
    * Inherits from AdjointVectorAccess and overwrites all methods specific to the primals.
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
-   * @tparam _Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    */
-  template<typename _Real, typename _Identifier, typename _Gradient>
-  struct PrimalAdjointVectorAccess : public AdjointVectorAccess<_Real, _Identifier, _Gradient> {
-      using Real = CODI_DD(_Real, double);           ///< See PrimalAdjointVectorAccess.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See PrimalAdjointVectorAccess.
-      using Gradient = CODI_DD(_Gradient, double);   ///< See PrimalAdjointVectorAccess.
+  template<typename T_Real, typename T_Identifier, typename T_Gradient>
+  struct PrimalAdjointVectorAccess : public AdjointVectorAccess<T_Real, T_Identifier, T_Gradient> {
+      using Real = CODI_DD(T_Real, double);           ///< See PrimalAdjointVectorAccess.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See PrimalAdjointVectorAccess.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See PrimalAdjointVectorAccess.
 
       using Base = AdjointVectorAccess<Real, Identifier, Gradient>;  ///< Base class abbreviation.
 

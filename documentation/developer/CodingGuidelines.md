@@ -72,13 +72,13 @@ namespace codi {
       int v; // Member variables are indented once again.
   };
 
-  template<typename _T> // Template parameters are declared with a '_' prefix
+  template<typename T_T> // Template parameters are declared with a 'T_' prefix
   struct Test2 {
     public:
-      using T = DECLARE_DEFAULT(T, int); // Template arguments are made available with `using` declarations without the
-                                         // '_'. A default type needs to be declared                                  ^
-                                         //                                                                           |
-                                         //                                              120 maximum character in a line
+      using T = DECLARE_DEFAULT(T_T, int); // Template arguments are made available with `using` declarations without 
+                                           // the 'T_'. A default type needs to be declared                            ^
+                                           //                                                                          |
+                                           //                                            120 maximum character in a line
 
   };
 

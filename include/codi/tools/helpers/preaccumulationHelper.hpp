@@ -35,14 +35,14 @@ namespace codi {
    * evaluations are possible. This improves the performance of the helper since stack allocations are only performed
    * once.
    *
-   * @tparam _Type  The CoDiPack type on which the evaluations take place.
+   * @tparam T_Type  The CoDiPack type on which the evaluations take place.
    */
-  template<typename _Type, typename = void>
+  template<typename T_Type, typename = void>
   struct PreaccumulationHelper {
     public:
 
       /// See PreaccumulationHelper.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.

@@ -30,25 +30,25 @@ namespace codi {
   /**
    * @brief Type definitions for the primal value tapes.
    *
-   * @tparam _Real                See TapeTypesInterface.
-   * @tparam _Gradient            See TapeTypesInterface.
-   * @tparam _IndexManager        Index manager for the tape. Needs to implement IndexManagerInterface.
-   * @tparam _StatementEvaluator  Statement handle generator. Needs to implement StatementEvaluatorInterface and
+   * @tparam T_Real                See TapeTypesInterface.
+   * @tparam T_Gradient            See TapeTypesInterface.
+   * @tparam T_IndexManager        Index manager for the tape. Needs to implement IndexManagerInterface.
+   * @tparam T_StatementEvaluator  Statement handle generator. Needs to implement StatementEvaluatorInterface and
    *                              StatementEvaluatorInnerTapeInterface.
-   * @tparam _Data                See TapeTypesInterface.
+   * @tparam T_Data                See TapeTypesInterface.
    */
-  template<typename _Real, typename _Gradient, typename _IndexManager, template<typename> class _StatementEvaluator,
-           template<typename, typename> class _Data>
+  template<typename T_Real, typename T_Gradient, typename T_IndexManager, template<typename> class T_StatementEvaluator,
+           template<typename, typename> class T_Data>
   struct PrimalValueTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);                                              ///< See PrimalValueTapeTypes.
-      using Gradient = CODI_DD(_Gradient, double);                                      ///< See PrimalValueTapeTypes.
-      using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See PrimalValueTapeTypes.
-      using StatementEvaluator = CODI_DD(CODI_T(_StatementEvaluator<Real>),
+      using Real = CODI_DD(T_Real, double);                                              ///< See PrimalValueTapeTypes.
+      using Gradient = CODI_DD(T_Gradient, double);                                      ///< See PrimalValueTapeTypes.
+      using IndexManager = CODI_DD(T_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See PrimalValueTapeTypes.
+      using StatementEvaluator = CODI_DD(CODI_T(T_StatementEvaluator<Real>),
                                          CODI_T(StatementEvaluatorInterface<double>));  ///< See PrimalValueTapeTypes.
       template<typename Chunk, typename Nested>
-      using Data = CODI_DD(CODI_T(_Data<Chunk, Nested>), CODI_T(DataInterface<Nested>));  ///< See PrimalValueTapeTypes.
+      using Data = CODI_DD(CODI_T(T_Data<Chunk, Nested>), CODI_T(DataInterface<Nested>));  ///< See PrimalValueTapeTypes.
 
       using Identifier = typename IndexManager::Index;    ///< See IndexManagerInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
@@ -94,21 +94,21 @@ namespace codi {
    * - internalEvaluate*_Step3_EvalStatements
    * The placeholder stands for Reverse, Forward, or Primal.
    *
-   * @tparam _TapeTypes needs to implement PrimalValueTapeTypes.
-   * @tparam _Impl Type of the final implementations
+   * @tparam T_TapeTypes needs to implement PrimalValueTapeTypes.
+   * @tparam T_Impl Type of the final implementations
    */
-  template<typename _TapeTypes, typename _Impl>
-  struct PrimalValueBaseTape : public CommonTapeImplementation<_TapeTypes, _Impl>,
-                               public StatementEvaluatorTapeInterface<typename _TapeTypes::Real>,
-                               public StatementEvaluatorInnerTapeInterface<typename _TapeTypes::Real> {
+  template<typename T_TapeTypes, typename T_Impl>
+  struct PrimalValueBaseTape : public CommonTapeImplementation<T_TapeTypes, T_Impl>,
+                               public StatementEvaluatorTapeInterface<typename T_TapeTypes::Real>,
+                               public StatementEvaluatorInnerTapeInterface<typename T_TapeTypes::Real> {
     public:
 
       /// See PrimalValueBaseTape.
-      using TapeTypes = CODI_DD(_TapeTypes,
+      using TapeTypes = CODI_DD(T_TapeTypes,
                                 CODI_T(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>,
                                                             StatementEvaluatorInterface, DefaultChunkedData>));
       /// See PrimalValueBaseTape.
-      using Impl = CODI_DD(_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Impl = CODI_DD(T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
@@ -762,12 +762,12 @@ namespace codi {
     protected:
 
       /// Implements StatementEvaluatorTapeInterface and StatementEvaluatorInnerTapeInterface
-      /// @tparam _size  Number of arguments.
-      template<size_t _size>
+      /// @tparam T_size  Number of arguments.
+      template<size_t T_size>
       struct JacobianStatementGenerator {
         public:
 
-          static size_t constexpr size = _size;  ///< See JacobianStatementGenerator
+          static size_t constexpr size = T_size;  ///< See JacobianStatementGenerator
 
           /*******************************************************************************/
           /// @name Implementation of StatementEvaluatorTapeInterface

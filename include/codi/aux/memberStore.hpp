@@ -14,19 +14,19 @@ namespace codi {
    *
    * Initialization of the static member is done on a first touch basis.
    *
-   * @tparam _Type  The type of the member. Can be anything.
-   * @tparam _Parent  The structure where the member is located.
-   * @tparam _storeStatic  Define context of the variable.
+   * @tparam T_Type  The type of the member. Can be anything.
+   * @tparam T_Parent  The structure where the member is located.
+   * @tparam T_storeStatic  Define context of the variable.
    */
-  template<typename _Type, typename _Parent, bool _storeStatic = false>
+  template<typename T_Type, typename T_Parent, bool T_storeStatic = false>
   struct MemberStore {
     public:
 
       ///< See MemberStore
-      using Type = _Type;                         // Default declaration breaks auto completion.
-      using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore.
+      using Type = T_Type;                         // Default declaration breaks auto completion.
+      using Parent = CODI_DD(T_Parent, CODI_ANY);  ///< See MemberStore.
 
-      static bool constexpr storeStatic = _storeStatic;  ///< See MemberStore.
+      static bool constexpr storeStatic = T_storeStatic;  ///< See MemberStore.
 
     private:
 
@@ -50,12 +50,12 @@ namespace codi {
   };
 
   /// \copydoc codi::MemberStore
-  template<typename _Type, typename _Parent>
-  struct MemberStore<_Type, _Parent, true> {
+  template<typename T_Type, typename T_Parent>
+  struct MemberStore<T_Type, T_Parent, true> {
     public:
 
-      using Type = CODI_DD(_Type, CODI_ANY);      ///< See MemberStore.
-      using Parent = CODI_DD(_Parent, CODI_ANY);  ///< See MemberStore.
+      using Type = CODI_DD(T_Type, CODI_ANY);      ///< See MemberStore.
+      using Parent = CODI_DD(T_Parent, CODI_ANY);  ///< See MemberStore.
 
       static bool constexpr storeStatic = true;  ///< See MemberStore.
 

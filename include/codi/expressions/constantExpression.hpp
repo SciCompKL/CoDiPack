@@ -16,13 +16,13 @@ namespace codi {
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * @tparam _Real  Original primal value of the statement/expression.
+   * @tparam T_Real  Original primal value of the statement/expression.
    */
-  template<typename _Real>
-  struct ConstantExpression : public ExpressionInterface<_Real, ConstantExpression<_Real>> {
+  template<typename T_Real>
+  struct ConstantExpression : public ExpressionInterface<T_Real, ConstantExpression<T_Real>> {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See ConstantExpression.
+      using Real = CODI_DD(T_Real, double);  ///< See ConstantExpression.
 
     private:
       Real primalValue;

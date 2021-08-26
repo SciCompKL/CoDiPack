@@ -10,7 +10,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename _Real, typename _Gradient>
+  template<typename T_Real, typename T_Gradient>
   struct ForwardEvaluation;
 
   /// Traits for everything that can be a CoDiPack tape usually the template argument of codi::ActiveType.

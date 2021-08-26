@@ -3,11 +3,11 @@
 #include "../tests/allTests.hpp"
 #include "driverInterface.hpp"
 
-template<typename _Number>
-struct DriverBase : public DriverInterface<_Number> {
+template<typename T_Number>
+struct DriverBase : public DriverInterface<T_Number> {
   public:
 
-    using Number = CODI_DECLARE_DEFAULT(_Number, double);
+    using Number = CODI_DECLARE_DEFAULT(T_Number, double);
 
     virtual void createAllTests(TestVector<Number>& tests) = 0;
 

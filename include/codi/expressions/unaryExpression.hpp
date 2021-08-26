@@ -15,13 +15,13 @@ namespace codi {
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * @tparam _Real  Original primal value of the statement/expression.
+   * @tparam T_Real  Original primal value of the statement/expression.
    */
-  template<typename _Real>
+  template<typename T_Real>
   struct UnaryOperation {
     public:
 
-      using Real = CODI_DD(_Real, double);  ///< See UnaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryOperation.
 
       /// Compute the primal value from the argument.
       ///
@@ -41,17 +41,17 @@ namespace codi {
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * @tparam _Real  Original primal value of the statement/expression.
-   * @tparam _Arg  The ExpressionInterface type of the argument.
-   * @tparam _Operation  The logic for computing the primal value and Jacobian. Must implement UnaryOperation.
+   * @tparam T_Real  Original primal value of the statement/expression.
+   * @tparam T_Arg  The ExpressionInterface type of the argument.
+   * @tparam T_Operation  The logic for computing the primal value and Jacobian. Must implement UnaryOperation.
    */
-  template<typename _Real, typename _Arg, template<typename> class _Operation>
-  struct UnaryExpression : public ExpressionInterface<_Real, UnaryExpression<_Real, _Arg, _Operation> > {
+  template<typename T_Real, typename T_Arg, template<typename> class T_Operation>
+  struct UnaryExpression : public ExpressionInterface<T_Real, UnaryExpression<T_Real, T_Arg, T_Operation> > {
     public:
 
-      using Real = CODI_DD(_Real, double);                                                ///< See UnaryExpression.
-      using Arg = CODI_DD(_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>));           ///< See UnaryExpression.
-      using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(UnaryOperation<Real>));  ///< See UnaryExpression.
+      using Real = CODI_DD(T_Real, double);                                                ///< See UnaryExpression.
+      using Arg = CODI_DD(T_Arg, CODI_T(ExpressionInterface<double, CODI_ANY>));           ///< See UnaryExpression.
+      using Operation = CODI_DD(CODI_T(T_Operation<Real>), CODI_T(UnaryOperation<Real>));  ///< See UnaryExpression.
 
       using ActiveResult = typename Arg::ActiveResult;  ///< See ExpressionInterface.
 

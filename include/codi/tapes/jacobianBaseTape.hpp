@@ -28,20 +28,20 @@ namespace codi {
   /**
    * @brief Type definitions for the Jacobian tapes.
    *
-   * @tparam _Real          See TapeTypesInterface.
-   * @tparam _Gradient      See TapeTypesInterface.
-   * @tparam _IndexManager  Index manager for the tape. Has to implement IndexManagerInterface.
-   * @tparam _Data          See TapeTypesInterface.
+   * @tparam T_Real          See TapeTypesInterface.
+   * @tparam T_Gradient      See TapeTypesInterface.
+   * @tparam T_IndexManager  Index manager for the tape. Has to implement IndexManagerInterface.
+   * @tparam T_Data          See TapeTypesInterface.
    */
-  template<typename _Real, typename _Gradient, typename _IndexManager, template<typename, typename> class _Data>
+  template<typename T_Real, typename T_Gradient, typename T_IndexManager, template<typename, typename> class T_Data>
   struct JacobianTapeTypes : public TapeTypesInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);                                              ///< See JacobianTapeTypes.
-      using Gradient = CODI_DD(_Gradient, double);                                      ///< See JacobianTapeTypes.
-      using IndexManager = CODI_DD(_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See JacobianTapeTypes.
+      using Real = CODI_DD(T_Real, double);                                              ///< See JacobianTapeTypes.
+      using Gradient = CODI_DD(T_Gradient, double);                                      ///< See JacobianTapeTypes.
+      using IndexManager = CODI_DD(T_IndexManager, CODI_T(IndexManagerInterface<int>));  ///< See JacobianTapeTypes.
       template<typename Chunk, typename Nested>
-      using Data = CODI_DD(CODI_T(_Data<Chunk, Nested>),
+      using Data = CODI_DD(CODI_T(T_Data<Chunk, Nested>),
                            CODI_T(DataInterface<Nested>));  ///< See JacobianTapeTypes.
 
       using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
@@ -78,18 +78,18 @@ namespace codi {
    * - internalEvaluate*_Step3_EvalStatements
    * The placeholder stands for Reverse, Forward, or Primal.
    *
-   * @tparam _TapeTypes has to implement JacobianTapeTypes.
-   * @tparam _Impl Type of the final implementation.
+   * @tparam T_TapeTypes has to implement JacobianTapeTypes.
+   * @tparam T_Impl Type of the final implementation.
    */
-  template<typename _TapeTypes, typename _Impl>
-  struct JacobianBaseTape : public CommonTapeImplementation<_TapeTypes, _Impl> {
+  template<typename T_TapeTypes, typename T_Impl>
+  struct JacobianBaseTape : public CommonTapeImplementation<T_TapeTypes, T_Impl> {
     public:
 
       /// See JacobianBaseTape.
       using TapeTypes = CODI_DD(
-          _TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
+          T_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
       /// See JacobianBaseTape.
-      using Impl = CODI_DD(_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Impl = CODI_DD(T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.

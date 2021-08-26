@@ -20,13 +20,13 @@ namespace codi {
     /**
      * @brief Common traits for all types used as real values
      *
-     * @tparam _Type  The type of the real value.
+     * @tparam T_Type  The type of the real value.
      */
-    template<typename _Type, typename = void>
+    template<typename T_Type, typename = void>
     struct TraitsImplementation {
       public:
 
-        using Type = CODI_DD(_Type, double);  ///< See TraitsImplementation
+        using Type = CODI_DD(T_Type, double);  ///< See TraitsImplementation
 
         using Real = Type;         ///< Inner type of the real value.
         using PassiveReal = Type;  ///< The original computation type, that was used in the application.
@@ -42,13 +42,13 @@ namespace codi {
     /**
      * @brief Function for checking if all values of the type are finite.
      *
-     * @tparam _Type  The type of the real value.
+     * @tparam T_Type  The type of the real value.
      */
-    template<typename _Type, typename = void>
+    template<typename T_Type, typename = void>
     struct IsTotalFinite {
       public:
 
-        using Type = CODI_DD(_Type, double);  ///< See IsTotalFinite
+        using Type = CODI_DD(T_Type, double);  ///< See IsTotalFinite
 
         /// Checks if the values are all finite.
         static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -60,13 +60,13 @@ namespace codi {
     /**
      * @brief Function for checking if the value of the type is completely zero.
      *
-     * @tparam _Type  The type of the real value.
+     * @tparam T_Type  The type of the real value.
      */
-    template<typename _Type, typename = void>
+    template<typename T_Type, typename = void>
     struct IsTotalZero {
       public:
 
-        using Type = CODI_DD(_Type, double);  ///< See IsTotalZero
+        using Type = CODI_DD(T_Type, double);  ///< See IsTotalZero
 
         /// Checks if the values are completely zero.
         static CODI_INLINE bool isTotalZero(Type const& v) {
@@ -118,15 +118,15 @@ namespace codi {
      * accessor methods in this class access each of these value. For `getValue`, for example, a complex type of the
      * CoDiPack type's inner value is generated.
      *
-     * @tparam _Type  Any type that contains a CoDiPack type.
+     * @tparam T_Type  Any type that contains a CoDiPack type.
      */
-    template<typename _Type, typename = void>
+    template<typename T_Type, typename = void>
     struct DataExtraction {
       public:
-        static_assert(false && std::is_void<_Type>::value,
+        static_assert(false && std::is_void<T_Type>::value,
                       "Instantiation of unspecialized RealTraits::DataExtraction.");
 
-        using Type = CODI_DD(_Type, CODI_ANY);  ///< See DataExtraction.
+        using Type = CODI_DD(T_Type, CODI_ANY);  ///< See DataExtraction.
 
         using Real = typename Type::Real;  ///< Type of primal values extracted from the type with AD values.
         using Identifier =
@@ -149,15 +149,15 @@ namespace codi {
      * methods in this class access each of these values in order to register the active types. For `registerInput`, the
      * real and imaginary part of the complex type are registered.
      *
-     * @tparam _Type  Any type that contains a CoDiPack type.
+     * @tparam T_Type  Any type that contains a CoDiPack type.
      */
-    template<typename _Type, typename = void>
+    template<typename T_Type, typename = void>
     struct TapeRegistration {
       public:
-        static_assert(false && std::is_void<_Type>::value,
+        static_assert(false && std::is_void<T_Type>::value,
                       "Instantiation of unspecialized RealTraits::TapeRegistration.");
 
-        using Type = CODI_DD(_Type, CODI_ANY);  ///< See TapeRegistration.
+        using Type = CODI_DD(T_Type, CODI_ANY);  ///< See TapeRegistration.
 
         using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
 
@@ -210,10 +210,10 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
 
     /// Specialization of DataExtraction for floating point types.
-    template<typename _Type>
-    struct DataExtraction<_Type, typename std::enable_if<std::is_floating_point<_Type>::value>::type> {
+    template<typename T_Type>
+    struct DataExtraction<T_Type, typename std::enable_if<std::is_floating_point<T_Type>::value>::type> {
       public:
-        using Type = CODI_DD(_Type, double);  ///< See DataExtraction.
+        using Type = CODI_DD(T_Type, double);  ///< See DataExtraction.
 
         using Real = double;     ///< See DataExtraction::Real.
         using Identifier = int;  ///< See DataExtraction::Identifier.
@@ -237,12 +237,12 @@ namespace codi {
     };
 
     /// Specialization of DataExtraction for complex types.
-    template<typename _InnerType>
-    struct DataExtraction<std::complex<_InnerType>> {
+    template<typename T_InnerType>
+    struct DataExtraction<std::complex<T_InnerType>> {
       public:
 
-        using InnerType = CODI_DD(_InnerType, CODI_ANY);
-        using Type = std::complex<_InnerType>;  ///< See DataExtraction.
+        using InnerType = CODI_DD(T_InnerType, CODI_ANY);
+        using Type = std::complex<T_InnerType>;  ///< See DataExtraction.
 
         using InnerExtraction = DataExtraction<InnerType>;
 
@@ -273,12 +273,12 @@ namespace codi {
     };
 
     /// Specialization of TapeRegistration for complex types.
-    template<typename _InnerType>
-    struct TapeRegistration<std::complex<_InnerType>> {
+    template<typename T_InnerType>
+    struct TapeRegistration<std::complex<T_InnerType>> {
       public:
 
-        using InnerType = CODI_DD(_InnerType, CODI_ANY);
-        using Type = std::complex<_InnerType>;  ///< See DataExtraction.
+        using InnerType = CODI_DD(T_InnerType, CODI_ANY);
+        using Type = std::complex<T_InnerType>;  ///< See DataExtraction.
 
         using InnerRegistration = TapeRegistration<InnerType>;
 

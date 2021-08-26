@@ -18,15 +18,15 @@ namespace codi {
    *
    * This interface resembles an rvalue in C++.
    *
-   * @tparam _Real  Original primal value of the statement/expression.
-   * @tparam _Impl  Class implementing this interface.
+   * @tparam T_Real  Original primal value of the statement/expression.
+   * @tparam T_Impl  Class implementing this interface.
    */
-  template<typename _Real, typename _Impl>
-  struct ExpressionInterface : public NodeInterface<_Impl> {
+  template<typename T_Real, typename T_Impl>
+  struct ExpressionInterface : public NodeInterface<T_Impl> {
     public:
 
-      using Real = CODI_DD(_Real, double);               ///< See ExpressionInterface.
-      using Impl = CODI_DD(_Impl, ExpressionInterface);  ///< See ExpressionInterface.
+      using Real = CODI_DD(T_Real, double);               ///< See ExpressionInterface.
+      using Impl = CODI_DD(T_Impl, ExpressionInterface);  ///< See ExpressionInterface.
 
       using ActiveResult = CODI_UNDEFINED;  ///< Type into which the expression can be converted. Usually also the type
                                             ///< from which is constructed.
@@ -67,11 +67,11 @@ namespace codi {
   };
 
 #ifndef DOXYGEN_DISABLE
-  template<typename _Type>
-  struct RealTraits::TraitsImplementation<_Type, ExpressionTraits::EnableIfExpression<_Type>> {
+  template<typename T_Type>
+  struct RealTraits::TraitsImplementation<T_Type, ExpressionTraits::EnableIfExpression<T_Type>> {
     public:
 
-      using Type = CODI_DD(_Type, CODI_T(ExpressionInterface<double, _Type>));
+      using Type = CODI_DD(T_Type, CODI_T(ExpressionInterface<double, T_Type>));
       using Real = typename Type::Real;
 
       using PassiveReal = RealTraits::PassiveReal<Real>;

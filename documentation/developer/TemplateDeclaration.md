@@ -3,16 +3,16 @@ Template declarations {#TemplateDeclaration}
 
 Template declarations for structures and classes follow a special layout in CoDiPack. There are three rules, any developer
 needs to follow:
- - Template arguments begin with an `_`.
- - Template arguments are redeclared inside the class with using without the underscore.
+ - Template arguments begin with an `T_`.
+ - Template arguments are redeclared inside the class with using without the `T_` prefix.
  - A default declaration of the template type needs to be done.
  
 The first two rules are simple and an example is:
 ```{.cpp}
-template<typename _T>
+template<typename T_T>
 struct Test {
   public:
-    using T = _T;
+    using T = T_T;
 };
 ```
 
@@ -26,10 +26,10 @@ macro. It is therefore necessary to wrap these declarations in `CODI_TEMPLATE` o
 
 Example declarations are
 ```{.cpp}
-  using Tape = CODI_DECLARE_DEFAULT(_Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
-  using Real = CODI_DD(_Real, double);
-  using Operation = CODI_DD(CODI_T(_Operation<Real>), CODI_T(BinaryOperation<Real>));
-  using Chunk = CODI_DD(_Chunk, CODI_T(Chunk1<CODI_ANY>));
+  using Tape = CODI_DECLARE_DEFAULT(T_Tape, CODI_TEMPLATE(FullTapeInterface<double, double, int, EmptyPosition>));
+  using Real = CODI_DD(T_Real, double);
+  using Operation = CODI_DD(CODI_T(T_Operation<Real>), CODI_T(BinaryOperation<Real>));
+  using Chunk = CODI_DD(T_Chunk, CODI_T(Chunk1<CODI_ANY>));
 ```
 
 

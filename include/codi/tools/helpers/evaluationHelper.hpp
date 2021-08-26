@@ -22,23 +22,23 @@ namespace codi {
    * The class performs no resizing of the vectors. The initial sizes need to be adequate for all calls to the
    * function object that the user will perform.
    *
-   * @tparam _Func  The type of the function object which defines the evaluation logic.
-   * @tparam _Type  The CoDiPack type that is used for the derivative evaluation.
-   * @tparam _InputStore  Vector used for the storage of input arguments.
-   * @tparam _OutputStore  Vector used for the storage of output arguments.
+   * @tparam T_Func  The type of the function object which defines the evaluation logic.
+   * @tparam T_Type  The CoDiPack type that is used for the derivative evaluation.
+   * @tparam T_InputStore  Vector used for the storage of input arguments.
+   * @tparam T_OutputStore  Vector used for the storage of output arguments.
    */
-  template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
-           typename _OutputStore = std::vector<_Type>>
+  template<typename T_Func, typename T_Type, typename T_InputStore = std::vector<T_Type>,
+           typename T_OutputStore = std::vector<T_Type>>
   struct EvaluationHandleBase {
     public:
 
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
+      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
       /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
     protected:
 
@@ -96,18 +96,18 @@ namespace codi {
   /// Implementation of EvaluationHandleBase for forward mode CoDiPack types.
   ///
   /// \copydetails EvaluationHandleBase
-  template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
-           typename _OutputStore = std::vector<_Type>>
-  struct EvaluationHandleForward : public EvaluationHandleBase<_Func, _Type, _InputStore, _OutputStore> {
+  template<typename T_Func, typename T_Type, typename T_InputStore = std::vector<T_Type>,
+           typename T_OutputStore = std::vector<T_Type>>
+  struct EvaluationHandleForward : public EvaluationHandleBase<T_Func, T_Type, T_InputStore, T_OutputStore> {
     public:
 
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
+      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
       /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;  ///< Abbreviation for the base class.
 
@@ -248,18 +248,18 @@ namespace codi {
   /// @brief Implementation for reverse mode CoDiPack types of EvaluationHandleBase.
   ///
   ///\copydetails EvaluationHandleBase
-  template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
-           typename _OutputStore = std::vector<_Type>>
-  struct EvaluationHandleReverseBase : public EvaluationHandleBase<_Func, _Type, _InputStore, _OutputStore> {
+  template<typename T_Func, typename T_Type, typename T_InputStore = std::vector<T_Type>,
+           typename T_OutputStore = std::vector<T_Type>>
+  struct EvaluationHandleReverseBase : public EvaluationHandleBase<T_Func, T_Type, T_InputStore, T_OutputStore> {
     public:
 
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
+      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
       /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;  ///< Abbreviation for the base class.
 
@@ -349,19 +349,19 @@ namespace codi {
    *
    * \copydetails EvaluationHandleBase
    */
-  template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
-           typename _OutputStore = std::vector<_Type>>
+  template<typename T_Func, typename T_Type, typename T_InputStore = std::vector<T_Type>,
+           typename T_OutputStore = std::vector<T_Type>>
   struct EvaluationHandleReversePrimalValueTapes
-      : public EvaluationHandleReverseBase<_Func, _Type, _InputStore, _OutputStore> {
+      : public EvaluationHandleReverseBase<T_Func, T_Type, T_InputStore, T_OutputStore> {
     public:
 
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
+      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
       /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       /// Abbreviation for the base class.
       using Base = EvaluationHandleReverseBase<Func, Type, InputStore, OutputStore>;
@@ -388,18 +388,18 @@ namespace codi {
    *
    * \copydetails EvaluationHandleBase
    */
-  template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
-           typename _OutputStore = std::vector<_Type>>
+  template<typename T_Func, typename T_Type, typename T_InputStore = std::vector<T_Type>,
+           typename T_OutputStore = std::vector<T_Type>>
   struct EvaluationHandleReverseJacobianTapes
-      : public EvaluationHandleReverseBase<_Func, _Type, _InputStore, _OutputStore> {
+      : public EvaluationHandleReverseBase<T_Func, T_Type, T_InputStore, T_OutputStore> {
     public:
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(_Func, CODI_TEMPLATE(void()(_InputStore const&, _OutputStore&)));
+      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
       /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(_Type,
+      using Type = CODI_DECLARE_DEFAULT(T_Type,
                                         CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       /// Abbreviation for the base class.
       using Base = EvaluationHandleReverseBase<Func, Type, InputStore, OutputStore>;
@@ -421,34 +421,34 @@ namespace codi {
   };
 
   /// See EvaluationHandleBase.
-  template<typename _Func, typename _Type, typename _InputStore = std::vector<_Type>,
-           typename _OutputStore = std::vector<_Type>, typename = void>
-  struct EvaluationHandle : public EvaluationHandleBase<_Func, _Type, _InputStore, _OutputStore> {};
+  template<typename T_Func, typename T_Type, typename T_InputStore = std::vector<T_Type>,
+           typename T_OutputStore = std::vector<T_Type>, typename = void>
+  struct EvaluationHandle : public EvaluationHandleBase<T_Func, T_Type, T_InputStore, T_OutputStore> {};
 
   /// See EvaluationHandleForward.
-  template<typename _Func, typename _Type, typename _InputStore, typename _OutputStore>
-  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore,
-                          TapeTraits::EnableIfForwardTape<typename _Type::Tape>>
-      : public EvaluationHandleForward<_Func, _Type, _InputStore, _OutputStore> {
-      using EvaluationHandleForward<_Func, _Type, _InputStore, _OutputStore>::EvaluationHandleForward;
+  template<typename T_Func, typename T_Type, typename T_InputStore, typename T_OutputStore>
+  struct EvaluationHandle<T_Func, T_Type, T_InputStore, T_OutputStore,
+                          TapeTraits::EnableIfForwardTape<typename T_Type::Tape>>
+      : public EvaluationHandleForward<T_Func, T_Type, T_InputStore, T_OutputStore> {
+      using EvaluationHandleForward<T_Func, T_Type, T_InputStore, T_OutputStore>::EvaluationHandleForward;
   };
 
   /// See EvaluationHandleReverseJacobianTapes.
-  template<typename _Func, typename _Type, typename _InputStore, typename _OutputStore>
-  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore,
-                          TapeTraits::EnableIfJacobianTape<typename _Type::Tape>>
-      : public EvaluationHandleReverseJacobianTapes<_Func, _Type, _InputStore, _OutputStore> {
-      using EvaluationHandleReverseJacobianTapes<_Func, _Type, _InputStore,
-                                                 _OutputStore>::EvaluationHandleReverseJacobianTapes;
+  template<typename T_Func, typename T_Type, typename T_InputStore, typename T_OutputStore>
+  struct EvaluationHandle<T_Func, T_Type, T_InputStore, T_OutputStore,
+                          TapeTraits::EnableIfJacobianTape<typename T_Type::Tape>>
+      : public EvaluationHandleReverseJacobianTapes<T_Func, T_Type, T_InputStore, T_OutputStore> {
+      using EvaluationHandleReverseJacobianTapes<T_Func, T_Type, T_InputStore,
+                                                 T_OutputStore>::EvaluationHandleReverseJacobianTapes;
   };
 
   /// See EvaluationHandleReversePrimalValueTapes.
-  template<typename _Func, typename _Type, typename _InputStore, typename _OutputStore>
-  struct EvaluationHandle<_Func, _Type, _InputStore, _OutputStore,
-                          TapeTraits::EnableIfPrimalValueTape<typename _Type::Tape>>
-      : public EvaluationHandleReversePrimalValueTapes<_Func, _Type, _InputStore, _OutputStore> {
-      using EvaluationHandleReversePrimalValueTapes<_Func, _Type, _InputStore,
-                                                    _OutputStore>::EvaluationHandleReversePrimalValueTapes;
+  template<typename T_Func, typename T_Type, typename T_InputStore, typename T_OutputStore>
+  struct EvaluationHandle<T_Func, T_Type, T_InputStore, T_OutputStore,
+                          TapeTraits::EnableIfPrimalValueTape<typename T_Type::Tape>>
+      : public EvaluationHandleReversePrimalValueTapes<T_Func, T_Type, T_InputStore, T_OutputStore> {
+      using EvaluationHandleReversePrimalValueTapes<T_Func, T_Type, T_InputStore,
+                                                    T_OutputStore>::EvaluationHandleReversePrimalValueTapes;
   };
 
   /**

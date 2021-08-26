@@ -22,17 +22,17 @@ namespace codi {
    *
    * Each chunk has the size provided in the constructor.
    *
-   * @tparam _Chunk            Has to implement ChunkBase. The chunk defines the data stored in this implementation.
-   * @tparam _NestedData       Nested DataInterface.
-   * @tparam _PointerInserter  Defines how data is appended to evaluate* function calls.
+   * @tparam T_Chunk            Has to implement ChunkBase. The chunk defines the data stored in this implementation.
+   * @tparam T_NestedData       Nested DataInterface.
+   * @tparam T_PointerInserter  Defines how data is appended to evaluate* function calls.
    */
-  template<typename _Chunk, typename _NestedData = EmptyData, typename _PointerInserter = PointerStore<_Chunk>>
-  struct ChunkedData : public DataInterface<_NestedData> {
+  template<typename T_Chunk, typename T_NestedData = EmptyData, typename T_PointerInserter = PointerStore<T_Chunk>>
+  struct ChunkedData : public DataInterface<T_NestedData> {
     public:
 
-      using Chunk = CODI_DD(_Chunk, ChunkBase);                                        ///< See ChunkedData
-      using NestedData = CODI_DD(_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< See ChunkedData
-      using PointerInserter = CODI_DD(_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< See ChunkedData
+      using Chunk = CODI_DD(T_Chunk, ChunkBase);                                        ///< See ChunkedData
+      using NestedData = CODI_DD(T_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< See ChunkedData
+      using PointerInserter = CODI_DD(T_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< See ChunkedData
 
       using InternalPosHandle = size_t;                      ///< Position in the chunk
       using NestedPosition = typename NestedData::Position;  ///< Position of NestedData

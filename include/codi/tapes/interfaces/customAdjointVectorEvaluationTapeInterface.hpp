@@ -24,13 +24,13 @@ namespace codi {
    * (documentation/examples/customAdjointVectorEvaluationTapeInterface.cpp):
    * \snippet examples/customAdjointVectorEvaluationTapeInterface.cpp Custom vector
    *
-   * @tparam _Position  Global tape position, usually chosen as Tape::Position.
+   * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
    */
-  template<typename _Position>
-  struct CustomAdjointVectorEvaluationTapeInterface : public virtual ForwardEvaluationTapeInterface<_Position> {
+  template<typename T_Position>
+  struct CustomAdjointVectorEvaluationTapeInterface : public virtual ForwardEvaluationTapeInterface<T_Position> {
     public:
 
-      using Position = CODI_DD(_Position, EmptyPosition);  ///< See CustomAdjointVectorEvaluationTapeInterface.
+      using Position = CODI_DD(T_Position, EmptyPosition);  ///< See CustomAdjointVectorEvaluationTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

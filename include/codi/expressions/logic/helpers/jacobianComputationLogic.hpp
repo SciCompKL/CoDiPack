@@ -13,13 +13,13 @@ namespace codi {
 
   /**
    *
-   * @tparam _Impl  Class implementing this interface.
+   * @tparam T_Impl  Class implementing this interface.
    */
-  template<typename _Impl>
-  struct JacobianComputationLogic : public TraversalLogic<_Impl> {
+  template<typename T_Impl>
+  struct JacobianComputationLogic : public TraversalLogic<T_Impl> {
     public:
 
-      using Impl = CODI_DD(_Impl, CODI_T(TraversalLogic<CODI_ANY>));  ///< See JacobianComputationLogic.
+      using Impl = CODI_DD(T_Impl, CODI_T(TraversalLogic<CODI_ANY>));  ///< See JacobianComputationLogic.
 
       /*******************************************************************************/
       /// @name Interface definition

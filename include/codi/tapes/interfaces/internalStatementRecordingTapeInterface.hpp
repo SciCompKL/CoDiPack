@@ -25,13 +25,13 @@ namespace codi {
    * ActiveType is the default implementation in CoDiPack which uses this interface and implements the behavior
    * described above.
    *
-   * @tparam _Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
    */
-  template<typename _Identifier>
+  template<typename T_Identifier>
   struct InternalStatementRecordingTapeInterface {
     public:
 
-      using Identifier = CODI_DD(_Identifier, int);  ///< See InternalStatementRecordingTapeInterface.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See InternalStatementRecordingTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

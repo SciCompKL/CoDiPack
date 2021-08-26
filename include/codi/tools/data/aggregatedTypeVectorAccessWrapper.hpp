@@ -37,33 +37,33 @@ namespace codi {
    * Implementations can use AggregatedTypeVectorAccessWrapperBase which implements most of the functions from
    * VectorAccessInterface.
    *
-   * @tparam _Type  An arbitrary type which consists of multiple CoDiPack types.
+   * @tparam T_Type  An arbitrary type which consists of multiple CoDiPack types.
    */
-  template<typename _Type, typename = void>
+  template<typename T_Type, typename = void>
   struct AggregatedTypeVectorAccessWrapper : public VectorAccessInterface<CODI_ANY, CODI_ANY> {
-      static_assert(false && std::is_void<_Type>::value,
+      static_assert(false && std::is_void<T_Type>::value,
                     "Instantiation of unspecialized AggregatedTypeVectorAccessWrapper.");
 
-      using Type = CODI_DD(_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
+      using Type = CODI_DD(T_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
   };
 
   /**
    * @brief Implements all methods from AggregatedTypeVectorAccessWrapper, that can be implemented with combinations of
    * other methods.
    *
-   * @tparam _Real  Primal value type of the combined type.
-   * @tparam _Identifier  Identifier type type of the combined type.
-   * @tparam _InnerInterface  The VectorAccessInterface of the underlying tape.
+   * @tparam T_Real  Primal value type of the combined type.
+   * @tparam T_Identifier  Identifier type type of the combined type.
+   * @tparam T_InnerInterface  The VectorAccessInterface of the underlying tape.
    */
-  template<typename _Real, typename _Identifier, typename _InnerInterface>
-  struct AggregatedTypeVectorAccessWrapperBase : public VectorAccessInterface<_Real, _Identifier> {
+  template<typename T_Real, typename T_Identifier, typename T_InnerInterface>
+  struct AggregatedTypeVectorAccessWrapperBase : public VectorAccessInterface<T_Real, T_Identifier> {
     public:
 
-      using Real = CODI_DD(_Real, CODI_ANY);              ///< See RealTraits::DataExtraction::Real.
-      using Identifier = CODI_DD(_Identifier, CODI_ANY);  ///< See RealTraits::DataExtraction::Identifier.
+      using Real = CODI_DD(T_Real, CODI_ANY);              ///< See RealTraits::DataExtraction::Real.
+      using Identifier = CODI_DD(T_Identifier, CODI_ANY);  ///< See RealTraits::DataExtraction::Identifier.
 
       using InnerInterface = CODI_DD(
-          _InnerInterface, CODI_T(VectorAccessInterface<double, int>));  ///< See AggregatedTypeVectorAccessWrapperBase.
+          T_InnerInterface, CODI_T(VectorAccessInterface<double, int>));  ///< See AggregatedTypeVectorAccessWrapperBase.
 
     protected:
 
@@ -167,12 +167,12 @@ namespace codi {
    * User can specialize this factory if the default construction of AggregatedTypeVectorAccessWrapper needs to be
    * specialized.
    *
-   * @tparam _Type See AggregatedTypeVectorAccessWrapper.
+   * @tparam T_Type See AggregatedTypeVectorAccessWrapper.
    */
-  template<typename _Type, typename = void>
+  template<typename T_Type, typename = void>
   struct AggregatedTypeVectorAccessWrapperFactory {
     public:
-      using Type = CODI_DD(_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
+      using Type = CODI_DD(T_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
 
       using RType = AggregatedTypeVectorAccessWrapper<Type>;  ///< Which instances this factory creates.
 
@@ -194,15 +194,15 @@ namespace codi {
   /// Specialization of AggregatedTypeVectorAccessWrapper for std::complex.
   ///
   /// @tparam The nested type of the complex data type.
-  template<typename _InnerType>
-  struct AggregatedTypeVectorAccessWrapper<std::complex<_InnerType>>
+  template<typename T_InnerType>
+  struct AggregatedTypeVectorAccessWrapper<std::complex<T_InnerType>>
       : public AggregatedTypeVectorAccessWrapperBase<
-            std::complex<typename _InnerType::Real>, std::complex<typename _InnerType::Identifier>,
-            VectorAccessInterface<typename _InnerType::Real, typename _InnerType::Identifier>> {
+            std::complex<typename T_InnerType::Real>, std::complex<typename T_InnerType::Identifier>,
+            VectorAccessInterface<typename T_InnerType::Real, typename T_InnerType::Identifier>> {
     public:
 
       using InnerType = CODI_DD(
-          _InnerType,
+          T_InnerType,
           CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));  ///< See
                                                                                 ///< AggregatedTypeVectorAccessWrapper.
       using Type = std::complex<InnerType>;  ///< See AggregatedTypeVectorAccessWrapper.
@@ -264,12 +264,12 @@ namespace codi {
 
   /// Specialization of AggregatedTypeVectorAccessWrapperFactory for CoDiPack active types.
   ///
-  /// @tparam _Type  A CoDiPack active type.
-  template<typename _Type>
-  struct AggregatedTypeVectorAccessWrapperFactory<_Type, ExpressionTraits::EnableIfLhsExpression<_Type>> {
+  /// @tparam T_Type  A CoDiPack active type.
+  template<typename T_Type>
+  struct AggregatedTypeVectorAccessWrapperFactory<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
     public:
       using Type = CODI_DD(
-          _Type,
+          T_Type,
           CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See
                                                                              ///< AggregatedTypeVectorAccessWrapperBase.
 

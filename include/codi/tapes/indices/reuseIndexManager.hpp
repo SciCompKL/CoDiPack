@@ -22,13 +22,13 @@ namespace codi {
    *
    * For generalization reasons, it also extends from the EmptyData DataInterface.
    *
-   * @tparam _Index   Type for the identifier, usually an integer type.
+   * @tparam T_Index   Type for the identifier, usually an integer type.
    */
-  template<typename _Index>
-  struct ReuseIndexManager : public IndexManagerInterface<_Index>, public EmptyData {
+  template<typename T_Index>
+  struct ReuseIndexManager : public IndexManagerInterface<T_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DD(_Index, int);         ///< See ReuseIndexManager.
+      using Index = CODI_DD(T_Index, int);         ///< See ReuseIndexManager.
       using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/

@@ -50,15 +50,15 @@ namespace codi {
    *    - This access is required for primal values tapes, which need to update or revert primal values during the
    *      tape evaluation.
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
    */
-  template<typename _Real, typename _Identifier>
+  template<typename T_Real, typename T_Identifier>
   struct VectorAccessInterface {
     public:
 
-      using Real = CODI_DD(_Real, double);           ///< See VectorAccessInterface.
-      using Identifier = CODI_DD(_Identifier, int);  ///< See VectorAccessInterface.
+      using Real = CODI_DD(T_Real, double);           ///< See VectorAccessInterface.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See VectorAccessInterface.
 
       virtual ~VectorAccessInterface() {}  ///< Destructor
 

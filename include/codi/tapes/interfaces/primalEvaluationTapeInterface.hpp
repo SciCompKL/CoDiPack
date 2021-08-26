@@ -28,17 +28,17 @@ namespace codi {
    * Here is an example for a primal reevaluation (documentation/examples/primalEvaluationTapeInterface.cpp):
    * \snippet examples/primalEvaluationTapeInterface.cpp Primal evaluation
    *
-   * @tparam _Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam _Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
-   * @tparam _Position  Global tape position, usually chosen as Tape::Position.
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
    */
-  template<typename _Real, typename _Identifier, typename _Position>
-  struct PrimalEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<_Position> {
+  template<typename T_Real, typename T_Identifier, typename T_Position>
+  struct PrimalEvaluationTapeInterface : public virtual PositionalEvaluationTapeInterface<T_Position> {
     public:
 
-      using Real = CODI_DD(_Real, double);                 ///< See PrimalEvaluationTapeInterface.
-      using Identifier = CODI_DD(_Identifier, int);        ///< See PrimalEvaluationTapeInterface.
-      using Position = CODI_DD(_Position, EmptyPosition);  ///< See PrimalEvaluationTapeInterface.
+      using Real = CODI_DD(T_Real, double);                 ///< See PrimalEvaluationTapeInterface.
+      using Identifier = CODI_DD(T_Identifier, int);        ///< See PrimalEvaluationTapeInterface.
+      using Position = CODI_DD(T_Position, EmptyPosition);  ///< See PrimalEvaluationTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition

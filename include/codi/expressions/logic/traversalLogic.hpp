@@ -16,13 +16,13 @@ namespace codi {
    *
    * Implementing classes can have members which store information required for the traversal.
    *
-   * @tparam _Impl  Class implementing this interface.
+   * @tparam T_Impl  Class implementing this interface.
    */
-  template<typename _Impl>
+  template<typename T_Impl>
   struct TraversalLogic {
     public:
 
-      using Impl = CODI_DD(_Impl, TraversalLogic);  ///< See TraversalLogic.
+      using Impl = CODI_DD(T_Impl, TraversalLogic);  ///< See TraversalLogic.
 
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {

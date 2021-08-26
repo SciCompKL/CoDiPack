@@ -18,13 +18,13 @@ namespace codi {
    * Here is an example for a positional tape evaluation (\ref Example_03_Positional_tape_evaluations):
    * \snippet examples/Example_03_Positional_tape_evaluations.cpp Positional evaluation
    *
-   * @tparam _Position  Global tape position, usually chosen as Tape::Position.
+   * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
    */
-  template<typename _Position>
+  template<typename T_Position>
   struct PositionalEvaluationTapeInterface {
     public:
 
-      using Position = CODI_DD(_Position, EmptyPosition);  ///< See PositionalEvaluationTapeInterface.
+      using Position = CODI_DD(T_Position, EmptyPosition);  ///< See PositionalEvaluationTapeInterface.
 
       /*******************************************************************************/
       /// @name Interface definition
