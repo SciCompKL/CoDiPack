@@ -11,12 +11,12 @@ namespace codi {
 
   /// Helper class for the constant data conversion in primal value tapes.
   ///
-  /// @tparam T_T  Type of the constant data store in the tape.
+  /// @tparam T_StoreData  Type of the constant data store in the tape.
   template <typename T_StoreData>
   struct ConstantDataConversion {
     public:
 
-      using StoreData = CODI_DD(T_StoreData, double); ///< See ConstantDataConversion
+      using StoreData = CODI_DD(T_StoreData, double); ///< See ConstantDataConversion.
       using ArgumentData = StoreData; ///< Defined by specializations.
 
       /// Convert the data from the store to the argument of the constant expression.

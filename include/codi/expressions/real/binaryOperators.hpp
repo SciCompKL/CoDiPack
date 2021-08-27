@@ -277,7 +277,7 @@ namespace codi {
 #define FUNCTION copysignf
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for frexp */
+  /// BinaryOperation implementation for frexp
   template<typename T_Real>
   struct OperationFrexp : public BinaryOperation<T_Real> {
     public:
@@ -294,7 +294,7 @@ namespace codi {
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, result);
-        /* The result is always computed beforehand therefore we can safely use the value of b */
+        /* The result is always computed beforehand, therefore we can safely use the value of b. */
         return ldexp(1.0, -(*argB));
       }
 
@@ -392,7 +392,7 @@ namespace codi {
 #define FUNCTION hypotf
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for ldexp */
+  /// BinaryOperation implementation for ldexp
   template<typename T_Real>
   struct OperationLdexp : public BinaryOperation<T_Real> {
     public:
