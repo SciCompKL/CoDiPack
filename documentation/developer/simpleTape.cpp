@@ -63,7 +63,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 //! [Identifiers - Member definition]
 
 //! [Data stream - Member definition]
-    codi::EmptyData emptyData; // Required for the termination
+    codi::EmptyData emptyData; // Required for the termination.
     OperatorData operatorData;
     IdentifierData identifierData;
     PrimalData primalData;
@@ -74,7 +74,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
     SimpleTape() :
 //! [Identifiers - Member initialization]
       active(false),
-      adjointVec(1), // Reserve one for out of bounds gradient access
+      adjointVec(1), // Reserve one for out of bounds gradient access.
       maxIdentifier(0),
 //! [Identifiers - Member initialization]
 //! [Data stream - Member creation]
@@ -110,7 +110,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 //! [Other - Activity]
     void setActive()      {active = true;}
     void setPassive()     {active = false;}
-    bool isActive() const { return active;}
+    bool isActive() const {return active;}
 //! [Other - Activity]
 
 //! [Evaluation - Entry]
@@ -121,12 +121,12 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
 //! [Other - Misc]
     void clearAdjoints() {
-      for(double& adj : adjointVec) {
+      for (double& adj : adjointVec) {
         adj = 0.0;
       }
     }
     void reset(bool resetAdjoints = true) {
-      if(resetAdjoints) {
+      if (resetAdjoints) {
         clearAdjoints();
       }
 
@@ -176,7 +176,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 //! [Identifiers - Initialization]
     template<typename Real>
     void initIdentifier(Real& value, Identifier& identifier) {
-      identifier = 0; // Initialize with zero we perform an online activity analysis
+      identifier = 0; // Initialize with zero we perform an online activity analysis.
     }
 
     template<typename Real>
@@ -230,7 +230,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
       if (identifier > maxIdentifier) {
         std::cerr << "Error: Tryinig to access an identifier which was not distributed." << std::endl;
       }
-      if (identifier >= (int)adjointVec.size()) { // Only resize if necessary
+      if (identifier >= (int)adjointVec.size()) { // Only resize if necessary.
         adjointVec.resize(maxIdentifier + 1);
       }
     }
@@ -271,7 +271,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
           tape.storeOperator(exp.arg, argValue, argIdentifier, false);
 
           if (argIdentifier != 0) {
-            // Active argument or branch => store the operator
+            // Active argument or branch => store the operator.
             tape.operatorData.reserveItems(1);
             tape.identifierData.reserveItems(2);
             tape.primalData.reserveItems(1);
@@ -283,7 +283,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
             tape.identifierData.pushData(resultIdentifier);
             tape.primalData.pushData(argValue);
           } else {
-            // passive argument or branch => do not store anything
+            // Passive argument or branch => do not store anything.
             resultIdentifier = 0;
           }
 
@@ -310,7 +310,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
           tape.storeOperator(exp.argB, argBValue, argBIdentifier, false);
 
           if (argAIdentifier != 0 || argBIdentifier != 0) {
-            // Active argument or branch => store the operator
+            // Active argument or branch => store the operator.
             tape.operatorData.reserveItems(1);
             tape.identifierData.reserveItems(3);
             tape.primalData.reserveItems(2);
@@ -325,7 +325,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
             tape.primalData.pushData(argBValue);
 
           } else {
-            // passive argument or branch => do not store anything
+            // Passive argument or branch => do not store anything.
             resultIdentifier = 0;
           }
 
@@ -353,7 +353,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
             double& resultValue, int& resultIdentifier, bool copy)
         {
           if (copy && 0 != exp.getIdentifier()) {
-            // Active argument and a copy operation => store the operator
+            // Active argument and a copy operation => store the operator.
             tape.operatorData.reserveItems(1);
             tape.identifierData.reserveItems(2);
             tape.primalData.reserveItems(1);
@@ -365,7 +365,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
             tape.identifierData.pushData(resultIdentifier);
             tape.primalData.pushData(exp.getValue());
           } else {
-            // No copy operation or passive value => just pass the data
+            // No copy operation or passive value => just pass the data.
             resultIdentifier = exp.getIdentifier();
           }
 
@@ -399,26 +399,26 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
         double arg1Value = 0.0;
         double arg2Value = 0.0;
 
-        // Get the data from the stacks
+        // Get the data from the stacks.
         switch (operatorData[curOperatorPos]) {
-          // Binary operations
+          // Binary operations.
           case OperatorCode::ADD:
           case OperatorCode::SUB:
           case OperatorCode::MUL:
           case OperatorCode::DIV:
-            // Get the data
+            // Get the data.
             resultIdentifier = identifierData[curIdentifierPos - 1];
             arg2Identifier = identifierData[curIdentifierPos - 2];
             arg1Identifier = identifierData[curIdentifierPos - 3];
             arg2Value = primalData[curPrimalPos - 1];
             arg1Value = primalData[curPrimalPos - 2];
 
-            // Adjust positions
+            // Adjust positions.
             curIdentifierPos -= 3;
             curPrimalPos -= 2;
             break;
 
-          // Unary operations
+          // Unary operations.
           case OperatorCode::COS:
           case OperatorCode::SIN:
           case OperatorCode::COPY:
@@ -427,7 +427,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
             arg1Identifier = identifierData[curIdentifierPos - 2];
             arg1Value = primalData[curPrimalPos - 1];
 
-            // Adjust positions
+            // Adjust positions.
             curIdentifierPos -= 2;
             curPrimalPos -= 1;
             break;
@@ -481,6 +481,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 //![Evaluation - Stack]
 };
 
+//![Example]
 template<typename Real>
 void eval() {
   using Tape = typename Real::Tape;
@@ -493,7 +494,7 @@ void eval() {
   tape.registerInput(a);
   tape.registerInput(b);
 
-  Real c = sin(a + b) * cos(a - b);
+  Real c = sin(a + b) * cos(a - b); // Single statement.
 
   tape.registerOutput(c);
 
@@ -526,4 +527,5 @@ int main(int nargs, char** args) {
 
   return 0;
 }
+//![Example]
 //! [Simple Tape]

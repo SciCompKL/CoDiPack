@@ -21,7 +21,7 @@ tape with the functionality available in CoDiPack is provided in \ref Developer_
 
 Here is the list of all interfaces currently defined in CoDiPack.
  - Internal:
-   - codi::InternalStatementRecordingInterface: Used in codi::ActiveType to initialize the storing of expressions.
+   - codi::InternalStatementRecordingTapeInterface: Used in codi::ActiveType to initialize the storing of expressions.
  - Basic (should be implemented by a tape):
    - codi::GradientAccessTapeInterface: Allow access to the tangent and/or adjoint values.
    - codi::IdentifierInformationTapeInterface: Check for activity of values.
