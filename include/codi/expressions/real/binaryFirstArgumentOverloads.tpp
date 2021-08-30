@@ -35,7 +35,7 @@
   #define OPERATION_LOGIC BinaryOperation
   #define FUNCTION func
   #define SECOND_ARG_TYPE double
-  #define SECOND_ARG_CONVERSION TODO
+  #define SECOND_ARG_CONVERSION ConstantDataConversion
 
 namespace codi {
 #endif
