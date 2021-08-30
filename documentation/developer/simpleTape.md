@@ -287,7 +287,8 @@ External function entries
   Memory allocated       :        2.50 MB
 -------------------------------------
 ```
-As expected, they yield the same result, but the required memory is different. The codi::RealReverse tape needs 96 bytes
-of memory and the simple tape requires 200 bytes of memory. In order to keep it simple, no advanced optimizations have
-been implemented in the SimpleTape. The data management is also quite simple and does not result in the minimal memory
-footprint.
+As expected, they yield the same result, but the required memory is different. The allocated memory does not interest
+us since this memory is defined by the default chunk size, that is different for the two tapes.The codi::RealReverse
+tape needs 96 bytes of memory and the simple tape requires 200 bytes of memory. In order to keep it simple, no advanced
+optimizations have been implemented in the SimpleTape. The data management is also quite simple and does not result in
+the minimal memory footprint.
