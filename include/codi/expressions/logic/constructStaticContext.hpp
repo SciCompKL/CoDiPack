@@ -104,14 +104,16 @@ namespace codi {
       using PassiveReal = typename Tape::PassiveReal;
 
       /// Conversion from ConstantExpression to ConstantExpression.
-      using ResultType = ConstantExpression<PassiveReal>;
+      using ResultType = ConstantExpression<typename Rhs::Real>;
 
       /// Uses constantData[constantValueOffset].
       static ResultType construct(Real* primalVector, Identifier const* const identifiers,
                                   PassiveReal const* const constantData) {
         CODI_UNUSED(primalVector, identifiers);
 
-        return ResultType(constantData[constantValueOffset]);
+        using ConversionOperator = typename Rhs::ConversionOperator<PassiveReal>;
+
+        return ResultType(ConversionOperator::fromDataStore(constantData[constantValueOffset]));
       }
   };
 

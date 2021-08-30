@@ -167,7 +167,9 @@ namespace codi {
 
   using std::atan2;
   using std::copysign;
+  using std::frexp;
   using std::hypot;
+  using std::ldexp;
   using std::max;
   using std::min;
   using std::pow;
@@ -275,6 +277,60 @@ namespace codi {
 #define FUNCTION copysignf
 #include "binaryOverloads.tpp"
 
+  /// BinaryOperation implementation for frexp
+  template<typename T_Real>
+  struct OperationFrexp : public BinaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double); ///< See BinaryOperation.
+
+      /// \copydoc codi::BinaryOperation::primal()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
+        return frexp(argA, argB);
+      }
+
+      /// \copydoc codi::BinaryOperation::gradientA()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+        CODI_UNUSED(argA, result);
+        /* The result is always computed beforehand, therefore we can safely use the value of b. */
+        return ldexp(1.0, -(*argB));
+      }
+
+      /// \copydoc codi::BinaryOperation::gradientB()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+        CODI_UNUSED(argA, argB, result);
+
+        return Real();
+      }
+  };
+
+#ifndef DOXYGEN_DISABLE
+  template<typename T_StoreData>
+  struct IntPointerConversion : public ConstantDataConversion<T_StoreData> {
+    public:
+
+      using StoreData = CODI_DD(T_StoreData, double);
+      using ArgumentData = int*;
+
+      static int* fromDataStore(StoreData const& v) {
+        static int i = (int)v;
+        return &i;
+      }
+
+      static StoreData toDataStore(int const* v) {
+        return (StoreData)*v;
+      }
+  };
+#endif
+#define OPERATION_LOGIC OperationFrexp
+#define FUNCTION frexp
+#define SECOND_ARG_TYPE int*
+#define SECOND_ARG_CONVERSION IntPointerConversion
+#include "binaryFirstArgumentOverloads.tpp"
+
   /// BinaryOperation implementation for hypot
   template<typename T_Real>
   struct OperationHypot : public BinaryOperation<T_Real> {
@@ -335,6 +391,42 @@ namespace codi {
 #define OPERATION_LOGIC OperationHypot
 #define FUNCTION hypotf
 #include "binaryOverloads.tpp"
+
+  /// BinaryOperation implementation for ldexp
+  template<typename T_Real>
+  struct OperationLdexp : public BinaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double); ///< See BinaryOperation.
+
+      /// \copydoc codi::BinaryOperation::primal()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
+        return ldexp(argA, argB);
+      }
+
+      /// \copydoc codi::BinaryOperation::gradientA()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+        CODI_UNUSED(argA, result);
+
+        return ldexp(1.0, argB);
+      }
+
+      /// \copydoc codi::BinaryOperation::gradientB()
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+        CODI_UNUSED(argA, argB, result);
+
+        return Real();
+      }
+
+  };
+#define OPERATION_LOGIC OperationLdexp
+#define FUNCTION ldexp
+#define SECOND_ARG_TYPE int
+#define SECOND_ARG_CONVERSION ConstantDataConversion
+#include "binaryFirstArgumentOverloads.tpp"
 
   /// BinaryOperation implementation for max
   template<typename T_Real>
@@ -558,9 +650,11 @@ namespace std {
   using codi::copysignf;
   using codi::fmax;
   using codi::fmin;
+  using codi::frexp;
   using codi::hypot;
   using codi::hypotl;
   using codi::hypotf;
+  using codi::ldexp;
   using codi::max;
   using codi::min;
   using codi::pow;
