@@ -5,7 +5,7 @@ The full tape interface of CoDiPack is broken down into several smaller interfac
  - related functions are clustered together,
  - documentation can be provided in more concise format,
  - other classes can specify more clearly which functionality is required,
- - new tape implementations can start with the basic interfaces (especially with regard to development guideline TODO: ref)
+ - new tape implementations can start with the basic interfaces
 
 A disadvantage is that functionality is spread over more files, but the advantages should outweigh this.
 
