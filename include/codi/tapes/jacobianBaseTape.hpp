@@ -391,9 +391,9 @@ namespace codi {
       CODI_INLINE TapeValues internalGetTapeValues() const {
         std::string name;
         if (TapeTypes::IsLinearIndexHandler) {
-          name = "CoDi Tape Statistics ( JacobiLinearTape )";
+          name = "CoDi Tape Statistics ( JacobianLinearTape )";
         } else {
-          name = "CoDi Tape Statistics ( JacobiReuseTape )";
+          name = "CoDi Tape Statistics ( JacobianReuseTape )";
         }
         TapeValues values = TapeValues(name);
 

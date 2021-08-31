@@ -1,9 +1,9 @@
 Template declarations {#TemplateDeclaration}
 =======
 
-Template declarations for structures and classes follow a special layout in CoDiPack. There are three rules, any developer
-needs to follow:
- - Template arguments begin with an `T_`.
+Template declarations for structures and classes follow a special layout in CoDiPack. There are three rules any
+developer needs to follow:
+ - Template arguments begin with a `T_`.
  - Template arguments are redeclared inside the class with using without the `T_` prefix.
  - A default declaration of the template type needs to be done.
  

@@ -1,7 +1,7 @@
 AD theory and mathematical definitions {#AD_TheoryMathematicalDefinitions}
 =======
 
-On this page we just want to give a brief introduction into the algorithmic differentiation (AD) theory. For a detailed introduction please see the
+On this page we want to give a brief introduction into the algorithmic differentiation (AD) theory. For a detailed introduction please see the
 book [_Evaluating Derivatives_](https://doi.org/10.1137/1.9780898717761) from Griewank and Walther or
 [_The Art of Differentiating Computer Programs: An Introduction to Algorithmic Differentiation_](https://doi.org/10.1137/1.9781611972078) from Naumann.
 
@@ -17,14 +17,14 @@ Forward AD Equation {#sec_forwardAD}
 The forward AD mode computes now the directional derivative of \f$f\f$ in the direction \f$\dot x\f$. The equation reads
 \f[ \dot y = \frac{df}{dx} \dot x \f]
 where \f$\dot y\f$ represents the directional derivative. This equation describes what AD will compute but it does not
-describe how it is done. (The matrix \f$df/dx\f$ is not setup directly.)
+describe how it is done (the matrix \f$df/dx\f$ is not setup directly).
 
 The _how_ can be explained by looking at the program evaluation on the CPU. During the compilation process and
 evaluation, the program is broken down in so called elemental operations \f$\phi_i : \R^{n_i} \rightarrow \R \f$,
-\f$ w = \phi_i(u) \f$. Usually these are the binary operations like \f$+\f$, \f$*\f$, etc. and unary functions like
+\f$ w = \phi_i(u) \f$ where \f$ u \f$ is a vector that contains the \f$ n_i \f$ arguments of the operation. Usually these are the binary operations like \f$+\f$, \f$*\f$, etc. and unary functions like
 \f$sin\f$, \f$exp\f$, etc.. For all of these elemental operations, the derivative is known and the program can be seen
 as big concatenated evaluation of these elemental operations. By applying the chain rule and the directional derivative
-to the chain of elementaloperations the forward mode AD theory is established. The result is, that alongside each
+to the chain of elemental operations, the forward mode AD theory is established. The result is that alongside each
 elemental operation \f$\phi_i\f$ the forward AD equation \f[ \dot w = \frac{d\phi_i}{du} \dot u \f] needs to be
 evaluated.
 
@@ -39,8 +39,8 @@ Reverse AD Equation {#sec_reverseAD}
 The reverse AD mode computes the adjoint directional derivative of \f$f\f$ in the adjoint direction \f$\bar y\f$. The
 equation reads
 \f[ \bar x = \frac{df}{dx}^T \bar y \f]
-where \f$\bar x\f$ represents the adjoint directional derivative. This equation describes what AD will compute but it
-does not describe how it is done. (The matrix \f$df/dx^T\f$ is not setup directly.)
+where \f$\bar x\f$ represents the adjoint directional derivative. This equation describes what AD will compute but, again, it
+does not describe how it is done (the matrix \f$df/dx^T\f$ is not setup directly).
 
 The _how_ can be explained by the identity \f$ \scalar{\dot y}{\bar y} = \scalar{\frac{df}{dx} \dot x}{\bar y} = \scalar{\dot x}{\frac{df}{dx}^T \bar y} = \scalar{\dot x}{\bar x}\f$.
 It describes that the reverse AD mode is just the discrete adjoint of the forward AD mode. How the discrete adjoint
