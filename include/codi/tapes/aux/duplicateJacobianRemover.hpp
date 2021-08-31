@@ -60,7 +60,7 @@ namespace codi {
 
       using Real = CODI_DD(T_Real, double);           ///< See DuplicateJacobianRemover.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See DuplicateJacobianRemover.
-      using ArgumentSize = Config::ArgumentSize;     ///< Definition of ArgumentSize type.
+      using ArgumentSize = Config::ArgumentSize;      ///< Definition of ArgumentSize type.
 
     private:
       std::array<Identifier, Config::MaxArgumentSize> indices;

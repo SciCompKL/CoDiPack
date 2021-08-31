@@ -46,12 +46,12 @@ namespace codi {
   /// Helper class for the constant data conversion in primal value tapes.
   ///
   /// @tparam T_StoreData  Type of the constant data store in the tape.
-  template <typename T_StoreData>
+  template<typename T_StoreData>
   struct ConstantDataConversion {
     public:
 
-      using StoreData = CODI_DD(T_StoreData, double); ///< See ConstantDataConversion.
-      using ArgumentData = StoreData; ///< Defined by specializations.
+      using StoreData = CODI_DD(T_StoreData, double);  ///< See ConstantDataConversion.
+      using ArgumentData = StoreData;                  ///< Defined by specializations.
 
       /// Convert the data from the store to the argument of the constant expression.
       static ArgumentData const& fromDataStore(StoreData const& v) {
@@ -74,7 +74,7 @@ namespace codi {
    * @tparam T_Real  Original primal value of the statement/expression.
    * @tparam T_ConversionOperator  Functions for the conversion of the constant data for primal value tape stores.
    */
-  template<typename T_Real, template <typename> class T_ConversionOperator = ConstantDataConversion>
+  template<typename T_Real, template<typename> class T_ConversionOperator = ConstantDataConversion>
   struct ConstantExpression : public ExpressionInterface<T_Real, ConstantExpression<T_Real, T_ConversionOperator>> {
     public:
 

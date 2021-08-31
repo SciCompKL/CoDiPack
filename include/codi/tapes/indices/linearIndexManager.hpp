@@ -62,7 +62,7 @@ namespace codi {
   struct LinearIndexManager : public IndexManagerInterface<T_Index>, public DataInterface<> {
     public:
 
-      using Index = CODI_DD(T_Index, int);         ///< See LinearIndexManager.
+      using Index = CODI_DD(T_Index, int);        ///< See LinearIndexManager.
       using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/

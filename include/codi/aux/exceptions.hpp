@@ -106,17 +106,17 @@ namespace codi {
   /// Presents presenting compile time warnings to the user.
   /// The warning is presented as a deprecated note.
   struct Warning {
+      /// Show a warning about an implicit cast of an active real type.
+      template<bool v>
+      static void implicitCast() {
+        implicitCastStatic(::std::integral_constant<bool, v>());
+      }
 
-    /// Show a warning about an implicit cast of an active real type.
-    template<bool v>
-    static void implicitCast() {
-      implicitCastStatic(::std::integral_constant<bool, v>());
-    }
+      /// Implementation that displayes the warning.
+      DEPRECATE(static void implicitCastStatic(::std::false_type const&),
+                "static_warning: Implicit conversion of CoDiPack type to real.") {}
 
-    /// Implementation that displayes the warning.
-    DEPRECATE(static void implicitCastStatic(::std::false_type const&), "static_warning: Implicit conversion of CoDiPack type to real.") {}
-
-    /// Implementation that ignores the warning.
-    static void implicitCastStatic(::std::true_type const&) {}
+      /// Implementation that ignores the warning.
+      static void implicitCastStatic(::std::true_type const&) {}
   };
 }

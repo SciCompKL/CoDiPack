@@ -578,7 +578,8 @@ namespace codi {
       template<typename VecIn, typename VecOut>
       using FunctorInterface = void (*)(VecIn const& x, VecOut& y);
 
-      /// The default type used for first order derivative computation. It is defined as forward vector AD mode of size 4.
+      /// The default type used for first order derivative computation. It is defined as forward vector AD mode of
+      /// size 4.
       using JacobianComputationType = RealForwardVec<4>;
 
       /// The default type used for second order derivative computation. It is defined as forward vector over forward

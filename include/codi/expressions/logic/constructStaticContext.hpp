@@ -70,9 +70,10 @@ namespace codi {
     public:
 
       using Rhs = CODI_DD(T_Rhs, CODI_T(ExpressionInterface<double, CODI_ANY>));  ///< See ConstructStaticContextLogic.
-      using Tape =
-          CODI_DD(T_Tape, CODI_T(ReverseTapeInterface<double, double, CODI_ANY>));  ///< See ConstructStaticContextLogic.
-      static constexpr size_t primalValueOffset = CODI_DD(T_primalValueOffset, 0);  ///< See ConstructStaticContextLogic.
+      using Tape = CODI_DD(
+          T_Tape, CODI_T(ReverseTapeInterface<double, double, CODI_ANY>));  ///< See ConstructStaticContextLogic.
+      static constexpr size_t primalValueOffset =
+          CODI_DD(T_primalValueOffset, 0);  ///< See ConstructStaticContextLogic.
       static constexpr size_t constantValueOffset =
           CODI_DD(T_constantValueOffset, 0);  ///< See ConstructStaticContextLogic.
 

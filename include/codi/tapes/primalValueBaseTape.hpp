@@ -82,7 +82,8 @@ namespace codi {
       using StatementEvaluator = CODI_DD(CODI_T(T_StatementEvaluator<Real>),
                                          CODI_T(StatementEvaluatorInterface<double>));  ///< See PrimalValueTapeTypes.
       template<typename Chunk, typename Nested>
-      using Data = CODI_DD(CODI_T(T_Data<Chunk, Nested>), CODI_T(DataInterface<Nested>));  ///< See PrimalValueTapeTypes.
+      using Data = CODI_DD(CODI_T(T_Data<Chunk, Nested>),
+                           CODI_T(DataInterface<Nested>));  ///< See PrimalValueTapeTypes.
 
       using Identifier = typename IndexManager::Index;    ///< See IndexManagerInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.

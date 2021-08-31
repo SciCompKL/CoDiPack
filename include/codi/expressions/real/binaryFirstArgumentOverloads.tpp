@@ -77,8 +77,8 @@ namespace codi {
 
   /// Function overload for FUNCTION.
   template<typename Real, typename ArgA>
-  CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<SECOND_ARG_TYPE, SECOND_ARG_CONVERSION>, OPERATION_LOGIC> FUNCTION(
-      ExpressionInterface<Real, ArgA> const& argA, SECOND_ARG_TYPE const& argB) {
+  CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<SECOND_ARG_TYPE, SECOND_ARG_CONVERSION>, OPERATION_LOGIC>
+  FUNCTION(ExpressionInterface<Real, ArgA> const& argA, SECOND_ARG_TYPE const& argB) {
     return BinaryExpression<Real, ArgA, ConstantExpression<SECOND_ARG_TYPE, SECOND_ARG_CONVERSION>, OPERATION_LOGIC>(
         argA, ConstantExpression<SECOND_ARG_TYPE, SECOND_ARG_CONVERSION>(argB));
   }

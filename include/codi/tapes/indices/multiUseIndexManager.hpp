@@ -57,7 +57,7 @@ namespace codi {
   struct MultiUseIndexManager : public ReuseIndexManager<T_Index> {
     public:
 
-      using Index = CODI_DD(T_Index, int);     ///< See MultiUseIndexManager.
+      using Index = CODI_DD(T_Index, int);    ///< See MultiUseIndexManager.
       using Base = ReuseIndexManager<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/

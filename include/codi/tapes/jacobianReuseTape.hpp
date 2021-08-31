@@ -62,8 +62,9 @@ namespace codi {
   struct JacobianReuseTape : public JacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>> {
     public:
 
-      using TapeTypes = CODI_DD(T_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
-                                                                     DefaultChunkedData>));  ///< See JacobianReuseTape.
+      using TapeTypes = CODI_DD(T_TapeTypes,
+                                CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
+                                                         DefaultChunkedData>));  ///< See JacobianReuseTape.
 
       using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.

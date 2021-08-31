@@ -192,7 +192,7 @@ namespace codi {
     public:
 
       using Type = CODI_DD(T_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
-                                                                  T_Type>));  ///< See RealTraits::IsTotalFinite.
+                                                                   T_Type>));  ///< See RealTraits::IsTotalFinite.
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalFinite()
       static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -208,9 +208,9 @@ namespace codi {
     public:
 
       using Type = CODI_DD(T_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
-                                                                  T_Type>));  ///< See RealTraits::IsTotalZero.
-      using Real = typename Type::Real;                                      ///< See
-                                                                             ///< codi::LhsExpressionInterface::Real.
+                                                                   T_Type>));  ///< See RealTraits::IsTotalZero.
+      using Real = typename Type::Real;                                        ///< See
+                                                                               ///< codi::LhsExpressionInterface::Real.
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalZero()
       static CODI_INLINE bool isTotalZero(Type const& v) {

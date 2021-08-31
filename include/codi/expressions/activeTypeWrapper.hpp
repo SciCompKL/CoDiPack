@@ -57,14 +57,15 @@ namespace codi {
    * @tparam T_ActiveType  The type of the active type which is wrapped.
    */
   template<typename T_ActiveType>
-  struct ActiveTypeWrapper : public LhsExpressionInterface<typename T_ActiveType::Real, typename T_ActiveType::Gradient,
-                                                           typename T_ActiveType::Tape, ActiveTypeWrapper<T_ActiveType>>,
-                             public AssignmentOperators<typename T_ActiveType::Tape, ActiveTypeWrapper<T_ActiveType>>,
-                             public IncrementOperators<typename T_ActiveType::Tape, ActiveTypeWrapper<T_ActiveType>> {
+  struct ActiveTypeWrapper
+      : public LhsExpressionInterface<typename T_ActiveType::Real, typename T_ActiveType::Gradient,
+                                      typename T_ActiveType::Tape, ActiveTypeWrapper<T_ActiveType>>,
+        public AssignmentOperators<typename T_ActiveType::Tape, ActiveTypeWrapper<T_ActiveType>>,
+        public IncrementOperators<typename T_ActiveType::Tape, ActiveTypeWrapper<T_ActiveType>> {
     public:
 
       using ActiveType = CODI_DD(T_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See WritableActiveTypeWrapper.
-      using Tape = typename ActiveType::Tape;                                 ///< See ActiveType.
+      using Tape = typename ActiveType::Tape;                                  ///< See ActiveType.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.

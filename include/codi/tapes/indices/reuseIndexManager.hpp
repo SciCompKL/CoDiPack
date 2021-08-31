@@ -62,7 +62,7 @@ namespace codi {
   struct ReuseIndexManager : public IndexManagerInterface<T_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DD(T_Index, int);         ///< See ReuseIndexManager.
+      using Index = CODI_DD(T_Index, int);        ///< See ReuseIndexManager.
       using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/

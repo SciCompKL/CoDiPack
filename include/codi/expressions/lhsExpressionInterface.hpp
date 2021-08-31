@@ -65,13 +65,13 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, Real);  ///< See LhsExpressionInterface.
       using Tape = CODI_DD(T_Tape,
                            CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));  ///< See LhsExpressionInterface.
-      using Impl = CODI_DD(T_Impl, LhsExpressionInterface);                             ///< See LhsExpressionInterface.
+      using Impl = CODI_DD(T_Impl, LhsExpressionInterface);                            ///< See LhsExpressionInterface.
 
       using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
-      LhsExpressionInterface() = default;  ///< Constructor
-      LhsExpressionInterface(LhsExpressionInterface const& other) = default; ///< Constructor
+      LhsExpressionInterface() = default;                                     ///< Constructor
+      LhsExpressionInterface(LhsExpressionInterface const& other) = default;  ///< Constructor
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -187,7 +187,7 @@ namespace codi {
 
   /// Read the primal value from a stream
   template<typename Expr>
-  ExpressionTraits::EnableIfLhsExpression<Expr, std::istream>& operator>>(std::istream& stream, Expr& v){
+  ExpressionTraits::EnableIfLhsExpression<Expr, std::istream>& operator>>(std::istream& stream, Expr& v) {
     typename Expr::Real temp;
 
     stream >> temp;
@@ -195,7 +195,6 @@ namespace codi {
 
     return stream;
   }
-
 
 #ifndef DOXYGEN_DISABLE
 

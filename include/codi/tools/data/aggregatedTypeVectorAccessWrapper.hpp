@@ -96,8 +96,9 @@ namespace codi {
       using Real = CODI_DD(T_Real, CODI_ANY);              ///< See RealTraits::DataExtraction::Real.
       using Identifier = CODI_DD(T_Identifier, CODI_ANY);  ///< See RealTraits::DataExtraction::Identifier.
 
-      using InnerInterface = CODI_DD(
-          T_InnerInterface, CODI_T(VectorAccessInterface<double, int>));  ///< See AggregatedTypeVectorAccessWrapperBase.
+      using InnerInterface =
+          CODI_DD(T_InnerInterface,
+                  CODI_T(VectorAccessInterface<double, int>));  ///< See AggregatedTypeVectorAccessWrapperBase.
 
     protected:
 

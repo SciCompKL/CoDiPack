@@ -97,8 +97,8 @@ namespace codi {
 
     protected:
 
-      Position startPos;                       ///< Starting position for the region.
-      std::vector<Gradient> storedAdjoints;    ///< If adjoints of inputs should be stored, before the preaccumulation.
+      Position startPos;                     ///< Starting position for the region.
+      std::vector<Gradient> storedAdjoints;  ///< If adjoints of inputs should be stored, before the preaccumulation.
       JacobianCountNonZerosRow<Real> jacobiean;  ///< Jacobian for the preaccumulation.
 
     public:

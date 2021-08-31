@@ -66,7 +66,7 @@ namespace codi {
     public:
 
       using ActiveType = CODI_DD(T_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See ImmutableActiveType.
-      using Tape = typename ActiveType::Tape;                                 ///< See ActiveType.
+      using Tape = typename ActiveType::Tape;                                  ///< See ActiveType.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.

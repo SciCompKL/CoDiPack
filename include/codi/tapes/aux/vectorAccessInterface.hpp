@@ -110,7 +110,7 @@ namespace codi {
                                                                 ///< \f$ \bar w \f$ to zero.
       virtual void updateAdjointWithLhs(Identifier const& index,
                                         Real const& jacobian) = 0;  ///< Perform \f$ \bar u_{\text{index}} \aeq
-                                                                  /// \text{jacobian} * \bar w \f$
+                                                                    /// \text{jacobian} * \bar w \f$
 
       /*******************************************************************************/
       /// @name Indirect tangent access
@@ -118,8 +118,9 @@ namespace codi {
       virtual void setLhsTangent(Identifier const& index) = 0;  ///< Perform \f$ \dot w = \text{internalMem} \f$.
                                                                 ///< Internal memory is reset afterwards.
       virtual void updateTangentWithLhs(Identifier const& index,
-                                        Real const& jacobian) = 0;  ///< Perform \f$ \text{internalMem} \aeq jacobian * \dot
-                                                                  /// u_{\text{index}} \f$.
+                                        Real const& jacobian) = 0;  ///< Perform \f$ \text{internalMem} \aeq jacobian *
+                                                                    ///< \dot
+                                                                    /// u_{\text{index}} \f$.
 
       /*******************************************************************************/
       /// @name Direct adjoint access

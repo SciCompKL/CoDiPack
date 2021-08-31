@@ -50,7 +50,7 @@ namespace codi {
   template<typename T_Real, typename T_Gradient, typename T_Tape, typename T_Impl>
   struct LhsExpressionInterface;
 
-  template<typename T_Real, template <typename> class T_ConversionOperator>
+  template<typename T_Real, template<typename> class T_ConversionOperator>
   struct ConstantExpression;
 
   template<typename T_Tape>

@@ -58,7 +58,7 @@ namespace codi {
    */
   template<typename T_Type,
            typename T_Tool = typename std::conditional<codi::TapeTraits::IsForwardTape<typename T_Type::Tape>::value,
-                                                      CoDiPackForwardTool<T_Type>, CoDiPackReverseTool<T_Type> >::type>
+                                                       CoDiPackForwardTool<T_Type>, CoDiPackReverseTool<T_Type> >::type>
   struct CoDiMpiTypes {
     public:
 

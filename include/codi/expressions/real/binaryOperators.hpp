@@ -316,7 +316,7 @@ namespace codi {
   struct OperationFrexp : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(T_Real, double); ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -384,7 +384,7 @@ namespace codi {
         CODI_UNUSED(argB);
 
         checkResult(result);
-        if(result != 0.0) {
+        if (result != 0.0) {
           return argA / result;
         } else {
           return Real();
@@ -397,7 +397,7 @@ namespace codi {
         CODI_UNUSED(argA);
 
         checkResult(result);
-        if(result != 0.0) {
+        if (result != 0.0) {
           return argB / result;
         } else {
           return Real();
@@ -431,7 +431,7 @@ namespace codi {
   struct OperationLdexp : public BinaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(T_Real, double); ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
@@ -454,7 +454,6 @@ namespace codi {
 
         return Real();
       }
-
   };
 #define OPERATION_LOGIC OperationLdexp
 #define FUNCTION ldexp
@@ -686,8 +685,8 @@ namespace std {
   using codi::fmin;
   using codi::frexp;
   using codi::hypot;
-  using codi::hypotl;
   using codi::hypotf;
+  using codi::hypotl;
   using codi::ldexp;
   using codi::max;
   using codi::min;
