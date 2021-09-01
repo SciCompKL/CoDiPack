@@ -146,7 +146,7 @@ namespace codi {
                                   PassiveReal const* const constantData) {
         CODI_UNUSED(primalVector, identifiers);
 
-        using ConversionOperator = typename Rhs::ConversionOperator<PassiveReal>;
+        using ConversionOperator = typename Rhs::template ConversionOperator<PassiveReal>;
 
         return ResultType(ConversionOperator::fromDataStore(constantData[constantValueOffset]));
       }

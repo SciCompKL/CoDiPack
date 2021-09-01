@@ -346,7 +346,7 @@ namespace codi {
                                           size_t& curPassiveArgument) {
             CODI_UNUSED(rhsIdentiferData, passiveValueData, curPassiveArgument);
 
-            using ConversionOperator = typename Node::ConversionOperator<PassiveReal>;
+            using ConversionOperator = typename Node::template ConversionOperator<PassiveReal>;
 
             constantValueData.pushData(ConversionOperator::toDataStore(node.getValue()));
           }
