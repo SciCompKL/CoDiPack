@@ -49,6 +49,34 @@ Files
  - Includes are relative to the file location.
  - At most 120 characters in a line.
 
+Documentation
+------
+ - The documentation should be ASCII readable.
+ - Documentation of all classes, members, functions and types. (No parameters.)
+ - Template parameters are documented for classes.
+ - Interface declarations need to have a detailed documentation, especialy for the class itself. This should contain
+   * the abstraction concept,
+   * usage of the interface and
+   * examples.
+
+   Other functions in the interface should be documented according to there exposal to the user.
+ - Implementation of interfaces can copy the documentation from the interface. Only important details need to be added.
+   * Short example (prefered):
+```
+/// \copydoc GradientAccessTapeInterface::getGradient
+```
+   * Long example:
+```
+/// \copydoc GradientAccessTapeInterface::getGradient <br><br>
+/// Implementation: Details
+```
+   * Long example:
+```
+/** \copydoc GradientAccessTapeInterface::getGradient <br><br>
+ * Implementation: Details
+ */
+```
+
 Example
 ----
 ```
