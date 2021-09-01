@@ -1,7 +1,7 @@
 Changelog {#Changelog}
 ===========================
 
-### v 2.0.0 - 2021-**-**
+### v 2.0.0 - 2021-09-01
  - Complete rewrite of CoDiPack. See \ref Migration_1_9_2_0 for some migration help.
    * Drop of modular class architecture.
    * Iterators for expression trees.

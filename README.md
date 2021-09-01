@@ -30,9 +30,9 @@ The file `codi.hpp` defines several datatypes. The most important ones are:
    - codi::RealForward
  - Implementation of the reverse mode of AD:
    - codi::RealReverse (most common type, works everywhere, C-compatible)
-   - codi::RealReverseIndex (reduced tape size compared to codi::RealReverse, no C-like memory operations (e.g. memcpy))
-   - codi::RealReversePrimal (reduced tape size compared to codi::RealReverseIndex, works everywhere, C-compatible, increased type complexity)
-   - codi::RealReversePrimalIndex (reduced tape size compared to codi::RealReversePrimal, no C-like memory operations (e.g. memcpy), increased type complexity)
+   - codi::RealReverseIndex (reduced tape size w.r.t. codi::RealReverse, no C-like memory operations (e.g. memcpy))
+   - codi::RealReversePrimal (reduced tape size w.r.t. codi::RealReverseIndex, works everywhere, C-compatible, increased type complexity)
+   - codi::RealReversePrimalIndex (reduced tape size w.r.t. codi::RealReversePrimal, no C-like memory operations (e.g. memcpy), increased type complexity)
 
 We recommend to use the codi::RealReverse type when AD is first introduced to an application.
 After that there should be no difficulties in replacing the codi::RealReverse type with other types.
@@ -61,7 +61,7 @@ Therefore we recomend to force inlining of CoDiPack with the option
 
 ## Hello World Example
 
-A very small and simple example for the usage of the RealForward type is the code:
+A very small and simple example for the usage of the RealForward type is the following code:
 
 ~~~~{.cpp}
     #include <codi.hpp>
