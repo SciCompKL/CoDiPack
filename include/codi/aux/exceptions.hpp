@@ -106,6 +106,7 @@ namespace codi {
   /// Presents presenting compile time warnings to the user.
   /// The warning is presented as a deprecated note.
   struct Warning {
+    public:
       /// Show a warning about an implicit cast of an active real type.
       template<bool v>
       static void implicitCast() {

@@ -52,16 +52,16 @@ Files
 Documentation
 ------
  - The documentation should be ASCII readable.
- - Documentation of all classes, members, functions and types. (No parameters.)
+ - Documentation of all classes, members, functions and types (no parameters).
  - Template parameters are documented for classes.
- - Interface declarations need to have a detailed documentation, especialy for the class itself. This should contain
+ - Interface declarations need to have a detailed documentation, especially for the class itself. This should contain
    * the abstraction concept,
    * usage of the interface and
    * examples.
 
-   Other functions in the interface should be documented according to there exposal to the user.
+   Other functions in the interface should be documented according to their exposal to the user.
  - Implementation of interfaces can copy the documentation from the interface. Only important details need to be added.
-   * Short example (prefered):
+   * Short example (preferred):
 ```
 /// \copydoc GradientAccessTapeInterface::getGradient
 ```
