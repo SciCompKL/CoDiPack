@@ -41,6 +41,18 @@ Incomplete list of major user interface changes.
 | GradientValue | Gradient |
 | getGlobalTape | getTape |
 
+### Mpi communication
+
+The MeDiPack implementation moved now to the final destination in `codi/tools/mpi/codiMpiTypes.hpp`. The structure
+`CoDiMpiTypes` moved into the `codi` namespace. \ref Example_13_MPI_communication provides a demonstration of the full
+use case.
+
+The correct definition is now:
+```{.cpp}
+#include "codi/tools/mpi/codiMpiTypes.hpp"
+using MpiTypes = codi::CoDiMpiTypes<codi::RealReverse>;
+```
+
 ### External functions
 
 The interface of the codi::ExternalFunctionHelper is nearly the same, only the passive evaluation function got renamed.
