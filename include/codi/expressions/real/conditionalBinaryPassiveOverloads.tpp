@@ -52,7 +52,7 @@
 #ifndef OPERATOR
   #define PROXY
 
-  #include "../../aux/macros.hpp"
+  #include "../../misc/macros.hpp"
   #include "../../config.h"
   #include "../../traits/realTraits.hpp"
   #include "../expressionInterface.hpp"

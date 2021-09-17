@@ -36,7 +36,7 @@
 
 #include <type_traits>
 
-#include "../aux/macros.hpp"
+#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../tapes/jacobianBaseTape.hpp"
 #include "../tapes/primalValueBaseTape.hpp"

@@ -43,10 +43,10 @@
 #include <medi/ampi/typeDefault.hpp>
 #include <medi/ampi/types/indexTypeHelper.hpp>
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
-#include "../../tapes/aux/adjointVectorAccess.hpp"
+#include "../../tapes/misc/adjointVectorAccess.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */

@@ -37,10 +37,10 @@
 #include <complex>
 #include <vector>
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
-#include "../../tapes/aux/vectorAccessInterface.hpp"
+#include "../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../traits/computationTraits.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "../../traits/realTraits.hpp"

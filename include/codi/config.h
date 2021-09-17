@@ -37,7 +37,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "aux/exceptions.hpp"
+#include "misc/exceptions.hpp"
 
 /** @file */
 

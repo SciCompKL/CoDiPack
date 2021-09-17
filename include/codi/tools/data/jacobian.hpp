@@ -36,8 +36,8 @@
 
 #include <vector>
 
-#include "../../aux/constructVector.hpp"
-#include "../../aux/macros.hpp"
+#include "../../misc/constructVector.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
 #include "delayAccessor.hpp"

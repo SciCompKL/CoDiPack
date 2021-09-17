@@ -38,8 +38,8 @@
 #include <functional>
 #include <type_traits>
 
-#include "../aux/macros.hpp"
-#include "../aux/memberStore.hpp"
+#include "../misc/macros.hpp"
+#include "../misc/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"

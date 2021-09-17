@@ -39,7 +39,7 @@
 #include <string>
 #include <vector>
 
-#include "../../aux/exceptions.hpp"
+#include "../../misc/exceptions.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */

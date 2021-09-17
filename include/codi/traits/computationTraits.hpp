@@ -37,7 +37,7 @@
 #include <complex>
 #include <type_traits>
 
-#include "../aux/macros.hpp"
+#include "../misc/macros.hpp"
 #include "../config.h"
 #include "expressionTraits.hpp"
 

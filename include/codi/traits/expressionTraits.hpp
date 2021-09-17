@@ -36,10 +36,10 @@
 
 #include <type_traits>
 
-#include "../aux/macros.hpp"
+#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
-#include "aux/enableIfHelpers.hpp"
+#include "misc/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

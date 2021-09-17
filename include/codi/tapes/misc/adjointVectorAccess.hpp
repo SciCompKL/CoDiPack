@@ -36,7 +36,7 @@
 
 #include <cstddef>
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../tools/data/direction.hpp"
 #include "../../traits/realTraits.hpp"

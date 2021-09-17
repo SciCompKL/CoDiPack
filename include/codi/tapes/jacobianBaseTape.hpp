@@ -38,8 +38,8 @@
 #include <cmath>
 #include <type_traits>
 
-#include "../aux/macros.hpp"
-#include "../aux/memberStore.hpp"
+#include "../misc/macros.hpp"
+#include "../misc/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
@@ -49,8 +49,8 @@
 #include "../expressions/referenceActiveType.hpp"
 #include "../traits/computationTraits.hpp"
 #include "../traits/expressionTraits.hpp"
-#include "aux/adjointVectorAccess.hpp"
-#include "aux/duplicateJacobianRemover.hpp"
+#include "misc/adjointVectorAccess.hpp"
+#include "misc/duplicateJacobianRemover.hpp"
 #include "commonTapeImplementation.hpp"
 #include "data/chunk.hpp"
 #include "data/chunkedData.hpp"

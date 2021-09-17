@@ -34,7 +34,7 @@
  */
 #pragma once
 
-#include "../aux/macros.hpp"
+#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
 #include "../traits/realTraits.hpp"

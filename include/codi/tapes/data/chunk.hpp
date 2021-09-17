@@ -36,8 +36,8 @@
 
 #include <cstddef>
 
-#include "../../aux/fileIo.hpp"
-#include "../../aux/macros.hpp"
+#include "../../misc/fileIo.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */

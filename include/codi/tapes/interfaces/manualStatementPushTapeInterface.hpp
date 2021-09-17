@@ -34,7 +34,7 @@
  */
 #pragma once
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 
 /** \copydoc codi::Namespace */

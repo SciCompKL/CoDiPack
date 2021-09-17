@@ -34,11 +34,11 @@
  */
 #pragma once
 
-#include "../../aux/exceptions.hpp"
-#include "../../aux/macros.hpp"
+#include "../../misc/exceptions.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
-#include "../aux/vectorAccessInterface.hpp"
+#include "../misc/vectorAccessInterface.hpp"
 #include "../data/position.hpp"
 #include "../interfaces/externalFunctionTapeInterface.hpp"
 

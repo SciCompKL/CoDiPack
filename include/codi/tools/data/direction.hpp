@@ -36,7 +36,7 @@
 
 #include <initializer_list>
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../traits/gradientTraits.hpp"
 #include "../../traits/realTraits.hpp"

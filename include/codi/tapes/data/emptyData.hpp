@@ -36,7 +36,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "chunk.hpp"
 #include "dataInterface.hpp"

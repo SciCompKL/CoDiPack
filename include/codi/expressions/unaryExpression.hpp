@@ -34,7 +34,7 @@
  */
 #pragma once
 
-#include "../aux/macros.hpp"
+#include "../misc/macros.hpp"
 #include "../config.h"
 #include "expressionInterface.hpp"
 #include "logic/compileTimeTraversalLogic.hpp"

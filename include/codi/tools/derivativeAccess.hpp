@@ -36,10 +36,10 @@
 
 #include <utility>
 
-#include "../aux/binomial.hpp"
-#include "../aux/compileTimeLoop.hpp"
-#include "../aux/exceptions.hpp"
-#include "../aux/macros.hpp"
+#include "../misc/binomial.hpp"
+#include "../misc/compileTimeLoop.hpp"
+#include "../misc/exceptions.hpp"
+#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../traits/realTraits.hpp"

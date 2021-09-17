@@ -37,11 +37,11 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "../aux/fileIo.hpp"
-#include "../aux/macros.hpp"
+#include "../misc/fileIo.hpp"
+#include "../misc/macros.hpp"
 #include "../config.h"
-#include "aux/externalFunction.hpp"
-#include "aux/vectorAccessInterface.hpp"
+#include "misc/externalFunction.hpp"
+#include "misc/vectorAccessInterface.hpp"
 #include "data/dataInterface.hpp"
 #include "data/position.hpp"
 #include "indices/indexManagerInterface.hpp"

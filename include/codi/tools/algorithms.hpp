@@ -34,7 +34,7 @@
  */
 #pragma once
 
-#include "../aux/exceptions.hpp"
+#include "../misc/exceptions.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../traits/gradientTraits.hpp"

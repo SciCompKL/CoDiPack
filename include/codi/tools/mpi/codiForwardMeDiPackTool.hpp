@@ -40,7 +40,7 @@
 #include <medi/ampi/typeDefault.hpp>
 #include <medi/ampi/types/indexTypeHelper.hpp>
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 

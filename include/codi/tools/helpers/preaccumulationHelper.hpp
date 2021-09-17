@@ -37,7 +37,7 @@
 
 #include <vector>
 
-#include "../../aux/exceptions.hpp"
+#include "../../misc/exceptions.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"

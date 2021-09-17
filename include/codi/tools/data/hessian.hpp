@@ -36,7 +36,7 @@
 
 #include <vector>
 
-#include "../../aux/constructVector.hpp"
+#include "../../misc/constructVector.hpp"
 #include "../../config.h"
 #include "dummy.hpp"
 #include "hessianInterface.hpp"

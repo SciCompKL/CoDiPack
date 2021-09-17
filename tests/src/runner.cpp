@@ -37,8 +37,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include <codi/aux/exceptions.hpp>
-#include <codi/aux/macros.hpp>
+#include <codi/misc/exceptions.hpp>
+#include <codi/misc/macros.hpp>
 
 #include "../include/drivers/driverInterface.hpp"
 #include "../include/testInterface.hpp"

@@ -35,7 +35,7 @@
 #pragma once
 #pragma once
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../data/position.hpp"
 #include "forwardEvaluationTapeInterface.hpp"

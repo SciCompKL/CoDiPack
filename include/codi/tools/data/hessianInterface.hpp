@@ -36,7 +36,7 @@
 
 #include <vector>
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

@@ -37,8 +37,8 @@
 #include <cmath>
 #include <utility>
 
-#include "../../aux/exceptions.hpp"
-#include "../../aux/macros.hpp"
+#include "../../misc/exceptions.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
 #include "../binaryExpression.hpp"

@@ -38,9 +38,9 @@
 #include <functional>
 #include <type_traits>
 
-#include "../../aux/exceptions.hpp"
-#include "../../aux/macros.hpp"
-#include "../../aux/memberStore.hpp"
+#include "../../misc/exceptions.hpp"
+#include "../../misc/macros.hpp"
+#include "../../misc/memberStore.hpp"
 #include "../../expressions/activeType.hpp"
 #include "statementEvaluatorInterface.hpp"
 

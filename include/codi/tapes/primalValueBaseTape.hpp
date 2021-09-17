@@ -40,8 +40,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "../aux/macros.hpp"
-#include "../aux/memberStore.hpp"
+#include "../misc/macros.hpp"
+#include "../misc/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
@@ -50,7 +50,7 @@
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../traits/expressionTraits.hpp"
-#include "aux/primalAdjointVectorAccess.hpp"
+#include "misc/primalAdjointVectorAccess.hpp"
 #include "commonTapeImplementation.hpp"
 #include "data/chunk.hpp"
 #include "data/chunkedData.hpp"

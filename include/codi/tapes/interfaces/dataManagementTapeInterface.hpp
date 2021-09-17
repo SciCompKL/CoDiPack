@@ -38,8 +38,8 @@
 
 #include "../../config.h"
 #include "../../traits/realTraits.hpp"
-#include "../aux/tapeParameters.hpp"
-#include "../aux/vectorAccessInterface.hpp"
+#include "../misc/tapeParameters.hpp"
+#include "../misc/vectorAccessInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

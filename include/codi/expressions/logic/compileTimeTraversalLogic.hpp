@@ -36,7 +36,7 @@
 
 #include <utility>
 
-#include "../../aux/macros.hpp"
+#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "nodeInterface.hpp"
 
