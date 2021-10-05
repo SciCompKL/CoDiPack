@@ -84,6 +84,11 @@ namespace codi {
         return RealTraits::isTotalZero(lhs);
       }
 
+      /// \copydoc codi::VectorAccessInterface::clone
+      VectorAccessInterface* clone() const {
+        return AdjointVectorAccess(this->adjointVector);
+      }
+
       /*******************************************************************************/
       /// @name Indirect adjoint access
 
