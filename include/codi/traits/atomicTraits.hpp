@@ -34,32 +34,32 @@
  */
 #pragma once
 
-#include "../../../misc/macros.hpp"
+#include <type_traits>
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename T_Type, typename T_Impl>
-  struct AtomicInterface {
-    public:
-      using Type = CODI_DD(T_Type, CODI_ANY);
-      using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);
+  namespace AtomicTraits {
 
-      CODI_INLINE AtomicInterface() {}
-      ~AtomicInterface() {}
+    template<typename T_Type>
+    struct IsAtomic : std::false_type {};
 
-      CODI_INLINE Impl& operator=(Impl const& other);
-      CODI_INLINE Impl& operator=(Type const& other);
+    template<typename T_Type>
+    using EnableIfAtomic = typename std::enable_if<IsAtomic<T_Type>::value>::type;
 
-      CODI_INLINE Impl& operator+=(Impl const& other);
-      CODI_INLINE Impl& operator+=(Type const& other);
+    template<typename T_NotAtomic, typename = void>
+    struct RemoveAtomicImpl {
+      public:
+        using Type = T_NotAtomic;
+    };
 
-      CODI_INLINE Type operator++();
-      CODI_INLINE Type operator++(int);
-      CODI_INLINE Type operator--();
-      CODI_INLINE Type operator--(int);
+    template<typename T_Atomic>
+    struct RemoveAtomicImpl<T_Atomic, EnableIfAtomic<T_Atomic>> {
+      public:
+        using Type = typename T_Atomic::Type;
+    };
 
-      CODI_INLINE operator Type () const;
-  };
+    template<typename T_Type>
+    using RemoveAtomic = RemoveAtomicImpl<T_Type>::Type;
+  }
 }
-

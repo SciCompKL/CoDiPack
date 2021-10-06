@@ -37,6 +37,7 @@
 #include <type_traits>
 
 #include "../../../expressions/activeType.hpp"
+#include "../../../traits/atomicTraits.hpp"
 #include "../../../traits/realTraits.hpp"
 #include "../../../traits/tapeTraits.hpp"
 #include "../atomicInterface.hpp"
