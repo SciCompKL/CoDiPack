@@ -56,6 +56,10 @@ namespace codi {
    * provides the current maximum index as positional information and adds this positional information in the evaluate
    * routines.
    *
+   * Since there is a one-to-one relation between tape and index manager for linear index managers, this index manager
+   * is thread-safe. Due to its linear nature, however, it can only be used to record tapes in parallel that do not
+   * depend on each other.
+   *
    * @tparam T_Index   Type for the identifier, usually an integer type.
    */
   template<typename T_Index>
@@ -71,6 +75,8 @@ namespace codi {
 
       static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization is implemented.
       static bool constexpr IsLinear = true;             ///< Tightly coupled to statements.
+      static bool constexpr IsThreadSafe = true;         ///< One-to-one relation to a tape, therefore thread-safe. See
+                                                         ///< LinearIndexManager and IndexManagerInterface.
 
       /// @}
       /*******************************************************************************/
