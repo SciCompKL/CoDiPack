@@ -106,6 +106,7 @@ namespace codi {
     private:
       ReadWriteMutex& mutex;
 
+    public:
       LockForRead(ReadWriteMutex& mutex) : mutex(mutex) {
         mutex.lockRead();
       }
@@ -123,6 +124,7 @@ namespace codi {
     private:
       ReadWriteMutex& mutex;
 
+    public:
       LockForWrite(ReadWriteMutex& mutex) : mutex(mutex) {
         mutex.lockWrite();
       }
@@ -131,5 +133,4 @@ namespace codi {
         mutex.unlockWrite();
       }
   };
-
 }

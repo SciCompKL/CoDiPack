@@ -34,27 +34,35 @@
  */
 #pragma once
 
-#include "atomicInterface.hpp"
-#include "mutexInterface.hpp"
-#include "readWriteMutex.hpp"
-#include "staticThreadLocalPointerInterface.hpp"
+#include "../../../misc/macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<template<typename> T_Atomic,
-           typename T_Mutex,
-           template<typename, typename> T_StaticThreadLocalPointer>
-  struct ParallelToolbox {
+  struct MutexInterface {
     public:
-      template<typename Type>
-      using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));
+      CODI_INLINE MutexInterface() {}
+      ~MutexInterface() {}
 
+      CODI_INLINE void lock();
+      CODI_INLINE void unlock();
+  };
+
+  template<typename T_Mutex>
+  struct Lock {
+    public:
       using Mutex = CODI_DD(T_Mutex, MutexInterface);
-      using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;
 
-      template<typename Type, typename Owner>
-      using StaticThreadLocalPointer = CODI_DD(CODI_T(T_StaticThreadLocalPointer<Type, Owner>),
-                                               CODI_T(StaticThreadLocalPointerInterface<Type, Owner, CODI_ANY>));
+    private:
+      Mutex& mutex;
+
+    public:
+      Lock(Mutex& mutex) : mutex(mutex) {
+        mutex.lock();
+      }
+
+      ~Lock() {
+        mutex.unlock();
+      }
   };
 }
