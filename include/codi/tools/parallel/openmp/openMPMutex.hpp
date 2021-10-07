@@ -34,13 +34,32 @@
  */
 #pragma once
 
-#include "../parallelToolbox.hpp"
-#include "openMPAtomic.hpp"
-#include "openMPMutex.hpp"
-#include "openMPStaticThreadLocalPointer.hpp"
+#include <omp.h>
+
+#include "../mutexInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  using OpenMPToolbox = ParallelToolbox<OpenMPAtomic, OpenMPMutex, OpenMPStaticThreadLocalPointer>;
+  struct OpenMPMutex : public MutexInterface {
+    private:
+      omp_lock_t mutex;
+
+    public:
+      CODI_INLINE OpenMPMutex() {
+        omp_init_lock(&mutex);
+      }
+
+      ~OpenMPMutex() {
+        omp_destroy_lock(&mutex);
+      }
+
+      void lock() {
+        omp_set_lock(&mutex);
+      }
+
+      void unlock() {
+        omp_unset_lock(&mutex);
+      }
+  };
 }
