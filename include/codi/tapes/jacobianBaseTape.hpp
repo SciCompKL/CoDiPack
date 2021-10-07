@@ -90,7 +90,7 @@ namespace codi {
                                                        Chunk2<Identifier, Config::ArgumentSize> >::type;
       using StatementData = Data<StatementChunk, IndexManager>;  ///< Statement data vector.
 
-      using JacobianChunk = Chunk2<Real, Identifier>;           ///< Jacobian chunks is \<Jacobian, rhs index\>.
+      using JacobianChunk = Chunk2<Real, Identifier>;           ///< Jacobian chunk is \<Jacobian, rhs index\>.
       using JacobianData = Data<JacobianChunk, StatementData>;  ///< Jacobian data vector.
 
       using NestedData = JacobianData;  ///< See TapeTypesInterface.
