@@ -35,7 +35,7 @@
 #pragma once
 
 #include "atomicInterface.hpp"
-#include "readWriteLock.hpp"
+#include "readWriteMutex.hpp"
 #include "staticThreadLocalPointerInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -47,7 +47,7 @@ namespace codi {
       template<typename Type>
       using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));
 
-      using ReadWriteLock = codi::ReadWriteLock<Atomic<int>>;
+      using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;
 
       template<typename Type, typename Owner>
       using StaticThreadLocalPointer = CODI_DD(CODI_T(T_StaticThreadLocalPointer<Type, Owner>),
