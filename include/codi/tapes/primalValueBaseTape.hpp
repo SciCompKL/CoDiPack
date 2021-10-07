@@ -89,8 +89,11 @@ namespace codi {
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
       constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
+      static bool constexpr IsThreadSafeIndexHandler =
+            IndexManager::IsThreadSafe;  ///< True if the index manager is thread-safe.
       constexpr static bool IsStaticIndexHandler =
-          !IsLinearIndexHandler;  ///< For reuse index management, a static index manager is used.
+            !IsLinearIndexHandler && !IsThreadSafeIndexHandler; ///< For reuse index management, a static index manager
+                                                                ///< is used, unless it is thread-safe.
 
       using EvalHandle = typename StatementEvaluator::Handle;  ///< Handle type returned by the statement generator.
 

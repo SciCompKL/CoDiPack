@@ -67,6 +67,10 @@ namespace codi {
    * IsLinear indicates whether the indices are coupled to the statements of a program. The tape needs to be managed
    * accordingly.
    *
+   * IsThreadSafe indicates whether the index manager is suitable for concurrent usage by multiple tapes. This is true
+   * for index managers that have a one-to-one relation to a tape, for example LinearIndexManager, or index managers
+   * that implement safeguards for shared resources, for example ParallelReuseIndexManager.
+   *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
    * @tparam T_Index  Type for the identifier, usually an integer type.
@@ -91,6 +95,8 @@ namespace codi {
           CODI_UNDEFINED_VALUE;  ///< True if no copy optimization is implemented. See IndexManagerInterface.
       static bool constexpr IsLinear =
           CODI_UNDEFINED_VALUE;  ///< True if identifiers are coupled to the statements. See IndexManagerInterface.
+      static bool constexpr IsThreadSafe =
+          CODI_UNDEFINED_VALUE;  ///< True if the index manager is thread-safe. See IndexManagerInterface.
 
       bool assignIndex(Index& index);        ///< Call on assignment on a primal value e.g. on `w` for  `w = a + b`.
                                              ///< @return true if new indices have been generated internally.

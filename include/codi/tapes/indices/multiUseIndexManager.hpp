@@ -65,8 +65,9 @@ namespace codi {
       /// @{
 
       static bool constexpr CopyNeedsStatement =
-          !Config::CopyOptimization;           ///< Copy optimization only active if configured.
-      static bool constexpr IsLinear = false;  ///< Identifiers are not coupled to statements.
+          !Config::CopyOptimization;               ///< Copy optimization only active if configured.
+      static bool constexpr IsLinear = false;      ///< Identifiers are not coupled to statements.
+      static bool constexpr IsThreadSafe = false;  ///< Not thread-safe.
 
       /// @}
 
