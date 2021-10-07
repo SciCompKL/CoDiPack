@@ -42,7 +42,7 @@
 namespace codi {
 
   template<typename T_AtomicInt>
-  struct ReadWriteLock {
+  struct ReadWriteMutex {
     public:
       using AtomicInt = CODI_DD(T_AtomicInt, CODI_T(AtomicInterface<int, CODI_ANY>));
 
@@ -51,8 +51,8 @@ namespace codi {
       AtomicInt numWriters;
 
     public:
-      CODI_INLINE ReadWriteLock() : numReaders(0), numWriters(0) {}
-      ~ReadWriteLock() {}
+      CODI_INLINE ReadWriteMutex() : numReaders(0), numWriters(0) {}
+      ~ReadWriteMutex() {}
 
       void lockRead() {
         int currentWriters;
@@ -98,37 +98,37 @@ namespace codi {
       }
   };
 
-  template<typename T_ReadWriteLock>
-  struct LockRead {
+  template<typename T_ReadWriteMutex>
+  struct LockForRead {
     public:
-      using ReadWriteLock = CODI_DD(T_ReadWriteLock, codi::ReadWriteLock<CODI_ANY>);
+      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, codi::ReadWriteMutex<CODI_ANY>);
 
     private:
-      ReadWriteLock& lock;
+      ReadWriteMutex& mutex;
 
-      LockRead(ReadWriteLock& lock) : lock(lock) {
-        lock.lockRead();
+      LockForRead(ReadWriteMutex& mutex) : mutex(mutex) {
+        mutex.lockRead();
       }
 
-      ~LockRead() {
-        lock.unlockRead();
+      ~LockForRead() {
+        mutex.unlockRead();
       }
   };
 
-  template<typename T_ReadWriteLock>
-  struct LockWrite {
+  template<typename T_ReadWriteMutex>
+  struct LockForWrite {
     public:
-      using ReadWriteLock = CODI_DD(T_ReadWriteLock, codi::ReadWriteLock<CODI_ANY>);
+      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, codi::ReadWriteMutex<CODI_ANY>);
 
     private:
-      ReadWriteLock& lock;
+      ReadWriteMutex& mutex;
 
-      LockWrite(ReadWriteLock& lock) : lock(lock) {
-        lock.lockWrite();
+      LockForWrite(ReadWriteMutex& mutex) : mutex(mutex) {
+        mutex.lockWrite();
       }
 
-      ~LockWrite() {
-        lock.unlockWrite();
+      ~LockForWrite() {
+        mutex.unlockWrite();
       }
   };
 

@@ -40,14 +40,14 @@
 namespace codi {
 
   template<typename T_Type, typename T_Owner, typename T_Impl>
-  struct StaticThreadLocalStoragePointer {
+  struct StaticThreadLocalPointerInterface {
     public:
       using Type = CODI_DD(T_Type, CODI_ANY);
       using Owner = CODI_DD(T_Owner, CODI_ANY);
       using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);
 
-      CODI_INLINE StaticThreadLocalStoragePointer() {}
-      ~StaticThreadLocalStoragePointer() {}
+      CODI_INLINE StaticThreadLocalPointerInterface() {}
+      ~StaticThreadLocalPointerInterface() {}
 
       static CODI_INLINE Impl& operator=(Type* other);
       static CODI_INLINE Type* get() const;

@@ -41,7 +41,7 @@ namespace codi {
 
   template<typename T_Type, typename T_Owner>
   struct OpenMPStaticThreadLocalPointer
-      : public StaticThreadLocalStoragePointer<T_Type, T_Owner, OpenMPStaticThreadLocalPointer> {
+      : public StaticThreadLocalPointerInterface<T_Type, T_Owner, OpenMPStaticThreadLocalPointer> {
     public:
       using Type = CODI_DD(T_Type, CODI_ANY);
       using Owner = CODI_DD(T_Owner, CODI_ANY);
