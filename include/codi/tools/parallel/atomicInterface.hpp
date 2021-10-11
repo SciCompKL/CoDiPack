@@ -51,8 +51,8 @@ namespace codi {
       CODI_INLINE Impl& operator=(Impl const& other);
       CODI_INLINE Impl& operator=(Type const& other);
 
-      CODI_INLINE Impl& operator+=(Impl const& other);
-      CODI_INLINE Impl& operator+=(Type const& other);
+      CODI_INLINE Type operator+=(Impl const& other);
+      CODI_INLINE Type operator+=(Type const& other);
 
       CODI_INLINE Type operator++();
       CODI_INLINE Type operator++(int);
