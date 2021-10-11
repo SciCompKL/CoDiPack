@@ -55,9 +55,9 @@ namespace codi {
     public:
 
       using Index = CODI_DD(T_Index, int);  ///< See ReuseIndexManager.
-      using Base = ReuseIndexManagerBase<T_Index, ReuseIndexManager>;  ///< Base class abbreviation.
+      using Base = ReuseIndexManagerBase<Index, ReuseIndexManager>;  ///< Base class abbreviation.
 
-      friend struct ReuseIndexManagerBase<T_Index, ReuseIndexManager>;
+      friend Base;  ///< Allow the base class to call protected and private methods.
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants

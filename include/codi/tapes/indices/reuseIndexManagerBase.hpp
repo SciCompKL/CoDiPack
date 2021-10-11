@@ -103,6 +103,7 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
+      /// Method to generate new indices. Only called when unusedIndices is empty.
       CODI_NO_INLINE void generateNewIndices() {
         cast().generateNewIndices();
       }
@@ -112,6 +113,7 @@ namespace codi {
     public:
 
       /// Constructor
+      /// The constructor of the implementing class is expected to call generateNewIndices.
       ReuseIndexManagerBase()
           : usedIndices(),
             usedIndicesPos(0),
