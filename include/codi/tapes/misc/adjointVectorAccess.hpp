@@ -60,9 +60,11 @@ namespace codi {
       using Identifier = CODI_DD(T_Identifier, int);  ///< See AdjointVectorAccess.
       using Gradient = CODI_DD(T_Gradient, double);   ///< See AdjointVectorAccess.
 
-    private:
+    protected:
 
       Gradient* adjointVector;  ///< Pointer to the gradient vector.
+
+    private:
 
       Gradient lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
 
@@ -85,8 +87,8 @@ namespace codi {
       }
 
       /// \copydoc codi::VectorAccessInterface::clone
-      VectorAccessInterface* clone() const {
-        return AdjointVectorAccess(this->adjointVector);
+      VectorAccessInterface<Real, Identifier>* clone() const {
+        return new AdjointVectorAccess(this->adjointVector);
       }
 
       /*******************************************************************************/

@@ -76,8 +76,8 @@ namespace codi {
       /// @name Misc
 
       /// \copydoc codi::VectorAccessInterface::clone
-      VectorAccessInterface* clone() const {
-        return PrimalAdjointVectorAccess(this->adjointVector, this->primalVector);
+      VectorAccessInterface<Real, Identifier>* clone() const {
+        return new PrimalAdjointVectorAccess(this->adjointVector, this->primalVector);
       }
 
       /*******************************************************************************/
