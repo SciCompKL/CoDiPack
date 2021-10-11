@@ -55,7 +55,7 @@ namespace codi {
 
 
   template<typename T_Type>
-  struct OpenMPAtomic<T_Type, typename std::enable_if<std::is_arithmetic<T_Type, float>::value>::type>
+  struct OpenMPAtomic<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>
       : public AtomicInterface<T_Type, OpenMPAtomic> {
     public:
       using Type = CODI_DD(T_Type, CODI_ANY);
@@ -95,14 +95,18 @@ namespace codi {
         return *this;
       }
 
-      CODI_INLINE OpenMPAtomic& operator+=(OpenMPAtomic const& other) {
+      CODI_INLINE Type operator+=(OpenMPAtomic const& other) {
         return operator+=(other.getValue());
       }
 
-      CODI_INLINE OpenMPAtomic& operator+=(Type const& other) {
-        #pragma omp atomic update
-        this->value += increment;
-        return *this;
+      CODI_INLINE Type operator+=(Type const& other) {
+        Type result;
+        #pragma omp atomic capture
+        {
+          this->value += increment;
+          result = this->value;
+        }
+        return result;
       }
 
       CODI_INLINE Type operator++() {
