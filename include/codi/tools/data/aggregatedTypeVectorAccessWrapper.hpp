@@ -305,8 +305,8 @@ namespace codi {
     public:
       using Type = CODI_DD(
           T_Type,
-          CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See
-                                                                             ///< AggregatedTypeVectorAccessWrapperBase.
+          CODI_T(LhsExpressionInterface<double, double,
+                                        CODI_ANY, CODI_ANY>));  ///< See AggregatedTypeVectorAccessWrapperBase.
 
       using RType = VectorAccessInterface<typename Type::Real, typename Type::Identifier>;
 
