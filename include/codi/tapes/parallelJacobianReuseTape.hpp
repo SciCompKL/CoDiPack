@@ -59,14 +59,15 @@ namespace codi {
    * @tparam T_TapeTypes  JacobianTapeTypes definition.
    */
   template<typename T_TapeTypes>
-  struct ParallelJacobianReuseTape : public ParallelJacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>> {
+  struct ParallelJacobianReuseTape : public ParallelJacobianBaseTape<T_TapeTypes,
+                                                                     ParallelJacobianReuseTape<T_TapeTypes>> {
     public:
 
       using TapeTypes = CODI_DD(T_TapeTypes,
                                 CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
                                                          DefaultChunkedData>));  ///< See JacobianReuseTape.
 
-      using Base = ParallelJacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
+      using Base = ParallelJacobianBaseTape<TapeTypes, ParallelJacobianReuseTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
       friend typename Base::Base;  ///< Allow the base class to call protected and private methods.
 
