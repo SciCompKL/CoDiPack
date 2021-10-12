@@ -102,6 +102,7 @@ namespace codi {
       /// \copydoc DataInterface::reserveItems <br><br>
       /// Implementation: Does not check if enough space is available.
       CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
+        CODI_UNUSED(items);
         codiAssert(chunk.getUsedSize() + items <= chunk.getSize());
 
         return chunk.getUsedSize();
