@@ -49,7 +49,7 @@ namespace codi {
       CODI_INLINE StaticThreadLocalPointerInterface() {}
       ~StaticThreadLocalPointerInterface() {}
 
-      static CODI_INLINE Impl& operator=(Type* other);
+      static CODI_INLINE void set(Type* other);
       static CODI_INLINE Type* get() const;
   };
 }

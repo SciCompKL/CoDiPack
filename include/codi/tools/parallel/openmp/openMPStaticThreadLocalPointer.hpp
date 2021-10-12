@@ -52,7 +52,7 @@ namespace codi {
 
     public:
 
-      static CODI_INLINE OpenMPStaticThreadLocalPointer& operator=(Type* other) {
+      static CODI_INLINE set(Type* other) {
         value = other;
       }
 
