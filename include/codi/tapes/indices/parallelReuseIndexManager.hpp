@@ -55,15 +55,13 @@ namespace codi {
    *
    * @tparam T_Index            Type for the identifier, usually an integer type.
    * @tparam T_ParallelToolbox  Tools used to make this index manager thread-safe.
-   * @tparam T_Tape             Tape class that uses this index manager.
    */
-  template<typename T_Index, typename T_ParallelToolbox, typename T_Tape>
+  template<typename T_Index, typename T_ParallelToolbox>
   struct ParallelReuseIndexManager : public ReuseIndexManagerBase<T_Index> {
     public:
 
       using Index = CODI_DD(T_Index, int);        ///< See ParallelReuseIndexManager.
       using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(codi::ParallelToolbox<CODI_ANY, CODI_ANY>));  ///< See ParallelReuseIndexManager.
-      using Tape = CODI_DD(T_Tape, CODI_ANY);     ///< Tape class that uses this index manager.
       using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
     private:
