@@ -202,8 +202,8 @@ namespace codi {
   template<typename T_Type>
   struct RealTraits::DataExtraction<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
     public:
-      using Type = CODI_DD(T_Type,
-                           CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See DataExtraction.
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double,
+                                                                 CODI_ANY, CODI_ANY>));  ///< See DataExtraction.
 
       using Real = typename Type::Real;              ///< See DataExtraction::Real.
       using Identifier = typename Type::Identifier;  ///< See DataExtraction::Identifier.
@@ -227,8 +227,8 @@ namespace codi {
   /// Specialization of RealTraits::DataRegistration for CoDiPack types.
   template<typename T_Type>
   struct RealTraits::TapeRegistration<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
-      using Type = CODI_DD(T_Type,
-                           CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See DataRegistration.
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double,
+                                                                 CODI_ANY, CODI_ANY>));  ///< See DataRegistration.
 
       using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
 
