@@ -68,6 +68,7 @@ namespace codi {
 
       using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
+      friend typename Base::Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
       using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
@@ -81,6 +82,13 @@ namespace codi {
       JacobianLinearTape() : Base() {}
 
       using Base::clearAdjoints;
+
+      /// \copydoc codi::ReverseTapeInterface::getTapeValues()
+      TapeValues internalGetTapeValues() {
+        TapeValues values = TapeValues("CoDi Tape Statistics ( JacobianLinearTape )");
+        Base::internalAddTapeValues(values);
+        return values;
+      }
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {

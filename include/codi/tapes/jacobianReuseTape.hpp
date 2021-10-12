@@ -68,6 +68,7 @@ namespace codi {
 
       using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
+      friend typename Base::Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                    ///< See TapeTypesInterface.
       using Gradient = typename TapeTypes::Gradient;            ///< See TapeTypesInterface.
@@ -80,6 +81,13 @@ namespace codi {
 
       /// Constructor
       JacobianReuseTape() : Base() {}
+
+      /// \copydoc codi::ReverseTapeInterface::getTapeValues()
+      TapeValues internalGetTapeValues() {
+        TapeValues values = TapeValues("CoDi Tape Statistics ( JacobianReuseTape )");
+        Base::internalAddTapeValues(values);
+        return values;
+      }
 
       using Base::clearAdjoints;
 
