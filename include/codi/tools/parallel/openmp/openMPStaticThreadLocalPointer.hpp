@@ -41,7 +41,7 @@ namespace codi {
 
   template<typename T_Type, typename T_Owner>
   struct OpenMPStaticThreadLocalPointer
-      : public StaticThreadLocalPointerInterface<T_Type, T_Owner, OpenMPStaticThreadLocalPointer> {
+      : public StaticThreadLocalPointerInterface<T_Type, T_Owner, OpenMPStaticThreadLocalPointer<T_Type, T_Owner>> {
     public:
       using Type = CODI_DD(T_Type, CODI_ANY);
       using Owner = CODI_DD(T_Owner, CODI_ANY);
@@ -52,15 +52,15 @@ namespace codi {
 
     public:
 
-      static CODI_INLINE set(Type* other) {
+      static CODI_INLINE void set(Type* other) {
         value = other;
       }
 
-      static CODI_INLINE Type* get() const {
+      static CODI_INLINE Type* get() {
         return value;
       }
   };
 
   template<typename Type, typename Owner>
-  Type OpenMPStaticThreadLocalPointer<Type, Owner>::value = new Type();
+  Type* OpenMPStaticThreadLocalPointer<Type, Owner>::value = new Type();
 }

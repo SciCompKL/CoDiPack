@@ -71,7 +71,7 @@ namespace codi {
       using TapeTypes = CODI_DD(
           T_TapeTypes, CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>, DefaultChunkedData>));
       /// Parallel toolbox used for thread safety.
-      using T_ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY>));
+      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY>));
       /// See JacobianBaseTape.
       using Impl = CODI_DD(T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
@@ -132,7 +132,7 @@ namespace codi {
     public:
 
       /// Constructor
-      JacobianBaseTape()
+      ParallelJacobianBaseTape()
           : Base()
       {
         Base::options.insert(TapeParameters::AdjointSize);
@@ -210,10 +210,11 @@ namespace codi {
       /// \copydoc codi::DataManagementTapeInterface::getParameter()
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {
-          case TapeParameters::AdjointSize:
+          case TapeParameters::AdjointSize: {
             LockForUse lock(adjointsMutex);
             return adjoints.size();
             break;
+          }
           default:
             return Base::getParameter(parameter);
             break;
@@ -223,10 +224,11 @@ namespace codi {
       /// \copydoc codi::DataManagementTapeInterface::setParameter()
       void setParameter(TapeParameters parameter, size_t value) {
         switch (parameter) {
-          case TapeParameters::AdjointSize:
+          case TapeParameters::AdjointSize: {
             LockForRealloc lock(adjointsMutex);
             adjoints.resize(value);
             break;
+          }
           default:
             Base::setParameter(parameter, value);
             break;

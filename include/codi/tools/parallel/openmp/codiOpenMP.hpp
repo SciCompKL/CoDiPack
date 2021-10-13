@@ -34,18 +34,22 @@
  */
 #pragma once
 
+#include "../../../../codi.hpp"
 #include "../../../expressions/parallelActiveType.hpp"
 #include "../../../tapes/indices/parallelReuseIndexManager.hpp"
 #include "../../../tapes/parallelJacobianReuseTape.hpp"
-#include "../../codi.hpp"
 #include "openMPToolbox.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  typename<typename Real, typename Gradient = OpenMPAtomic<Real>,
+  template<typename Real, typename Gradient = OpenMPAtomic<Real>,
            typename IndexManager = ParallelReuseIndexManager<int, OpenMPToolbox>>
-  using RealReverseIndexOpenMPGen = ParallelActiveType<ParallelJacobianReuseTape<JacobianTypeTypes<Real, Gradient, IndexManager, DefaultChunkedData>>>;
+  using RealReverseIndexOpenMPGen = ParallelActiveType<
+                                      ParallelJacobianReuseTape<
+                                        JacobianTapeTypes<Real, Gradient, IndexManager, DefaultChunkedData>,
+                                        OpenMPToolbox>,
+                                      OpenMPToolbox>;
 
   using RealReverseIndexOpenMP = RealReverseIndexOpenMPGen<double>;
 }

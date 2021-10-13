@@ -34,7 +34,7 @@
  */
 #pragma once
 
-#include "../../../misc/macros.hpp"
+#include "../../misc/macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -50,6 +50,6 @@ namespace codi {
       ~StaticThreadLocalPointerInterface() {}
 
       static CODI_INLINE void set(Type* other);
-      static CODI_INLINE Type* get() const;
+      static CODI_INLINE Type* get();
   };
 }

@@ -40,23 +40,28 @@
 
 #include "../../../expressions/lhsExpressionInterface.hpp"
 #include "../../../misc/macros.hpp"
+#include "../../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../../traits/atomicTraits.hpp"
 #include "openMPAtomic.hpp"
 
 template<typename T_CoDiType>
 struct CoDiOpDiLibTool : public opdi::ToolInterface {
   public:
-    using CoDiType = CODI_DD(T_CoDiType, codi::LhsExpressionInterface<double, int,
-    using Tape = typename CoDiType::TapeType;
+    using CoDiType = CODI_DD(T_CoDiType, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+    using Real = typename CoDiType::Real;
+    using Identifier = typename CoDiType::Identifier;
+    using Tape = typename CoDiType::Tape;
     using Position = typename Tape::Position;
 
+    using VAI = codi::VectorAccessInterface<Real, Identifier>;
+
   private:
-    static void callHandleReverse(void*, void* handlePtr, void*) {
+    static void callHandleReverse(Tape*, void* handlePtr, VAI*) {
       opdi::Handle* handle = (opdi::Handle*) handlePtr;
       handle->reverseFunc(handle->data);
     }
 
-    static void callHandleDelete(void*, void* handlePtr) {
+    static void callHandleDelete(Tape*, void* handlePtr) {
       opdi::Handle* handle = (opdi::Handle*) handlePtr;
       if (handle->deleteFunc != nullptr) {
         handle->deleteFunc(handle->data);
@@ -160,16 +165,16 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
         std::cerr << "Warning: OpDiLib evaluation of an active tape." << std::endl;
       }
 
-      typename Tape::GradientValue* adjoints = &tape->gradient(0);
-      using NonAtomicGradientValue = codi::AtomicTraits::RemoveAtomic<typename Tape::GradientValue>;
-      using AtomicGradientValue = codi::OpenMPAtomic<NonAtomicGradientValue>;
+      typename Tape::Gradient* adjoints = &tape->gradient(0);
+      using NonAtomicGradient = codi::AtomicTraits::RemoveAtomic<typename Tape::Gradient>;
+      using AtomicGradient = codi::OpenMPAtomic<NonAtomicGradient>;
 
       if (useAtomics) {
-        AtomicGradientValue* safeAdjoints = (AtomicGradientValue*) adjoints;
+        AtomicGradient* safeAdjoints = (AtomicGradient*) adjoints;
         tape->evaluate(*start, *end, safeAdjoints);
       }
       else {
-        NonAtomicGradientValue* unsafeAdjoints = (NonAtomicGradientValue*) adjoints;
+        NonAtomicGradient* unsafeAdjoints = (NonAtomicGradient*) adjoints;
         tape->evaluate(*start, *end, unsafeAdjoints);
       }
     }
@@ -182,7 +187,7 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
     void reset(void* tapePtr, void* positionPtr, bool clearAdjoints) {
       Tape* tape = (Tape*) tapePtr;
       Position* position = (Position*) positionPtr;
-      tape->reset(*position, clearAdjoints);
+      tape->resetTo(*position, clearAdjoints);
     }
 
     void* getThreadLocalTape() {
@@ -196,12 +201,14 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
 
     void pushExternalFunction(void* tapePtr, opdi::Handle const* handle) {
       Tape* tape = (Tape*) tapePtr;
-      tape->pushExternalFunctionHandle(CoDiOpDiLibTool::callHandleReverse, (void*) handle,
-                                       CoDiOpDiLibTool::callHandleDelete);
+      tape->pushExternalFunction(codi::ExternalFunction<Tape>::create(CoDiOpDiLibTool::callHandleReverse,
+                                                                      (void*) handle,
+                                                                      CoDiOpDiLibTool::callHandleDelete));
     }
 
     void erase(void* tapePtr, void* startPtr, void* endPtr) {
 
+      codi::CODI_UNUSED(tapePtr, startPtr, endPtr);
       // TODO
 
       /*
@@ -214,6 +221,7 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
 
     void append(void* dstTapePtr, void* srcTapePtr, void* startPtr, void* endPtr) {
 
+      codi::CODI_UNUSED(dstTapePtr, srcTapePtr, startPtr, endPtr);
       // TODO
 
       /*

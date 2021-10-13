@@ -77,7 +77,7 @@ namespace codi {
       Real primalValue;
       Identifier identifier;
 
-      static ParallelToolbox::StaticThreadLocalPointer<Tape, ParallelActiveType> tape;
+      static typename ParallelToolbox::template StaticThreadLocalPointer<Tape, ParallelActiveType> tape;
 
     public:
 
@@ -87,7 +87,7 @@ namespace codi {
       }
 
       /// Constructor
-      CODI_INLINE ParallelActiveType(ParallelActiveType<Tape> const& v) : primalValue(), identifier() {
+      CODI_INLINE ParallelActiveType(ParallelActiveType const& v) : primalValue(), identifier() {
         Base::init();
         this->getTape().store(*this, v);
       }
@@ -110,7 +110,7 @@ namespace codi {
       }
 
       /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
-      CODI_INLINE ParallelActiveType<Tape>& operator=(ParallelActiveType<Tape> const& v) {
+      CODI_INLINE ParallelActiveType& operator=(ParallelActiveType const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ParallelActiveType>&>(*this) = v;
         return *this;
       }
@@ -167,5 +167,6 @@ namespace codi {
   };
 
   template<typename Tape, typename ParallelToolbox>
-  ParallelToolbox::StaticThreadLocalPointer<Tape> ParallelActiveType<Tape>::tape;
+  typename ParallelToolbox::template StaticThreadLocalPointer<Tape, ParallelActiveType<Tape, ParallelToolbox>>
+      ParallelActiveType<Tape, ParallelToolbox>::tape;
 }

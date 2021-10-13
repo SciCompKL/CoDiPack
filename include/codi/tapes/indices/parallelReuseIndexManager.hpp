@@ -57,19 +57,21 @@ namespace codi {
    * @tparam T_ParallelToolbox  Tools used to make this index manager thread-safe.
    */
   template<typename T_Index, typename T_ParallelToolbox>
-  struct ParallelReuseIndexManager : public ReuseIndexManagerBase<T_Index> {
+  struct ParallelReuseIndexManager
+      : public ReuseIndexManagerBase<T_Index, ParallelReuseIndexManager<T_Index, T_ParallelToolbox>> {
     public:
 
       using Index = CODI_DD(T_Index, int);        ///< See ParallelReuseIndexManager.
       using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(codi::ParallelToolbox<CODI_ANY, CODI_ANY>));  ///< See ParallelReuseIndexManager.
-      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
+      using Base = ReuseIndexManagerBase<Index, ParallelReuseIndexManager>;  ///< Base class abbreviation.
+      friend Base;  ///< Allow the base class to access protected and private members.
 
     private:
 
       template<typename Type>
-      using ParallelToolbox::template Atomic<Type>;
+      using Atomic = typename ParallelToolbox::template Atomic<Type>;
+
       using Mutex = typename ParallelToolbox::Mutex;
-      using typename ParallelToolbox::Mutex;
 
     public:
 
@@ -155,12 +157,13 @@ namespace codi {
       }
   };
 
-  template<typename Index, typename ParallelToolbox, typename Tape>
-  ParallelToolbox::template Atomic<Index> ParallelReuseIndexManager<Index, ParallelToolbox, Tape>::globalMaximumIndex;
+  template<typename Index, typename ParallelToolbox>
+  typename ParallelToolbox::template Atomic<Index> ParallelReuseIndexManager<Index,
+                                                                             ParallelToolbox>::globalMaximumIndex;
 
-  template<typename Index, typename ParallelToolbox, typename Tape>
-  bool ParallelReuseIndexManager<Index, ParallelToolbox, Tape>::globalMaximumIndexInitialized = false;
+  template<typename Index, typename ParallelToolbox>
+  bool ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndexInitialized = false;
 
-  template<typename Index, typename ParallelToolbox, typename Tape>
-  typename ParallelToolbox::Mutex ParallelReuseIndexManager<Index, ParallelToolbox, Tape>::globalMaximumIndexMutex;
+  template<typename Index, typename ParallelToolbox>
+  typename ParallelToolbox::Mutex ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndexMutex;
 }

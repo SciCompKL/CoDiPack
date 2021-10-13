@@ -60,6 +60,6 @@ namespace codi {
     };
 
     template<typename T_Type>
-    using RemoveAtomic = RemoveAtomicImpl<T_Type>::Type;
+    using RemoveAtomic = typename RemoveAtomicImpl<T_Type>::Type;
   }
 }

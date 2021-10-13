@@ -45,18 +45,19 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename T_Type, typename = void>
-  struct OpenMPAtomic : public AtomicInterface<T_Type, OpenMPAtomic> {
+  template<typename T_Type, typename T_Sfinae = void>
+  struct OpenMPAtomicImpl : public AtomicInterface<T_Type, OpenMPAtomicImpl<T_Type, T_Sfinae>> {
     public:
       using Type = CODI_DD(T_Type, CODI_ANY);
 
-      OpenMPAtomic() = delete;
+      OpenMPAtomicImpl() = delete;
   };
 
 
   template<typename T_Type>
-  struct OpenMPAtomic<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>
-      : public AtomicInterface<T_Type, OpenMPAtomic> {
+  struct OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>
+      : public AtomicInterface<T_Type,
+                               OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>> {
     public:
       using Type = CODI_DD(T_Type, CODI_ANY);
 
@@ -76,26 +77,26 @@ namespace codi {
       }
 
     public:
-      CODI_INLINE OpenMPAtomic() : value() {}
+      CODI_INLINE OpenMPAtomicImpl() : value() {}
 
-      CODI_INLINE OpenMPAtomic(OpenMPAtomic const& other) {
+      CODI_INLINE OpenMPAtomicImpl(OpenMPAtomicImpl const& other) {
         setValue(other.getValue());
       }
 
-      CODI_INLINE OpenMPAtomic(Type const& other) {
+      CODI_INLINE OpenMPAtomicImpl(Type const& other) {
         setValue(other);
       }
 
-      CODI_INLINE OpenMPAtomic& operator=(OpenMPAtomic const& other) {
+      CODI_INLINE OpenMPAtomicImpl& operator=(OpenMPAtomicImpl const& other) {
         return operator = (other.getValue());
       }
 
-      CODI_INLINE OpenMPAtomic& operator=(Type const& other) {
+      CODI_INLINE OpenMPAtomicImpl& operator=(Type const& other) {
         setValue(other);
         return *this;
       }
 
-      CODI_INLINE Type operator+=(OpenMPAtomic const& other) {
+      CODI_INLINE Type operator+=(OpenMPAtomicImpl const& other) {
         return operator+=(other.getValue());
       }
 
@@ -103,7 +104,7 @@ namespace codi {
         Type result;
         #pragma omp atomic capture
         {
-          this->value += increment;
+          this->value += other;
           result = this->value;
         }
         return result;
@@ -144,8 +145,9 @@ namespace codi {
 
 
   template<typename T_Tape>
-  struct OpenMPAtomic<ActiveType<T_Tape>, TapeTraits::EnableIfForwardTape>
-      : public AtomicInterface<ActiveType<T_Tape>, OpenMPAtomic>,
+  struct OpenMPAtomicImpl<ActiveType<T_Tape>, TapeTraits::EnableIfForwardTape<T_Tape>>
+      : public AtomicInterface<ActiveType<T_Tape>, OpenMPAtomicImpl<ActiveType<T_Tape>,
+                               TapeTraits::EnableIfForwardTape<T_Tape>>>,
         public ActiveType<T_Tape> {
     public:
       using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
@@ -155,16 +157,16 @@ namespace codi {
 
     private:
       CODI_INLINE void atomicSetValue(Type const& newValue) {
-        OpenMPAtomic<Real>* atomicValue = reinterpret_cast<OpenMPAtomic<Real>*>(&this->value());
-        OpenMPAtomic<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomic<Gradient>*>(&this->gradient());
+        OpenMPAtomicImpl<Real>* atomicValue = reinterpret_cast<OpenMPAtomicImpl<Real>*>(&this->value());
+        OpenMPAtomicImpl<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomicImpl<Gradient>*>(&this->gradient());
 
         *atomicValue = newValue.value();
         *atomicGradient = newValue.gradient();
       }
 
       CODI_INLINE void atomicAddValue(Type const& increment) {
-        OpenMPAtomic<Real>* atomicValue = reinterpret_cast<OpenMPAtomic<Real>*>(&this->value());
-        OpenMPAtomic<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomic<Gradient>*>(&this->gradient());
+        OpenMPAtomicImpl<Real>* atomicValue = reinterpret_cast<OpenMPAtomicImpl<Real>*>(&this->value());
+        OpenMPAtomicImpl<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomicImpl<Gradient>*>(&this->gradient());
 
         *atomicValue += increment.value();
         *atomicGradient += increment.gradient();
@@ -173,8 +175,8 @@ namespace codi {
       CODI_INLINE Type atomicGetValue() const {
         Type result;
 
-        OpenMPAtomic<Real>* atomicValue = reinterpret_cast<OpenMPAtomic<Real>*>(&this->value());
-        OpenMPAtomic<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomic<Gradient>*>(&this->gradient());
+        OpenMPAtomicImpl<Real>* atomicValue = reinterpret_cast<OpenMPAtomicImpl<Real>*>(&this->value());
+        OpenMPAtomicImpl<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomicImpl<Gradient>*>(&this->gradient());
 
         result.value() = *atomicValue;
         result.gradient() = *atomicGradient;
@@ -183,32 +185,32 @@ namespace codi {
       }
 
     public:
-      CODI_INLINE OpenMPAtomic() : Type() {}
+      CODI_INLINE OpenMPAtomicImpl() : Type() {}
 
-      CODI_INLINE OpenMPAtomic(OpenMPAtomic const& other) : Type() {
+      CODI_INLINE OpenMPAtomicImpl(OpenMPAtomicImpl const& other) : Type() {
         atomicSetValue(other.atomicGetValue());
       }
 
-      CODI_INLINE OpenMPAtomic(Type const& other) : Type() {
+      CODI_INLINE OpenMPAtomicImpl(Type const& other) : Type() {
         atomicSetValue(other);
       }
 
-      CODI_INLINE OpenMPAtomic& operator=(OpenMPAtomic const& other) {
+      CODI_INLINE OpenMPAtomicImpl& operator=(OpenMPAtomicImpl const& other) {
         return operator=(other.atomicGetValue());
       }
 
-      CODI_INLINE OpenMPAtomic& operator=(Type const& other) {
+      CODI_INLINE OpenMPAtomicImpl& operator=(Type const& other) {
         atomicSetValue(other);
         return *this;
       }
 
-      CODI_INLINE OpenMPAtomic& operator+=(OpenMPAtomic const& other) {
+      CODI_INLINE OpenMPAtomicImpl& operator+=(OpenMPAtomicImpl const& other) {
         return operator+=(other.atomicGetValue());
       }
 
-      CODI_INLINE OpenMPAtomic& operator+=(Type const& other) {
-        OpenMPAtomic<Real>* atomicValue = reinterpret_cast<OpenMPAtomic<Real>*>(&this->value());
-        OpenMPAtomic<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomic<Gradient>*>(&this->gradient());
+      CODI_INLINE OpenMPAtomicImpl& operator+=(Type const& other) {
+        OpenMPAtomicImpl<Real>* atomicValue = reinterpret_cast<OpenMPAtomicImpl<Real>*>(&this->value());
+        OpenMPAtomicImpl<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomicImpl<Gradient>*>(&this->gradient());
 
         *atomicValue += other.value();
         *atomicGradient += other.gradient();
@@ -247,6 +249,9 @@ namespace codi {
         return atomicGetValue();
       }
   };
+
+  template<typename Type>
+  using OpenMPAtomic = OpenMPAtomicImpl<Type>;
 
   namespace AtomicTraits {
 
