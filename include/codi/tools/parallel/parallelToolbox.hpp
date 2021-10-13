@@ -42,9 +42,9 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<template<typename> T_Atomic,
+  template<template<typename> class T_Atomic,
            typename T_Mutex,
-           template<typename, typename> T_StaticThreadLocalPointer>
+           template<typename, typename> class T_StaticThreadLocalPointer>
   struct ParallelToolbox {
     public:
       template<typename Type>

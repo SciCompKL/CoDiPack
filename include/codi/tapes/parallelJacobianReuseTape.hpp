@@ -58,16 +58,19 @@ namespace codi {
    *
    * @tparam T_TapeTypes  JacobianTapeTypes definition.
    */
-  template<typename T_TapeTypes>
-  struct ParallelJacobianReuseTape : public ParallelJacobianBaseTape<T_TapeTypes,
-                                                                     ParallelJacobianReuseTape<T_TapeTypes>> {
+  template<typename T_TapeTypes, typename T_ParallelToolbox>
+  struct ParallelJacobianReuseTape : public ParallelJacobianBaseTape<T_TapeTypes, T_ParallelToolbox,
+                                                                     ParallelJacobianReuseTape<T_TapeTypes,
+                                                                                               T_ParallelToolbox>> {
     public:
 
       using TapeTypes = CODI_DD(T_TapeTypes,
                                 CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
                                                          DefaultChunkedData>));  ///< See JacobianReuseTape.
-
-      using Base = ParallelJacobianBaseTape<TapeTypes, ParallelJacobianReuseTape>;  ///< Base class abbreviation.
+      /// Parallel toolbox used for thread safety.
+      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY>));
+      /// Base class abbreviation.
+      using Base = ParallelJacobianBaseTape<TapeTypes, ParallelToolbox, ParallelJacobianReuseTape>;
       friend Base;  ///< Allow the base class to call protected and private methods.
       friend typename Base::Base;  ///< Allow the base class to call protected and private methods.
 
@@ -102,7 +105,7 @@ namespace codi {
           }
         };
 
-        Base::LockForUse lock(Base::adjointsMutex);
+        typename Base::LockForUse lock(Base::adjointsMutex);
 
         using StmtPosition = typename StatementData::Position;
         StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(start);
