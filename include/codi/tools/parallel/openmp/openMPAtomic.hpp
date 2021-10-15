@@ -175,8 +175,8 @@ namespace codi {
       CODI_INLINE Type atomicGetValue() const {
         Type result;
 
-        OpenMPAtomicImpl<Real>* atomicValue = reinterpret_cast<OpenMPAtomicImpl<Real>*>(&this->value());
-        OpenMPAtomicImpl<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomicImpl<Gradient>*>(&this->gradient());
+        OpenMPAtomicImpl<Real> const* atomicValue = reinterpret_cast<OpenMPAtomicImpl<Real> const*>(&this->value());
+        OpenMPAtomicImpl<Gradient> const* atomicGradient = reinterpret_cast<OpenMPAtomicImpl<Gradient> const*>(&this->gradient());
 
         result.value() = *atomicValue;
         result.gradient() = *atomicGradient;
@@ -262,12 +262,13 @@ namespace codi {
   namespace RealTraits {
 
     template<typename T_Type>
-    struct IsTotalZero<OpenMPAtomic<T_Type>> {
+    struct IsTotalZero<OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>> {
       public:
 
-        using Type = CODI_DD(OpenMPAtomic<T_Type>, OpenMPAtomic<double>);
+        using Type = CODI_DD(CODI_T(OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>),
+                             OpenMPAtomic<double>);
 
-        static CODI_INLINE bool isTotalZero(OpenMPAtomic<T_Type> const& v) {
+        static CODI_INLINE bool isTotalZero(Type const& v) {
           return typename Type::Type() == v;
         }
     };

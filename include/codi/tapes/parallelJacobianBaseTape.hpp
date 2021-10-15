@@ -110,6 +110,11 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
+      CODI_INLINE size_t getAdjointsSize() const {
+        LockForUse lock(adjointsMutex);
+        return this->adjoints.size();
+      }
+
     protected:
 
       /*******************************************************************************/
@@ -152,7 +157,7 @@ namespace codi {
       /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&) const
       CODI_INLINE Gradient const& gradient(Identifier const& identifier) const {
         LockForUse lock(adjointsMutex);
-        if (identifier > (Identifier)adjoints.size()) {
+        if (identifier > (Identifier)getAdjointsSize()) {
           return adjoints[0];
         } else {
           return adjoints[identifier];
@@ -211,8 +216,7 @@ namespace codi {
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {
           case TapeParameters::AdjointSize: {
-            LockForUse lock(adjointsMutex);
-            return adjoints.size();
+            return getAdjointsSize();
             break;
           }
           default:
@@ -287,13 +291,13 @@ namespace codi {
     private:
 
       CODI_INLINE void checkAdjointSize(Identifier const& identifier) {
-        LockForRealloc lock(adjointsMutex);
-        if (identifier >= (Identifier)adjoints.size()) {
+        if (identifier >= (Identifier)getAdjointsSize()) {
           resizeAdjointsVector();
         }
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
+        LockForRealloc lock(adjointsMutex);
         adjoints.resize(this->indexManager.get().getLargestCreatedIndex() + 1);
       }
   };
