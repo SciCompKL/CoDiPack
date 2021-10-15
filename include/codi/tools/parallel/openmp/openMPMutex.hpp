@@ -46,11 +46,15 @@ namespace codi {
       omp_lock_t mutex;
 
     public:
-      CODI_INLINE OpenMPMutex() {
+      CODI_INLINE OpenMPMutex() {}
+
+      ~OpenMPMutex() {}
+
+      void initialize() {
         omp_init_lock(&mutex);
       }
 
-      ~OpenMPMutex() {
+      void finalize() {
         omp_destroy_lock(&mutex);
       }
 

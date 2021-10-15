@@ -44,6 +44,9 @@ namespace codi {
       CODI_INLINE MutexInterface() {}
       ~MutexInterface() {}
 
+      CODI_INLINE void initialize();
+      CODI_INLINE void finalize();
+
       CODI_INLINE void lock();
       CODI_INLINE void unlock();
   };
