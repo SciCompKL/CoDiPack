@@ -33,7 +33,6 @@
  *      - Tim Albring
  */
 #pragma once
-#pragma once
 
 #include <vector>
 
