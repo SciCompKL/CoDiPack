@@ -91,6 +91,11 @@ namespace codi {
         CODI_UNUSED(pos);
       }
 
+      /// \copydoc DataInterface::erase
+      void erase(Position const& start, Position const& end, bool recursive = true) {
+        CODI_UNUSED(start, end, recursive);
+      }
+
       /*******************************************************************************/
       /// @name Position functions
 
