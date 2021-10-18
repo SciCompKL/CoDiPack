@@ -208,6 +208,13 @@ namespace codi {
         count = reservedIndices;
       }
 
+      /// \copydoc DataInterface::erase
+      /// Implementation: Empty. Linear index management depends on indices being handed out in a contiguous fashion,
+      /// and deleting a range of indices is not meaningful.
+      void erase(Position const& start, Position const& end, bool recursive = true) {
+        CODI_UNUSED(start, end, recursive);
+      }
+
       /// \copydoc DataInterface::setNested
       void setNested(NestedData* v) {
         CODI_UNUSED(v);

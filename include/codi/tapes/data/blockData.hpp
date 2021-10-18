@@ -137,6 +137,15 @@ namespace codi {
         nested->resetTo(pos.inner);
       }
 
+      /// \copydoc DataInterface::erase
+      /// Implementation: No memory is freed.
+      void erase(Position const& start, Position const& end, bool recursive = true) {
+        chunk.erase(start.data, end.data);
+        if (recursive) {
+          nested->erase(start.inner, end.inner);
+        }
+      }
+
       /*******************************************************************************/
       /// @name Position functions
 
