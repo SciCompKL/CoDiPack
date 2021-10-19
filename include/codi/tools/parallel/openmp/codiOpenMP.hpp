@@ -38,6 +38,7 @@
 #include "../../../expressions/parallelActiveType.hpp"
 #include "../../../tapes/indices/parallelReuseIndexManager.hpp"
 #include "../../../tapes/parallelJacobianReuseTape.hpp"
+#include "../../helpers/openMPExternalFunctionHelper.hpp"
 #include "openMPToolbox.hpp"
 
 /** \copydoc codi::Namespace */
