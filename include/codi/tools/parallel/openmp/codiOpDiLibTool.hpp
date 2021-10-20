@@ -208,28 +208,20 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
 
     void erase(void* tapePtr, void* startPtr, void* endPtr) {
 
-      codi::CODI_UNUSED(tapePtr, startPtr, endPtr);
-      // TODO
-
-      /*
       Tape* tape = (Tape*) tapePtr;
       Position* start = (Position*) startPtr;
       Position* end = (Position*) endPtr;
 
-      tape->erase(*start, *end);*/
+      tape->erase(*start, *end);
     }
 
     void append(void* dstTapePtr, void* srcTapePtr, void* startPtr, void* endPtr) {
 
-      codi::CODI_UNUSED(dstTapePtr, srcTapePtr, startPtr, endPtr);
-      // TODO
-
-      /*
       Tape* dstTape = (Tape*) dstTapePtr;
       Tape* srcTape = (Tape*) srcTapePtr;
       Position* start = (Position*) startPtr;
       Position* end = (Position*) endPtr;
 
-      dstTape->append(*srcTape, *start, *end);*/
+      dstTape->append(*srcTape, *start, *end);
     }
 };
