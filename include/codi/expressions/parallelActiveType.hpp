@@ -167,6 +167,7 @@ namespace codi {
   };
 
   template<typename Tape, typename ParallelToolbox>
-  typename ParallelToolbox::template StaticThreadLocalPointer<Tape, ParallelActiveType<Tape, ParallelToolbox>>
+  typename ParallelActiveType<Tape, ParallelToolbox>::ParallelToolbox::template StaticThreadLocalPointer<
+      typename ParallelActiveType<Tape, ParallelToolbox>::Tape, ParallelActiveType<Tape, ParallelToolbox>>
       ParallelActiveType<Tape, ParallelToolbox>::tape;
 }
