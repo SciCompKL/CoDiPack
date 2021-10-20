@@ -187,7 +187,7 @@ namespace codi {
           chunks[start.chunk]->erase(start.data, end.data);
         } else {
           // Treat first chunk.
-          chunks[start.chunk]->erase(start.data, chunks[start.chunk]->usedSize);
+          chunks[start.chunk]->erase(start.data, chunks[start.chunk]->getUsedSize());
 
           // Treat last chunk.
           chunks[end.chunk]->erase(0, end.data);
