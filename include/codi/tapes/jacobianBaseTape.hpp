@@ -402,10 +402,13 @@ namespace codi {
       /// \copydoc codi::ReverseTapeInterface::registerInput()
       template<typename Lhs>
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
+        if (TapeTypes::IsLinearIndexHandler) {
+          statementData.reserveItems(1);
+        }
+
         indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
 
         if (TapeTypes::IsLinearIndexHandler) {
-          statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
         }
       }

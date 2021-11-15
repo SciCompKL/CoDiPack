@@ -437,6 +437,10 @@ namespace codi {
       template<typename Lhs>
       CODI_INLINE Real internalRegisterInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value,
                                              bool unusedIndex) {
+        if (TapeTypes::IsLinearIndexHandler) {
+          statementData.reserveItems(1);
+        }
+
         bool generatedNewIndex;
         if (unusedIndex) {
           generatedNewIndex = indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
@@ -447,7 +451,6 @@ namespace codi {
 
         Real& primalEntry = primals[value.cast().getIdentifier()];
         if (TapeTypes::IsLinearIndexHandler) {
-          statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag, primalEntry,
                               StatementEvaluator::template createHandle<Impl, Impl, Lhs>());
         }
