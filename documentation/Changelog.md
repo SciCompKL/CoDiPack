@@ -1,6 +1,11 @@
 Changelog {#Changelog}
 ===========================
 
+### v 2.0.1 - 2021-11-15
+ - Bugfix:
+   * Fixed a stack corruption in the reverse interpretation of tapes with a linear index manager.
+   * Renamed folders aux -> misc for windows compatibility.
+
 ### v 2.0.0 - 2021-09-01
  - Complete rewrite of CoDiPack. See \ref Migration_1_9_2_0 for some migration help.
    * Drop of modular class architecture.
