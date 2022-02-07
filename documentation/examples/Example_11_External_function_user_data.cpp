@@ -59,8 +59,8 @@ int main(int nargs, char** args) {
   y.setGradient(1.0);
   tape.evaluate();
 
-  std::cout << "f(4.0) = " << y << std::endl;
-  std::cout << "df/dx(4.0) = " << x.getGradient() << std::endl;
+  std::cout << "f(f(4.0)) = " << y << std::endl;
+  std::cout << "d(f ○ f)/dx(4.0) = " << x.getGradient() << std::endl;
 
   tape.reset();
 
