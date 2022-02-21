@@ -167,6 +167,12 @@ namespace codi {
         options.insert(TapeParameters::ExternalFunctionsSize);
       }
 
+      /// Do not allow copy construction.
+      CommonTapeImplementation(CommonTapeImplementation const&) = delete;
+
+      /// Do not allow copy assignment.
+      CommonTapeImplementation& operator=(CommonTapeImplementation const&) = delete;
+
       /*******************************************************************************/
       /// @name Functions from GradientAccessTapeInterface
       /// @{
