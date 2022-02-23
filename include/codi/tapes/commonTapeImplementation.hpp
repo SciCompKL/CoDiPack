@@ -176,6 +176,9 @@ namespace codi {
       /// Do not allow move construction. Relevant use cases should be covered by \ref swap.
       CommonTapeImplementation(CommonTapeImplementation&&) = delete;
 
+      /// Do not allow move assignment. Relevant use cases should be covered by \ref swap.
+      CommonTapeImplementation& operator=(CommonTapeImplementation&&) = delete;
+
       /*******************************************************************************/
       /// @name Functions from GradientAccessTapeInterface
       /// @{
