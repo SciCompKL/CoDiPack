@@ -159,5 +159,5 @@ namespace codi {
   };
 
   template<typename Tape>
-  Tape ActiveType<Tape>::tape = Tape();
+  Tape ActiveType<Tape>::tape{};
 }
