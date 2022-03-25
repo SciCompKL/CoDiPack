@@ -265,6 +265,9 @@ namespace codi {
         deleteExternalFunctionUserData(cast().getZeroPosition());
 
         externalFunctionData.reset();
+
+        // Requires extra reset since the default vector implementation forwards to resetTo
+        cast().indexManager.get().reset();
       }
 
       // clearAdjoints and reset(Position) are not implemented.

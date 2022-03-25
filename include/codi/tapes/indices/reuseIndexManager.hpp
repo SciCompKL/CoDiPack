@@ -225,18 +225,6 @@ namespace codi {
       }
 
       /// @}
-      /*******************************************************************************/
-      /// @name EmptyData: Method overwrite
-      /// @{
-
-      /// \copydoc EmptyData::resetTo
-      void resetTo(Position const& pos) {
-        if (pos == getZeroPosition()) {
-          reset();
-        }
-      }
-
-      /// @}
 
     private:
 
