@@ -289,6 +289,14 @@ namespace codi {
     bool constexpr EnableEigen = CODI_EnableEigen;
     // Do not undefine
 
+#ifndef CODI_EnableEnzyme
+  /// See codi::Config::EnableEnzyme.
+  #define CODI_EnableEnzyme false
+#endif
+    /// Add Enzyme specific functionality.
+    bool constexpr EnableEnzyme = CODI_EnableEnzyme;
+    // Do not undefine.
+
 #ifndef CODI_EnableMPI
   /// See codi::Config::EnableMPI.
   #define CODI_EnableMPI false

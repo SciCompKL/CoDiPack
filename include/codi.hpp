@@ -77,6 +77,10 @@
   #include "codi/tools/helpers/linearSystem/eigenLinearSystem.hpp"
 #endif
 
+#if CODI_EnableEnzyme
+  #include "codi/tools/helpers/enzymeExternalFunctionHelper.hpp"
+#endif
+
 /** \copydoc codi::Namespace */
 namespace codi {
 

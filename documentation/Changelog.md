@@ -2,6 +2,9 @@ Changelog {#Changelog}
 ===========================
 
 ### v 2.?.? - ???-??-??
+ - Features:
+  * New helper for adding Enzyme-generated derivative functions to the tape. See \ref Example_24_Enzyme_external_function_helper.
+
  - Bugfix:
   * Uninitialized values in external function helper.
   * External function outputs in Jacobian tapes no longer use unused indices.

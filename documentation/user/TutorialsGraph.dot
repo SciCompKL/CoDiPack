@@ -64,9 +64,12 @@ digraph Tutorials {
 
   E23 [label="E23 - OpenMP parallel codes"];
 
+  E24 [label="E24 - Enzyme external function helper"];
+
   // Edges (sorted)
   E02:e -> E08:w;
   E02:e -> E09:w;
+  E10:e -> E24:w;
   E11:e -> E20:w;
   E17:e -> E18:w;
   E17:e -> E19:w;
