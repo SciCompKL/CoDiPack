@@ -155,7 +155,9 @@ namespace codi {
             storeInputAdjoints();
           }
 
+          tape.setPassive();
           doPreaccumulation();
+          tape.setActive();
 
           if (storeAdjoints) {
             restoreInputAdjoints();
