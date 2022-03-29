@@ -194,7 +194,7 @@ namespace codi {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-          Gradient const lhsAdjoint;
+          Gradient const lhsAdjoint{};
           adjointVector->setLhsAdjoint(lhsIdentifier);
 #else
           Gradient const lhsAdjoint = adjointVector[lhsIdentifier];

@@ -545,7 +545,7 @@ namespace codi {
         return vectorAccess;
 #else
         static_assert(std::is_same<Adjoint, Gradient>::value,
-                      "Please enable 'CODI_VariableAdjointInterfacePrimalInPrimalTapes' in order"
+                      "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
                       " to use custom adjoint vectors in the primal value tapes.");
 
         return data;

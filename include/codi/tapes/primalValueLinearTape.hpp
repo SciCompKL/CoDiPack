@@ -204,7 +204,7 @@ namespace codi {
 
           if (Config::StatementInputTag != nPassiveValues) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-            Gradient const lhsAdjoint;
+            Gradient const lhsAdjoint{};
             adjointVector->setLhsAdjoint(curAdjointPos);
 #else
             Gradient const lhsAdjoint = adjointVector[curAdjointPos];
