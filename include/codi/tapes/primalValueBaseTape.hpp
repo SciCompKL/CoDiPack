@@ -688,6 +688,10 @@ namespace codi {
         std::swap(primals, other.primals);
 
         Base::swap(other);
+
+        // Ensure that the primals vector of both tapes are sized according to the index manager.
+        checkPrimalSize(true);
+        other.checkPrimalSize(true);
       }
 
       /// \copydoc codi::DataManagementTapeInterface::deleteAdjointVector()
