@@ -187,14 +187,15 @@ namespace codi {
         Tape& tape = CoDiType::getGlobalTape();
 
         if(tape.isActive()) {
-
           addOutputRec(outputs...);
 
           if(storeAdjoints) {
             storeInputAdjoints();
           }
 
+          tape.setPassive();
           doPreaccumulation();
+          tape.setActive();
 
           if(storeAdjoints) {
             restoreInputAdjoints();
