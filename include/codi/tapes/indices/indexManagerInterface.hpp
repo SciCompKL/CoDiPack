@@ -80,9 +80,9 @@ namespace codi {
       /*******************************************************************************/
       /// @name Global constants
 
-      static Index constexpr InactiveIndex = 0;  ///< Default inactive index for all index managers.
+      static Index constexpr InactiveIndex = Index(0);  ///< Default inactive index for all index managers.
       static Index constexpr InvalidIndex =
-          -1;  ///< Default invalid index for all index mangers (max value for unsigned types).
+          Index(-1);  ///< Default invalid index for all index mangers (max value for unsigned types).
 
       /*******************************************************************************/
       /// @name Identifier handling
@@ -117,4 +117,10 @@ namespace codi {
        */
       Index getLargestCreatedIndex() const;
   };
+
+
+	template<typename Index>
+  Index constexpr IndexManagerInterface<Index>::InactiveIndex;
+	template<typename Index>
+  Index constexpr IndexManagerInterface<Index>::InvalidIndex;
 }

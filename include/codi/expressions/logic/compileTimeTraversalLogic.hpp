@@ -60,13 +60,13 @@ namespace codi {
       using ResultType = CODI_DD(T_ResultType, size_t);         ///< See CompileTimeTraversalLogic.
       using Impl = CODI_DD(T_Impl, CompileTimeTraversalLogic);  ///< See CompileTimeTraversalLogic.
 
-      static constexpr ResultType NeutralElement = {};  ///< Neutral element of the reduction.
+      static ResultType constexpr NeutralElement = {};  ///< Neutral element of the reduction.
 
       /**
        * @brief Start the evaluation of the logic on the given expression.
        */
       template<typename Node, typename... Args>
-      CODI_INLINE static constexpr ResultType eval(Args&&... args) {
+      CODI_INLINE static ResultType constexpr eval(Args&&... args) {
         return toNode<Node>(std::forward<Args>(args)...);
       }
 
@@ -81,7 +81,7 @@ namespace codi {
        *
        * Default: summation.
        */
-      CODI_INLINE static constexpr ResultType reduce(ResultType a, ResultType b) {
+      CODI_INLINE static ResultType constexpr reduce(ResultType a, ResultType b) {
         return a + b;
       }
 
@@ -95,7 +95,7 @@ namespace codi {
        * Default: Call each link of the node and forward all arguments.
        */
       template<typename Node, typename... Args>
-      CODI_INLINE static constexpr ResultType node(Args&&... args) {
+      CODI_INLINE static ResultType constexpr node(Args&&... args) {
         // Default logic forwards to all links.
         return toLinks<Node>(std::forward<Args>(args)...);
       }
@@ -108,7 +108,7 @@ namespace codi {
        * Default: Returns NeutralElement.
        */
       template<typename Node, typename... Args>
-      CODI_INLINE static constexpr ResultType leaf(Args&&... CODI_UNUSED_ARG(args)) {
+      CODI_INLINE static ResultType constexpr leaf(Args&&... CODI_UNUSED_ARG(args)) {
         // Default logic does nothing.
         return Impl::NeutralElement;
       }
@@ -123,7 +123,7 @@ namespace codi {
        * Default: Call the child node and forward all arguments.
        */
       template<size_t ChildNumber, typename Child, typename Root, typename... Args>
-      CODI_INLINE static constexpr ResultType link(Args&&... args) {
+      CODI_INLINE static ResultType constexpr link(Args&&... args) {
         // Default logic forwards to node evaluation.
         return toNode<Child>(std::forward<Args>(args)...);
       }
@@ -137,7 +137,7 @@ namespace codi {
       struct CallSwitch {
         public:
           template<typename Node, typename... Args>
-          CODI_INLINE static constexpr ResultType call(Args&&... args) {
+          CODI_INLINE static ResultType constexpr call(Args&&... args) {
             return TraversalImpl::template node<Node>(std::forward<Args>(args)...);
           }
       };
@@ -146,7 +146,7 @@ namespace codi {
       struct CallSwitch<TraversalImpl, true> {
         public:
           template<typename Node, typename... Args>
-          CODI_INLINE static constexpr ResultType call(Args&&... args) {
+          CODI_INLINE static ResultType constexpr call(Args&&... args) {
             return TraversalImpl::template leaf<Node>(std::forward<Args>(args)...);
           }
       };
@@ -154,13 +154,13 @@ namespace codi {
 
       /// Helper method to distinguish between leaf nodes and normal nodes.
       template<typename Node, typename... Args>
-      CODI_INLINE static constexpr ResultType toNode(Args&&... args) {
+      CODI_INLINE static ResultType constexpr toNode(Args&&... args) {
         return CallSwitch<Impl, Node::EndPoint>::template call<Node>(std::forward<Args>(args)...);
       }
 
       /// Helper method which calls forEachLinkConstExpr on the node.
       template<typename Node, typename... Args>
-      CODI_INLINE static constexpr ResultType toLinks(Args&&... args) {
+      CODI_INLINE static ResultType constexpr toLinks(Args&&... args) {
         return Node::template forEachLinkConstExpr<Impl>(std::forward<Args>(args)...);
       }
   };
