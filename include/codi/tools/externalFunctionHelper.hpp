@@ -633,6 +633,11 @@ namespace codi {
       void addToTape(ReverseFunc revFunc, ForwardFunc forwFunc = nullptr, PrimalFunc primalFunc = nullptr) {
         if(isTapeActive) {
 
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
+          #pragma omp master
+          {
+          #endif
+
           data->revFunc = revFunc;
           data->forwFunc = forwFunc;
 
@@ -645,6 +650,10 @@ namespace codi {
           if(!storeInputPrimals) {
             data->inputValues.clear();
           }
+
+          #if defined(_OPENMP) && !CODI_DisableThreadSafety
+          }
+          #endif
 
           #if defined(_OPENMP) && !CODI_DisableThreadSafety
             // make sure that the delete handle is pushed onto only one tape in a parallel context
