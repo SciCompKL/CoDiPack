@@ -201,21 +201,6 @@ namespace codi {
         return true;
       }
 
-
-      /**
-       * @brief Set the gradient value of the corresponding index.
-       *
-       * If the index 0 is the inactive indicator and is ignored.
-       *
-       * @param[in]    index  The index of the active type.
-       * @param[in] gradient  The new value for the gradient.
-       */
-      void setGradient(Index& index, const GradientValue& gradient) {
-        if(0 != index) {
-          this->gradient(index) = gradient;
-        }
-      }
-
       /**
        * @brief Check whether the gradient data is zero.
        *

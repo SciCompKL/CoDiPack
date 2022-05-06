@@ -364,6 +364,23 @@ namespace codi {
         }
       }
 
+      CODI_INLINE void setGradient(const Index& index, const GradientValue& gradientValue) {
+        codiAssert(0 != index);
+        codiAssert(index <= cast().indexHandler.getMaximumGlobalIndex());
+
+        //TODO: Add error when index is bigger than expression count
+        if(getAdjointsSize() <= index) {
+          resizeAdjoints(cast().indexHandler.getMaximumGlobalIndex() + 1);
+        }
+
+        setAdjoint(index, gradientValue);
+      }
+
+      CODI_INLINE void setGradient(Index& index, const GradientValue& gradientValue) {
+        Index const& indexConst = index;
+        setGradient(indexConst, gradientValue);
+      }
+
       /**
        * @brief Get a reference to the gradient value of the corresponding index.
        *
