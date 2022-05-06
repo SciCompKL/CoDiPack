@@ -365,15 +365,20 @@ namespace codi {
       }
 
       CODI_INLINE void setGradient(const Index& index, const GradientValue& gradientValue) {
-        codiAssert(0 != index);
         codiAssert(index <= cast().indexHandler.getMaximumGlobalIndex());
 
-        //TODO: Add error when index is bigger than expression count
-        if(getAdjointsSize() <= index) {
-          resizeAdjoints(cast().indexHandler.getMaximumGlobalIndex() + 1);
+        if (index == 0) {
+          resizeAdjointsToIndexSize();
         }
+        else {
 
-        setAdjoint(index, gradientValue);
+          //TODO: Add error when index is bigger than expression count
+          if(getAdjointsSize() <= index) {
+            resizeAdjoints(cast().indexHandler.getMaximumGlobalIndex() + 1);
+          }
+
+          setAdjoint(index, gradientValue);
+        }
       }
 
       CODI_INLINE void setGradient(Index& index, const GradientValue& gradientValue) {
