@@ -149,12 +149,5 @@ namespace codi {
       return getValue();
     }
 #endif
-
-  private:
-    /**
-     * Intentionally inaccessible to prevent an expression appearing
-     * on the left-hand-side of a statement
-     */
-    Expression& operator=(const Expression&) = delete;
   };
 }
