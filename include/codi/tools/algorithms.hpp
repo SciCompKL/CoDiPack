@@ -162,7 +162,9 @@ namespace codi {
               for(size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
                 jac(outputSize - i - 1,j + curDim) = GT::at(tape.getGradient(output[outputSize - i - 1]), curDim);
                 if (output[i] != GradientData()) {
+                  tape.lockForUse();
                   GT::at(tape.gradient(output[outputSize - i - 1]), curDim) = typename GT::Data();
+                  tape.unlockAfterUse();
                 }
               }
             }
@@ -186,7 +188,9 @@ namespace codi {
             for(size_t j = 0; j < inputSize; j += 1) {
               for(size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
                 jac(i + curDim,j) = GT::at(tape.getGradient(input[j]), curDim);
+                tape.lockForUse();
                 GT::at(tape.gradient(input[j]), curDim) = typename GT::Data();
+                tape.unlockAfterUse();
               }
             }
 
@@ -579,7 +583,9 @@ namespace codi {
 
         for(size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           ENABLE_CHECK(ActiveChecks, tape.isActive(values[pos + curDim])) {
+            tape.lockForUse();
             GT::at(tape.gradient(values[pos + curDim]), curDim) = value;
+            tape.unlockAfterUse();
           }
         }
       }
@@ -622,7 +628,9 @@ namespace codi {
 
         for(size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           ENABLE_CHECK(ActiveChecks, tape.isActive(values[pos + curDim].getGradientData())) {
+            tape.lockForUse();
             GT::at(tape.gradient(values[pos + curDim].getGradientData()), curDim) = value;
+            tape.unlockAfterUse();
           }
         }
       }
