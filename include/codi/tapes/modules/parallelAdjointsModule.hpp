@@ -480,11 +480,11 @@ namespace codi {
        * @brief Sets all adjoint/gradients to zero.
        */
       CODI_INLINE void clearAdjoints(){
+
+        LockUse lock;
+
         if(adjointsValid()) {
-
           Index adjointsSize = getAdjointsSize();
-
-          LockUse lock;
           for(Index i = 0; i < adjointsSize; ++i) {
             clearAdjoint(i);
           }
