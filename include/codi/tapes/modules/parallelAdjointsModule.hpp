@@ -398,13 +398,11 @@ namespace codi {
         codiAssert(0 != index);
         codiAssert(index <= cast().indexHandler.getMaximumGlobalIndex());
 
-        //TODO: Add error when index is bigger than expression count
         if(getAdjointsSize() <= index) {
-          resizeAdjoints(cast().indexHandler.getMaximumGlobalIndex() + 1);
+          return adjointsWrapper.adjoints[0];
+        } else {
+          return adjointsWrapper.adjoints[index];
         }
-
-        LockUse lock;
-        return adjointsWrapper.adjoints[index];
       }
 
       /**
@@ -428,10 +426,8 @@ namespace codi {
        */
       CODI_INLINE const GradientValue& gradient(const Index& index) const {
         if(getAdjointsSize() <= index) {
-          LockUse lock;
           return adjointsWrapper.adjoints[0];
         } else {
-          LockUse lock;
           return adjointsWrapper.adjoints[index];
         }
       }
