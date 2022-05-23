@@ -274,7 +274,9 @@ namespace codi {
           }
         };
 
+        this->lockForUse();
         this->stmtVector.forEachReverse(start.inner.inner, end.inner.inner, clearFunc);
+        this->unlockAfterUse();
       }
     }
 
