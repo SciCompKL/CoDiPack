@@ -38,6 +38,22 @@
 
 #include <omp.h>
 
+#ifdef __SANITIZE_THREAD__
+  #define ANNOTATE_RWLOCK_CREATE(lock) \
+    AnnotateRWLockCreate(__FILE__, __LINE__, (void*)lock)
+  #define ANNOTATE_RWLOCK_DESTROY(lock) \
+    AnnotateRWLockDestroy(__FILE__, __LINE__, (void*)lock)
+  #define ANNOTATE_RWLOCK_ACQUIRED(lock, isWrite) \
+    AnnotateRWLockAcquired(__FILE__, __LINE__, (void*)lock, isWrite)
+  #define ANNOTATE_RWLOCK_RELEASED(lock, isWrite) \
+    AnnotateRWLockReleased(__FILE__, __LINE__, (void*)lock, isWrite)
+
+  extern "C" void AnnotateRWLockCreate(const char* f, int l, void* addr);
+  extern "C" void AnnotateRWLockDestroy(const char* f, int l, void* addr);
+  extern "C" void AnnotateRWLockAcquired(const char* f, int l, void* addr, size_t isWrite);
+  extern "C" void AnnotateRWLockReleased(const char* f, int l, void* addr, size_t isWrite);
+#endif
+
 /**
  * @brief Global namespace for CoDiPack - Code Differentiation Package
  */
@@ -76,6 +92,11 @@ namespace codi {
       }
 
     private:
+
+      #ifdef __SANITIZE_THREAD__
+        static int lockDummy;
+      #endif
+
       /**
        * @brief The adjoint vector.
        *
@@ -88,6 +109,9 @@ namespace codi {
         int lockForRealloc;
 
         AdjointsWrapper() : adjoints(NULL) {
+          #ifdef __SANITIZE_THREAD__
+            ANNOTATE_RWLOCK_CREATE(&lockDummy);
+          #endif
         }
 
         ~AdjointsWrapper() {
@@ -95,6 +119,10 @@ namespace codi {
             free(adjoints);
             adjoints = NULL;
           }
+
+          #ifdef __SANITIZE_THREAD__
+            ANNOTATE_RWLOCK_DESTROY(&lockDummy);
+          #endif
         }
       };
 
@@ -134,9 +162,17 @@ namespace codi {
           }
           break;
         }
+
+        #ifdef __SANITIZE_THREAD__
+          ANNOTATE_RWLOCK_ACQUIRED(&lockDummy, false);
+        #endif
       }
 
       static void unlockAfterUse() {
+        #ifdef __SANITIZE_THREAD__
+          ANNOTATE_RWLOCK_RELEASED(&lockDummy, false);
+        #endif
+
         #pragma omp atomic update
         --adjointsWrapper.lockForUse;
       }
@@ -162,9 +198,17 @@ namespace codi {
           #pragma omp atomic read
           users = adjointsWrapper.lockForUse;
         } while (users != 0);
+
+        #ifdef __SANITIZE_THREAD__
+          ANNOTATE_RWLOCK_ACQUIRED(&lockDummy, true);
+        #endif
       }
 
       static void unlockAfterRealloc() {
+        #ifdef __SANITIZE_THREAD__
+          ANNOTATE_RWLOCK_RELEASED(&lockDummy, true);
+        #endif
+
         #pragma omp atomic update
         --adjointsWrapper.lockForRealloc;
       }
@@ -454,6 +498,9 @@ namespace codi {
         cleanAdjoints();
       }
   };
+
+  template<typename TapeTypes, typename Tape>
+  int ParallelAdjointsModule<TapeTypes, Tape>::lockDummy;
 
   template<typename TapeTypes, typename Tape>
   typename ParallelAdjointsModule<TapeTypes, Tape>::AdjointsWrapper ParallelAdjointsModule<TapeTypes, Tape>::adjointsWrapper;
