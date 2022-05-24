@@ -499,8 +499,10 @@ namespace codi {
       }
   };
 
-  template<typename TapeTypes, typename Tape>
-  int ParallelAdjointsModule<TapeTypes, Tape>::lockDummy;
+  #if __SANITIZE_THREAD__
+    template<typename TapeTypes, typename Tape>
+    int ParallelAdjointsModule<TapeTypes, Tape>::lockDummy;
+  #endif
 
   template<typename TapeTypes, typename Tape>
   typename ParallelAdjointsModule<TapeTypes, Tape>::AdjointsWrapper ParallelAdjointsModule<TapeTypes, Tape>::adjointsWrapper;
