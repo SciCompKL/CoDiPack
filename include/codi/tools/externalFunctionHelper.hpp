@@ -448,6 +448,9 @@ namespace codi {
         isTapeActive(CoDiType::getGlobalTape().isActive()),
         data(nullptr) {
         data = new ExternalFunctionData<CoDiType>();
+        #if defined(_OPENMP) && !CODI_DisableThreadSafety
+          omp_init_lock(&dataLock);
+        #endif
       }
 
       /**
@@ -457,6 +460,9 @@ namespace codi {
         if(!isTapeActive) {
           delete data;
         }
+        #if defined(_OPENMP) && !CODI_DisableThreadSafety
+          omp_destroy_lock(&dataLock);
+        #endif
       }
 
       /**
@@ -495,6 +501,10 @@ namespace codi {
       }
 
     private:
+
+      #if defined(_OPENMP) && !CODI_DisableThreadSafety
+        omp_lock_t dataLock;
+      #endif
 
       /**
        * @brief Helper function for the correct adding of an output value.
@@ -634,8 +644,7 @@ namespace codi {
         if(isTapeActive) {
 
           #if defined(_OPENMP) && !CODI_DisableThreadSafety
-          #pragma omp master
-          {
+            omp_set_lock(&dataLock);
           #endif
 
           data->revFunc = revFunc;
@@ -652,7 +661,7 @@ namespace codi {
           }
 
           #if defined(_OPENMP) && !CODI_DisableThreadSafety
-          }
+            omp_unset_lock(&dataLock);
           #endif
 
           #if defined(_OPENMP) && !CODI_DisableThreadSafety
