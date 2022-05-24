@@ -146,6 +146,8 @@ namespace codi {
       {
         constexpr size_t gradDim = GT::getVectorSize();
 
+        tape.setGradient(0, 0.0); // resize adjoints
+
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if(EvaluationType::Forward == evalType) {
 
