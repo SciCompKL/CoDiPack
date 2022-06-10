@@ -105,8 +105,6 @@ namespace codi {
        */
       struct AdjointsWrapper {
         GradientValue* adjoints;
-        int lockForUse;
-        int lockForRealloc;
 
         AdjointsWrapper() : adjoints(NULL) {
           #ifdef __SANITIZE_THREAD__
@@ -127,6 +125,10 @@ namespace codi {
       };
 
       static AdjointsWrapper adjointsWrapper;
+      static int lockForUseCounter;
+      static int lockForReallocCounter;
+      static int nestedLockForUseCounter;
+      #pragma omp threadprivate(nestedLockForUseCounter)
 
       /** @brief The current size of the adjoint vector. */
       static Index adjointsSize;
@@ -140,26 +142,34 @@ namespace codi {
       static void lockForUse() {
         int numReallocators;
         while (true) {
+          // nested lock for use
+          if (nestedLockForUseCounter > 0) {
+            ++nestedLockForUseCounter;
+            break;
+          }
+
           // wait until there are no reallocators
           do {
             #pragma omp atomic read
-            numReallocators = adjointsWrapper.lockForRealloc;
+            numReallocators = lockForReallocCounter;
           } while (numReallocators > 0);
 
           // increment lock for use
           #pragma omp atomic update
-          ++adjointsWrapper.lockForUse;
+          ++lockForUseCounter;
 
           // check if there are still no reallocators
           #pragma omp atomic read
-          numReallocators = adjointsWrapper.lockForRealloc;
+          numReallocators = lockForReallocCounter;
 
           // if so, let reallocators go first and try again
           if (numReallocators > 0) {
             #pragma omp atomic update
-            --adjointsWrapper.lockForUse;
+            --lockForUseCounter;
             continue;
           }
+
+          ++nestedLockForUseCounter;
           break;
         }
 
@@ -173,8 +183,12 @@ namespace codi {
           ANNOTATE_RWLOCK_RELEASED(&lockDummy, false);
         #endif
 
-        #pragma omp atomic update
-        --adjointsWrapper.lockForUse;
+        --nestedLockForUseCounter;
+        if (nestedLockForUseCounter == 0)
+        {
+          #pragma omp atomic update
+          --lockForUseCounter;
+        }
       }
 
       static void lockForRealloc() {
@@ -182,11 +196,11 @@ namespace codi {
         int numReallocators;
         while (true) {
           #pragma omp atomic capture
-          numReallocators = ++adjointsWrapper.lockForRealloc;
+          numReallocators = ++lockForReallocCounter;
 
           if (numReallocators != 1) {
             #pragma omp atomic update
-            --adjointsWrapper.lockForRealloc;
+            --lockForReallocCounter;
             continue;
           }
           break;
@@ -196,7 +210,7 @@ namespace codi {
         int users;
         do {
           #pragma omp atomic read
-          users = adjointsWrapper.lockForUse;
+          users = lockForUseCounter;
         } while (users != 0);
 
         #ifdef __SANITIZE_THREAD__
@@ -210,7 +224,7 @@ namespace codi {
         #endif
 
         #pragma omp atomic update
-        --adjointsWrapper.lockForRealloc;
+        --lockForReallocCounter;
       }
 
       struct LockUse {
@@ -506,6 +520,15 @@ namespace codi {
 
   template<typename TapeTypes, typename Tape>
   typename ParallelAdjointsModule<TapeTypes, Tape>::AdjointsWrapper ParallelAdjointsModule<TapeTypes, Tape>::adjointsWrapper;
+
+  template<typename TapeTypes, typename Tape>
+  int ParallelAdjointsModule<TapeTypes, Tape>::lockForReallocCounter = 0;
+
+  template<typename TapeTypes, typename Tape>
+  int ParallelAdjointsModule<TapeTypes, Tape>::lockForUseCounter = 0;
+
+  template<typename TapeTypes, typename Tape>
+  int ParallelAdjointsModule<TapeTypes, Tape>::nestedLockForUseCounter = 0;
 
   template<typename TapeTypes, typename Tape>
   typename ParallelAdjointsModule<TapeTypes, Tape>::Index ParallelAdjointsModule<TapeTypes, Tape>::adjointsSize = 0;
