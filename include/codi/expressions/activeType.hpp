@@ -95,15 +95,28 @@ namespace codi {
       }
 
       /// Constructor
-      CODI_INLINE ActiveType(PassiveReal const& value) : primalValue(value), identifier() {
+      CODI_INLINE ActiveType(Real const& value) : primalValue(value), identifier() {
         Base::init();
       }
 
       /// Constructor
-      template<class Rhs>
+      template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
+      CODI_INLINE ActiveType(PassiveReal const& value) :
+        primalValue(value), identifier() {
+        Base::init();
+      }
+
+      /// Constructor
+      template<typename Rhs>
       CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
         Base::init();
         this->getTape().store(*this, rhs.cast());
+      }
+
+      /// Constructor
+      template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
+      CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : primalValue(rhs.cast()), identifier() {
+        Base::init();
       }
 
       /// Destructor

@@ -129,7 +129,14 @@ namespace codi {
       }
 
       /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
-      CODI_INLINE Impl& operator=(PassiveReal const& rhs) {
+      CODI_INLINE Impl& operator=(Real const& rhs) {
+        Impl::getTape().store(cast(), rhs);
+        return cast();
+      }
+
+      /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
+      template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
+      CODI_INLINE Impl & operator=(PassiveReal const& rhs) {
         Impl::getTape().store(cast(), rhs);
         return cast();
       }
@@ -138,6 +145,13 @@ namespace codi {
       template<typename Rhs>
       CODI_INLINE Impl& operator=(ExpressionInterface<Real, Rhs> const& rhs) {
         Impl::getTape().store(cast(), rhs.cast());
+        return cast();
+      }
+
+      /// Assignment operator for expressions. Calls store on the InternalStatementRecordingTapeInterface.
+      template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
+      CODI_INLINE Impl& operator=(ExpressionInterface<typename U::Real, Rhs> const& rhs) {
+        Impl::getTape().store(cast(), Real(rhs));
         return cast();
       }
 

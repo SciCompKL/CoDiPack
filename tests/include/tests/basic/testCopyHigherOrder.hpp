@@ -32,25 +32,29 @@
  *    - Former members:
  *      - Tim Albring
  */
+
 #pragma once
 
-#include <type_traits>
+#include <codi.hpp>
 
-#include "../../misc/macros.hpp"
-#include "../../config.h"
+#include "../../testInterface.hpp"
 
-/** \copydoc codi::Namespace */
-namespace codi {
+struct TestCopyHigherOrder : public TestInterface {
+  public:
+    NAME("CopyHigherOrder")
+    IN(1)
+    OUT(4)
+    POINTS(1) = {{1.0}};
 
-  /// Enable if abbreviation for std::is_base_of
-  template<typename Base, typename Impl, typename R = void>
-  using enable_if_base_of = std::enable_if<std::is_base_of<Base, Impl>::value, R>;
+    template<typename Number>
+    static void func(Number* x, Number* y) {
 
-  /// Enable if abbreviation for \c "std::is_same"
-  template<typename T1, typename T2, typename R = void>
-  using enable_if_same = std::enable_if<std::is_same<T1, T2>::value, R>;
+      Number temp1 = codi::RealTraits::getValue(x[0]);
+      Number temp2 = codi::RealTraits::getPassiveValue(x[0]);
 
-  /// Enable if abbreviation for \c "!std::is_same"
-  template<typename T1, typename T2, typename R = void>
-  using enable_if_not_same = std::enable_if<!std::is_same<T1, T2>::value, R>;
-}
+      y[0] = codi::RealTraits::getValue(x[0]);
+      y[1] = codi::RealTraits::getPassiveValue(x[0]);
+      y[2] = temp1;
+      y[3] = temp2;
+    }
+};

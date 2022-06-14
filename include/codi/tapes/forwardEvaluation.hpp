@@ -140,7 +140,7 @@ namespace codi {
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Specialization for passive assignments.
       template<typename Lhs>
-      void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs, PassiveReal const& rhs) {
+      void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs, Real const& rhs) {
         lhs.cast().value() = rhs;
         lhs.cast().gradient() = Gradient();
       }
