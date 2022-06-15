@@ -781,7 +781,7 @@ namespace codi {
       /// \copydoc codi::ExternalFunctionTapeInterface::registerExternalFunctionOutput()
       template<typename Lhs>
       Real registerExternalFunctionOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        return internalRegisterInput(value, true);
+        return internalRegisterInput(value, false);
       }
 
       /// @}
