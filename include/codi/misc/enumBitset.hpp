@@ -151,9 +151,33 @@ namespace codi {
         return bitset;
       }
 
+      CODI_INLINE bool operator !=(EnumBitset const& o) const {
+        return bitset != o.bitset;
+      }
+
+      CODI_INLINE bool operator !=(Enum const& pos) const {
+        return bitset != EnumBitset(pos);
+      }
+
+      CODI_INLINE bool operator ==(EnumBitset const& o) const {
+        return bitset == o.bitset;
+      }
+
+      CODI_INLINE bool operator ==(Enum const& pos) const {
+        return bitset == EnumBitset(pos);
+      }
+
+      CODI_INLINE operator bool() {
+        return this->bitset.any();
+      }
+
       /// Constructor for a bitset with all values flagged as true.
       CODI_INLINE static constexpr EnumBitset ALL() {
         return EnumBitset(ALL_VALUE);
+      }
+
+      CODI_INLINE static constexpr EnumBitset NONE() {
+        return EnumBitset();
       }
   };
 
@@ -203,6 +227,16 @@ namespace codi {
   template<typename Enum>
   CODI_INLINE EnumBitset<Enum> operator&(Enum a, EnumBitset<Enum> const& b) {
     return b & a;
+  }
+
+  template<typename Enum>
+  CODI_INLINE bool operator !=(Enum a, EnumBitset<Enum> const& b) {
+    return b != a;
+  }
+
+  template<typename Enum>
+  CODI_INLINE bool operator ==(Enum a, EnumBitset<Enum> const& b) {
+    return b == a;
   }
 
   /// Stream output.

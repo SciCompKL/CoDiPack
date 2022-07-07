@@ -33,30 +33,42 @@
  *      - Tim Albring
  */
 
-#pragma once
+/*
+ * In order to include this file the user has to define the preprocessor macro ENUM. *
+ *
+ * The define ENUM will be undefined at the end of this template.
+ */
 
-#include <vector>
+#ifndef ENUM
+  #error Please define the name of the ENUM.
+#endif
 
-#include "../../../config.h"
-#include "../../../misc/enumBitset.hpp"
-#include "../../../misc/macros.hpp"
+// Create a correct include environment for viewing and programming in an IDE.
+#ifndef ENUM
+  #define PROXY
 
-/** \copydoc codi::Namespace */
+  #include "../misc/macros.hpp"
+  #include "../config.h"
+  #include "enumBitset.hpp"
+  #define ENUM Enum
+
 namespace codi {
+#endif
 
-  /// Flags for the linear system solver. See LinearSystemInterface for a description of the flags.
-  enum class LinearSystemSolverFlags {
-    ReverseEvaluation = 0,
-    ForwardEvaluation,
-    PrimalEvaluation,
-    ProvidePrimalSolution,
-    RecomputePrimalInForwardEvaluation,
-    MaxElement
-  };
+  /// Return a EnumBitset structure when to enums are ored.
+  CODI_INLINE EnumBitset<ENUM> operator|(ENUM a, ENUM b) {
+    return EnumBitset<ENUM>(a) | b;
+  }
 
-  /// All hints for the LinearSystemSolverHelper.
-  using LinearSystemSolverHints = EnumBitset<LinearSystemSolverFlags>;
+  /// Return a boolean structure when to enums are anded.
+  CODI_INLINE bool operator&(ENUM a, ENUM b) {
+    return a == b;
+  }
 
-#define ENUM LinearSystemSolverFlags
-#include "../../../misc/enumOperations.tpp"
+// Create a correct include environment for viewing and programming in an IDE.
+#ifdef PROXY
+  #undef PROXY
 }
+#endif
+
+#undef ENUM
