@@ -118,9 +118,9 @@ namespace codi {
 
           app.print(formatHeader());
 
-          io->writeY(0, yRealF, OutputFlags::F);  // TODO: Multi flag
-          io->writeX(0, xRealF, OutputFlags::F);
-          io->writeP(0, pRealF, OutputFlags::F);
+          io->writeY(0, yRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+          io->writeX(0, xRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+          io->writeP(0, pRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
 
           int curAdjIteration = 0;
           while (!(isFinished || isStop || isConverged)) {
@@ -142,7 +142,8 @@ namespace codi {
             // Prepare next iteration
             std::swap(data.realCurY, data.realNextY);
             curAdjIteration += 1;
-            io->writeY(curAdjIteration, data.realCurY, OutputFlags::Intermediate);
+            io->writeY(curAdjIteration, data.realCurY,
+                       OutputFlags::Derivative | OutputFlags::G | OutputFlags::Intermediate);
 
             isFinished = curAdjIteration >= settings.maxIterations;
             if (1 == curAdjIteration) {
@@ -161,9 +162,9 @@ namespace codi {
           Base::copyFromTo(xRealF, data.realX);
           Base::evaluateTape(data, EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX);
 
-          io->writeY(curAdjIteration, data.realCurY, OutputFlags::Final);
-          io->writeP(curAdjIteration, data.realP, OutputFlags::Final);
-          io->writeX(curAdjIteration, data.realX, OutputFlags::Final);
+          io->writeY(curAdjIteration, data.realCurY, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
+          io->writeP(curAdjIteration, data.realP, OutputFlags::Derivative | OutputFlags::P | OutputFlags::Final);
+          io->writeX(curAdjIteration, data.realX, OutputFlags::Derivative | OutputFlags::P | OutputFlags::Final);
 
           cpm->remove(cp);
         }

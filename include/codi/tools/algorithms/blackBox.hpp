@@ -140,7 +140,7 @@ namespace codi {
 
           Base::getGradientAndReset(tape, idX, gradX);
 
-          io->writeX(0, gradX, OutputFlags::Final);
+          io->writeX(0, gradX, OutputFlags::Final | OutputFlags::Derivative | OutputFlags::F);
         }
 
         std::string formatHeader() {

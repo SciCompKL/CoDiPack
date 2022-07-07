@@ -46,12 +46,22 @@
 namespace codi {
   namespace algorithms {
 
+    /// Flags should be one out of each category, that is
+    /// {status} + {function} + {kind}
     enum class OutputFlags {
+      // Category: status
       Intermediate,
       Final,
+      // Category: function
       F,
+      G,
+      P,
+      // Category: kind
+      Primal,
+      Derivative,
       MaxElement
     };
+    using OutputHints = EnumBitset<OutputFlags>;
 
 #define ENUM OutputFlags
 #include "../../../misc/enumOperations.tpp"
@@ -75,10 +85,10 @@ namespace codi {
 
         virtual void readRestartData(std::string const& filename, char*& data, size_t& length) = 0;
 
-        virtual void writeY(int iteration, std::vector<Real> const& v, OutputFlags flags) = 0;
-        virtual void writeX(int iteration, std::vector<Real> const& v, OutputFlags flags) = 0;
-        virtual void writeP(int iteration, std::vector<Real> const& v, OutputFlags flags) = 0;
-        virtual void writeZ(int iteration, std::vector<Real> const& v, OutputFlags flags) = 0;
+        virtual void writeY(int iteration, std::vector<Real> const& v, OutputHints flags) = 0;
+        virtual void writeX(int iteration, std::vector<Real> const& v, OutputHints flags) = 0;
+        virtual void writeP(int iteration, std::vector<Real> const& v, OutputHints flags) = 0;
+        virtual void writeZ(int iteration, std::vector<Real> const& v, OutputHints flags) = 0;
     };
   }
 }

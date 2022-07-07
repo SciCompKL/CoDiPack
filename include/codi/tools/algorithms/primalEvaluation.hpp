@@ -119,7 +119,9 @@ namespace codi {
             isStop = app.isStop();
 
             io->writeY(app.getIteration(), yCur,
-                       (isFinished | isConverged | isStop) ? OutputFlags::Final : OutputFlags::Intermediate);
+                       OutputFlags::Primal | OutputFlags::G | ((isFinished | isConverged | isStop)
+                           ? OutputFlags::Final
+                           : OutputFlags::Intermediate));
           }
 
           app.evaluateF();
@@ -127,7 +129,7 @@ namespace codi {
           RealVector z(app.getSizeZ());
           app.iterateZ(typename Base::GetPrimal(z));
 
-          io->writeZ(app.getIteration(), z, OutputFlags::Final);
+          io->writeZ(app.getIteration(), z, OutputFlags::Primal | OutputFlags::F | OutputFlags::Final);
         }
 
         std::string formatHeader() {
