@@ -42,6 +42,7 @@
 
 #include "../include/drivers/driverInterface.hpp"
 #include "../include/testInterface.hpp"
+#include "../include/utils/fileSystem.hpp"
 
 #ifndef DRIVER
   #error A driver include needs to be specified
@@ -78,23 +79,11 @@ struct Runner {
 
   private:
 
-    int makePath(char const* dir, mode_t mode) {
-      struct stat sb;
-
-      if (!stat(dir, &sb)) {
-        return 0;
-      }
-
-      makePath(dirname(strdupa(dir)), mode);
-
-      return mkdir(dir, mode);
-    }
-
     std::string generateOutputFile(TestInterface* test) {
       std::string file = "build/results";
       file += "/" + driver.getName();
 
-      makePath(file.c_str(), 0755);
+      FileSystem::makePath(file.c_str());
 
       file += "/" + test->getName() + ".out";
 

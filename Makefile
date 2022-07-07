@@ -98,11 +98,11 @@ else
   CXX := $(CXX)
 endif
 
-TUTORIALS = $(patsubst %.cpp,$(BUILD_DIR)/%.exe,$(TUTORIAL_FILES))
-EXAMPLES = $(patsubst %.cpp,$(BUILD_DIR)/%.exe,$(EXAMPLE_FILES))
+# disable the deletion of secondary targets
+.SECONDARY:
 
 # set default rule
-all: tutorials examples
+all: tutorials examples algorithmTests
 
 $(BUILD_DIR)/%.exe : %.cpp $(BUILD_DIR)/compiler_flags
 	@mkdir -p $(@D)
@@ -117,6 +117,23 @@ doc:
 	@mkdir -p $(BUILD_DIR)
 	@mkdir -p $(BUILD_DIR)/documentation
 	CODI_VERSION=$(CODI_VERSION) doxygen
+
+# Tests and runners for algorithm tests
+TUTORIALS = $(patsubst %.cpp,$(BUILD_DIR)/%.exe,$(TUTORIAL_FILES))
+EXAMPLES = $(patsubst %.cpp,$(BUILD_DIR)/%.exe,$(EXAMPLE_FILES))
+
+ALGORITHM_TEST_DIR = tests/include/algorithms
+ALGORITHM_TEST_FILES  = $(wildcard $(ALGORITHM_TEST_DIR)/*.cpp)
+ALGORITHM_TESTS = $(patsubst %.cpp,$(BUILD_DIR)/%.run,$(ALGORITHM_TEST_FILES))
+
+%.run : TEST_NAME = $(basename $(<F))
+%.run : %.exe $(BUILD_DIR)/compiler_flags
+	@echo "Running $(TEST_NAME)"
+	cd $(<D); ./$(<F)
+	@echo "Comparing"
+	@diff -ruw tests/resultsAlgorithms/$(TEST_NAME) $(@D)/$(TEST_NAME)
+
+algorithmTests: $(ALGORITHM_TESTS)
 
 .PHONY: format
 format:
