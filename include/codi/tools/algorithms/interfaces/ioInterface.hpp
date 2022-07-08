@@ -47,7 +47,7 @@ namespace codi {
   namespace algorithms {
 
     /// Flags should be one out of each category, that is
-    /// {status} + {function} + {kind}
+    /// {status} + {function} + {kind} + (optional: {version})
     enum class OutputFlags {
       // Category: status
       Intermediate,
@@ -59,6 +59,9 @@ namespace codi {
       // Category: kind
       Primal,
       Derivative,
+      // Category: version (optional)
+      V1,
+      V2,
       MaxElement
     };
     using OutputHints = EnumBitset<OutputFlags>;

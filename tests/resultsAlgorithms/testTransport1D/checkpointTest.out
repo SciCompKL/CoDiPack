@@ -1,0 +1,17 @@
+Iterating to checkpoint iteration 10.
+Creating checkpoint.
+Getting solution at iteration 10.
+Iterating to comparison iteration 20.
+Getting solution at iteration 20.
+Iterating to comparison iteration 30.
+Getting solution at iteration 30.
+Restoring checkpoint at 10.
+Iteration is correctly reset 1. (10 == 10).
+Getting solution at iteration 10.
+Comparing current solution with stored one ..OK
+Iterating to comparison iteration 20.
+Getting solution at iteration 20.
+Comparing current solution with stored one ..OK
+Iterating to comparison iteration 30.
+Getting solution at iteration 30.
+Comparing current solution with stored one ..OK

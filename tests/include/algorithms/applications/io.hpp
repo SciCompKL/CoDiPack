@@ -151,6 +151,11 @@ struct TestIO : public codi::algorithms::IOInterface<T_Type> {
       } else if(codi::algorithms::OutputFlags::Derivative & flags) {
         prefix = "deriv_";
       }
+      if(codi::algorithms::OutputFlags::V1 & flags) {
+        prefix += "v1_";
+      } else if(codi::algorithms::OutputFlags::V2 & flags) {
+        prefix += "v2_";
+      }
 
       std::ofstream out(codi::StringUtil::format("%s/%s%s", generalSettings.outputDir.c_str(), prefix.c_str(), fileName.c_str()));
       for(size_t i = 0; i < v.size(); i += 1) {

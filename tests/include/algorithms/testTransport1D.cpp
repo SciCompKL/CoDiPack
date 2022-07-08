@@ -68,5 +68,13 @@ int main(int nargs, char** args) {
   bb.settings.absThreshold = 0.000000001;
   bb.run(app);
 
+  app.setOutputFile("testTransport1D/checkpointTest.out");
+  app.setIteration(0);
+  app.initialize();
+  app.generalSettings.outputDir = "testTransport1D/checkpointTest";
+  app.generalSettings.onlyWriteFinal = false;
+  codi::algorithms::CheckpointTest<Problem> ct{codi::algorithms::CheckpointTestSettings()};
+  ct.run(app);
+
   return 0;
 }
