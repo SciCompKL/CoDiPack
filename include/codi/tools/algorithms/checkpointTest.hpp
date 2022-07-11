@@ -122,7 +122,7 @@ namespace codi {
            bool correctIteration = settings.checkpointIter == app.getIteration();
            app.print(StringUtil::format("Iteration is correctly reset %d. (%d == %d).\n", (int)correctIteration, settings.checkpointIter, app.getIteration()));
 
-           RealVector curPrimal(app.getSizeY());
+           RealVector curPrimal;
            for(size_t i = 0; i < settings.compareIter.size(); i += 1) {
              int compareIter = settings.compareIter[i];
 
@@ -132,6 +132,7 @@ namespace codi {
              }
 
              app.print(StringUtil::format("Getting solution at iteration %d.\n", compareIter));
+             curPrimal.resize(app.getSizeY());
              app.iterateY(typename Base::GetPrimal(curPrimal));
 
              app.print(StringUtil::format("Comparing current solution with stored one ..", compareIter));
@@ -154,17 +155,21 @@ namespace codi {
         inline void compareVectors(RealVector const& v1, RealVector const& v2, double& largestError, int& errorCount) {
           largestError = -1e300;
           errorCount = 0;
-          for(size_t pos = 0; pos < v2.size(); pos += 1) {
-            double base = RealTraits::getPassiveValue(v1[pos]);
-            double diff = abs(RealTraits::getPassiveValue(v2[pos]) - base);
+          if(v1.size() == v2.size()) {
+            for(size_t pos = 0; pos < v2.size(); pos += 1) {
+              double base = RealTraits::getPassiveValue(v1[pos]);
+              double diff = abs(RealTraits::getPassiveValue(v2[pos]) - base);
 
-            double rel = diff / abs(base);
-            if(rel > settings.maxRelativeError) {
-              errorCount += 1;
-              largestError = max(largestError, rel);
+              double rel = diff / abs(base);
+              if(rel > settings.maxRelativeError) {
+                errorCount += 1;
+                largestError = max(largestError, rel);
+              }
             }
+          } else {
+            errorCount = max(v1.size(), v2.size());
+            largestError = 1.0;
           }
-
         }
 
         inline void validateSettings(App& app) {
