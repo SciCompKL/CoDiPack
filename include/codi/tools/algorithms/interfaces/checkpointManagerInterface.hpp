@@ -63,7 +63,7 @@ namespace codi {
 
         CheckpointBase(int iteration) : iteration(iteration), appData(NULL) {}
 
-        int getIeration() const {
+        int getIteration() const {
           return iteration;
         }
 

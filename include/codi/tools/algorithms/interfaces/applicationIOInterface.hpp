@@ -70,11 +70,11 @@ namespace codi {
 #include "../../../misc/enumOperations.tpp"
 
     template<typename T_Type>
-    struct IOInterface {
+    struct ApplicationIOInterface {
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
         using Real = typename Type::Real;
 
-        virtual ~IOInterface() {}
+        virtual ~ApplicationIOInterface() {}
 
         virtual void writeRestartY(std::string const& fileName, std::vector<Real> const& v) = 0;
         virtual void writeRestartX(std::string const& fileName, std::vector<Real> const& v) = 0;

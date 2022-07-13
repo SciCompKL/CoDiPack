@@ -81,7 +81,7 @@ namespace codi {
         PrimalEvaluation(PrimalEvaluationSettings settings) : settings(settings) {}
 
         void run(App& app) {
-          IOInterface<Type>* io = app.getIOInterface();
+          ApplicationIOInterface<Type>* io = app.getIOInterface();
 
           bool isConverged = false;
           bool isStop = false;
@@ -119,9 +119,8 @@ namespace codi {
             isStop = app.isStop();
 
             io->writeY(app.getIteration(), yCur,
-                       OutputFlags::Primal | OutputFlags::G | ((isFinished | isConverged | isStop)
-                           ? OutputFlags::Final
-                           : OutputFlags::Intermediate));
+                       OutputFlags::Primal | OutputFlags::G |
+                           ((isFinished | isConverged | isStop) ? OutputFlags::Final : OutputFlags::Intermediate));
           }
 
           app.evaluateF();

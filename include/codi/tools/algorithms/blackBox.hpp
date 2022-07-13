@@ -83,7 +83,7 @@ namespace codi {
         BlackBox(BlackBoxSettings settings) : settings(settings) {}
 
         void run(App& app) {
-          IOInterface<Type>* io = app.getIOInterface();
+          ApplicationIOInterface<Type>* io = app.getIOInterface();
 
           bool isConverged = false;
           bool isStop = false;

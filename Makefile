@@ -53,6 +53,7 @@ EXAMPLE_FILES  = $(wildcard $(EXAMPLE_DIR)/*.cpp) $(wildcard $(DEVELOPER_DIR)/*.
 DEP_FILES   = $(wildcard $(BUILD_DIR)/*.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/*.d)
 DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/*.d)
+DEP_FILES  += $(wildcard $(BUILD_DIR)/**/**/**/*.d)
 
 MAJOR_VERSION = $(shell grep -oP 'define CODI_MAJOR_VERSION \K\d+' include/codi.hpp)
 MINOR_VERSION = $(shell grep -oP 'define CODI_MINOR_VERSION \K\d+' include/codi.hpp)

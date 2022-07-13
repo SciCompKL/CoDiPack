@@ -41,8 +41,8 @@
 #include "../../../expressions/lhsExpressionInterface.hpp"
 #include "../../../misc/enumBitset.hpp"
 #include "../../../misc/macros.hpp"
+#include "applicationIOInterface.hpp"
 #include "checkpointManagerInterface.hpp"
-#include "ioInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -104,7 +104,7 @@ namespace codi {
         Residuum<Real> residuumP(std::vector<Real> const& v1, std::vector<Real> const& v2);
 
         CheckpointManagerInterface* getCheckpointInterface();
-        IOInterface<Type>* getIOInterface();
+        ApplicationIOInterface<Type>* getIOInterface();
 
         void initialize();
         ApplicationHints getHints();

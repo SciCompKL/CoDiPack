@@ -35,11 +35,10 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-
 #include <codi.hpp>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
 
 #include "applicationBase.hpp"
 
@@ -84,29 +83,23 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
 
     double res;
 
-    Transport1D(std::string outputFile, Settings settings) :
-      Base(outputFile, this),
-      settings(settings)
-    {}
+    Transport1D(Settings settings) : Base(this), settings(settings) {}
 
-    Transport1D(std::string outputFile) :
-      Base(outputFile, this),
-      settings()
-    {}
+    Transport1D() : Base(this), settings() {}
 
   private:
 
     void solve(std::vector<Type>& phi) {
-      for(int k=0;k<settings.maxIterSolve;k++) {
-        for(int i=1;i<settings.N-1;i++) {
-          phi[i]=(b[i]-A_m[i]*phi[i-1]-A_p[i]*phi[i+1])/A_d[i];
+      for (int k = 0; k < settings.maxIterSolve; k++) {
+        for (int i = 1; i < settings.N - 1; i++) {
+          phi[i] = (b[i] - A_m[i] * phi[i - 1] - A_p[i] * phi[i + 1]) / A_d[i];
         }
       }
     }
 
     Type computeExplicitTerm(int i) {
-      Type temp = -settings.control[i] * (phi[i+1]-phi[i-1])/(2.0*dx)
-                  +coeff * ((phi[i+1]-2.0*phi[i]+phi[i-1])/(dx*dx));
+      Type temp = -settings.control[i] * (phi[i + 1] - phi[i - 1]) / (2.0 * dx) +
+                  coeff * ((phi[i + 1] - 2.0 * phi[i] + phi[i - 1]) / (dx * dx));
       return temp * 0.5 + phi[i] / dt;
     }
 
@@ -126,38 +119,38 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
 
       evaluateP();
 
-      for(int i=0;i<settings.N;i++) {
-        phi[i]=0.0;
+      for (int i = 0; i < settings.N; i++) {
+        phi[i] = 0.0;
       }
-      phi[0]=0.0;
-      phi[settings.N-1]=1.0;
+      phi[0] = 0.0;
+      phi[settings.N - 1] = 1.0;
 
-      for(int i=0;i<settings.N;i++) {
-        settings.control[i]=1.0;
+      for (int i = 0; i < settings.N; i++) {
+        settings.control[i] = 1.0;
       }
     }
 
     void evaluateG() {
-      for(int i=0;i<settings.N;i++) {
-        phi_old[i]= codi::RealTraits::getPassiveValue(phi[i]);
+      for (int i = 0; i < settings.N; i++) {
+        phi_old[i] = codi::RealTraits::getPassiveValue(phi[i]);
       }
 
-      for(int i=1;i<settings.N-1;i++) {
-        b[i]=computeExplicitTerm(i);
+      for (int i = 1; i < settings.N - 1; i++) {
+        b[i] = computeExplicitTerm(i);
       }
       b[0] = 0.0;
-      b[settings.N-1] = 1.0;
+      b[settings.N - 1] = 1.0;
 
       solve(phi);
-      phi[0]=0.0;
-      phi[settings.N-1]=1.0;
+      phi[0] = 0.0;
+      phi[settings.N - 1] = 1.0;
 
-      res=0.0;
-      for(int i=0;i<settings.N;i++) {
+      res = 0.0;
+      for (int i = 0; i < settings.N; i++) {
         double diff = codi::RealTraits::getPassiveValue(phi[i]) - phi_old[i];
-        res+= diff * diff;
+        res += diff * diff;
       }
-      res=sqrt(res);
+      res = sqrt(res);
 
       Base::setIteration(Base::getIteration() + 1);
     }
@@ -165,43 +158,42 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
     void evaluateF() {
       z = 0.0;
       z += 0.5 * sin(0) * phi[0];
-      for(int i = 1; i < settings.N - 1; i += 1) {
+      for (int i = 1; i < settings.N - 1; i += 1) {
         z += sin(i * dx) * phi[i];
       }
-      z += 0.5 * sin((settings.N - 1) * dx) * phi[settings.N-1];
+      z += 0.5 * sin((settings.N - 1) * dx) * phi[settings.N - 1];
 
       z *= dx;
     }
 
     void evaluateP() {
-
-      for(int i = 1; i < settings.N - 1; i += 1) {
-        A_d[i] =  1.0/dt+coeff/(dx*dx);
-        A_m[i] = -settings.control[i]/(4.0*dx) - (0.5* coeff)/(dx*dx);
-        A_p[i] =  settings.control[i]/(4.0*dx) - (0.5* coeff)/(dx*dx);
+      for (int i = 1; i < settings.N - 1; i += 1) {
+        A_d[i] = 1.0 / dt + coeff / (dx * dx);
+        A_m[i] = -settings.control[i] / (4.0 * dx) - (0.5 * coeff) / (dx * dx);
+        A_p[i] = settings.control[i] / (4.0 * dx) - (0.5 * coeff) / (dx * dx);
       }
       // Initialize boundary conditions
       A_d[0] = 1.0;
-      A_d[settings.N-1] = 1.0;
+      A_d[settings.N - 1] = 1.0;
     }
 
     template<typename Func>
     void iterateY(Func&& func) {
-      for(int i = 0; i < settings.N; i += 1) {
+      for (int i = 0; i < settings.N; i += 1) {
         func(phi[i], i);
       }
     }
 
     template<typename Func>
     void iterateX(Func&& func) {
-      for(int i = 0; i < settings.N; i += 1) {
+      for (int i = 0; i < settings.N; i += 1) {
         func(settings.control[i], i);
       }
     }
 
     template<typename Func>
     void iterateP(Func&& func) {
-      for(int i = 0; i < settings.N; i += 1) {
+      for (int i = 0; i < settings.N; i += 1) {
         size_t pos = 3 * i;
         func(A_d[i], pos);
         func(A_p[i], pos + 1);
@@ -231,18 +223,18 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
     }
 
     void runPrimal() {
-
       initialize();
 
       Base::print(codi::StringUtil::format("Iter Res\n"));
 
-      for(int T=0;T<settings.maxT;T++){
-
+      for (int T = 0; T < settings.maxT; T++) {
         evaluateG();
 
         Base::print(codi::StringUtil::format("%d %0.6e\n", Base::getIteration(), res));
 
-        if(res < 0.00000001) break;
+        if (res < 0.00000001) {
+          break;
+        }
       }
 
       evaluateF();

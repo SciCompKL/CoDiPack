@@ -35,100 +35,48 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-
 #include <codi.hpp>
-
-#include "applicationBaseSettings.hpp"
-#include "checkpointManager.hpp"
-#include "io.hpp"
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
 
 template<typename T_Type, typename T_Impl>
-struct TestApplicationBase : public codi::algorithms::ApplicationInterface<T_Type> {
+struct TestApplicationBase : public codi::algorithms::DefaultApplication<T_Type, T_Impl> {
   public:
     using Type = CODI_DD(T_Type, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
     using Impl = CODI_DD(T_Impl, CODI_T(codi::algorithms::ApplicationInterface<CODI_ANY>));
 
+    using Base = codi::algorithms::DefaultApplication<Type, Impl>;
+
     using Real = typename Type::Real;
 
   private:
-    int curIteration;
-
     std::ofstream out;
-
-    TestCheckpointManager<Type, Impl> testCPM;
-    TestIO<Type, Impl> testIO;
 
   public:
 
-    TestApplicationBaseSettings generalSettings;
+    bool writeToStdout;
 
-    TestApplicationBase(std::string file, Impl* impl) :
-      curIteration(0),
-      out(file),
-      testCPM(impl),
-      testIO(impl),
-      generalSettings()
-    {}
-
-    codi::algorithms::Residuum<Real> residuumY(std::vector<Real> const& v1, std::vector<Real> const& v2) {
-      codi::algorithms::Residuum<Real> res{};
-      res.lMax = -1e300;
-
-      for(size_t i = 0; i < v1.size(); i += 1) {
-        Real diff = abs(v1[i] - v2[i]);
-        res.l1 += diff;
-        res.l2 += diff * diff;
-        if(res.lMax < diff) {
-          res.lMax = diff;
-          res.lMaxPos = i;
-        }
-      }
-
-      res.l2 = sqrt(res.l2);
-
-      return res;
+    TestApplicationBase(Impl* impl) : Base(impl), out(), writeToStdout(false) {
+      setOutputFolder(".");
     }
 
-    codi::algorithms::Residuum<Real> residuumX(std::vector<Real> const& v1, std::vector<Real> const& v2) {
-      return residuumY(v1, v2);
-    }
-
-    codi::algorithms::Residuum<Real> residuumP(std::vector<Real> const& v1, std::vector<Real> const& v2) {
-      return residuumY(v1, v2);
-    }
-
-    TestCheckpointManager<Type, Impl>* getCheckpointInterface() {
-      return &testCPM;
-    }
-
-    TestIO<Type, Impl>* getIOInterface() {
-      return &testIO;
-    }
-
-    codi::algorithms::ApplicationHints getHints() {
-      return codi::algorithms::ApplicationHints::NONE();
-    }
-
-    int getIteration() {
-      return curIteration;
+    void setOutputFolder(std::string const& folder) {
+      typename Base::IO* io = Base::getIOInterface();
+      io->restartReadFolder = folder;
+      io->restartWriteFolder = folder;
+      io->writeFolder = folder;
     }
 
     void print(std::string const& line) {
-      if(generalSettings.writeToStdout) {
+      if (writeToStdout) {
         std::cout << line;
+        std::cout.flush();
       }
-      out << line;
-    }
-
-    bool isStop() {
-      return false;
-    }
-
-    void setIteration(int iteration) {
-      curIteration = iteration;
+      if (out) {
+        out << line;
+        out.flush();
+      }
     }
 
     void setOutputFile(std::string const& file) {

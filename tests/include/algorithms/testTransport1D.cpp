@@ -33,46 +33,48 @@
  *      - Tim Albring
  */
 
+#include "../utils/fileSystem.hpp"
 #include "applications/transport1D.hpp"
 
-#include "../utils/fileSystem.hpp"
+using Real = codi::RealReverse;
+using Problem = Transport1D<Real>;
+
+void prepare(Problem& app, std::string const& folder, std::string file) {
+  FileSystem::makePath(folder.c_str());
+  app.setOutputFolder(folder);
+  app.setOutputFile(folder + "/" + file);
+}
 
 int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
 
-  using Real = codi::RealReverse;
-  using Problem = Transport1D<Real>;
-
   FileSystem::makePath("testTransport1D");
 
-  Problem app("testTransport1D/primal.out");
-  app.generalSettings.outputDir = "testTransport1D/primal";
+  Problem app;
+  prepare(app, "testTransport1D/primal", "run.out");
   codi::algorithms::PrimalEvaluation<Problem> pe{codi::algorithms::PrimalEvaluationSettings()};
   pe.settings.checkRelConvergence = false;
   pe.settings.absThreshold = 0.000000001;
   pe.run(app);
 
-  app.setOutputFile("testTransport1D/revAcc.out");
-  app.generalSettings.outputDir = "testTransport1D/revAcc";
+  prepare(app, "testTransport1D/revAcc", "run.out");
   codi::algorithms::ReverseAccumulation<Problem> ra{codi::algorithms::ReverseAccumulationSettings()};
   ra.settings.checkRelConvergence = false;
   ra.settings.absThreshold = 0.000000001;
   ra.run(app);
 
-  app.setOutputFile("testTransport1D/blackBox.out");
+  prepare(app, "testTransport1D/blackBox", "run.out");
   app.setIteration(0);
-  app.generalSettings.outputDir = "testTransport1D/blackBox";
   codi::algorithms::BlackBox<Problem> bb{codi::algorithms::BlackBoxSettings()};
   bb.settings.checkRelConvergence = false;
   bb.settings.absThreshold = 0.000000001;
   bb.run(app);
 
-  app.setOutputFile("testTransport1D/checkpointTest.out");
+  prepare(app, "testTransport1D/checkpointTest", "run.out");
   app.setIteration(0);
   app.initialize();
-  app.generalSettings.outputDir = "testTransport1D/checkpointTest";
-  app.generalSettings.onlyWriteFinal = false;
+  app.getIOInterface()->onlyWriteFinal = false;
   codi::algorithms::CheckpointTest<Problem> ct{codi::algorithms::CheckpointTestSettings()};
   ct.run(app);
 

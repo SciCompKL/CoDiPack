@@ -84,7 +84,7 @@ namespace codi {
 
         void run(App& app) {
           CheckpointManagerInterface* cpm = app.getCheckpointInterface();
-          IOInterface<Type>* io = app.getIOInterface();
+          ApplicationIOInterface<Type>* io = app.getIOInterface();
 
           if (-1 != settings.start && settings.start > app.getIteration()) {
             // Not yet at initial iteration
