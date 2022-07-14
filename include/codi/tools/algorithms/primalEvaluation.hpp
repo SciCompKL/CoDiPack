@@ -46,7 +46,7 @@
 namespace codi {
   namespace algorithms {
 
-    struct PrimalEvaluationSettings {
+    struct PrimalEvaluationSettings : public AlgorithmBaseSettings {
         int maxIterations;  ///< Maximum number of adjoint iterations.
 
         bool checkAbsConvergence;
@@ -79,6 +79,10 @@ namespace codi {
         PrimalEvaluationSettings settings;
 
         PrimalEvaluation(PrimalEvaluationSettings settings) : settings(settings) {}
+
+        AlgorithmBaseSettings const* getSettings() const {
+          return &settings;
+        }
 
         void run(App& app) {
           ApplicationIOInterface<Type>* io = app.getIOInterface();

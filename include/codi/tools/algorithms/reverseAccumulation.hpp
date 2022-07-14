@@ -46,7 +46,7 @@
 namespace codi {
   namespace algorithms {
 
-    struct ReverseAccumulationSettings {
+    struct ReverseAccumulationSettings : public AlgorithmBaseSettings {
         int start;          ///< Start iteration, -1 for current position.
         int maxIterations;  ///< Maximum number of adjoint iterations.
 
@@ -82,9 +82,16 @@ namespace codi {
 
         ReverseAccumulation(ReverseAccumulationSettings settings) : settings(settings) {}
 
+        AlgorithmBaseSettings const* getSettings() const {
+          return &settings;
+        }
+
         void run(App& app) {
           CheckpointManagerInterface* cpm = app.getCheckpointInterface();
           ApplicationIOInterface<Type>* io = app.getIOInterface();
+
+          Data data;
+          Base::initializeApp(app, data);
 
           if (-1 != settings.start && settings.start > app.getIteration()) {
             // Not yet at initial iteration
@@ -98,7 +105,7 @@ namespace codi {
           bool isFinished = false;
 
           RecordingInputOutput tapeStatus;
-          Data data(app);
+          data.init(app);
           Res initalResY;
 
           tapeStatus = RecodingInputOutputFlags::InP | RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InY |
@@ -155,15 +162,17 @@ namespace codi {
           }
 
           cpm->load(cp);
-          tapeStatus = RecodingInputOutputFlags::InX | RecodingInputOutputFlags::OutY;
-          Base::recordTape(app, data, TapeEvaluationFlags::G | TapeEvaluationFlags::P, tapeStatus);
+          tapeStatus = RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InP | RecodingInputOutputFlags::OutY;
+          Base::recordTape(app, data, TapeEvaluationFlags::G, tapeStatus);
 
           Base::copyFromTo(pRealF, data.realP);
           Base::copyFromTo(xRealF, data.realX);
-          Base::evaluateTape(data, EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX);
+          Base::evaluateTape(data, EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX | EvaluationInputOutputFlags::UpdateP);
+
+          Base::reverseP(app, data, EvaluationInputOutputFlags::UpdateX);
 
           io->writeY(curAdjIteration, data.realCurY, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
-          io->writeP(curAdjIteration, data.realP, OutputFlags::Derivative | OutputFlags::P | OutputFlags::Final);
+          io->writeP(curAdjIteration, data.realP, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
           io->writeX(curAdjIteration, data.realX, OutputFlags::Derivative | OutputFlags::P | OutputFlags::Final);
 
           cpm->remove(cp);

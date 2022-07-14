@@ -49,6 +49,7 @@ namespace codi {
       InP,
       InX,
       OutY,
+      OutP,
       OutZ,
       MaxElement
     };
@@ -70,6 +71,7 @@ namespace codi {
 
     enum class EvaluationInputOutputFlags {
       SetY,
+      SetP,
       SetZ,
       GetY,
       GetP,
@@ -89,6 +91,7 @@ namespace codi {
       public:
         using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
         using Type = typename App::Type;
+        using Tape = typename Type::Tape;
 
         using Real = typename Type::Real;
         using Identifier = typename Type::Identifier;
@@ -101,10 +104,17 @@ namespace codi {
           this->init(app);
         }
 
+        ~AlgorithmData() {
+          if(nullptr != initTape) {
+            delete initTape;
+          }
+        }
+
         IdVector idInY;
         IdVector idInP;
         IdVector idInX;
         IdVector idOutY;
+        IdVector idOutP;
         IdVector idOutZ;
 
         RealVector realCurY;
@@ -113,11 +123,16 @@ namespace codi {
         RealVector realP;
         RealVector realX;
 
+        IdVector idInitX;
+        IdVector idInitP;
+        Tape* initTape = nullptr;
+
         void init(App& app) {
           idInY.resize(app.getSizeY());
           idInP.resize(app.getSizeP());
           idInX.resize(app.getSizeX());
           idOutY.resize(app.getSizeY());
+          idOutP.resize(app.getSizeP());
           idOutZ.resize(app.getSizeZ());
 
           realCurY.resize(app.getSizeY());
@@ -126,6 +141,20 @@ namespace codi {
           realP.resize(app.getSizeP());
           realX.resize(app.getSizeX());
         }
+
+        void initInitializationRecording(App& app) {
+          idInitX.resize(app.getSizeX());
+          idInitP.resize(app.getSizeP());
+          initTape = new Tape();
+        }
+    };
+
+    struct AlgorithmBaseSettings {
+      public:
+
+        AlgorithmBaseSettings() = default;
+
+        std::string initializationTaperFolder;
     };
 
     template<typename T_App>
@@ -147,11 +176,75 @@ namespace codi {
 
         void run(App& app);
 
+        virtual AlgorithmBaseSettings const* getSettings() const = 0;
+
       protected:
 
         void iterateUntil(App& app, int iteration) {
           while (app.getIteration() < iteration) {
             app.evaluateG();
+          }
+        }
+
+        void initializeApp(App& app, Data& data) {
+          bool initialize = app.getHints() & ApplicationFlags::InitializationRequired;
+          bool record = app.getHints() & ApplicationFlags::InitializationComputesP;
+          if(initialize || record) {
+
+            Tape& tape = Type::getTape();
+
+            if(record) {
+              tape.reset();
+              tape.setActive();
+            }
+
+            app.initialize();
+
+            if(record) {
+              data.initInitializationRecording(app);
+
+              app.iterateX(GetId(data.idInitX));
+              app.iterateP(RegisterOutput(data.idInitP));
+
+              tape.setPassive();
+              tape.swap(*data.initTape);
+
+              if(app.getHints() & ApplicationFlags::InitializationWriteTapeToDisk) {
+                data.initTape->writeToFile(getSettings()->initializationTaperFolder);
+                data.initTape->deleteData();
+              }
+            }
+          }
+
+          // TODO: Checkpoint load.
+        }
+
+        void reverseP(App& app, Data& data, EvaluationInputOutput evalXFlag) {
+          if(app.getHints() & ApplicationFlags::InitializationComputesP) {
+
+            if(app.getHints() & ApplicationFlags::InitializationWriteTapeToDisk) {
+              data.initTape->readFromFile(getSettings()->initializationTaperFolder);
+            }
+
+            setGradient(*data.initTape, data.idInitP, data.realP);
+
+            data.initTape->evaluate();
+
+            if (EvaluationInputOutputFlags::GetX & evalXFlag) {
+              getGradientAndReset(*data.initTape, data.idInitX, data.realX);
+            } else if (EvaluationInputOutputFlags::UpdateX & evalXFlag) {
+              updateGradientAndReset(*data.initTape, data.idInitX, data.realX);
+            }
+
+            if(app.getHints() & ApplicationFlags::InitializationWriteTapeToDisk) {
+              data.initTape->deleteData();
+            }
+
+          } else {
+            // Regular recording and reversal
+            recordTape(app, data, TapeEvaluationFlags::P, RecodingInputOutputFlags::InX | RecodingInputOutputFlags::OutP);
+
+            evaluateTape(data, EvaluationInputOutputFlags::SetP | evalXFlag);
           }
         }
 
@@ -190,6 +283,10 @@ namespace codi {
             app.iterateY(RegisterOutput(data.idOutY));
           }
 
+          if (RecodingInputOutputFlags::OutP & recOpt) {
+            app.iterateP(RegisterOutput(data.idOutP));
+          }
+
           if (RecodingInputOutputFlags::OutZ & recOpt) {
             app.iterateZ(RegisterOutput(data.idOutZ));
           }
@@ -202,6 +299,10 @@ namespace codi {
 
           if (EvaluationInputOutputFlags::SetY & operations) {
             setGradient(tape, data.idOutY, data.realCurY);
+          }
+
+          if (EvaluationInputOutputFlags::SetP & operations) {
+            setGradient(tape, data.idOutP, data.realP);
           }
 
           if (EvaluationInputOutputFlags::SetZ & operations) {
@@ -232,6 +333,16 @@ namespace codi {
         static void clearInput(Type& value, size_t pos) {
           Type::getTape().deactivateValue(value);
         }
+
+        struct GetId {
+          public:
+            IdVector& vec;
+            GetId(IdVector& vec) : vec(vec) {}
+
+            void operator()(Type& value, size_t pos) {
+              vec[pos] = value.getIdentifier();
+            }
+        };
 
         struct GetPrimal {
           public:

@@ -72,10 +72,13 @@ namespace codi {
         CheckpointManager cm;
         IO io;
 
+        ApplicationHints hints;
+
       public:
 
         DefaultApplication(Impl* impl)
-            : iteration(), textIO(), binaryIO(), cm("checkpoints", impl, &binaryIO), io(&textIO, &binaryIO) {
+            : iteration(), textIO(), binaryIO(), cm("checkpoints", impl, &binaryIO), io(&textIO, &binaryIO),
+              hints(ApplicationHints::NONE()) {
           io.restartReadFolder = "restart";
           io.restartWriteFolder = "restart";
           io.writeFolder = "output";
@@ -132,7 +135,11 @@ namespace codi {
         void initialize() {}
 
         ApplicationHints getHints() {
-          return ApplicationHints::NONE();
+          return hints;
+        }
+
+        void setHints(ApplicationHints value) {
+          hints = value;
         }
 
         int getIteration() {

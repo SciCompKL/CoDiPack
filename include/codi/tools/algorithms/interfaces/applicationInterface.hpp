@@ -49,6 +49,9 @@ namespace codi {
   namespace algorithms {
 
     enum class ApplicationFlags {
+      InitializationRequired,
+      InitializationComputesP,
+      InitializationWriteTapeToDisk,
       MaxElement
     };
     using ApplicationHints = EnumBitset<ApplicationFlags>;

@@ -46,7 +46,7 @@
 namespace codi {
   namespace algorithms {
 
-    struct BlackBoxSettings {
+    struct BlackBoxSettings : public AlgorithmBaseSettings {
         int maxIterations;  ///< Maximum number of adjoint iterations.
 
         bool checkAbsConvergence;
@@ -81,6 +81,10 @@ namespace codi {
         BlackBoxSettings settings;
 
         BlackBox(BlackBoxSettings settings) : settings(settings) {}
+
+        AlgorithmBaseSettings const* getSettings() const {
+          return &settings;
+        }
 
         void run(App& app) {
           ApplicationIOInterface<Type>* io = app.getIOInterface();

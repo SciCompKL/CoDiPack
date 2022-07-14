@@ -64,8 +64,16 @@ int main(int nargs, char** args) {
   ra.settings.absThreshold = 0.000000001;
   ra.run(app);
 
+  prepare(app, "testTransport1D/revAccWithInit", "run.out");
+  codi::algorithms::ReverseAccumulation<Problem> raWithInit{codi::algorithms::ReverseAccumulationSettings()};
+  app.setHints(codi::algorithms::ApplicationFlags::InitializationComputesP);
+  raWithInit.settings.start = 455;
+  raWithInit.settings.checkRelConvergence = false;
+  raWithInit.settings.absThreshold = 0.000000001;
+  raWithInit.run(app);
+  app.setHints(codi::algorithms::ApplicationHints::NONE());
+
   prepare(app, "testTransport1D/blackBox", "run.out");
-  app.setIteration(0);
   codi::algorithms::BlackBox<Problem> bb{codi::algorithms::BlackBoxSettings()};
   bb.settings.checkRelConvergence = false;
   bb.settings.absThreshold = 0.000000001;

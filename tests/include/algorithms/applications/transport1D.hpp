@@ -117,6 +117,13 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
       phi.resize(settings.N);
       phi_old.resize(settings.N);
 
+      for (int i = 0; i < settings.N; i++) {
+        settings.control[i] = 1.0;
+        if(Base::getHints() & codi::algorithms::ApplicationFlags::InitializationComputesP) {
+          Type::getTape().registerInput(settings.control[i]);
+        }
+      }
+
       evaluateP();
 
       for (int i = 0; i < settings.N; i++) {
@@ -124,10 +131,7 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
       }
       phi[0] = 0.0;
       phi[settings.N - 1] = 1.0;
-
-      for (int i = 0; i < settings.N; i++) {
-        settings.control[i] = 1.0;
-      }
+      Base::setIteration(0);
     }
 
     void evaluateG() {
