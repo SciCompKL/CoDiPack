@@ -284,4 +284,8 @@ namespace codi {
         }
       }
   };
+
+  /// BlockData DataInterface used in all unchecked tapes.
+  template<typename Chunk, typename NestedData = EmptyData>
+  using DefaultBlockData = BlockData<Chunk, NestedData>;
 }

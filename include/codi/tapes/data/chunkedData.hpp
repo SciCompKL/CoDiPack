@@ -470,4 +470,8 @@ namespace codi {
         }
       }
   };
+
+  /// ChunkData DataInterface used in all regular tapes.
+  template<typename Chunk, typename NestedData = EmptyData>
+  using DefaultChunkedData = ChunkedData<Chunk, NestedData>;
 }
