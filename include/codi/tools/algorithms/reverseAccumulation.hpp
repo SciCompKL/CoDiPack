@@ -90,6 +90,8 @@ namespace codi {
           CheckpointManagerInterface* cpm = app.getCheckpointInterface();
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
+          bool pIterationAvailable = app.getHints() & ApplicationFlags::PIterationIsAvailable;
+
           Data data;
           Base::initializeApp(app, data);
 
@@ -127,7 +129,9 @@ namespace codi {
 
           io->writeY(0, yRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
           io->writeX(0, xRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
-          io->writeP(0, pRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+          if(pIterationAvailable) {
+            io->writeP(0, pRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+          }
 
           int curAdjIteration = 0;
           while (!(isFinished || isStop || isConverged)) {
@@ -140,7 +144,6 @@ namespace codi {
 
             Base::copyFromTo(yRealF, data.realNextY);
             Base::evaluateTape(data, EvaluationInputOutputFlags::UpdateY | EvaluationInputOutputFlags::SetY);
-            Type::getTape().clearAdjoints();  // TODO: Remove
 
             Res resY = app.residuumY(data.realCurY, data.realNextY);
 
@@ -163,17 +166,25 @@ namespace codi {
 
           cpm->load(cp);
           tapeStatus = RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InP | RecodingInputOutputFlags::OutY;
-          Base::recordTape(app, data, TapeEvaluationFlags::G, tapeStatus);
+          TapeEvaluation tapeEvaluation = TapeEvaluationFlags::G;
+          if(app.getHints() & ApplicationFlags::PComputationIsAvailable && !pIterationAvailable) {
+            tapeEvaluation |= TapeEvaluationFlags::P; // P but not iterable, then P and G need to be called at the same time.
+          }
+          Base::recordTape(app, data, tapeEvaluation, tapeStatus);
 
           Base::copyFromTo(pRealF, data.realP);
           Base::copyFromTo(xRealF, data.realX);
           Base::evaluateTape(data, EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX | EvaluationInputOutputFlags::UpdateP);
 
-          Base::reverseP(app, data, EvaluationInputOutputFlags::UpdateX);
+          if(pIterationAvailable) {
+            Base::reverseP(app, data, EvaluationInputOutputFlags::UpdateX);
+          }
 
           io->writeY(curAdjIteration, data.realCurY, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
-          io->writeP(curAdjIteration, data.realP, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
           io->writeX(curAdjIteration, data.realX, OutputFlags::Derivative | OutputFlags::P | OutputFlags::Final);
+          if(pIterationAvailable) {
+            io->writeP(curAdjIteration, data.realP, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
+          }
 
           cpm->remove(cp);
         }

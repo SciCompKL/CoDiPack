@@ -60,17 +60,26 @@ int main(int nargs, char** args) {
 
   prepare(app, "testTransport1D/revAcc", "run.out");
   codi::algorithms::ReverseAccumulation<Problem> ra{codi::algorithms::ReverseAccumulationSettings()};
+  app.setHints(codi::algorithms::ApplicationFlags::PComputationIsAvailable | codi::algorithms::ApplicationFlags::PIterationIsAvailable);
   ra.settings.checkRelConvergence = false;
   ra.settings.absThreshold = 0.000000001;
   ra.run(app);
 
   prepare(app, "testTransport1D/revAccWithInit", "run.out");
   codi::algorithms::ReverseAccumulation<Problem> raWithInit{codi::algorithms::ReverseAccumulationSettings()};
-  app.setHints(codi::algorithms::ApplicationFlags::InitializationComputesP);
+  app.setHints(codi::algorithms::ApplicationFlags::InitializationComputesP | codi::algorithms::ApplicationFlags::PIterationIsAvailable);
   raWithInit.settings.start = 455;
   raWithInit.settings.checkRelConvergence = false;
   raWithInit.settings.absThreshold = 0.000000001;
   raWithInit.run(app);
+
+  prepare(app, "testTransport1D/revAccNoPIteration", "run.out");
+  codi::algorithms::ReverseAccumulation<Problem> raNoPIteration{codi::algorithms::ReverseAccumulationSettings()};
+  app.setHints(codi::algorithms::ApplicationFlags::PComputationIsAvailable);
+  raNoPIteration.settings.start = 455;
+  raNoPIteration.settings.checkRelConvergence = false;
+  raNoPIteration.settings.absThreshold = 0.000000001;
+  raNoPIteration.run(app);
   app.setHints(codi::algorithms::ApplicationHints::NONE());
 
   prepare(app, "testTransport1D/blackBox", "run.out");

@@ -52,6 +52,8 @@ namespace codi {
       InitializationRequired,
       InitializationComputesP,
       InitializationWriteTapeToDisk,
+      PComputationIsAvailable, // TODO: Automatic detection
+      PIterationIsAvailable, // TODO: Automatic detection
       MaxElement
     };
     using ApplicationHints = EnumBitset<ApplicationFlags>;

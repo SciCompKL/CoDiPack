@@ -129,17 +129,20 @@ namespace codi {
 
         void init(App& app) {
           idInY.resize(app.getSizeY());
-          idInP.resize(app.getSizeP());
           idInX.resize(app.getSizeX());
           idOutY.resize(app.getSizeY());
-          idOutP.resize(app.getSizeP());
           idOutZ.resize(app.getSizeZ());
 
           realCurY.resize(app.getSizeY());
           realNextY.resize(app.getSizeY());
 
-          realP.resize(app.getSizeP());
           realX.resize(app.getSizeX());
+
+          if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+            idInP.resize(app.getSizeP());
+            idOutP.resize(app.getSizeP());
+            realP.resize(app.getSizeP());
+          }
         }
 
         void initInitializationRecording(App& app) {
@@ -189,6 +192,19 @@ namespace codi {
         void initializeApp(App& app, Data& data) {
           bool initialize = app.getHints() & ApplicationFlags::InitializationRequired;
           bool record = app.getHints() & ApplicationFlags::InitializationComputesP;
+          bool pIsComputable = app.getHints() & ApplicationFlags::PComputationIsAvailable;
+          bool pIsIterable = app.getHints() & ApplicationFlags::PIterationIsAvailable;
+
+          if(pIsComputable && record) {
+            CODI_EXCEPTION("P can either be defined through the initialization or through the recomputation, but not "
+                           "both. Manually remove either InitializationComputesP or PComputationIsAvailable from the "
+                           "application hints.");
+          }
+
+          if(!pIsIterable && record) {
+            CODI_EXCEPTION("P needs to be iterable if the initialization computes P.");
+          }
+
           if(initialize || record) {
 
             Tape& tape = Type::getTape();
@@ -240,7 +256,7 @@ namespace codi {
               data.initTape->deleteData();
             }
 
-          } else {
+          } else if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
             // Regular recording and reversal
             recordTape(app, data, TapeEvaluationFlags::P, RecodingInputOutputFlags::InX | RecodingInputOutputFlags::OutP);
 
@@ -258,10 +274,15 @@ namespace codi {
           } else {
             app.iterateY(clearInput);
           }
-          if (RecodingInputOutputFlags::InP & recOpt) {
-            app.iterateP(RegisterInput(data.idInP));
-          } else {
-            app.iterateP(clearInput);
+          if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+            if (RecodingInputOutputFlags::InP & recOpt) {
+              app.iterateP(RegisterInput(data.idInP));
+            } else {
+              app.iterateP(clearInput);
+            }
+          } else if(app.getHints() & ApplicationFlags::PComputationIsAvailable){
+            evalOpt |= TapeEvaluationFlags::P; // Force the evaluation of P for clearing.
+            // TODO: Force based on last tape recording.
           }
           if (RecodingInputOutputFlags::InX & recOpt) {
             app.iterateX(RegisterInput(data.idInX));
@@ -283,8 +304,10 @@ namespace codi {
             app.iterateY(RegisterOutput(data.idOutY));
           }
 
-          if (RecodingInputOutputFlags::OutP & recOpt) {
-            app.iterateP(RegisterOutput(data.idOutP));
+          if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+            if (RecodingInputOutputFlags::OutP & recOpt) {
+              app.iterateP(RegisterOutput(data.idOutP));
+            }
           }
 
           if (RecodingInputOutputFlags::OutZ & recOpt) {
@@ -301,8 +324,10 @@ namespace codi {
             setGradient(tape, data.idOutY, data.realCurY);
           }
 
-          if (EvaluationInputOutputFlags::SetP & operations) {
-            setGradient(tape, data.idOutP, data.realP);
+          if(data.idOutP.size() != 0 /*app.getHints() & ApplicationFlags::PIterationIsAvailable*/) {
+            if (EvaluationInputOutputFlags::SetP & operations) {
+              setGradient(tape, data.idOutP, data.realP);
+            }
           }
 
           if (EvaluationInputOutputFlags::SetZ & operations) {
@@ -317,10 +342,12 @@ namespace codi {
             updateGradientAndReset(tape, data.idInY, data.realNextY);
           }
 
-          if (EvaluationInputOutputFlags::GetP & operations) {
-            getGradientAndReset(tape, data.idInP, data.realP);
-          } else if (EvaluationInputOutputFlags::UpdateP & operations) {
-            updateGradientAndReset(tape, data.idInP, data.realP);
+          if(data.idOutP.size() != 0 /*app.getHints() & ApplicationFlags::PIterationIsAvailable*/) {
+            if (EvaluationInputOutputFlags::GetP & operations) {
+              getGradientAndReset(tape, data.idInP, data.realP);
+            } else if (EvaluationInputOutputFlags::UpdateP & operations) {
+              updateGradientAndReset(tape, data.idInP, data.realP);
+            }
           }
 
           if (EvaluationInputOutputFlags::GetX & operations) {
