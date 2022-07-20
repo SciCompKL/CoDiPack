@@ -60,7 +60,7 @@ namespace codi {
         using Real = typename Type::Real;
 
         using CheckpointManager = StateBasedCheckpointManager<Type, BinaryFileIO, Impl>;
-        using IO = DefaultApplicationIO<Type, TextFileIO, BinaryFileIO>;
+        using IO = DefaultApplicationIO<Type, TextFileIO, BinaryFileIO, Impl>;
 
       protected:
 
@@ -77,7 +77,7 @@ namespace codi {
       public:
 
         DefaultApplication(Impl* impl)
-            : iteration(), textIO(), binaryIO(), cm("checkpoints", impl, &binaryIO), io(&textIO, &binaryIO),
+            : iteration(), textIO(), binaryIO(), cm("checkpoints", impl, &binaryIO), io(impl, &textIO, &binaryIO),
               hints(ApplicationHints::NONE()) {
           io.restartReadFolder = "restart";
           io.restartWriteFolder = "restart";
@@ -111,6 +111,8 @@ namespace codi {
         void evaluateG();
         void evaluateF();
         void evaluateP();
+
+        int getNumberOfFunctionals() { return 1; }
 
         Residuum<Real> residuumY(std::vector<Real> const& v1, std::vector<Real> const& v2) {
           return vectorBasedResiduum(v1, v2);

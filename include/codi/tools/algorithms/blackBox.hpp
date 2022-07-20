@@ -93,11 +93,13 @@ namespace codi {
           bool isStop = false;
           bool isFinished = false;
 
+          Base::initVectorMode(app);
+
           RealVector yCur(app.getSizeY());
           RealVector yNext(app.getSizeY());
           IdVector idX(app.getSizeX());
           IdVector idZ(app.getSizeZ());
-          RealVector gradX(app.getSizeX());
+          std::vector<RealVector> gradX(Base::d_local, RealVector(app.getSizeX()));
           Res initalResY;
 
           app.print(formatHeader());
@@ -138,13 +140,19 @@ namespace codi {
 
           tape.setPassive();
 
-          Base::setGradient(tape, idZ, 1.0);
+          int d = app.getNumberOfFunctionals();
 
-          tape.evaluate();
+          for(int vecPos = 0; vecPos < d; vecPos += Base::d_local) {
+            int steps = min(d - vecPos, Base::d_local);
 
-          Base::getGradientAndReset(tape, idX, gradX);
+            Base::setGradient(tape, idZ, 1.0, vecPos, steps);
 
-          io->writeX(0, gradX, OutputFlags::Final | OutputFlags::Derivative | OutputFlags::F);
+            tape.evaluate();
+
+            Base::getGradientAndReset(tape, idX, gradX, vecPos, steps);
+
+            io->writeX(0, gradX, OutputFlags::Final | OutputFlags::Derivative | OutputFlags::F, vecPos);
+          }
         }
 
         std::string formatHeader() {

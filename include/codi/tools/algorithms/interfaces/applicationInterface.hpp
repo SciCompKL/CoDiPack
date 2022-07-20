@@ -100,6 +100,8 @@ namespace codi {
         size_t getSizeP();
         size_t getSizeZ();
 
+        int getNumberOfFunctionals();
+
         void evaluateG();
         void evaluateF();
         void evaluateP();

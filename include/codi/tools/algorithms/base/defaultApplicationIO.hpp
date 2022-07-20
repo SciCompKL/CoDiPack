@@ -41,6 +41,7 @@
 #include "../../../expressions/lhsExpressionInterface.hpp"
 #include "../../../misc/macros.hpp"
 #include "../../../misc/stringUtil.hpp"
+#include "../interfaces/applicationInterface.hpp"
 #include "../interfaces/applicationIOInterface.hpp"
 #include "../interfaces/fileIOInterface.hpp"
 
@@ -48,11 +49,12 @@
 namespace codi {
   namespace algorithms {
 
-    template<typename T_Type, typename T_WriteIO, typename T_RestartIO>
+    template<typename T_Type, typename T_WriteIO, typename T_RestartIO, typename T_Application>
     struct DefaultApplicationIO : public codi::algorithms::ApplicationIOInterface<T_Type> {
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
         using WriteIO = CODI_DD(T_WriteIO, FileIOInterface);
         using RestartIO = CODI_DD(T_RestartIO, FileIOInterface);
+        using Application = CODI_DD(T_Application, CODI_T(codi::algorithms::ApplicationInterface<CODI_ANY>));
 
         using Real = typename Type::Real;
 
@@ -60,6 +62,7 @@ namespace codi {
         std::string restartReadFolder;
         std::string writeFolder;
 
+        Application* app;
         WriteIO* writeIO;
         RestartIO* restartIO;
 
@@ -69,10 +72,11 @@ namespace codi {
         bool outputZ;
         bool onlyWriteFinal;
 
-        DefaultApplicationIO(WriteIO* writeIO, RestartIO* restartIO)
+        DefaultApplicationIO(Application* app, WriteIO* writeIO, RestartIO* restartIO)
             : restartWriteFolder("."),
               restartReadFolder("."),
               writeFolder("."),
+              app(app),
               writeIO(writeIO),
               restartIO(restartIO),
               outputY(true),
@@ -112,27 +116,27 @@ namespace codi {
           readVector(createRestartName(restartReadFolder, fileName), restartIO, data, length);
         }
 
-        void writeY(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags) {
+        void writeY(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
           if (outputY && checkFinal(flags)) {
-            writeVector(createWriteName(writeFolder, "y", iteration, flags, writeIO), writeIO, v.data(), v.size());
+            writeVector(createWriteName(writeFolder, "y", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
-        void writeX(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags) {
+        void writeX(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
           if (outputX && checkFinal(flags)) {
-            writeVector(createWriteName(writeFolder, "x", iteration, flags, writeIO), writeIO, v.data(), v.size());
+            writeVector(createWriteName(writeFolder, "x", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
-        void writeP(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags) {
+        void writeP(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
           if (outputP && checkFinal(flags)) {
-            writeVector(createWriteName(writeFolder, "p", iteration, flags, writeIO), writeIO, v.data(), v.size());
+            writeVector(createWriteName(writeFolder, "p", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
-        void writeZ(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags) {
+        void writeZ(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
           if (outputZ && checkFinal(flags)) {
-            writeVector(createWriteName(writeFolder, "z", iteration, flags, writeIO), writeIO, v.data(), v.size());
+            writeVector(createWriteName(writeFolder, "z", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
@@ -144,7 +148,7 @@ namespace codi {
 
         template<typename IO>
         std::string createWriteName(std::string const& folder, std::string const& name, int iteration,
-                                    OutputHints flags, CODI_DD(IO, FileIOInterface) * io) {
+                                    OutputHints flags, CODI_DD(IO, FileIOInterface) * io, int vec) {
           std::string prefix = "";
           if (codi::algorithms::OutputFlags::Primal & flags) {
             prefix = "primal_";
@@ -157,8 +161,13 @@ namespace codi {
             prefix += "v2_";
           }
 
-          return StringUtil::format("%s/%s%s_%05d.%s", folder.c_str(), prefix.c_str(), name.c_str(), iteration,
-                                    io->getFileEnding().c_str());
+          std::string suffix = "";
+          if((OutputFlags::Derivative & flags) && (app->getNumberOfFunctionals() != 1)) {
+            suffix += StringUtil::format("_%02d", vec);
+          }
+
+          return StringUtil::format("%s/%s%s_%05d%s.%s", folder.c_str(), prefix.c_str(), name.c_str(), iteration,
+                                    suffix.c_str(), io->getFileEnding().c_str());
         }
 
         template<typename IO, typename T>

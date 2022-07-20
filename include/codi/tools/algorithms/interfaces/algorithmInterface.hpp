@@ -38,6 +38,7 @@
 #include "../../../config.h"
 #include "../../../misc/enumBitset.hpp"
 #include "../../../misc/macros.hpp"
+#include "../../../traits/gradientTraits.hpp"
 #include "applicationInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -117,11 +118,11 @@ namespace codi {
         IdVector idOutP;
         IdVector idOutZ;
 
-        RealVector realCurY;
-        RealVector realNextY;
+        std::vector<RealVector> realCurY;
+        std::vector<RealVector> realNextY;
 
-        RealVector realP;
-        RealVector realX;
+        std::vector<RealVector> realP;
+        std::vector<RealVector> realX;
 
         IdVector idInitX;
         IdVector idInitP;
@@ -133,15 +134,15 @@ namespace codi {
           idOutY.resize(app.getSizeY());
           idOutZ.resize(app.getSizeZ());
 
-          realCurY.resize(app.getSizeY());
-          realNextY.resize(app.getSizeY());
+          realCurY.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeY()));
+          realNextY.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeY()));
 
-          realX.resize(app.getSizeX());
+          realX.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeX()));
 
           if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
             idInP.resize(app.getSizeP());
             idOutP.resize(app.getSizeP());
-            realP.resize(app.getSizeP());
+            realP.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeP()));
           }
         }
 
@@ -155,9 +156,11 @@ namespace codi {
     struct AlgorithmBaseSettings {
       public:
 
-        AlgorithmBaseSettings() = default;
-
         std::string initializationTaperFolder;
+
+        AlgorithmBaseSettings() :
+          initializationTaperFolder("tapes")
+        {}
     };
 
     template<typename T_App>
@@ -177,16 +180,24 @@ namespace codi {
         using RealVector = typename Data::RealVector;
         using IdVector = typename Data::IdVector;
 
+        AlgorithmInterface() : d_local(-1) {}
+
         void run(App& app);
 
         virtual AlgorithmBaseSettings const* getSettings() const = 0;
 
       protected:
 
+        int d_local;
+
         void iterateUntil(App& app, int iteration) {
           while (app.getIteration() < iteration) {
             app.evaluateG();
           }
+        }
+
+        void initVectorMode(App& app) {
+          d_local = GradientTraits::dim<typename Tape::Gradient>();
         }
 
         void initializeApp(App& app, Data& data) {
@@ -231,8 +242,26 @@ namespace codi {
               }
             }
           }
+        }
 
-          // TODO: Checkpoint load.
+        void loadClosestCheckPoint(App& app, int iteration) {
+          CheckpointManagerInterface* cm = app.getCheckpointInterface();
+
+          std::vector<CheckpointHandle*> checkpoints = cm->list();
+
+          while(!checkpoints.empty() && checkpoints.back()->getIteration() > iteration) {
+            cm->remove(checkpoints.back());
+            checkpoints.pop_back();
+          }
+
+          if(!checkpoints.empty()) {
+            cm->load(checkpoints.back());
+          }
+
+          while(!checkpoints.empty()) {
+            cm->remove(checkpoints.back());
+            checkpoints.pop_back();
+          }
         }
 
         void reverseP(App& app, Data& data, EvaluationInputOutput evalXFlag) {
@@ -242,14 +271,20 @@ namespace codi {
               data.initTape->readFromFile(getSettings()->initializationTaperFolder);
             }
 
-            setGradient(*data.initTape, data.idInitP, data.realP);
+            int d = app.getNumberOfFunctionals();
 
-            data.initTape->evaluate();
+            for(int vecPos = 0; vecPos < d; vecPos += d_local) {
+              int steps = min(d - vecPos, d_local);
 
-            if (EvaluationInputOutputFlags::GetX & evalXFlag) {
-              getGradientAndReset(*data.initTape, data.idInitX, data.realX);
-            } else if (EvaluationInputOutputFlags::UpdateX & evalXFlag) {
-              updateGradientAndReset(*data.initTape, data.idInitX, data.realX);
+              setGradient(*data.initTape, data.idInitP, data.realP, vecPos, steps);
+
+              data.initTape->evaluate();
+
+              if (EvaluationInputOutputFlags::GetX & evalXFlag) {
+                getGradientAndReset(*data.initTape, data.idInitX, data.realX, vecPos, steps);
+              } else if (EvaluationInputOutputFlags::UpdateX & evalXFlag) {
+                updateGradientAndReset(*data.initTape, data.idInitX, data.realX, vecPos, steps);
+              }
             }
 
             if(app.getHints() & ApplicationFlags::InitializationWriteTapeToDisk) {
@@ -260,7 +295,7 @@ namespace codi {
             // Regular recording and reversal
             recordTape(app, data, TapeEvaluationFlags::P, RecodingInputOutputFlags::InX | RecodingInputOutputFlags::OutP);
 
-            evaluateTape(data, EvaluationInputOutputFlags::SetP | evalXFlag);
+            evaluateTape(app, data, EvaluationInputOutputFlags::SetP | evalXFlag);
           }
         }
 
@@ -317,43 +352,49 @@ namespace codi {
           tape.setPassive();
         }
 
-        void evaluateTape(Data& data, EvaluationInputOutput operations) {
+        void evaluateTape(App& app, Data& data, EvaluationInputOutput operations) {
           Tape& tape = Type::getTape();
 
-          if (EvaluationInputOutputFlags::SetY & operations) {
-            setGradient(tape, data.idOutY, data.realCurY);
-          }
+          int d = app.getNumberOfFunctionals();
 
-          if(data.idOutP.size() != 0 /*app.getHints() & ApplicationFlags::PIterationIsAvailable*/) {
-            if (EvaluationInputOutputFlags::SetP & operations) {
-              setGradient(tape, data.idOutP, data.realP);
+          for(int vecPos = 0; vecPos < d; vecPos += d_local) {
+            int steps = min(d - vecPos, d_local);
+
+            if (EvaluationInputOutputFlags::SetY & operations) {
+              setGradient(tape, data.idOutY, data.realCurY, vecPos, steps);
             }
-          }
 
-          if (EvaluationInputOutputFlags::SetZ & operations) {
-            setGradient(tape, data.idOutZ, 1.0);
-          }
-
-          tape.evaluate();
-
-          if (EvaluationInputOutputFlags::GetY & operations) {
-            getGradientAndReset(tape, data.idInY, data.realNextY);
-          } else if (EvaluationInputOutputFlags::UpdateY & operations) {
-            updateGradientAndReset(tape, data.idInY, data.realNextY);
-          }
-
-          if(data.idOutP.size() != 0 /*app.getHints() & ApplicationFlags::PIterationIsAvailable*/) {
-            if (EvaluationInputOutputFlags::GetP & operations) {
-              getGradientAndReset(tape, data.idInP, data.realP);
-            } else if (EvaluationInputOutputFlags::UpdateP & operations) {
-              updateGradientAndReset(tape, data.idInP, data.realP);
+            if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+              if (EvaluationInputOutputFlags::SetP & operations) {
+                setGradient(tape, data.idOutP, data.realP, vecPos, steps);
+              }
             }
-          }
 
-          if (EvaluationInputOutputFlags::GetX & operations) {
-            getGradientAndReset(tape, data.idInX, data.realX);
-          } else if (EvaluationInputOutputFlags::UpdateX & operations) {
-            updateGradientAndReset(tape, data.idInX, data.realX);
+            if (EvaluationInputOutputFlags::SetZ & operations) {
+              setGradient(tape, data.idOutZ, 1.0, vecPos, steps);
+            }
+
+            tape.evaluate();
+
+            if (EvaluationInputOutputFlags::GetY & operations) {
+              getGradientAndReset(tape, data.idInY, data.realNextY, vecPos, steps);
+            } else if (EvaluationInputOutputFlags::UpdateY & operations) {
+              updateGradientAndReset(tape, data.idInY, data.realNextY, vecPos, steps);
+            }
+
+            if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+              if (EvaluationInputOutputFlags::GetP & operations) {
+                getGradientAndReset(tape, data.idInP, data.realP, vecPos, steps);
+              } else if (EvaluationInputOutputFlags::UpdateP & operations) {
+                updateGradientAndReset(tape, data.idInP, data.realP, vecPos, steps);
+              }
+            }
+
+            if (EvaluationInputOutputFlags::GetX & operations) {
+              getGradientAndReset(tape, data.idInX, data.realX, vecPos, steps);
+            } else if (EvaluationInputOutputFlags::UpdateX & operations) {
+              updateGradientAndReset(tape, data.idInX, data.realX, vecPos, steps);
+            }
           }
         }
 
@@ -403,37 +444,47 @@ namespace codi {
             }
         };
 
-        static void setGradient(Tape& tape, IdVector& ids, RealVector& seed) {
+        static void setGradient(Tape& tape, IdVector& ids, std::vector<RealVector>& seed, int vecPos, int steps) {
           for (size_t pos = 0; pos < ids.size(); pos += 1) {
-            tape.setGradient(ids[pos], seed[pos]);
+            for (int i = 0; i < steps; i += 1) {
+              GradientTraits::at(tape.gradient(ids[pos]), i) = seed[vecPos + i][pos];
+            }
           }
         }
 
-        static void setGradient(Tape& tape, IdVector& ids, Real const& seed) {
-          for (size_t pos = 0; pos < ids.size(); pos += 1) {
-            tape.setGradient(ids[pos], seed);
+        static void setGradient(Tape& tape, IdVector& ids, Real const& seed, int vecPos, int steps) {
+          for (int i = 0; i < steps; i += 1) {
+            GradientTraits::at(tape.gradient(ids[vecPos + i]), i) = seed;
           }
         }
 
-        static void getGradientAndReset(Tape& tape, IdVector& ids, RealVector& value) {
+        static void getGradientAndReset(Tape& tape, IdVector& ids, std::vector<RealVector>& value, int vecPos, int steps) {
+          using GT = GradientTraits::TraitsImplementation<typename Tape::Gradient>;
+
           for (size_t pos = 0; pos < ids.size(); pos += 1) {
-            Real& gradient = tape.gradient(ids[pos]);
-            value[pos] = gradient;
-            gradient = 0;
+            typename GT::Gradient& gradient = tape.gradient(ids[pos]);
+            for (int i = 0; i < steps; i += 1) {
+              value[vecPos + i][pos] = GT::at(gradient, i);
+            }
+            gradient = typename GT::Gradient();
           }
         }
 
-        static void updateGradientAndReset(Tape& tape, IdVector& ids, RealVector& value) {
+        static void updateGradientAndReset(Tape& tape, IdVector& ids, std::vector<RealVector>& value, int vecPos, int steps) {
+          using GT = GradientTraits::TraitsImplementation<typename Tape::Gradient>;
+
           for (size_t pos = 0; pos < ids.size(); pos += 1) {
-            Real& gradient = tape.gradient(ids[pos]);
-            value[pos] += gradient;
-            gradient = 0;
+            typename GT::Gradient& gradient = tape.gradient(ids[pos]);
+            for (int i = 0; i < steps; i += 1) {
+              value[vecPos + i][pos] += GT::at(gradient, i);
+            }
+            gradient = typename GT::Gradient();
           }
         }
 
-        static void copyFromTo(RealVector const& from, RealVector& to) {
-          for (size_t pos = 0; pos < from.size(); pos += 1) {
-            to[pos] = from[pos];
+        static void copyFromTo(std::vector<RealVector> const& from, std::vector<RealVector>& to) {
+          for(size_t i = 0; i < to.size(); i += 1) {
+            std::copy(from.begin(), from.end(), to.begin());
           }
         }
     };

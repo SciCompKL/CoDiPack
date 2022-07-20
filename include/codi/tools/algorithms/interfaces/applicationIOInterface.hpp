@@ -74,24 +74,50 @@ namespace codi {
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
         using Real = typename Type::Real;
 
+        using RealVector =  std::vector<Real>;
+
         virtual ~ApplicationIOInterface() {}
 
-        virtual void writeRestartY(std::string const& fileName, std::vector<Real> const& v) = 0;
-        virtual void writeRestartX(std::string const& fileName, std::vector<Real> const& v) = 0;
-        virtual void writeRestartP(std::string const& fileName, std::vector<Real> const& v) = 0;
+        virtual void writeRestartY(std::string const& fileName, RealVector const& v) = 0;
+        virtual void writeRestartX(std::string const& fileName, RealVector const& v) = 0;
+        virtual void writeRestartP(std::string const& fileName, RealVector const& v) = 0;
 
         virtual void writeRestartData(std::string const& filename, char* data, size_t length) = 0;
 
-        virtual void readRestartY(std::string const& fileName, std::vector<Real>& v) = 0;
-        virtual void readRestartX(std::string const& fileName, std::vector<Real>& v) = 0;
-        virtual void readRestartP(std::string const& fileName, std::vector<Real>& v) = 0;
+        virtual void readRestartY(std::string const& fileName, RealVector& v) = 0;
+        virtual void readRestartX(std::string const& fileName, RealVector& v) = 0;
+        virtual void readRestartP(std::string const& fileName, RealVector& v) = 0;
 
         virtual void readRestartData(std::string const& filename, char*& data, size_t& length) = 0;
 
-        virtual void writeY(int iteration, std::vector<Real> const& v, OutputHints flags) = 0;
-        virtual void writeX(int iteration, std::vector<Real> const& v, OutputHints flags) = 0;
-        virtual void writeP(int iteration, std::vector<Real> const& v, OutputHints flags) = 0;
-        virtual void writeZ(int iteration, std::vector<Real> const& v, OutputHints flags) = 0;
+        virtual void writeY(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
+        virtual void writeX(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
+        virtual void writeP(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
+        virtual void writeZ(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
+
+        void writeY(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+          for(size_t i = 0; i < v.size(); i += 1) {
+            writeY(iteration, v[i], flags, i + vecOffset);
+          }
+        }
+
+        void writeX(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+          for(size_t i = 0; i < v.size(); i += 1) {
+            writeX(iteration, v[i], flags, i + vecOffset);
+          }
+        }
+
+        void writeP(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+          for(size_t i = 0; i < v.size(); i += 1) {
+            writeP(iteration, v[i], flags, i + vecOffset);
+          }
+        }
+
+        void writeZ(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+          for(size_t i = 0; i < v.size(); i += 1) {
+            writeZ(iteration, v[i], flags, i + vecOffset);
+          }
+        }
     };
   }
 }

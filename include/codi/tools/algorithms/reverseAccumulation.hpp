@@ -92,8 +92,14 @@ namespace codi {
 
           bool pIterationAvailable = app.getHints() & ApplicationFlags::PIterationIsAvailable;
 
+          Base::initVectorMode(app);
+
           Data data;
           Base::initializeApp(app, data);
+
+          if(-1 != settings.start) {
+            Base::loadClosestCheckPoint(app, settings.start);
+          }
 
           if (-1 != settings.start && settings.start > app.getIteration()) {
             // Not yet at initial iteration
@@ -108,24 +114,24 @@ namespace codi {
 
           RecordingInputOutput tapeStatus;
           data.init(app);
-          Res initalResY;
+          std::vector<Res> initalResY(app.getNumberOfFunctionals());
 
           tapeStatus = RecodingInputOutputFlags::InP | RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InY |
                        RecodingInputOutputFlags::OutZ;
           Base::recordTape(app, data, TapeEvaluationFlags::F, tapeStatus);
-          Base::evaluateTape(data, EvaluationInputOutputFlags::GetP | EvaluationInputOutputFlags::GetX |
+          Base::evaluateTape(app, data, EvaluationInputOutputFlags::GetP | EvaluationInputOutputFlags::GetX |
                                        EvaluationInputOutputFlags::GetY | EvaluationInputOutputFlags::SetZ);
 
-          RealVector yRealF(app.getSizeY());
-          RealVector pRealF(app.getSizeP());
-          RealVector xRealF(app.getSizeX());
+          std::vector<RealVector> yRealF(app.getNumberOfFunctionals(), RealVector(app.getSizeY()));
+          std::vector<RealVector> pRealF(app.getNumberOfFunctionals(), RealVector(app.getSizeP()));
+          std::vector<RealVector> xRealF(app.getNumberOfFunctionals(), RealVector(app.getSizeX()));
           std::swap(data.realNextY, yRealF);
           std::swap(data.realP, pRealF);
           std::swap(data.realX, xRealF);
 
           Base::copyFromTo(yRealF, data.realCurY);  // Do first step.
 
-          app.print(formatHeader());
+          app.print(formatHeader(app.getNumberOfFunctionals()));
 
           io->writeY(0, yRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
           io->writeX(0, xRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
@@ -143,9 +149,12 @@ namespace codi {
             }
 
             Base::copyFromTo(yRealF, data.realNextY);
-            Base::evaluateTape(data, EvaluationInputOutputFlags::UpdateY | EvaluationInputOutputFlags::SetY);
+            Base::evaluateTape(app, data, EvaluationInputOutputFlags::UpdateY | EvaluationInputOutputFlags::SetY);
 
-            Res resY = app.residuumY(data.realCurY, data.realNextY);
+            std::vector<Res> resY(app.getNumberOfFunctionals());
+            for(int i = 0; i < app.getNumberOfFunctionals(); i += 1) {
+              resY[i] = app.residuumY(data.realCurY[i], data.realNextY[i]);
+            }
 
             app.print(formatEntry(curAdjIteration, resY));
 
@@ -174,7 +183,7 @@ namespace codi {
 
           Base::copyFromTo(pRealF, data.realP);
           Base::copyFromTo(xRealF, data.realX);
-          Base::evaluateTape(data, EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX | EvaluationInputOutputFlags::UpdateP);
+          Base::evaluateTape(app, data, EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX | EvaluationInputOutputFlags::UpdateP);
 
           if(pIterationAvailable) {
             Base::reverseP(app, data, EvaluationInputOutputFlags::UpdateX);
@@ -189,24 +198,49 @@ namespace codi {
           cpm->remove(cp);
         }
 
-        std::string formatHeader() {
-          return StringUtil::format("Iter AdjY_L1 AdjY_L2 AdjY_LMax AdjY_LMaxPos\n");
-        }
-        std::string formatEntry(int adjIteration, Res resY) {
-          return StringUtil::format("%d %0.6e %0.6e %0.6e %d\n", adjIteration, resY.l1, resY.l2, resY.lMax,
-                                    resY.lMaxPos);
-        }
+        std::string formatHeader(int vectorDirections) {
+          std::string out = "Iter";
+          for(int i = 0; i < vectorDirections; i += 1) {
+            std::string prefix = StringUtil::format("V%02d_", i);
 
-        bool checkConvergence(Res initial, Res cur) {
-          bool converged = false;
-          if (settings.checkAbsConvergence) {
-            converged = cur.l2 < settings.absThreshold;
-          }
-          if (settings.checkRelConvergence) {
-            converged = cur.l2 < settings.relThreshold * initial.l2;
+            if(1 == vectorDirections) {
+              prefix = "";
+            }
+            out += StringUtil::format(" %sAdjY_L1 %sAdjY_L2 %sAdjY_LMax %sAdjY_LMaxPos", prefix.c_str(),
+                                      prefix.c_str(), prefix.c_str(), prefix.c_str());
           }
 
-          return converged;
+          out += "\n";
+
+          return out;
+        }
+
+        std::string formatEntry(int adjIteration, std::vector<Res> const& resY) {
+          std::string out = StringUtil::format("%d", adjIteration);
+          for(size_t i = 0; i < resY.size(); i += 1) {
+            out += StringUtil::format(" %0.6e %0.6e %0.6e %d", resY[i].l1, resY[i].l2, resY[i].lMax, resY[i].lMaxPos);
+          }
+
+          out += "\n";
+
+          return out;
+        }
+
+        bool checkConvergence(std::vector<Res> const& initial, std::vector<Res> const& cur) {
+          bool allConverged = true;
+          for(size_t i = 0; i < cur.size(); i += 1) {
+            bool converged = false;
+            if (settings.checkAbsConvergence) {
+              converged = cur[i].l2 < settings.absThreshold;
+            }
+            if (settings.checkRelConvergence) {
+              converged = cur[i].l2 < settings.relThreshold * initial[i].l2;
+            }
+
+            allConverged &= converged;
+          }
+
+          return allConverged;
         }
 
         EvaluationInputOutput getVectorOperations(RecordingInputOutput tapeStatus, EvaluationInputOutput vectorStatus) {

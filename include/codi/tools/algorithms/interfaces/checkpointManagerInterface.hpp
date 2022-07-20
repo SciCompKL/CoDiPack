@@ -47,10 +47,13 @@ namespace codi {
   namespace algorithms {
 
     struct CheckpointHandle {
-        int getIteration() const;
 
-        void setAlgorithmData(void* data);
-        void* getAlgorithmData() const;
+        virtual ~CheckpointHandle() {}
+
+        virtual int getIteration() const = 0;
+
+        virtual void setAlgorithmData(void* data) = 0;
+        virtual void* getAlgorithmData() const = 0;
     };
 
     struct CheckpointBase : public CheckpointHandle {

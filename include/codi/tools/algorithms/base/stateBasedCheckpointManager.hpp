@@ -99,6 +99,14 @@ namespace codi {
         StateBasedCheckpointManager(std::string const& folder, Application* app, FileIO* io)
             : app(app), io(io), folder(folder) {}
 
+        void setFolder(std::string const& value) {
+          folder = value;
+        }
+
+        std::string getFolder() {
+          return folder;
+        }
+
         Checkpoint* create() {
           Checkpoint* cp = new Checkpoint(app->getIteration());
           cp->data.resize(app->getSizeY());
