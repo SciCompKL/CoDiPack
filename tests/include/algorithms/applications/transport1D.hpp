@@ -55,6 +55,8 @@ struct Transport1DSettings {
     int maxIterSolve = 100;
     int maxT = 10000;
 
+    int functionalNumber = 1;
+
     std::vector<Type> control = std::vector<Type>(101, 1.0);
 };
 
@@ -64,6 +66,8 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
     using Type = CODI_DD(T_Type, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
     using Base = TestApplicationBase<Type, Transport1D>;
     using Settings = Transport1DSettings<Type>;
+
+    static size_t constexpr FunctionalMax = 16;
 
     Settings settings;
 
@@ -79,7 +83,7 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
 
     std::vector<Type> phi;
     std::vector<double> phi_old;
-    Type z;
+    Type z[FunctionalMax];
 
     double res;
 
@@ -160,14 +164,23 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
     }
 
     void evaluateF() {
-      z = 0.0;
-      z += 0.5 * sin(0) * phi[0];
+      z[0] = 0.0;
+      z[1] = 0.0;
+      z[0] += 0.5 * sin(0) * phi[0];
+      z[1] += 0.5 * cos(0) * phi[0];
       for (int i = 1; i < settings.N - 1; i += 1) {
-        z += sin(i * dx) * phi[i];
+        z[0] += sin(i * dx) * phi[i];
+        z[1] += cos(i * dx) * phi[i];
       }
-      z += 0.5 * sin((settings.N - 1) * dx) * phi[settings.N - 1];
+      z[0] += 0.5 * sin((settings.N - 1) * dx) * phi[settings.N - 1];
+      z[1] += 0.5 * sin((settings.N - 1) * dx) * phi[settings.N - 1];
 
-      z *= dx;
+      z[0] *= dx;
+      z[1] *= dx;
+
+      for(size_t i = 2; i < FunctionalMax; i += 1) {
+        z[i] = phi[settings.N - 1 - i];
+      }
     }
 
     void evaluateP() {
@@ -207,7 +220,9 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
 
     template<typename Func>
     void iterateZ(Func&& func) {
-      func(z, 0);
+      for (int i = 0; i < settings.functionalNumber; i += 1) {
+        func(z[i], i);
+      }
     }
 
     size_t getSizeY() {
@@ -223,8 +238,10 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
     }
 
     size_t getSizeZ() {
-      return 1;
+      return settings.functionalNumber;
     }
+
+    int getNumberOfFunctionals() { return settings.functionalNumber; }
 
     void runPrimal() {
       initialize();

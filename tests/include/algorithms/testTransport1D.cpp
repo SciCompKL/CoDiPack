@@ -39,56 +39,126 @@
 using Real = codi::RealReverse;
 using Problem = Transport1D<Real>;
 
-void prepare(Problem& app, std::string const& folder, std::string file) {
+using codi::algorithms::ApplicationHints;
+using codi::algorithms::ApplicationFlags;
+using codi::algorithms::ReverseAccumulationSettings;
+using codi::algorithms::CheckpointHandle;
+
+char const* const OUTPUT_DIR = "testTransport1D";
+char const* const CHECKPOINT_DIR = "testTransport1D_checkpoints";
+
+template<typename Type>
+void prepare(Transport1D<Type>& app, std::string const& folder, std::string file) {
   FileSystem::makePath(folder.c_str());
   app.setOutputFolder(folder);
   app.setOutputFile(folder + "/" + file);
+}
+
+struct AppConfig {
+    std::string name;
+    ApplicationHints hints;
+
+    AppConfig(std::string const& name, ApplicationHints hints) :
+      name(name),
+      hints(hints)
+    {}
+
+    AppConfig() = default;
+};
+
+template<typename T_Type>
+struct VectorConfig {
+    using Type = T_Type;
+    std::string name;
+    int vectorFunctions;
+
+    VectorConfig(std::string const& name, int vectorFunctions) :
+      name(name),
+      vectorFunctions(vectorFunctions)
+    {}
+};
+
+size_t constexpr CONFIG_SIZE = 3;
+AppConfig appConfigs[CONFIG_SIZE] = {
+  {"InitRecord", ApplicationFlags::InitializationComputesP | ApplicationFlags::PIterationIsAvailable},
+  {"InitRecompute_PIterableYes", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::PIterationIsAvailable},
+  {"InitRecompute_PIterableNo", ApplicationFlags::PComputationIsAvailable}
+};
+
+
+std::vector<AppConfig> selectAll(AppConfig* configs) {
+  return std::vector<AppConfig>(&configs[0], &configs[CONFIG_SIZE]);
+}
+
+std::vector<AppConfig> select(AppConfig* config, std::initializer_list<int> l) {
+  std::vector<AppConfig> s(l.size());
+
+  size_t pos = 0;
+  for(int i : l) {
+    s[pos] = config[i];
+    pos += 1;
+  }
+
+  return s;
+}
+
+template<typename Type>
+void runRAProblem(VectorConfig<Type> const& vecConf, std::vector<AppConfig> const& appConf, ReverseAccumulationSettings raSettings) {
+
+  Transport1D<Type> app;
+  app.getCheckpointInterface()->setFolder(CHECKPOINT_DIR);
+
+  for(AppConfig const& curAppConfig: appConf) {
+    std::string name = codi::StringUtil::format("%s/revAcc_%s_%s", OUTPUT_DIR, curAppConfig.name.c_str(), vecConf.name.c_str());
+
+    app.setHints(curAppConfig.hints);
+    app.settings.functionalNumber = vecConf.vectorFunctions;
+    prepare(app, name, "run.out");
+
+    codi::algorithms::ReverseAccumulation<Transport1D<Type>> ra{raSettings};
+    ra.run(app);
+  }
 }
 
 int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
 
-  FileSystem::makePath("testTransport1D");
+  FileSystem::makePath(OUTPUT_DIR);
+  FileSystem::makePath(CHECKPOINT_DIR);
 
   Problem app;
-  prepare(app, "testTransport1D/primal", "run.out");
+  app.getCheckpointInterface()->setFolder(CHECKPOINT_DIR);
+  prepare(app, codi::StringUtil::format("%s/primal", OUTPUT_DIR), "run.out");
   codi::algorithms::PrimalEvaluation<Problem> pe{codi::algorithms::PrimalEvaluationSettings()};
   pe.settings.checkRelConvergence = false;
   pe.settings.absThreshold = 0.000000001;
   pe.run(app);
 
-  prepare(app, "testTransport1D/revAcc", "run.out");
-  codi::algorithms::ReverseAccumulation<Problem> ra{codi::algorithms::ReverseAccumulationSettings()};
-  app.setHints(codi::algorithms::ApplicationFlags::PComputationIsAvailable | codi::algorithms::ApplicationFlags::PIterationIsAvailable);
-  ra.settings.checkRelConvergence = false;
-  ra.settings.absThreshold = 0.000000001;
-  ra.run(app);
+  codi::algorithms::CheckpointManagerInterface* cm = app.getCheckpointInterface();
+  codi::algorithms::CheckpointHandle* checkpoint = cm->create();
+  cm->write(checkpoint);
 
-  prepare(app, "testTransport1D/revAccWithInit", "run.out");
-  codi::algorithms::ReverseAccumulation<Problem> raWithInit{codi::algorithms::ReverseAccumulationSettings()};
-  app.setHints(codi::algorithms::ApplicationFlags::InitializationComputesP | codi::algorithms::ApplicationFlags::PIterationIsAvailable);
-  raWithInit.settings.start = 455;
-  raWithInit.settings.checkRelConvergence = false;
-  raWithInit.settings.absThreshold = 0.000000001;
-  raWithInit.run(app);
+  codi::algorithms::ReverseAccumulationSettings raSettings;
+  raSettings.start = 455;
+  raSettings.maxIterations = 550;
+  raSettings.checkRelConvergence = false;
+  raSettings.absThreshold = 0.000000001;
 
-  prepare(app, "testTransport1D/revAccNoPIteration", "run.out");
-  codi::algorithms::ReverseAccumulation<Problem> raNoPIteration{codi::algorithms::ReverseAccumulationSettings()};
-  app.setHints(codi::algorithms::ApplicationFlags::PComputationIsAvailable);
-  raNoPIteration.settings.start = 455;
-  raNoPIteration.settings.checkRelConvergence = false;
-  raNoPIteration.settings.absThreshold = 0.000000001;
-  raNoPIteration.run(app);
-  app.setHints(codi::algorithms::ApplicationHints::NONE());
+  runRAProblem(VectorConfig<codi::RealReverse>("TapeVec1_Functional1", 1), selectAll(appConfigs), raSettings);
+  runRAProblem(VectorConfig<codi::RealReverse>("TapeVec1_Functional2", 2), select(appConfigs, {0}), raSettings);
 
-  prepare(app, "testTransport1D/blackBox", "run.out");
+  runRAProblem(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional1", 1), select(appConfigs, {0}), raSettings);
+  runRAProblem(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional4", 4), select(appConfigs, {0}), raSettings);
+  runRAProblem(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional5", 5), select(appConfigs, {0}), raSettings);
+
+  prepare(app, codi::StringUtil::format("%s/blackBox", OUTPUT_DIR), "run.out");
   codi::algorithms::BlackBox<Problem> bb{codi::algorithms::BlackBoxSettings()};
   bb.settings.checkRelConvergence = false;
   bb.settings.absThreshold = 0.000000001;
   bb.run(app);
 
-  prepare(app, "testTransport1D/checkpointTest", "run.out");
+  prepare(app, codi::StringUtil::format("%s/checkpointTest", OUTPUT_DIR), "run.out");
   app.setIteration(0);
   app.initialize();
   app.getIOInterface()->onlyWriteFinal = false;
