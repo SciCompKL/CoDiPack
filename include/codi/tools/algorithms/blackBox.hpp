@@ -142,17 +142,25 @@ namespace codi {
 
           int d = app.getNumberOfFunctionals();
 
+          typename Base::VectorAccess* access = Base::createVectorAccess(tape);
+
           for(int vecPos = 0; vecPos < d; vecPos += Base::d_local) {
             int steps = min(d - vecPos, Base::d_local);
 
-            Base::setGradient(tape, idZ, 1.0, vecPos, steps);
+            Base::setGradient(access, idZ, 1.0, vecPos, steps);
 
-            tape.evaluate();
+            if(Base::useTapeAdjoint) {
+              tape.evaluate();
+            } else {
+              Base::vectorHelper->evaluate();
+            }
 
-            Base::getGradientAndReset(tape, idX, gradX, vecPos, steps);
+            Base::getGradientAndReset(access, idX, gradX, vecPos, steps);
 
             io->writeX(0, gradX, OutputFlags::Final | OutputFlags::Derivative | OutputFlags::F, vecPos);
           }
+
+          Base::deleteVectorAccess(tape, access);
         }
 
         std::string formatHeader() {

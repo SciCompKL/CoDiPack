@@ -39,6 +39,7 @@
 #include "../../../misc/enumBitset.hpp"
 #include "../../../misc/macros.hpp"
 #include "../../../traits/gradientTraits.hpp"
+#include "../../helpers/customAdjointVectorHelper.hpp"
 #include "applicationInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -180,7 +181,36 @@ namespace codi {
         using RealVector = typename Data::RealVector;
         using IdVector = typename Data::IdVector;
 
-        AlgorithmInterface() : d_local(-1) {}
+        using VectorAccess = VectorAccessInterface<Real, Identifier>;
+        using VectorHelper = CustomAdjointVectorInterface<Type>;
+
+        AlgorithmInterface() :
+          useTapeAdjoint(true),
+          vectorHelper(nullptr),
+          d_local(1)
+        {
+          setVectorMode(-1);  // Setup the default vector mode from the tape.
+        }
+
+        /// -1 for default vector mode from the tape
+        void setVectorMode(int directions) {
+          if(nullptr != vectorHelper) {
+            delete vectorHelper;
+            vectorHelper = nullptr;
+          }
+
+          int tapeVectorMode = GradientTraits::dim<typename Tape::Gradient>();
+          if(-1 == directions || directions <= tapeVectorMode) {
+            // Use the tape vector mode
+            useTapeAdjoint = true;
+            d_local = tapeVectorMode;
+          } else {
+            // Create a custom vector mode
+            useTapeAdjoint = false;
+            vectorHelper = createClosestVectorHelper(directions);
+            d_local = vectorHelper->getVectorInterface()->getVectorSize();
+          }
+        }
 
         void run(App& app);
 
@@ -188,6 +218,8 @@ namespace codi {
 
       protected:
 
+        bool useTapeAdjoint;
+        VectorHelper* vectorHelper;
         int d_local;
 
         void iterateUntil(App& app, int iteration) {
@@ -273,18 +305,32 @@ namespace codi {
 
             int d = app.getNumberOfFunctionals();
 
+            if(!useTapeAdjoint) {
+              vectorHelper->setTape(*data.initTape);
+            }
+            VectorAccess* access = createVectorAccess(*data.initTape);
+
             for(int vecPos = 0; vecPos < d; vecPos += d_local) {
               int steps = min(d - vecPos, d_local);
 
-              setGradient(*data.initTape, data.idInitP, data.realP, vecPos, steps);
+              setGradient(access, data.idInitP, data.realP, vecPos, steps);
 
-              data.initTape->evaluate();
+              if(useTapeAdjoint) {
+                data.initTape->evaluate();
+              } else {
+                vectorHelper->evaluate();
+              }
 
               if (EvaluationInputOutputFlags::GetX & evalXFlag) {
-                getGradientAndReset(*data.initTape, data.idInitX, data.realX, vecPos, steps);
+                getGradientAndReset(access, data.idInitX, data.realX, vecPos, steps);
               } else if (EvaluationInputOutputFlags::UpdateX & evalXFlag) {
-                updateGradientAndReset(*data.initTape, data.idInitX, data.realX, vecPos, steps);
+                updateGradientAndReset(access, data.idInitX, data.realX, vecPos, steps);
               }
+            }
+
+            deleteVectorAccess(*data.initTape, access);
+            if(!useTapeAdjoint) {
+              vectorHelper->setTape(Type::getTape());
             }
 
             if(app.getHints() & ApplicationFlags::InitializationWriteTapeToDisk) {
@@ -300,6 +346,11 @@ namespace codi {
         }
 
         void recordTape(App& app, Data& data, TapeEvaluation evalOpt, RecordingInputOutput recOpt) {
+
+          if(!useTapeAdjoint) {
+            vectorHelper->deleteAdjointVector();
+          }
+
           Tape& tape = Type::getTape();
           tape.reset();
           tape.setActive();
@@ -350,10 +401,16 @@ namespace codi {
           }
 
           tape.setPassive();
+
+          if(!useTapeAdjoint) {
+            tape.deleteAdjointVector(); // Free memory that the tape has allocated for the adjoints.
+          }
         }
 
         void evaluateTape(App& app, Data& data, EvaluationInputOutput operations) {
           Tape& tape = Type::getTape();
+
+          VectorAccess* access = createVectorAccess(tape);
 
           int d = app.getNumberOfFunctionals();
 
@@ -361,41 +418,47 @@ namespace codi {
             int steps = min(d - vecPos, d_local);
 
             if (EvaluationInputOutputFlags::SetY & operations) {
-              setGradient(tape, data.idOutY, data.realCurY, vecPos, steps);
+              setGradient(access, data.idOutY, data.realCurY, vecPos, steps);
             }
 
             if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
               if (EvaluationInputOutputFlags::SetP & operations) {
-                setGradient(tape, data.idOutP, data.realP, vecPos, steps);
+                setGradient(access, data.idOutP, data.realP, vecPos, steps);
               }
             }
 
             if (EvaluationInputOutputFlags::SetZ & operations) {
-              setGradient(tape, data.idOutZ, 1.0, vecPos, steps);
+              setGradient(access, data.idOutZ, 1.0, vecPos, steps);
             }
 
-            tape.evaluate();
+            if(useTapeAdjoint) {
+              tape.evaluate();
+            } else {
+              vectorHelper->evaluate();
+            }
 
             if (EvaluationInputOutputFlags::GetY & operations) {
-              getGradientAndReset(tape, data.idInY, data.realNextY, vecPos, steps);
+              getGradientAndReset(access, data.idInY, data.realNextY, vecPos, steps);
             } else if (EvaluationInputOutputFlags::UpdateY & operations) {
-              updateGradientAndReset(tape, data.idInY, data.realNextY, vecPos, steps);
+              updateGradientAndReset(access, data.idInY, data.realNextY, vecPos, steps);
             }
 
             if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
               if (EvaluationInputOutputFlags::GetP & operations) {
-                getGradientAndReset(tape, data.idInP, data.realP, vecPos, steps);
+                getGradientAndReset(access, data.idInP, data.realP, vecPos, steps);
               } else if (EvaluationInputOutputFlags::UpdateP & operations) {
-                updateGradientAndReset(tape, data.idInP, data.realP, vecPos, steps);
+                updateGradientAndReset(access, data.idInP, data.realP, vecPos, steps);
               }
             }
 
             if (EvaluationInputOutputFlags::GetX & operations) {
-              getGradientAndReset(tape, data.idInX, data.realX, vecPos, steps);
+              getGradientAndReset(access, data.idInX, data.realX, vecPos, steps);
             } else if (EvaluationInputOutputFlags::UpdateX & operations) {
-              updateGradientAndReset(tape, data.idInX, data.realX, vecPos, steps);
+              updateGradientAndReset(access, data.idInX, data.realX, vecPos, steps);
             }
           }
+
+          deleteVectorAccess(tape, access);
         }
 
         static void clearInput(Type& value, size_t pos) {
@@ -444,41 +507,46 @@ namespace codi {
             }
         };
 
-        static void setGradient(Tape& tape, IdVector& ids, std::vector<RealVector>& seed, int vecPos, int steps) {
+        static void setGradient(VectorAccess* access, IdVector& ids, std::vector<RealVector>& seed, int vecPos, int steps) {
+          RealVector vec(access->getVectorSize());
           for (size_t pos = 0; pos < ids.size(); pos += 1) {
             for (int i = 0; i < steps; i += 1) {
-              GradientTraits::at(tape.gradient(ids[pos]), i) = seed[vecPos + i][pos];
+              vec[i] = seed[vecPos + i][pos];
             }
+            access->resetAdjointVec(ids[pos]);
+            access->updateAdjointVec(ids[pos], vec.data());
           }
         }
 
-        static void setGradient(Tape& tape, IdVector& ids, Real const& seed, int vecPos, int steps) {
+        static void setGradient(VectorAccess* access, IdVector& ids, Real const& seed, int vecPos, int steps) {
           for (int i = 0; i < steps; i += 1) {
-            GradientTraits::at(tape.gradient(ids[vecPos + i]), i) = seed;
+            access->resetAdjointVec(ids[vecPos + i]);
+            access->updateAdjoint(ids[vecPos + i], i, seed);
+          }
+
+        }
+
+        static void getGradientAndReset(VectorAccess* access, IdVector& ids, std::vector<RealVector>& value, int vecPos, int steps) {
+          RealVector vec(access->getVectorSize());
+
+          for (size_t pos = 0; pos < ids.size(); pos += 1) {
+            access->getAdjointVec(ids[pos], vec.data());
+            access->resetAdjointVec(ids[pos]);
+            for (int i = 0; i < steps; i += 1) {
+              value[vecPos + i][pos] = vec[i];
+            }
           }
         }
 
-        static void getGradientAndReset(Tape& tape, IdVector& ids, std::vector<RealVector>& value, int vecPos, int steps) {
-          using GT = GradientTraits::TraitsImplementation<typename Tape::Gradient>;
+        static void updateGradientAndReset(VectorAccess* access, IdVector& ids, std::vector<RealVector>& value, int vecPos, int steps) {
+          RealVector vec(access->getVectorSize());
 
           for (size_t pos = 0; pos < ids.size(); pos += 1) {
-            typename GT::Gradient& gradient = tape.gradient(ids[pos]);
+            access->getAdjointVec(ids[pos], vec.data());
+            access->resetAdjointVec(ids[pos]);
             for (int i = 0; i < steps; i += 1) {
-              value[vecPos + i][pos] = GT::at(gradient, i);
+              value[vecPos + i][pos] += vec[i];
             }
-            gradient = typename GT::Gradient();
-          }
-        }
-
-        static void updateGradientAndReset(Tape& tape, IdVector& ids, std::vector<RealVector>& value, int vecPos, int steps) {
-          using GT = GradientTraits::TraitsImplementation<typename Tape::Gradient>;
-
-          for (size_t pos = 0; pos < ids.size(); pos += 1) {
-            typename GT::Gradient& gradient = tape.gradient(ids[pos]);
-            for (int i = 0; i < steps; i += 1) {
-              value[vecPos + i][pos] += GT::at(gradient, i);
-            }
-            gradient = typename GT::Gradient();
           }
         }
 
@@ -486,6 +554,44 @@ namespace codi {
           for(size_t i = 0; i < to.size(); i += 1) {
             std::copy(from.begin(), from.end(), to.begin());
           }
+        }
+
+
+        VectorAccess* createVectorAccess(Tape& tape) {
+          if(useTapeAdjoint) {
+            return tape.createVectorAccess();
+          } else {
+            return vectorHelper->getVectorInterface();
+          }
+        }
+
+        void deleteVectorAccess(Tape& tape, VectorAccess* access) {
+          if(useTapeAdjoint) {
+            tape.deleteVectorAccess(access);
+          } else {
+            // Vector helper interfaces do not need to be freed.
+          }
+        }
+
+        virtual VectorHelper* createClosestVectorHelper(int directions) {
+          if(directions <= 1) {
+            return createVectorHelper<1>();
+          } else if(directions <= 2) {
+            return createVectorHelper<2>();
+          } else if(directions <= 4) {
+            return createVectorHelper<4>();
+          } else if(directions <= 8) {
+            return createVectorHelper<8>();
+          } else if(directions <= 12) {
+            return createVectorHelper<12>();
+          } else {
+            return createVectorHelper<16>();
+          }
+        }
+
+        template<int dim>
+        VectorHelper* createVectorHelper() {
+          return new CustomAdjointVectorHelper<Type, Direction<Real, dim>>();
         }
     };
   }

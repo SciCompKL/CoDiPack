@@ -606,6 +606,8 @@ namespace codi {
 
       /// \copydoc codi::DataManagementTapeInterface::createVectorAccess()
       VectorAccess<Gradient>* createVectorAccess() {
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+
         return createVectorAccessCustomAdjoints(adjoints.data());
       }
 
