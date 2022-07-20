@@ -152,6 +152,9 @@ int main(int nargs, char** args) {
   runRAProblem(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional4", 4), select(appConfigs, {0}), raSettings);
   runRAProblem(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional5", 5), select(appConfigs, {0}), raSettings);
 
+  runRAProblem(VectorConfig<codi::RealReverse>("CustomVec_Functional4", 4), select(appConfigs, {0}), raSettings);
+  runRAProblem(VectorConfig<codi::RealReverse>("CustomVec_Functional5", 5), select(appConfigs, {0}), raSettings);
+
   prepare(app, codi::StringUtil::format("%s/blackBox", OUTPUT_DIR), "run.out");
   codi::algorithms::BlackBox<Problem> bb{codi::algorithms::BlackBoxSettings()};
   bb.settings.checkRelConvergence = false;
