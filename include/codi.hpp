@@ -40,6 +40,7 @@
 #include "codi/expressions/immutableActiveType.hpp"
 #include "codi/expressions/real/allOperators.hpp"
 #include "codi/expressions/referenceActiveType.hpp"
+#include "codi/misc/enumBitset.hpp"
 #include "codi/tapes/data/blockData.hpp"
 #include "codi/tapes/data/chunkedData.hpp"
 #include "codi/tapes/forwardEvaluation.hpp"
@@ -60,6 +61,7 @@
 #include "codi/tools/helpers/customAdjointVectorHelper.hpp"
 #include "codi/tools/helpers/externalFunctionHelper.hpp"
 // #include "codi/tools/helpers/evaluationHelper.hpp" // Included at the end of this file.
+#include "codi/tools/helpers/linearSystem/linearSystemHandler.hpp"
 #include "codi/tools/helpers/preaccumulationHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
 #include "codi/tools/helpers/tapeHelper.hpp"
@@ -69,6 +71,10 @@
 
 #if CODI_EnableMPI
   #include "codi/tools/mpi/codiMpiTypes.hpp"
+#endif
+
+#if CODI_EnableEigen
+  #include "codi/tools/helpers/linearSystem/eigenLinearSystem.hpp"
 #endif
 
 /** \copydoc codi::Namespace */

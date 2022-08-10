@@ -42,7 +42,7 @@ define define_codi_driver
 #  $(5) DRIVER_TESTS
 #  $(6) ADDITIONAL_FLAGS
   ALL_DRIVERS := $(ALL_DRIVERS) $(1)
-  $(BUILD_DIR)/$(1).runner.o : DRIVER_INC = -I$(CODI_DIR)/include -DDRIVER='$(2)' -DDRIVER_NAME=$(3) -DCODI_TYPE='$(4)' -DCODI_TYPE_NAME=$(1) $(6)
+  $(BUILD_DIR)/$(1).runner.o : DRIVER_INC = $(CODI_INCLUDE) -DDRIVER='$(2)' -DDRIVER_NAME=$(3) -DCODI_TYPE='$(4)' -DCODI_TYPE_NAME=$(1) $(6)
   $(BUILD_DIR)/$(1).runner.o : DRIVER_TESTS = $(5)
 endef
 

@@ -40,6 +40,11 @@ EXAMPLE_DIR  = $(DOC_DIR)/examples
 TUTORIAL_DIR = $(DOC_DIR)/tutorials
 DEVELOPER_DIR = $(DOC_DIR)/developer
 
+EIGEN_DEFINE=
+ifdef EIGEN_DIR
+  EIGEN_DEFINE=-I$(EIGEN_DIR) -DCODI_EnableEigen=true
+endif
+
 #list all source files in DOC_DIR
 TUTORIAL_FILES  = $(wildcard $(TUTORIAL_DIR)/*.cpp)
 EXAMPLE_FILES  = $(wildcard $(EXAMPLE_DIR)/*.cpp) $(wildcard $(DEVELOPER_DIR)/*.cpp)
@@ -56,7 +61,7 @@ CODI_VERSION = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
 
 CODI_DIR := .
 
-FLAGS = -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp
+FLAGS = -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE)
 
 ifndef CLANG_FORMAT
   CLANG_FORMAT := clang-format

@@ -79,6 +79,8 @@ namespace codi {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See ConstantExpression.
+
+      /// See ConstantExpression.
       template<typename T>
       using ConversionOperator = CODI_DD(CODI_T(T_ConversionOperator<T>), CODI_T(ConstantDataConversion<T>));
 
