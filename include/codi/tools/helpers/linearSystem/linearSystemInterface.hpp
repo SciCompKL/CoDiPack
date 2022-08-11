@@ -153,7 +153,7 @@ namespace codi {
       /// Delete a real Vector.
       void deleteVectorReal(VectorReal* vec_v);
 
-      /// Delete an identifier vector
+      /// Delete an identifier vector.
       void deleteVectorIdentifier(VectorIdentifier* vec_id);
 
       /// @}
@@ -187,7 +187,7 @@ namespace codi {
       /// @{
 
       /// Solve the linear system with the real valued matrices and vectors.
-      /// Computes: Ax = b
+      /// Solves Ax = b for x.
       void solveSystem(MatrixReal const* A, VectorReal const* b, VectorReal* x);
 
       /// @}
@@ -227,7 +227,7 @@ namespace codi {
 
       /// Solve the linear system with the real valued matrices and vectors.
       /// Implementation that is called in the primal routine. If not specialized solveSystem is called.
-      /// Computes: Ax = b
+      /// Solves Ax = b for x.
       void solveSystemPrimal(MatrixReal const* A, VectorReal const* b, VectorReal* x) {
         CODI_UNUSED(A, b, x);
       }

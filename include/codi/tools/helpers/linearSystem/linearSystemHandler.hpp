@@ -157,7 +157,7 @@ namespace codi {
           }
       };
 
-      /// Get the primal and adjoint with value_id from the interface and return it in value_v and value_b.
+      /// Get the primal and adjoint with value_id from the interface and return them in value_v and value_b.
       struct GetPrimalAndGetAdjoint : public VectorAccessFunctor {
         public:
           using VectorAccessFunctor::VectorAccessFunctor;
@@ -168,7 +168,7 @@ namespace codi {
           }
       };
 
-      /// Get the primal and tangent with value_id from the interface and return it in value_v and value_b.
+      /// Get the primal and tangent with value_id from the interface and return them in value_v and value_b.
       using GetPrimalAndGetTangent = GetPrimalAndGetAdjoint;
 
       /// Get the tangent with value_id from the interface and return it in value_b.
@@ -570,7 +570,7 @@ namespace codi {
   };
 
 #ifndef DOXYGEN_DISABLE
-  /// Specialization of LinearSystemSolverHandler for none-AD types.
+  /// Specialization of LinearSystemSolverHandler for non-AD types.
   /// @tparam T_LinearSystem  Implementation of LinearSystemInterface.
   template<typename T_LinearSystem>
   struct LinearSystemSolverHandler<T_LinearSystem, RealTraits::EnableIfPassiveReal<typename T_LinearSystem::Type>> {
