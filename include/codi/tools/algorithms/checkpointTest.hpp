@@ -54,7 +54,9 @@ namespace codi {
 
         double maxRelativeError;
 
-        CheckpointTestSettings() : checkpointIter(10), compareIter(), maxRelativeError(1e-12) {
+        bool forceWrite;
+
+        CheckpointTestSettings() : checkpointIter(10), compareIter(), maxRelativeError(1e-12), forceWrite(false) {
           compareIter.push_back(10);
           compareIter.push_back(20);
           compareIter.push_back(30);
@@ -139,7 +141,7 @@ namespace codi {
             double largestError;
             int errorCount;
             compareVectors(vectors[i], curPrimal, largestError, errorCount);
-            if (0 == errorCount) {
+            if(0 == errorCount && !settings.forceWrite) {
               app.print("OK\n");
             } else {
               app.print(StringUtil::format("found %d errors, largest is %0.6e.\n", errorCount, largestError));
