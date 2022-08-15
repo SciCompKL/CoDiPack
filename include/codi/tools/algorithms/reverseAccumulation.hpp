@@ -41,6 +41,7 @@
 #include "../../misc/macros.hpp"
 #include "../../misc/stringUtil.hpp"
 #include "interfaces/algorithmInterface.hpp"
+#include "base/algorithmBase.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -66,14 +67,14 @@ namespace codi {
     };
 
     template<typename T_App>
-    struct ReverseAccumulation : public AlgorithmInterface<T_App> {
+    struct ReverseAccumulation : public AlgorithmBase<T_App> {
       public:
 
         using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
 
         using Type = typename App::Type;
 
-        using Base = AlgorithmInterface<App>;
+        using Base = AlgorithmBase<App>;
         using Data = typename Base::Data;
         using Res = typename Base::Res;
         using RealVector = typename Base::RealVector;

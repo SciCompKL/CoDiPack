@@ -47,7 +47,7 @@
 namespace codi {
   namespace algorithms {
 
-    struct CheckpointTestSettings : public AlgorithmBaseSettings {
+    struct CheckpointTestSettings {
       public:
         int checkpointIter;
         std::vector<int> compareIter;
@@ -78,7 +78,7 @@ namespace codi {
 
         CheckpointTest(CheckpointTestSettings settings) : settings(settings) {}
 
-        AlgorithmBaseSettings const* getSettings() const {
+        CheckpointTestSettings const* getSettings() const {
           return &settings;
         }
 
