@@ -70,10 +70,10 @@ namespace codi {
         using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
 
         using Type = typename App::Type;
+        using Real = typename App::Real;
 
         using Base = AlgorithmInterface<App>;
-        using Data = typename Base::Data;
-        using Res = typename Base::Res;
+        using Res = typename App::Res;
         using RealVector = typename Base::RealVector;
 
         CheckpointTestSettings settings;

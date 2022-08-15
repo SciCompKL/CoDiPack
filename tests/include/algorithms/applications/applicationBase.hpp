@@ -49,6 +49,7 @@ struct TestApplicationBase : public codi::algorithms::DefaultApplication<T_Type,
     using Base = codi::algorithms::DefaultApplication<Type, Impl>;
 
     using Real = typename Type::Real;
+    using Res = typename Base::Res;
 
   private:
     std::ofstream out;

@@ -56,7 +56,7 @@ namespace codi {
         using RestartIO = CODI_DD(T_RestartIO, FileIOInterface);
         using Application = CODI_DD(T_Application, CODI_T(codi::algorithms::ApplicationInterface<CODI_ANY>));
 
-        using Real = typename Type::Real;
+        using Real = RealTraits::Real<Type>;
 
         std::string restartWriteFolder;
         std::string restartReadFolder;

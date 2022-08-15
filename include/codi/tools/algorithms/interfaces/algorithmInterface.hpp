@@ -161,14 +161,9 @@ namespace codi {
         using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
         using Type = typename App::Type;
 
-        using Real = typename Type::Real;
-        using Identifier = typename Type::Identifier;
+        using Real = RealTraits::Real<Type>;
 
-        using Data = AlgorithmData<App>;
-        using Res = Residuum<Real>;
-
-        using RealVector = typename Data::RealVector;
-        using IdVector = typename Data::IdVector;
+        using RealVector = std::vector<Real>;
 
         void run(App& app);
 
@@ -186,7 +181,7 @@ namespace codi {
             GetPrimal(RealVector& vec) : vec(vec) {}
 
             void operator()(Type& value, size_t pos) {
-              vec[pos] = value.getValue();
+              vec[pos] = RealTraits::getValue(value);
             }
         };
     };

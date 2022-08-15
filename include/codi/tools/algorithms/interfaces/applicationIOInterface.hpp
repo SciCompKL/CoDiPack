@@ -72,7 +72,7 @@ namespace codi {
     template<typename T_Type>
     struct ApplicationIOInterface {
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-        using Real = typename Type::Real;
+        using Real = RealTraits::Real<Type>;
 
         using RealVector =  std::vector<Real>;
 

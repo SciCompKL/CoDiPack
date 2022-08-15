@@ -79,7 +79,8 @@ namespace codi {
 
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
-        using Real = typename Type::Real;
+        using Real = RealTraits::Real<Type>;
+        using Res = Residuum<Real>;
 
         virtual ~ApplicationInterface() {}
 
@@ -106,9 +107,9 @@ namespace codi {
         void evaluateF();
         void evaluateP();
 
-        Residuum<Real> residuumY(std::vector<Real> const& v1, std::vector<Real> const& v2);
-        Residuum<Real> residuumX(std::vector<Real> const& v1, std::vector<Real> const& v2);
-        Residuum<Real> residuumP(std::vector<Real> const& v1, std::vector<Real> const& v2);
+        Res residuumY(std::vector<Real> const& v1, std::vector<Real> const& v2);
+        Res residuumX(std::vector<Real> const& v1, std::vector<Real> const& v2);
+        Res residuumP(std::vector<Real> const& v1, std::vector<Real> const& v2);
 
         CheckpointManagerInterface* getCheckpointInterface();
         ApplicationIOInterface<Type>* getIOInterface();

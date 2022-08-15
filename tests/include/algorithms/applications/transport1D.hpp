@@ -65,6 +65,7 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
   public:
     using Type = CODI_DD(T_Type, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
     using Base = TestApplicationBase<Type, Transport1D>;
+    using Res = typename Base::Res;
     using Settings = Transport1DSettings<Type>;
 
     static size_t constexpr FunctionalMax = 16;
