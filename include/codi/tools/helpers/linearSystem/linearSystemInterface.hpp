@@ -71,21 +71,21 @@ namespace codi {
    * Implementations need to define all mandatory functions, the optional ones either depend on the use case and on
    * specifics of the algorithm. For more details see LinearSystemSolverHandler.
    *
-   * If the interface has been specialized it can be called with:
+   * If the interface has been specialized, it can be called with:
    * \code{.cpp}
    * codi::solveLinearSystem({Specialization}, A, rhs, sol, hints);
    * \endcode
    *  The hints parameter is optional, but can be used to improve the runtime and memory.
-   *  They are defined in #LinearSystemSolverFlags.
+   *  The set of flags that can be passed as hints is defined in #LinearSystemSolverFlags.
    *  - ReverseEvaluation: Prepare for a reverse mode evaluation. Stores A_v_trans.
    *  - ForwardEvaluation: Prepare for a forward mode evaluation. Stores A_v.
    *  - PrimalEvaluation:  Prepare for a primal reevaluation. Stores A_v.
    *  - ProvidePrimalSolution: Read x_v before the system is solved and provide it to the solveSystem or
-   *                           solveSystemPrimal methods. (only during the primal computation, not in the external
-   *                           function implementations)
+   *                           solveSystemPrimal methods (only during the primal computation, not in the external
+   *                           function implementations).
    *  - RecomputePrimalInForwardEvaluation: In the AD forward mode also solve the primal linear system again.
    *
-   *  See \ref Example_21_Special_handling_of_linear_system_solvers for an example with the Eigen impelemtation.
+   *  See \ref Example_21_Special_handling_of_linear_system_solvers for an example with the Eigen implementation.
    *
    *  \subsection sec_mandatory Mandatory methods
    *   - #createMatrixReal, #createMatrixIdentifier, #deleteMatrixReal, #deleteMatrixIdentifier
@@ -197,7 +197,7 @@ namespace codi {
 
       /// Iterate over all elements in \c mat_id \c and provide the elements in \c b_b \c and \c x_v \c .
       /// For element (i,j) func needs to be called with \c func(mat_id(i,j), b_b(i), x_v(j)) \c .
-      /// For sparse matrices only the elements of the sparsity pattern need to be considered.
+      /// For sparse matrices, only the elements of the sparsity pattern need to be considered.
       /// Used for e.g. the computation of the dyadic product \f$A=x_v*b_b^T\f$.
       template<typename Func>
       void iterateDyadic(Func func, MatrixIdentifier* mat_id, VectorReal* x_v, VectorReal* b_b) {

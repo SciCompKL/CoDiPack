@@ -260,7 +260,7 @@ namespace codi {
           }
       };
 
-      /// Update the adjoint from the dyadic product of x_v and b_b.
+      /// Update the adjoint from the dyadic product of x_v and b_b. See LinearSystemSolverHandler for a use case.
       struct UpdateAdjointDyadic : public VectorAccessFunctor {
         public:
           using VectorAccessFunctor::VectorAccessFunctor;

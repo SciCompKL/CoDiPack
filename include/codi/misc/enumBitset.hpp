@@ -51,10 +51,10 @@ namespace codi {
    * The bitset implementation allows to use an enum class as flags without causing compiler warnings or having to cast
    * the enum elements to integer types.
    *
-   * The enum needs to have an 'MaxElement' item and all elements need to be positive. An example definition is:
+   * The enum needs to have a 'MaxElement' item and all elements need to be positive. An example definition is:
    * \snippet examples/enumBitset.cpp Enum definition
    * where the overloaded operator | is required to create a bitset out of two flags.
-   * An example use is:
+   * An example use case is:
    * \snippet examples/enumBitset.cpp Enum use
    *
    * @tparam T_Enum An enumeration class. It has to have the element 'MaxElement' and only positive values.
