@@ -87,8 +87,8 @@ struct TestEigenSparseLinearSystemSolverHandler : public TestInterface {
 
       using Solver = EigenLinearSystemTest<Number>;
 #else
-      Number* A = &x[0];
-      Number b[2] = {x[4], x[5]};
+      Number A[4] = {x[0], x[1], Number(), x[2]} ;
+      Number b[2] = {x[3], x[4]};
       Number sol[2];
 
       using Solver = int;
