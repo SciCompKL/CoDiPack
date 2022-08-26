@@ -126,7 +126,7 @@ namespace codi {
           bool initialize = app.getHints() & ApplicationFlags::InitializationRequired;
           bool record = app.getHints() & ApplicationFlags::InitializationComputesP;
           bool pIsComputable = app.getHints() & ApplicationFlags::PComputationIsAvailable;
-          bool pIsIterable = app.getHints() & ApplicationFlags::PIterationIsAvailable;
+          bool pIsIterable = app.getHints() & ApplicationFlags::PStateIsAvailable;
 
           if(pIsComputable && record) {
             CODI_EXCEPTION("P can either be defined through the initialization or through the recomputation, but not "
@@ -227,7 +227,7 @@ namespace codi {
               data.initTape->deleteData();
             }
 
-          } else if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+          } else if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
             // Regular recording and reversal
             recordTape(app, data, TapeEvaluationFlags::P, RecodingInputOutputFlags::InX | RecodingInputOutputFlags::OutP);
 
@@ -250,7 +250,7 @@ namespace codi {
           } else {
             app.iterateY(clearInput);
           }
-          if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+          if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
             if (RecodingInputOutputFlags::InP & recOpt) {
               app.iterateP(RegisterInput(data.idInP));
             } else {
@@ -280,7 +280,7 @@ namespace codi {
             app.iterateY(RegisterOutput(data.idOutY));
           }
 
-          if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+          if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
             if (RecodingInputOutputFlags::OutP & recOpt) {
               app.iterateP(RegisterOutput(data.idOutP));
             }
@@ -311,7 +311,7 @@ namespace codi {
               setGradient(access, data.idOutY, data.realCurY, vecPos, steps);
             }
 
-            if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+            if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
               if (EvaluationInputOutputFlags::SetP & operations) {
                 setGradient(access, data.idOutP, data.realP, vecPos, steps);
               }
@@ -333,7 +333,7 @@ namespace codi {
               updateGradientAndReset(access, data.idInY, data.realNextY, vecPos, steps);
             }
 
-            if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+            if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
               if (EvaluationInputOutputFlags::GetP & operations) {
                 getGradientAndReset(access, data.idInP, data.realP, vecPos, steps);
               } else if (EvaluationInputOutputFlags::UpdateP & operations) {
@@ -472,6 +472,35 @@ namespace codi {
         template<int dim>
         VectorHelper* createVectorHelper() {
           return new CustomAdjointVectorHelper<Type, Direction<Real, dim>>();
+        }
+
+        std::string formatAdjointHeader(std::vector<Res> res) {
+          int vectorDirections = res.size();
+
+          std::string out = "Iter";
+          for(int i = 0; i < vectorDirections; i += 1) {
+            std::string prefix = StringUtil::format("V%02d_Adj", i);
+
+            if(1 == vectorDirections) {
+              prefix = "Adj";
+            }
+            out += " " + res[i].formatHeader(prefix);
+          }
+
+          out += "\n";
+
+          return out;
+        }
+
+        std::string formatAdjointEntry(int adjIteration, std::vector<Res> const& resY, int width = 6) {
+          std::string out = StringUtil::format("%d", adjIteration);
+          for(size_t i = 0; i < resY.size(); i += 1) {
+            out += " " + resY[i].formatEntry(width);
+          }
+
+          out += "\n";
+
+          return out;
         }
     };
   }

@@ -132,7 +132,7 @@ ALGORITHM_TESTS = $(patsubst %.cpp,$(BUILD_DIR)/%.run,$(ALGORITHM_TEST_FILES))
 	@echo "Running $(TEST_NAME)"
 	cd $(<D); ./$(<F)
 	@echo "Comparing"
-	@diff -ruw tests/resultsAlgorithms/$(TEST_NAME) $(@D)/$(TEST_NAME)
+	@diff -rq tests/resultsAlgorithms/$(TEST_NAME) $(@D)/$(TEST_NAME)
 
 algorithmTests: $(ALGORITHM_TESTS)
 

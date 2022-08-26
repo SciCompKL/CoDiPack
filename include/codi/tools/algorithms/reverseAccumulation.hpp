@@ -91,7 +91,7 @@ namespace codi {
           CheckpointManagerInterface* cpm = app.getCheckpointInterface();
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
-          bool pIterationAvailable = app.getHints() & ApplicationFlags::PIterationIsAvailable;
+          bool pStateAvailable = app.getHints() & ApplicationFlags::PStateIsAvailable;
 
           Base::initVectorMode(app);
 
@@ -132,11 +132,11 @@ namespace codi {
 
           Base::copyFromTo(yRealF, data.realCurY);  // Do first step.
 
-          app.print(formatHeader(app.getNumberOfFunctionals()));
+          app.print(Base::formatAdjointHeader(initalResY));
 
           io->writeY(0, yRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
           io->writeX(0, xRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
-          if(pIterationAvailable) {
+          if(pStateAvailable) {
             io->writeP(0, pRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
           }
 
@@ -157,7 +157,7 @@ namespace codi {
               resY[i] = app.residuumY(data.realCurY[i], data.realNextY[i]);
             }
 
-            app.print(formatEntry(curAdjIteration, resY));
+            app.print(Base::formatAdjointEntry(curAdjIteration, resY));
 
             // Prepare next iteration
             std::swap(data.realCurY, data.realNextY);
@@ -177,7 +177,7 @@ namespace codi {
           cpm->load(cp);
           tapeStatus = RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InP | RecodingInputOutputFlags::OutY;
           TapeEvaluation tapeEvaluation = TapeEvaluationFlags::G;
-          if(app.getHints() & ApplicationFlags::PComputationIsAvailable && !pIterationAvailable) {
+          if(app.getHints() & ApplicationFlags::PComputationIsAvailable && !pStateAvailable) {
             tapeEvaluation |= TapeEvaluationFlags::P; // P but not iterable, then P and G need to be called at the same time.
           }
           Base::recordTape(app, data, tapeEvaluation, tapeStatus);
@@ -186,45 +186,17 @@ namespace codi {
           Base::copyFromTo(xRealF, data.realX);
           Base::evaluateTape(app, data, EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX | EvaluationInputOutputFlags::UpdateP);
 
-          if(pIterationAvailable) {
+          if(pStateAvailable) {
             Base::reverseP(app, data, EvaluationInputOutputFlags::UpdateX);
           }
 
           io->writeY(curAdjIteration, data.realCurY, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
           io->writeX(curAdjIteration, data.realX, OutputFlags::Derivative | OutputFlags::P | OutputFlags::Final);
-          if(pIterationAvailable) {
+          if(pStateAvailable) {
             io->writeP(curAdjIteration, data.realP, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
           }
 
           cpm->remove(cp);
-        }
-
-        std::string formatHeader(int vectorDirections) {
-          std::string out = "Iter";
-          for(int i = 0; i < vectorDirections; i += 1) {
-            std::string prefix = StringUtil::format("V%02d_", i);
-
-            if(1 == vectorDirections) {
-              prefix = "";
-            }
-            out += StringUtil::format(" %sAdjY_L1 %sAdjY_L2 %sAdjY_LMax %sAdjY_LMaxPos", prefix.c_str(),
-                                      prefix.c_str(), prefix.c_str(), prefix.c_str());
-          }
-
-          out += "\n";
-
-          return out;
-        }
-
-        std::string formatEntry(int adjIteration, std::vector<Res> const& resY) {
-          std::string out = StringUtil::format("%d", adjIteration);
-          for(size_t i = 0; i < resY.size(); i += 1) {
-            out += StringUtil::format(" %0.6e %0.6e %0.6e %d", resY[i].l1, resY[i].l2, resY[i].lMax, resY[i].lMaxPos);
-          }
-
-          out += "\n";
-
-          return out;
         }
 
         bool checkConvergence(std::vector<Res> const& initial, std::vector<Res> const& cur) {
@@ -242,27 +214,6 @@ namespace codi {
           }
 
           return allConverged;
-        }
-
-        EvaluationInputOutput getVectorOperations(RecordingInputOutput tapeStatus, EvaluationInputOutput vectorStatus) {
-          if (!(RecodingInputOutputFlags::InY & tapeStatus)) {
-            // Blank out y operations
-            vectorStatus.reset(EvaluationInputOutputFlags::GetY);
-            vectorStatus.reset(EvaluationInputOutputFlags::UpdateY);
-          }
-
-          if (!(RecodingInputOutputFlags::InP & tapeStatus)) {
-            // Blank out p operations
-            vectorStatus.reset(EvaluationInputOutputFlags::GetP);
-            vectorStatus.reset(EvaluationInputOutputFlags::UpdateP);
-          }
-
-          if (!(RecodingInputOutputFlags::InX & tapeStatus)) {
-            // Blank out x operations
-            vectorStatus.reset(EvaluationInputOutputFlags::GetX);
-            vectorStatus.reset(EvaluationInputOutputFlags::UpdateX);
-          }
-          return vectorStatus;
         }
     };
   }

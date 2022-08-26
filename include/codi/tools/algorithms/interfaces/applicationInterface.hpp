@@ -41,6 +41,7 @@
 #include "../../../expressions/lhsExpressionInterface.hpp"
 #include "../../../misc/enumBitset.hpp"
 #include "../../../misc/macros.hpp"
+#include "../../../misc/stringUtil.hpp"
 #include "applicationIOInterface.hpp"
 #include "checkpointManagerInterface.hpp"
 
@@ -53,7 +54,7 @@ namespace codi {
       InitializationComputesP,
       InitializationWriteTapeToDisk,
       PComputationIsAvailable, // TODO: Automatic detection
-      PIterationIsAvailable, // TODO: Automatic detection
+      PStateIsAvailable, // TODO: Automatic detection
       MaxElement
     };
     using ApplicationHints = EnumBitset<ApplicationFlags>;
@@ -71,6 +72,16 @@ namespace codi {
         size_t lMaxPos;
 
         Residuum() = default;
+
+        std::string formatHeader(std::string prefix) const {
+
+          return StringUtil::format("%sY_L1 %sY_L2 %sY_LMax %sY_LMaxPos", prefix.c_str(),
+                                    prefix.c_str(), prefix.c_str(), prefix.c_str());
+        }
+
+        std::string formatEntry(int width = 6) const {
+          return StringUtil::format("%0.*e %0.*e %0.*e %d", width, l1, width, l2, width, lMax, lMaxPos);
+        }
     };
 
     template<typename T_Type>

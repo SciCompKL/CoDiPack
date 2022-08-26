@@ -140,7 +140,7 @@ namespace codi {
 
           realX.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeX()));
 
-          if(app.getHints() & ApplicationFlags::PIterationIsAvailable) {
+          if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
             idInP.resize(app.getSizeP());
             idOutP.resize(app.getSizeP());
             realP.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeP()));

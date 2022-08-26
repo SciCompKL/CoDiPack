@@ -94,7 +94,7 @@ namespace codi {
           RealVector yNext(app.getSizeY());
           Res initalResY;
 
-          app.print(formatHeader());
+          app.print(formatHeader(initalResY));
 
           app.initialize();
           app.evaluateP();
@@ -134,12 +134,12 @@ namespace codi {
           io->writeZ(app.getIteration(), z, OutputFlags::Primal | OutputFlags::F | OutputFlags::Final);
         }
 
-        std::string formatHeader() {
-          return StringUtil::format("Iter Y_L1 Y_L2 Y_LMax Y_LMaxPos\n");
+        std::string formatHeader(Res resY) {
+          return "Iter " + resY.formatHeader("") + "\n";
         }
 
         std::string formatEntry(int iteration, Res resY) {
-          return StringUtil::format("%d %0.6e %0.6e %0.6e %d\n", iteration, resY.l1, resY.l2, resY.lMax, resY.lMaxPos);
+          return StringUtil::format("%d ", iteration) + resY.formatEntry() + "\n";
         }
 
         bool checkConvergence(Res initial, Res cur) {

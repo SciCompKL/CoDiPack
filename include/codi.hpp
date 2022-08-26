@@ -60,6 +60,7 @@
 #include "codi/tools/algorithms/interfaces/fileIOInterface.hpp"
 #include "codi/tools/algorithms/interfaces/applicationIOInterface.hpp"
 #include "codi/tools/algorithms/blackBox.hpp"
+#include "codi/tools/algorithms/blackBoxWithCheckpoints.hpp"
 #include "codi/tools/algorithms/checkpointTest.hpp"
 #include "codi/tools/algorithms/primalEvaluation.hpp"
 #include "codi/tools/algorithms/reverseAccumulation.hpp"

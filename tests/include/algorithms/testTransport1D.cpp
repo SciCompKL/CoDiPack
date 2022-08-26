@@ -52,6 +52,7 @@ void prepare(Transport1D<Type>& app, std::string const& folder, std::string file
   FileSystem::makePath(folder.c_str());
   app.setOutputFolder(folder);
   app.setOutputFile(folder + "/" + file);
+  app.initialize();
 }
 
 struct AppConfig {
@@ -80,8 +81,8 @@ struct VectorConfig {
 
 size_t constexpr CONFIG_SIZE = 3;
 AppConfig appConfigs[CONFIG_SIZE] = {
-  {"InitRecord", ApplicationFlags::InitializationComputesP | ApplicationFlags::PIterationIsAvailable},
-  {"InitRecompute_PIterableYes", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::PIterationIsAvailable},
+  {"InitRecord", ApplicationFlags::InitializationComputesP | ApplicationFlags::PStateIsAvailable},
+  {"InitRecompute_PIterableYes", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::PStateIsAvailable},
   {"InitRecompute_PIterableNo", ApplicationFlags::PComputationIsAvailable}
 };
 
@@ -102,22 +103,50 @@ std::vector<AppConfig> select(AppConfig* config, std::initializer_list<int> l) {
   return s;
 }
 
-template<typename Type>
-void runRAProblem(VectorConfig<Type> const& vecConf, std::vector<AppConfig> const& appConf, ReverseAccumulationSettings raSettings) {
+template<template <typename> class Algo, typename Type, typename Settings>
+void runProblem(VectorConfig<Type> const& vecConf, std::vector<AppConfig> const& appConf, Settings& settings, std::string const& prefix) {
 
   Transport1D<Type> app;
   app.getCheckpointInterface()->setFolder(CHECKPOINT_DIR);
 
   for(AppConfig const& curAppConfig: appConf) {
-    std::string name = codi::StringUtil::format("%s/revAcc_%s_%s", OUTPUT_DIR, curAppConfig.name.c_str(), vecConf.name.c_str());
+    std::string name = codi::StringUtil::format("%s/%s_%s_%s", OUTPUT_DIR, prefix.c_str(), curAppConfig.name.c_str(), vecConf.name.c_str());
 
     app.setHints(curAppConfig.hints);
     app.settings.functionalNumber = vecConf.vectorFunctions;
     prepare(app, name, "run.out");
 
-    codi::algorithms::ReverseAccumulation<Transport1D<Type>> ra{raSettings};
-    ra.run(app);
+    Algo<Transport1D<Type>> algo(settings);
+    algo.run(app);
   }
+}
+
+void runRATests()
+{
+  codi::algorithms::ReverseAccumulationSettings settings;
+  settings.start = 455;
+  settings.maxIterations = 550;
+  settings.checkRelConvergence = false;
+  settings.absThreshold = 0.000000001;
+
+  runProblem<codi::algorithms::ReverseAccumulation>(VectorConfig<codi::RealReverse>("TapeVec1_Functional1", 1), selectAll(appConfigs), settings, "revAcc");
+  runProblem<codi::algorithms::ReverseAccumulation>(VectorConfig<codi::RealReverse>("TapeVec1_Functional2", 2), select(appConfigs, {0}), settings, "revAcc");
+
+  runProblem<codi::algorithms::ReverseAccumulation>(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional1", 1), select(appConfigs, {0}), settings, "revAcc");
+  runProblem<codi::algorithms::ReverseAccumulation>(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional4", 4), select(appConfigs, {0}), settings, "revAcc");
+  runProblem<codi::algorithms::ReverseAccumulation>(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional5", 5), select(appConfigs, {0}), settings, "revAcc");
+
+  runProblem<codi::algorithms::ReverseAccumulation>(VectorConfig<codi::RealReverse>("CustomVec_Functional4", 4), select(appConfigs, {0}), settings, "revAcc");
+  runProblem<codi::algorithms::ReverseAccumulation>(VectorConfig<codi::RealReverse>("CustomVec_Functional5", 5), select(appConfigs, {0}), settings, "revAcc");
+}
+
+void runBBTests(Problem& app)
+{
+  prepare(app, codi::StringUtil::format("%s/blackBox", OUTPUT_DIR), "run.out");
+  codi::algorithms::BlackBox<Problem> bb{codi::algorithms::BlackBoxSettings()};
+  bb.settings.checkRelConvergence = false;
+  bb.settings.absThreshold = 0.000000001;
+  bb.run(app);
 }
 
 int main(int nargs, char** args) {
@@ -139,27 +168,10 @@ int main(int nargs, char** args) {
   codi::algorithms::CheckpointHandle* checkpoint = cm->create();
   cm->write(checkpoint);
 
-  codi::algorithms::ReverseAccumulationSettings raSettings;
-  raSettings.start = 455;
-  raSettings.maxIterations = 550;
-  raSettings.checkRelConvergence = false;
-  raSettings.absThreshold = 0.000000001;
+  runRATests();
 
-  runRAProblem(VectorConfig<codi::RealReverse>("TapeVec1_Functional1", 1), selectAll(appConfigs), raSettings);
-  runRAProblem(VectorConfig<codi::RealReverse>("TapeVec1_Functional2", 2), select(appConfigs, {0}), raSettings);
+  runBBTests(app);
 
-  runRAProblem(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional1", 1), select(appConfigs, {0}), raSettings);
-  runRAProblem(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional4", 4), select(appConfigs, {0}), raSettings);
-  runRAProblem(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional5", 5), select(appConfigs, {0}), raSettings);
-
-  runRAProblem(VectorConfig<codi::RealReverse>("CustomVec_Functional4", 4), select(appConfigs, {0}), raSettings);
-  runRAProblem(VectorConfig<codi::RealReverse>("CustomVec_Functional5", 5), select(appConfigs, {0}), raSettings);
-
-  prepare(app, codi::StringUtil::format("%s/blackBox", OUTPUT_DIR), "run.out");
-  codi::algorithms::BlackBox<Problem> bb{codi::algorithms::BlackBoxSettings()};
-  bb.settings.checkRelConvergence = false;
-  bb.settings.absThreshold = 0.000000001;
-  bb.run(app);
 
   prepare(app, codi::StringUtil::format("%s/checkpointTest", OUTPUT_DIR), "run.out");
   app.setIteration(0);
