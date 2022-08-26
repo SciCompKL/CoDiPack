@@ -83,10 +83,11 @@ namespace codi {
         virtual ~CheckpointManagerInterface() {}
 
         virtual CheckpointHandle* create() = 0;
+        virtual void free(CheckpointHandle* cp) = 0;
         virtual std::vector<CheckpointHandle*> list() = 0;
         virtual void load(CheckpointHandle* cp) = 0;
-        virtual void remove(CheckpointHandle* cp) = 0;
 
+        virtual void remove(CheckpointHandle* cp) = 0;
         virtual void write(CheckpointHandle* cp) = 0;
         virtual void read(CheckpointHandle* cp) = 0;
     };

@@ -1,458 +1,8 @@
-Checkpoints avail: 2, first: 0, last: 455
+Checkpoints avail: 47, first: 0, last: 455
 Computing adjoint of f at 455.
 Starting main loop.
 Iter V00_AdjY_L1 V00_AdjY_L2 V00_AdjY_LMax V00_AdjY_LMaxPos V01_AdjY_L1 V01_AdjY_L2 V01_AdjY_LMax V01_AdjY_LMaxPos
-Iterating from 0 to 454.
-Creating checkpoint at 1.
-Creating checkpoint at 2.
-Creating checkpoint at 3.
-Creating checkpoint at 4.
-Creating checkpoint at 5.
-Creating checkpoint at 6.
-Creating checkpoint at 7.
-Creating checkpoint at 8.
-Creating checkpoint at 9.
-Creating checkpoint at 10.
-Creating checkpoint at 11.
-Creating checkpoint at 12.
-Creating checkpoint at 13.
-Creating checkpoint at 14.
-Creating checkpoint at 15.
-Creating checkpoint at 16.
-Creating checkpoint at 17.
-Creating checkpoint at 18.
-Creating checkpoint at 19.
-Creating checkpoint at 20.
-Creating checkpoint at 21.
-Creating checkpoint at 22.
-Creating checkpoint at 23.
-Creating checkpoint at 24.
-Creating checkpoint at 25.
-Creating checkpoint at 26.
-Creating checkpoint at 27.
-Creating checkpoint at 28.
-Creating checkpoint at 29.
-Creating checkpoint at 30.
-Creating checkpoint at 31.
-Creating checkpoint at 32.
-Creating checkpoint at 33.
-Creating checkpoint at 34.
-Creating checkpoint at 35.
-Creating checkpoint at 36.
-Creating checkpoint at 37.
-Creating checkpoint at 38.
-Creating checkpoint at 39.
-Creating checkpoint at 40.
-Creating checkpoint at 41.
-Creating checkpoint at 42.
-Creating checkpoint at 43.
-Creating checkpoint at 44.
-Creating checkpoint at 45.
-Creating checkpoint at 46.
-Creating checkpoint at 47.
-Creating checkpoint at 48.
-Creating checkpoint at 49.
-Creating checkpoint at 50.
-Creating checkpoint at 51.
-Creating checkpoint at 52.
-Creating checkpoint at 53.
-Creating checkpoint at 54.
-Creating checkpoint at 55.
-Creating checkpoint at 56.
-Creating checkpoint at 57.
-Creating checkpoint at 58.
-Creating checkpoint at 59.
-Creating checkpoint at 60.
-Creating checkpoint at 61.
-Creating checkpoint at 62.
-Creating checkpoint at 63.
-Creating checkpoint at 64.
-Creating checkpoint at 65.
-Creating checkpoint at 66.
-Creating checkpoint at 67.
-Creating checkpoint at 68.
-Creating checkpoint at 69.
-Creating checkpoint at 70.
-Creating checkpoint at 71.
-Creating checkpoint at 72.
-Creating checkpoint at 73.
-Creating checkpoint at 74.
-Creating checkpoint at 75.
-Creating checkpoint at 76.
-Creating checkpoint at 77.
-Creating checkpoint at 78.
-Creating checkpoint at 79.
-Creating checkpoint at 80.
-Creating checkpoint at 81.
-Creating checkpoint at 82.
-Creating checkpoint at 83.
-Creating checkpoint at 84.
-Creating checkpoint at 85.
-Creating checkpoint at 86.
-Creating checkpoint at 87.
-Creating checkpoint at 88.
-Creating checkpoint at 89.
-Creating checkpoint at 90.
-Creating checkpoint at 91.
-Creating checkpoint at 92.
-Creating checkpoint at 93.
-Creating checkpoint at 94.
-Creating checkpoint at 95.
-Creating checkpoint at 96.
-Creating checkpoint at 97.
-Creating checkpoint at 98.
-Creating checkpoint at 99.
-Creating checkpoint at 100.
-Creating checkpoint at 101.
-Creating checkpoint at 102.
-Creating checkpoint at 103.
-Creating checkpoint at 104.
-Creating checkpoint at 105.
-Creating checkpoint at 106.
-Creating checkpoint at 107.
-Creating checkpoint at 108.
-Creating checkpoint at 109.
-Creating checkpoint at 110.
-Creating checkpoint at 111.
-Creating checkpoint at 112.
-Creating checkpoint at 113.
-Creating checkpoint at 114.
-Creating checkpoint at 115.
-Creating checkpoint at 116.
-Creating checkpoint at 117.
-Creating checkpoint at 118.
-Creating checkpoint at 119.
-Creating checkpoint at 120.
-Creating checkpoint at 121.
-Creating checkpoint at 122.
-Creating checkpoint at 123.
-Creating checkpoint at 124.
-Creating checkpoint at 125.
-Creating checkpoint at 126.
-Creating checkpoint at 127.
-Creating checkpoint at 128.
-Creating checkpoint at 129.
-Creating checkpoint at 130.
-Creating checkpoint at 131.
-Creating checkpoint at 132.
-Creating checkpoint at 133.
-Creating checkpoint at 134.
-Creating checkpoint at 135.
-Creating checkpoint at 136.
-Creating checkpoint at 137.
-Creating checkpoint at 138.
-Creating checkpoint at 139.
-Creating checkpoint at 140.
-Creating checkpoint at 141.
-Creating checkpoint at 142.
-Creating checkpoint at 143.
-Creating checkpoint at 144.
-Creating checkpoint at 145.
-Creating checkpoint at 146.
-Creating checkpoint at 147.
-Creating checkpoint at 148.
-Creating checkpoint at 149.
-Creating checkpoint at 150.
-Creating checkpoint at 151.
-Creating checkpoint at 152.
-Creating checkpoint at 153.
-Creating checkpoint at 154.
-Creating checkpoint at 155.
-Creating checkpoint at 156.
-Creating checkpoint at 157.
-Creating checkpoint at 158.
-Creating checkpoint at 159.
-Creating checkpoint at 160.
-Creating checkpoint at 161.
-Creating checkpoint at 162.
-Creating checkpoint at 163.
-Creating checkpoint at 164.
-Creating checkpoint at 165.
-Creating checkpoint at 166.
-Creating checkpoint at 167.
-Creating checkpoint at 168.
-Creating checkpoint at 169.
-Creating checkpoint at 170.
-Creating checkpoint at 171.
-Creating checkpoint at 172.
-Creating checkpoint at 173.
-Creating checkpoint at 174.
-Creating checkpoint at 175.
-Creating checkpoint at 176.
-Creating checkpoint at 177.
-Creating checkpoint at 178.
-Creating checkpoint at 179.
-Creating checkpoint at 180.
-Creating checkpoint at 181.
-Creating checkpoint at 182.
-Creating checkpoint at 183.
-Creating checkpoint at 184.
-Creating checkpoint at 185.
-Creating checkpoint at 186.
-Creating checkpoint at 187.
-Creating checkpoint at 188.
-Creating checkpoint at 189.
-Creating checkpoint at 190.
-Creating checkpoint at 191.
-Creating checkpoint at 192.
-Creating checkpoint at 193.
-Creating checkpoint at 194.
-Creating checkpoint at 195.
-Creating checkpoint at 196.
-Creating checkpoint at 197.
-Creating checkpoint at 198.
-Creating checkpoint at 199.
-Creating checkpoint at 200.
-Creating checkpoint at 201.
-Creating checkpoint at 202.
-Creating checkpoint at 203.
-Creating checkpoint at 204.
-Creating checkpoint at 205.
-Creating checkpoint at 206.
-Creating checkpoint at 207.
-Creating checkpoint at 208.
-Creating checkpoint at 209.
-Creating checkpoint at 210.
-Creating checkpoint at 211.
-Creating checkpoint at 212.
-Creating checkpoint at 213.
-Creating checkpoint at 214.
-Creating checkpoint at 215.
-Creating checkpoint at 216.
-Creating checkpoint at 217.
-Creating checkpoint at 218.
-Creating checkpoint at 219.
-Creating checkpoint at 220.
-Creating checkpoint at 221.
-Creating checkpoint at 222.
-Creating checkpoint at 223.
-Creating checkpoint at 224.
-Creating checkpoint at 225.
-Creating checkpoint at 226.
-Creating checkpoint at 227.
-Creating checkpoint at 228.
-Creating checkpoint at 229.
-Creating checkpoint at 230.
-Creating checkpoint at 231.
-Creating checkpoint at 232.
-Creating checkpoint at 233.
-Creating checkpoint at 234.
-Creating checkpoint at 235.
-Creating checkpoint at 236.
-Creating checkpoint at 237.
-Creating checkpoint at 238.
-Creating checkpoint at 239.
-Creating checkpoint at 240.
-Creating checkpoint at 241.
-Creating checkpoint at 242.
-Creating checkpoint at 243.
-Creating checkpoint at 244.
-Creating checkpoint at 245.
-Creating checkpoint at 246.
-Creating checkpoint at 247.
-Creating checkpoint at 248.
-Creating checkpoint at 249.
-Creating checkpoint at 250.
-Creating checkpoint at 251.
-Creating checkpoint at 252.
-Creating checkpoint at 253.
-Creating checkpoint at 254.
-Creating checkpoint at 255.
-Creating checkpoint at 256.
-Creating checkpoint at 257.
-Creating checkpoint at 258.
-Creating checkpoint at 259.
-Creating checkpoint at 260.
-Creating checkpoint at 261.
-Creating checkpoint at 262.
-Creating checkpoint at 263.
-Creating checkpoint at 264.
-Creating checkpoint at 265.
-Creating checkpoint at 266.
-Creating checkpoint at 267.
-Creating checkpoint at 268.
-Creating checkpoint at 269.
-Creating checkpoint at 270.
-Creating checkpoint at 271.
-Creating checkpoint at 272.
-Creating checkpoint at 273.
-Creating checkpoint at 274.
-Creating checkpoint at 275.
-Creating checkpoint at 276.
-Creating checkpoint at 277.
-Creating checkpoint at 278.
-Creating checkpoint at 279.
-Creating checkpoint at 280.
-Creating checkpoint at 281.
-Creating checkpoint at 282.
-Creating checkpoint at 283.
-Creating checkpoint at 284.
-Creating checkpoint at 285.
-Creating checkpoint at 286.
-Creating checkpoint at 287.
-Creating checkpoint at 288.
-Creating checkpoint at 289.
-Creating checkpoint at 290.
-Creating checkpoint at 291.
-Creating checkpoint at 292.
-Creating checkpoint at 293.
-Creating checkpoint at 294.
-Creating checkpoint at 295.
-Creating checkpoint at 296.
-Creating checkpoint at 297.
-Creating checkpoint at 298.
-Creating checkpoint at 299.
-Creating checkpoint at 300.
-Creating checkpoint at 301.
-Creating checkpoint at 302.
-Creating checkpoint at 303.
-Creating checkpoint at 304.
-Creating checkpoint at 305.
-Creating checkpoint at 306.
-Creating checkpoint at 307.
-Creating checkpoint at 308.
-Creating checkpoint at 309.
-Creating checkpoint at 310.
-Creating checkpoint at 311.
-Creating checkpoint at 312.
-Creating checkpoint at 313.
-Creating checkpoint at 314.
-Creating checkpoint at 315.
-Creating checkpoint at 316.
-Creating checkpoint at 317.
-Creating checkpoint at 318.
-Creating checkpoint at 319.
-Creating checkpoint at 320.
-Creating checkpoint at 321.
-Creating checkpoint at 322.
-Creating checkpoint at 323.
-Creating checkpoint at 324.
-Creating checkpoint at 325.
-Creating checkpoint at 326.
-Creating checkpoint at 327.
-Creating checkpoint at 328.
-Creating checkpoint at 329.
-Creating checkpoint at 330.
-Creating checkpoint at 331.
-Creating checkpoint at 332.
-Creating checkpoint at 333.
-Creating checkpoint at 334.
-Creating checkpoint at 335.
-Creating checkpoint at 336.
-Creating checkpoint at 337.
-Creating checkpoint at 338.
-Creating checkpoint at 339.
-Creating checkpoint at 340.
-Creating checkpoint at 341.
-Creating checkpoint at 342.
-Creating checkpoint at 343.
-Creating checkpoint at 344.
-Creating checkpoint at 345.
-Creating checkpoint at 346.
-Creating checkpoint at 347.
-Creating checkpoint at 348.
-Creating checkpoint at 349.
-Creating checkpoint at 350.
-Creating checkpoint at 351.
-Creating checkpoint at 352.
-Creating checkpoint at 353.
-Creating checkpoint at 354.
-Creating checkpoint at 355.
-Creating checkpoint at 356.
-Creating checkpoint at 357.
-Creating checkpoint at 358.
-Creating checkpoint at 359.
-Creating checkpoint at 360.
-Creating checkpoint at 361.
-Creating checkpoint at 362.
-Creating checkpoint at 363.
-Creating checkpoint at 364.
-Creating checkpoint at 365.
-Creating checkpoint at 366.
-Creating checkpoint at 367.
-Creating checkpoint at 368.
-Creating checkpoint at 369.
-Creating checkpoint at 370.
-Creating checkpoint at 371.
-Creating checkpoint at 372.
-Creating checkpoint at 373.
-Creating checkpoint at 374.
-Creating checkpoint at 375.
-Creating checkpoint at 376.
-Creating checkpoint at 377.
-Creating checkpoint at 378.
-Creating checkpoint at 379.
-Creating checkpoint at 380.
-Creating checkpoint at 381.
-Creating checkpoint at 382.
-Creating checkpoint at 383.
-Creating checkpoint at 384.
-Creating checkpoint at 385.
-Creating checkpoint at 386.
-Creating checkpoint at 387.
-Creating checkpoint at 388.
-Creating checkpoint at 389.
-Creating checkpoint at 390.
-Creating checkpoint at 391.
-Creating checkpoint at 392.
-Creating checkpoint at 393.
-Creating checkpoint at 394.
-Creating checkpoint at 395.
-Creating checkpoint at 396.
-Creating checkpoint at 397.
-Creating checkpoint at 398.
-Creating checkpoint at 399.
-Creating checkpoint at 400.
-Creating checkpoint at 401.
-Creating checkpoint at 402.
-Creating checkpoint at 403.
-Creating checkpoint at 404.
-Creating checkpoint at 405.
-Creating checkpoint at 406.
-Creating checkpoint at 407.
-Creating checkpoint at 408.
-Creating checkpoint at 409.
-Creating checkpoint at 410.
-Creating checkpoint at 411.
-Creating checkpoint at 412.
-Creating checkpoint at 413.
-Creating checkpoint at 414.
-Creating checkpoint at 415.
-Creating checkpoint at 416.
-Creating checkpoint at 417.
-Creating checkpoint at 418.
-Creating checkpoint at 419.
-Creating checkpoint at 420.
-Creating checkpoint at 421.
-Creating checkpoint at 422.
-Creating checkpoint at 423.
-Creating checkpoint at 424.
-Creating checkpoint at 425.
-Creating checkpoint at 426.
-Creating checkpoint at 427.
-Creating checkpoint at 428.
-Creating checkpoint at 429.
-Creating checkpoint at 430.
-Creating checkpoint at 431.
-Creating checkpoint at 432.
-Creating checkpoint at 433.
-Creating checkpoint at 434.
-Creating checkpoint at 435.
-Creating checkpoint at 436.
-Creating checkpoint at 437.
-Creating checkpoint at 438.
-Creating checkpoint at 439.
-Creating checkpoint at 440.
-Creating checkpoint at 441.
-Creating checkpoint at 442.
-Creating checkpoint at 443.
-Creating checkpoint at 444.
-Creating checkpoint at 445.
-Creating checkpoint at 446.
-Creating checkpoint at 447.
-Creating checkpoint at 448.
-Creating checkpoint at 449.
-Creating checkpoint at 450.
+Iterating from 450 to 454.
 Creating checkpoint at 451.
 Creating checkpoint at 452.
 Creating checkpoint at 453.
@@ -466,6 +16,15 @@ Computing adjoint of G at 451.
 451 2.919163e-02 8.308736e-03 6.762000e-03 100 3.948188e-02 1.075152e-02 8.111877e-03 0
 Computing adjoint of G at 450.
 450 2.257388e-02 4.960584e-03 3.041487e-03 99 2.801838e-02 5.989843e-03 3.519810e-03 0
+Iterating from 440 to 449.
+Creating checkpoint at 441.
+Creating checkpoint at 442.
+Creating checkpoint at 443.
+Creating checkpoint at 444.
+Creating checkpoint at 445.
+Creating checkpoint at 446.
+Creating checkpoint at 447.
+Creating checkpoint at 448.
 Computing adjoint of G at 449.
 449 2.179716e-02 4.735160e-03 3.368900e-03 100 2.773668e-02 5.938575e-03 4.065269e-03 0
 Computing adjoint of G at 448.
@@ -484,6 +43,16 @@ Computing adjoint of G at 442.
 442 1.239734e-02 1.621752e-03 6.639209e-04 99 1.463724e-02 1.779852e-03 7.189350e-04 1
 Computing adjoint of G at 441.
 441 1.194979e-02 1.565838e-03 5.761217e-04 100 1.442362e-02 1.794256e-03 7.361858e-04 0
+Iterating from 430 to 440.
+Creating checkpoint at 431.
+Creating checkpoint at 432.
+Creating checkpoint at 433.
+Creating checkpoint at 434.
+Creating checkpoint at 435.
+Creating checkpoint at 436.
+Creating checkpoint at 437.
+Creating checkpoint at 438.
+Creating checkpoint at 439.
 Computing adjoint of G at 440.
 440 1.124491e-02 1.398850e-03 4.798314e-04 99 1.346788e-02 1.545215e-03 5.209544e-04 1
 Computing adjoint of G at 439.
@@ -504,6 +73,16 @@ Computing adjoint of G at 432.
 432 8.085601e-03 9.508276e-04 1.682929e-04 67 1.079580e-02 1.177852e-03 1.810386e-04 62
 Computing adjoint of G at 431.
 431 7.841332e-03 9.242628e-04 1.622228e-04 66 1.078472e-02 1.177998e-03 2.040439e-04 0
+Iterating from 420 to 430.
+Creating checkpoint at 421.
+Creating checkpoint at 422.
+Creating checkpoint at 423.
+Creating checkpoint at 424.
+Creating checkpoint at 425.
+Creating checkpoint at 426.
+Creating checkpoint at 427.
+Creating checkpoint at 428.
+Creating checkpoint at 429.
 Computing adjoint of G at 430.
 430 7.518109e-03 8.871170e-04 1.566030e-04 65 1.039752e-02 1.138947e-03 1.732123e-04 59
 Computing adjoint of G at 429.
@@ -524,6 +103,16 @@ Computing adjoint of G at 422.
 422 5.828328e-03 7.119957e-04 1.231079e-04 58 9.261328e-03 1.029822e-03 1.508367e-04 49
 Computing adjoint of G at 421.
 421 5.710604e-03 6.976961e-04 1.199676e-04 57 9.198560e-03 1.023420e-03 1.487303e-04 47
+Iterating from 410 to 420.
+Creating checkpoint at 411.
+Creating checkpoint at 412.
+Creating checkpoint at 413.
+Creating checkpoint at 414.
+Creating checkpoint at 415.
+Creating checkpoint at 416.
+Creating checkpoint at 417.
+Creating checkpoint at 418.
+Creating checkpoint at 419.
 Computing adjoint of G at 420.
 420 5.544389e-03 6.827638e-04 1.169933e-04 56 9.008612e-03 1.006600e-03 1.467422e-04 46
 Computing adjoint of G at 419.
@@ -544,6 +133,16 @@ Computing adjoint of G at 412.
 412 5.040405e-03 6.029554e-04 9.789623e-05 48 8.004632e-03 9.126146e-04 1.332579e-04 37
 Computing adjoint of G at 411.
 411 5.033969e-03 5.958481e-04 9.597823e-05 47 7.889638e-03 9.021184e-04 1.317565e-04 36
+Iterating from 400 to 410.
+Creating checkpoint at 401.
+Creating checkpoint at 402.
+Creating checkpoint at 403.
+Creating checkpoint at 404.
+Creating checkpoint at 405.
+Creating checkpoint at 406.
+Creating checkpoint at 407.
+Creating checkpoint at 408.
+Creating checkpoint at 409.
 Computing adjoint of G at 410.
 410 4.998383e-03 5.887815e-04 9.414482e-05 46 7.745992e-03 8.878104e-04 1.302736e-04 35
 Computing adjoint of G at 409.
@@ -564,6 +163,16 @@ Computing adjoint of G at 402.
 402 4.658057e-03 5.377182e-04 8.205868e-05 39 6.672356e-03 7.821847e-04 1.292559e-04 0
 Computing adjoint of G at 401.
 401 4.602669e-03 5.312459e-04 8.080964e-05 38 6.539443e-03 7.690279e-04 1.333153e-04 0
+Iterating from 390 to 400.
+Creating checkpoint at 391.
+Creating checkpoint at 392.
+Creating checkpoint at 393.
+Creating checkpoint at 394.
+Creating checkpoint at 395.
+Creating checkpoint at 396.
+Creating checkpoint at 397.
+Creating checkpoint at 398.
+Creating checkpoint at 399.
 Computing adjoint of G at 400.
 400 4.538312e-03 5.246094e-04 7.960599e-05 37 6.400181e-03 7.545124e-04 1.298490e-04 0
 Computing adjoint of G at 399.
@@ -584,6 +193,16 @@ Computing adjoint of G at 392.
 392 3.976540e-03 4.669222e-04 7.311008e-05 0 5.333832e-03 6.422213e-04 1.251231e-04 0
 Computing adjoint of G at 391.
 391 3.901079e-03 4.591545e-04 7.389559e-05 0 5.206285e-03 6.284830e-04 1.249640e-04 0
+Iterating from 380 to 390.
+Creating checkpoint at 381.
+Creating checkpoint at 382.
+Creating checkpoint at 383.
+Creating checkpoint at 384.
+Creating checkpoint at 385.
+Creating checkpoint at 386.
+Creating checkpoint at 387.
+Creating checkpoint at 388.
+Creating checkpoint at 389.
 Computing adjoint of G at 390.
 390 3.823982e-03 4.512788e-04 7.450300e-05 0 5.078170e-03 6.143879e-04 1.225590e-04 0
 Computing adjoint of G at 389.
@@ -604,6 +223,16 @@ Computing adjoint of G at 382.
 382 3.206767e-03 3.861958e-04 7.411781e-05 0 4.122750e-03 5.073760e-04 1.089763e-04 0
 Computing adjoint of G at 381.
 381 3.131214e-03 3.779780e-04 7.355461e-05 0 4.012135e-03 4.947361e-04 1.073556e-04 0
+Iterating from 370 to 380.
+Creating checkpoint at 371.
+Creating checkpoint at 372.
+Creating checkpoint at 373.
+Creating checkpoint at 374.
+Creating checkpoint at 375.
+Creating checkpoint at 376.
+Creating checkpoint at 377.
+Creating checkpoint at 378.
+Creating checkpoint at 379.
 Computing adjoint of G at 380.
 380 3.055822e-03 3.697777e-04 7.290566e-05 0 3.903031e-03 4.821332e-04 1.050595e-04 0
 Computing adjoint of G at 379.
@@ -624,6 +253,16 @@ Computing adjoint of G at 372.
 372 2.486270e-03 3.060343e-04 6.545864e-05 0 3.107693e-03 3.889112e-04 8.874933e-05 0
 Computing adjoint of G at 371.
 371 2.419820e-03 2.984170e-04 6.433631e-05 0 3.017851e-03 3.782184e-04 8.681011e-05 0
+Iterating from 360 to 370.
+Creating checkpoint at 361.
+Creating checkpoint at 362.
+Creating checkpoint at 363.
+Creating checkpoint at 364.
+Creating checkpoint at 365.
+Creating checkpoint at 366.
+Creating checkpoint at 367.
+Creating checkpoint at 368.
+Creating checkpoint at 369.
 Computing adjoint of G at 370.
 370 2.354448e-03 2.908984e-04 6.318849e-05 0 2.929938e-03 3.676957e-04 8.468415e-05 0
 Computing adjoint of G at 369.
@@ -644,6 +283,16 @@ Computing adjoint of G at 362.
 362 1.875852e-03 2.348120e-04 5.353724e-05 0 2.300320e-03 2.914863e-04 6.917524e-05 0
 Computing adjoint of G at 361.
 361 1.821656e-03 2.283516e-04 5.231811e-05 0 2.230413e-03 2.829296e-04 6.738267e-05 0
+Iterating from 350 to 360.
+Creating checkpoint at 351.
+Creating checkpoint at 352.
+Creating checkpoint at 353.
+Creating checkpoint at 354.
+Creating checkpoint at 355.
+Creating checkpoint at 356.
+Creating checkpoint at 357.
+Creating checkpoint at 358.
+Creating checkpoint at 359.
 Computing adjoint of G at 360.
 360 1.768679e-03 2.220193e-04 5.110428e-05 0 2.162311e-03 2.745664e-04 6.555755e-05 0
 Computing adjoint of G at 359.
@@ -664,6 +313,16 @@ Computing adjoint of G at 352.
 352 1.388732e-03 1.760189e-04 4.177708e-05 0 1.680586e-03 2.149226e-04 5.235772e-05 0
 Computing adjoint of G at 351.
 351 1.346515e-03 1.708465e-04 4.067728e-05 0 1.627735e-03 2.083260e-04 5.086701e-05 0
+Iterating from 340 to 350.
+Creating checkpoint at 341.
+Creating checkpoint at 342.
+Creating checkpoint at 343.
+Creating checkpoint at 344.
+Creating checkpoint at 345.
+Creating checkpoint at 346.
+Creating checkpoint at 347.
+Creating checkpoint at 348.
+Creating checkpoint at 349.
 Computing adjoint of G at 350.
 350 1.305406e-03 1.657997e-04 3.959508e-05 0 1.576388e-03 2.019041e-04 4.938998e-05 0
 Computing adjoint of G at 349.
@@ -684,6 +343,16 @@ Computing adjoint of G at 342.
 342 1.014499e-03 1.297686e-04 3.162421e-05 0 1.216319e-03 1.566028e-04 3.884032e-05 0
 Computing adjoint of G at 341.
 341 9.825777e-04 1.257819e-04 3.071747e-05 0 1.177142e-03 1.516453e-04 3.766870e-05 0
+Iterating from 330 to 340.
+Creating checkpoint at 331.
+Creating checkpoint at 332.
+Creating checkpoint at 333.
+Creating checkpoint at 334.
+Creating checkpoint at 335.
+Creating checkpoint at 336.
+Creating checkpoint at 337.
+Creating checkpoint at 338.
+Creating checkpoint at 339.
 Computing adjoint of G at 340.
 340 9.515716e-04 1.219037e-04 2.983095e-05 0 1.139149e-03 1.468311e-04 3.652132e-05 0
 Computing adjoint of G at 339.
@@ -704,6 +373,16 @@ Computing adjoint of G at 332.
 332 7.341275e-04 9.453708e-05 2.345528e-05 0 8.743404e-04 1.131321e-04 2.841223e-05 0
 Computing adjoint of G at 331.
 331 7.104699e-04 9.154205e-05 2.274527e-05 0 8.456978e-04 1.094718e-04 2.752225e-05 0
+Iterating from 320 to 330.
+Creating checkpoint at 321.
+Creating checkpoint at 322.
+Creating checkpoint at 323.
+Creating checkpoint at 324.
+Creating checkpoint at 325.
+Creating checkpoint at 326.
+Creating checkpoint at 327.
+Creating checkpoint at 328.
+Creating checkpoint at 329.
 Computing adjoint of G at 330.
 330 6.875289e-04 8.863459e-05 2.205379e-05 0 8.179531e-04 1.059230e-04 2.665560e-05 0
 Computing adjoint of G at 329.
@@ -724,6 +403,16 @@ Computing adjoint of G at 322.
 322 5.276424e-04 6.828196e-05 1.715365e-05 0 6.254156e-04 8.121901e-05 2.057934e-05 0
 Computing adjoint of G at 321.
 321 5.103499e-04 6.607143e-05 1.661530e-05 0 6.046773e-04 7.855001e-05 1.991801e-05 0
+Iterating from 310 to 320.
+Creating checkpoint at 311.
+Creating checkpoint at 312.
+Creating checkpoint at 313.
+Creating checkpoint at 314.
+Creating checkpoint at 315.
+Creating checkpoint at 316.
+Creating checkpoint at 317.
+Creating checkpoint at 318.
+Creating checkpoint at 319.
 Computing adjoint of G at 320.
 320 4.936006e-04 6.392865e-05 1.609233e-05 0 5.846059e-04 7.596522e-05 1.927597e-05 0
 Computing adjoint of G at 319.
@@ -744,6 +433,16 @@ Computing adjoint of G at 312.
 312 3.773751e-04 4.901271e-05 1.242182e-05 0 4.457505e-04 5.804276e-05 1.480082e-05 0
 Computing adjoint of G at 311.
 311 3.648574e-04 4.740135e-05 1.202219e-05 0 4.308393e-04 5.611385e-05 1.431664e-05 0
+Iterating from 300 to 310.
+Creating checkpoint at 301.
+Creating checkpoint at 302.
+Creating checkpoint at 303.
+Creating checkpoint at 304.
+Creating checkpoint at 305.
+Creating checkpoint at 306.
+Creating checkpoint at 307.
+Creating checkpoint at 308.
+Creating checkpoint at 309.
 Computing adjoint of G at 310.
 310 3.527428e-04 4.584097e-05 1.163464e-05 0 4.164163e-04 5.424725e-05 1.384741e-05 0
 Computing adjoint of G at 309.
@@ -764,6 +463,16 @@ Computing adjoint of G at 302.
 302 2.689385e-04 3.502227e-05 8.932243e-06 0 3.168606e-04 4.134152e-05 1.059069e-05 0
 Computing adjoint of G at 301.
 301 2.599398e-04 3.385801e-05 8.639837e-06 0 3.061931e-04 3.995640e-05 1.023983e-05 0
+Iterating from 290 to 300.
+Creating checkpoint at 291.
+Creating checkpoint at 292.
+Creating checkpoint at 293.
+Creating checkpoint at 294.
+Creating checkpoint at 295.
+Creating checkpoint at 296.
+Creating checkpoint at 297.
+Creating checkpoint at 298.
+Creating checkpoint at 299.
 Computing adjoint of G at 300.
 300 2.512358e-04 3.273141e-05 8.356597e-06 0 2.958791e-04 3.861675e-05 9.900171e-06 0
 Computing adjoint of G at 299.
@@ -784,6 +493,16 @@ Computing adjoint of G at 292.
 292 1.911597e-04 2.494254e-05 6.390536e-06 0 2.248029e-04 2.937362e-05 7.550093e-06 0
 Computing adjoint of G at 291.
 291 1.847228e-04 2.410665e-05 6.178727e-06 0 2.171992e-04 2.838360e-05 7.297686e-06 0
+Iterating from 280 to 290.
+Creating checkpoint at 281.
+Creating checkpoint at 282.
+Creating checkpoint at 283.
+Creating checkpoint at 284.
+Creating checkpoint at 285.
+Creating checkpoint at 286.
+Creating checkpoint at 287.
+Creating checkpoint at 288.
+Creating checkpoint at 289.
 Computing adjoint of G at 290.
 290 1.784994e-04 2.329823e-05 5.973727e-06 0 2.098497e-04 2.742647e-05 7.053509e-06 0
 Computing adjoint of G at 289.
@@ -804,6 +523,16 @@ Computing adjoint of G at 282.
 282 1.356141e-04 1.772067e-05 4.555317e-06 0 1.592629e-04 2.083253e-05 5.367891e-06 0
 Computing adjoint of G at 281.
 281 1.310264e-04 1.712329e-05 4.402980e-06 0 1.538574e-04 2.012731e-05 5.187252e-06 0
+Iterating from 270 to 280.
+Creating checkpoint at 271.
+Creating checkpoint at 272.
+Creating checkpoint at 273.
+Creating checkpoint at 274.
+Creating checkpoint at 275.
+Creating checkpoint at 276.
+Creating checkpoint at 277.
+Creating checkpoint at 278.
+Creating checkpoint at 279.
 Computing adjoint of G at 280.
 280 1.265922e-04 1.654577e-05 4.255628e-06 0 1.486338e-04 1.944571e-05 5.012588e-06 0
 Computing adjoint of G at 279.
@@ -824,6 +553,16 @@ Computing adjoint of G at 272.
 272 9.607239e-05 1.256726e-05 3.238432e-06 0 1.127115e-04 1.475522e-05 3.808829e-06 0
 Computing adjoint of G at 271.
 271 9.281128e-05 1.214178e-05 3.129429e-06 0 1.088763e-04 1.425412e-05 3.680038e-06 0
+Iterating from 260 to 270.
+Creating checkpoint at 261.
+Creating checkpoint at 262.
+Creating checkpoint at 263.
+Creating checkpoint at 264.
+Creating checkpoint at 265.
+Creating checkpoint at 266.
+Creating checkpoint at 267.
+Creating checkpoint at 268.
+Creating checkpoint at 269.
 Computing adjoint of G at 270.
 270 8.965996e-05 1.173055e-05 3.024038e-06 0 1.051708e-04 1.376990e-05 3.555549e-06 0
 Computing adjoint of G at 269.
@@ -844,6 +583,16 @@ Computing adjoint of G at 262.
 262 6.798893e-05 8.900749e-06 2.297717e-06 0 7.970441e-05 1.044046e-05 2.698631e-06 0
 Computing adjoint of G at 261.
 261 6.567530e-05 8.598439e-06 2.220010e-06 0 7.698724e-05 1.008504e-05 2.607058e-06 0
+Iterating from 250 to 260.
+Creating checkpoint at 251.
+Creating checkpoint at 252.
+Creating checkpoint at 253.
+Creating checkpoint at 254.
+Creating checkpoint at 255.
+Creating checkpoint at 256.
+Creating checkpoint at 257.
+Creating checkpoint at 258.
+Creating checkpoint at 259.
 Computing adjoint of G at 260.
 260 6.343993e-05 8.306320e-06 2.144901e-06 0 7.436227e-05 9.741661e-06 2.518565e-06 0
 Computing adjoint of G at 259.
@@ -864,6 +613,16 @@ Computing adjoint of G at 252.
 252 4.807751e-05 6.297774e-06 1.627905e-06 0 5.633069e-05 7.382014e-06 1.909968e-06 0
 Computing adjoint of G at 251.
 251 4.643842e-05 6.083371e-06 1.572659e-06 0 5.440767e-05 7.130275e-06 1.844989e-06 0
+Iterating from 240 to 250.
+Creating checkpoint at 241.
+Creating checkpoint at 242.
+Creating checkpoint at 243.
+Creating checkpoint at 244.
+Creating checkpoint at 245.
+Creating checkpoint at 246.
+Creating checkpoint at 247.
+Creating checkpoint at 248.
+Creating checkpoint at 249.
 Computing adjoint of G at 250.
 250 4.485496e-05 5.876225e-06 1.519271e-06 0 5.255009e-05 6.887084e-06 1.782206e-06 0
 Computing adjoint of G at 249.
@@ -884,6 +643,16 @@ Computing adjoint of G at 242.
 242 3.397792e-05 4.452794e-06 1.152119e-06 0 3.979433e-05 5.216679e-06 1.350709e-06 0
 Computing adjoint of G at 241.
 241 3.281794e-05 4.300938e-06 1.112919e-06 0 3.843443e-05 5.038550e-06 1.304668e-06 0
+Iterating from 230 to 240.
+Creating checkpoint at 231.
+Creating checkpoint at 232.
+Creating checkpoint at 233.
+Creating checkpoint at 234.
+Creating checkpoint at 235.
+Creating checkpoint at 236.
+Creating checkpoint at 237.
+Creating checkpoint at 238.
+Creating checkpoint at 239.
 Computing adjoint of G at 240.
 240 3.169742e-05 4.154239e-06 1.075044e-06 0 3.712090e-05 4.866484e-06 1.260189e-06 0
 Computing adjoint of G at 239.
@@ -904,6 +673,16 @@ Computing adjoint of G at 232.
 232 2.400309e-05 3.146622e-06 8.147456e-07 0 2.810340e-05 3.685006e-06 9.546413e-07 0
 Computing adjoint of G at 231.
 231 2.318281e-05 3.039173e-06 7.869720e-07 0 2.714229e-05 3.559056e-06 9.220547e-07 0
+Iterating from 220 to 230.
+Creating checkpoint at 221.
+Creating checkpoint at 222.
+Creating checkpoint at 223.
+Creating checkpoint at 224.
+Creating checkpoint at 225.
+Creating checkpoint at 226.
+Creating checkpoint at 227.
+Creating checkpoint at 228.
+Creating checkpoint at 229.
 Computing adjoint of G at 230.
 230 2.239049e-05 2.935382e-06 7.601409e-07 0 2.621399e-05 3.437401e-06 8.905766e-07 0
 Computing adjoint of G at 229.
@@ -924,6 +703,16 @@ Computing adjoint of G at 222.
 222 1.695120e-05 2.222712e-06 5.758277e-07 0 1.984238e-05 2.602269e-06 6.744163e-07 0
 Computing adjoint of G at 221.
 221 1.637147e-05 2.146740e-06 5.561709e-07 0 1.916340e-05 2.513262e-06 6.513710e-07 0
+Iterating from 210 to 220.
+Creating checkpoint at 211.
+Creating checkpoint at 212.
+Creating checkpoint at 213.
+Creating checkpoint at 214.
+Creating checkpoint at 215.
+Creating checkpoint at 216.
+Creating checkpoint at 217.
+Creating checkpoint at 218.
+Creating checkpoint at 219.
 Computing adjoint of G at 220.
 220 1.581154e-05 2.073358e-06 5.371830e-07 0 1.850763e-05 2.427294e-06 6.291111e-07 0
 Computing adjoint of G at 219.
@@ -944,6 +733,16 @@ Computing adjoint of G at 212.
 212 1.196829e-05 1.569615e-06 4.067939e-07 0 1.400723e-05 1.837255e-06 4.762933e-07 0
 Computing adjoint of G at 211.
 211 1.155875e-05 1.515927e-06 3.928930e-07 0 1.352772e-05 1.774381e-06 4.600053e-07 0
+Iterating from 200 to 210.
+Creating checkpoint at 201.
+Creating checkpoint at 202.
+Creating checkpoint at 203.
+Creating checkpoint at 204.
+Creating checkpoint at 205.
+Creating checkpoint at 206.
+Creating checkpoint at 207.
+Creating checkpoint at 208.
+Creating checkpoint at 209.
 Computing adjoint of G at 210.
 210 1.116320e-05 1.464073e-06 3.794659e-07 0 1.306461e-05 1.713656e-06 4.442732e-07 0
 Computing adjoint of G at 209.
@@ -964,6 +763,16 @@ Computing adjoint of G at 202.
 202 8.448670e-06 1.108173e-06 2.872873e-07 0 9.886759e-06 1.296925e-06 3.362914e-07 0
 Computing adjoint of G at 201.
 201 8.159445e-06 1.070248e-06 2.774626e-07 0 9.548202e-06 1.252525e-06 3.247845e-07 0
+Iterating from 190 to 200.
+Creating checkpoint at 191.
+Creating checkpoint at 192.
+Creating checkpoint at 193.
+Creating checkpoint at 194.
+Creating checkpoint at 195.
+Creating checkpoint at 196.
+Creating checkpoint at 197.
+Creating checkpoint at 198.
+Creating checkpoint at 199.
 Computing adjoint of G at 200.
 200 7.880110e-06 1.033620e-06 2.679732e-07 0 9.221230e-06 1.209643e-06 3.136707e-07 0
 Computing adjoint of G at 199.
@@ -984,6 +793,16 @@ Computing adjoint of G at 192.
 192 5.963323e-06 7.822591e-07 2.028404e-07 0 6.977719e-06 9.153917e-07 2.373991e-07 0
 Computing adjoint of G at 191.
 191 5.759116e-06 7.554779e-07 1.958996e-07 0 6.738723e-06 8.840438e-07 2.292725e-07 0
+Iterating from 180 to 190.
+Creating checkpoint at 181.
+Creating checkpoint at 182.
+Creating checkpoint at 183.
+Creating checkpoint at 184.
+Creating checkpoint at 185.
+Creating checkpoint at 186.
+Creating checkpoint at 187.
+Creating checkpoint at 188.
+Creating checkpoint at 189.
 Computing adjoint of G at 190.
 190 5.561896e-06 7.296128e-07 1.891961e-07 0 6.507907e-06 8.537687e-07 2.214238e-07 0
 Computing adjoint of G at 189.
@@ -1004,6 +823,16 @@ Computing adjoint of G at 182.
 182 4.208686e-06 5.521296e-07 1.431909e-07 0 4.924268e-06 6.460398e-07 1.675654e-07 0
 Computing adjoint of G at 181.
 181 4.064531e-06 5.332215e-07 1.382891e-07 0 4.755575e-06 6.239112e-07 1.618275e-07 0
+Iterating from 170 to 180.
+Creating checkpoint at 171.
+Creating checkpoint at 172.
+Creating checkpoint at 173.
+Creating checkpoint at 174.
+Creating checkpoint at 175.
+Creating checkpoint at 176.
+Creating checkpoint at 177.
+Creating checkpoint at 178.
+Creating checkpoint at 179.
 Computing adjoint of G at 180.
 180 3.925312e-06 5.149606e-07 1.335550e-07 0 4.592660e-06 6.025401e-07 1.562859e-07 0
 Computing adjoint of G at 179.
@@ -1024,6 +853,16 @@ Computing adjoint of G at 172.
 172 2.970118e-06 3.896656e-07 1.010692e-07 0 3.474933e-06 4.559131e-07 1.182624e-07 0
 Computing adjoint of G at 171.
 171 2.868369e-06 3.763184e-07 9.760827e-08 0 3.355876e-06 4.402943e-07 1.142118e-07 0
+Iterating from 160 to 170.
+Creating checkpoint at 161.
+Creating checkpoint at 162.
+Creating checkpoint at 163.
+Creating checkpoint at 164.
+Creating checkpoint at 165.
+Creating checkpoint at 166.
+Creating checkpoint at 167.
+Creating checkpoint at 168.
+Creating checkpoint at 169.
 Computing adjoint of G at 170.
 170 2.770104e-06 3.634281e-07 9.426576e-08 0 3.240897e-06 4.252103e-07 1.102998e-07 0
 Computing adjoint of G at 169.
@@ -1044,6 +883,16 @@ Computing adjoint of G at 162.
 162 2.095935e-06 2.749881e-07 7.133122e-08 0 2.452076e-06 3.217236e-07 8.345967e-08 0
 Computing adjoint of G at 161.
 161 2.024124e-06 2.655675e-07 6.888804e-08 0 2.368056e-06 3.107006e-07 8.060059e-08 0
+Iterating from 150 to 160.
+Creating checkpoint at 151.
+Creating checkpoint at 152.
+Creating checkpoint at 153.
+Creating checkpoint at 154.
+Creating checkpoint at 155.
+Creating checkpoint at 156.
+Creating checkpoint at 157.
+Creating checkpoint at 158.
+Creating checkpoint at 159.
 Computing adjoint of G at 160.
 160 1.954773e-06 2.564694e-07 6.652850e-08 0 2.286914e-06 3.000551e-07 7.783942e-08 0
 Computing adjoint of G at 159.
@@ -1064,6 +913,16 @@ Computing adjoint of G at 152.
 152 1.478988e-06 1.940502e-07 5.033948e-08 0 1.730249e-06 2.270217e-07 5.889561e-08 0
 Computing adjoint of G at 151.
 151 1.428311e-06 1.874015e-07 4.861500e-08 0 1.670957e-06 2.192427e-07 5.687776e-08 0
+Iterating from 140 to 150.
+Creating checkpoint at 141.
+Creating checkpoint at 142.
+Creating checkpoint at 143.
+Creating checkpoint at 144.
+Creating checkpoint at 145.
+Creating checkpoint at 146.
+Creating checkpoint at 147.
+Creating checkpoint at 148.
+Creating checkpoint at 149.
 Computing adjoint of G at 150.
 150 1.379369e-06 1.809806e-07 4.694956e-08 0 1.613698e-06 2.117302e-07 5.492903e-08 0
 Computing adjoint of G at 149.
@@ -1084,6 +943,16 @@ Computing adjoint of G at 142.
 142 1.043612e-06 1.369298e-07 3.552338e-08 0 1.220881e-06 1.601916e-07 4.155961e-08 0
 Computing adjoint of G at 141.
 141 1.007850e-06 1.322379e-07 3.430629e-08 0 1.179043e-06 1.547022e-07 4.013558e-08 0
+Iterating from 130 to 140.
+Creating checkpoint at 131.
+Creating checkpoint at 132.
+Creating checkpoint at 133.
+Creating checkpoint at 134.
+Creating checkpoint at 135.
+Creating checkpoint at 136.
+Creating checkpoint at 137.
+Creating checkpoint at 138.
+Creating checkpoint at 139.
 Computing adjoint of G at 140.
 140 9.733129e-07 1.277066e-07 3.313089e-08 0 1.138638e-06 1.494009e-07 3.876033e-08 0
 Computing adjoint of G at 139.
@@ -1104,6 +973,16 @@ Computing adjoint of G at 132.
 132 7.363826e-07 9.662068e-08 2.506700e-08 0 8.614524e-07 1.130324e-07 2.932560e-08 0
 Computing adjoint of G at 131.
 131 7.111473e-07 9.330970e-08 2.420808e-08 0 8.319299e-07 1.091589e-07 2.832069e-08 0
+Iterating from 120 to 130.
+Creating checkpoint at 121.
+Creating checkpoint at 122.
+Creating checkpoint at 123.
+Creating checkpoint at 124.
+Creating checkpoint at 125.
+Creating checkpoint at 126.
+Creating checkpoint at 127.
+Creating checkpoint at 128.
+Creating checkpoint at 129.
 Computing adjoint of G at 130.
 130 6.867767e-07 9.011215e-08 2.337858e-08 0 8.034191e-07 1.054180e-07 2.735021e-08 0
 Computing adjoint of G at 129.
@@ -1124,6 +1003,16 @@ Computing adjoint of G at 122.
 122 5.195904e-07 6.817626e-08 1.768794e-08 0 6.078323e-07 7.975533e-08 2.069247e-08 0
 Computing adjoint of G at 121.
 121 5.017837e-07 6.583988e-08 1.708182e-08 0 5.870009e-07 7.702205e-08 1.998336e-08 0
+Iterating from 110 to 120.
+Creating checkpoint at 111.
+Creating checkpoint at 112.
+Creating checkpoint at 113.
+Creating checkpoint at 114.
+Creating checkpoint at 115.
+Creating checkpoint at 116.
+Creating checkpoint at 117.
+Creating checkpoint at 118.
+Creating checkpoint at 119.
 Computing adjoint of G at 120.
 120 4.845872e-07 6.358357e-08 1.649647e-08 0 5.668834e-07 7.438244e-08 1.929855e-08 0
 Computing adjoint of G at 119.
@@ -1144,6 +1033,16 @@ Computing adjoint of G at 112.
 112 3.666177e-07 4.810492e-08 1.248080e-08 0 4.288766e-07 5.627446e-08 1.460060e-08 0
 Computing adjoint of G at 111.
 111 3.540531e-07 4.645633e-08 1.205310e-08 0 4.141780e-07 5.434584e-08 1.410023e-08 0
+Iterating from 100 to 110.
+Creating checkpoint at 101.
+Creating checkpoint at 102.
+Creating checkpoint at 103.
+Creating checkpoint at 104.
+Creating checkpoint at 105.
+Creating checkpoint at 106.
+Creating checkpoint at 107.
+Creating checkpoint at 108.
+Creating checkpoint at 109.
 Computing adjoint of G at 110.
 110 3.419191e-07 4.486423e-08 1.164004e-08 0 3.999831e-07 5.248330e-08 1.361701e-08 0
 Computing adjoint of G at 109.
@@ -1164,6 +1063,16 @@ Computing adjoint of G at 102.
 102 2.586794e-07 3.394228e-08 8.806443e-09 0 3.026063e-07 3.970628e-08 1.030205e-08 0
 Computing adjoint of G at 101.
 101 2.498139e-07 3.277902e-08 8.504642e-09 0 2.922351e-07 3.834545e-08 9.948980e-09 0
+Iterating from 90 to 100.
+Creating checkpoint at 91.
+Creating checkpoint at 92.
+Creating checkpoint at 93.
+Creating checkpoint at 94.
+Creating checkpoint at 95.
+Creating checkpoint at 96.
+Creating checkpoint at 97.
+Creating checkpoint at 98.
+Creating checkpoint at 99.
 Computing adjoint of G at 100.
 100 2.412522e-07 3.165562e-08 8.213182e-09 0 2.822193e-07 3.703125e-08 9.608013e-09 0
 Computing adjoint of G at 99.
@@ -1184,6 +1093,16 @@ Computing adjoint of G at 92.
 92 1.825187e-07 2.394908e-08 6.213742e-09 0 2.135115e-07 2.801588e-08 7.268961e-09 0
 Computing adjoint of G at 91.
 91 1.762633e-07 2.312828e-08 6.000787e-09 0 2.061938e-07 2.705570e-08 7.019837e-09 0
+Iterating from 80 to 90.
+Creating checkpoint at 81.
+Creating checkpoint at 82.
+Creating checkpoint at 83.
+Creating checkpoint at 84.
+Creating checkpoint at 85.
+Creating checkpoint at 86.
+Creating checkpoint at 87.
+Creating checkpoint at 88.
+Creating checkpoint at 89.
 Computing adjoint of G at 90.
 90 1.702222e-07 2.233562e-08 5.795131e-09 0 1.991269e-07 2.612842e-08 6.779251e-09 0
 Computing adjoint of G at 89.
@@ -1204,6 +1123,16 @@ Computing adjoint of G at 82.
 82 1.287807e-07 1.689794e-08 4.384316e-09 0 1.506479e-07 1.976730e-08 5.128828e-09 0
 Computing adjoint of G at 81.
 81 1.243670e-07 1.631880e-08 4.234056e-09 0 1.454847e-07 1.908981e-08 4.953048e-09 0
+Iterating from 70 to 80.
+Creating checkpoint at 71.
+Creating checkpoint at 72.
+Creating checkpoint at 73.
+Creating checkpoint at 74.
+Creating checkpoint at 75.
+Creating checkpoint at 76.
+Creating checkpoint at 77.
+Creating checkpoint at 78.
+Creating checkpoint at 79.
 Computing adjoint of G at 80.
 80 1.201045e-07 1.575950e-08 4.088945e-09 0 1.404984e-07 1.843554e-08 4.783293e-09 0
 Computing adjoint of G at 79.
@@ -1224,6 +1153,16 @@ Computing adjoint of G at 72.
 72 9.086414e-08 1.192276e-08 3.093482e-09 0 1.062928e-07 1.394726e-08 3.618776e-09 0
 Computing adjoint of G at 71.
 71 8.774990e-08 1.151413e-08 2.987460e-09 0 1.026497e-07 1.346924e-08 3.494749e-09 0
+Iterating from 60 to 70.
+Creating checkpoint at 61.
+Creating checkpoint at 62.
+Creating checkpoint at 63.
+Creating checkpoint at 64.
+Creating checkpoint at 65.
+Creating checkpoint at 66.
+Creating checkpoint at 67.
+Creating checkpoint at 68.
+Creating checkpoint at 69.
 Computing adjoint of G at 70.
 70 8.474239e-08 1.111950e-08 2.885071e-09 0 9.913152e-08 1.300760e-08 3.374972e-09 0
 Computing adjoint of G at 69.
@@ -1244,6 +1183,16 @@ Computing adjoint of G at 62.
 62 6.411108e-08 8.412368e-09 2.182685e-09 0 7.499692e-08 9.840775e-09 2.553310e-09 0
 Computing adjoint of G at 61.
 61 6.191374e-08 8.124045e-09 2.107877e-09 0 7.242648e-08 9.503493e-09 2.465799e-09 0
+Iterating from 50 to 60.
+Creating checkpoint at 51.
+Creating checkpoint at 52.
+Creating checkpoint at 53.
+Creating checkpoint at 54.
+Creating checkpoint at 55.
+Creating checkpoint at 56.
+Creating checkpoint at 57.
+Creating checkpoint at 58.
+Creating checkpoint at 59.
 Computing adjoint of G at 60.
 60 5.979172e-08 7.845604e-09 2.035633e-09 0 6.994413e-08 9.177772e-09 2.381287e-09 0
 Computing adjoint of G at 59.
@@ -1264,6 +1213,16 @@ Computing adjoint of G at 52.
 52 4.523481e-08 5.935518e-09 1.540043e-09 0 5.291545e-08 6.943346e-09 1.801541e-09 0
 Computing adjoint of G at 51.
 51 4.368443e-08 5.732084e-09 1.487261e-09 0 5.110182e-08 6.705370e-09 1.739796e-09 0
+Iterating from 40 to 50.
+Creating checkpoint at 41.
+Creating checkpoint at 42.
+Creating checkpoint at 43.
+Creating checkpoint at 44.
+Creating checkpoint at 45.
+Creating checkpoint at 46.
+Creating checkpoint at 47.
+Creating checkpoint at 48.
+Creating checkpoint at 49.
 Computing adjoint of G at 50.
 50 4.218719e-08 5.535624e-09 1.436287e-09 0 4.935035e-08 6.475550e-09 1.680166e-09 0
 Computing adjoint of G at 49.
@@ -1284,6 +1243,16 @@ Computing adjoint of G at 42.
 42 3.191624e-08 4.187917e-09 1.086610e-09 0 3.733542e-08 4.899003e-09 1.271113e-09 0
 Computing adjoint of G at 41.
 41 3.082234e-08 4.044381e-09 1.049367e-09 0 3.605577e-08 4.731094e-09 1.227546e-09 0
+Iterating from 30 to 40.
+Creating checkpoint at 31.
+Creating checkpoint at 32.
+Creating checkpoint at 33.
+Creating checkpoint at 34.
+Creating checkpoint at 35.
+Creating checkpoint at 36.
+Creating checkpoint at 37.
+Creating checkpoint at 38.
+Creating checkpoint at 39.
 Computing adjoint of G at 40.
 40 2.976593e-08 3.905763e-09 1.013402e-09 0 3.481999e-08 4.568940e-09 1.185474e-09 0
 Computing adjoint of G at 39.
@@ -1304,6 +1273,16 @@ Computing adjoint of G at 32.
 32 2.251906e-08 2.954861e-09 7.666785e-10 0 2.634263e-08 3.456576e-09 8.968567e-10 0
 Computing adjoint of G at 31.
 31 2.174724e-08 2.853585e-09 7.404014e-10 0 2.543976e-08 3.338105e-09 8.661177e-10 0
+Iterating from 20 to 30.
+Creating checkpoint at 21.
+Creating checkpoint at 22.
+Creating checkpoint at 23.
+Creating checkpoint at 24.
+Creating checkpoint at 25.
+Creating checkpoint at 26.
+Creating checkpoint at 27.
+Creating checkpoint at 28.
+Creating checkpoint at 29.
 Computing adjoint of G at 30.
 30 2.100187e-08 2.755781e-09 7.150248e-10 0 2.456783e-08 3.223694e-09 8.364323e-10 0
 Computing adjoint of G at 29.
@@ -1324,6 +1303,16 @@ Computing adjoint of G at 22.
 22 1.588870e-08 2.084853e-09 5.409440e-10 0 1.858647e-08 2.438845e-09 6.327929e-10 0
 Computing adjoint of G at 21.
 21 1.534413e-08 2.013396e-09 5.224036e-10 0 1.794944e-08 2.355256e-09 6.111044e-10 0
+Iterating from 10 to 20.
+Creating checkpoint at 11.
+Creating checkpoint at 12.
+Creating checkpoint at 13.
+Creating checkpoint at 14.
+Creating checkpoint at 15.
+Creating checkpoint at 16.
+Creating checkpoint at 17.
+Creating checkpoint at 18.
+Creating checkpoint at 19.
 Computing adjoint of G at 20.
 20 1.481822e-08 1.944389e-09 5.044987e-10 0 1.733423e-08 2.274531e-09 5.901593e-10 0
 Computing adjoint of G at 19.
@@ -1344,6 +1333,16 @@ Computing adjoint of G at 12.
 12 1.121053e-08 1.471003e-09 3.816725e-10 0 1.311398e-08 1.720767e-09 4.464777e-10 0
 Computing adjoint of G at 11.
 11 1.082630e-08 1.420585e-09 3.685910e-10 0 1.266451e-08 1.661789e-09 4.311750e-10 0
+Iterating from 0 to 10.
+Creating checkpoint at 1.
+Creating checkpoint at 2.
+Creating checkpoint at 3.
+Creating checkpoint at 4.
+Creating checkpoint at 5.
+Creating checkpoint at 6.
+Creating checkpoint at 7.
+Creating checkpoint at 8.
+Creating checkpoint at 9.
 Computing adjoint of G at 10.
 10 1.045523e-08 1.371896e-09 3.559578e-10 0 1.223044e-08 1.604832e-09 4.163968e-10 0
 Computing adjoint of G at 9.

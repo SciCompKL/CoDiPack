@@ -89,7 +89,7 @@ namespace codi {
           } else {
             curAdjIteration = settings.end;
             while(curAdjIteration < checkpoints.back()->getIteration()) {
-              cpm->remove(checkpoints.back());
+              cpm->free(checkpoints.back());
               checkpoints.pop_back();
             }
           }
@@ -107,7 +107,7 @@ namespace codi {
               removeFront -= 1; // Start and last checkpoint are not the same skip one removal
             }
             for(int i = 0; i < removeFront; i += 1) {
-              cpm->remove(checkpoints[i]);
+              cpm->free(checkpoints[i]);
             }
             checkpoints.erase(checkpoints.begin(), checkpoints.begin() + removeFront);
           }
@@ -139,9 +139,11 @@ namespace codi {
         }
 
         inline void loadAndPopCheckpoint(CheckpointManagerInterface* cpm, std::vector<CheckpointHandle*>& checkpoints) {
-          if(0 != checkpoints.size()) { // Check for last iteration.
-            cpm->load(checkpoints.back());
+          cpm->load(checkpoints.back());
+
+          if(1 != checkpoints.size()) { // Check for last iteration.
             cpm->remove(checkpoints.back());
+            cpm->free(checkpoints.back());
             checkpoints.pop_back();
           }
         }
@@ -184,7 +186,7 @@ namespace codi {
             iterateUntilWithCheckpoints(app, curAdjIteration, checkpoints, cpm);
           } else {
             // Remove the loaded checkpoint.
-            cpm->remove(checkpoints.back());
+            cpm->free(checkpoints.back());
             checkpoints.pop_back();
           }
 

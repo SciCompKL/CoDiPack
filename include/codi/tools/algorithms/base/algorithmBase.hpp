@@ -172,7 +172,7 @@ namespace codi {
           std::vector<CheckpointHandle*> checkpoints = cm->list();
 
           while(!checkpoints.empty() && checkpoints.back()->getIteration() > iteration) {
-            cm->remove(checkpoints.back());
+            cm->free(checkpoints.back());
             checkpoints.pop_back();
           }
 
@@ -181,7 +181,7 @@ namespace codi {
           }
 
           while(!checkpoints.empty()) {
-            cm->remove(checkpoints.back());
+            cm->free(checkpoints.back());
             checkpoints.pop_back();
           }
         }

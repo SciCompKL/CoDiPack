@@ -55,12 +55,17 @@ namespace codi {
         double absThreshold;
         double relThreshold;
 
+        bool writeCheckpoints;
+        int checkpointsInterleave;
+
         PrimalEvaluationSettings()
             : maxIterations(1000),
               checkAbsConvergence(true),
               checkRelConvergence(true),
               absThreshold(1e-12),
-              relThreshold(1e-6) {}
+              relThreshold(1e-6),
+              writeCheckpoints(false),
+              checkpointsInterleave(10) {}
     };
 
     template<typename T_App>
@@ -77,6 +82,7 @@ namespace codi {
 
         PrimalEvaluationSettings settings;
 
+        PrimalEvaluation() : settings() {}
         PrimalEvaluation(PrimalEvaluationSettings settings) : settings(settings) {}
 
         PrimalEvaluationSettings const* getSettings() const {
@@ -102,6 +108,9 @@ namespace codi {
           app.iterateY(typename Base::GetPrimal(yCur));
 
           while (!(isFinished || isStop || isConverged)) {
+
+            writeCheckpoint(app);
+
             app.evaluateG();
 
             app.iterateY(typename Base::GetPrimal(yNext));
@@ -126,12 +135,25 @@ namespace codi {
                            ((isFinished | isConverged | isStop) ? OutputFlags::Final : OutputFlags::Intermediate));
           }
 
+          writeCheckpoint(app, true);
+
           app.evaluateF();
 
           RealVector z(app.getSizeZ());
           app.iterateZ(typename Base::GetPrimal(z));
 
           io->writeZ(app.getIteration(), z, OutputFlags::Primal | OutputFlags::F | OutputFlags::Final);
+        }
+
+        void writeCheckpoint(App& app, bool force = false) {
+          if(settings.writeCheckpoints) {
+            if(force || 0 == app.getIteration() % settings.checkpointsInterleave) {
+              CheckpointManagerInterface* cpm = app.getCheckpointInterface();
+              CheckpointHandle* cp = cpm->create();
+              cpm->write(cp);
+              cpm->free(cp);
+            }
+          }
         }
 
         std::string formatHeader(Res resY) {

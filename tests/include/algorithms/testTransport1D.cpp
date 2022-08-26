@@ -151,6 +151,17 @@ void runBBTests(Problem& app)
 
 void runBBWCTests()
 {
+
+  // Setup checkpoints
+  Problem app;
+  app.getCheckpointInterface()->setFolder(CHECKPOINT_DIR);
+  prepare(app, codi::StringUtil::format("%s/blackBoxWithCheck_writeCheck", OUTPUT_DIR), "run.out");
+  codi::algorithms::PrimalEvaluation<Problem> pe{};
+  pe.settings.checkRelConvergence = false;
+  pe.settings.absThreshold = 0.000000001;
+  pe.settings.writeCheckpoints = true;
+  pe.run(app);
+
   codi::algorithms::BlackBoxWithCheckpointsSettings settings;
   settings.start = 0;
   settings.end = 455;

@@ -57,7 +57,7 @@ namespace codi {
   namespace algorithms {
 
     template<typename T_PassiveReal>
-    struct StateVectorCheckpoint : public codi::algorithms::CheckpointBase {
+    struct StateVectorCheckpoint : public CheckpointBase {
       public:
 
         using PassiveReal = CODI_DD(T_PassiveReal, double);
@@ -68,17 +68,17 @@ namespace codi {
         bool isListed;
 
         StateVectorCheckpoint(int iteration)
-            : codi::algorithms::CheckpointBase(iteration), data(0), isWritten(false), isListed(false) {}
+            : CheckpointBase(iteration), data(0), isWritten(false), isListed(false) {}
     };
 
     /// Assumes setIteration method is available on Application.
     /// Uses app io to write checkpoint data
     template<typename T_Type, typename T_FileIO, typename T_Application>
-    struct StateBasedCheckpointManager : public codi::algorithms::CheckpointManagerInterface {
+    struct StateBasedCheckpointManager : public CheckpointManagerInterface {
       public:
         using Type = CODI_DD(T_Type, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
         using FileIO = CODI_DD(T_FileIO, FileIOInterface);
-        using Application = CODI_DD(T_Application, CODI_T(codi::algorithms::ApplicationInterface<CODI_ANY>));
+        using Application = CODI_DD(T_Application, CODI_T(ApplicationInterface<CODI_ANY>));
 
         using PassiveReal = RealTraits::PassiveReal<Type>;
         using Checkpoint = StateVectorCheckpoint<PassiveReal>;
@@ -116,8 +116,14 @@ namespace codi {
           return cp;
         }
 
-        std::vector<codi::algorithms::CheckpointHandle*> list() {
-          std::vector<codi::algorithms::CheckpointHandle*> checkList;
+        void free(CheckpointHandle* cp) {
+          Checkpoint* check = cast(cp);
+
+          delete check;
+        }
+
+        std::vector<CheckpointHandle*> list() {
+          std::vector<CheckpointHandle*> checkList;
 
           std::regex checkpointRegex(StringUtil::format("%s_(\\d+).%s", CHECKPOINT_NAME, io->getFileEnding().c_str()));
           std::smatch match;
@@ -143,10 +149,12 @@ namespace codi {
             std::cerr << "Can not open directory '" << folder << "'" << std::endl;
           }
 
+          std::sort(checkList.begin(), checkList.end(), [](CheckpointHandle const* a, CheckpointHandle const* b) { return a->getIteration() < b->getIteration(); });
+
           return checkList;
         }
 
-        void load(codi::algorithms::CheckpointHandle* cp) {
+        void load(CheckpointHandle* cp) {
           Checkpoint* check = cast(cp);
 
           bool clearData = false;
@@ -164,17 +172,15 @@ namespace codi {
           }
         }
 
-        void remove(codi::algorithms::CheckpointHandle* cp) {
+        void remove(CheckpointHandle* cp) {
           Checkpoint* check = cast(cp);
 
           if (check->isWritten && !check->isListed) {
             std::remove(createFileName(check).c_str());
           }
-
-          delete check;
         }
 
-        void write(codi::algorithms::CheckpointHandle* cp) {
+        void write(CheckpointHandle* cp) {
           Checkpoint* check = cast(cp);
 
           size_t totalSize = sizeof(PassiveReal) * check->data.size() + sizeof(size_t);
@@ -188,7 +194,7 @@ namespace codi {
           check->data.resize(0);
         }
 
-        void read(codi::algorithms::CheckpointHandle* cp) {
+        void read(CheckpointHandle* cp) {
           Checkpoint* check = cast(cp);
 
           size_t size = 0;
@@ -210,7 +216,7 @@ namespace codi {
 
       private:
 
-        Checkpoint* cast(codi::algorithms::CheckpointHandle* cp) {
+        Checkpoint* cast(CheckpointHandle* cp) {
           return static_cast<Checkpoint*>(cp);
         }
     };

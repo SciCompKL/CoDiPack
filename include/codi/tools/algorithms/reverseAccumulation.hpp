@@ -197,6 +197,7 @@ namespace codi {
           }
 
           cpm->remove(cp);
+          cpm->free(cp);
         }
 
         bool checkConvergence(std::vector<Res> const& initial, std::vector<Res> const& cur) {
