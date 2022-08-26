@@ -1,0 +1,1370 @@
+Checkpoints avail: 2, first: 0, last: 455
+Computing adjoint of f at 455.
+Starting main loop.
+Iter V00_AdjY_L1 V00_AdjY_L2 V00_AdjY_LMax V00_AdjY_LMaxPos V01_AdjY_L1 V01_AdjY_L2 V01_AdjY_LMax V01_AdjY_LMaxPos V02_AdjY_L1 V02_AdjY_L2 V02_AdjY_LMax V02_AdjY_LMaxPos V03_AdjY_L1 V03_AdjY_L2 V03_AdjY_LMax V03_AdjY_LMaxPos V04_AdjY_L1 V04_AdjY_L2 V04_AdjY_LMax V04_AdjY_LMaxPos
+Iterating from 0 to 454.
+Creating checkpoint at 1.
+Creating checkpoint at 2.
+Creating checkpoint at 3.
+Creating checkpoint at 4.
+Creating checkpoint at 5.
+Creating checkpoint at 6.
+Creating checkpoint at 7.
+Creating checkpoint at 8.
+Creating checkpoint at 9.
+Creating checkpoint at 10.
+Creating checkpoint at 11.
+Creating checkpoint at 12.
+Creating checkpoint at 13.
+Creating checkpoint at 14.
+Creating checkpoint at 15.
+Creating checkpoint at 16.
+Creating checkpoint at 17.
+Creating checkpoint at 18.
+Creating checkpoint at 19.
+Creating checkpoint at 20.
+Creating checkpoint at 21.
+Creating checkpoint at 22.
+Creating checkpoint at 23.
+Creating checkpoint at 24.
+Creating checkpoint at 25.
+Creating checkpoint at 26.
+Creating checkpoint at 27.
+Creating checkpoint at 28.
+Creating checkpoint at 29.
+Creating checkpoint at 30.
+Creating checkpoint at 31.
+Creating checkpoint at 32.
+Creating checkpoint at 33.
+Creating checkpoint at 34.
+Creating checkpoint at 35.
+Creating checkpoint at 36.
+Creating checkpoint at 37.
+Creating checkpoint at 38.
+Creating checkpoint at 39.
+Creating checkpoint at 40.
+Creating checkpoint at 41.
+Creating checkpoint at 42.
+Creating checkpoint at 43.
+Creating checkpoint at 44.
+Creating checkpoint at 45.
+Creating checkpoint at 46.
+Creating checkpoint at 47.
+Creating checkpoint at 48.
+Creating checkpoint at 49.
+Creating checkpoint at 50.
+Creating checkpoint at 51.
+Creating checkpoint at 52.
+Creating checkpoint at 53.
+Creating checkpoint at 54.
+Creating checkpoint at 55.
+Creating checkpoint at 56.
+Creating checkpoint at 57.
+Creating checkpoint at 58.
+Creating checkpoint at 59.
+Creating checkpoint at 60.
+Creating checkpoint at 61.
+Creating checkpoint at 62.
+Creating checkpoint at 63.
+Creating checkpoint at 64.
+Creating checkpoint at 65.
+Creating checkpoint at 66.
+Creating checkpoint at 67.
+Creating checkpoint at 68.
+Creating checkpoint at 69.
+Creating checkpoint at 70.
+Creating checkpoint at 71.
+Creating checkpoint at 72.
+Creating checkpoint at 73.
+Creating checkpoint at 74.
+Creating checkpoint at 75.
+Creating checkpoint at 76.
+Creating checkpoint at 77.
+Creating checkpoint at 78.
+Creating checkpoint at 79.
+Creating checkpoint at 80.
+Creating checkpoint at 81.
+Creating checkpoint at 82.
+Creating checkpoint at 83.
+Creating checkpoint at 84.
+Creating checkpoint at 85.
+Creating checkpoint at 86.
+Creating checkpoint at 87.
+Creating checkpoint at 88.
+Creating checkpoint at 89.
+Creating checkpoint at 90.
+Creating checkpoint at 91.
+Creating checkpoint at 92.
+Creating checkpoint at 93.
+Creating checkpoint at 94.
+Creating checkpoint at 95.
+Creating checkpoint at 96.
+Creating checkpoint at 97.
+Creating checkpoint at 98.
+Creating checkpoint at 99.
+Creating checkpoint at 100.
+Creating checkpoint at 101.
+Creating checkpoint at 102.
+Creating checkpoint at 103.
+Creating checkpoint at 104.
+Creating checkpoint at 105.
+Creating checkpoint at 106.
+Creating checkpoint at 107.
+Creating checkpoint at 108.
+Creating checkpoint at 109.
+Creating checkpoint at 110.
+Creating checkpoint at 111.
+Creating checkpoint at 112.
+Creating checkpoint at 113.
+Creating checkpoint at 114.
+Creating checkpoint at 115.
+Creating checkpoint at 116.
+Creating checkpoint at 117.
+Creating checkpoint at 118.
+Creating checkpoint at 119.
+Creating checkpoint at 120.
+Creating checkpoint at 121.
+Creating checkpoint at 122.
+Creating checkpoint at 123.
+Creating checkpoint at 124.
+Creating checkpoint at 125.
+Creating checkpoint at 126.
+Creating checkpoint at 127.
+Creating checkpoint at 128.
+Creating checkpoint at 129.
+Creating checkpoint at 130.
+Creating checkpoint at 131.
+Creating checkpoint at 132.
+Creating checkpoint at 133.
+Creating checkpoint at 134.
+Creating checkpoint at 135.
+Creating checkpoint at 136.
+Creating checkpoint at 137.
+Creating checkpoint at 138.
+Creating checkpoint at 139.
+Creating checkpoint at 140.
+Creating checkpoint at 141.
+Creating checkpoint at 142.
+Creating checkpoint at 143.
+Creating checkpoint at 144.
+Creating checkpoint at 145.
+Creating checkpoint at 146.
+Creating checkpoint at 147.
+Creating checkpoint at 148.
+Creating checkpoint at 149.
+Creating checkpoint at 150.
+Creating checkpoint at 151.
+Creating checkpoint at 152.
+Creating checkpoint at 153.
+Creating checkpoint at 154.
+Creating checkpoint at 155.
+Creating checkpoint at 156.
+Creating checkpoint at 157.
+Creating checkpoint at 158.
+Creating checkpoint at 159.
+Creating checkpoint at 160.
+Creating checkpoint at 161.
+Creating checkpoint at 162.
+Creating checkpoint at 163.
+Creating checkpoint at 164.
+Creating checkpoint at 165.
+Creating checkpoint at 166.
+Creating checkpoint at 167.
+Creating checkpoint at 168.
+Creating checkpoint at 169.
+Creating checkpoint at 170.
+Creating checkpoint at 171.
+Creating checkpoint at 172.
+Creating checkpoint at 173.
+Creating checkpoint at 174.
+Creating checkpoint at 175.
+Creating checkpoint at 176.
+Creating checkpoint at 177.
+Creating checkpoint at 178.
+Creating checkpoint at 179.
+Creating checkpoint at 180.
+Creating checkpoint at 181.
+Creating checkpoint at 182.
+Creating checkpoint at 183.
+Creating checkpoint at 184.
+Creating checkpoint at 185.
+Creating checkpoint at 186.
+Creating checkpoint at 187.
+Creating checkpoint at 188.
+Creating checkpoint at 189.
+Creating checkpoint at 190.
+Creating checkpoint at 191.
+Creating checkpoint at 192.
+Creating checkpoint at 193.
+Creating checkpoint at 194.
+Creating checkpoint at 195.
+Creating checkpoint at 196.
+Creating checkpoint at 197.
+Creating checkpoint at 198.
+Creating checkpoint at 199.
+Creating checkpoint at 200.
+Creating checkpoint at 201.
+Creating checkpoint at 202.
+Creating checkpoint at 203.
+Creating checkpoint at 204.
+Creating checkpoint at 205.
+Creating checkpoint at 206.
+Creating checkpoint at 207.
+Creating checkpoint at 208.
+Creating checkpoint at 209.
+Creating checkpoint at 210.
+Creating checkpoint at 211.
+Creating checkpoint at 212.
+Creating checkpoint at 213.
+Creating checkpoint at 214.
+Creating checkpoint at 215.
+Creating checkpoint at 216.
+Creating checkpoint at 217.
+Creating checkpoint at 218.
+Creating checkpoint at 219.
+Creating checkpoint at 220.
+Creating checkpoint at 221.
+Creating checkpoint at 222.
+Creating checkpoint at 223.
+Creating checkpoint at 224.
+Creating checkpoint at 225.
+Creating checkpoint at 226.
+Creating checkpoint at 227.
+Creating checkpoint at 228.
+Creating checkpoint at 229.
+Creating checkpoint at 230.
+Creating checkpoint at 231.
+Creating checkpoint at 232.
+Creating checkpoint at 233.
+Creating checkpoint at 234.
+Creating checkpoint at 235.
+Creating checkpoint at 236.
+Creating checkpoint at 237.
+Creating checkpoint at 238.
+Creating checkpoint at 239.
+Creating checkpoint at 240.
+Creating checkpoint at 241.
+Creating checkpoint at 242.
+Creating checkpoint at 243.
+Creating checkpoint at 244.
+Creating checkpoint at 245.
+Creating checkpoint at 246.
+Creating checkpoint at 247.
+Creating checkpoint at 248.
+Creating checkpoint at 249.
+Creating checkpoint at 250.
+Creating checkpoint at 251.
+Creating checkpoint at 252.
+Creating checkpoint at 253.
+Creating checkpoint at 254.
+Creating checkpoint at 255.
+Creating checkpoint at 256.
+Creating checkpoint at 257.
+Creating checkpoint at 258.
+Creating checkpoint at 259.
+Creating checkpoint at 260.
+Creating checkpoint at 261.
+Creating checkpoint at 262.
+Creating checkpoint at 263.
+Creating checkpoint at 264.
+Creating checkpoint at 265.
+Creating checkpoint at 266.
+Creating checkpoint at 267.
+Creating checkpoint at 268.
+Creating checkpoint at 269.
+Creating checkpoint at 270.
+Creating checkpoint at 271.
+Creating checkpoint at 272.
+Creating checkpoint at 273.
+Creating checkpoint at 274.
+Creating checkpoint at 275.
+Creating checkpoint at 276.
+Creating checkpoint at 277.
+Creating checkpoint at 278.
+Creating checkpoint at 279.
+Creating checkpoint at 280.
+Creating checkpoint at 281.
+Creating checkpoint at 282.
+Creating checkpoint at 283.
+Creating checkpoint at 284.
+Creating checkpoint at 285.
+Creating checkpoint at 286.
+Creating checkpoint at 287.
+Creating checkpoint at 288.
+Creating checkpoint at 289.
+Creating checkpoint at 290.
+Creating checkpoint at 291.
+Creating checkpoint at 292.
+Creating checkpoint at 293.
+Creating checkpoint at 294.
+Creating checkpoint at 295.
+Creating checkpoint at 296.
+Creating checkpoint at 297.
+Creating checkpoint at 298.
+Creating checkpoint at 299.
+Creating checkpoint at 300.
+Creating checkpoint at 301.
+Creating checkpoint at 302.
+Creating checkpoint at 303.
+Creating checkpoint at 304.
+Creating checkpoint at 305.
+Creating checkpoint at 306.
+Creating checkpoint at 307.
+Creating checkpoint at 308.
+Creating checkpoint at 309.
+Creating checkpoint at 310.
+Creating checkpoint at 311.
+Creating checkpoint at 312.
+Creating checkpoint at 313.
+Creating checkpoint at 314.
+Creating checkpoint at 315.
+Creating checkpoint at 316.
+Creating checkpoint at 317.
+Creating checkpoint at 318.
+Creating checkpoint at 319.
+Creating checkpoint at 320.
+Creating checkpoint at 321.
+Creating checkpoint at 322.
+Creating checkpoint at 323.
+Creating checkpoint at 324.
+Creating checkpoint at 325.
+Creating checkpoint at 326.
+Creating checkpoint at 327.
+Creating checkpoint at 328.
+Creating checkpoint at 329.
+Creating checkpoint at 330.
+Creating checkpoint at 331.
+Creating checkpoint at 332.
+Creating checkpoint at 333.
+Creating checkpoint at 334.
+Creating checkpoint at 335.
+Creating checkpoint at 336.
+Creating checkpoint at 337.
+Creating checkpoint at 338.
+Creating checkpoint at 339.
+Creating checkpoint at 340.
+Creating checkpoint at 341.
+Creating checkpoint at 342.
+Creating checkpoint at 343.
+Creating checkpoint at 344.
+Creating checkpoint at 345.
+Creating checkpoint at 346.
+Creating checkpoint at 347.
+Creating checkpoint at 348.
+Creating checkpoint at 349.
+Creating checkpoint at 350.
+Creating checkpoint at 351.
+Creating checkpoint at 352.
+Creating checkpoint at 353.
+Creating checkpoint at 354.
+Creating checkpoint at 355.
+Creating checkpoint at 356.
+Creating checkpoint at 357.
+Creating checkpoint at 358.
+Creating checkpoint at 359.
+Creating checkpoint at 360.
+Creating checkpoint at 361.
+Creating checkpoint at 362.
+Creating checkpoint at 363.
+Creating checkpoint at 364.
+Creating checkpoint at 365.
+Creating checkpoint at 366.
+Creating checkpoint at 367.
+Creating checkpoint at 368.
+Creating checkpoint at 369.
+Creating checkpoint at 370.
+Creating checkpoint at 371.
+Creating checkpoint at 372.
+Creating checkpoint at 373.
+Creating checkpoint at 374.
+Creating checkpoint at 375.
+Creating checkpoint at 376.
+Creating checkpoint at 377.
+Creating checkpoint at 378.
+Creating checkpoint at 379.
+Creating checkpoint at 380.
+Creating checkpoint at 381.
+Creating checkpoint at 382.
+Creating checkpoint at 383.
+Creating checkpoint at 384.
+Creating checkpoint at 385.
+Creating checkpoint at 386.
+Creating checkpoint at 387.
+Creating checkpoint at 388.
+Creating checkpoint at 389.
+Creating checkpoint at 390.
+Creating checkpoint at 391.
+Creating checkpoint at 392.
+Creating checkpoint at 393.
+Creating checkpoint at 394.
+Creating checkpoint at 395.
+Creating checkpoint at 396.
+Creating checkpoint at 397.
+Creating checkpoint at 398.
+Creating checkpoint at 399.
+Creating checkpoint at 400.
+Creating checkpoint at 401.
+Creating checkpoint at 402.
+Creating checkpoint at 403.
+Creating checkpoint at 404.
+Creating checkpoint at 405.
+Creating checkpoint at 406.
+Creating checkpoint at 407.
+Creating checkpoint at 408.
+Creating checkpoint at 409.
+Creating checkpoint at 410.
+Creating checkpoint at 411.
+Creating checkpoint at 412.
+Creating checkpoint at 413.
+Creating checkpoint at 414.
+Creating checkpoint at 415.
+Creating checkpoint at 416.
+Creating checkpoint at 417.
+Creating checkpoint at 418.
+Creating checkpoint at 419.
+Creating checkpoint at 420.
+Creating checkpoint at 421.
+Creating checkpoint at 422.
+Creating checkpoint at 423.
+Creating checkpoint at 424.
+Creating checkpoint at 425.
+Creating checkpoint at 426.
+Creating checkpoint at 427.
+Creating checkpoint at 428.
+Creating checkpoint at 429.
+Creating checkpoint at 430.
+Creating checkpoint at 431.
+Creating checkpoint at 432.
+Creating checkpoint at 433.
+Creating checkpoint at 434.
+Creating checkpoint at 435.
+Creating checkpoint at 436.
+Creating checkpoint at 437.
+Creating checkpoint at 438.
+Creating checkpoint at 439.
+Creating checkpoint at 440.
+Creating checkpoint at 441.
+Creating checkpoint at 442.
+Creating checkpoint at 443.
+Creating checkpoint at 444.
+Creating checkpoint at 445.
+Creating checkpoint at 446.
+Creating checkpoint at 447.
+Creating checkpoint at 448.
+Creating checkpoint at 449.
+Creating checkpoint at 450.
+Creating checkpoint at 451.
+Creating checkpoint at 452.
+Creating checkpoint at 453.
+Computing adjoint of G at 454.
+454 6.342647e-02 2.640450e-02 2.151764e-02 100 1.078472e-01 4.256077e-02 3.606567e-02 0 3.277697e+00 1.834849e+00 1.638848e+00 98 3.191809e+00 1.715347e+00 1.595904e+00 97 3.156648e+00 1.671836e+00 1.578324e+00 96
+Computing adjoint of G at 453.
+453 5.496868e-02 2.482380e-02 2.324467e-02 100 8.374351e-02 3.312917e-02 2.776578e-02 0 3.310602e+00 1.565184e+00 1.164260e+00 98 3.015489e+00 1.363465e+00 1.128587e+00 97 2.886156e+00 1.335065e+00 1.129238e+00 96
+Computing adjoint of G at 452.
+452 2.997880e-02 8.751250e-03 6.229475e-03 100 3.992757e-02 1.093899e-02 7.325705e-03 0 2.265119e+00 1.127069e+00 9.438981e-01 98 2.409472e+00 1.143115e+00 9.525446e-01 97 2.461151e+00 1.153471e+00 9.694959e-01 96
+Computing adjoint of G at 451.
+451 2.919163e-02 8.308736e-03 6.762000e-03 100 3.948188e-02 1.075152e-02 8.111877e-03 0 1.814458e+00 9.648857e-01 7.793383e-01 98 2.041042e+00 9.886122e-01 7.954972e-01 97 1.973279e+00 9.816564e-01 8.023430e-01 96
+Computing adjoint of G at 450.
+450 2.257388e-02 4.960584e-03 3.041487e-03 99 2.801838e-02 5.989843e-03 3.519810e-03 0 1.652161e+00 8.482876e-01 6.639494e-01 98 1.783960e+00 8.665199e-01 6.863828e-01 97 1.703452e+00 8.540113e-01 6.917040e-01 96
+Computing adjoint of G at 449.
+449 2.179716e-02 4.735160e-03 3.368900e-03 100 2.773668e-02 5.938575e-03 4.065269e-03 0 1.485334e+00 7.515194e-01 5.694040e-01 98 1.519102e+00 7.552187e-01 5.885419e-01 97 1.440061e+00 7.448830e-01 5.882744e-01 96
+Computing adjoint of G at 448.
+448 1.866399e-02 3.334597e-03 1.972537e-03 99 2.245847e-02 3.888084e-03 2.126900e-03 1 1.328605e+00 6.699530e-01 4.949228e-01 98 1.301060e+00 6.632835e-01 5.118284e-01 97 1.237095e+00 6.548913e-01 5.109445e-01 96
+Computing adjoint of G at 447.
+447 1.777536e-02 3.193900e-03 1.970919e-03 100 2.183227e-02 3.880369e-03 2.398093e-03 0 1.206017e+00 5.961642e-01 4.312579e-01 98 1.132885e+00 5.825021e-01 4.434114e-01 97 1.102018e+00 5.776591e-01 4.405690e-01 96
+Computing adjoint of G at 446.
+446 1.594867e-02 2.467166e-03 1.337281e-03 99 1.883145e-02 2.788782e-03 1.443341e-03 1 1.093963e+00 5.319799e-01 3.784868e-01 98 1.016202e+00 5.141241e-01 3.875132e-01 97 1.001669e+00 5.111527e-01 3.851733e-01 96
+Computing adjoint of G at 445.
+445 1.517058e-02 2.370113e-03 1.250382e-03 100 1.830625e-02 2.797912e-03 1.539078e-03 0 9.829428e-01 4.736816e-01 3.324377e-01 98 9.066130e-01 4.543387e-01 3.377935e-01 97 9.145958e-01 4.533526e-01 3.350578e-01 96
+Computing adjoint of G at 444.
+444 1.393783e-02 1.951229e-03 9.327844e-04 99 1.634861e-02 2.158560e-03 1.008151e-03 1 8.849130e-01 4.225716e-01 2.932813e-01 98 8.136069e-01 4.028270e-01 2.963576e-01 97 8.269020e-01 4.026601e-01 2.944375e-01 96
+Computing adjoint of G at 443.
+443 1.334889e-02 1.879548e-03 8.340794e-04 100 1.600522e-02 2.173085e-03 1.043117e-03 0 7.929498e-01 3.763300e-01 2.587466e-01 98 7.266355e-01 3.576517e-01 2.595081e-01 97 7.491436e-01 3.582363e-01 2.576870e-01 96
+Computing adjoint of G at 442.
+442 1.239734e-02 1.621752e-03 6.639209e-04 99 1.463724e-02 1.779852e-03 7.189350e-04 1 7.136011e-01 3.356711e-01 2.289690e-01 98 6.531871e-01 3.182245e-01 2.284275e-01 97 6.748935e-01 3.189511e-01 2.273358e-01 96
+Computing adjoint of G at 441.
+441 1.194979e-02 1.565838e-03 5.761217e-04 100 1.442362e-02 1.794256e-03 7.361858e-04 0 6.389476e-01 2.990084e-01 2.025529e-01 98 5.851108e-01 2.834962e-01 2.007517e-01 97 6.105407e-01 2.843425e-01 1.998287e-01 96
+Computing adjoint of G at 440.
+440 1.124491e-02 1.398850e-03 4.798314e-04 99 1.346788e-02 1.545215e-03 5.209544e-04 1 5.732689e-01 2.667186e-01 1.795898e-01 98 5.261290e-01 2.529064e-01 1.772139e-01 97 5.490792e-01 2.536083e-01 1.768221e-01 96
+Computing adjoint of G at 439.
+439 1.081989e-02 1.353214e-03 4.084867e-04 100 1.326155e-02 1.557037e-03 5.371513e-04 0 5.125916e-01 2.376651e-01 1.591500e-01 98 4.768766e-01 2.258569e-01 1.562122e-01 97 4.945281e-01 2.264343e-01 1.559280e-01 96
+Computing adjoint of G at 438.
+438 1.027653e-02 1.239820e-03 3.509985e-04 99 1.256563e-02 1.395526e-03 3.824468e-04 1 4.597844e-01 2.120454e-01 1.412933e-01 98 4.327310e-01 2.018739e-01 1.382396e-01 97 4.447246e-01 2.022429e-01 1.382989e-01 96
+Computing adjoint of G at 437.
+437 9.911621e-03 1.201195e-03 2.956975e-04 100 1.240109e-02 1.404000e-03 4.037445e-04 0 4.106788e-01 1.890220e-01 1.253650e-01 98 3.920456e-01 1.806012e-01 1.221655e-01 97 3.993471e-01 1.807947e-01 1.222556e-01 96
+Computing adjoint of G at 436.
+436 9.446659e-03 1.120545e-03 2.593002e-04 99 1.185235e-02 1.296526e-03 2.839210e-04 1 3.680362e-01 1.686987e-01 1.114052e-01 98 3.553355e-01 1.616512e-01 1.083435e-01 97 3.591805e-01 1.616689e-01 1.086362e-01 96
+Computing adjoint of G at 435.
+435 9.130370e-03 1.086960e-03 2.177588e-04 100 1.175604e-02 1.301750e-03 3.122304e-04 0 3.287623e-01 1.504464e-01 9.893517e-02 98 3.215440e-01 1.448040e-01 9.595095e-02 97 3.223837e-01 1.446738e-01 9.621736e-02 96
+Computing adjoint of G at 434.
+434 8.723621e-03 1.026984e-03 1.931463e-04 99 1.127493e-02 1.227979e-03 2.129213e-04 1 2.943758e-01 1.343202e-01 8.798299e-02 98 2.909046e-01 1.297451e-01 8.525437e-02 97 2.897847e-01 1.294999e-01 8.562964e-02 96
+Computing adjoint of G at 433.
+433 8.444015e-03 9.972567e-04 1.748724e-04 68 1.122891e-02 1.230404e-03 2.485550e-04 0 2.645767e-01 1.198405e-01 7.818902e-02 98 2.642782e-01 1.163348e-01 7.564031e-02 97 2.623087e-01 1.159906e-01 7.595660e-02 96
+Computing adjoint of G at 432.
+432 8.085601e-03 9.508276e-04 1.682929e-04 67 1.079580e-02 1.177852e-03 1.810386e-04 62 2.380167e-01 1.070374e-01 6.957489e-02 98 2.399098e-01 1.043180e-01 6.731726e-02 97 2.377775e-01 1.039168e-01 6.768561e-02 96
+Computing adjoint of G at 431.
+431 7.841332e-03 9.242628e-04 1.622228e-04 66 1.078472e-02 1.177998e-03 2.040439e-04 0 2.140273e-01 9.554097e-02 6.186485e-02 98 2.182735e-01 9.360385e-02 5.981839e-02 97 2.162661e-01 9.314934e-02 6.011442e-02 96
+Computing adjoint of G at 430.
+430 7.518109e-03 8.871170e-04 1.566030e-04 65 1.039752e-02 1.138947e-03 1.732123e-04 59 1.928967e-01 8.536868e-02 5.507699e-02 98 1.983391e-01 8.398495e-02 5.331151e-02 97 1.963880e-01 8.351806e-02 5.362823e-02 96
+Computing adjoint of G at 429.
+429 7.302320e-03 8.633223e-04 1.513833e-04 64 1.040074e-02 1.137270e-03 1.731287e-04 0 1.735822e-01 7.623243e-02 4.899667e-02 98 1.803559e-01 7.540165e-02 4.743517e-02 97 1.785856e-01 7.491607e-02 4.767883e-02 96
+Computing adjoint of G at 428.
+428 7.012153e-03 8.328806e-04 1.465209e-04 63 1.008218e-02 1.106910e-03 1.664274e-04 56 1.564035e-01 6.814373e-02 4.364013e-02 98 1.637877e-01 6.768452e-02 4.232732e-02 97 1.622481e-01 6.721631e-02 4.257634e-02 96
+Computing adjoint of G at 427.
+427 6.822905e-03 8.116415e-04 1.419791e-04 62 1.005995e-02 1.103761e-03 1.634183e-04 55 1.408432e-01 6.087625e-02 3.883823e-02 98 1.489379e-01 6.079432e-02 3.770386e-02 97 1.476328e-01 6.033021e-02 3.788610e-02 96
+Computing adjoint of G at 426.
+426 6.562830e-03 7.863177e-04 1.377261e-04 61 9.793256e-03 1.079066e-03 1.605790e-04 54 1.269094e-01 5.443882e-02 3.460620e-02 98 1.351760e-01 5.459223e-02 3.368004e-02 97 1.341195e-01 5.416273e-02 3.386172e-02 96
+Computing adjoint of G at 425.
+425 6.397995e-03 7.675075e-04 1.337342e-04 60 9.749429e-03 1.074692e-03 1.578950e-04 53 1.143583e-01 4.865237e-02 3.080942e-02 98 1.229249e-01 4.905271e-02 3.002965e-02 97 1.221056e-01 4.864031e-02 3.015395e-02 96
+Computing adjoint of G at 424.
+424 6.168199e-03 7.462902e-04 1.299795e-04 59 9.521954e-03 1.053734e-03 1.554195e-04 51 1.030758e-01 4.352469e-02 2.746250e-02 98 1.115310e-01 4.406160e-02 2.685014e-02 97 1.112150e-01 4.369182e-02 2.697293e-02 96
+Computing adjoint of G at 423.
+423 6.026956e-03 7.298021e-04 1.264410e-04 58 9.467821e-03 1.048295e-03 1.530723e-04 50 9.293101e-02 3.891313e-02 2.445738e-02 98 1.014318e-01 3.960278e-02 2.395929e-02 97 1.013232e-01 3.925598e-02 2.403483e-02 96
+Computing adjoint of G at 422.
+422 5.828328e-03 7.119957e-04 1.231079e-04 58 9.261328e-03 1.029822e-03 1.508367e-04 49 8.381872e-02 3.482524e-02 2.180818e-02 98 9.202481e-02 3.558203e-02 2.144035e-02 97 9.251610e-02 3.527960e-02 2.151573e-02 96
+Computing adjoint of G at 421.
+421 5.710604e-03 6.976961e-04 1.199676e-04 57 9.198560e-03 1.023420e-03 1.487303e-04 47 7.559317e-02 3.114669e-02 1.942747e-02 98 8.370534e-02 3.198979e-02 1.914498e-02 97 8.434958e-02 3.171154e-02 1.918262e-02 96
+Computing adjoint of G at 420.
+420 5.544389e-03 6.827638e-04 1.169933e-04 56 9.008612e-03 1.006600e-03 1.467422e-04 46 6.823348e-02 2.788506e-02 1.732894e-02 98 7.595826e-02 2.874806e-02 1.714487e-02 97 7.700921e-02 2.851210e-02 1.718444e-02 96
+Computing adjoint of G at 419.
+419 5.451346e-03 6.704653e-04 1.141721e-04 55 8.935752e-03 9.992979e-04 1.448329e-04 45 6.158490e-02 2.494818e-02 1.544134e-02 98 6.914943e-02 2.585189e-02 1.531814e-02 97 7.027828e-02 2.563849e-02 1.532824e-02 96
+Computing adjoint of G at 418.
+418 5.318125e-03 6.579400e-04 1.114926e-04 54 8.757227e-03 9.835665e-04 1.429954e-04 44 5.561466e-02 2.234374e-02 1.377786e-02 98 6.273310e-02 2.323649e-02 1.372694e-02 97 6.414891e-02 2.306121e-02 1.374102e-02 96
+Computing adjoint of G at 417.
+417 5.253223e-03 6.473968e-04 1.089449e-04 53 8.675220e-03 9.754075e-04 1.412450e-04 42 5.025813e-02 1.999704e-02 1.228008e-02 98 5.716417e-02 2.090014e-02 1.227026e-02 97 5.859776e-02 2.074436e-02 1.226169e-02 96
+Computing adjoint of G at 416.
+416 5.156016e-03 6.368399e-04 1.065198e-04 52 8.504448e-03 9.603708e-04 1.395648e-04 41 4.548638e-02 1.791580e-02 1.096063e-02 98 5.196297e-02 1.878888e-02 1.100226e-02 97 5.362117e-02 1.866616e-02 1.099933e-02 96
+Computing adjoint of G at 415.
+415 5.122844e-03 6.277591e-04 1.042093e-04 51 8.414181e-03 9.513915e-04 1.379316e-04 40 4.118981e-02 1.603918e-02 9.771309e-03 98 4.739610e-02 1.690326e-02 9.838620e-03 97 4.898546e-02 1.679640e-02 9.818463e-03 96
+Computing adjoint of G at 414.
+414 5.069790e-03 6.187497e-04 1.020061e-04 50 8.257560e-03 9.367722e-04 1.363398e-04 39 3.734082e-02 1.437486e-02 8.724131e-03 98 4.314644e-02 1.519818e-02 8.826749e-03 97 4.490980e-02 1.511919e-02 8.813366e-03 96
+Computing adjoint of G at 413.
+413 5.069838e-03 6.108139e-04 9.990374e-05 49 8.150968e-03 9.270114e-04 1.347838e-04 38 3.384621e-02 1.287303e-02 7.779092e-03 98 3.939476e-02 1.367575e-02 7.895752e-03 97 4.106684e-02 1.360901e-02 7.869342e-03 96
+Computing adjoint of G at 412.
+412 5.040405e-03 6.029554e-04 9.789623e-05 48 8.004632e-03 9.126146e-04 1.332579e-04 37 3.071580e-02 1.154122e-02 6.947552e-03 98 3.589077e-02 1.229819e-02 7.087300e-03 97 3.767106e-02 1.225442e-02 7.068298e-03 96
+Computing adjoint of G at 411.
+411 5.033969e-03 5.958481e-04 9.597823e-05 47 7.889638e-03 9.021184e-04 1.317565e-04 36 2.786893e-02 1.033849e-02 6.196123e-03 98 3.279617e-02 1.106865e-02 6.341403e-03 97 3.448214e-02 1.103383e-02 6.312551e-03 96
+Computing adjoint of G at 410.
+410 4.998383e-03 5.887815e-04 9.414482e-05 46 7.745992e-03 8.878104e-04 1.302736e-04 35 2.532563e-02 9.272125e-03 5.535486e-03 98 2.991258e-02 9.955362e-03 5.694816e-03 97 3.166152e-02 9.939183e-03 5.673591e-03 96
+Computing adjoint of G at 409.
+409 4.979665e-03 5.822097e-04 9.239148e-05 45 7.625110e-03 8.766347e-04 1.301513e-04 0 2.300132e-02 8.308299e-03 4.937620e-03 98 2.735734e-02 8.962162e-03 5.096476e-03 97 2.901260e-02 8.952128e-03 5.067758e-03 96
+Computing adjoint of G at 408.
+408 4.937667e-03 5.756250e-04 9.071399e-05 44 7.482360e-03 8.623296e-04 1.273383e-04 33 2.093655e-02 7.454016e-03 4.412514e-03 98 2.498689e-02 8.062265e-03 4.578900e-03 97 2.667970e-02 8.067181e-03 4.557709e-03 96
+Computing adjoint of G at 407.
+407 4.907896e-03 5.693354e-04 8.911222e-05 44 7.356816e-03 8.505404e-04 1.317017e-04 0 1.903799e-02 6.681202e-03 3.936532e-03 98 2.287982e-02 7.259904e-03 4.098388e-03 97 2.447819e-02 7.268706e-03 4.071426e-03 96
+Computing adjoint of G at 406.
+406 4.859591e-03 5.629786e-04 8.758203e-05 43 7.214739e-03 8.361896e-04 1.254341e-04 0 1.736330e-02 5.996517e-03 3.518972e-03 98 2.093582e-02 6.532430e-03 3.683787e-03 97 2.255556e-02 6.553149e-03 3.664024e-03 96
+Computing adjoint of G at 405.
+405 4.820027e-03 5.567665e-04 8.611506e-05 42 7.085687e-03 8.238615e-04 1.327945e-04 0 1.581513e-02 5.376566e-03 3.139793e-03 98 1.920388e-02 5.884269e-03 3.297503e-03 97 2.073040e-02 5.907147e-03 3.273212e-03 96
+Computing adjoint of G at 404.
+404 4.765784e-03 5.504416e-04 8.470783e-05 41 6.944311e-03 8.094461e-04 1.278048e-04 0 1.445917e-02 4.827628e-03 2.807621e-03 98 1.761201e-02 5.296213e-03 2.965193e-03 97 1.914873e-02 5.328598e-03 2.947630e-03 96
+Computing adjoint of G at 403.
+403 4.717689e-03 5.441526e-04 8.335687e-05 40 6.812829e-03 7.966608e-04 1.333455e-04 0 1.319743e-02 4.330128e-03 2.505375e-03 98 1.619100e-02 4.772735e-03 2.654365e-03 97 1.764146e-02 4.806044e-03 2.633162e-03 96
+Computing adjoint of G at 402.
+402 4.658057e-03 5.377182e-04 8.205868e-05 39 6.672356e-03 7.821847e-04 1.292559e-04 0 1.210257e-02 3.889944e-03 2.241031e-03 98 1.489372e-02 4.297499e-03 2.387889e-03 97 1.634898e-02 4.338461e-03 2.372861e-03 96
+Computing adjoint of G at 401.
+401 4.602669e-03 5.312459e-04 8.080964e-05 38 6.539443e-03 7.690279e-04 1.333153e-04 0 1.107862e-02 3.490634e-03 1.999964e-03 98 1.373452e-02 3.874917e-03 2.137556e-03 97 1.511635e-02 3.915999e-03 2.119518e-03 96
+Computing adjoint of G at 400.
+400 4.538312e-03 5.246094e-04 7.960599e-05 37 6.400181e-03 7.545124e-04 1.298490e-04 0 1.019791e-02 3.137667e-03 1.789528e-03 98 1.268207e-02 3.491057e-03 1.923793e-03 97 1.406155e-02 3.538420e-03 1.911346e-03 96
+Computing adjoint of G at 399.
+399 4.476820e-03 5.178891e-04 7.844376e-05 36 6.266753e-03 7.410719e-04 1.326981e-04 0 9.374204e-03 2.817180e-03 1.597141e-03 98 1.175421e-02 3.150194e-03 1.722012e-03 97 1.307245e-02 3.197235e-03 1.707003e-03 96
+Computing adjoint of G at 398.
+398 4.408462e-03 5.109990e-04 7.731871e-05 35 6.129069e-03 7.265506e-04 1.296548e-04 0 8.667537e-03 2.534232e-03 1.429569e-03 98 1.089667e-02 2.840417e-03 1.550491e-03 97 1.221186e-02 2.892769e-03 1.540490e-03 96
+Computing adjoint of G at 397.
+397 4.341993e-03 5.040011e-04 7.622632e-05 34 5.996035e-03 7.129134e-04 1.315129e-04 0 8.019260e-03 2.277096e-03 1.275939e-03 98 1.016634e-02 2.565806e-03 1.387713e-03 97 1.142995e-02 2.617686e-03 1.375473e-03 96
+Computing adjoint of G at 396.
+396 4.270380e-03 4.968385e-04 7.516170e-05 33 5.860240e-03 6.984280e-04 1.287496e-04 0 7.452379e-03 2.050425e-03 1.142465e-03 98 9.475335e-03 2.316157e-03 1.250064e-03 97 1.074162e-02 2.372700e-03 1.242273e-03 96
+Computing adjoint of G at 395.
+395 4.199982e-03 4.895608e-04 7.411959e-05 32 5.728470e-03 6.846786e-04 1.297959e-04 0 6.950412e-03 1.844270e-03 1.022802e-03 97 8.913901e-03 2.095316e-03 1.118647e-03 97 1.013991e-02 2.151461e-03 1.108852e-03 96
+Computing adjoint of G at 394.
+394 4.125850e-03 4.821320e-04 7.309434e-05 31 5.594821e-03 6.702754e-04 1.272126e-04 0 6.512228e-03 1.662888e-03 9.159449e-04 97 8.375577e-03 1.894527e-03 1.008175e-03 97 9.609948e-03 1.954931e-03 1.002308e-03 96
+Computing adjoint of G at 393.
+393 4.052484e-03 4.745929e-04 7.213489e-05 0 5.464905e-03 6.564942e-04 1.275948e-04 0 6.124346e-03 1.497817e-03 8.249377e-04 97 7.949369e-03 1.717371e-03 9.019937e-04 97 9.154114e-03 1.777605e-03 8.943006e-04 96
+Computing adjoint of G at 392.
+392 3.976540e-03 4.669222e-04 7.311008e-05 0 5.333832e-03 6.422213e-04 1.251231e-04 0 5.774672e-03 1.352928e-03 7.385482e-04 97 7.514622e-03 1.556327e-03 8.133341e-04 97 8.725025e-03 1.620583e-03 8.090959e-04 96
+Computing adjoint of G at 391.
+391 3.901079e-03 4.591545e-04 7.389559e-05 0 5.206285e-03 6.284830e-04 1.249640e-04 0 5.454642e-03 1.221010e-03 6.653848e-04 97 7.160190e-03 1.414690e-03 7.274758e-04 97 8.338869e-03 1.479086e-03 7.215510e-04 96
+Computing adjoint of G at 390.
+390 3.823982e-03 4.512788e-04 7.450300e-05 0 5.078170e-03 6.143879e-04 1.225590e-04 0 5.163205e-03 1.105560e-03 5.955188e-04 97 6.793746e-03 1.286000e-03 6.563319e-04 97 7.974427e-03 1.354264e-03 6.534358e-04 96
+Computing adjoint of G at 389.
+389 3.747229e-03 4.433246e-04 7.494128e-05 0 4.953434e-03 6.007609e-04 1.219610e-04 0 4.895621e-03 1.000427e-03 5.367241e-04 97 6.493619e-03 1.173247e-03 5.868510e-04 97 7.641673e-03 1.241970e-03 5.823843e-04 96
+Computing adjoint of G at 388.
+388 3.669563e-03 4.352880e-04 7.522164e-05 0 4.828612e-03 5.868890e-04 1.195948e-04 0 4.650714e-03 9.087446e-04 4.801990e-04 97 6.182850e-03 1.070886e-03 5.297756e-04 97 7.329301e-03 1.143331e-03 5.279601e-04 96
+Computing adjoint of G at 387.
+387 3.592337e-03 4.271947e-04 7.535307e-05 0 4.707058e-03 5.734347e-04 1.186437e-04 0 4.425252e-03 8.252657e-04 4.329722e-04 97 5.925785e-03 9.815915e-04 4.735017e-04 97 7.039824e-03 1.054753e-03 4.702164e-04 96
+Computing adjoint of G at 386.
+386 3.514520e-03 4.190453e-04 7.534622e-05 0 4.585907e-03 5.598280e-04 1.163005e-04 0 4.218173e-03 7.527702e-04 3.872198e-04 97 5.659920e-03 9.006127e-04 4.277286e-04 97 6.769462e-03 9.772862e-04 4.267627e-04 96
+Computing adjoint of G at 385.
+385 3.437384e-03 4.108622e-04 7.520987e-05 0 4.467744e-03 5.466005e-04 1.150685e-04 0 4.026032e-03 6.867876e-04 3.493039e-04 97 5.437639e-03 8.303024e-04 3.821120e-04 97 6.515206e-03 9.078267e-04 3.797675e-04 96
+Computing adjoint of G at 384.
+384 3.359939e-03 4.026490e-04 7.495396e-05 0 4.350484e-03 5.332969e-04 1.127412e-04 0 3.850113e-03 6.297531e-04 3.122519e-04 97 5.208075e-03 7.666053e-04 3.454202e-04 97 6.278831e-03 8.473142e-04 3.451058e-04 96
+Computing adjoint of G at 383.
+383 3.283385e-03 3.944251e-04 7.458688e-05 0 4.235966e-03 5.203433e-04 1.112892e-04 0 3.684069e-03 5.778698e-04 2.818287e-04 97 5.014004e-03 7.115512e-04 3.084090e-04 97 6.053388e-03 7.930864e-04 3.068009e-04 96
+Computing adjoint of G at 382.
+382 3.206767e-03 3.861958e-04 7.411781e-05 0 4.122750e-03 5.073760e-04 1.089763e-04 0 3.533168e-03 5.332388e-04 2.518051e-04 97 4.813877e-03 6.617010e-04 2.790143e-04 97 5.844616e-03 7.459567e-04 2.791853e-04 96
+Computing adjoint of G at 381.
+381 3.131214e-03 3.779780e-04 7.355461e-05 0 4.012135e-03 4.947361e-04 1.073556e-04 0 3.388341e-03 4.926516e-04 2.274099e-04 97 4.642800e-03 6.187714e-04 2.489560e-04 97 5.642894e-03 7.036673e-04 2.479141e-04 96
+Computing adjoint of G at 380.
+380 3.055822e-03 3.697777e-04 7.290566e-05 0 3.903031e-03 4.821332e-04 1.050595e-04 0 3.257589e-03 4.578906e-04 2.030652e-04 97 4.466647e-03 5.798725e-04 2.254248e-04 97 5.456659e-03 6.669075e-04 2.259451e-04 96
+Computing adjoint of G at 379.
+379 2.981614e-03 3.616097e-04 7.217821e-05 0 3.796461e-03 4.698402e-04 1.033132e-04 0 3.130107e-03 4.262653e-04 1.835185e-04 97 4.314425e-03 5.464305e-04 2.009879e-04 97 5.274611e-03 6.337919e-04 2.003728e-04 96
+Computing adjoint of G at 378.
+378 2.907834e-03 3.534801e-04 7.137986e-05 0 3.691559e-03 4.576251e-04 1.010387e-04 0 3.015653e-03 3.992618e-04 1.637637e-04 97 4.157901e-03 5.160470e-04 1.821678e-04 97 5.106898e-03 6.048993e-04 1.829277e-04 96
+Computing adjoint of G at 377.
+377 2.835208e-03 3.454014e-04 7.051721e-05 0 3.589127e-03 4.457059e-04 9.920325e-05 0 2.902442e-03 3.746475e-04 1.481154e-04 97 4.021249e-03 4.898906e-04 1.622787e-04 97 4.941309e-03 5.786844e-04 1.619780e-04 96
+Computing adjoint of G at 376.
+376 2.763286e-03 3.373797e-04 6.959706e-05 0 3.488477e-03 4.338970e-04 9.695626e-05 0 2.801239e-03 3.536422e-04 1.320717e-04 97 3.880904e-03 4.660001e-04 1.472432e-04 97 4.788944e-03 5.556336e-04 1.481564e-04 96
+Computing adjoint of G at 375.
+375 2.692522e-03 3.294257e-04 6.862537e-05 0 3.390236e-03 4.223726e-04 9.506214e-05 0 2.699856e-03 3.344177e-04 1.195570e-04 97 3.757216e-03 4.453248e-04 1.310358e-04 97 4.637255e-03 5.345046e-04 1.309604e-04 96
+Computing adjoint of G at 374.
+374 2.622643e-03 3.215448e-04 6.760819e-05 0 3.293854e-03 4.109839e-04 9.284914e-05 0 2.609498e-03 3.179630e-04 1.065148e-04 97 3.630310e-03 4.262871e-04 1.190399e-04 97 4.497731e-03 5.157083e-04 1.200395e-04 96
+Computing adjoint of G at 373.
+373 2.553959e-03 3.137460e-04 6.655084e-05 0 3.199820e-03 3.998699e-04 9.092186e-05 0 2.517999e-03 3.028034e-04 9.651804e-05 97 3.517516e-03 4.096550e-04 1.058151e-04 97 4.357907e-03 4.982635e-04 1.058954e-04 96
+Computing adjoint of G at 372.
+372 2.486270e-03 3.060343e-04 6.545864e-05 0 3.107693e-03 3.889112e-04 8.874933e-05 0 2.436587e-03 2.897343e-04 8.590455e-05 97 3.401876e-03 3.941794e-04 9.625965e-05 97 4.229243e-03 4.825192e-04 9.729522e-05 96
+Computing adjoint of G at 371.
+371 2.419820e-03 2.984170e-04 6.433631e-05 0 3.017851e-03 3.782184e-04 8.681011e-05 0 2.353422e-03 2.775843e-04 7.793008e-05 97 3.298330e-03 3.804807e-04 8.545297e-05 97 4.099660e-03 4.677114e-04 8.563530e-05 96
+Computing adjoint of G at 370.
+370 2.354448e-03 2.908984e-04 6.318849e-05 0 2.929938e-03 3.676957e-04 8.468415e-05 0 2.279455e-03 2.669901e-04 6.928278e-05 97 3.192229e-03 3.675838e-04 7.785604e-05 97 3.980293e-03 4.541367e-04 7.889027e-05 96
+Computing adjoint of G at 369.
+369 2.290347e-03 2.834843e-04 6.201933e-05 0 2.844246e-03 3.574307e-04 8.275053e-05 0 2.203385e-03 2.570344e-04 6.293178e-05 97 3.096618e-03 3.559894e-04 6.901133e-05 97 3.859651e-03 4.412066e-04 7.619174e-05 0
+Computing adjoint of G at 368.
+368 2.227384e-03 2.761784e-04 6.083285e-05 0 2.760485e-03 3.473462e-04 8.067666e-05 0 2.135680e-03 2.482255e-04 5.587708e-05 97 2.998684e-03 3.449445e-04 6.298533e-05 97 3.748345e-03 4.291726e-04 7.602630e-05 0
+Computing adjoint of G at 367.
+367 2.165710e-03 2.689852e-04 5.963266e-05 0 2.678878e-03 3.375118e-04 7.876301e-05 0 2.065710e-03 2.398532e-04 5.082865e-05 97 2.909960e-03 3.348531e-04 5.957154e-05 0 3.635598e-03 4.175846e-04 7.573325e-05 0
+Computing adjoint of G at 366.
+366 2.105217e-03 2.619077e-04 5.842223e-05 0 2.599188e-03 3.278649e-04 7.674605e-05 0 2.003333e-03 2.323229e-04 4.506475e-05 97 2.819100e-03 3.251382e-04 5.925955e-05 0 3.531374e-03 4.066544e-04 7.532324e-05 0
+Computing adjoint of G at 365.
+365 2.046019e-03 2.549495e-04 5.720464e-05 0 2.521584e-03 3.184605e-04 7.486406e-05 0 1.938663e-03 2.250897e-04 4.119458e-05 0 2.736420e-03 3.161252e-04 5.886265e-05 0 3.425680e-03 3.960393e-04 7.480638e-05 0
+Computing adjoint of G at 364.
+364 1.988029e-03 2.481125e-04 5.598288e-05 0 2.445869e-03 3.092480e-04 7.290804e-05 0 1.880871e-03 2.184760e-04 4.086721e-05 0 2.651759e-03 3.073739e-04 5.838840e-05 0 3.327757e-03 3.859162e-04 7.419223e-05 0
+Computing adjoint of G at 363.
+363 1.931331e-03 2.413996e-04 5.475957e-05 0 2.372169e-03 3.002703e-04 7.106706e-05 0 1.820854e-03 2.120662e-04 4.049035e-05 0 2.574446e-03 2.991461e-04 5.784397e-05 0 3.228427e-03 3.760248e-04 7.348983e-05 0
+Computing adjoint of G at 362.
+362 1.875852e-03 2.348120e-04 5.353724e-05 0 2.300320e-03 2.914863e-04 6.917524e-05 0 1.767059e-03 2.061164e-04 4.006873e-05 0 2.495282e-03 2.911069e-04 5.723610e-05 0 3.136182e-03 3.665120e-04 7.270772e-05 0
+Computing adjoint of G at 361.
+361 1.821656e-03 2.283516e-04 5.231811e-05 0 2.230413e-03 2.829296e-04 6.738267e-05 0 1.711168e-03 2.003106e-04 3.960683e-05 0 2.422783e-03 2.834660e-04 5.657115e-05 0 3.042652e-03 3.571797e-04 7.185393e-05 0
+Computing adjoint of G at 360.
+360 1.768679e-03 2.220193e-04 5.110428e-05 0 2.162311e-03 2.745664e-04 6.555755e-05 0 1.660899e-03 1.948518e-04 3.910886e-05 0 2.348547e-03 2.759688e-04 5.585511e-05 0 2.955580e-03 3.481491e-04 7.093600e-05 0
+Computing adjoint of G at 359.
+359 1.716967e-03 2.158162e-04 4.989761e-05 0 2.096078e-03 2.664230e-04 6.381907e-05 0 1.608702e-03 1.895001e-04 3.857875e-05 0 2.280412e-03 2.687831e-04 5.509359e-05 0 2.867382e-03 3.392692e-04 6.996103e-05 0
+Computing adjoint of G at 358.
+358 1.666466e-03 2.097424e-04 4.869986e-05 0 2.031596e-03 2.584714e-04 6.206245e-05 0 1.561583e-03 1.844160e-04 3.802022e-05 0 2.210642e-03 2.617152e-04 5.429185e-05 0 2.785072e-03 3.306395e-04 6.893565e-05 0
+Computing adjoint of G at 357.
+357 1.617205e-03 2.037986e-04 4.751254e-05 0 1.968909e-03 2.507318e-04 6.038233e-05 0 1.512723e-03 1.794174e-04 3.743671e-05 0 2.146497e-03 2.548989e-04 5.345480e-05 0 2.701812e-03 3.221447e-04 6.786606e-05 0
+Computing adjoint of G at 356.
+356 1.569138e-03 1.979846e-04 4.633709e-05 0 1.907916e-03 2.431811e-04 5.869531e-05 0 1.468448e-03 1.746312e-04 3.683147e-05 0 2.080810e-03 2.481863e-04 5.258703e-05 0 2.623923e-03 3.138658e-04 6.675807e-05 0
+Computing adjoint of G at 355.
+355 1.522284e-03 1.923001e-04 4.517474e-05 0 1.848644e-03 2.358345e-04 5.707660e-05 0 1.422626e-03 1.699185e-04 3.620749e-05 0 2.020343e-03 2.416842e-04 5.169284e-05 0 2.545266e-03 3.057142e-04 6.561707e-05 0
+Computing adjoint of G at 354.
+354 1.476599e-03 1.867448e-04 4.402665e-05 0 1.791004e-03 2.286730e-04 5.545973e-05 0 1.380945e-03 1.653796e-04 3.556759e-05 0 1.958421e-03 2.352794e-04 5.077619e-05 0 2.471512e-03 2.977559e-04 6.444808e-05 0
+Computing adjoint of G at 353.
+353 1.432095e-03 1.813180e-04 4.289379e-05 0 1.735011e-03 2.217077e-04 5.390444e-05 0 1.337911e-03 1.609087e-04 3.491437e-05 0 1.901367e-03 2.290567e-04 4.984080e-05 0 2.397168e-03 2.899226e-04 6.325578e-05 0
+Computing adjoint of G at 352.
+352 1.388732e-03 1.760189e-04 4.177708e-05 0 1.680586e-03 2.149226e-04 5.235772e-05 0 1.298617e-03 1.565845e-04 3.425024e-05 0 1.842942e-03 2.229293e-04 4.889009e-05 0 2.327304e-03 2.822674e-04 6.204448e-05 0
+Computing adjoint of G at 351.
+351 1.346515e-03 1.708465e-04 4.067728e-05 0 1.627735e-03 2.083260e-04 5.086701e-05 0 1.258157e-03 1.523262e-04 3.357743e-05 0 1.789075e-03 2.169644e-04 4.792724e-05 0 2.257020e-03 2.747375e-04 6.081818e-05 0
+Computing adjoint of G at 350.
+350 1.305406e-03 1.657997e-04 3.959508e-05 0 1.576388e-03 2.019041e-04 4.938998e-05 0 1.221077e-03 1.481957e-04 3.289803e-05 0 1.733914e-03 2.110949e-04 4.695518e-05 0 2.190833e-03 2.673756e-04 5.958060e-05 0
+Computing adjoint of G at 349.
+349 1.265404e-03 1.608771e-04 3.853105e-05 0 1.526542e-03 1.956629e-04 4.796429e-05 0 1.183005e-03 1.441310e-04 3.221392e-05 0 1.683036e-03 2.053743e-04 4.597661e-05 0 2.124381e-03 2.601405e-04 5.833513e-05 0
+Computing adjoint of G at 348.
+348 1.226475e-03 1.560774e-04 3.748570e-05 0 1.478134e-03 1.895907e-04 4.655609e-05 0 1.147990e-03 1.401807e-04 3.152687e-05 0 1.630940e-03 1.997504e-04 4.499404e-05 0 2.061682e-03 2.530664e-04 5.708491e-05 0
+Computing adjoint of G at 347.
+347 1.188613e-03 1.513991e-04 3.645944e-05 0 1.431155e-03 1.836913e-04 4.519526e-05 0 1.112145e-03 1.362969e-04 3.083848e-05 0 1.582875e-03 1.942655e-04 4.400974e-05 0 1.998858e-03 2.461209e-04 5.583282e-05 0
+Computing adjoint of G at 346.
+346 1.151787e-03 1.468406e-04 3.545261e-05 0 1.385550e-03 1.779546e-04 4.385470e-05 0 1.079069e-03 1.325177e-04 3.015023e-05 0 1.533666e-03 1.888790e-04 4.302581e-05 0 1.939484e-03 2.393311e-04 5.458150e-05 0
+Computing adjoint of G at 345.
+345 1.115986e-03 1.424000e-04 3.446549e-05 0 1.341304e-03 1.723832e-04 4.255809e-05 0 1.045307e-03 1.288061e-04 2.946348e-05 0 1.488256e-03 1.836239e-04 4.204417e-05 0 1.880093e-03 2.326716e-04 5.333336e-05 0
+Computing adjoint of G at 344.
+344 1.081183e-03 1.380758e-04 3.349830e-05 0 1.298366e-03 1.669680e-04 4.128369e-05 0 1.014056e-03 1.251920e-04 2.877944e-05 0 1.441776e-03 1.784688e-04 4.106655e-05 0 1.824014e-03 2.261636e-04 5.209058e-05 0
+Computing adjoint of G at 343.
+343 1.047363e-03 1.338660e-04 3.255117e-05 0 1.256720e-03 1.617105e-04 4.005026e-05 0 9.822509e-04 1.216463e-04 2.809924e-05 0 1.398879e-03 1.734394e-04 4.009455e-05 0 1.767756e-03 2.197868e-04 5.085517e-05 0
+Computing adjoint of G at 342.
+342 1.014499e-03 1.297686e-04 3.162421e-05 0 1.216319e-03 1.566028e-04 3.884032e-05 0 9.527246e-04 1.181925e-04 2.742390e-05 0 1.354981e-03 1.685108e-04 3.912960e-05 0 1.714796e-03 2.135580e-04 4.962894e-05 0
+Computing adjoint of G at 341.
+341 9.825777e-04 1.257819e-04 3.071747e-05 0 1.177142e-03 1.516453e-04 3.766870e-05 0 9.227592e-04 1.148078e-04 2.675432e-05 0 1.314466e-03 1.637032e-04 3.817300e-05 0 1.661539e-03 2.074607e-04 4.841351e-05 0
+Computing adjoint of G at 340.
+340 9.515716e-04 1.219037e-04 2.983095e-05 0 1.139149e-03 1.468311e-04 3.652132e-05 0 8.948661e-04 1.115104e-04 2.609134e-05 0 1.273016e-03 1.589967e-04 3.722592e-05 0 1.611537e-03 2.015079e-04 4.721035e-05 0
+Computing adjoint of G at 339.
+339 9.214655e-04 1.181320e-04 2.896461e-05 0 1.102316e-03 1.421597e-04 3.540991e-05 0 8.666351e-04 1.082824e-04 2.543569e-05 0 1.234762e-03 1.544071e-04 3.628941e-05 0 1.561167e-03 1.956862e-04 4.602078e-05 0
+Computing adjoint of G at 338.
+338 8.922341e-04 1.144647e-04 2.811838e-05 0 1.066605e-03 1.376250e-04 3.432307e-05 0 8.402912e-04 1.051379e-04 2.478803e-05 0 1.195636e-03 1.499183e-04 3.536440e-05 0 1.513956e-03 1.900055e-04 4.484597e-05 0
+Computing adjoint of G at 337.
+337 8.638611e-04 1.108998e-04 2.729216e-05 0 1.031994e-03 1.332261e-04 3.327004e-05 0 8.136973e-04 1.020627e-04 2.414895e-05 0 1.159528e-03 1.455426e-04 3.445172e-05 0 1.466439e-03 1.844548e-04 4.368696e-05 0
+Computing adjoint of G at 336.
+336 8.363222e-04 1.074352e-04 2.648579e-05 0 9.984445e-04 1.289575e-04 3.224160e-05 0 7.888244e-04 9.906750e-05 2.351896e-05 0 1.122646e-03 1.412669e-04 3.355210e-05 0 1.421786e-03 1.790414e-04 4.254466e-05 0
+Computing adjoint of G at 335.
+335 8.096007e-04 1.040688e-04 2.569913e-05 0 9.659353e-04 1.248177e-04 3.124501e-05 0 7.637769e-04 9.614101e-05 2.289852e-05 0 1.088539e-03 1.371005e-04 3.266618e-05 0 1.376975e-03 1.737562e-04 4.141987e-05 0
+Computing adjoint of G at 334.
+334 7.836733e-04 1.007983e-04 2.493196e-05 0 9.344317e-04 1.208018e-04 3.027276e-05 0 7.403017e-04 9.329149e-05 2.228802e-05 0 1.053815e-03 1.330329e-04 3.179451e-05 0 1.334773e-03 1.686047e-04 4.031329e-05 0
+Computing adjoint of G at 333.
+333 7.585229e-04 9.762181e-05 2.418409e-05 0 9.039107e-04 1.169081e-04 2.933054e-05 0 7.167163e-04 9.050971e-05 2.168780e-05 0 1.021583e-03 1.290709e-04 3.093757e-05 0 1.292527e-03 1.635790e-04 3.922552e-05 0
+Computing adjoint of G at 332.
+332 7.341275e-04 9.453708e-05 2.345528e-05 0 8.743404e-04 1.131321e-04 2.841223e-05 0 6.945694e-04 8.780194e-05 2.109814e-05 0 9.888980e-04 1.252059e-04 3.009577e-05 0 1.252670e-03 1.586830e-04 3.815705e-05 0
+Computing adjoint of G at 331.
+331 7.104699e-04 9.154205e-05 2.274527e-05 0 8.456978e-04 1.094718e-04 2.752225e-05 0 6.723666e-04 8.516066e-05 2.051928e-05 0 9.584576e-04 1.214428e-04 2.926945e-05 0 1.212858e-03 1.539098e-04 3.710831e-05 0
+Computing adjoint of G at 330.
+330 6.875289e-04 8.863459e-05 2.205379e-05 0 8.179531e-04 1.059230e-04 2.665560e-05 0 6.514821e-04 8.259053e-05 1.995143e-05 0 9.277484e-04 1.177745e-04 2.845887e-05 0 1.175242e-03 1.492623e-04 3.607964e-05 0
+Computing adjoint of G at 329.
+329 6.652876e-04 8.581264e-05 2.138058e-05 0 7.910838e-04 1.024838e-04 2.581570e-05 0 6.305870e-04 8.008535e-05 1.939474e-05 0 8.989696e-04 1.142046e-04 2.766427e-05 0 1.137737e-03 1.447344e-04 3.507132e-05 0
+Computing adjoint of G at 328.
+328 6.437257e-04 8.307412e-05 2.072533e-05 0 7.650617e-04 9.915025e-05 2.499842e-05 0 6.109020e-04 7.764852e-05 1.884932e-05 0 8.701378e-04 1.107268e-04 2.688580e-05 0 1.102261e-03 1.403278e-04 3.408354e-05 0
+Computing adjoint of G at 327.
+327 6.228265e-04 8.041699e-05 2.008774e-05 0 7.398648e-04 9.592026e-05 2.420641e-05 0 5.912439e-04 7.527488e-05 1.831527e-05 0 8.429345e-04 1.073437e-04 2.612359e-05 0 1.066993e-03 1.360372e-04 3.311645e-05 0
+Computing adjoint of G at 326.
+326 6.025708e-04 7.783920e-05 1.946751e-05 0 7.154668e-04 9.279026e-05 2.343625e-05 0 5.726981e-04 7.296684e-05 1.779263e-05 0 8.158649e-04 1.040500e-04 2.537771e-05 0 1.033505e-03 1.318635e-04 3.217014e-05 0
+Computing adjoint of G at 325.
+325 5.829420e-04 7.533878e-05 1.886431e-05 0 6.918463e-04 8.975809e-05 2.268995e-05 0 5.542408e-04 7.072005e-05 1.728145e-05 0 7.901755e-04 1.008473e-04 2.464820e-05 0 1.000375e-03 1.278020e-04 3.124466e-05 0
+Computing adjoint of G at 324.
+324 5.639220e-04 7.291372e-05 1.827782e-05 0 6.689785e-04 8.682042e-05 2.196468e-05 0 5.367719e-04 6.853614e-05 1.678171e-05 0 7.647614e-04 9.773099e-05 2.393505e-05 0 9.687641e-04 1.238529e-04 3.033998e-05 0
+Computing adjoint of G at 323.
+323 5.454946e-04 7.056209e-05 1.770771e-05 0 6.468427e-04 8.397509e-05 2.126193e-05 0 5.194270e-04 6.641139e-05 1.629340e-05 0 7.405229e-04 9.470196e-05 2.323824e-05 0 9.376465e-04 1.200119e-04 2.945608e-05 0
+Computing adjoint of G at 322.
+322 5.276424e-04 6.828196e-05 1.715365e-05 0 6.254156e-04 8.121901e-05 2.057934e-05 0 5.029740e-04 6.434682e-05 1.581646e-05 0 7.166654e-04 9.175619e-05 2.255769e-05 0 9.078321e-04 1.162788e-04 2.859285e-05 0
+Computing adjoint of G at 321.
+321 5.103499e-04 6.607143e-05 1.661530e-05 0 6.046773e-04 7.855001e-05 1.991801e-05 0 4.866753e-04 6.233925e-05 1.535085e-05 0 6.938143e-04 8.889400e-05 2.189331e-05 0 8.786105e-04 1.126496e-04 2.775018e-05 0
+Computing adjoint of G at 320.
+320 4.936006e-04 6.392865e-05 1.609233e-05 0 5.846059e-04 7.596522e-05 1.927597e-05 0 4.711887e-04 6.038920e-05 1.489647e-05 0 6.714209e-04 8.611183e-05 2.124500e-05 0 8.505123e-04 1.091238e-04 2.692792e-05 0
+Computing adjoint of G at 319.
+319 4.773795e-04 6.185178e-05 1.558440e-05 0 5.651822e-04 7.346252e-05 1.865399e-05 0 4.558770e-04 5.849389e-05 1.445324e-05 0 6.499292e-04 8.340957e-05 2.061260e-05 0 8.230768e-04 1.056976e-04 2.612588e-05 0
+Computing adjoint of G at 318.
+318 4.616707e-04 5.983904e-05 1.509118e-05 0 5.463857e-04 7.103921e-05 1.805041e-05 0 4.413083e-04 5.665351e-05 1.402104e-05 0 6.288779e-04 8.078401e-05 1.999596e-05 0 7.966151e-04 1.023702e-04 2.534385e-05 0
+Computing adjoint of G at 317.
+317 4.464600e-04 5.788865e-05 1.461231e-05 0 5.281980e-04 6.869321e-05 1.746576e-05 0 4.269275e-04 5.486557e-05 1.359974e-05 0 6.086766e-04 7.823475e-05 1.939490e-05 0 7.708622e-04 9.913825e-05 2.458162e-05 0
+Computing adjoint of G at 316.
+316 4.317322e-04 5.599888e-05 1.414748e-05 0 5.105998e-04 6.642201e-05 1.689862e-05 0 4.132297e-04 5.312999e-05 1.318922e-05 0 5.888924e-04 7.575886e-05 1.880922e-05 0 7.459941e-04 9.600050e-05 2.383894e-05 0
+Computing adjoint of G at 315.
+315 4.174737e-04 5.416805e-05 1.369635e-05 0 4.935735e-04 6.422358e-05 1.634934e-05 0 3.997269e-04 5.144456e-05 1.278933e-05 0 5.699122e-04 7.335569e-05 1.823873e-05 0 7.217903e-04 9.295395e-05 2.311552e-05 0
+Computing adjoint of G at 314.
+314 4.036702e-04 5.239449e-05 1.325858e-05 0 4.771011e-04 6.209558e-05 1.581668e-05 0 3.868543e-04 4.980897e-05 1.239992e-05 0 5.513262e-04 7.102258e-05 1.768320e-05 0 6.984385e-04 8.999716e-05 2.241111e-05 0
+Computing adjoint of G at 313.
+313 3.903084e-04 5.067657e-05 1.283384e-05 0 4.611658e-04 6.003604e-05 1.530087e-05 0 3.741795e-04 4.822124e-05 1.202082e-05 0 5.335005e-04 6.875867e-05 1.714240e-05 0 6.756916e-04 8.712731e-05 2.172540e-05 0
+Computing adjoint of G at 312.
+312 3.773751e-04 4.901271e-05 1.242182e-05 0 4.457505e-04 5.804276e-05 1.480082e-05 0 3.620880e-04 4.668090e-05 1.165187e-05 0 5.160470e-04 6.656155e-05 1.661609e-05 0 6.537711e-04 8.434288e-05 2.105808e-05 0
+Computing adjoint of G at 311.
+311 3.648574e-04 4.740135e-05 1.202219e-05 0 4.308393e-04 5.611385e-05 1.431664e-05 0 3.501996e-04 4.518616e-05 1.129290e-05 0 4.993120e-04 6.443020e-05 1.610402e-05 0 6.324035e-04 8.164120e-05 2.040885e-05 0
+Computing adjoint of G at 310.
+310 3.527428e-04 4.584097e-05 1.163464e-05 0 4.164163e-04 5.424725e-05 1.384741e-05 0 3.388409e-04 4.373641e-05 1.094373e-05 0 4.829342e-04 6.236239e-05 1.560595e-05 0 6.118334e-04 7.902069e-05 1.977737e-05 0
+Computing adjoint of G at 309.
+309 3.410191e-04 4.433009e-05 1.125884e-05 0 4.024663e-04 5.244116e-05 1.339311e-05 0 3.277027e-04 4.233004e-05 1.060418e-05 0 4.672228e-04 6.035704e-05 1.512160e-05 0 5.917860e-04 7.647883e-05 1.916332e-05 0
+Computing adjoint of G at 308.
+308 3.296743e-04 4.286725e-05 1.089450e-05 0 3.889742e-04 5.069362e-05 1.295295e-05 0 3.170273e-04 4.096635e-05 1.027406e-05 0 4.518756e-04 5.841205e-05 1.465072e-05 0 5.724735e-04 7.401400e-05 1.856635e-05 0
+Computing adjoint of G at 307.
+307 3.186971e-04 4.145104e-05 1.054130e-05 0 3.759259e-04 4.900292e-05 1.252685e-05 0 3.065932e-04 3.964384e-05 9.953185e-06 0 4.371146e-04 5.652628e-05 1.419304e-05 0 5.536838e-04 7.162383e-05 1.798613e-05 0
+Computing adjoint of G at 306.
+306 3.080760e-04 4.008008e-05 1.019895e-05 0 3.633070e-04 4.736723e-05 1.211411e-05 0 2.965654e-04 3.836179e-05 9.641369e-06 0 4.227353e-04 5.469780e-05 1.374828e-05 0 5.355463e-04 6.930667e-05 1.742231e-05 0
+Computing adjoint of G at 305.
+305 2.978001e-04 3.875302e-05 9.867155e-06 0 3.511041e-04 4.578490e-05 1.171461e-05 0 2.867921e-04 3.711879e-05 9.338419e-06 0 4.088745e-04 5.292541e-05 1.331618e-05 0 5.179388e-04 6.706029e-05 1.687455e-05 0
+Computing adjoint of G at 304.
+304 2.878587e-04 3.746855e-05 9.545628e-06 0 3.393039e-04 4.425422e-05 1.132770e-05 0 2.773776e-04 3.591409e-05 9.044145e-06 0 3.954043e-04 5.120731e-05 1.289646e-05 0 5.009182e-04 6.488304e-05 1.634250e-05 0
+Computing adjoint of G at 303.
+303 2.782416e-04 3.622538e-05 9.234083e-06 0 3.278936e-04 4.277363e-05 1.095325e-05 0 2.682245e-04 3.474639e-05 8.758355e-06 0 3.823950e-04 4.954228e-05 1.248885e-05 0 4.844169e-04 6.277282e-05 1.582580e-05 0
+Computing adjoint of G at 302.
+302 2.689385e-04 3.502227e-05 8.932243e-06 0 3.168606e-04 4.134152e-05 1.059069e-05 0 2.593912e-04 3.361490e-05 8.480856e-06 0 3.697785e-04 4.792864e-05 1.209306e-05 0 4.684650e-04 6.072798e-05 1.532412e-05 0
+Computing adjoint of G at 301.
+301 2.599398e-04 3.385801e-05 8.639837e-06 0 3.061931e-04 3.995640e-05 1.023983e-05 0 2.508188e-04 3.251843e-05 8.211459e-06 0 3.575881e-04 4.636519e-05 1.170884e-05 0 4.529901e-04 5.874655e-05 1.483709e-05 0
+Computing adjoint of G at 300.
+300 2.512358e-04 3.273141e-05 8.356597e-06 0 2.958791e-04 3.861675e-05 9.900171e-06 0 2.425425e-04 3.145617e-05 7.949972e-06 0 3.457591e-04 4.485032e-05 1.133591e-05 0 4.380437e-04 5.682691e-05 1.436439e-05 0
+Computing adjoint of G at 299.
+299 2.428174e-04 3.164132e-05 8.082262e-06 0 2.859075e-04 3.732118e-05 9.571513e-06 0 2.345071e-04 3.042701e-05 7.696207e-06 0 3.343388e-04 4.338285e-05 1.097399e-05 0 4.235455e-04 5.496719e-05 1.390566e-05 0
+Computing adjoint of G at 298.
+298 2.346755e-04 3.058662e-05 7.816578e-06 0 2.762670e-04 3.606826e-05 9.253397e-06 0 2.267546e-04 2.943016e-05 7.449976e-06 0 3.232517e-04 4.196129e-05 1.062283e-05 0 4.095355e-04 5.316581e-05 1.346056e-05 0
+Computing adjoint of G at 297.
+297 2.268014e-04 2.956621e-05 7.559294e-06 0 2.669470e-04 3.485667e-05 8.945617e-06 0 2.192249e-04 2.846456e-05 7.211092e-06 0 3.125554e-04 4.058447e-05 1.028214e-05 0 3.959594e-04 5.142101e-05 1.302876e-05 0
+Computing adjoint of G at 296.
+296 2.191866e-04 2.857904e-05 7.310166e-06 0 2.579372e-04 3.368505e-05 8.647755e-06 0 2.119647e-04 2.752944e-05 6.979372e-06 0 3.021740e-04 3.925097e-05 9.951681e-06 0 3.828341e-04 4.973125e-05 1.260992e-05 0
+Computing adjoint of G at 295.
+295 2.118229e-04 2.762408e-05 7.068957e-06 0 2.492275e-04 3.255217e-05 8.359600e-06 0 2.049126e-04 2.662381e-05 6.754634e-06 0 2.921512e-04 3.795967e-05 9.631179e-06 0 3.701190e-04 4.809486e-05 1.220371e-05 0
+Computing adjoint of G at 294.
+294 2.047023e-04 2.670032e-05 6.835433e-06 0 2.408081e-04 3.145676e-05 8.080769e-06 0 1.981132e-04 2.574691e-05 6.536697e-06 0 2.824345e-04 3.670923e-05 9.320380e-06 0 3.578270e-04 4.651037e-05 1.180981e-05 0
+Computing adjoint of G at 293.
+293 1.978171e-04 2.580679e-05 6.609366e-06 0 2.326697e-04 3.039764e-05 7.811050e-06 0 1.915143e-04 2.489782e-05 6.325386e-06 0 2.730449e-04 3.549854e-05 9.019033e-06 0 3.459223e-04 4.497619e-05 1.142789e-05 0
+Computing adjoint of G at 292.
+292 1.911597e-04 2.494254e-05 6.390536e-06 0 2.248029e-04 2.937362e-05 7.550093e-06 0 1.851439e-04 2.407580e-05 6.120524e-06 0 2.639506e-04 3.432637e-05 8.726888e-06 0 3.344117e-04 4.349090e-05 1.105763e-05 0
+Computing adjoint of G at 291.
+291 1.847228e-04 2.410665e-05 6.178727e-06 0 2.171992e-04 2.838360e-05 7.297686e-06 0 1.789698e-04 2.327997e-05 5.921941e-06 0 2.551612e-04 3.319165e-05 8.443698e-06 0 3.232664e-04 4.205300e-05 1.069874e-05 0
+Computing adjoint of G at 290.
+290 1.784994e-04 2.329823e-05 5.973727e-06 0 2.098497e-04 2.742647e-05 7.053509e-06 0 1.730046e-04 2.250963e-05 5.729467e-06 0 2.466478e-04 3.209319e-05 8.169224e-06 0 3.124903e-04 4.066114e-05 1.035089e-05 0
+Computing adjoint of G at 289.
+289 1.724826e-04 2.251641e-05 5.775331e-06 0 2.027462e-04 2.650116e-05 6.817352e-06 0 1.672275e-04 2.176395e-05 5.542937e-06 0 2.384207e-04 3.102997e-05 7.903227e-06 0 3.020584e-04 3.931388e-05 1.001379e-05 0
+Computing adjoint of G at 288.
+288 1.666656e-04 2.176034e-05 5.583339e-06 0 1.958806e-04 2.560665e-05 6.588920e-06 0 1.616453e-04 2.104225e-05 5.362187e-06 0 2.304549e-04 3.000089e-05 7.645475e-06 0 2.919723e-04 3.800994e-05 9.687147e-06 0
+Computing adjoint of G at 287.
+287 1.610422e-04 2.102921e-05 5.397556e-06 0 1.892451e-04 2.474194e-05 6.368010e-06 0 1.562388e-04 2.034376e-05 5.187056e-06 0 2.227551e-04 2.900496e-05 7.395740e-06 0 2.822102e-04 3.674797e-05 9.370665e-06 0
+Computing adjoint of G at 286.
+286 1.556059e-04 2.032223e-05 5.217793e-06 0 1.828321e-04 2.390606e-05 6.154348e-06 0 1.510157e-04 1.966781e-05 5.017389e-06 0 2.153016e-04 2.804114e-05 7.153798e-06 0 2.727720e-04 3.552674e-05 9.064063e-06 0
+Computing adjoint of G at 285.
+285 1.503508e-04 1.963862e-05 5.043864e-06 0 1.766344e-04 2.309808e-05 5.947737e-06 0 1.459586e-04 1.901370e-05 4.853032e-06 0 2.080970e-04 2.710849e-05 6.919429e-06 0 2.636385e-04 3.434497e-05 8.767061e-06 0
+Computing adjoint of G at 284.
+284 1.452708e-04 1.897764e-05 4.875591e-06 0 1.706449e-04 2.231708e-05 5.747925e-06 0 1.410715e-04 1.838077e-05 4.693834e-06 0 2.011242e-04 2.620602e-05 6.692419e-06 0 2.548084e-04 3.320149e-05 8.479388e-06 0
+Computing adjoint of G at 283.
+283 1.403605e-04 1.833855e-05 4.712799e-06 0 1.648566e-04 2.156218e-05 5.554721e-06 0 1.363413e-04 1.776836e-05 4.539647e-06 0 1.943842e-04 2.533284e-05 6.472557e-06 0 2.462647e-04 3.209509e-05 8.200776e-06 0
+Computing adjoint of G at 282.
+282 1.356141e-04 1.772067e-05 4.555317e-06 0 1.592629e-04 2.083253e-05 5.367891e-06 0 1.317697e-04 1.717585e-05 4.390329e-06 0 1.878623e-04 2.448802e-05 6.259637e-06 0 2.380050e-04 3.102466e-05 7.930964e-06 0
+Computing adjoint of G at 281.
+281 1.310264e-04 1.712329e-05 4.402980e-06 0 1.538574e-04 2.012731e-05 5.187252e-06 0 1.273457e-04 1.660262e-05 4.245737e-06 0 1.815582e-04 2.367070e-05 6.053459e-06 0 2.300144e-04 2.998907e-05 7.669698e-06 0
+Computing adjoint of G at 280.
+280 1.265922e-04 1.654577e-05 4.255628e-06 0 1.486338e-04 1.944571e-05 5.012588e-06 0 1.230701e-04 1.604809e-05 4.105734e-06 0 1.754590e-04 2.288003e-05 5.853826e-06 0 2.222897e-04 2.898726e-05 7.416729e-06 0
+Computing adjoint of G at 279.
+279 1.223064e-04 1.598746e-05 4.113104e-06 0 1.435862e-04 1.878695e-05 4.843722e-06 0 1.189333e-04 1.551165e-05 3.970185e-06 0 1.695636e-04 2.211517e-05 5.660547e-06 0 2.148177e-04 2.801815e-05 7.171812e-06 0
+Computing adjoint of G at 278.
+278 1.181642e-04 1.544774e-05 3.975257e-06 0 1.387086e-04 1.815030e-05 4.680455e-06 0 1.149351e-04 1.499275e-05 3.838960e-06 0 1.638606e-04 2.137533e-05 5.473433e-06 0 2.075946e-04 2.708075e-05 6.934711e-06 0
+Computing adjoint of G at 277.
+277 1.141609e-04 1.492600e-05 3.841940e-06 0 1.339956e-04 1.753501e-05 4.522618e-06 0 1.110673e-04 1.449084e-05 3.711930e-06 0 1.583484e-04 2.065971e-05 5.292303e-06 0 2.006086e-04 2.617405e-05 6.705193e-06 0
+Computing adjoint of G at 276.
+276 1.102919e-04 1.442167e-05 3.713009e-06 0 1.294414e-04 1.694038e-05 4.370024e-06 0 1.073293e-04 1.400540e-05 3.588971e-06 0 1.530168e-04 1.996756e-05 5.116977e-06 0 1.938555e-04 2.529709e-05 6.483033e-06 0
+Computing adjoint of G at 275.
+275 1.065527e-04 1.393417e-05 3.588326e-06 0 1.250410e-04 1.636574e-05 4.222514e-06 0 1.037136e-04 1.353589e-05 3.469960e-06 0 1.478636e-04 1.929815e-05 4.947283e-06 0 1.873248e-04 2.444893e-05 6.268010e-06 0
+Computing adjoint of G at 274.
+274 1.029392e-04 1.346295e-05 3.467756e-06 0 1.207891e-04 1.581042e-05 4.079915e-06 0 1.002192e-04 1.308182e-05 3.354779e-06 0 1.428798e-04 1.865074e-05 4.783050e-06 0 1.810122e-04 2.362867e-05 6.059910e-06 0
+Computing adjoint of G at 273.
+273 9.944706e-05 1.300749e-05 3.351167e-06 0 1.166809e-04 1.527379e-05 3.942074e-06 0 9.683964e-05 1.264270e-05 3.243312e-06 0 1.380629e-04 1.802466e-05 4.624113e-06 0 1.749080e-04 2.283542e-05 5.858522e-06 0
+Computing adjoint of G at 272.
+272 9.607239e-05 1.256726e-05 3.238432e-06 0 1.127115e-04 1.475522e-05 3.808829e-06 0 9.357352e-05 1.221805e-05 3.135445e-06 0 1.334050e-04 1.741921e-05 4.470312e-06 0 1.690079e-04 2.206832e-05 5.663642e-06 0
+Computing adjoint of G at 271.
+271 9.281128e-05 1.214178e-05 3.129429e-06 0 1.088763e-04 1.425412e-05 3.680038e-06 0 9.041509e-05 1.180742e-05 3.031071e-06 0 1.289031e-04 1.683375e-05 4.321491e-06 0 1.633031e-04 2.132655e-05 5.475073e-06 0
+Computing adjoint of G at 270.
+270 8.965996e-05 1.173055e-05 3.024038e-06 0 1.051708e-04 1.376990e-05 3.555549e-06 0 8.736272e-05 1.141036e-05 2.930081e-06 0 1.245502e-04 1.626763e-05 4.177496e-06 0 1.577893e-04 2.060929e-05 5.292622e-06 0
+Computing adjoint of G at 269.
+269 8.661480e-05 1.133311e-05 2.922143e-06 0 1.015906e-04 1.330201e-05 3.435227e-06 0 8.441130e-05 1.102643e-05 2.832372e-06 0 1.203432e-04 1.572024e-05 4.038179e-06 0 1.524584e-04 1.991576e-05 5.116099e-06 0
+Computing adjoint of G at 268.
+268 8.367226e-05 1.094900e-05 2.823630e-06 0 9.813164e-05 1.284990e-05 3.318930e-06 0 8.155905e-05 1.065521e-05 2.737842e-06 0 1.162758e-04 1.519097e-05 3.903396e-06 0 1.473062e-04 1.924520e-05 4.945322e-06 0
+Computing adjoint of G at 267.
+267 8.082895e-05 1.057779e-05 2.728392e-06 0 9.478980e-05 1.241305e-05 3.206531e-06 0 7.880139e-05 1.029630e-05 2.646393e-06 0 1.123450e-04 1.467926e-05 3.773007e-06 0 1.423253e-04 1.859688e-05 4.780113e-06 0
+Computing adjoint of G at 266.
+266 7.808156e-05 1.021905e-05 2.636321e-06 0 9.156115e-05 1.199095e-05 3.097899e-06 0 7.613645e-05 9.949300e-06 2.557929e-06 0 1.085448e-04 1.418452e-05 3.646875e-06 0 1.375115e-04 1.797007e-05 4.620299e-06 0
+Computing adjoint of G at 265.
+265 7.542691e-05 9.872369e-06 2.547317e-06 0 8.844189e-05 1.158311e-05 2.992912e-06 0 7.356010e-05 9.613824e-06 2.472358e-06 0 1.048723e-04 1.370622e-05 3.524867e-06 0 1.328581e-04 1.736409e-05 4.465711e-06 0
+Computing adjoint of G at 264.
+264 7.286189e-05 9.537346e-06 2.461278e-06 0 8.542837e-05 1.118905e-05 2.891447e-06 0 7.107044e-05 9.289503e-06 2.389589e-06 0 1.013222e-04 1.324383e-05 3.406855e-06 0 1.283610e-04 1.677826e-05 4.316187e-06 0
+Computing adjoint of G at 263.
+263 7.038353e-05 9.213597e-06 2.378109e-06 0 8.251702e-05 1.080831e-05 2.793392e-06 0 6.866374e-05 8.975974e-06 2.309533e-06 0 9.789148e-05 1.279682e-05 3.292713e-06 0 1.240140e-04 1.621192e-05 4.171567e-06 0
+Computing adjoint of G at 262.
+262 6.798893e-05 8.900749e-06 2.297717e-06 0 7.970441e-05 1.044046e-05 2.698631e-06 0 6.633806e-05 8.672888e-06 2.232107e-06 0 9.457529e-05 1.236470e-05 3.182319e-06 0 1.198132e-04 1.566446e-05 4.031697e-06 0
+Computing adjoint of G at 261.
+261 6.567530e-05 8.598439e-06 2.220010e-06 0 7.698724e-05 1.008504e-05 2.607058e-06 0 6.409004e-05 8.379906e-06 2.157226e-06 0 9.137070e-05 1.194699e-05 3.075555e-06 0 1.157529e-04 1.513524e-05 3.896427e-06 0
+Computing adjoint of G at 260.
+260 6.343993e-05 8.306320e-06 2.144901e-06 0 7.436227e-05 9.741661e-06 2.518565e-06 0 6.191776e-05 8.096700e-06 2.084810e-06 0 8.827331e-05 1.154321e-05 2.972307e-06 0 1.118292e-04 1.462369e-05 3.765612e-06 0
+Computing adjoint of G at 259.
+259 6.128019e-05 8.024051e-06 2.072306e-06 0 7.182642e-05 9.409906e-06 2.433052e-06 0 5.981815e-05 7.822950e-06 2.014781e-06 0 8.528024e-05 1.115293e-05 2.872462e-06 0 1.080369e-04 1.412922e-05 3.639109e-06 0
+Computing adjoint of G at 258.
+258 5.919357e-05 7.751306e-06 2.002141e-06 0 6.937668e-05 9.089388e-06 2.350419e-06 0 5.778933e-05 7.558349e-06 1.947064e-06 0 8.238746e-05 1.077568e-05 2.775913e-06 0 1.043724e-04 1.365128e-05 3.516783e-06 0
+Computing adjoint of G at 257.
+257 5.717761e-05 7.487766e-06 1.934327e-06 0 6.701016e-05 8.779731e-06 2.270571e-06 0 5.582849e-05 7.302596e-06 1.881584e-06 0 7.959219e-05 1.041105e-05 2.682554e-06 0 1.008308e-04 1.318932e-05 3.398500e-06 0
+Computing adjoint of G at 256.
+256 5.522994e-05 7.233127e-06 1.868787e-06 0 6.472403e-05 8.480571e-06 2.193415e-06 0 5.393382e-05 7.055404e-06 1.818270e-06 0 7.689073e-05 1.005863e-05 2.592284e-06 0 9.740859e-05 1.274283e-05 3.284130e-06 0
+Computing adjoint of G at 255.
+255 5.334828e-05 6.987091e-06 1.805446e-06 0 6.251560e-05 8.191554e-06 2.118862e-06 0 5.210274e-05 6.816491e-06 1.757053e-06 0 7.428040e-05 9.718006e-06 2.505003e-06 0 9.410139e-05 1.231130e-05 3.173548e-06 0
+Computing adjoint of G at 254.
+254 5.153040e-05 6.749370e-06 1.744232e-06 0 6.038224e-05 7.912340e-06 2.046825e-06 0 5.033348e-05 6.585585e-06 1.697865e-06 0 7.175780e-05 9.388803e-06 2.420616e-06 0 9.090574e-05 1.189423e-05 3.066633e-06 0
+Computing adjoint of G at 253.
+253 4.977417e-05 6.519687e-06 1.685074e-06 0 5.832142e-05 7.642600e-06 1.977222e-06 0 4.862369e-05 6.362423e-06 1.640641e-06 0 6.932036e-05 9.070641e-06 2.339030e-06 0 8.781763e-05 1.149115e-05 2.963266e-06 0
+Computing adjoint of G at 252.
+252 4.807751e-05 6.297774e-06 1.627905e-06 0 5.633069e-05 7.382014e-06 1.909968e-06 0 4.697167e-05 6.146752e-06 1.585318e-06 0 6.696495e-05 8.763158e-06 2.260154e-06 0 8.483376e-05 1.110160e-05 2.863334e-06 0
+Computing adjoint of G at 251.
+251 4.643842e-05 6.083371e-06 1.572659e-06 0 5.440767e-05 7.130275e-06 1.844989e-06 0 4.537525e-05 5.938322e-06 1.531834e-06 0 6.468912e-05 8.466001e-06 2.183900e-06 0 8.195043e-05 1.072513e-05 2.766725e-06 0
+Computing adjoint of G at 250.
+250 4.485496e-05 5.876225e-06 1.519271e-06 0 5.255009e-05 6.887084e-06 1.782206e-06 0 4.383281e-05 5.736896e-06 1.480131e-06 0 6.248996e-05 8.178830e-06 2.110185e-06 0 7.916451e-05 1.036132e-05 2.673332e-06 0
+Computing adjoint of G at 249.
+249 4.332527e-05 5.676095e-06 1.467682e-06 0 5.075572e-05 6.652154e-06 1.721546e-06 0 4.234234e-05 5.542243e-06 1.430149e-06 0 6.036516e-05 7.901315e-06 2.038925e-06 0 7.647255e-05 1.000973e-05 2.583050e-06 0
+Computing adjoint of G at 248.
+248 4.184752e-05 5.482744e-06 1.417831e-06 0 4.902243e-05 6.425206e-06 1.662939e-06 0 4.090230e-05 5.354138e-06 1.381834e-06 0 5.831204e-05 7.633136e-06 1.970041e-06 0 7.387161e-05 9.669983e-06 2.495778e-06 0
+Computing adjoint of G at 247.
+247 4.041997e-05 5.295946e-06 1.369660e-06 0 4.734816e-05 6.205972e-06 1.606317e-06 0 3.951084e-05 5.172365e-06 1.335131e-06 0 5.632837e-05 7.373984e-06 1.903455e-06 0 7.135848e-05 9.341667e-06 2.411420e-06 0
+Computing adjoint of G at 246.
+246 3.904093e-05 5.115481e-06 1.323113e-06 0 4.573089e-05 5.994189e-06 1.551611e-06 0 3.816649e-05 4.996714e-06 1.289988e-06 0 5.441169e-05 7.123561e-06 1.839094e-06 0 6.893039e-05 9.024411e-06 2.329878e-06 0
+Computing adjoint of G at 245.
+245 3.770876e-05 4.941135e-06 1.278138e-06 0 4.416872e-05 5.789608e-06 1.498759e-06 0 3.686754e-05 4.826981e-06 1.246354e-06 0 5.255989e-05 6.881577e-06 1.776883e-06 0 6.658435e-05 8.717846e-06 2.251062e-06 0
+Computing adjoint of G at 244.
+244 3.642188e-05 4.772704e-06 1.234680e-06 0 4.265975e-05 5.591985e-06 1.447697e-06 0 3.561259e-05 4.662971e-06 1.204178e-06 0 5.077069e-05 6.647751e-06 1.716754e-06 0 6.431774e-05 8.421617e-06 2.174883e-06 0
+Computing adjoint of G at 243.
+243 3.517876e-05 4.609987e-06 1.192690e-06 0 4.120221e-05 5.401085e-06 1.398367e-06 0 3.440007e-05 4.504492e-06 1.163415e-06 0 4.904210e-05 6.421812e-06 1.658637e-06 0 6.212781e-05 8.135381e-06 2.101254e-06 0
+Computing adjoint of G at 242.
+242 3.397792e-05 4.452794e-06 1.152119e-06 0 3.979433e-05 5.216679e-06 1.350709e-06 0 3.322864e-05 4.351362e-06 1.124017e-06 0 4.737198e-05 6.203498e-06 1.602467e-06 0 6.001207e-05 7.858805e-06 2.030092e-06 0
+Computing adjoint of G at 241.
+241 3.281794e-05 4.300938e-06 1.112919e-06 0 3.843443e-05 5.038550e-06 1.304668e-06 0 3.209685e-05 4.203402e-06 1.085939e-06 0 4.575848e-05 5.992555e-06 1.548179e-06 0 5.796795e-05 7.591568e-06 1.961315e-06 0
+Computing adjoint of G at 240.
+240 3.169742e-05 4.154239e-06 1.075044e-06 0 3.712090e-05 4.866484e-06 1.260189e-06 0 3.100344e-05 4.060440e-06 1.049139e-06 0 4.419961e-05 5.788737e-06 1.495713e-06 0 5.599314e-05 7.333358e-06 1.894845e-06 0
+Computing adjoint of G at 239.
+239 3.061504e-05 4.012524e-06 1.038451e-06 0 3.585215e-05 4.700277e-06 1.217219e-06 0 2.994706e-05 3.922308e-06 1.013573e-06 0 4.269361e-05 5.591807e-06 1.445008e-06 0 5.408522e-05 7.083874e-06 1.830606e-06 0
+Computing adjoint of G at 238.
+238 2.956951e-05 3.875624e-06 1.003097e-06 0 3.462666e-05 4.539730e-06 1.175709e-06 0 2.892652e-05 3.788846e-06 9.792025e-07 0 4.123864e-05 5.401535e-06 1.396005e-06 0 5.224203e-05 6.842825e-06 1.768525e-06 0
+Computing adjoint of G at 237.
+237 2.855958e-05 3.743377e-06 9.689388e-07 0 3.344297e-05 4.384650e-06 1.135608e-06 0 2.794057e-05 3.659898e-06 9.459867e-07 0 3.983305e-05 5.217698e-06 1.348650e-06 0 5.046133e-05 6.609929e-06 1.708531e-06 0
+Computing adjoint of G at 236.
+236 2.758404e-05 3.615627e-06 9.359378e-07 0 3.229965e-05 4.234854e-06 1.096870e-06 0 2.698810e-05 3.535312e-06 9.138877e-07 0 3.847512e-05 5.040080e-06 1.302887e-06 0 4.874107e-05 6.384913e-06 1.650554e-06 0
+Computing adjoint of G at 235.
+235 2.664172e-05 3.492220e-06 9.040549e-07 0 3.119534e-05 4.090162e-06 1.059447e-06 0 2.606792e-05 3.414943e-06 8.828687e-07 0 3.716330e-05 4.868475e-06 1.258663e-06 0 4.707917e-05 6.167513e-06 1.594528e-06 0
+Computing adjoint of G at 234.
+234 2.573152e-05 3.373011e-06 8.732526e-07 0 3.012871e-05 3.950400e-06 1.023297e-06 0 2.517900e-05 3.298650e-06 8.528939e-07 0 3.589598e-05 4.702680e-06 1.215928e-06 0 4.547371e-05 5.957475e-06 1.540388e-06 0
+Computing adjoint of G at 233.
+233 2.485232e-05 3.257857e-06 8.434945e-07 0 2.909847e-05 3.815402e-06 9.883754e-07 0 2.432025e-05 3.186296e-06 8.239286e-07 0 3.467173e-05 4.542501e-06 1.174633e-06 0 4.392275e-05 5.754552e-06 1.488072e-06 0
+Computing adjoint of G at 232.
+232 2.400309e-05 3.146622e-06 8.147456e-07 0 2.810340e-05 3.685006e-06 9.546413e-07 0 2.349068e-05 3.077748e-06 7.959395e-07 0 3.348903e-05 4.387749e-06 1.134730e-06 0 4.242449e-05 5.558504e-06 1.437519e-06 0
+Computing adjoint of G at 231.
+231 2.318281e-05 3.039173e-06 7.869720e-07 0 2.714229e-05 3.559056e-06 9.220547e-07 0 2.268928e-05 2.972880e-06 7.688940e-07 0 3.234654e-05 4.238243e-06 1.096171e-06 0 4.097711e-05 5.369103e-06 1.388670e-06 0
+Computing adjoint of G at 230.
+230 2.239049e-05 2.935382e-06 7.601409e-07 0 2.621399e-05 3.437401e-06 8.905766e-07 0 2.191513e-05 2.871567e-06 7.427608e-07 0 3.124285e-05 4.093806e-06 1.058914e-06 0 3.957894e-05 5.186123e-06 1.341470e-06 0
+Computing adjoint of G at 229.
+229 2.162518e-05 2.835124e-06 7.342205e-07 0 2.531738e-05 3.319895e-06 8.601696e-07 0 2.116728e-05 2.773691e-06 7.175096e-07 0 3.017670e-05 3.954268e-06 1.022914e-06 0 3.822829e-05 5.009350e-06 1.295862e-06 0
+Computing adjoint of G at 228.
+228 2.088597e-05 2.738281e-06 7.091802e-07 0 2.445139e-05 3.206397e-06 8.307975e-07 0 2.044487e-05 2.679135e-06 6.931109e-07 0 2.914679e-05 3.819464e-06 9.881293e-07 0 3.692357e-05 4.838574e-06 1.251795e-06 0
+Computing adjoint of G at 227.
+227 2.017198e-05 2.644737e-06 6.849904e-07 0 2.361497e-05 3.096771e-06 8.024252e-07 0 1.974702e-05 2.587788e-06 6.695364e-07 0 2.815191e-05 3.689236e-06 9.545199e-07 0 3.566322e-05 4.673595e-06 1.209216e-06 0
+Computing adjoint of G at 226.
+226 1.948234e-05 2.554380e-06 6.616224e-07 0 2.280711e-05 2.990886e-06 7.750190e-07 0 1.907291e-05 2.499542e-06 6.467586e-07 0 2.719086e-05 3.563428e-06 9.220463e-07 0 3.444575e-05 4.514216e-06 1.168076e-06 0
+Computing adjoint of G at 225.
+225 1.881623e-05 2.467101e-06 6.390485e-07 0 2.202685e-05 2.888614e-06 7.485461e-07 0 1.842173e-05 2.414293e-06 6.247509e-07 0 2.626253e-05 3.441892e-06 8.906705e-07 0 3.326969e-05 4.360250e-06 1.128328e-06 0
+Computing adjoint of G at 224.
+224 1.817285e-05 2.382797e-06 6.172418e-07 0 2.127324e-05 2.789832e-06 7.229748e-07 0 1.779272e-05 2.331939e-06 6.034875e-07 0 2.536578e-05 3.324485e-06 8.603561e-07 0 3.213367e-05 4.211514e-06 1.089924e-06 0
+Computing adjoint of G at 223.
+223 1.755142e-05 2.301367e-06 5.961766e-07 0 2.054537e-05 2.694422e-06 6.982748e-07 0 1.718511e-05 2.252384e-06 5.829436e-07 0 2.449955e-05 3.211067e-06 8.310673e-07 0 3.103631e-05 4.067831e-06 1.052819e-06 0
+Computing adjoint of G at 222.
+222 1.695120e-05 2.222712e-06 5.758277e-07 0 1.984238e-05 2.602269e-06 6.744163e-07 0 1.659820e-05 2.175532e-06 5.630950e-07 0 2.366282e-05 3.101503e-06 8.027700e-07 0 2.997631e-05 3.929032e-06 1.016970e-06 0
+Computing adjoint of G at 221.
+221 1.637147e-05 2.146740e-06 5.561709e-07 0 1.916340e-05 2.513262e-06 6.513710e-07 0 1.603126e-05 2.101292e-06 5.439186e-07 0 2.285458e-05 2.995663e-06 7.754308e-07 0 2.895241e-05 3.794951e-06 9.823354e-07 0
+Computing adjoint of G at 220.
+220 1.581154e-05 2.073358e-06 5.371830e-07 0 1.850763e-05 2.427294e-06 6.291111e-07 0 1.548364e-05 2.029576e-06 5.253917e-07 0 2.207387e-05 2.893422e-06 7.490177e-07 0 2.796339e-05 3.665429e-06 9.488739e-07 0
+Computing adjoint of G at 219.
+219 1.527072e-05 2.002479e-06 5.188411e-07 0 1.787427e-05 2.344263e-06 6.076101e-07 0 1.495467e-05 1.960300e-06 5.074925e-07 0 2.131975e-05 2.794659e-06 7.234997e-07 0 2.700805e-05 3.540312e-06 9.165464e-07 0
+Computing adjoint of G at 218.
+218 1.474836e-05 1.934018e-06 5.011236e-07 0 1.726255e-05 2.264066e-06 5.868422e-07 0 1.444373e-05 1.893380e-06 4.902001e-07 0 2.059133e-05 2.699255e-06 6.988467e-07 0 2.608527e-05 3.419451e-06 8.853147e-07 0
+Computing adjoint of G at 217.
+217 1.424385e-05 1.867893e-06 4.840093e-07 0 1.667175e-05 2.186609e-06 5.667825e-07 0 1.395019e-05 1.828737e-06 4.734941e-07 0 1.988773e-05 2.607097e-06 6.750296e-07 0 2.519393e-05 3.302703e-06 8.551421e-07 0
+Computing adjoint of G at 216.
+216 1.375656e-05 1.804024e-06 4.674777e-07 0 1.610114e-05 2.111798e-06 5.474069e-07 0 1.347348e-05 1.766294e-06 4.573547e-07 0 1.920811e-05 2.518076e-06 6.520204e-07 0 2.433298e-05 3.189928e-06 8.259929e-07 0
+Computing adjoint of G at 215.
+215 1.328592e-05 1.742334e-06 4.515091e-07 0 1.555004e-05 2.039543e-06 5.286923e-07 0 1.301301e-05 1.705976e-06 4.417628e-07 0 1.855166e-05 2.432085e-06 6.297918e-07 0 2.350137e-05 3.080992e-06 7.978328e-07 0
+Computing adjoint of G at 214.
+214 1.283136e-05 1.682750e-06 4.360844e-07 0 1.501778e-05 1.969756e-06 5.106162e-07 0 1.256825e-05 1.647712e-06 4.267002e-07 0 1.791758e-05 2.349021e-06 6.083177e-07 0 2.269812e-05 2.975765e-06 7.706285e-07 0
+Computing adjoint of G at 213.
+213 1.239233e-05 1.625200e-06 4.211853e-07 0 1.450371e-05 1.902354e-06 4.931568e-07 0 1.213865e-05 1.591432e-06 4.121489e-07 0 1.730514e-05 2.268786e-06 5.875727e-07 0 2.192225e-05 2.874121e-06 7.443479e-07 0
+Computing adjoint of G at 212.
+212 1.196829e-05 1.569615e-06 4.067939e-07 0 1.400723e-05 1.837255e-06 4.762933e-07 0 1.172371e-05 1.537069e-06 3.980918e-07 0 1.671357e-05 2.191284e-06 5.675321e-07 0 2.117285e-05 2.775939e-06 7.189597e-07 0
+Computing adjoint of G at 211.
+211 1.155875e-05 1.515927e-06 3.928930e-07 0 1.352772e-05 1.774381e-06 4.600053e-07 0 1.132291e-05 1.484558e-06 3.845121e-07 0 1.614219e-05 2.116422e-06 5.481723e-07 0 2.044901e-05 2.681102e-06 6.944339e-07 0
+Computing adjoint of G at 210.
+210 1.116320e-05 1.464073e-06 3.794659e-07 0 1.306461e-05 1.713656e-06 4.442732e-07 0 1.093579e-05 1.433835e-06 3.713938e-07 0 1.559030e-05 2.044110e-06 5.294703e-07 0 1.974987e-05 2.589497e-06 6.707415e-07 0
+Computing adjoint of G at 209.
+209 1.078117e-05 1.413990e-06 3.664965e-07 0 1.261734e-05 1.655006e-06 4.290782e-07 0 1.056188e-05 1.384842e-06 3.587214e-07 0 1.505724e-05 1.974263e-06 5.114039e-07 0 1.907458e-05 2.501013e-06 6.478544e-07 0
+Computing adjoint of G at 208.
+208 1.041220e-05 1.365617e-06 3.539694e-07 0 1.218537e-05 1.598362e-06 4.144020e-07 0 1.020072e-05 1.337518e-06 3.464798e-07 0 1.454236e-05 1.906797e-06 4.939517e-07 0 1.842233e-05 2.415545e-06 6.257453e-07 0
+Computing adjoint of G at 207.
+207 1.005584e-05 1.318896e-06 3.418695e-07 0 1.176818e-05 1.543654e-06 4.002270e-07 0 9.851895e-06 1.291807e-06 3.346544e-07 0 1.404506e-05 1.841630e-06 4.770929e-07 0 1.779234e-05 2.332990e-06 6.043880e-07 0
+Computing adjoint of G at 206.
+206 9.711663e-06 1.273771e-06 3.301824e-07 0 1.136525e-05 1.490816e-06 3.865360e-07 0 9.514973e-06 1.247655e-06 3.232312e-07 0 1.356474e-05 1.778685e-06 4.608075e-07 0 1.718386e-05 2.253251e-06 5.837571e-07 0
+Computing adjoint of G at 205.
+205 9.379251e-06 1.230188e-06 3.188939e-07 0 1.097611e-05 1.439785e-06 3.733126e-07 0 9.189552e-06 1.205008e-06 3.121966e-07 0 1.310081e-05 1.717887e-06 4.450761e-07 0 1.659615e-05 2.176230e-06 5.638281e-07 0
+Computing adjoint of G at 204.
+204 9.058205e-06 1.188094e-06 3.079905e-07 0 1.060028e-05 1.390499e-06 3.605409e-07 0 8.875241e-06 1.163816e-06 3.015374e-07 0 1.265272e-05 1.659162e-06 4.298799e-07 0 1.602850e-05 2.101836e-06 5.445772e-07 0
+Computing adjoint of G at 203.
+203 8.748136e-06 1.147439e-06 2.974592e-07 0 1.023731e-05 1.342898e-06 3.482054e-07 0 8.571662e-06 1.124029e-06 2.912411e-07 0 1.221993e-05 1.602440e-06 4.152010e-07 0 1.548024e-05 2.029980e-06 5.259815e-07 0
+Computing adjoint of G at 202.
+202 8.448670e-06 1.108173e-06 2.872873e-07 0 9.886759e-06 1.296925e-06 3.362914e-07 0 8.278449e-06 1.085599e-06 2.812952e-07 0 1.180192e-05 1.547654e-06 4.010217e-07 0 1.495070e-05 1.960576e-06 5.080188e-07 0
+Computing adjoint of G at 201.
+201 8.159445e-06 1.070248e-06 2.774626e-07 0 9.548202e-06 1.252525e-06 3.247845e-07 0 7.995250e-06 1.048481e-06 2.716879e-07 0 1.139818e-05 1.494736e-06 3.873253e-07 0 1.443924e-05 1.893539e-06 4.906677e-07 0
+Computing adjoint of G at 200.
+200 7.880110e-06 1.033620e-06 2.679732e-07 0 9.221230e-06 1.209643e-06 3.136707e-07 0 7.721724e-06 1.012629e-06 2.624078e-07 0 1.100824e-05 1.443625e-06 3.740952e-07 0 1.394525e-05 1.828790e-06 4.739075e-07 0
+Computing adjoint of G at 199.
+199 7.610330e-06 9.982444e-07 2.588078e-07 0 8.905447e-06 1.168228e-06 3.029367e-07 0 7.457541e-06 9.780003e-07 2.534438e-07 0 1.063161e-05 1.394257e-06 3.613158e-07 0 1.346814e-05 1.766251e-06 4.577182e-07 0
+Computing adjoint of G at 198.
+198 7.349777e-06 9.640778e-07 2.499553e-07 0 8.600470e-06 1.128229e-06 2.925696e-07 0 7.202384e-06 9.445538e-07 2.447851e-07 0 1.026785e-05 1.346575e-06 3.489717e-07 0 1.300733e-05 1.705846e-06 4.420804e-07 0
+Computing adjoint of G at 197.
+197 7.098136e-06 9.310792e-07 2.414052e-07 0 8.305930e-06 1.089599e-06 2.825568e-07 0 6.955944e-06 9.122491e-07 2.364215e-07 0 9.916520e-06 1.300521e-06 3.370482e-07 0 1.256226e-05 1.647504e-06 4.269755e-07 0
+Computing adjoint of G at 196.
+196 6.855104e-06 8.992089e-07 2.331470e-07 0 8.021470e-06 1.052290e-06 2.728863e-07 0 6.717924e-06 8.810472e-07 2.283429e-07 0 9.577193e-06 1.256038e-06 3.255310e-07 0 1.213240e-05 1.591153e-06 4.123853e-07 0
+Computing adjoint of G at 195.
+195 6.620385e-06 8.684282e-07 2.251709e-07 0 7.746747e-06 1.016258e-06 2.635463e-07 0 6.488038e-06 8.509108e-07 2.205396e-07 0 9.249462e-06 1.213075e-06 3.144065e-07 0 1.171722e-05 1.536727e-06 3.982925e-07 0
+Computing adjoint of G at 194.
+194 6.393697e-06 8.387001e-07 2.174672e-07 0 7.481426e-06 9.814589e-07 2.545257e-07 0 6.266008e-06 8.218034e-07 2.130024e-07 0 8.932931e-06 1.171579e-06 3.036611e-07 0 1.131624e-05 1.484159e-06 3.846801e-07 0
+Computing adjoint of G at 193.
+193 6.174764e-06 8.099887e-07 2.100267e-07 0 7.225187e-06 9.478503e-07 2.458134e-07 0 6.051567e-06 7.936901e-07 2.057221e-07 0 8.627219e-06 1.131500e-06 2.932822e-07 0 1.092896e-05 1.433386e-06 3.715318e-07 0
+Computing adjoint of G at 192.
+192 5.963323e-06 7.822591e-07 2.028404e-07 0 6.977719e-06 9.153917e-07 2.373991e-07 0 5.844455e-06 7.665370e-07 1.986901e-07 0 8.331956e-06 1.092790e-06 2.832571e-07 0 1.055492e-05 1.384348e-06 3.588319e-07 0
+Computing adjoint of G at 191.
+191 5.759116e-06 7.554779e-07 1.958996e-07 0 6.738723e-06 8.840438e-07 2.292725e-07 0 5.644423e-06 7.403115e-07 1.918980e-07 0 8.046786e-06 1.055402e-06 2.735740e-07 0 1.019367e-05 1.336985e-06 3.465651e-07 0
+Computing adjoint of G at 190.
+190 5.561896e-06 7.296128e-07 1.891961e-07 0 6.507907e-06 8.537687e-07 2.214238e-07 0 5.451230e-06 7.149819e-07 1.853375e-07 0 7.771365e-06 1.019291e-06 2.642212e-07 0 9.844761e-06 1.291239e-06 3.347168e-07 0
+Computing adjoint of G at 189.
+189 5.371426e-06 7.046324e-07 1.827216e-07 0 6.284993e-06 8.245297e-07 2.138435e-07 0 5.264641e-06 6.905176e-07 1.790008e-07 0 7.505360e-06 9.844145e-07 2.551874e-07 0 9.507784e-06 1.247057e-06 3.232727e-07 0
+Computing adjoint of G at 188.
+188 5.187474e-06 6.805065e-07 1.764684e-07 0 6.069711e-06 7.962914e-07 2.065224e-07 0 5.084432e-06 6.668893e-07 1.728804e-07 0 7.248451e-06 9.507294e-07 2.464619e-07 0 9.182330e-06 1.204385e-06 3.122191e-07 0
+Computing adjoint of G at 187.
+187 5.009817e-06 6.572059e-07 1.704289e-07 0 5.861799e-06 7.690195e-07 1.994518e-07 0 4.910385e-06 6.440685e-07 1.669688e-07 0 7.000326e-06 9.181954e-07 2.380342e-07 0 8.868004e-06 1.163170e-06 3.015427e-07 0
+Computing adjoint of G at 186.
+186 4.838241e-06 6.347025e-07 1.645958e-07 0 5.661006e-06 7.426811e-07 1.926230e-07 0 4.742290e-06 6.220275e-07 1.612589e-07 0 6.760686e-06 8.867733e-07 2.298940e-07 0 8.564427e-06 1.123365e-06 2.912307e-07 0
+Computing adjoint of G at 185.
+185 4.672537e-06 6.129690e-07 1.589622e-07 0 5.467087e-06 7.172443e-07 1.860278e-07 0 4.579943e-06 6.007398e-07 1.557440e-07 0 6.529241e-06 8.564251e-07 2.220318e-07 0 8.271232e-06 1.084919e-06 2.812706e-07 0
+Computing adjoint of G at 184.
+184 4.512505e-06 5.919792e-07 1.535212e-07 0 5.279808e-06 6.926781e-07 1.796582e-07 0 4.423149e-06 5.801798e-07 1.504173e-07 0 6.305712e-06 8.271142e-07 2.144379e-07 0 7.988064e-06 1.047788e-06 2.716506e-07 0
+Computing adjoint of G at 183.
+183 4.357950e-06 5.717075e-07 1.482662e-07 0 5.098941e-06 6.689529e-07 1.735066e-07 0 4.271717e-06 5.603225e-07 1.452725e-07 0 6.089828e-06 7.988053e-07 2.071033e-07 0 7.714582e-06 1.011926e-06 2.623591e-07 0
+Computing adjoint of G at 182.
+182 4.208686e-06 5.521296e-07 1.431909e-07 0 4.924268e-06 6.460398e-07 1.675654e-07 0 4.125465e-06 5.411442e-07 1.403033e-07 0 5.881328e-06 7.714642e-07 2.000191e-07 0 7.450454e-06 9.772904e-07 2.533848e-07 0
+Computing adjoint of G at 181.
+181 4.064531e-06 5.332215e-07 1.382891e-07 0 4.755575e-06 6.239112e-07 1.618275e-07 0 3.984216e-06 5.226215e-07 1.355039e-07 0 5.679960e-06 7.450578e-07 1.931769e-07 0 7.195361e-06 9.438387e-07 2.447170e-07 0
+Computing adjoint of G at 180.
+180 3.925312e-06 5.149606e-07 1.335550e-07 0 4.592660e-06 6.025401e-07 1.562859e-07 0 3.847799e-06 5.047321e-07 1.308683e-07 0 5.485481e-06 7.195543e-07 1.865683e-07 0 6.948994e-06 9.115307e-07 2.363452e-07 0
+Computing adjoint of G at 179.
+179 3.790858e-06 4.973246e-07 1.289828e-07 0 4.435323e-06 5.819006e-07 1.509340e-07 0 3.716049e-06 4.874544e-07 1.263911e-07 0 5.297655e-06 6.949229e-07 1.801855e-07 0 6.711056e-06 8.803275e-07 2.282593e-07 0
+Computing adjoint of G at 178.
+178 3.661007e-06 4.802922e-07 1.245669e-07 0 4.283374e-06 5.619679e-07 1.457652e-07 0 3.588806e-06 4.707675e-07 1.220668e-07 0 5.116256e-06 6.711338e-07 1.740207e-07 0 6.481259e-06 8.501913e-07 2.204497e-07 0
+Computing adjoint of G at 177.
+177 3.535603e-06 4.638427e-07 1.203021e-07 0 4.136629e-06 5.427175e-07 1.407732e-07 0 3.465916e-06 4.546513e-07 1.178903e-07 0 4.941062e-06 6.481582e-07 1.680665e-07 0 6.259324e-06 8.210858e-07 2.129069e-07 0
+Computing adjoint of G at 176.
+176 3.414491e-06 4.479563e-07 1.161832e-07 0 3.994909e-06 5.241263e-07 1.359521e-07 0 3.347232e-06 4.390863e-07 1.138564e-07 0 4.771864e-06 6.259684e-07 1.623158e-07 0 6.044982e-06 7.929756e-07 2.056218e-07 0
+Computing adjoint of G at 175.
+175 3.297526e-06 4.326137e-07 1.122052e-07 0 3.858043e-06 5.061717e-07 1.312961e-07 0 3.232608e-06 4.240536e-07 1.099604e-07 0 4.608454e-06 6.045375e-07 1.567616e-07 0 5.837975e-06 7.658270e-07 1.985856e-07 0
+Computing adjoint of G at 174.
+174 3.184567e-06 4.177962e-07 1.083632e-07 0 3.725865e-06 4.888319e-07 1.267993e-07 0 3.121907e-06 4.095352e-07 1.061976e-07 0 4.450637e-06 5.838397e-07 1.513971e-07 0 5.638052e-06 7.396069e-07 1.917899e-07 0
+Computing adjoint of G at 173.
+173 3.075474e-06 4.034860e-07 1.046527e-07 0 3.598213e-06 4.720858e-07 1.224565e-07 0 3.014995e-06 3.955133e-07 1.025633e-07 0 4.298220e-06 5.638499e-07 1.462160e-07 0 5.444971e-06 7.142838e-07 1.852265e-07 0
+Computing adjoint of G at 172.
+172 2.970118e-06 3.896656e-07 1.010692e-07 0 3.474933e-06 4.559131e-07 1.182624e-07 0 2.911741e-06 3.819712e-07 9.905322e-08 0 4.151019e-06 5.445440e-07 1.412120e-07 0 5.258497e-06 6.898269e-07 1.788873e-07 0
+Computing adjoint of G at 171.
+171 2.868369e-06 3.763184e-07 9.760827e-08 0 3.355876e-06 4.402943e-07 1.142118e-07 0 2.812020e-06 3.688923e-07 9.566313e-08 0 4.008857e-06 5.258985e-07 1.363790e-07 0 5.078405e-06 6.662068e-07 1.727649e-07 0
+Computing adjoint of G at 170.
+170 2.770104e-06 3.634281e-07 9.426576e-08 0 3.240897e-06 4.252103e-07 1.102998e-07 0 2.715713e-06 3.562609e-07 9.238894e-08 0 3.871559e-06 5.078909e-07 1.317112e-07 0 4.904477e-06 6.433948e-07 1.668517e-07 0
+Computing adjoint of G at 169.
+169 2.675205e-06 3.509792e-07 9.103764e-08 0 3.129856e-06 4.106429e-07 1.065218e-07 0 2.622702e-06 3.440616e-07 8.922667e-08 0 3.738962e-06 4.904994e-07 1.272030e-07 0 4.736502e-06 6.213632e-07 1.611407e-07 0
+Computing adjoint of G at 168.
+168 2.583555e-06 3.389564e-07 8.791998e-08 0 3.022618e-06 3.965744e-07 1.028731e-07 0 2.532875e-06 3.322798e-07 8.617253e-08 0 3.610902e-06 4.737030e-07 1.228490e-07 0 4.574276e-06 6.000855e-07 1.556250e-07 0
+Computing adjoint of G at 167.
+167 2.495044e-06 3.273453e-07 8.490901e-08 0 2.919054e-06 3.829877e-07 9.934935e-08 0 2.446122e-06 3.209011e-07 8.322281e-08 0 3.487226e-06 4.574813e-07 1.186438e-07 0 4.417604e-06 5.795359e-07 1.502978e-07 0
+Computing adjoint of G at 166.
+166 2.409564e-06 3.161318e-07 8.200109e-08 0 2.819037e-06 3.698664e-07 9.594622e-08 0 2.362339e-06 3.099118e-07 8.037395e-08 0 3.367784e-06 4.418148e-07 1.145824e-07 0 4.266295e-06 5.596895e-07 1.451529e-07 0
+Computing adjoint of G at 165.
+165 2.327012e-06 3.053022e-07 7.919270e-08 0 2.722446e-06 3.571944e-07 9.265960e-08 0 2.281425e-06 2.992985e-07 7.762251e-08 0 3.252431e-06 4.266844e-07 1.106599e-07 0 4.120165e-06 5.405223e-07 1.401838e-07 0
+Computing adjoint of G at 164.
+164 2.247287e-06 2.948435e-07 7.648043e-08 0 2.629164e-06 3.449564e-07 8.948552e-08 0 2.203280e-06 2.890485e-07 7.496517e-08 0 3.141026e-06 4.120717e-07 1.068715e-07 0 3.979038e-06 5.220110e-07 1.353847e-07 0
+Computing adjoint of G at 163.
+163 2.170292e-06 2.847429e-07 7.386099e-08 0 2.539077e-06 3.331376e-07 8.642011e-08 0 2.127810e-06 2.791493e-07 7.239871e-08 0 3.033435e-06 3.979592e-07 1.032128e-07 0 3.842742e-06 5.041333e-07 1.307497e-07 0
+Computing adjoint of G at 162.
+162 2.095935e-06 2.749881e-07 7.133122e-08 0 2.452076e-06 3.217236e-07 8.345967e-08 0 2.054924e-06 2.695888e-07 6.992003e-08 0 2.929528e-06 3.843297e-07 9.967910e-08 0 3.711113e-06 4.868674e-07 1.262733e-07 0
+Computing adjoint of G at 161.
+161 2.024124e-06 2.655675e-07 6.888804e-08 0 2.368056e-06 3.107006e-07 8.060059e-08 0 1.984534e-06 2.603556e-07 6.752614e-08 0 2.829179e-06 3.711667e-07 9.626632e-08 0 3.583990e-06 4.701925e-07 1.219500e-07 0
+Computing adjoint of G at 160.
+160 1.954773e-06 2.564694e-07 6.652850e-08 0 2.286914e-06 3.000551e-07 7.783942e-08 0 1.916554e-06 2.514385e-07 6.521414e-08 0 2.732265e-06 3.584542e-07 9.297028e-08 0 3.461220e-06 4.540884e-07 1.177745e-07 0
+Computing adjoint of G at 159.
+159 1.887798e-06 2.476829e-07 6.424973e-08 0 2.208551e-06 2.897742e-07 7.517280e-08 0 1.850901e-06 2.428265e-07 6.298122e-08 0 2.638669e-06 3.461769e-07 8.978700e-08 0 3.342653e-06 4.385355e-07 1.137419e-07 0
+Computing adjoint of G at 158.
+158 1.823116e-06 2.391973e-07 6.204897e-08 0 2.132874e-06 2.798456e-07 7.259750e-08 0 1.787496e-06 2.345094e-07 6.082470e-08 0 2.548278e-06 3.343199e-07 8.671262e-08 0 3.228146e-06 4.235150e-07 1.098473e-07 0
+Computing adjoint of G at 157.
+157 1.760650e-06 2.310023e-07 5.992356e-08 0 2.059788e-06 2.702570e-07 7.011038e-08 0 1.726262e-06 2.264770e-07 5.874196e-08 0 2.460982e-06 3.228687e-07 8.374342e-08 0 3.117560e-06 4.090087e-07 1.060859e-07 0
+Computing adjoint of G at 156.
+156 1.700324e-06 2.230880e-07 5.787091e-08 0 1.989207e-06 2.609969e-07 6.770845e-08 0 1.667125e-06 2.187195e-07 5.673048e-08 0 2.376676e-06 3.118096e-07 8.087582e-08 0 3.010761e-06 3.949990e-07 1.024532e-07 0
+Computing adjoint of G at 155.
+155 1.642064e-06 2.154448e-07 5.588855e-08 0 1.921044e-06 2.520540e-07 6.538877e-08 0 1.610013e-06 2.112277e-07 5.478782e-08 0 2.295256e-06 3.011291e-07 7.810633e-08 0 2.907618e-06 3.814689e-07 9.894486e-08 0
+Computing adjoint of G at 154.
+154 1.585800e-06 2.080633e-07 5.397405e-08 0 1.855216e-06 2.434174e-07 6.314853e-08 0 1.554857e-06 2.039923e-07 5.291164e-08 0 2.216624e-06 2.908142e-07 7.543162e-08 0 2.808008e-06 3.684021e-07 9.555653e-08 0
+Computing adjoint of G at 153.
+153 1.531464e-06 2.009347e-07 5.212511e-08 0 1.791643e-06 2.350767e-07 6.098502e-08 0 1.501590e-06 1.970046e-07 5.109966e-08 0 2.140686e-06 2.808525e-07 7.284843e-08 0 2.711809e-06 3.557826e-07 9.228414e-08 0
+Computing adjoint of G at 152.
+152 1.478988e-06 1.940502e-07 5.033948e-08 0 1.730249e-06 2.270217e-07 5.889561e-08 0 1.450146e-06 1.902562e-07 4.934969e-08 0 2.067347e-06 2.712318e-07 7.035364e-08 0 2.618905e-06 3.435952e-07 8.912375e-08 0
+Computing adjoint of G at 151.
+151 1.428311e-06 1.874015e-07 4.861500e-08 0 1.670957e-06 2.192427e-07 5.687776e-08 0 1.400465e-06 1.837389e-07 4.765961e-08 0 1.996521e-06 2.619406e-07 6.794423e-08 0 2.529182e-06 3.318250e-07 8.607151e-08 0
+Computing adjoint of G at 150.
+150 1.379369e-06 1.809806e-07 4.694956e-08 0 1.613698e-06 2.117302e-07 5.492903e-08 0 1.352485e-06 1.774447e-07 4.602737e-08 0 1.928120e-06 2.529675e-07 6.561728e-08 0 2.442532e-06 3.204579e-07 8.312373e-08 0
+Computing adjoint of G at 149.
+149 1.332104e-06 1.747796e-07 4.534116e-08 0 1.558400e-06 2.044750e-07 5.304704e-08 0 1.306148e-06 1.713660e-07 4.445100e-08 0 1.862061e-06 2.443016e-07 6.336998e-08 0 2.358849e-06 3.094801e-07 8.027684e-08 0
+Computing adjoint of G at 148.
+148 1.286458e-06 1.687910e-07 4.378783e-08 0 1.504996e-06 1.974684e-07 5.122951e-08 0 1.261398e-06 1.654954e-07 4.292858e-08 0 1.798266e-06 2.359325e-07 6.119959e-08 0 2.278033e-06 2.988781e-07 7.752740e-08 0
+Computing adjoint of G at 147.
+147 1.242376e-06 1.630076e-07 4.228770e-08 0 1.453423e-06 1.907019e-07 4.947424e-08 0 1.218181e-06 1.598259e-07 4.145827e-08 0 1.736655e-06 2.278500e-07 5.910349e-08 0 2.199984e-06 2.886391e-07 7.487207e-08 0
+Computing adjoint of G at 146.
+146 1.199805e-06 1.574223e-07 4.083894e-08 0 1.403616e-06 1.841671e-07 4.777909e-08 0 1.176444e-06 1.543506e-07 4.003829e-08 0 1.677154e-06 2.200442e-07 5.707915e-08 0 2.124609e-06 2.787508e-07 7.230763e-08 0
+Computing adjoint of G at 145.
+145 1.158691e-06 1.520283e-07 3.943980e-08 0 1.355517e-06 1.778563e-07 4.614201e-08 0 1.136137e-06 1.490627e-07 3.866692e-08 0 1.619691e-06 2.125058e-07 5.512410e-08 0 2.051815e-06 2.692012e-07 6.983097e-08 0
+Computing adjoint of G at 144.
+144 1.118987e-06 1.468190e-07 3.808858e-08 0 1.309065e-06 1.717616e-07 4.456100e-08 0 1.097210e-06 1.439560e-07 3.734249e-08 0 1.564197e-06 2.052255e-07 5.323597e-08 0 1.981515e-06 2.599785e-07 6.743910e-08 0
+Computing adjoint of G at 143.
+143 1.080642e-06 1.417883e-07 3.678363e-08 0 1.264204e-06 1.658758e-07 4.303416e-08 0 1.059617e-06 1.390241e-07 3.606341e-08 0 1.510603e-06 1.981945e-07 5.141249e-08 0 1.913623e-06 2.510717e-07 6.512911e-08 0
+Computing adjoint of G at 142.
+142 1.043612e-06 1.369298e-07 3.552338e-08 0 1.220881e-06 1.601916e-07 4.155961e-08 0 1.023311e-06 1.342611e-07 3.482811e-08 0 1.458845e-06 1.914044e-07 4.965143e-08 0 1.848056e-06 2.424700e-07 6.289821e-08 0
+Computing adjoint of G at 141.
+141 1.007850e-06 1.322379e-07 3.430629e-08 0 1.179043e-06 1.547022e-07 4.013558e-08 0 9.882488e-07 1.296613e-07 3.363511e-08 0 1.408860e-06 1.848467e-07 4.795066e-08 0 1.784735e-06 2.341628e-07 6.074368e-08 0
+Computing adjoint of G at 140.
+140 9.733129e-07 1.277066e-07 3.313089e-08 0 1.138638e-06 1.494009e-07 3.876033e-08 0 9.543877e-07 1.252189e-07 3.248295e-08 0 1.360587e-06 1.785137e-07 4.630813e-08 0 1.723583e-06 2.261402e-07 5.866292e-08 0
+Computing adjoint of G at 139.
+139 9.399595e-07 1.233306e-07 3.199575e-08 0 1.099617e-06 1.442812e-07 3.743220e-08 0 9.216865e-07 1.209288e-07 3.137023e-08 0 1.313968e-06 1.723976e-07 4.472183e-08 0 1.664526e-06 2.183923e-07 5.665340e-08 0
+Computing adjoint of G at 138.
+138 9.077489e-07 1.191045e-07 3.089949e-08 0 1.061934e-06 1.393369e-07 3.614956e-08 0 8.901055e-07 1.167856e-07 3.029562e-08 0 1.268945e-06 1.664910e-07 4.318984e-08 0 1.607492e-06 2.109098e-07 5.471268e-08 0
+Computing adjoint of G at 137.
+137 8.766419e-07 1.150232e-07 2.984078e-08 0 1.025541e-06 1.345620e-07 3.491086e-08 0 8.596063e-07 1.127842e-07 2.925780e-08 0 1.225465e-06 1.607866e-07 4.171032e-08 0 1.552412e-06 2.036836e-07 5.283842e-08 0
+Computing adjoint of G at 136.
+136 8.466007e-07 1.110817e-07 2.881833e-08 0 9.903960e-07 1.299507e-07 3.371460e-08 0 8.301520e-07 1.089200e-07 2.825552e-08 0 1.183475e-06 1.552777e-07 4.028145e-08 0 1.499218e-06 1.967049e-07 5.102833e-08 0
+Computing adjoint of G at 135.
+135 8.175889e-07 1.072753e-07 2.783091e-08 0 9.564550e-07 1.254975e-07 3.255933e-08 0 8.017066e-07 1.051881e-07 2.728756e-08 0 1.142923e-06 1.499574e-07 3.890151e-08 0 1.447847e-06 1.899652e-07 4.928023e-08 0
+Computing adjoint of G at 134.
+134 7.895711e-07 1.035992e-07 2.687731e-08 0 9.236771e-07 1.211968e-07 3.144363e-08 0 7.742357e-07 1.015840e-07 2.635275e-08 0 1.103760e-06 1.448194e-07 3.756882e-08 0 1.398236e-06 1.834564e-07 4.759199e-08 0
+Computing adjoint of G at 133.
+133 7.625133e-07 1.000491e-07 2.595638e-08 0 8.920224e-07 1.170435e-07 3.036616e-08 0 7.477060e-07 9.810339e-08 2.544995e-08 0 1.065939e-06 1.398574e-07 3.628178e-08 0 1.350324e-06 1.771705e-07 4.596156e-08 0
+Computing adjoint of G at 132.
+132 7.363826e-07 9.662068e-08 2.506700e-08 0 8.614524e-07 1.130324e-07 2.932560e-08 0 7.220851e-07 9.474200e-08 2.457806e-08 0 1.029413e-06 1.350654e-07 3.503880e-08 0 1.304054e-06 1.711000e-07 4.438697e-08 0
+Computing adjoint of G at 131.
+131 7.111473e-07 9.330970e-08 2.420808e-08 0 8.319299e-07 1.091589e-07 2.832069e-08 0 6.973419e-07 9.149575e-08 2.373603e-08 0 9.941390e-07 1.304375e-07 3.383840e-08 0 1.259369e-06 1.652374e-07 4.286630e-08 0
+Computing adjoint of G at 130.
+130 6.867767e-07 9.011215e-08 2.337858e-08 0 8.034191e-07 1.054180e-07 2.735021e-08 0 6.734464e-07 8.836071e-08 2.292284e-08 0 9.600734e-07 1.259681e-07 3.267910e-08 0 1.216215e-06 1.595756e-07 4.139770e-08 0
+Computing adjoint of G at 129.
+129 6.632411e-07 8.702416e-08 2.257751e-08 0 7.758853e-07 1.018054e-07 2.641298e-08 0 6.503696e-07 8.533305e-08 2.213750e-08 0 9.271748e-07 1.216519e-07 3.155951e-08 0 1.174539e-06 1.541078e-07 3.997941e-08 0
+Computing adjoint of G at 128.
+128 6.405120e-07 8.404198e-08 2.180387e-08 0 7.492950e-07 9.831651e-08 2.550786e-08 0 6.280834e-07 8.240912e-08 2.137906e-08 0 8.954033e-07 1.174835e-07 3.047826e-08 0 1.134291e-06 1.488273e-07 3.860969e-08 0
+Computing adjoint of G at 127.
+127 6.185618e-07 8.116197e-08 2.105674e-08 0 7.236159e-07 9.494720e-08 2.463376e-08 0 6.065608e-07 7.958535e-08 2.064659e-08 0 8.647203e-07 1.134579e-07 2.943404e-08 0 1.095422e-06 1.437277e-07 3.728688e-08 0
+Computing adjoint of G at 126.
+126 5.973637e-07 7.838065e-08 2.033521e-08 0 6.988168e-07 9.169334e-08 2.378960e-08 0 5.857755e-07 7.685832e-08 1.993921e-08 0 8.350886e-07 1.095702e-07 2.842559e-08 0 1.057885e-06 1.388028e-07 3.600937e-08 0
+Computing adjoint of G at 125.
+125 5.768919e-07 7.569462e-08 1.963839e-08 0 6.748675e-07 8.855097e-08 2.297437e-08 0 5.657024e-07 7.422471e-08 1.925606e-08 0 8.064721e-07 1.058156e-07 2.745168e-08 0 1.021633e-06 1.340466e-07 3.477563e-08 0
+Computing adjoint of G at 124.
+124 5.571217e-07 7.310063e-08 1.896545e-08 0 6.517389e-07 8.551629e-08 2.218707e-08 0 5.463170e-07 7.168133e-08 1.859630e-08 0 7.788361e-07 1.021898e-07 2.651112e-08 0 9.866243e-07 1.294533e-07 3.358414e-08 0
+Computing adjoint of G at 123.
+123 5.380289e-07 7.059553e-08 1.831556e-08 0 6.294029e-07 8.258560e-08 2.142675e-08 0 5.275958e-07 6.922507e-08 1.795915e-08 0 7.521469e-07 9.868810e-08 2.560279e-08 0 9.528146e-07 1.250174e-07 3.243346e-08 0
+Computing adjoint of G at 122.
+122 5.195904e-07 6.817626e-08 1.768794e-08 0 6.078323e-07 7.975533e-08 2.069247e-08 0 5.095161e-07 6.685297e-08 1.734382e-08 0 7.263722e-07 9.530640e-08 2.472556e-08 0 9.201634e-07 1.207335e-07 3.132219e-08 0
+Computing adjoint of G at 121.
+121 5.017837e-07 6.583988e-08 1.708182e-08 0 5.870009e-07 7.702205e-08 1.998336e-08 0 4.920558e-07 6.456214e-08 1.674956e-08 0 7.014806e-07 9.204056e-08 2.387838e-08 0 8.886308e-07 1.165964e-07 3.024899e-08 0
+Computing adjoint of G at 120.
+120 4.845872e-07 6.358357e-08 1.649647e-08 0 5.668834e-07 7.438244e-08 1.929855e-08 0 4.751938e-07 6.234979e-08 1.617566e-08 0 6.774419e-07 8.888661e-08 2.306023e-08 0 8.581787e-07 1.126010e-07 2.921255e-08 0
+Computing adjoint of G at 119.
+119 4.679800e-07 6.140457e-08 1.593117e-08 0 5.474554e-07 7.183328e-08 1.863720e-08 0 4.589095e-07 6.021324e-08 1.562142e-08 0 6.542268e-07 8.584071e-08 2.227009e-08 0 8.287700e-07 1.087424e-07 2.821162e-08 0
+Computing adjoint of G at 118.
+118 4.519419e-07 5.930023e-08 1.538524e-08 0 5.286931e-07 6.937147e-08 1.799851e-08 0 4.431832e-07 5.814989e-08 1.508617e-08 0 6.318072e-07 8.289917e-08 2.150703e-08 0 8.003690e-07 1.050161e-07 2.724497e-08 0
+Computing adjoint of G at 117.
+117 4.364534e-07 5.726801e-08 1.485802e-08 0 5.105737e-07 6.699402e-08 1.738170e-08 0 4.279957e-07 5.615723e-08 1.456925e-08 0 6.101557e-07 8.005842e-08 2.077010e-08 0 7.729411e-07 1.014175e-07 2.631143e-08 0
+Computing adjoint of G at 116.
+116 4.214956e-07 5.530542e-08 1.434886e-08 0 4.930754e-07 6.469805e-08 1.678603e-08 0 4.133286e-07 5.423284e-08 1.407004e-08 0 5.892462e-07 7.731499e-08 2.005842e-08 0 7.464530e-07 9.794211e-08 2.540988e-08 0
+Computing adjoint of G at 115.
+115 4.070504e-07 5.341008e-08 1.385715e-08 0 4.761767e-07 6.248076e-08 1.621078e-08 0 3.991641e-07 5.237439e-08 1.358793e-08 0 5.690531e-07 7.466556e-08 1.937111e-08 0 7.208725e-07 9.458582e-08 2.453921e-08 0
+Computing adjoint of G at 114.
+114 3.931003e-07 5.157969e-08 1.338228e-08 0 4.598571e-07 6.033945e-08 1.565523e-08 0 3.854850e-07 5.057962e-08 1.312233e-08 0 5.495519e-07 7.210690e-08 1.870736e-08 0 6.961685e-07 9.134454e-08 2.369836e-08 0
+Computing adjoint of G at 113.
+113 3.796282e-07 4.981202e-08 1.292368e-08 0 4.440968e-07 5.827152e-08 1.511872e-08 0 3.722745e-07 4.884634e-08 1.267269e-08 0 5.307189e-07 6.963591e-08 1.806634e-08 0 6.723110e-07 8.821430e-08 2.288632e-08 0
+Computing adjoint of G at 112.
+112 3.666177e-07 4.810492e-08 1.248080e-08 0 4.288766e-07 5.627446e-08 1.460060e-08 0 3.595168e-07 4.717244e-08 1.223845e-08 0 5.125313e-07 6.724959e-08 1.744728e-08 0 6.492710e-07 8.519132e-08 2.210210e-08 0
+Computing adjoint of G at 111.
+111 3.540531e-07 4.645633e-08 1.205310e-08 0 4.141780e-07 5.434584e-08 1.410023e-08 0 3.471961e-07 4.555590e-08 1.181908e-08 0 4.949669e-07 6.494503e-08 1.684943e-08 0 6.270206e-07 8.227192e-08 2.134475e-08 0
+Computing adjoint of G at 110.
+110 3.419191e-07 4.486423e-08 1.164004e-08 0 3.999831e-07 5.248330e-08 1.361701e-08 0 3.352977e-07 4.399475e-08 1.141409e-08 0 4.780043e-07 6.271944e-08 1.627206e-08 0 6.055325e-07 7.945255e-08 2.061334e-08 0
+Computing adjoint of G at 109.
+109 3.302010e-07 4.332668e-08 1.124115e-08 0 3.862747e-07 5.068460e-08 1.315034e-08 0 3.238070e-07 4.248709e-08 1.102297e-08 0 4.616230e-07 6.057010e-08 1.571447e-08 0 5.847808e-07 7.672979e-08 1.990699e-08 0
+Computing adjoint of G at 108.
+108 3.188844e-07 4.184183e-08 1.085592e-08 0 3.730361e-07 4.894754e-08 1.269967e-08 0 3.127100e-07 4.103110e-08 1.064524e-08 0 4.458030e-07 5.849441e-08 1.517599e-08 0 5.647401e-07 7.410031e-08 1.922484e-08 0
+Computing adjoint of G at 107.
+107 3.079556e-07 4.040785e-08 1.048389e-08 0 3.602512e-07 4.727001e-08 1.226444e-08 0 3.019933e-07 3.962499e-08 1.028046e-08 0 4.305252e-07 5.648984e-08 1.465595e-08 0 5.453862e-07 7.156094e-08 1.856606e-08 0
+Computing adjoint of G at 106.
+106 2.974013e-07 3.902302e-08 1.012460e-08 0 3.479045e-07 4.564996e-08 1.184412e-08 0 2.916438e-07 3.826706e-08 9.928180e-09 0 4.157708e-07 5.455396e-08 1.415373e-08 0 5.266955e-07 6.910858e-08 1.792985e-08 0
+Computing adjoint of G at 105.
+105 2.872088e-07 3.768565e-08 9.777634e-09 0 3.359808e-07 4.408544e-08 1.143821e-08 0 2.816490e-07 3.695566e-08 9.587967e-09 0 4.015221e-07 5.268442e-08 1.366872e-08 0 5.086453e-07 6.674025e-08 1.731544e-08 0
+Computing adjoint of G at 104.
+104 2.773655e-07 3.639410e-08 9.442553e-09 0 3.244659e-07 4.257453e-08 1.104621e-08 0 2.719967e-07 3.568919e-08 9.259410e-09 0 3.877616e-07 5.087893e-08 1.320032e-08 0 4.912136e-07 6.445307e-08 1.672208e-08 0
+Computing adjoint of G at 103.
+103 2.678596e-07 3.514682e-08 9.118954e-09 0 3.133455e-07 4.111540e-08 1.066764e-08 0 2.626751e-07 3.446613e-08 8.942109e-09 0 3.744727e-07 4.913531e-08 1.274798e-08 0 4.743793e-07 6.224427e-08 1.614905e-08 0
+Computing adjoint of G at 102.
+102 2.586794e-07 3.394228e-08 8.806443e-09 0 3.026063e-07 3.970628e-08 1.030205e-08 0 2.536730e-07 3.328497e-08 8.635681e-09 0 3.616391e-07 4.745144e-08 1.231113e-08 0 4.581218e-07 6.011115e-08 1.559566e-08 0
+Computing adjoint of G at 101.
+101 2.498139e-07 3.277902e-08 8.504642e-09 0 2.922351e-07 3.834545e-08 9.948980e-09 0 2.449793e-07 3.214429e-08 8.339751e-09 0 3.492453e-07 4.582527e-08 1.188925e-08 0 4.424215e-07 5.805113e-08 1.506122e-08 0
+Computing adjoint of G at 100.
+100 2.412522e-07 3.165562e-08 8.213182e-09 0 2.822193e-07 3.703125e-08 9.608013e-09 0 2.365836e-07 3.104269e-08 8.053961e-09 0 3.372763e-07 4.425482e-08 1.148182e-08 0 4.272592e-07 5.606170e-08 1.454509e-08 0
+Computing adjoint of G at 99.
+99 2.329838e-07 3.057072e-08 7.931710e-09 0 2.725469e-07 3.576210e-08 9.278730e-09 0 2.284756e-07 2.997885e-08 7.777963e-09 0 3.257174e-07 4.273819e-08 1.108836e-08 0 4.126164e-07 5.414044e-08 1.404665e-08 0
+Computing adjoint of G at 98.
+98 2.249989e-07 2.952300e-08 7.659884e-09 0 2.632059e-07 3.453644e-08 8.960731e-09 0 2.206454e-07 2.895145e-08 7.511422e-09 0 3.145546e-07 4.127353e-08 1.070837e-08 0 3.984755e-07 5.228501e-08 1.356529e-08 0
+Computing adjoint of G at 97.
+97 2.172876e-07 2.851118e-08 7.397372e-09 0 2.541850e-07 3.335278e-08 8.653631e-09 0 2.130835e-07 2.795927e-08 7.254014e-09 0 3.037743e-07 3.985906e-08 1.034141e-08 0 3.848191e-07 5.049317e-08 1.310042e-08 0
+Computing adjoint of G at 96.
+96 2.098406e-07 2.753405e-08 7.143856e-09 0 2.454733e-07 3.220969e-08 8.357054e-09 0 2.057808e-07 2.700108e-08 7.005425e-09 0 2.933635e-07 3.849306e-08 9.987017e-09 0 3.716308e-07 4.876273e-08 1.265148e-08 0
+Computing adjoint of G at 95.
+95 2.026488e-07 2.659039e-08 6.899028e-09 0 2.370601e-07 3.110578e-08 8.070641e-09 0 1.987284e-07 2.607573e-08 6.765355e-09 0 2.833095e-07 3.717386e-08 9.644769e-09 0 3.588944e-07 4.709158e-08 1.221793e-08 0
+Computing adjoint of G at 94.
+94 1.957035e-07 2.567908e-08 6.662589e-09 0 2.289353e-07 3.003969e-08 7.794044e-09 0 1.919176e-07 2.518209e-08 6.533510e-09 0 2.736000e-07 3.589988e-08 9.314248e-09 0 3.465944e-07 4.547771e-08 1.179922e-08 0
+Computing adjoint of G at 93.
+93 1.889962e-07 2.479900e-08 6.434253e-09 0 2.210890e-07 2.901015e-08 7.526925e-09 0 1.853403e-07 2.431907e-08 6.309609e-09 0 2.642232e-07 3.466955e-08 8.995053e-09 0 3.347160e-07 4.391913e-08 1.139487e-08 0
+Computing adjoint of G at 92.
+92 1.825187e-07 2.394908e-08 6.213742e-09 0 2.135115e-07 2.801588e-08 7.268961e-09 0 1.789883e-07 2.348563e-08 6.093381e-09 0 2.551678e-07 3.348138e-08 8.686795e-09 0 3.232446e-07 4.241397e-08 1.100437e-08 0
+Computing adjoint of G at 91.
+91 1.762633e-07 2.312828e-08 6.000787e-09 0 2.061938e-07 2.705570e-08 7.019837e-09 0 1.728540e-07 2.268075e-08 5.884562e-09 0 2.464227e-07 3.233393e-08 8.389100e-09 0 3.121664e-07 4.096039e-08 1.062725e-08 0
+Computing adjoint of G at 90.
+90 1.702222e-07 2.233562e-08 5.795131e-09 0 1.991269e-07 2.612842e-08 6.779251e-09 0 1.669300e-07 2.190344e-08 5.682898e-09 0 2.379773e-07 3.122580e-08 8.101606e-09 0 3.014678e-07 3.955662e-08 1.026306e-08 0
+Computing adjoint of G at 89.
+89 1.643882e-07 2.157012e-08 5.596522e-09 0 1.923021e-07 2.523292e-08 6.546909e-09 0 1.612089e-07 2.115278e-08 5.488145e-09 0 2.298213e-07 3.015565e-08 7.823963e-09 0 2.911359e-07 3.820095e-08 9.911341e-09 0
+Computing adjoint of G at 88.
+88 1.587541e-07 2.083085e-08 5.404719e-09 0 1.857113e-07 2.436811e-08 6.322531e-09 0 1.556839e-07 2.042784e-08 5.300065e-09 0 2.219448e-07 2.912217e-08 7.555834e-09 0 2.811580e-07 3.689175e-08 9.571677e-09 0
+Computing adjoint of G at 87.
+87 1.533131e-07 2.011692e-08 5.219489e-09 0 1.793463e-07 2.353293e-08 6.105842e-09 0 1.503483e-07 1.972775e-08 5.118430e-09 0 2.143382e-07 2.812410e-08 7.296893e-09 0 2.715221e-07 3.562741e-08 9.243652e-09 0
+Computing adjoint of G at 86.
+86 1.480586e-07 1.942746e-08 5.040607e-09 0 1.731995e-07 2.272639e-08 5.896579e-09 0 1.451955e-07 1.905164e-08 4.943019e-09 0 2.069924e-07 2.716024e-08 7.046825e-09 0 2.622164e-07 3.440639e-08 8.926867e-09 0
+Computing adjoint of G at 85.
+85 1.429842e-07 1.876163e-08 4.867855e-09 0 1.672633e-07 2.194748e-08 5.694487e-09 0 1.402193e-07 1.839871e-08 4.773618e-09 0 1.998983e-07 2.622941e-08 6.805326e-09 0 2.532296e-07 3.322722e-08 8.620938e-09 0
+Computing adjoint of G at 84.
+84 1.380836e-07 1.811861e-08 4.701023e-09 0 1.615306e-07 2.119527e-08 5.499322e-09 0 1.354137e-07 1.776815e-08 4.610023e-09 0 1.930473e-07 2.533048e-08 6.572102e-09 0 2.445508e-07 3.208846e-08 8.325492e-09 0
+Computing adjoint of G at 83.
+83 1.333511e-07 1.749764e-08 4.539909e-09 0 1.559944e-07 2.046884e-08 5.310845e-09 0 1.307727e-07 1.715920e-08 4.452034e-09 0 1.864310e-07 2.446235e-08 6.346871e-09 0 2.361695e-07 3.098873e-08 8.040171e-09 0
+Computing adjoint of G at 82.
+82 1.287807e-07 1.689794e-08 4.384316e-09 0 1.506479e-07 1.976730e-08 5.128828e-09 0 1.262908e-07 1.657112e-08 4.299459e-09 0 1.800416e-07 2.362398e-08 6.129358e-09 0 2.280753e-07 2.992668e-08 7.764626e-09 0
+Computing adjoint of G at 81.
+81 1.243670e-07 1.631880e-08 4.234056e-09 0 1.454847e-07 1.908981e-08 4.953048e-09 0 1.219625e-07 1.600319e-08 4.152112e-09 0 1.738711e-07 2.281433e-08 5.919298e-09 0 2.202586e-07 2.890103e-08 7.498525e-09 0
+Computing adjoint of G at 80.
+80 1.201045e-07 1.575950e-08 4.088945e-09 0 1.404984e-07 1.843554e-08 4.783293e-09 0 1.177825e-07 1.545473e-08 4.009814e-09 0 1.679121e-07 2.203244e-08 5.716437e-09 0 2.127097e-07 2.791053e-08 7.241542e-09 0
+Computing adjoint of G at 79.
+79 1.159881e-07 1.521938e-08 3.948807e-09 0 1.356830e-07 1.780369e-08 4.619356e-09 0 1.137458e-07 1.492506e-08 3.872393e-09 0 1.621572e-07 2.127733e-08 5.520528e-09 0 2.054196e-07 2.695397e-08 6.993365e-09 0
+Computing adjoint of G at 78.
+78 1.120128e-07 1.469776e-08 3.813471e-09 0 1.310327e-07 1.719349e-08 4.461036e-09 0 1.098474e-07 1.441354e-08 3.739681e-09 0 1.565997e-07 2.054811e-08 5.331332e-09 0 1.983793e-07 2.603019e-08 6.753693e-09 0
+Computing adjoint of G at 77.
+77 1.081737e-07 1.419402e-08 3.682774e-09 0 1.265417e-07 1.660421e-08 4.308143e-09 0 1.060826e-07 1.391956e-08 3.611517e-09 0 1.512326e-07 1.984388e-08 5.148620e-09 0 1.915803e-07 2.513808e-08 6.522234e-09 0
+Computing adjoint of G at 76.
+76 1.044662e-07 1.370755e-08 3.556556e-09 0 1.222046e-07 1.603513e-08 4.160490e-09 0 1.024468e-07 1.344250e-08 3.487745e-09 0 1.460494e-07 1.916378e-08 4.972169e-09 0 1.850143e-07 2.427653e-08 6.298707e-09 0
+Computing adjoint of G at 75.
+75 1.008858e-07 1.323775e-08 3.434663e-09 0 1.180162e-07 1.548555e-08 4.017897e-09 0 9.893570e-08 1.298179e-08 3.368214e-09 0 1.410438e-07 1.850699e-08 4.801765e-09 0 1.786733e-07 2.344452e-08 6.082841e-09 0
+Computing adjoint of G at 74.
+74 9.742811e-08 1.278405e-08 3.316948e-09 0 1.139714e-07 1.495480e-08 3.880191e-09 0 9.554488e-08 1.253687e-08 3.252780e-09 0 1.362099e-07 1.787271e-08 4.637200e-09 0 1.725496e-07 2.264101e-08 5.874371e-09 0
+Computing adjoint of G at 73.
+73 9.408890e-08 1.234589e-08 3.203267e-09 0 1.100651e-07 1.444225e-08 3.747205e-09 0 9.227027e-08 1.210720e-08 3.141301e-09 0 1.315415e-07 1.726016e-08 4.478275e-09 0 1.666358e-07 2.186505e-08 5.673046e-09 0
+Computing adjoint of G at 72.
+72 9.086414e-08 1.192276e-08 3.093482e-09 0 1.062928e-07 1.394726e-08 3.618776e-09 0 8.910788e-08 1.169226e-08 3.033643e-09 0 1.270332e-07 1.666861e-08 4.324796e-09 0 1.609247e-07 2.111567e-08 5.478621e-09 0
+Computing adjoint of G at 71.
+71 8.774990e-08 1.151413e-08 2.987460e-09 0 1.026497e-07 1.346924e-08 3.494749e-09 0 8.605388e-08 1.129153e-08 2.929675e-09 0 1.226794e-07 1.609733e-08 4.176577e-09 0 1.554093e-07 2.039198e-08 5.290858e-09 0
+Computing adjoint of G at 70.
+70 8.474239e-08 1.111950e-08 2.885071e-09 0 9.913152e-08 1.300760e-08 3.374972e-09 0 8.310455e-08 1.090454e-08 2.829269e-09 0 1.184748e-07 1.554563e-08 4.033438e-09 0 1.500830e-07 1.969309e-08 5.109529e-09 0
+Computing adjoint of G at 69.
+69 8.183796e-08 1.073839e-08 2.786191e-09 0 9.573390e-08 1.256178e-08 3.259300e-09 0 8.025629e-08 1.053081e-08 2.732304e-09 0 1.144143e-07 1.501284e-08 3.895204e-09 0 1.449391e-07 1.901815e-08 4.934415e-09 0
+Computing adjoint of G at 68.
+68 7.903307e-08 1.037035e-08 2.690700e-09 0 9.245273e-08 1.213124e-08 3.147593e-09 0 7.750565e-08 1.016989e-08 2.638662e-09 0 1.104929e-07 1.449831e-08 3.761707e-09 0 1.399716e-07 1.836635e-08 4.765302e-09 0
+Computing adjoint of G at 67.
+67 7.632432e-08 1.001492e-08 2.598481e-09 0 8.928401e-08 1.171546e-08 3.039715e-09 0 7.484928e-08 9.821336e-09 2.548229e-09 0 1.067060e-07 1.400141e-08 3.632785e-09 0 1.351743e-07 1.773688e-08 4.601985e-09 0
+Computing adjoint of G at 66.
+66 7.370840e-08 9.671678e-09 2.509423e-09 0 8.622390e-08 1.131392e-08 2.935533e-09 0 7.228395e-08 9.484730e-09 2.460896e-09 0 1.030488e-07 1.352154e-08 3.508281e-09 0 1.305415e-07 1.712898e-08 4.444264e-09 0
+Computing adjoint of G at 65.
+65 7.118214e-08 9.340195e-09 2.423417e-09 0 8.326867e-08 1.092615e-08 2.834922e-09 0 6.980654e-08 9.159659e-09 2.376555e-09 0 9.951699e-08 1.305811e-08 3.388044e-09 0 1.260674e-07 1.654192e-08 4.291949e-09 0
+Computing adjoint of G at 64.
+64 6.874246e-08 9.020073e-09 2.340359e-09 0 8.041472e-08 1.055167e-08 2.737760e-09 0 6.741404e-08 8.845730e-09 2.295105e-09 0 9.610621e-08 1.261057e-08 3.271928e-09 0 1.217466e-07 1.597498e-08 4.144854e-09 0
+Computing adjoint of G at 63.
+63 6.638639e-08 8.710923e-09 2.260148e-09 0 7.765859e-08 1.019003e-08 2.643927e-09 0 6.510353e-08 8.542559e-09 2.216446e-09 0 9.281232e-08 1.217837e-08 3.159791e-09 0 1.175739e-07 1.542747e-08 4.002799e-09 0
+Computing adjoint of G at 62.
+62 6.411108e-08 8.412368e-09 2.182685e-09 0 7.499692e-08 9.840775e-09 2.553310e-09 0 6.287221e-08 8.249779e-09 2.140483e-09 0 8.963133e-08 1.176098e-08 3.051497e-09 0 1.135443e-07 1.489872e-08 3.865613e-09 0
+Computing adjoint of G at 61.
+61 6.191374e-08 8.124045e-09 2.107877e-09 0 7.242648e-08 9.503493e-09 2.465799e-09 0 6.071736e-08 7.967033e-09 2.067123e-09 0 8.655935e-08 1.135789e-08 2.946914e-09 0 1.096527e-07 1.438809e-08 3.733129e-09 0
+Computing adjoint of G at 60.
+60 5.979172e-08 7.845604e-09 2.035633e-09 0 6.994413e-08 9.177772e-09 2.381287e-09 0 5.863637e-08 7.693977e-09 1.996277e-09 0 8.359266e-08 1.096862e-08 2.845915e-09 0 1.058946e-07 1.389497e-08 3.605185e-09 0
+Computing adjoint of G at 59.
+59 5.774243e-08 7.576706e-09 1.965865e-09 0 6.754687e-08 8.863214e-09 2.299672e-09 0 5.662669e-08 7.430280e-09 1.927859e-09 0 8.072765e-08 1.059269e-08 2.748378e-09 0 1.022652e-07 1.341874e-08 3.481625e-09 0
+Computing adjoint of G at 58.
+58 5.576337e-08 7.317024e-09 1.898489e-09 0 6.523176e-08 8.559437e-09 2.220854e-09 0 5.468590e-08 7.175620e-09 1.861786e-09 0 7.796083e-08 1.022964e-08 2.654184e-09 0 9.876018e-08 1.295884e-08 3.362300e-09 0
+Computing adjoint of G at 57.
+57 5.385214e-08 7.066242e-09 1.833421e-09 0 6.299601e-08 8.266071e-09 2.144737e-09 0 5.281162e-08 6.929687e-09 1.797978e-09 0 7.528883e-08 9.879040e-09 2.563218e-09 0 9.537532e-08 1.251469e-08 3.247065e-09 0
+Computing adjoint of G at 56.
+56 5.200642e-08 6.824056e-09 1.770583e-09 0 6.083688e-08 7.982760e-09 2.071229e-09 0 5.100157e-08 6.692184e-09 1.736356e-09 0 7.270841e-08 9.540452e-09 2.475369e-09 0 9.210646e-08 1.208577e-08 3.135779e-09 0
+Computing adjoint of G at 55.
+55 5.022396e-08 6.590170e-09 1.709899e-09 0 5.875175e-08 7.709160e-09 2.000240e-09 0 4.925356e-08 6.462820e-09 1.676846e-09 0 7.021643e-08 9.213469e-09 2.390531e-09 0 8.894964e-08 1.167155e-08 3.028307e-09 0
+Computing adjoint of G at 54.
+54 4.850258e-08 6.364299e-09 1.651295e-09 0 5.673809e-08 7.444936e-09 1.931685e-09 0 4.756546e-08 6.241317e-09 1.619376e-09 0 6.780986e-08 8.897692e-09 2.308600e-09 0 8.590101e-08 1.127153e-08 2.924518e-09 0
+Computing adjoint of G at 53.
+53 4.684021e-08 6.146170e-09 1.594699e-09 0 5.479344e-08 7.189768e-09 1.865478e-09 0 4.593522e-08 6.027406e-09 1.563875e-09 0 6.548577e-08 8.592737e-09 2.229478e-09 0 8.295687e-08 1.088521e-08 2.824286e-09 0
+Computing adjoint of G at 52.
+52 4.523481e-08 5.935518e-09 1.540043e-09 0 5.291545e-08 6.943346e-09 1.801541e-09 0 4.436085e-08 5.820825e-09 1.510276e-09 0 6.324133e-08 8.298234e-09 2.153067e-09 0 8.011363e-08 1.051214e-08 2.727489e-09 0
+Computing adjoint of G at 51.
+51 4.368443e-08 5.732084e-09 1.487261e-09 0 5.110182e-08 6.705370e-09 1.739796e-09 0 4.284044e-08 5.621325e-09 1.458514e-09 0 6.107381e-08 8.013824e-09 2.079275e-09 0 7.736784e-08 1.015185e-08 2.634009e-09 0
+Computing adjoint of G at 50.
+50 4.218719e-08 5.535624e-09 1.436287e-09 0 4.935035e-08 6.475550e-09 1.680166e-09 0 4.137214e-08 5.428663e-09 1.408527e-09 0 5.898058e-08 7.739162e-09 2.008011e-09 0 7.471616e-08 9.803912e-09 2.543734e-09 0
+Computing adjoint of G at 49.
+49 4.074126e-08 5.345896e-09 1.387060e-09 0 4.765891e-08 6.253606e-09 1.622581e-09 0 3.995416e-08 5.242603e-09 1.360252e-09 0 5.695910e-08 7.473914e-09 1.939191e-09 0 7.215535e-08 9.467897e-09 2.456552e-09 0
+Computing adjoint of G at 48.
+48 3.934490e-08 5.162671e-09 1.339520e-09 0 4.602544e-08 6.039270e-09 1.566968e-09 0 3.858478e-08 5.062920e-09 1.313632e-09 0 5.500690e-08 7.217756e-09 1.872728e-09 0 6.968232e-08 9.143398e-09 2.372358e-09 0
+Computing adjoint of G at 47.
+47 3.799639e-08 4.985726e-09 1.293610e-09 0 4.444795e-08 5.832280e-09 1.513262e-09 0 3.726233e-08 4.889396e-09 1.268609e-09 0 5.312160e-08 6.970377e-09 1.808544e-09 0 6.729404e-08 8.830021e-09 2.291050e-09 0
+Computing adjoint of G at 46.
+46 3.669410e-08 4.814846e-09 1.249273e-09 0 4.292454e-08 5.632384e-09 1.461397e-09 0 3.598521e-08 4.721818e-09 1.225130e-09 0 5.130092e-08 6.731477e-09 1.746559e-09 0 6.498761e-08 8.527384e-09 2.212528e-09 0
+Computing adjoint of G at 45.
+45 3.543644e-08 4.649822e-09 1.206456e-09 0 4.145333e-08 5.439339e-09 1.411309e-09 0 3.475186e-08 4.559984e-09 1.183141e-09 0 4.954264e-08 6.500765e-09 1.686699e-09 0 6.276024e-08 8.235119e-09 2.136697e-09 0
+Computing adjoint of G at 44.
+44 3.422189e-08 4.490454e-09 1.165106e-09 0 4.003256e-08 5.252910e-09 1.362938e-09 0 3.356078e-08 4.403697e-09 1.142591e-09 0 4.784462e-08 6.277959e-09 1.628890e-09 0 6.060920e-08 7.952871e-09 2.063466e-09 0
+Computing adjoint of G at 43.
+43 3.304896e-08 4.336548e-09 1.125174e-09 0 3.866047e-08 5.072871e-09 1.316225e-09 0 3.241052e-08 4.252766e-09 1.103430e-09 0 4.620480e-08 6.062790e-09 1.573063e-09 0 5.853189e-08 7.680297e-09 1.992744e-09 0
+Computing adjoint of G at 42.
+42 3.191624e-08 4.187917e-09 1.086610e-09 0 3.733542e-08 4.899003e-09 1.271113e-09 0 3.129969e-08 4.107008e-09 1.065612e-09 0 4.462118e-08 5.854996e-09 1.519148e-09 0 5.652578e-08 7.417064e-09 1.924446e-09 0
+Computing adjoint of G at 41.
+41 3.082234e-08 4.044381e-09 1.049367e-09 0 3.605577e-08 4.731094e-09 1.227546e-09 0 3.022692e-08 3.966245e-09 1.029090e-09 0 4.309184e-08 5.654323e-09 1.467082e-09 0 5.458842e-08 7.162854e-09 1.858488e-09 0
+Computing adjoint of G at 40.
+40 2.976593e-08 3.905763e-09 1.013402e-09 0 3.481999e-08 4.568940e-09 1.185474e-09 0 2.919093e-08 3.830307e-09 9.938193e-10 0 4.161492e-08 5.460528e-09 1.416800e-09 0 5.271746e-08 6.917356e-09 1.794791e-09 0
+Computing adjoint of G at 39.
+39 2.874573e-08 3.771897e-09 9.786684e-10 0 3.362656e-08 4.412343e-09 1.144843e-09 0 2.819044e-08 3.699028e-09 9.597577e-10 0 4.018861e-08 5.273375e-09 1.368241e-09 0 5.091062e-08 6.680272e-09 1.733278e-09 0
+Computing adjoint of G at 38.
+38 2.776049e-08 3.642619e-09 9.451256e-10 0 3.247404e-08 4.261114e-09 1.105604e-09 0 2.722424e-08 3.572248e-09 9.268634e-10 0 3.881119e-08 5.092636e-09 1.321347e-09 0 4.916571e-08 6.451313e-09 1.673872e-09 0
+Computing adjoint of G at 37.
+37 2.680903e-08 3.517771e-09 9.127325e-10 0 3.136101e-08 4.115068e-09 1.067711e-09 0 2.629116e-08 3.449813e-09 8.950965e-10 0 3.748097e-08 4.918092e-09 1.276060e-09 0 4.748061e-08 6.230202e-09 1.616503e-09 0
+Computing adjoint of G at 36.
+36 2.589017e-08 3.397203e-09 8.814496e-10 0 3.028614e-08 3.974027e-09 1.031116e-09 0 2.539006e-08 3.331575e-09 8.644184e-10 0 3.619635e-08 4.749530e-09 1.232324e-09 0 4.585326e-08 6.016669e-09 1.561099e-09 0
+Computing adjoint of G at 35.
+35 2.500280e-08 3.280767e-09 8.512389e-10 0 2.924810e-08 3.837821e-09 9.957754e-10 0 2.451984e-08 3.217389e-09 8.347916e-10 0 3.495576e-08 4.586745e-09 1.190088e-09 0 4.428168e-08 5.810454e-09 1.507595e-09 0
+Computing adjoint of G at 34.
+34 2.414585e-08 3.168322e-09 8.220636e-10 0 2.824565e-08 3.706282e-09 9.616461e-10 0 2.367945e-08 3.107116e-09 8.061803e-10 0 3.375768e-08 4.429540e-09 1.149300e-09 0 4.276397e-08 5.611307e-09 1.455924e-09 0
+Computing adjoint of G at 33.
+33 2.331827e-08 3.059730e-09 7.938882e-10 0 2.727755e-08 3.579252e-09 9.286866e-10 0 2.286786e-08 3.000623e-09 7.785496e-10 0 3.260067e-08 4.277722e-09 1.109909e-09 0 4.129828e-08 5.418986e-09 1.406024e-09 0
+Computing adjoint of G at 32.
+32 2.251906e-08 2.954861e-09 7.666785e-10 0 2.634263e-08 3.456576e-09 8.968567e-10 0 2.208408e-08 2.897780e-09 7.518658e-10 0 3.148331e-08 4.131108e-09 1.071868e-09 0 3.988282e-08 5.233256e-09 1.357835e-09 0
+Computing adjoint of G at 31.
+31 2.174724e-08 2.853585e-09 7.404014e-10 0 2.543976e-08 3.338105e-09 8.661177e-10 0 2.132717e-08 2.798462e-09 7.260966e-10 0 3.040425e-08 3.989519e-09 1.035131e-09 0 3.851587e-08 5.053892e-09 1.311297e-09 0
+Computing adjoint of G at 30.
+30 2.100187e-08 2.755781e-09 7.150248e-10 0 2.456783e-08 3.223694e-09 8.364323e-10 0 2.059620e-08 2.702548e-09 7.012106e-10 0 2.936217e-08 3.852782e-09 9.996536e-10 0 3.719578e-08 4.880675e-09 1.266354e-09 0
+Computing adjoint of G at 29.
+29 2.028204e-08 2.661329e-09 6.905181e-10 0 2.372578e-08 3.113204e-09 8.077643e-10 0 1.989029e-08 2.609920e-09 6.771775e-10 0 2.835581e-08 3.720732e-09 9.653917e-10 0 3.592093e-08 4.713395e-09 1.222951e-09 0
+Computing adjoint of G at 28.
+28 1.958689e-08 2.570114e-09 6.668512e-10 0 2.291260e-08 3.006502e-09 7.800789e-10 0 1.920856e-08 2.520468e-09 6.539680e-10 0 2.738394e-08 3.593207e-09 9.323041e-10 0 3.468977e-08 4.551848e-09 1.181036e-09 0
+Computing adjoint of G at 27.
+27 1.891557e-08 2.482026e-09 6.439956e-10 0 2.212728e-08 2.903456e-09 7.533424e-10 0 1.855021e-08 2.434082e-09 6.315541e-10 0 2.644538e-08 3.470054e-09 9.003506e-10 0 3.350081e-08 4.395838e-09 1.140557e-09 0
+Computing adjoint of G at 26.
+26 1.826725e-08 2.396956e-09 6.219232e-10 0 2.136889e-08 2.803942e-09 7.275222e-10 0 1.791442e-08 2.350656e-09 6.099083e-10 0 2.553899e-08 3.351121e-09 8.694921e-10 0 3.235260e-08 4.245175e-09 1.101466e-09 0
+Computing adjoint of G at 25.
+25 1.764115e-08 2.314802e-09 6.006074e-10 0 2.063648e-08 2.707839e-09 7.025870e-10 0 1.730042e-08 2.270089e-09 5.890044e-10 0 2.466366e-08 3.236265e-09 8.396913e-10 0 3.124374e-08 4.099675e-09 1.063715e-09 0
+Computing adjoint of G at 24.
+24 1.703652e-08 2.235464e-09 5.800221e-10 0 1.992918e-08 2.615030e-09 6.785064e-10 0 1.670746e-08 2.192284e-09 5.688170e-10 0 2.381834e-08 3.125345e-09 8.109118e-10 0 3.017289e-08 3.959163e-09 1.027257e-09 0
+Computing adjoint of G at 23.
+23 1.645260e-08 2.158846e-09 5.601424e-10 0 1.924612e-08 2.525402e-09 6.552511e-10 0 1.613482e-08 2.117146e-09 5.493214e-10 0 2.300199e-08 3.018227e-09 7.831188e-10 0 2.913874e-08 3.823466e-09 9.920489e-10 0
+Computing adjoint of G at 22.
+22 1.588870e-08 2.084853e-09 5.409440e-10 0 1.858647e-08 2.438845e-09 6.327929e-10 0 1.558182e-08 2.044583e-09 5.304941e-10 0 2.221361e-08 2.914780e-09 7.562782e-10 0 2.814003e-08 3.692421e-09 9.580475e-10 0
+Computing adjoint of G at 21.
+21 1.534413e-08 2.013396e-09 5.224036e-10 0 1.794944e-08 2.355256e-09 6.111044e-10 0 1.504776e-08 1.974506e-09 5.123120e-10 0 2.145226e-08 2.814878e-09 7.303576e-10 0 2.717556e-08 3.565866e-09 9.252115e-10 0
+Computing adjoint of G at 20.
+20 1.481822e-08 1.944389e-09 5.044987e-10 0 1.733423e-08 2.274531e-09 5.901593e-10 0 1.453201e-08 1.906832e-09 4.947530e-10 0 2.071700e-08 2.718401e-09 7.053254e-10 0 2.624414e-08 3.443649e-09 8.935009e-10 0
+Computing adjoint of G at 19.
+19 1.431033e-08 1.877746e-09 4.872075e-10 0 1.674011e-08 2.196573e-09 5.699321e-10 0 1.403394e-08 1.841477e-09 4.777959e-10 0 2.000694e-08 2.625230e-09 6.811512e-10 0 2.534464e-08 3.325621e-09 8.628771e-10 0
+Computing adjoint of G at 18.
+18 1.381986e-08 1.813388e-09 4.705088e-10 0 1.616635e-08 2.121287e-09 5.503981e-10 0 1.355294e-08 1.778362e-09 4.614199e-10 0 1.932122e-08 2.535253e-09 6.578054e-10 0 2.447597e-08 3.211639e-09 8.333029e-10 0
+Computing adjoint of G at 17.
+17 1.334619e-08 1.751235e-09 4.543825e-10 0 1.561226e-08 2.048581e-09 5.315336e-10 0 1.308842e-08 1.717410e-09 4.456053e-10 0 1.865900e-08 2.448359e-09 6.352598e-10 0 2.363708e-08 3.101563e-09 8.047423e-10 0
+Computing adjoint of G at 16.
+16 1.288876e-08 1.691213e-09 4.388090e-10 0 1.507716e-08 1.978368e-09 5.133157e-10 0 1.263983e-08 1.658547e-09 4.303326e-10 0 1.801948e-08 2.364444e-09 6.134869e-10 0 2.282694e-08 2.995259e-09 7.771606e-10 0
+Computing adjoint of G at 15.
+15 1.244701e-08 1.633248e-09 4.237692e-10 0 1.456040e-08 1.910560e-09 4.957222e-10 0 1.220661e-08 1.601702e-09 4.155834e-10 0 1.740188e-08 2.283404e-09 5.924603e-10 0 2.204456e-08 2.892599e-09 7.505242e-10 0
+Computing adjoint of G at 14.
+14 1.202039e-08 1.577269e-09 4.092448e-10 0 1.406135e-08 1.845077e-09 4.787317e-10 0 1.178824e-08 1.546805e-09 4.013397e-10 0 1.680544e-08 2.205143e-09 5.721543e-10 0 2.128900e-08 2.793458e-09 7.248007e-10 0
+Computing adjoint of G at 13.
+13 1.160840e-08 1.523210e-09 3.952183e-10 0 1.357941e-08 1.781838e-09 4.623235e-10 0 1.138420e-08 1.493790e-09 3.875841e-10 0 1.622945e-08 2.129563e-09 5.525443e-10 0 2.055934e-08 2.697714e-09 6.999589e-10 0
+Computing adjoint of G at 12.
+12 1.121053e-08 1.471003e-09 3.816725e-10 0 1.311398e-08 1.720767e-09 4.464777e-10 0 1.099402e-08 1.442591e-09 3.743001e-10 0 1.567319e-08 2.056574e-09 5.336064e-10 0 1.985468e-08 2.605252e-09 6.759684e-10 0
+Computing adjoint of G at 11.
+11 1.082630e-08 1.420585e-09 3.685910e-10 0 1.266451e-08 1.661789e-09 4.311750e-10 0 1.061721e-08 1.393148e-09 3.614713e-10 0 1.513601e-08 1.986087e-09 5.153175e-10 0 1.917418e-08 2.515960e-09 6.528003e-10 0
+Computing adjoint of G at 10.
+10 1.045523e-08 1.371896e-09 3.559578e-10 0 1.223044e-08 1.604832e-09 4.163968e-10 0 1.025331e-08 1.345399e-09 3.490822e-10 0 1.461723e-08 1.918015e-09 4.976555e-10 0 1.851700e-08 2.429727e-09 6.304262e-10 0
+Computing adjoint of G at 9.
+9 1.009689e-08 1.324875e-09 3.437576e-10 0 1.181125e-08 1.549828e-09 4.021251e-10 0 9.901885e-09 1.299286e-09 3.371177e-10 0 1.411624e-08 1.852277e-09 4.805988e-10 0 1.788234e-08 2.346450e-09 6.088189e-10 0
+Computing adjoint of G at 8.
+8 9.750824e-09 1.279466e-09 3.319756e-10 0 1.140643e-08 1.496708e-09 3.883425e-10 0 9.562505e-09 1.254754e-09 3.255633e-10 0 1.363241e-08 1.788792e-09 4.641267e-10 0 1.726944e-08 2.266027e-09 5.879522e-10 0
+Computing adjoint of G at 7.
+7 9.416621e-09 1.235613e-09 3.205974e-10 0 1.101548e-08 1.445410e-09 3.750324e-10 0 9.234757e-09 1.211748e-09 3.144049e-10 0 1.316517e-08 1.727482e-09 4.482192e-10 0 1.667754e-08 2.188361e-09 5.678006e-10 0
+Computing adjoint of G at 6.
+6 9.093872e-09 1.193263e-09 3.096092e-10 0 1.063793e-08 1.395869e-09 3.621784e-10 0 8.918242e-09 1.170217e-09 3.036290e-10 0 1.271395e-08 1.668274e-09 4.328569e-10 0 1.610593e-08 2.113357e-09 5.483398e-10 0
+Computing adjoint of G at 5.
+5 8.782186e-09 1.152365e-09 2.989975e-10 0 1.027332e-08 1.348027e-09 3.497650e-10 0 8.612576e-09 1.130108e-09 2.932224e-10 0 1.227818e-08 1.611095e-09 4.180211e-10 0 1.555391e-08 2.040923e-09 5.295459e-10 0
+Computing adjoint of G at 4.
+4 8.481182e-09 1.112868e-09 2.887496e-10 0 9.921211e-09 1.301824e-09 3.377770e-10 0 8.317386e-09 1.091375e-09 2.831724e-10 0 1.185736e-08 1.555876e-09 4.036938e-10 0 1.502081e-08 1.970972e-09 5.113962e-10 0
+Computing adjoint of G at 3.
+3 8.190495e-09 1.074725e-09 2.788529e-10 0 9.581168e-09 1.257205e-09 3.262000e-10 0 8.032313e-09 1.053969e-09 2.734669e-10 0 1.145096e-08 1.502550e-09 3.898575e-10 0 1.450598e-08 1.903418e-09 4.938685e-10 0
+Computing adjoint of G at 2.
+2 7.909771e-09 1.037890e-09 2.692955e-10 0 9.252779e-09 1.214115e-09 3.150197e-10 0 7.757012e-09 1.017845e-09 2.640941e-10 0 1.105848e-08 1.451051e-09 3.764955e-10 0 1.400880e-08 1.838180e-09 4.769416e-10 0
+Computing adjoint of G at 1.
+1 7.638668e-09 1.002317e-09 2.600655e-10 0 8.935646e-09 1.172502e-09 3.042226e-10 0 7.491145e-09 9.829589e-10 2.550425e-10 0 1.067946e-08 1.401317e-09 3.635914e-10 0 1.352866e-08 1.775178e-09 4.605948e-10 0
+Computing adjoint of G at 0.
+0 7.376858e-09 9.679632e-10 2.511520e-10 0 8.629382e-09 1.132315e-09 2.937956e-10 0 7.234391e-09 9.492687e-10 2.463011e-10 0 1.031343e-08 1.353288e-09 3.511296e-10 0 1.306497e-08 1.714335e-09 4.448083e-10 0
+Computing adjoint of P at -1.
+Finished.

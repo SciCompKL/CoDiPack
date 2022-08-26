@@ -149,6 +149,25 @@ void runBBTests(Problem& app)
   bb.run(app);
 }
 
+void runBBWCTests()
+{
+  codi::algorithms::BlackBoxWithCheckpointsSettings settings;
+  settings.start = 0;
+  settings.end = 455;
+  settings.verbose = true;
+
+  runProblem<codi::algorithms::BlackBoxWithCheckpoints>(VectorConfig<codi::RealReverse>("TapeVec1_Functional1", 1), selectAll(appConfigs), settings, "blackBoxWithCheck");
+
+  runProblem<codi::algorithms::BlackBoxWithCheckpoints>(VectorConfig<codi::RealReverse>("TapeVec1_Functional2", 2), select(appConfigs, {0}), settings, "blackBoxWithCheck");
+
+  runProblem<codi::algorithms::BlackBoxWithCheckpoints>(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional1", 1), select(appConfigs, {0}), settings, "blackBoxWithCheck");
+  runProblem<codi::algorithms::BlackBoxWithCheckpoints>(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional4", 4), select(appConfigs, {0}), settings, "blackBoxWithCheck");
+  runProblem<codi::algorithms::BlackBoxWithCheckpoints>(VectorConfig<codi::RealReverseVec<4>>("TapeVec4_Functional5", 5), select(appConfigs, {0}), settings, "blackBoxWithCheck");
+
+  runProblem<codi::algorithms::BlackBoxWithCheckpoints>(VectorConfig<codi::RealReverse>("CustomVec_Functional4", 4), select(appConfigs, {0}), settings, "blackBoxWithCheck");
+  runProblem<codi::algorithms::BlackBoxWithCheckpoints>(VectorConfig<codi::RealReverse>("CustomVec_Functional5", 5), select(appConfigs, {0}), settings, "blackBoxWithCheck");
+}
+
 int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
@@ -172,6 +191,7 @@ int main(int nargs, char** args) {
 
   runBBTests(app);
 
+  runBBWCTests();
 
   prepare(app, codi::StringUtil::format("%s/checkpointTest", OUTPUT_DIR), "run.out");
   app.setIteration(0);
