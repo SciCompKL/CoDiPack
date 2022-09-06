@@ -115,15 +115,15 @@ namespace codi {
         int getNumberOfFunctionals() { return 1; }
 
         Residuum<Real> residuumY(std::vector<Real> const& v1, std::vector<Real> const& v2) {
-          return vectorBasedResiduum(v1, v2);
+          return Residuum<Real>::vectorBasedResiduum(v1, v2);
         }
 
         Residuum<Real> residuumX(std::vector<Real> const& v1, std::vector<Real> const& v2) {
-          return vectorBasedResiduum(v1, v2);
+          return Residuum<Real>::vectorBasedResiduum(v1, v2);
         }
 
         Residuum<Real> residuumP(std::vector<Real> const& v1, std::vector<Real> const& v2) {
-          return vectorBasedResiduum(v1, v2);
+          return Residuum<Real>::vectorBasedResiduum(v1, v2);
         }
 
         CheckpointManager* getCheckpointInterface() {
@@ -159,29 +159,6 @@ namespace codi {
 
         bool isStop() {
           return false;
-        }
-
-      protected:
-
-        Residuum<Real> vectorBasedResiduum(std::vector<Real> const& v1, std::vector<Real> const& v2) {
-          Residuum<Real> res{};
-          res.lMax = -1e300;
-
-          codiAssert(v1.size() == v2.size());
-
-          for (size_t i = 0; i < v1.size(); i += 1) {
-            Real diff = abs(v1[i] - v2[i]);
-            res.l1 += diff;
-            res.l2 += diff * diff;
-            if (res.lMax < diff) {
-              res.lMax = diff;
-              res.lMaxPos = i;
-            }
-          }
-
-          res.l2 = sqrt(res.l2);
-
-          return res;
         }
     };
   }

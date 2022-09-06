@@ -55,6 +55,7 @@ namespace codi {
       InitializationWriteTapeToDisk,
       PComputationIsAvailable, // TODO: Automatic detection
       PStateIsAvailable, // TODO: Automatic detection
+      FComputationIsAvailable, // TODO: Automatic detection
       MaxElement
     };
     using ApplicationHints = EnumBitset<ApplicationFlags>;
@@ -72,6 +73,27 @@ namespace codi {
         size_t lMaxPos;
 
         Residuum() = default;
+
+        static Residuum<Real> vectorBasedResiduum(std::vector<Real> const& v1, std::vector<Real> const& v2) {
+          Residuum<Real> res{};
+          res.lMax = -1e300;
+
+          codiAssert(v1.size() == v2.size());
+
+          for (size_t i = 0; i < v1.size(); i += 1) {
+            Real diff = abs(v1[i] - v2[i]);
+            res.l1 += diff;
+            res.l2 += diff * diff;
+            if (res.lMax < diff) {
+              res.lMax = diff;
+              res.lMaxPos = i;
+            }
+          }
+
+          res.l2 = sqrt(res.l2);
+
+          return res;
+        }
 
         std::string formatHeader(std::string prefix) const {
 
@@ -112,7 +134,7 @@ namespace codi {
         size_t getSizeP();
         size_t getSizeZ();
 
-        int getNumberOfFunctionals();
+        virtual int getNumberOfFunctionals() = 0;
 
         void evaluateG();
         void evaluateF();

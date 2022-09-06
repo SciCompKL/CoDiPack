@@ -88,6 +88,7 @@ namespace codi {
         }
 
         void run(App& app) {
+          // TODO: Handle no F available
           CheckpointManagerInterface* cpm = app.getCheckpointInterface();
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 

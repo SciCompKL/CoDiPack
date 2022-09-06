@@ -81,13 +81,21 @@ namespace codi {
           return &settings;
         }
 
-        inline int prepareCheckpointsAtEnd(CheckpointManagerInterface* cpm, std::vector<CheckpointHandle*>& checkpoints)
+        inline int prepareCheckpointsAtEnd(CheckpointManagerInterface* cpm, std::vector<CheckpointHandle*>& checkpoints, bool fAvailable)
         {
           int curAdjIteration;
           if(-1 == settings.end) {
             curAdjIteration = checkpoints.back()->getIteration();
+
+            if(!fAvailable) {
+              curAdjIteration += 1; // Increase iteration by one since we do one additional G iteration to compute f, so that the last checkpoint is used.
+            }
+
           } else {
             curAdjIteration = settings.end;
+            if(!fAvailable) {
+              curAdjIteration -= 1; // Decrease iteration by one since we do one additional G iteration to compute f.
+            }
             while(curAdjIteration < checkpoints.back()->getIteration()) {
               cpm->free(checkpoints.back());
               checkpoints.pop_back();
@@ -153,6 +161,7 @@ namespace codi {
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
           bool pStateAvailable = app.getHints() & ApplicationFlags::PStateIsAvailable;
+          bool fAvailable = app.getHints() & ApplicationFlags::FComputationIsAvailable;
 
           Base::initVectorMode(app);
 
@@ -162,7 +171,7 @@ namespace codi {
           std::vector<CheckpointHandle*> checkpoints = cpm->list();
 
           prepareCheckpointsAtFront(cpm, checkpoints);
-          int curAdjIteration = prepareCheckpointsAtEnd(cpm, checkpoints);
+          int curAdjIteration = prepareCheckpointsAtEnd(cpm, checkpoints, fAvailable);
 
           if(settings.verbose) { app.print(StringUtil::format("Checkpoints avail: %d, first: %d, last: %d\n",
                                                               checkpoints.size(),
@@ -194,7 +203,12 @@ namespace codi {
 
           tapeStatus = RecodingInputOutputFlags::InP | RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InY |
                        RecodingInputOutputFlags::OutZ;
-          Base::recordTape(app, data, TapeEvaluationFlags::F, tapeStatus);
+
+          if(fAvailable) {
+            Base::recordTape(app, data, TapeEvaluationFlags::F, tapeStatus);
+          } else {
+            Base::recordTape(app, data, TapeEvaluationFlags::G, tapeStatus);
+          }
           Base::evaluateTape(app, data, EvaluationInputOutputFlags::GetP | EvaluationInputOutputFlags::GetX |
                                        EvaluationInputOutputFlags::GetY | EvaluationInputOutputFlags::SetZ);
 
