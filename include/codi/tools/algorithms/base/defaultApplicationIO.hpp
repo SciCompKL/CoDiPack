@@ -49,12 +49,11 @@
 namespace codi {
   namespace algorithms {
 
-    template<typename T_Type, typename T_WriteIO, typename T_RestartIO, typename T_Application>
+    template<typename T_Type, typename T_WriteIO, typename T_RestartIO>
     struct DefaultApplicationIO : public codi::algorithms::ApplicationIOInterface<T_Type> {
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
         using WriteIO = CODI_DD(T_WriteIO, FileIOInterface);
         using RestartIO = CODI_DD(T_RestartIO, FileIOInterface);
-        using Application = CODI_DD(T_Application, CODI_T(codi::algorithms::ApplicationInterface<CODI_ANY>));
 
         using Real = RealTraits::Real<Type>;
 
@@ -62,7 +61,7 @@ namespace codi {
         std::string restartReadFolder;
         std::string writeFolder;
 
-        Application* app;
+        ApplicationInterface<Type>* app;
         WriteIO* writeIO;
         RestartIO* restartIO;
 
@@ -72,7 +71,7 @@ namespace codi {
         bool outputZ;
         bool onlyWriteFinal;
 
-        DefaultApplicationIO(Application* app, WriteIO* writeIO, RestartIO* restartIO)
+        DefaultApplicationIO(ApplicationInterface<Type>* app, WriteIO* writeIO, RestartIO* restartIO)
             : restartWriteFolder("."),
               restartReadFolder("."),
               writeFolder("."),

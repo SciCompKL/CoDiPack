@@ -60,7 +60,7 @@ namespace codi {
         using Real = typename Type::Real;
 
         using CheckpointManager = StateBasedCheckpointManager<Type, BinaryFileIO, Impl>;
-        using IO = DefaultApplicationIO<Type, TextFileIO, BinaryFileIO, Impl>;
+        using IO = DefaultApplicationIO<Type, TextFileIO, BinaryFileIO>;
 
       protected:
 
