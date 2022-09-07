@@ -50,6 +50,7 @@ namespace codi {
     struct BlackBoxSettings : public AlgorithmBaseSettings {
         int maxIterations;  ///< Maximum number of adjoint iterations.
 
+        bool outputPrimalConvergence;
         bool checkAbsConvergence;
         bool checkRelConvergence;
 
@@ -58,6 +59,7 @@ namespace codi {
 
         BlackBoxSettings()
             : maxIterations(1000),
+              outputPrimalConvergence(true),
               checkAbsConvergence(true),
               checkRelConvergence(true),
               absThreshold(1e-12),
@@ -94,18 +96,23 @@ namespace codi {
           bool isStop = false;
           bool isFinished = false;
 
+          app.initialize();
+
           Base::initVectorMode(app);
 
-          RealVector yCur(app.getSizeY());
-          RealVector yNext(app.getSizeY());
+          RealVector yCur(0);
+          RealVector yNext(0);
+          if(settings.outputPrimalConvergence) {
+            yCur.resize(app.getSizeY());
+            yNext.resize(app.getSizeY());
+
+            app.print(formatHeader());
+          }
           IdVector idX(app.getSizeX());
           IdVector idZ(app.getSizeZ());
           std::vector<RealVector> gradX(Base::d_local, RealVector(app.getSizeX()));
           Res initalResY;
 
-          app.print(formatHeader());
-
-          app.initialize();
 
           Tape& tape = Type::getTape();
           tape.setActive();
@@ -113,26 +120,31 @@ namespace codi {
 
           app.evaluateP();
 
-          app.iterateY(typename Base::GetPrimal(yCur));
+          if(settings.outputPrimalConvergence) {
+            app.iterateY(typename Base::GetPrimal(yCur));
+          }
 
           while (!(isFinished || isStop || isConverged)) {
             app.evaluateG();
 
-            app.iterateY(typename Base::GetPrimal(yNext));
+            if(settings.outputPrimalConvergence) {
+              app.iterateY(typename Base::GetPrimal(yNext));
 
-            Res resY = app.residuumY(yCur, yNext);
+              Res resY = app.residuumY(yCur, yNext);
 
-            app.print(formatEntry(app.getIteration(), resY));
+              app.print(formatEntry(app.getIteration(), resY));
 
-            // Prepare next iteration
-            std::swap(yCur, yNext);
+              // Prepare next iteration
+              std::swap(yCur, yNext);
+
+              if (1 == app.getIteration()) {
+                initalResY = resY;
+              } else {
+                isConverged = checkConvergence(initalResY, resY);
+              }
+            }
 
             isFinished = app.getIteration() >= settings.maxIterations;
-            if (1 == app.getIteration()) {
-              initalResY = resY;
-            } else {
-              isConverged = checkConvergence(initalResY, resY);
-            }
             isStop = app.isStop();
           }
 
