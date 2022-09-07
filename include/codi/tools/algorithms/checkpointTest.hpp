@@ -88,6 +88,10 @@ namespace codi {
           CheckpointManagerInterface* cm = app.getCheckpointInterface();
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
+          if(app.getHints() & ApplicationFlags::InitializationRequired) {
+            app.initialize();
+          }
+
           // Pare settings
           std::sort(settings.compareIter.begin(), settings.compareIter.end());
           settings.compareIter.erase(std::unique(settings.compareIter.begin(), settings.compareIter.end()),
