@@ -69,6 +69,14 @@ namespace codi {
 #define ENUM OutputFlags
 #include "../../../misc/enumOperations.tpp"
 
+    enum class OutputType {
+      P,
+      X,
+      Y,
+      Z,
+      MaxElement
+    };
+
     template<typename T_Type>
     struct ApplicationIOInterface {
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
@@ -116,6 +124,28 @@ namespace codi {
         void writeZ(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
           for(size_t i = 0; i < v.size(); i += 1) {
             writeZ(iteration, v[i], flags, i + vecOffset);
+          }
+        }
+
+        virtual void write(OutputType type, int iteration, RealVector const& v, OutputHints flags, int vec = 0) {
+          switch (type) {
+            case OutputType::P: writeP(iteration, v, flags, vec); break;
+            case OutputType::X: writeX(iteration, v, flags, vec); break;
+            case OutputType::Y: writeY(iteration, v, flags, vec); break;
+            case OutputType::Z: writeZ(iteration, v, flags, vec); break;
+          default:
+            CODI_EXCEPTION("Unimplemented switch case.");
+          }
+        }
+
+        virtual void write(OutputType type, int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+          switch (type) {
+            case OutputType::P: writeP(iteration, v, flags, vecOffset); break;
+            case OutputType::X: writeX(iteration, v, flags, vecOffset); break;
+            case OutputType::Y: writeY(iteration, v, flags, vecOffset); break;
+            case OutputType::Z: writeZ(iteration, v, flags, vecOffset); break;
+          default:
+            CODI_EXCEPTION("Unimplemented switch case.");
           }
         }
     };

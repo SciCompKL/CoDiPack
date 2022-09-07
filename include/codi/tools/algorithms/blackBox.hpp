@@ -40,8 +40,9 @@
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../misc/macros.hpp"
 #include "../../misc/stringUtil.hpp"
-#include "interfaces/algorithmInterface.hpp"
 #include "base/algorithmBase.hpp"
+#include "interfaces/algorithmInterface.hpp"
+#include "tools/reverseTapeOutput.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -57,13 +58,16 @@ namespace codi {
         double absThreshold;
         double relThreshold;
 
+        bool debugOutput;
+
         BlackBoxSettings()
             : maxIterations(1000),
               outputPrimalConvergence(true),
               checkAbsConvergence(true),
               checkRelConvergence(true),
               absThreshold(1e-12),
-              relThreshold(1e-6) {}
+              relThreshold(1e-6),
+              debugOutput(false) {}
     };
 
     template<typename T_App>
@@ -144,6 +148,8 @@ namespace codi {
               }
             }
 
+            if(settings.debugOutput) { addDebugOutput(app); }
+
             isFinished = app.getIteration() >= settings.maxIterations;
             isStop = app.isStop();
           }
@@ -194,6 +200,26 @@ namespace codi {
           }
 
           return converged;
+        }
+
+      private:
+
+        void addDebugOutput(App& app) {
+          OutputHints hints = OutputFlags::Intermediate | OutputFlags::Derivative | OutputFlags::G;
+
+          IdVector idY(app.getSizeY());
+          app.iterateY(typename Base::GetId(idY));
+          ReverseTapeOutput<App>::addReverseOutput(app, idY, OutputType::Y, hints);
+
+          IdVector idX(app.getSizeX());
+          app.iterateX(typename Base::GetId(idX));
+          ReverseTapeOutput<App>::addReverseOutput(app, idX, OutputType::X, hints);
+
+          if(0 != app.getSizeP()) {
+            IdVector idP(app.getSizeP());
+            app.iterateP(typename Base::GetId(idP));
+            ReverseTapeOutput<App>::addReverseOutput(app, idP, OutputType::P, hints);
+          }
         }
     };
   }
