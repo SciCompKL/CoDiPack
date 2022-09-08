@@ -81,11 +81,12 @@ struct VectorConfig {
     {}
 };
 
-size_t constexpr CONFIG_SIZE = 3;
+size_t constexpr CONFIG_SIZE = 4;
 AppConfig appConfigs[CONFIG_SIZE] = {
   {"InitRecord", ApplicationFlags::InitializationComputesP | ApplicationFlags::PStateIsAvailable | ApplicationFlags::FComputationIsAvailable},
   {"InitRecompute_PIterableYes", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::PStateIsAvailable | ApplicationFlags::FComputationIsAvailable},
-  {"InitRecompute_PIterableNo", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::FComputationIsAvailable}
+  {"InitRecompute_PIterableNo", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::FComputationIsAvailable},
+  {"InitRecord_FComputeNo", ApplicationFlags::InitializationComputesP | ApplicationFlags::PStateIsAvailable}
 };
 
 

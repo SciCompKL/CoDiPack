@@ -161,6 +161,10 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
       }
       res = sqrt(res);
 
+      if(!(Base::hints & codi::algorithms::ApplicationFlags::FComputationIsAvailable)) {
+        evaluateF();
+      }
+
       Base::setIteration(Base::getIteration() + 1);
     }
 

@@ -81,7 +81,11 @@ namespace codi {
 
         ReverseAccumulationSettings settings;
 
-        ReverseAccumulation(ReverseAccumulationSettings settings) : settings(settings) {}
+        std::vector<RealVector> yRealF;
+        std::vector<RealVector> pRealF;
+        std::vector<RealVector> xRealF;
+
+        ReverseAccumulation(ReverseAccumulationSettings settings) : settings(settings), yRealF(), pRealF(), xRealF() {}
 
         AlgorithmBaseSettings const* getSettings() const {
           return &settings;
@@ -93,6 +97,11 @@ namespace codi {
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
           bool pStateAvailable = app.getHints() & ApplicationFlags::PStateIsAvailable;
+          bool fCompAvailable = app.getHints() & ApplicationFlags::FComputationIsAvailable;
+
+          if(!fCompAvailable) {
+            app.print("Warning: Reverse accumulation without an f computation is mathematical not correct.\n");
+          }
 
           Base::initVectorMode(app);
 
@@ -115,43 +124,35 @@ namespace codi {
           bool isFinished = false;
 
           RecordingInputOutput tapeStatus;
+          EvaluationInputOutput evalFlags;
           data.init(app);
           std::vector<Res> initalResY(app.getNumberOfFunctionals());
 
-          tapeStatus = RecodingInputOutputFlags::InP | RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InY |
-                       RecodingInputOutputFlags::OutZ;
-          Base::recordTape(app, data, TapeEvaluationFlags::F, tapeStatus);
-          Base::evaluateTape(app, data, EvaluationInputOutputFlags::GetP | EvaluationInputOutputFlags::GetX |
-                                       EvaluationInputOutputFlags::GetY | EvaluationInputOutputFlags::SetZ);
-
-          std::vector<RealVector> yRealF(app.getNumberOfFunctionals(), RealVector(app.getSizeY()));
-          std::vector<RealVector> pRealF(app.getNumberOfFunctionals(), RealVector(app.getSizeP()));
-          std::vector<RealVector> xRealF(app.getNumberOfFunctionals(), RealVector(app.getSizeX()));
-          std::swap(data.realNextY, yRealF);
-          std::swap(data.realP, pRealF);
-          std::swap(data.realX, xRealF);
-
-          Base::copyFromTo(yRealF, data.realCurY);  // Do first step.
+          if(fCompAvailable) {
+            initializeAndComputeF(app, data, tapeStatus);
+          }
 
           app.print(Base::formatAdjointHeader(initalResY));
 
-          io->writeY(0, yRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
-          io->writeX(0, xRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
-          if(pStateAvailable) {
-            io->writeP(0, pRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
-          }
-
           int curAdjIteration = 0;
           while (!(isFinished || isStop || isConverged)) {
-            RecordingInputOutput const G_FLAGS = RecodingInputOutputFlags::InY | RecodingInputOutputFlags::OutY;
+            RecordingInputOutput G_FLAGS = RecodingInputOutputFlags::InY | RecodingInputOutputFlags::OutY;
+            if(!fCompAvailable) {
+              G_FLAGS |= RecodingInputOutputFlags::OutZ;
+            }
             if (G_FLAGS != tapeStatus) {
               cpm->load(cp);
               tapeStatus = G_FLAGS;
               Base::recordTape(app, data, TapeEvaluationFlags::G, tapeStatus);
             }
 
-            Base::copyFromTo(yRealF, data.realNextY);
-            Base::evaluateTape(app, data, EvaluationInputOutputFlags::UpdateY | EvaluationInputOutputFlags::SetY);
+            if(fCompAvailable) {
+              Base::copyFromTo(yRealF, data.realNextY);
+              evalFlags = EvaluationInputOutputFlags::UpdateY | EvaluationInputOutputFlags::SetY;
+            } else {
+              evalFlags = EvaluationInputOutputFlags::GetY | EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::SetZ;
+            }
+            Base::evaluateTape(app, data, evalFlags);
 
             std::vector<Res> resY(app.getNumberOfFunctionals());
             for(int i = 0; i < app.getNumberOfFunctionals(); i += 1) {
@@ -177,15 +178,23 @@ namespace codi {
 
           cpm->load(cp);
           tapeStatus = RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InP | RecodingInputOutputFlags::OutY;
+          if(!fCompAvailable) {
+            tapeStatus |= RecodingInputOutputFlags::OutZ;
+          }
           TapeEvaluation tapeEvaluation = TapeEvaluationFlags::G;
           if(app.getHints() & ApplicationFlags::PComputationIsAvailable && !pStateAvailable) {
             tapeEvaluation |= TapeEvaluationFlags::P; // P but not iterable, then P and G need to be called at the same time.
           }
           Base::recordTape(app, data, tapeEvaluation, tapeStatus);
 
-          Base::copyFromTo(pRealF, data.realP);
-          Base::copyFromTo(xRealF, data.realX);
-          Base::evaluateTape(app, data, EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX | EvaluationInputOutputFlags::UpdateP);
+          if(fCompAvailable) {
+            Base::copyFromTo(pRealF, data.realP);
+            Base::copyFromTo(xRealF, data.realX);
+            evalFlags = EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::UpdateX | EvaluationInputOutputFlags::UpdateP;
+          } else {
+            evalFlags = EvaluationInputOutputFlags::SetY | EvaluationInputOutputFlags::SetZ | EvaluationInputOutputFlags::GetX | EvaluationInputOutputFlags::GetP;
+          }
+          Base::evaluateTape(app, data, evalFlags);
 
           if(pStateAvailable) {
             Base::reverseP(app, data, EvaluationInputOutputFlags::UpdateX);
@@ -195,6 +204,10 @@ namespace codi {
           io->writeX(curAdjIteration, data.realX, OutputFlags::Derivative | OutputFlags::P | OutputFlags::Final);
           if(pStateAvailable) {
             io->writeP(curAdjIteration, data.realP, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
+          }
+
+          if(fCompAvailable) {
+            freeF(app);
           }
 
           cpm->remove(cp);
@@ -216,6 +229,49 @@ namespace codi {
           }
 
           return allConverged;
+        }
+
+      private:
+
+        void initializeAndComputeF(App& app, Data& data, RecordingInputOutput& tapeStatus) {
+          ApplicationIOInterface<Type>* io = app.getIOInterface();
+
+          bool pStateAvailable = app.getHints() & ApplicationFlags::PStateIsAvailable;
+
+          tapeStatus = RecodingInputOutputFlags::InP | RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InY |
+                       RecodingInputOutputFlags::OutZ;
+          Base::recordTape(app, data, TapeEvaluationFlags::F, tapeStatus);
+          Base::evaluateTape(app, data, EvaluationInputOutputFlags::GetP | EvaluationInputOutputFlags::GetX |
+                                       EvaluationInputOutputFlags::GetY | EvaluationInputOutputFlags::SetZ);
+
+          yRealF.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeY()));
+          xRealF.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeX()));
+          if(pStateAvailable) {
+            pRealF.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeP()));
+          }
+          std::swap(data.realNextY, yRealF);
+          std::swap(data.realX, xRealF);
+          if(pStateAvailable) {
+            std::swap(data.realP, pRealF);
+          }
+
+          Base::copyFromTo(yRealF, data.realCurY);  // Do first step.
+
+          io->writeY(0, yRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+          io->writeX(0, xRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+          if(pStateAvailable) {
+            io->writeP(0, pRealF, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+          }
+        }
+
+        void freeF(App& app) {
+          bool pStateAvailable = app.getHints() & ApplicationFlags::PStateIsAvailable;
+
+          yRealF.resize(0);
+          xRealF.resize(0);
+          if(pStateAvailable) {
+            pRealF.resize(0);
+          }
         }
     };
   }
