@@ -150,10 +150,14 @@ namespace codi {
           cpm->load(checkpoints.back());
 
           if(1 != checkpoints.size()) { // Check for last iteration.
-            cpm->remove(checkpoints.back());
-            cpm->free(checkpoints.back());
-            checkpoints.pop_back();
+            popCheckpoint(cpm, checkpoints);
           }
+        }
+
+        inline void popCheckpoint(CheckpointManagerInterface* cpm, std::vector<CheckpointHandle*>& checkpoints) {
+          cpm->remove(checkpoints.back());
+          cpm->free(checkpoints.back());
+          checkpoints.pop_back();
         }
 
         void run(App& app) {
@@ -195,8 +199,7 @@ namespace codi {
             iterateUntilWithCheckpoints(app, curAdjIteration, checkpoints, cpm);
           } else {
             // Remove the loaded checkpoint.
-            cpm->free(checkpoints.back());
-            checkpoints.pop_back();
+            popCheckpoint(cpm, checkpoints);
           }
 
           if(settings.verbose) { app.print(StringUtil::format("Computing adjoint of f at %d.\n", app.getIteration())); }
@@ -221,6 +224,9 @@ namespace codi {
           curAdjIteration -= 1;
 
           cpm->load(checkpoints.back());
+          if(checkpoints.back()->getIteration() == curAdjIteration) {
+            popCheckpoint(cpm, checkpoints);
+          }
 
           if(settings.verbose) { app.print(StringUtil::format("Starting main loop.\n")); }
           app.print(Base::formatAdjointHeader(initalResY));
