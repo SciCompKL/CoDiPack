@@ -53,6 +53,8 @@ void prepare(Transport1D<Type>& app, std::string const& folder, std::string file
   app.setOutputFolder(folder);
   app.setOutputFile(folder + "/" + file);
   app.initialize();
+
+  std::cout << "Running '" << folder << "'" << std::endl;
 }
 
 struct AppConfig {
@@ -81,9 +83,9 @@ struct VectorConfig {
 
 size_t constexpr CONFIG_SIZE = 3;
 AppConfig appConfigs[CONFIG_SIZE] = {
-  {"InitRecord", ApplicationFlags::InitializationComputesP | ApplicationFlags::PStateIsAvailable},
-  {"InitRecompute_PIterableYes", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::PStateIsAvailable},
-  {"InitRecompute_PIterableNo", ApplicationFlags::PComputationIsAvailable}
+  {"InitRecord", ApplicationFlags::InitializationComputesP | ApplicationFlags::PStateIsAvailable | ApplicationFlags::FComputationIsAvailable},
+  {"InitRecompute_PIterableYes", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::PStateIsAvailable | ApplicationFlags::FComputationIsAvailable},
+  {"InitRecompute_PIterableNo", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::FComputationIsAvailable}
 };
 
 
