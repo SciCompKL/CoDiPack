@@ -112,8 +112,15 @@ namespace codi {
 
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
+
         using Real = RealTraits::Real<Type>;
         using Res = Residuum<Real>;
+
+        using InitFunc = void (*)(Type& value);
+
+        InitFunc initFunc;
+
+        ApplicationInterface() = default;
 
         virtual ~ApplicationInterface() {}
 
@@ -153,6 +160,14 @@ namespace codi {
 
         void print(std::string const& line);
         bool isStop();
+
+        // Init variable handling
+        void setInitializationHandlingFunction(InitFunc const& func) { initFunc = func; }
+        void handleInitializationVariable(Type& value) {
+          if(nullptr != initFunc) {
+            initFunc(value);
+          }
+        }
     };
   }
 }

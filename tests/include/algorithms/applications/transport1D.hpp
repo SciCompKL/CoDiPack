@@ -125,7 +125,7 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
       for (int i = 0; i < settings.N; i++) {
         settings.control[i] = 1.0;
         if(Base::getHints() & codi::algorithms::ApplicationFlags::InitializationComputesP) {
-          Type::getTape().registerInput(settings.control[i]);
+          this->handleInitializationVariable(settings.control[i]);
         }
       }
 

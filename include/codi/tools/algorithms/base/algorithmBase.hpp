@@ -145,11 +145,15 @@ namespace codi {
             if(record) {
               tape.reset();
               tape.setActive();
+
+              app.setInitializationHandlingFunction(registerInitInput);
             }
 
             app.initialize();
 
             if(record) {
+              app.setInitializationHandlingFunction(nullptr);
+
               data.initInitializationRecording(app);
 
               app.iterateX(GetId(data.idInitX));
@@ -368,6 +372,10 @@ namespace codi {
               vec[pos] = value.getIdentifier();
             }
         };
+
+        static void registerInitInput(Type& value) {
+          Type::getTape().registerInput(value);
+        }
 
         struct RegisterInput {
           public:
