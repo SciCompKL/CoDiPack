@@ -206,6 +206,8 @@ namespace codi {
   using std::ldexp;
   using std::max;
   using std::min;
+  using std::fmin;
+  using std::fmax;
   using std::pow;
   using std::remainder;
 
