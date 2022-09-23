@@ -866,6 +866,8 @@ namespace codi {
   #define FUNCTION min
   #include "binaryOverloads.tpp"
 
+  using std::fmin;
+
   /*
    * Forward of fmin to min
    */
@@ -1011,6 +1013,8 @@ namespace codi {
   #define OPERATION_LOGIC Max
   #define FUNCTION max
   #include "binaryOverloads.tpp"
+
+  using std::fmax;
 
   /*
    * Forward of fmax to max
