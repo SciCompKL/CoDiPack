@@ -147,15 +147,21 @@ namespace codi {
           }
         }
 
-        void resizeY(App& app) {
-          if(app.getSizeY() > idInY.size()) {
+        void resizeYIn(App& app) {
+          if(app.getSizeY() != idInY.size()) {
             idInY.resize(app.getSizeY());
+
+            for(RealVector& vec : realNextY) {
+              vec.resize(app.getSizeY());
+            }
+          }
+        }
+
+        void resizeYOut(App& app) {
+          if(app.getSizeY() != idOutY.size()) {
             idOutY.resize(app.getSizeY());
 
             for(RealVector& vec : realCurY) {
-              vec.resize(app.getSizeY());
-            }
-            for(RealVector& vec : realNextY) {
               vec.resize(app.getSizeY());
             }
           }

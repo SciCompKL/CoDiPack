@@ -245,7 +245,7 @@ namespace codi {
             vectorHelper->deleteAdjointVector();
           }
 
-          data.resizeY(app);
+          data.resizeYIn(app);
 
           Tape& tape = Type::getTape();
           tape.reset();
@@ -282,7 +282,7 @@ namespace codi {
             app.evaluateF();
           }
 
-          data.resizeY(app);
+          data.resizeYOut(app);
 
           if (RecodingInputOutputFlags::OutY & recOpt) {
             app.iterateY(RegisterOutput(data.idOutY));
