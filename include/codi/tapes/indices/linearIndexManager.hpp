@@ -36,6 +36,7 @@
 
 #include <vector>
 
+#include "../../misc/eventSystem.hpp"
 #include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../data/dataInterface.hpp"
@@ -115,6 +116,7 @@ namespace codi {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or a reuse index manager.");
         }
         count += 1;
+        IndexEventSystem<LinearIndexManager>::template notifyListeners<IndexEvent::Assign>(count);
         index = count;
         return true;
       }

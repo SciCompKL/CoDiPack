@@ -240,6 +240,24 @@ namespace codi {
 
     /// @}
     /*******************************************************************************/
+    /// @name Event system
+    /// @{
+    ///
+
+#ifndef CODI_HighLevelEvents
+  #define CODI_HighLevelEvents false
+#endif
+    bool constexpr HighLevelEvents = CODI_HighLevelEvents;
+#undef CODI_HighLevelEvents
+
+#ifndef CODI_LowLevelEvents
+  #define CODI_LowLevelEvents false
+#endif
+    bool constexpr LowLevelEvents = CODI_LowLevelEvents;
+#undef CODI_LowLevelEvents
+
+    /// @}
+    /*******************************************************************************/
     /// @name Relations to other libraries
     /// @{
 

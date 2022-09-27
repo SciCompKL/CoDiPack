@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <type_traits>
 
+#include "../misc/eventSystem.hpp"
 #include "../misc/fileIo.hpp"
 #include "../misc/macros.hpp"
 #include "../config.h"
@@ -215,11 +216,13 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::setActive()
       void setActive() {
+        TapeEventSystem<Impl>::template notifyListeners<TapeEvent::StartRecording>(this->cast());
         active = true;
       }
 
       /// \copydoc codi::ReverseTapeInterface::setPassive()
       void setPassive() {
+        TapeEventSystem<Impl>::template notifyListeners<TapeEvent::StopRecording>(this->cast());
         active = false;
       }
 
