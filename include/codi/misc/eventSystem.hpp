@@ -103,12 +103,12 @@ namespace codi {
 
     public:
       template<Event event>
-      static void registerListener(typename EventTraits<event>::Callback callback, void* customData = nullptr) {
+      static CODI_INLINE void registerListener(typename EventTraits<event>::Callback callback, void* customData = nullptr) {
         listeners[event].push_back(std::make_pair((void*)callback, customData));
       }
 
       template<Event event, typename... Args>
-      static void notifyListeners(Args&&... args) {
+      static CODI_INLINE void notifyListeners(Args&&... args) {
         if (EventTraits<event>::enabled) {
           for (auto const& listener : listeners[event]) {
             ((typename EventTraits<event>::Callback) listener.first)(std::forward<Args...>(args...), listener.second);
