@@ -223,9 +223,10 @@ namespace codi {
           std::swap(data.realNextY, data.realCurY);
           curAdjIteration -= 1;
 
-          cpm->load(checkpoints.back());
           if(checkpoints.back()->getIteration() == curAdjIteration) {
-            popCheckpoint(cpm, checkpoints);
+            loadAndPopCheckpoint(cpm, checkpoints);
+          } else {
+            cpm->load(checkpoints.back());
           }
 
           if(settings.verbose) { app.print(StringUtil::format("Starting main loop.\n")); }
