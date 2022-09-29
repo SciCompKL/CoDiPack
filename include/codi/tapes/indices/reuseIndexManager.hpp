@@ -133,6 +133,7 @@ namespace codi {
       }
 
       /// \copydoc IndexManagerInterface::assignIndex
+      template<typename Tape>
       CODI_INLINE bool assignIndex(Index& index) {
         bool generatedNewIndex = false;
 
@@ -155,8 +156,9 @@ namespace codi {
       }
 
       /// \copydoc IndexManagerInterface::assignUnusedIndex
+      template<typename Tape>
       CODI_INLINE bool assignUnusedIndex(Index& index) {
-        freeIndex(index);  // Zero check is performed inside.
+        freeIndex<Tape>(index);  // Zero check is performed inside.
 
         bool generatedNewIndex = false;
         if (0 == unusedIndicesPos) {
@@ -171,15 +173,17 @@ namespace codi {
       }
 
       /// \copydoc IndexManagerInterface::copyIndex
+      template<typename Tape>
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
         if (Base::InactiveIndex == rhs) {
-          freeIndex(lhs);
+          freeIndex<Tape>(lhs);
         } else {
-          assignIndex(lhs);
+          assignIndex<Tape>(lhs);
         }
       }
 
       /// \copydoc IndexManagerInterface::freeIndex
+      template<typename Tape>
       CODI_INLINE void freeIndex(Index& index) {
         if (valid && Base::InactiveIndex != index) {  // Do not free the zero index.
 

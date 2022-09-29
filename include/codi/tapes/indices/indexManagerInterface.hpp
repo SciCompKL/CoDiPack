@@ -92,11 +92,16 @@ namespace codi {
       static bool constexpr IsLinear =
           CODI_UNDEFINED_VALUE;  ///< True if identifiers are coupled to the statements. See IndexManagerInterface.
 
+      template<typename Tape>
       bool assignIndex(Index& index);        ///< Call on assignment on a primal value e.g. on `w` for  `w = a + b`.
                                              ///< @return true if new indices have been generated internally.
+      template<typename Tape>
       bool assignUnusedIndex(Index& index);  ///< Call on registering input values.
                                              ///< @return true if new indices have been generated internally.
+      template<typename Tape>
       void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy of a primal value e.g. `w = a`.
+
+      template<typename Tape>
       void freeIndex(Index& index);  ///< Call on destruction of a primal value. Usually called from the destructor.
 
       void reset();  ///< Reset for a new recording.

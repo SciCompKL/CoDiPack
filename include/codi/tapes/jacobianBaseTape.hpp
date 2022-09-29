@@ -256,7 +256,7 @@ namespace codi {
       CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        indexManager.get().freeIndex(identifier);
+        indexManager.get().template freeIndex<Impl>(identifier);
       }
 
       /// @}
@@ -355,13 +355,13 @@ namespace codi {
 
           size_t numberOfArguments = jacobianData.getPushedDataCount(jacobianStart);
           if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments)) {
-            indexManager.get().assignIndex(lhs.cast().getIdentifier());
+            indexManager.get().template assignIndex<Impl>(lhs.cast().getIdentifier());
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
           } else {
-            indexManager.get().freeIndex(lhs.cast().getIdentifier());
+            indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
           }
         } else {
-          indexManager.get().freeIndex(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -376,10 +376,10 @@ namespace codi {
           if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
           } else {
-            indexManager.get().copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
+            indexManager.get().template copyIndex<Impl>(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
           }
         } else {
-          indexManager.get().freeIndex(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -389,7 +389,7 @@ namespace codi {
       /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) {
-        indexManager.get().freeIndex(lhs.cast().getIdentifier());
+        indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
 
         lhs.cast().value() = rhs;
       }
@@ -406,7 +406,7 @@ namespace codi {
           statementData.reserveItems(1);
         }
 
-        indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
+        indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
 
         if (TapeTypes::IsLinearIndexHandler) {
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
@@ -668,7 +668,7 @@ namespace codi {
         statementData.reserveItems(1);
         jacobianData.reserveItems(size);
 
-        indexManager.get().assignIndex(lhsIndex);
+        indexManager.get().template assignIndex<Impl>(lhsIndex);
         cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);
       }
 
