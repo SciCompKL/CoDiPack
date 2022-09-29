@@ -45,28 +45,24 @@
 namespace codi {
 
   /* might need to be moved to an extra file */
-  enum class TapeEvent {
+  enum class Event {
     /* high-level events */
     StartRecording,
     StopRecording,
     /* ... */
     /* low-level events */
     /*... */
-  };
-
-  enum class IndexEvent {
-    /* low-level events */
-    Assign
+    /* index management events */
+    IndexAssign
     /* ... */
   };
 
   /* specialize if signature is different, and with respect to "enabled", depending on how it will be toggled */
-  template<TapeEvent T_event, typename T_Tape>
-  struct TapeEventTraits {
+  template<Event T_event, typename T_Tape>
+  struct EventTraits {
     public:
-      static TapeEvent constexpr event = CODI_DD(T_event, TapeEvent::StartRecording);
+      static Event constexpr event = CODI_DD(T_event, Event::StartRecording);
       using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-
       static bool constexpr enabled = Config::HighLevelEvents;
 
       using Callback = void (*)(Tape&, void*);
@@ -74,29 +70,27 @@ namespace codi {
 
   /* no need to specialize for StopRecording right now */
 
-  template<IndexEvent T_event, typename T_Management>
-  struct IndexEventTraits {
+  template<typename T_Tape>
+  struct EventTraits<Event::IndexAssign, T_Tape> {
     public:
-      static IndexEvent constexpr event = CODI_DD(T_event, IndexEvent::Assign);
-      using Management = CODI_DD(T_Management, CODI_T(IndexManagerInterface<int>));
-      using Index = typename Management::Index;
-
+      static Event constexpr event = Event::IndexAssign;
+      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
       static bool constexpr enabled = Config::LowLevelEvents;
+
+      using Index = typename Tape::Identifier;
 
       using Callback = void (*)(Index&, void*);
   };
 
-
-  template<typename T_Event, template<T_Event, typename> class T_EventTraits, typename T_Dependency>
+  template<typename T_Tape>
   struct EventSystem {
     public:
-      using Event = CODI_DD(T_Event, TapeEvent);
-      using Dependency = CODI_DD(T_Dependency, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-
-      template<Event event>
-      using EventTraits = T_EventTraits<event, Dependency>;
+      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       using Callback = void*;
+
+      template<Event event>
+      using EventTraits = EventTraits<event, Tape>;
 
     private:
       static std::map<Event, std::list<std::pair<Callback, void*>>> listeners;
@@ -117,12 +111,11 @@ namespace codi {
       }
   };
 
-  template<typename Event, template<Event, typename> class EventTraits, typename Dependency>
-  std::map<Event, std::list<std::pair<typename EventSystem<Event, EventTraits, Dependency>::Callback, void*>>> EventSystem<Event, EventTraits, Dependency>::listeners;
-
   template<typename Tape>
-  using TapeEventSystem = EventSystem<TapeEvent, TapeEventTraits, Tape>;
+  std::map<Event, std::list<std::pair<typename EventSystem<Tape>::Callback, void*>>> EventSystem<Tape>::listeners;
 
-  template<typename Management>
-  using IndexEventSystem = EventSystem<IndexEvent, IndexEventTraits, Management>;
+  template<Event event, typename ActiveType>
+  void registerListener(typename EventTraits<event, typename ActiveType::Tape>::Callback callback, void* customData = nullptr) {
+    EventSystem<typename ActiveType::Tape>::template registerListener<event>(callback, customData);
+  }
 }

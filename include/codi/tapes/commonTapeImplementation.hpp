@@ -216,13 +216,13 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::setActive()
       void setActive() {
-        TapeEventSystem<Impl>::template notifyListeners<TapeEvent::StartRecording>(this->cast());
+        EventSystem<Impl>::template notifyListeners<Event::StartRecording>(this->cast());
         active = true;
       }
 
       /// \copydoc codi::ReverseTapeInterface::setPassive()
       void setPassive() {
-        TapeEventSystem<Impl>::template notifyListeners<TapeEvent::StopRecording>(this->cast());
+        EventSystem<Impl>::template notifyListeners<Event::StopRecording>(this->cast());
         active = false;
       }
 
