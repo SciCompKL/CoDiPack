@@ -44,78 +44,69 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /* might need to be moved to an extra file */
-  enum class Event {
-    /* high-level events */
-    StartRecording,
-    StopRecording,
-    /* ... */
-    /* low-level events */
-    /*... */
-    /* index management events */
-    IndexAssign
-    /* ... */
-  };
-
-  /* specialize if signature is different, and with respect to "enabled", depending on how it will be toggled */
-  template<Event T_event, typename T_Tape>
-  struct EventTraits {
-    public:
-      static Event constexpr event = CODI_DD(T_event, Event::StartRecording);
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-      static bool constexpr enabled = Config::HighLevelEvents;
-
-      using Callback = void (*)(Tape&, void*);
-  };
-
-  /* no need to specialize for StopRecording right now */
-
-  template<typename T_Tape>
-  struct EventTraits<Event::IndexAssign, T_Tape> {
-    public:
-      static Event constexpr event = Event::IndexAssign;
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-      static bool constexpr enabled = Config::LowLevelEvents;
-
-      using Index = typename Tape::Identifier;
-
-      using Callback = void (*)(Index&, void*);
-  };
-
   template<typename T_Tape>
   struct EventSystem {
     public:
       using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-
-      using Callback = void*;
-
-      template<Event event>
-      using EventTraits = EventTraits<event, Tape>;
+      using Index = typename Tape::Identifier;
 
     private:
+      enum class Event {
+        /* high-level events */
+        StartRecording,
+        StopRecording,
+        /* ... */
+        /* low-level events */
+        /*... */
+        /* index management events */
+        IndexAssign
+        /* ... */
+      };
+
+      using Callback = void*;
       static std::map<Event, std::list<std::pair<Callback, void*>>> listeners;
 
-    public:
-      template<Event event>
-      static CODI_INLINE void registerListener(typename EventTraits<event>::Callback callback, void* customData = nullptr) {
+      template<typename TypedCallback>
+      static CODI_INLINE void internalRegisterListener(Event event, TypedCallback callback, void* customData) {
         listeners[event].push_back(std::make_pair((void*)callback, customData));
       }
 
-      template<Event event, typename... Args>
-      static CODI_INLINE void notifyListeners(Args&&... args) {
-        if (EventTraits<event>::enabled) {
+      template<typename TypedCallback, typename... Args>
+      static CODI_INLINE void internalNotifyListeners(bool enabled, Event event, Args&&... args) {
+        if (enabled) {
           for (auto const& listener : listeners[event]) {
-            ((typename EventTraits<event>::Callback) listener.first)(std::forward<Args...>(args...), listener.second);
+            ((TypedCallback) listener.first)(std::forward<Args...>(args...), listener.second);
           }
         }
+      }
+
+    public:
+
+      static CODI_INLINE void registerStartRecordingListener(void (*callback)(Tape&, void*), void* customData = nullptr) {
+        internalRegisterListener(Event::StartRecording, callback, customData);
+      }
+
+      static CODI_INLINE void notifyStartRecordingListeners(Tape& tape) {
+        internalNotifyListeners<void (*)(Tape&, void*)>(Config::HighLevelEvents, Event::StartRecording, tape);
+      }
+
+      static CODI_INLINE void registerStopRecordingListener(void (*callback)(Tape&, void*), void* customData = nullptr) {
+        internalRegisterListener(Event::StopRecording, callback, customData);
+      }
+
+      static CODI_INLINE void notifyStopRecordingListeners(Tape& tape) {
+        internalNotifyListeners<void (*)(Tape&, void*)>(Config::HighLevelEvents, Event::StopRecording, tape);
+      }
+
+      static CODI_INLINE void registerIndexAssignListener(void (*callback)(Index&, void*), void* customData = nullptr) {
+        internalRegisterListener(Event::IndexAssign, callback, customData);
+      }
+
+      static CODI_INLINE void notifyIndexAssignListeners(Index& index) {
+        internalNotifyListeners<void (*)(Index&, void*)>(Config::LowLevelEvents, Event::IndexAssign, index);
       }
   };
 
   template<typename Tape>
-  std::map<Event, std::list<std::pair<typename EventSystem<Tape>::Callback, void*>>> EventSystem<Tape>::listeners;
-
-  template<Event event, typename ActiveType>
-  void registerListener(typename EventTraits<event, typename ActiveType::Tape>::Callback callback, void* customData = nullptr) {
-    EventSystem<typename ActiveType::Tape>::template registerListener<event>(callback, customData);
-  }
+  std::map<typename EventSystem<Tape>::Event, std::list<std::pair<typename EventSystem<Tape>::Callback, void*>>> EventSystem<Tape>::listeners;
 }

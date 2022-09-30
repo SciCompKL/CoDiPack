@@ -118,7 +118,7 @@ namespace codi {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or a reuse index manager.");
         }
         count += 1;
-        EventSystem<Tape>::template notifyListeners<Event::IndexAssign>(count);
+        EventSystem<Tape>::notifyIndexAssignListeners(count);
         index = count;
         return true;
       }
