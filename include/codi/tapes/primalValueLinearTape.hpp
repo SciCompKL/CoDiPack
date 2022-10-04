@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -204,7 +204,7 @@ namespace codi {
 
           if (Config::StatementInputTag != nPassiveValues) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-            Gradient const lhsAdjoint;
+            Gradient const lhsAdjoint{};
             adjointVector->setLhsAdjoint(curAdjointPos);
 #else
             Gradient const lhsAdjoint = adjointVector[curAdjointPos];

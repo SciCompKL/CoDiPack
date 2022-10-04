@@ -37,6 +37,7 @@
       <tab type="user" title="Example 18 - EvaluationHelper function object declaration" url="@ref Example_18_EvaluationHelper_function_objects"/>
       <tab type="user" title="Example 19 - EvaluationHelper handle creation" url="@ref Example_19_EvaluationHelper_handle_creation"/>
       <tab type="user" title="Example 20 - Aggregated active type handling" url="@ref Example_20_Aggregated_active_type_handling"/>
+      <tab type="user" title="Example 21 - Special handling of linear system solvers" url="@ref Example_21_Special_handling_of_linear_system_solvers"/>
     </tab>
     <tab type="user" title="Papers" url="@ref Papers"/>
     <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>

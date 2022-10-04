@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -222,6 +222,28 @@ namespace codi {
     /// Value entry of NumberOfConstantTypeArguments
     template<typename Expr>
     bool constexpr numberOfConstantTypeArguments = NumberOfConstantTypeArguments<Expr>::value;
+#endif
+
+    /// Counts the number of nodes in the expression.
+    template<typename Expr>
+    struct NumberOfOperations
+        : public CompileTimeTraversalLogic<size_t, NumberOfOperations<Expr>> {
+      public:
+
+        /// \copydoc CompileTimeTraversalLogic::node()
+        template<typename Node>
+        CODI_INLINE static size_t constexpr node() {
+          return 1 + NumberOfOperations::template toLinks<Node>();
+        }
+
+        /// See NumberOfOperations
+        static size_t constexpr value = NumberOfOperations::template eval<Expr>();
+    };
+
+#if CODI_IS_CPP14
+    /// Value entry of NumberOfOperations
+    template<typename Expr>
+    bool constexpr numberOfOperations = NumberOfOperations<Expr>::value;
 #endif
 
     /// @}

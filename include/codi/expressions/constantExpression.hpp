@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -79,6 +79,8 @@ namespace codi {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See ConstantExpression.
+
+      /// See ConstantExpression.
       template<typename T>
       using ConversionOperator = CODI_DD(CODI_T(T_ConversionOperator<T>), CODI_T(ConstantDataConversion<T>));
 

@@ -1,7 +1,7 @@
 #
 # CoDiPack, a Code Differentiation Package
 #
-# Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+# Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
 # Homepage: http://www.scicomp.uni-kl.de
 # Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
 #
@@ -45,7 +45,14 @@ DRIVER_DIR = $(INCLUDE_DIR)/drivers
 CODI_DIR := ..
 CODI_INCLUDE = -I$(CODI_DIR)/include
 
-FLAGS = -Wall -Wextra -pedantic -std=c++11 -DCODI_IgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(INCLUDE_DIR)
+EIGEN_DEFINE=
+ifdef EIGEN_DIR
+  EIGEN_DEFINE=-I$(EIGEN_DIR) -DCODI_EnableEigen=true
+else
+  $(warning EIGEN_DIR not defined. Testing without Eigen.)
+endif
+
+FLAGS = -Wall -Werror=return-type -Wextra -pedantic -std=c++11 -DCODI_IgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(INCLUDE_DIR) $(CODI_INCLUDE) $(EIGEN_DEFINE)
 
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
