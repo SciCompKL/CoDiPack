@@ -1,0 +1,146 @@
+/*
+ * CoDiPack, a Code Differentiation Package
+ *
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Homepage: http://www.scicomp.uni-kl.de
+ * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
+ *
+ * Lead developers: Max Sagebaum, Johannes Blühdorn (SciComp, TU Kaiserslautern)
+ *
+ * This file is part of CoDiPack (http://www.scicomp.uni-kl.de/software/codi).
+ *
+ * CoDiPack is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * CoDiPack is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU
+ * General Public License along with CoDiPack.
+ * If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For other licensing options please contact us.
+ *
+ * Authors:
+ *  - SciComp, TU Kaiserslautern:
+ *    - Max Sagebaum
+ *    - Johannes Blühdorn
+ *    - Former members:
+ *      - Tim Albring
+ */
+#pragma once
+
+#include "interalAdjointsInterface.hpp"
+
+/** \copydoc codi::Namespace */
+namespace codi {
+
+  /**
+   * @brief Provides global adjoint variables owned by a tape type. Thread-safe for use in parallel taping.
+   *
+   * @tparam T_Gradient         The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Identifier       The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Tape             The associated tape type.
+   * @tparam T_ParallelToolbox  The parallel toolbox used in the associated tape.
+   */
+  template<typename T_Gradient, typename T_Identifier, typename T_Tape, typename T_ParallelToolbox>
+  struct ThreadSafeGlobalAdjoints : public InternalAdjointsInterface<T_Gradient, T_Identifier, T_Tape> {
+    public:
+
+      /// See LocalAdjoints.
+      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See LocalAdjoints.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See LocalAdjoints.
+      /// See LocalAdjoints.
+      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY>));
+
+      using ReadWriteMutex = typename ParallelToolbox::ReadWriteMutex;  /// See ParallelToolbox.
+      using LockForUse = typename ParallelToolbox::LockForRead;         /// See ParallelToolbox.
+      using LockForRealloc = typename ParallelToolbox::LockForWrite;    /// See ParallelToolbox.
+
+    private:
+
+      bool inUse;
+
+      static std::vector<Gradient> adjoints; ///< Vector of adjoint variables.
+
+    public:
+
+      static ReadWriteMutex adjointsMutex;   ///< Protects adjoints. Lock for read stands for lock for using the
+                                             ///< adjoint vector. Lock for write stands for reallocating the adjoint
+                                             ///< vector. Also used outside this class, hence public.
+
+      /// Constructor
+      ThreadSafeGlobalAdjoints(size_t initialSize) : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize),
+                                                     inUse(false) {}
+
+      /// See InternalAdjointsInterface.
+      CODI_INLINE Gradient& operator[](Identifier const& identifier) {
+        LockForUse lock(adjointsMutex);
+        return adjoints[(size_t)identifier];
+      }
+
+      /// See InternalAdjointsInterface.
+      CODI_INLINE Gradient const& operator[](Identifier const& identifier) const {
+        LockForUse lock(adjointsMutex);
+        return adjoints[(size_t)identifier];
+      }
+
+      /// See InternalAdjointsInterface.
+      CODI_INLINE Gradient* data() {
+        LockForUse lock(adjointsMutex);
+        return adjoints.data();
+      }
+
+      /// See InternalAdjointsInterface.
+      CODI_INLINE size_t size() const {
+        LockForUse lock(adjointsMutex);
+        return adjoints.size();
+      }
+
+      /// See InternalAdjointsInterface.
+      CODI_NO_INLINE void resize(Identifier const& newSize) {
+        if (inUse) {
+          CODI_EXCEPTION("Cannot resize adjoints while they are in use.");
+        }
+
+        LockForRealloc lock(adjointsMutex);
+        adjoints.resize((size_t)newSize);
+      }
+
+      /// See InternalAdjointsInterface.
+      CODI_INLINE void zeroAll() {
+        LockForUse lock(adjointsMutex);
+        for (Gradient& gradient : adjoints) {
+          gradient = Gradient();
+        }
+      }
+
+      /// See InternalAdjointsInterface.
+      CODI_INLINE void swap(ThreadSafeGlobalAdjoints&) {
+        /* adjoints are global and there is no need to swap them */
+      }
+
+      /// See InternalAdjointsInterface.
+      CODI_INLINE void beginUse() {
+        adjointsMutex.lockRead();
+        inUse = true;
+      }
+
+      /// See InternalAdjointsInterface.
+      CODI_INLINE void endUse() {
+        inUse = false;
+        adjointsMutex.unlockRead();
+      }
+  };
+
+  template<typename Gradient, typename Identifier, typename Tape, typename ParallelToolbox>
+  std::vector<Gradient> ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjoints(1);
+
+  template<typename Gradient, typename Identifier, typename Tape, typename ParallelToolbox>
+  typename ParallelToolbox::ReadWriteMutex ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjointsMutex;
+}

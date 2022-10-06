@@ -114,13 +114,15 @@ namespace codi {
           }
         };
 
-        typename Base::LockForUse lock(Base::adjointsMutex);
+        this->adjoints.beginUse();
 
         using StmtPosition = typename StatementData::Position;
         StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(start);
         StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(end);
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
+
+        this->adjoints.endUse();
       }
 
     protected:
