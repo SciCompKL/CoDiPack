@@ -40,6 +40,7 @@
 #include "../misc/memberStore.hpp"
 #include "../config.h"
 #include "misc/adjointVectorAccess.hpp"
+#include "misc/localAdjoints.hpp"
 #include "commonJacobianTapeImplementation.hpp"
 #include "indices/indexManagerInterface.hpp"
 
@@ -81,7 +82,7 @@ namespace codi {
 
     protected:
 
-      std::vector<Gradient> adjoints;  ///< Evaluation vector for AD.
+      LocalAdjoints<Gradient, Identifier, Impl> adjoints;  ///< Evaluation vector for AD.
 
     private:
 
@@ -149,9 +150,7 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
       CODI_INLINE void clearAdjoints() {
-        for (Gradient& gradient : adjoints) {
-          gradient = Gradient();
-        }
+        adjoints.zeroAll();
       }
 
       /// @}
@@ -178,7 +177,7 @@ namespace codi {
 
       /// \copydoc codi::DataManagementTapeInterface::swap()
       CODI_INLINE void swap(Impl& other) {
-        std::swap(adjoints, other.adjoints);
+        adjoints.swap(other.adjoints);
 
         Base::swap(other);
       }
