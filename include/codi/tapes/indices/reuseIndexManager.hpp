@@ -65,8 +65,7 @@ namespace codi {
 
       using Base::CopyNeedsStatement;  ///< See ReuseIndexManagerBase.
       using Base::IsLinear;            ///< See ReuseIndexManagerBase.
-
-      static bool constexpr IsThreadSafe = false;       ///< Not thread-safe.
+      using Base::NeedsStaticStorage;  ///< See ReuseIndexManagerBase.
 
       /// @}
 
