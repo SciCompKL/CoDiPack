@@ -39,10 +39,14 @@
 #include "../../../tapes/indices/parallelReuseIndexManager.hpp"
 #include "../../../tapes/misc/threadSafeGlobalAdjoints.hpp"
 #include "../../helpers/openMPExternalFunctionHelper.hpp"
-#include "openMPToolbox.hpp"
+#include "openMPAtomic.hpp"
+#include "openMPMutex.hpp"
+#include "openMPStaticThreadLocalPointer.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  using OpenMPToolbox = ParallelToolbox<OpenMPAtomic, OpenMPMutex, OpenMPStaticThreadLocalPointer>;
 
   template<typename Gradient, typename Identifier, typename Tape>
   using OpenMPGlobalAdjoints = ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, OpenMPToolbox>;
