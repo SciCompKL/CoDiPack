@@ -75,8 +75,7 @@ namespace codi {
 
       static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization is implemented.
       static bool constexpr IsLinear = true;             ///< Tightly coupled to statements.
-      static bool constexpr IsThreadSafe = true;         ///< One-to-one relation to a tape, therefore thread-safe. See
-                                                         ///< LinearIndexManager and IndexManagerInterface.
+      static bool constexpr NeedsStaticStorage = false;  ///< Linear indices are not meaningful across tape instances.
 
       /// @}
       /*******************************************************************************/

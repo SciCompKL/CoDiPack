@@ -81,8 +81,8 @@ namespace codi {
 
       using Base::CopyNeedsStatement;  ///< See ReuseIndexManagerBase.
       using Base::IsLinear;            ///< See ReuseIndexManagerBase.
-
-      static bool constexpr IsThreadSafe = true;       ///< Is thread-safe.
+      static bool constexpr NeedsStaticStorage = false;  ///< Indices are managed globally, but the global part is
+                                                         ///< handled by static members of the manager itself.
 
       /// @}
 

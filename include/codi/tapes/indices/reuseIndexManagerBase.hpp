@@ -78,6 +78,7 @@ namespace codi {
 
       static bool constexpr CopyNeedsStatement = true;  ///< No copy optimization is implemented.
       static bool constexpr IsLinear = false;           ///< Identifiers are not coupled to statements.
+      static bool constexpr NeedsStaticStorage = true;  ///< Identifiers are managed globally.
 
       /// @}
 

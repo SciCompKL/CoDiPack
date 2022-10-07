@@ -88,11 +88,8 @@ namespace codi {
                                CODI_T(InternalAdjointsInterface<Gradient, Identifier, CODI_ANY>));
 
       static bool constexpr IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
-      static bool constexpr IsStaticIndexHandler = !IsLinearIndexHandler && !IndexManager::IsThreadSafe;
-                                                                            ///< For reuse index management, a static
-                                                                            ///< index manager is used. For the thread-
-                                                                            /// safe index manager, the static part is
-                                                                            /// in the manager itself.
+      static bool constexpr IsStaticIndexHandler =
+            IndexManager::NeedsStaticStorage;  ///< True if the index manager must be stored statically in the tape.
 
       /// Statement chunk is either \<argument size\> (linear management) or \<lhs identifier, argument size\>
       /// (reuse management).
