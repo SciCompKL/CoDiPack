@@ -34,14 +34,8 @@
  */
 #pragma once
 
-#include "../misc/macros.hpp"
-#include "../config.h"
-#include "../tapes/interfaces/fullTapeInterface.hpp"
 #include "../tools/parallel/parallelToolbox.hpp"
-#include "../traits/realTraits.hpp"
-#include "assignmentOperators.hpp"
-#include "incrementOperators.hpp"
-#include "lhsExpressionInterface.hpp"
+#include "activeTypeBase.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -49,109 +43,91 @@ namespace codi {
   /**
    * @brief Represents a concrete lvalue in the CoDiPack expression tree.
    *
-   * This class provides a parallel alternative to ActiveType.
+   * This active type implements a static threadlocal tape, as suitable for parallel taping.
    *
    * @tparam T_Tape  The tape that manages all expressions created with this type.
    * @tparam T_ParallelToolbox  Toolbox used to parallelize this type.
    */
   template<typename T_Tape, typename T_ParallelToolbox>
-  struct ParallelActiveType
-      : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape,
-                                      ParallelActiveType<T_Tape, T_ParallelToolbox>>,
-        public AssignmentOperators<T_Tape, ParallelActiveType<T_Tape, T_ParallelToolbox>>,
-        public IncrementOperators<T_Tape, ParallelActiveType<T_Tape, T_ParallelToolbox>> {
+  struct ParallelActiveType : public ActiveTypeBase<T_Tape, ParallelActiveType<T_Tape, T_ParallelToolbox>> {
     public:
 
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  /// See ActiveType.
-      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T());  ///< See ParallelActiveType.
+      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See ActiveType.
+      /// See ParallelActiveType.
+      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY, CODI_ANY>));
 
-      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
-      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
-      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
+      using Base = ActiveTypeBase<Tape, ParallelActiveType>;  ///< Base class abbreviation.
 
-      using Base = LhsExpressionInterface<Real, Gradient, Tape, ParallelActiveType>;  ///< Base class abbreviation.
+      using typename Base::Real;          ///< See ActiveTypeBase.
+      using typename Base::PassiveReal;   ///< See ActiveTypeBase.
+      using typename Base::Identifier;    ///< See ActiveTypeBase.
+      using typename Base::Gradient;      ///< See ActiveTypeBase.
+
+      using typename Base::StoreAs;       ///< See ActiveTypeBase.
+      using typename Base::ActiveResult;  ///< See ActiveTypeBase.
 
     private:
-
-      Real primalValue;
-      Identifier identifier;
 
       static typename ParallelToolbox::template StaticThreadLocalPointer<Tape, ParallelActiveType> tape;
 
     public:
 
-      /// Constructor
-      CODI_INLINE ParallelActiveType() : primalValue(), identifier() {
-        Base::init();
-      }
-
-      /// Constructor
-      CODI_INLINE ParallelActiveType(ParallelActiveType const& v) : primalValue(), identifier() {
-        Base::init();
-        this->getTape().store(*this, v);
-      }
-
-      /// Constructor
-      CODI_INLINE ParallelActiveType(PassiveReal const& value) : primalValue(value), identifier() {
-        Base::init();
-      }
-
-      /// Constructor
-      template<class Rhs>
-      CODI_INLINE ParallelActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
-        Base::init();
-        this->getTape().store(*this, rhs.cast());
-      }
-
-      /// Destructor
-      CODI_INLINE ~ParallelActiveType() {
-        Base::destroy();
-      }
-
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
-      CODI_INLINE ParallelActiveType& operator=(ParallelActiveType const& v) {
-        static_cast<LhsExpressionInterface<Real, Gradient, Tape, ParallelActiveType>&>(*this) = v;
-        return *this;
-      }
-      using LhsExpressionInterface<Real, Gradient, Tape, ParallelActiveType>::operator=;
-
       /*******************************************************************************/
-      /// @name Implementation of ExpressionInterface
+      /// @name Constructors (all forwarding to the base class)
       /// @{
 
-      using StoreAs = ParallelActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = ParallelActiveType;    ///< \copydoc codi::ExpressionInterface::ActiveResult
+      /// Constructor
+      CODI_INLINE ParallelActiveType() : Base() {}
+
+      /// Constructor
+      CODI_INLINE ParallelActiveType(ParallelActiveType const& v) : Base(static_cast<Base const&>(v)) {}
+
+      /// Constructor
+      CODI_INLINE ParallelActiveType(Real const& value) : Base(value) {}
+
+      /// Constructor
+      template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
+      CODI_INLINE ParallelActiveType(PassiveReal const& value) : Base(value) {}
+
+      /// Constructor
+      template<typename Rhs>
+      CODI_INLINE ParallelActiveType(ExpressionInterface<Real, Rhs> const& rhs) : Base(rhs) {}
+
+      /// Constructor
+      template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
+      CODI_INLINE ParallelActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : Base(rhs) {}
+
+      /// @}
+
+      /// Destructor
+      CODI_INLINE ~ParallelActiveType() {}
+
+      /*******************************************************************************/
+      /// @name Assignment operators (all forwarding to the base class)
+      /// @{
+
+      /// See ActiveTypeBase::operator=(ActiveTypeBase const&).
+      CODI_INLINE ParallelActiveType& operator=(ParallelActiveType const& v) {
+        static_cast<Base&>(*this) = static_cast<Base const&>(v);
+        return *this;
+      }
+
+      using Base::operator=;
 
       /// @}
       /*******************************************************************************/
       /// @name Implementation of LhsExpressionInterface
       /// @{
 
-      /// \copydoc codi::LhsExpressionInterface::getIdentifier()
-      CODI_INLINE Identifier& getIdentifier() {
-        return identifier;
-      }
-
-      /// \copydoc codi::LhsExpressionInterface::getIdentifier() const
-      CODI_INLINE Identifier const& getIdentifier() const {
-        return identifier;
-      }
-
-      /// \copydoc codi::LhsExpressionInterface::value()
-      CODI_INLINE Real& value() {
-        return primalValue;
-      }
-
-      /// \copydoc codi::LhsExpressionInterface::value() const
-      CODI_INLINE Real const& value() const {
-        return primalValue;
-      }
-
       /// \copydoc codi::LhsExpressionInterface::getTape()
       static CODI_INLINE Tape& getTape() {
         return *(tape.get());
       }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Additional functions used for parallel taping.
+      /// @{
 
       /// Get the thread-local tape pointer.
       static CODI_INLINE Tape* getTapePtr() {
