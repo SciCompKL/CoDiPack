@@ -34,13 +34,7 @@
  */
 #pragma once
 
-#include "../misc/macros.hpp"
-#include "../config.h"
-#include "../tapes/interfaces/fullTapeInterface.hpp"
-#include "../traits/realTraits.hpp"
-#include "assignmentOperators.hpp"
-#include "incrementOperators.hpp"
-#include "lhsExpressionInterface.hpp"
+#include "activeTypeBase.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -48,120 +42,80 @@ namespace codi {
   /**
    * @brief Represents a concrete lvalue in the CoDiPack expression tree.
    *
-   * The class uses members for storing the value and the identifier.
+   * See ActiveTypeBase.
    *
-   * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
+   * This active type implements a static tape.
    *
    * @tparam T_Tape  The tape that manages all expressions created with this type.
    */
   template<typename T_Tape>
-  struct ActiveType
-      : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape, ActiveType<T_Tape>>,
-        public AssignmentOperators<T_Tape, ActiveType<T_Tape>>,
-        public IncrementOperators<T_Tape, ActiveType<T_Tape>> {
+  struct ActiveType : public ActiveTypeBase<T_Tape, ActiveType<T_Tape>> {
     public:
 
-      /// See ActiveType.
-      /// For reverse AD, the tape must implement ReverseTapeInterface.
-      /// For forward AD, the 'tape' (that is not a tape, technically) must implement
-      /// InternalStatementRecordingTapeInterface and GradientAccessTapeInterface.
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See ActiveType.
 
-      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
-      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
-      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
+      using Base = ActiveTypeBase<T_Tape, ActiveType>;  ///< Base class abbreviation.
 
-      using Base = LhsExpressionInterface<Real, Gradient, Tape, ActiveType>;  ///< Base class abbreviation.
+      using typename Base::Real;          ///< See ActiveTypeBase.
+      using typename Base::PassiveReal;   ///< See ActiveTypeBase.
+      using typename Base::Identifier;    ///< See ActiveTypeBase.
+      using typename Base::Gradient;      ///< See ActiveTypeBase.
+
+      using typename Base::StoreAs;       ///< See ActiveTypeBase.
+      using typename Base::ActiveResult;  ///< See ActiveTypeBase.
 
     private:
-
-      Real primalValue;
-      Identifier identifier;
 
       static Tape tape;
 
     public:
 
-      /// Constructor
-      CODI_INLINE ActiveType() : primalValue(), identifier() {
-        Base::init();
-      }
+      /*******************************************************************************/
+      /// @name Constructors (all forwarding to the base class)
+      /// @{
 
       /// Constructor
-      CODI_INLINE ActiveType(ActiveType<Tape> const& v) : primalValue(), identifier() {
-        Base::init();
-        this->getTape().store(*this, v);
-      }
+      CODI_INLINE ActiveType() : Base() {}
 
       /// Constructor
-      CODI_INLINE ActiveType(Real const& value) : primalValue(value), identifier() {
-        Base::init();
-      }
+      CODI_INLINE ActiveType(ActiveType<Tape> const& v) : Base(static_cast<Base const&>(v)) {}
+
+      /// Constructor
+      CODI_INLINE ActiveType(Real const& value) : Base(value) {}
 
       /// Constructor
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveType(PassiveReal const& value) :
-        primalValue(value), identifier() {
-        Base::init();
-      }
+      CODI_INLINE ActiveType(PassiveReal const& value) : Base(value) {}
 
       /// Constructor
       template<typename Rhs>
-      CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
-        Base::init();
-        this->getTape().store(*this, rhs.cast());
-      }
+      CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : Base(rhs) {}
 
       /// Constructor
       template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : primalValue(rhs.cast()), identifier() {
-        Base::init();
-      }
+      CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : Base(rhs) {}
+
+      /// @}
 
       /// Destructor
-      CODI_INLINE ~ActiveType() {
-        Base::destroy();
-      }
-
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
-      CODI_INLINE ActiveType<Tape>& operator=(ActiveType<Tape> const& v) {
-        static_cast<LhsExpressionInterface<Real, Gradient, Tape, ActiveType>&>(*this) = v;
-        return *this;
-      }
-      using LhsExpressionInterface<Real, Gradient, Tape, ActiveType>::operator=;
+      CODI_INLINE ~ActiveType() {}
 
       /*******************************************************************************/
-      /// @name Implementation of ExpressionInterface
+      /// @name Assignment operators (all forwarding to the base class)
       /// @{
 
-      using StoreAs = ActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = ActiveType;    ///< \copydoc codi::ExpressionInterface::ActiveResult
+      /// See ActiveTypeBase::operator=(ActiveTypeBase const&).
+      CODI_INLINE ActiveType& operator=(ActiveType const& v) {
+        static_cast<Base&>(*this) = static_cast<Base const&>(v);
+        return *this;
+      }
+
+      using Base::operator=;
 
       /// @}
       /*******************************************************************************/
       /// @name Implementation of LhsExpressionInterface
       /// @{
-
-      /// \copydoc codi::LhsExpressionInterface::getIdentifier()
-      CODI_INLINE Identifier& getIdentifier() {
-        return identifier;
-      }
-
-      /// \copydoc codi::LhsExpressionInterface::getIdentifier() const
-      CODI_INLINE Identifier const& getIdentifier() const {
-        return identifier;
-      }
-
-      /// \copydoc codi::LhsExpressionInterface::value()
-      CODI_INLINE Real& value() {
-        return primalValue;
-      }
-
-      /// \copydoc codi::LhsExpressionInterface::value() const
-      CODI_INLINE Real const& value() const {
-        return primalValue;
-      }
 
       /// \copydoc codi::LhsExpressionInterface::getTape()
       static CODI_INLINE Tape& getTape() {
