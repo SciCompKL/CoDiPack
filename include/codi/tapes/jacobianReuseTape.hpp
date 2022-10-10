@@ -103,10 +103,14 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-        auto clearFunc = [this](Identifier* index, Config::ArgumentSize* stmtSize) {
+
+        this->adjoints.beginUse();
+        Identifier adjointsSize = (Identifier)this->adjoints.size();
+
+        auto clearFunc = [&adjointsSize, this](Identifier* index, Config::ArgumentSize* stmtSize) {
           CODI_UNUSED(stmtSize);
 
-          if (*index < (Identifier)this->adjoints.size()) {
+          if (*index < adjointsSize) {
             this->adjoints[*index] = Gradient();
           }
         };
@@ -116,6 +120,8 @@ namespace codi {
         StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(end);
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
+
+        this->adjoints.endUse();
       }
 
       /// @}
