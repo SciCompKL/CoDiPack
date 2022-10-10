@@ -68,25 +68,25 @@ namespace codi {
 
       static std::vector<Gradient> adjoints; ///< Vector of adjoint variables.
 
-    public:
-
       static ReadWriteMutex adjointsMutex;   ///< Protects adjoints. Lock for read stands for lock for using the
                                              ///< adjoint vector. Lock for write stands for reallocating the adjoint
-                                             ///< vector. Also used outside this class, hence public.
+                                             ///< vector.
+
+    public:
 
       /// Constructor
       ThreadSafeGlobalAdjoints(size_t initialSize) : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize),
                                                      inUse(false) {}
 
       /// See InternalAdjointsInterface.
+      /// Implementation: No locking is performed, beginUse and endUse have to be used accordingly.
       CODI_INLINE Gradient& operator[](Identifier const& identifier) {
-        LockForUse lock(adjointsMutex);
         return adjoints[(size_t)identifier];
       }
 
       /// See InternalAdjointsInterface.
+      /// Implementation: No locking is performed, beginUse and endUse have to be used accordingly.
       CODI_INLINE Gradient const& operator[](Identifier const& identifier) const {
-        LockForUse lock(adjointsMutex);
         return adjoints[(size_t)identifier];
       }
 
@@ -126,12 +126,14 @@ namespace codi {
       }
 
       /// See InternalAdjointsInterface.
+      /// Implementation: Sets an internal lock.
       CODI_INLINE void beginUse() {
         adjointsMutex.lockRead();
         inUse = true;
       }
 
       /// See InternalAdjointsInterface.
+      /// Implementation: Unsets an internal lock.
       CODI_INLINE void endUse() {
         inUse = false;
         adjointsMutex.unlockRead();

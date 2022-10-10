@@ -120,6 +120,5 @@ namespace codi {
       CODI_INLINE void endUse() {
         inUse = false;
       }
-
   };
 }
