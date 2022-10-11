@@ -48,10 +48,9 @@ namespace codi {
   /**
    * @brief Reuse index manager with a one-to-one relation between tapes and index manager.
    *
-   * This is a parallel implementation of the reuse index management strategy. For the details of reuse index
-   * management, see ReuseIndexManagerBase.
-   *
-   * This index manager is thread-safe.
+   * This is a thread-safe implementation of the reuse index management strategy. For the details of reuse index
+   * management, see ReuseIndexManagerBase. The key difference is that multiple tape-local index managers can acquire
+   * non-overlapping ranges of indices from the same global management.
    *
    * @tparam T_Index            Type for the identifier, usually an integer type.
    * @tparam T_ParallelToolbox  Tools used to make this index manager thread-safe.

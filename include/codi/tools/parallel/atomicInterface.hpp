@@ -39,27 +39,39 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Provides a data type on which operations are performed atomically.
+   *
+   * If used with an underlying floating point type or an active CoDiPack type, this data type is suitable as an adjoint
+   * variable type. Provides also increment and decrement operators for the use case of an underlying integer type.
+   *
+   * Implementations likely require template specializations with respect to the underlying type, especially if it is an
+   * active CoDiPack type.
+   *
+   * @tparam T_Type  The underlying data type.
+   * @tparam T_Impl  The implementing type.
+   */
   template<typename T_Type, typename T_Impl>
   struct AtomicInterface {
     public:
-      using Type = CODI_DD(T_Type, CODI_ANY);
-      using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);
+      using Type = CODI_DD(T_Type, CODI_ANY);             ///< See AtomicInterface.
+      using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);  ///< See AtomicInterface.
 
-      CODI_INLINE AtomicInterface() {}
-      ~AtomicInterface() {}
+      CODI_INLINE AtomicInterface() {}  ///< Constructor
+      ~AtomicInterface() {}             ///< Destructor
 
-      CODI_INLINE Impl& operator=(Impl const& other);
-      CODI_INLINE Impl& operator=(Type const& other);
+      CODI_INLINE Impl& operator=(Impl const& other);  ///< Assignment operator with implementing type as rhs.
+      CODI_INLINE Impl& operator=(Type const& other);  ///< Assignment operator with underlying type as rhs.
 
-      CODI_INLINE Type operator+=(Impl const& other);
-      CODI_INLINE Type operator+=(Type const& other);
+      CODI_INLINE Type operator+=(Impl const& other);  ///< Incremental update with implementing type as rhs.
+      CODI_INLINE Type operator+=(Type const& other);  ///< Incremental update with underlying type as rhs.
 
-      CODI_INLINE Type operator++();
-      CODI_INLINE Type operator++(int);
-      CODI_INLINE Type operator--();
-      CODI_INLINE Type operator--(int);
+      CODI_INLINE Type operator++();     ///< Pre-increment operator.
+      CODI_INLINE Type operator++(int);  ///< Post-increment operator.
+      CODI_INLINE Type operator--();     ///< Pre-decrement operator.
+      CODI_INLINE Type operator--(int);  ///< Post-decrement operator.
 
-      CODI_INLINE operator Type () const;
+      CODI_INLINE operator Type () const;  ///< Implicit cast to underlying type for rhs access.
   };
 }
 

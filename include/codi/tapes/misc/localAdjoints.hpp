@@ -70,27 +70,27 @@ namespace codi {
                                           inUse(false),
                                           adjoints(initialSize) {}
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::operator[](Identifier const&)
       CODI_INLINE Gradient& operator[](Identifier const& identifier) {
         return adjoints[(size_t)identifier];
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::operator[](Identifier const&) const
       CODI_INLINE Gradient const& operator[](Identifier const& identifier) const {
         return adjoints[(size_t)identifier];
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::data
       CODI_INLINE Gradient* data() {
         return adjoints.data();
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::size
       CODI_INLINE size_t size() const {
         return adjoints.size();
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::resize
       CODI_NO_INLINE void resize(Identifier const& newSize) {
         if (inUse) {
           CODI_EXCEPTION("Cannot resize adjoints while they are in use.");
@@ -99,24 +99,24 @@ namespace codi {
         adjoints.resize((size_t)newSize);
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::zeroAll
       CODI_INLINE void zeroAll() {
         for (Gradient& gradient : adjoints) {
           gradient = Gradient();
         }
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::swap
       CODI_INLINE void swap(LocalAdjoints& other) {
         std::swap(adjoints, other.adjoints);
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::beginUse
       CODI_INLINE void beginUse() {
         inUse = true;
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::endUse
       CODI_INLINE void endUse() {
         inUse = false;
       }

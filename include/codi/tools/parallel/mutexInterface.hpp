@@ -39,31 +39,44 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Abstracts a mutex.
+   *
+   * Simple mutex with lock and unlock operations. Lock provides RAII locking.
+   */
   struct MutexInterface {
     public:
-      CODI_INLINE MutexInterface() {}
-      ~MutexInterface() {}
+      CODI_INLINE MutexInterface() {}  ///< Constructor
+      ~MutexInterface() {}             ///< Destructor
 
-      CODI_INLINE void initialize();
-      CODI_INLINE void finalize();
+      CODI_INLINE void initialize();  ///< Initialize the mutex.
+      CODI_INLINE void finalize();    ///< Finalize the mutex.
 
-      CODI_INLINE void lock();
-      CODI_INLINE void unlock();
+      CODI_INLINE void lock();    ///< Lock the mutex.
+      CODI_INLINE void unlock();  ///< Unlock the mutex.
   };
 
+  /**
+   * @brief RAII mutex locking.
+   *
+   * @tparam T_Mutex  The underlying mutex type.
+   */
   template<typename T_Mutex>
   struct Lock {
     public:
-      using Mutex = CODI_DD(T_Mutex, MutexInterface);
+      using Mutex = CODI_DD(T_Mutex, MutexInterface);  ///< See Lock.
 
     private:
       Mutex& mutex;
 
     public:
+      /// Constructor. Locks the mutex.
+      /// @param mutex  The mutex to be locked.
       Lock(Mutex& mutex) : mutex(mutex) {
         mutex.lock();
       }
 
+      /// Destructor. Unlocks the mutex.
       ~Lock() {
         mutex.unlock();
       }
