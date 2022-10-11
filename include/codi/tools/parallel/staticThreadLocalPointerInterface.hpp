@@ -39,17 +39,24 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Abstracts a static threadlocal pointer.
+   *
+   * @tparam T_Type   The datatype pointed to.
+   * @tparam T_Owner  Type that owns the static pointer. Needed to distinguish between multiple such pointers.
+   * @tparam T_Impl   The implementing type.
+   */
   template<typename T_Type, typename T_Owner, typename T_Impl>
   struct StaticThreadLocalPointerInterface {
     public:
-      using Type = CODI_DD(T_Type, CODI_ANY);
-      using Owner = CODI_DD(T_Owner, CODI_ANY);
-      using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);
+      using Type = CODI_DD(T_Type, CODI_ANY);             ///< See StaticThreadLocalPointerInterface.
+      using Owner = CODI_DD(T_Owner, CODI_ANY);           ///< See StaticThreadLocalPointerInterface.
+      using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);  ///< See StaticThreadLocalPointerInterface.
 
-      CODI_INLINE StaticThreadLocalPointerInterface() {}
-      ~StaticThreadLocalPointerInterface() {}
+      CODI_INLINE StaticThreadLocalPointerInterface() {}  ///< Constructor.
+      ~StaticThreadLocalPointerInterface() {}             ///< Destructor.
 
-      static CODI_INLINE void set(Type* other);
-      static CODI_INLINE Type* get();
+      static CODI_INLINE void set(Type* other);  ///< Set the pointer.
+      static CODI_INLINE Type* get();            ///< Get the pointer.´
   };
 }

@@ -52,9 +52,8 @@ namespace codi {
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
-   * Since this index manager is tightly coupled to the statements, it also implements a simple data interface. It just
-   * provides the current maximum index as positional information and adds this positional information in the evaluate
-   * routines.
+   * Since this index manager is tightly coupled to the statements, it is specific to a tape instance and requires
+   * non-static storage.
    *
    * Since there is a one-to-one relation between tape and index manager for linear index managers, this index manager
    * is thread-safe. Due to its linear nature, however, it can only be used to record tapes in parallel that do not

@@ -51,11 +51,11 @@ namespace codi {
   struct ThreadSafeGlobalAdjoints : public InternalAdjointsInterface<T_Gradient, T_Identifier, T_Tape> {
     public:
 
-      /// See LocalAdjoints.
+      /// See ThreadSafeGlobalAdjoints.
       using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-      using Gradient = CODI_DD(T_Gradient, double);   ///< See LocalAdjoints.
-      using Identifier = CODI_DD(T_Identifier, int);  ///< See LocalAdjoints.
-      /// See LocalAdjoints.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See ThreadSafeGlobalAdjoints.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See ThreadSafeGlobalAdjoints.
+      /// See ThreadSafeGlobalAdjoints.
       using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY>));
 
       using ReadWriteMutex = typename ParallelToolbox::ReadWriteMutex;  /// See ParallelToolbox.
@@ -78,31 +78,31 @@ namespace codi {
       ThreadSafeGlobalAdjoints(size_t initialSize) : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize),
                                                      inUse(false) {}
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::operator[](Identifier const&)
       /// Implementation: No locking is performed, beginUse and endUse have to be used accordingly.
       CODI_INLINE Gradient& operator[](Identifier const& identifier) {
         return adjoints[(size_t)identifier];
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::operator[](Identifier const&) const
       /// Implementation: No locking is performed, beginUse and endUse have to be used accordingly.
       CODI_INLINE Gradient const& operator[](Identifier const& identifier) const {
         return adjoints[(size_t)identifier];
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::data
       CODI_INLINE Gradient* data() {
         LockForUse lock(adjointsMutex);
         return adjoints.data();
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::size
       CODI_INLINE size_t size() const {
         LockForUse lock(adjointsMutex);
         return adjoints.size();
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::resize
       CODI_NO_INLINE void resize(Identifier const& newSize) {
         if (inUse) {
           CODI_EXCEPTION("Cannot resize adjoints while they are in use.");
@@ -112,7 +112,7 @@ namespace codi {
         adjoints.resize((size_t)newSize);
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::zeroAll
       CODI_INLINE void zeroAll() {
         LockForUse lock(adjointsMutex);
         for (Gradient& gradient : adjoints) {
@@ -120,19 +120,19 @@ namespace codi {
         }
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::swap
       CODI_INLINE void swap(ThreadSafeGlobalAdjoints&) {
         /* adjoints are global and there is no need to swap them */
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::beginUse
       /// Implementation: Sets an internal lock.
       CODI_INLINE void beginUse() {
         adjointsMutex.lockRead();
         inUse = true;
       }
 
-      /// See InternalAdjointsInterface.
+      /// \copydoc InternalAdjointsInterface::endUse
       /// Implementation: Unsets an internal lock.
       CODI_INLINE void endUse() {
         inUse = false;

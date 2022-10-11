@@ -57,10 +57,24 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Mutex construct that distinguishes between lock for read and lock for write.
+   *
+   * Since not all shared memory parallel APIs provide such mutexes, this is a custom implementation based on the atomic
+   * type.
+   *
+   * The custom locking mechanism is annotated for the thread sanitizer so that the synchronization due to this mutex
+   * is captured correctly when checking for data races.
+   *
+   * The user is responsible for correct pairing lockForRead, unlockForRead and lockForWrite, unlockForWrite,
+   * respectively. Use of the RAII locks LockForRead and LockForWrite is advised.
+   *
+   * @tparam T_AtomicInt  Implementation of AtomicInterface, instantiated with an underlying integer type.
+   */
   template<typename T_AtomicInt>
   struct ReadWriteMutex {
     public:
-      using AtomicInt = CODI_DD(T_AtomicInt, CODI_T(AtomicInterface<int, CODI_ANY>));
+      using AtomicInt = CODI_DD(T_AtomicInt, CODI_T(AtomicInterface<int, CODI_ANY>));  ///< See T_AtomicInt.
 
     private:
       AtomicInt numReaders;
@@ -71,6 +85,7 @@ namespace codi {
       #endif
 
     public:
+      /// Constructor
       CODI_INLINE ReadWriteMutex() : numReaders(0), numWriters(0)
                                      #ifdef __SANITIZE_THREAD__
                                        , dummy(0)
@@ -81,12 +96,18 @@ namespace codi {
         #endif
       }
 
+      /// Destructor
       ~ReadWriteMutex() {
         #ifdef __SANITIZE_THREAD__
           ANNOTATE_RWLOCK_DESTROY(&dummy);
         #endif
       }
 
+      /**
+       * @brief Acquire mutex for read access.
+       *
+       * Waits until there are no writers. Multiple simultaneous acquisitions for reading are allowed.
+       */
       void lockRead() {
         int currentWriters;
         while (true) {
@@ -108,6 +129,7 @@ namespace codi {
         #endif
       }
 
+      /// Release mutex that was acquired for read access.
       void unlockRead() {
         #ifdef __SANITIZE_THREAD__
           ANNOTATE_RWLOCK_RELEASED(&dummy, false);
@@ -116,6 +138,12 @@ namespace codi {
         --numReaders;
       }
 
+      /**
+       * @brief Acquire mutex for read access.
+       *
+       * First writer comes first, as soon as there are no readers. Possible other writers wait until the first one is
+       * done.
+       */
       void lockWrite() {
         int currentWriters;
         while (true) {
@@ -138,6 +166,7 @@ namespace codi {
         #endif
       }
 
+      /// Release mutex that was acquired for write access.
       void unlockWrite() {
         #ifdef __SANITIZE_THREAD__
           ANNOTATE_RWLOCK_RELEASED(&dummy, true);
@@ -147,37 +176,51 @@ namespace codi {
       }
   };
 
+  /**
+   * @brief RAII lock for read.
+   *´
+   * @tparam T_ReadWriteMutex  The underlying ReadWriteMutex.
+   */
   template<typename T_ReadWriteMutex>
   struct LockForRead {
     public:
-      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, codi::ReadWriteMutex<CODI_ANY>);
+      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, codi::ReadWriteMutex<CODI_ANY>);  ///< See LockForRead.
 
     private:
       ReadWriteMutex& mutex;
 
     public:
+      /// Constructor. Acquires lock for read access.
       LockForRead(ReadWriteMutex& mutex) : mutex(mutex) {
         mutex.lockRead();
       }
 
+      /// Destructor. Releases lock for read access.
       ~LockForRead() {
         mutex.unlockRead();
       }
   };
 
+  /**
+   * @brief RAII lock for write
+   *
+   * @tparam T_ReadWriteMutex  The underlying ReadWriteMutex.
+   */
   template<typename T_ReadWriteMutex>
   struct LockForWrite {
     public:
-      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, codi::ReadWriteMutex<CODI_ANY>);
+      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, codi::ReadWriteMutex<CODI_ANY>);  ///< See LockForWrite.
 
     private:
       ReadWriteMutex& mutex;
 
     public:
+      /// Constructor. Acquires lock for write access.
       LockForWrite(ReadWriteMutex& mutex) : mutex(mutex) {
         mutex.lockWrite();
       }
 
+      /// Destructor. Releases lock for write access.
       ~LockForWrite() {
         mutex.unlockWrite();
       }

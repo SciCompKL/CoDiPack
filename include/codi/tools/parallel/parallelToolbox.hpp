@@ -42,20 +42,33 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Constructs required to make CoDiPack suitable for a shared memory parallel environment.
+   *
+   * Hides details of a specific shared memory parallelization approach, such as OpenMP.
+   *
+   * Please refer to the individual constructs for documentation.
+   *
+   * @tparam T_Atomic                    Atomic implementation used by the toolbox. See codi::Atomic.
+   * @tparam T_Mutex                     Mutex implementation used by the toolbox. See codi::Mutex.
+   * @tparam T_StaticThreadLocalPointer  Static threadlocal pointer implementation used by the toolbox.
+   *                                     See codi::StaticThreadLocalPointer.
+   */
   template<template<typename> class T_Atomic,
            typename T_Mutex,
            template<typename, typename> class T_StaticThreadLocalPointer>
   struct ParallelToolbox {
     public:
       template<typename Type>
-      using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));
+      using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));  ///< See codi::Atomic.
 
-      using Mutex = CODI_DD(T_Mutex, MutexInterface);
-      using Lock = codi::Lock<Mutex>;
-      using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;
-      using LockForRead = codi::LockForRead<ReadWriteMutex>;
-      using LockForWrite = codi::LockForWrite<ReadWriteMutex>;
+      using Mutex = CODI_DD(T_Mutex, MutexInterface);            ///< See codi::Mutex.
+      using Lock = codi::Lock<Mutex>;                            ///< See codi::Lock.
+      using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;  ///< See codi::ReadWriteMutex.
+      using LockForRead = codi::LockForRead<ReadWriteMutex>;     ///< See codi::LockForRead.
+      using LockForWrite = codi::LockForWrite<ReadWriteMutex>;   ///< See codi::LockForWrite.
 
+      ///< See codi::StaticThreadLocalPointer.
       template<typename Type, typename Owner>
       using StaticThreadLocalPointer = CODI_DD(CODI_T(T_StaticThreadLocalPointer<Type, Owner>),
                                                CODI_T(StaticThreadLocalPointerInterface<Type, Owner, CODI_ANY>));
