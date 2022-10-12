@@ -86,7 +86,7 @@ namespace codi {
       /// \copydoc DataInterface::resetHard
       void resetHard() {}
 
-      /// \copydoc DataInterface::resetTo
+      /// \copydoc codi::DataInterface::resetTo
       void resetTo(Position const& pos) {
         CODI_UNUSED(pos);
       }

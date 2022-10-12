@@ -51,7 +51,7 @@ namespace codi {
    *
    * @tparam T_Atomic                    Atomic implementation used by the toolbox. See codi::Atomic.
    * @tparam T_Mutex                     Mutex implementation used by the toolbox. See codi::Mutex.
-   * @tparam T_StaticThreadLocalPointer  Static threadlocal pointer implementation used by the toolbox.
+   * @tparam T_StaticThreadLocalPointer  Static thread-local pointer implementation used by the toolbox.
    *                                     See codi::StaticThreadLocalPointer.
    */
   template<template<typename> class T_Atomic,
@@ -60,15 +60,15 @@ namespace codi {
   struct ParallelToolbox {
     public:
       template<typename Type>
-      using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));  ///< See codi::Atomic.
+      using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));  ///< See codi::AtomicInterface.
 
-      using Mutex = CODI_DD(T_Mutex, MutexInterface);            ///< See codi::Mutex.
+      using Mutex = CODI_DD(T_Mutex, MutexInterface);            ///< See codi::MutexInterface.
       using Lock = codi::Lock<Mutex>;                            ///< See codi::Lock.
       using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;  ///< See codi::ReadWriteMutex.
       using LockForRead = codi::LockForRead<ReadWriteMutex>;     ///< See codi::LockForRead.
       using LockForWrite = codi::LockForWrite<ReadWriteMutex>;   ///< See codi::LockForWrite.
 
-      ///< See codi::StaticThreadLocalPointer.
+      /// See codi::StaticThreadLocalPointerInterface.
       template<typename Type, typename Owner>
       using StaticThreadLocalPointer = CODI_DD(CODI_T(T_StaticThreadLocalPointer<Type, Owner>),
                                                CODI_T(StaticThreadLocalPointerInterface<Type, Owner, CODI_ANY>));

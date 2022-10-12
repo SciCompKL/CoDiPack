@@ -40,11 +40,11 @@
 namespace codi {
 
   /**
-   * @brief Abstracts a static threadlocal pointer.
+   * @brief Abstracts a static thread-local pointer.
    *
    * @tparam T_Type   The datatype pointed to.
    * @tparam T_Owner  Type that owns the static pointer. Needed to distinguish between multiple such pointers.
-   * @tparam T_Impl   The implementing type.
+   * @tparam T_Impl   Implementing class.
    */
   template<typename T_Type, typename T_Owner, typename T_Impl>
   struct StaticThreadLocalPointerInterface {

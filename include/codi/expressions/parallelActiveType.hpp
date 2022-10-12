@@ -43,7 +43,7 @@ namespace codi {
   /**
    * @brief Represents a concrete lvalue in the CoDiPack expression tree.
    *
-   * This active type implements a static threadlocal tape, as suitable for parallel taping.
+   * This active type implements a static thread-local tape, as suitable for parallel taping.
    *
    * @tparam T_Tape  The tape that manages all expressions created with this type.
    * @tparam T_ParallelToolbox  Toolbox used to parallelize this type.

@@ -133,7 +133,7 @@ namespace codi {
         Base::destroy();
       }
 
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
+      /// See LhsExpressionInterface::operator=(LhsExpressionInterface const&).
       CODI_INLINE ActiveTypeBase& operator=(ActiveTypeBase const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, Impl>&>(*this) = v;
         return *this;

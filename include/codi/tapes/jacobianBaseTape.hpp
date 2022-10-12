@@ -86,6 +86,7 @@ namespace codi {
       template<typename Impl>
       using Adjoints = CODI_DD(CODI_T(T_Adjoints<Gradient, Identifier, Impl>),
                                CODI_T(InternalAdjointsInterface<Gradient, Identifier, CODI_ANY>));
+                                 ///< See JacobianTapeTypes.
 
       static bool constexpr IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
       static bool constexpr IsStaticIndexHandler =
@@ -143,7 +144,7 @@ namespace codi {
       using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
       using JacobianData = typename TapeTypes::JacobianData;    ///< See JacobianTapeTypes.
 
-      using Adjoints = typename TapeTypes::template Adjoints<Impl>;
+      using Adjoints = typename TapeTypes::template Adjoints<Impl>;  ///< See JacobianTapeTypes.
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 

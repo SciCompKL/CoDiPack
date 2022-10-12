@@ -66,12 +66,12 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
-      /// Prefix operator ++
+      /// Prefix operator++
       CODI_INLINE Impl& operator++() {
         return cast() = cast() + PassiveReal(1.0);
       }
 
-      /// Postfix operator ++
+      /// Postfix operator++
       CODI_INLINE Impl operator++(int u) {
         CODI_UNUSED(u);
 
@@ -80,12 +80,12 @@ namespace codi {
         return r;
       }
 
-      /// Prefix operator --
+      /// Prefix operator--
       CODI_INLINE Impl& operator--() {
         return cast() = cast() - PassiveReal(1.0);
       }
 
-      /// Postfix operator --
+      /// Postfix operator--
       CODI_INLINE Impl operator--(int u) {
         CODI_UNUSED(u);
 

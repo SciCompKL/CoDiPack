@@ -60,17 +60,17 @@ namespace codi {
    * indices.
    *
    * @tparam T_Index   Type for the identifier, usually an integer type.
-   * @tparam T_Impl    The implementing class.
+   * @tparam T_Impl    Implementing class.
    */
   template<typename T_Index, typename T_Impl>
   struct ReuseIndexManagerBase : public IndexManagerInterface<T_Index>, public EmptyData {
     public:
 
-      using Index = CODI_DD(T_Index, int);        ///< See ReuseIndexManager.
-      using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);
-      using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
+      using Index = CODI_DD(T_Index, int);                ///< See ReuseIndexManagerBase.
+      using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);  ///< See ReuseIndexManagerBase.
+      using Base = IndexManagerInterface<Index>;          ///< Base class abbreviation.
 
-      using Position = EmptyData::Position;
+      using Position = EmptyData::Position;  ///< See EmptyData.
 
       /*******************************************************************************/
       /// @name IndexManagerInterface: Constants
@@ -134,7 +134,7 @@ namespace codi {
       /// @name IndexManagerInterface: Methods
       /// @{
 
-      /// \copydoc IndexManagerInterface::assignIndex
+      /// \copydoc codi::IndexManagerInterface::assignIndex
       CODI_INLINE bool assignIndex(Index& index) {
         bool generatedNewIndex = false;
 
@@ -156,7 +156,7 @@ namespace codi {
         return generatedNewIndex;
       }
 
-      /// \copydoc IndexManagerInterface::assignUnusedIndex
+      /// \copydoc codi::IndexManagerInterface::assignUnusedIndex
       CODI_INLINE bool assignUnusedIndex(Index& index) {
         freeIndex(index);  // Zero check is performed inside.
 
@@ -172,7 +172,7 @@ namespace codi {
         return generatedNewIndex;
       }
 
-      /// \copydoc IndexManagerInterface::copyIndex
+      /// \copydoc codi::IndexManagerInterface::copyIndex
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
         if (Base::InactiveIndex == rhs) {
           freeIndex(lhs);
@@ -181,7 +181,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc IndexManagerInterface::freeIndex
+      /// \copydoc codi::IndexManagerInterface::freeIndex
       CODI_INLINE void freeIndex(Index& index) {
         if (valid && Base::InactiveIndex != index) {  // Do not free the zero index.
 
@@ -196,7 +196,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc IndexManagerInterface::reset
+      /// \copydoc codi::IndexManagerInterface::reset
       CODI_INLINE void reset() {
         size_t totalSize = usedIndicesPos + unusedIndicesPos;
         if (totalSize > unusedIndices.size()) {
@@ -218,7 +218,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc IndexManagerInterface::addToTapeValues <br><br>
+      /// \copydoc codi::IndexManagerInterface::addToTapeValues <br><br>
       /// Implementation: Adds indices stored, memory used, memory allocated.
       void addToTapeValues(TapeValues& values) const {
         unsigned long storedIndices = this->usedIndicesPos + this->unusedIndicesPos;
@@ -237,7 +237,7 @@ namespace codi {
       /// @name EmptyData: Method overwrite
       /// @{
 
-      /// \copydoc EmptyData::resetTo
+      /// \copydoc codi::EmptyData::resetTo
       void resetTo(Position const& pos) {
         if (pos == getZeroPosition()) {
           reset();

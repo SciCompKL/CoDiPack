@@ -56,6 +56,7 @@ namespace codi {
   struct InternalAdjointsInterface {
     public:
 
+      /// See InternalAdjointsInterface.
       using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
       using Gradient = CODI_DD(T_Gradient, double);   ///< See InternalAdjointsInterface.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See InternalAdjointsInterface.
@@ -73,7 +74,7 @@ namespace codi {
       /// Pointer to an underlying array implementation.
       CODI_INLINE Gradient* data();
 
-      /// @returns number of adjoint variables.
+      /// Returns the number of adjoint variables.
       CODI_INLINE size_t size() const;
 
       /// Ensure that identifiers up to newSize can be passed to operator[] without error.
