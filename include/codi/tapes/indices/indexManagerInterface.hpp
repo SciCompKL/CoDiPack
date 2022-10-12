@@ -94,14 +94,18 @@ namespace codi {
           CODI_UNDEFINED_VALUE;  ///< True if no copy optimization is implemented. See IndexManagerInterface.
       static bool constexpr IsLinear =
           CODI_UNDEFINED_VALUE;  ///< True if identifiers are coupled to the statements. See IndexManagerInterface.
-      static bool constexpr NeedsStaticStorage =
-          CODI_UNDEFINED_VALUE;  ///< True if the index manager is specific to a tape type (and not a tape instance).
-                                 ///< See IndexManagerInterface.
 
-      bool assignIndex(Index& index);        ///< Call on assignment on a primal value e.g. on `w` for  `w = a + b`.
-                                             ///< @return true if new indices have been generated internally.
-      bool assignUnusedIndex(Index& index);  ///< Call on registering input values.
-                                             ///< @return true if new indices have been generated internally.
+      /// True if the index manager is specific to a tape type (and not a tape instance). See IndexManagerInterface.
+      static bool constexpr NeedsStaticStorage = CODI_UNDEFINED_VALUE;
+
+      /// @brief Call on assignment on a primal value e.g. on `w` for  `w = a + b`.
+      /// @return true if new indices have been generated internally.
+      bool assignIndex(Index& index);
+
+      /// @brief Call on registering input values.
+      /// @return true if new indices have been generated internally.
+      bool assignUnusedIndex(Index& index);
+
       void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy of a primal value e.g. `w = a`.
       void freeIndex(Index& index);  ///< Call on destruction of a primal value. Usually called from the destructor.
 

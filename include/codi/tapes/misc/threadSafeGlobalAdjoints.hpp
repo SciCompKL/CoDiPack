@@ -45,7 +45,7 @@ namespace codi {
    * @tparam T_Gradient         The gradient type of a tape, usually chosen as ActiveType::Gradient.
    * @tparam T_Identifier       The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
    * @tparam T_Tape             The associated tape type.
-   * @tparam T_ParallelToolbox  The parallel toolbox used in the associated tape.
+   * @tparam T_ParallelToolbox  The parallel toolbox used in the associated tape. See codi::ParallelToolbox.
    */
   template<typename T_Gradient, typename T_Identifier, typename T_Tape, typename T_ParallelToolbox>
   struct ThreadSafeGlobalAdjoints : public InternalAdjointsInterface<T_Gradient, T_Identifier, T_Tape> {
@@ -58,9 +58,9 @@ namespace codi {
       /// See ThreadSafeGlobalAdjoints.
       using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY>));
 
-      using ReadWriteMutex = typename ParallelToolbox::ReadWriteMutex;  /// See ParallelToolbox.
-      using LockForUse = typename ParallelToolbox::LockForRead;         /// See ParallelToolbox.
-      using LockForRealloc = typename ParallelToolbox::LockForWrite;    /// See ParallelToolbox.
+      using ReadWriteMutex = typename ParallelToolbox::ReadWriteMutex;  ///< See ParallelToolbox.
+      using LockForUse = typename ParallelToolbox::LockForRead;         ///< See ParallelToolbox.
+      using LockForRealloc = typename ParallelToolbox::LockForWrite;    ///< See ParallelToolbox.
 
     private:
 

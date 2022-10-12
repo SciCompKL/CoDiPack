@@ -76,9 +76,9 @@ namespace codi {
       template<typename Real>
       void initIdentifier(Real& value,
                           Identifier& identifier);  ///< Has to be called for each identifier, after it is allocated.
+      /// Has to be called for each identifier, before it is deallocated.
       template<typename Real>
-      void destroyIdentifier(Real& value, Identifier& identifier);  ///< Has to be called for each identifier, before
-                                                                    ///< it is deallocated.
+      void destroyIdentifier(Real& value, Identifier& identifier);
 
       /**
        * @brief Has to be called by an AD variable every time it is assigned.

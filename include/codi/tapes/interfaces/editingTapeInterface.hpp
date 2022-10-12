@@ -54,6 +54,7 @@ namespace codi {
     public:
 
       using Position = CODI_DD(T_Position, EmptyPosition);  ///< See EditingTapeInterface.
+      /// See EditingTapeInterface.
       using Impl = CODI_DD(T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       /*******************************************************************************/

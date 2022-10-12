@@ -74,7 +74,7 @@ namespace codi {
   template<typename T_AtomicInt>
   struct ReadWriteMutex {
     public:
-      using AtomicInt = CODI_DD(T_AtomicInt, CODI_T(AtomicInterface<int, CODI_ANY>));  ///< See T_AtomicInt.
+      using AtomicInt = CODI_DD(T_AtomicInt, CODI_T(AtomicInterface<int, CODI_ANY>));  ///< See ReadWriteMutex.
 
     private:
       AtomicInt numReaders;
@@ -139,9 +139,9 @@ namespace codi {
       }
 
       /**
-       * @brief Acquire mutex for read access.
+       * @brief Acquire mutex for write access.
        *
-       * First writer comes first, as soon as there are no readers. Possible other writers wait until the first one is
+       * First writer comes first, as soon as there are no readers. Other writers, if any, wait until the first one is
        * done.
        */
       void lockWrite() {

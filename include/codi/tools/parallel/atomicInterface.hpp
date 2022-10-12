@@ -49,7 +49,7 @@ namespace codi {
    * active CoDiPack type.
    *
    * @tparam T_Type  The underlying data type.
-   * @tparam T_Impl  The implementing type.
+   * @tparam T_Impl  Implementing class.
    */
   template<typename T_Type, typename T_Impl>
   struct AtomicInterface {
