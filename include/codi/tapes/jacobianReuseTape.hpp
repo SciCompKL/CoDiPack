@@ -74,7 +74,6 @@ namespace codi {
 
       using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
-      friend typename Base::Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                    ///< See TapeTypesInterface.
       using Gradient = typename TapeTypes::Gradient;            ///< See TapeTypesInterface.
