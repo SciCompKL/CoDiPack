@@ -39,12 +39,18 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Static thread-local pointers for OpenMP.
+   *
+   * @tparam T_Type   See StaticThreadLocalPointerInterface.
+   * @tparam T_Owner  See StaticThreadLocalPointerInterface.
+   */
   template<typename T_Type, typename T_Owner>
   struct OpenMPStaticThreadLocalPointer
       : public StaticThreadLocalPointerInterface<T_Type, T_Owner, OpenMPStaticThreadLocalPointer<T_Type, T_Owner>> {
     public:
-      using Type = CODI_DD(T_Type, CODI_ANY);
-      using Owner = CODI_DD(T_Owner, CODI_ANY);
+      using Type = CODI_DD(T_Type, CODI_ANY);    ///< See OpenMPStaticThreadLocalPointer.
+      using Owner = CODI_DD(T_Owner, CODI_ANY);  ///< See OpenMPStaticThreadLocalPointer.
 
     private:
       static Type* value;
@@ -52,10 +58,12 @@ namespace codi {
 
     public:
 
+      /// \copydoc StaticThreadLocalPointerInterface::set
       static CODI_INLINE void set(Type* other) {
         value = other;
       }
 
+      /// \copydoc StaticThreadLocalPointerInterface::get
       static CODI_INLINE Type* get() {
         return value;
       }

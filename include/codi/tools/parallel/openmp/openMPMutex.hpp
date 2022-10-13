@@ -41,27 +41,34 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  /**
+   * @brief Mutex implementation for OpenMP.
+   */
   struct OpenMPMutex : public MutexInterface {
     private:
       omp_lock_t mutex;
 
     public:
-      CODI_INLINE OpenMPMutex() {}
+      CODI_INLINE OpenMPMutex() {}  ///< Constructor.
 
-      ~OpenMPMutex() {}
+      ~OpenMPMutex() {}  ///< Destructor.
 
+      /// \copydoc MutexInterface::initialize
       void initialize() {
         omp_init_lock(&mutex);
       }
 
+      /// \copydoc MutexInterface::finalize
       void finalize() {
         omp_destroy_lock(&mutex);
       }
 
+      /// \copydoc MutexInterface::lock
       void lock() {
         omp_set_lock(&mutex);
       }
 
+      /// \copydoc MutexInterface::unlock
       void unlock() {
         omp_unset_lock(&mutex);
       }

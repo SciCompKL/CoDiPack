@@ -72,17 +72,17 @@ namespace codi {
       /// See LhsExpressionInterface.
       using Tape = CODI_DD(typename Type::Tape, CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));
 
-      /// \copydoc codi::ExternalFunctionHelper::ReverseFunc
+      /// \copydoc codi::ExternalFunctionHelper::ReverseFunc <br><br>
       /// Note that the parameters are shared by all threads executing the ReverseFunc.
       using ReverseFunc = void (*)(Real const* x, Real* x_b, size_t m, Real const* y, Real const* y_b, size_t n,
                                    ExternalFunctionUserData* d);
 
-      /// \copydoc codi::ExternalFunctionHelper::ForwardFunc
+      /// \copydoc codi::ExternalFunctionHelper::ForwardFunc <br><br>
       /// Note that the parameters are shared by all threads executing the ForwardFunc.
       using ForwardFunc = void (*)(Real const* x, Real const* x_d, size_t m, Real* y, Real* y_d, size_t n,
                                    ExternalFunctionUserData* d);
 
-      /// \copydoc codi::ExternalFunctionHelper::PrimalFunc
+      /// \copydoc codi::ExternalFunctionHelper::PrimalFunc <br><br>
       /// Note that the parameters are shared by all threads executing the PrimalFunc.
       using PrimalFunc = void (*)(Real const* x, size_t m, Real* y, size_t n, ExternalFunctionUserData* d);
 
@@ -323,7 +323,7 @@ namespace codi {
 
       EvalData* data;  ///< \copydoc ExternalFunctionHelper::data
 
-      Real* y;  /// Shared array of output variables.
+      Real* y;  ///< Shared array of output variables.
 
     public:
 
@@ -343,19 +343,19 @@ namespace codi {
         delete data;
       }
 
-      /// \copydoc ExternalFunctionHelper::disableInputPrimalStore
+      /// \copydoc ExternalFunctionHelper::disableInputPrimalStore <br><br>
       /// Not thread-safe.
       void disableInputPrimalStore() {
         storeInputPrimals = false;
       }
 
-      /// \copydoc ExternalFunctionHelper::disableOutputPrimalStore
+      /// \copydoc ExternalFunctionHelper::disableOutputPrimalStore <br><br>
       /// Not thread-safe.
       void disableOutputPrimalStore() {
         storeOutputPrimals = false;
       }
 
-      /// \copydoc ExternalFunctionHelper::addInput
+      /// \copydoc ExternalFunctionHelper::addInput <br><br>
       /// Not thread-safe.
       void addInput(Type const& input) {
         if (Type::getTape().isActive()) {
@@ -385,7 +385,7 @@ namespace codi {
 
     public:
 
-      /// \copydoc ExternalFunctionHelper::addOutput
+      /// \copydoc ExternalFunctionHelper::addOutput <br><br>
       /// Not thread-safe.
       void addOutput(Type& output) {
         if (Type::getTape().isActive()) {
@@ -393,19 +393,19 @@ namespace codi {
         }
       }
 
-      /// \copydoc ExternalFunctionHelper::addUserData.
+      /// \copydoc ExternalFunctionHelper::addUserData <br><br>
       /// Not thread-safe.
       template<typename Data>
       void addUserData(Data const& data) {
         this->data->userData.addData(data);
       }
 
-      /// \copydoc ExternalFunctionHelper::getExternalFunctionUserData
+      /// \copydoc ExternalFunctionHelper::getExternalFunctionUserData <br><br>
       ExternalFunctionUserData& getExternalFunctionUserData() {
         return this->data->userData;
       }
 
-      /// \copydoc ExternalFunctionHelper::callPrimalFuncWithADType
+      /// \copydoc ExternalFunctionHelper::callPrimalFuncWithADType <br><br>
       /// Must be called by all threads of the current team.
       template<typename FuncObj, typename... Args>
       void callPrimalFuncWithADType(FuncObj& func, Args&&... args) {
@@ -433,7 +433,7 @@ namespace codi {
         #pragma omp barrier
       }
 
-      /// \copydoc ExternalFunctionHelper::callPrimalFunc
+      /// \copydoc ExternalFunctionHelper::callPrimalFunc <br><br>
       /// Must be called by all threads of the current team.
       void callPrimalFunc(PrimalFunc func) {
         if (!primalFuncUsesADType) {
@@ -476,7 +476,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc ExternalFunctionHelper::addToTape
+      /// \copydoc ExternalFunctionHelper::addToTape <br><br>
       /// Must be called by all threads of the current team.
       void addToTape(ReverseFunc reverseFunc, ForwardFunc forwardFunc = nullptr, PrimalFunc primalFunc = nullptr) {
         if (Type::getTape().isActive()) {

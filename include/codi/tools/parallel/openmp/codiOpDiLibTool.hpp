@@ -44,6 +44,8 @@
 #include "../../../traits/atomicTraits.hpp"
 #include "openMPAtomic.hpp"
 
+#ifndef DOXYGEN_DISABLE
+
 template<typename T_CoDiType>
 struct CoDiOpDiLibTool : public opdi::ToolInterface {
   public:
@@ -225,3 +227,5 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
       dstTape->append(*srcTape, *start, *end);
     }
 };
+
+#endif
