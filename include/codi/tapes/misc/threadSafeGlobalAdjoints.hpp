@@ -68,9 +68,9 @@ namespace codi {
 
       static std::vector<Gradient> adjoints; ///< Vector of adjoint variables.
 
-      static ReadWriteMutex adjointsMutex;   ///< Protects adjoints. Lock for read stands for lock for using the
-                                             ///< adjoint vector. Lock for write stands for reallocating the adjoint
-                                             ///< vector.
+      /// @brief Protects adjoints.
+      /// Lock for read stands for lock for using the adjoint vector. Lock for write stands for reallocating it.
+      static ReadWriteMutex adjointsMutex;
 
     public:
 
@@ -78,13 +78,13 @@ namespace codi {
       ThreadSafeGlobalAdjoints(size_t initialSize) : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize),
                                                      inUse(false) {}
 
-      /// \copydoc InternalAdjointsInterface::operator[](Identifier const&)
+      /// \copydoc InternalAdjointsInterface::operator[](Identifier const&) <br><br>
       /// Implementation: No locking is performed, beginUse and endUse have to be used accordingly.
       CODI_INLINE Gradient& operator[](Identifier const& identifier) {
         return adjoints[(size_t)identifier];
       }
 
-      /// \copydoc InternalAdjointsInterface::operator[](Identifier const&) const
+      /// \copydoc InternalAdjointsInterface::operator[](Identifier const&) const <br><br>
       /// Implementation: No locking is performed, beginUse and endUse have to be used accordingly.
       CODI_INLINE Gradient const& operator[](Identifier const& identifier) const {
         return adjoints[(size_t)identifier];
@@ -125,14 +125,14 @@ namespace codi {
         /* adjoints are global and there is no need to swap them */
       }
 
-      /// \copydoc InternalAdjointsInterface::beginUse
+      /// \copydoc InternalAdjointsInterface::beginUse <br><br>
       /// Implementation: Sets an internal lock.
       CODI_INLINE void beginUse() {
         adjointsMutex.lockRead();
         inUse = true;
       }
 
-      /// \copydoc InternalAdjointsInterface::endUse
+      /// \copydoc InternalAdjointsInterface::endUse <br><br>
       /// Implementation: Unsets an internal lock.
       CODI_INLINE void endUse() {
         inUse = false;

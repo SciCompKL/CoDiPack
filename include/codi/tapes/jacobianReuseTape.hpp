@@ -131,7 +131,7 @@ namespace codi {
       /// @name Functions from JacobianBaseTape
       /// @{
 
-      /// \copydoc codi::JacobianBaseTape::pushStmtData
+      /// \copydoc codi::JacobianBaseTape::pushStmtData <br><br>
       /// Both arguments are pushed to the tape.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         this->statementData.pushData(index, numberOfArguments);

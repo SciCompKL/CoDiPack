@@ -105,7 +105,7 @@ namespace codi {
 
     protected:
 
-      /// \copydoc codi::JacobianBaseTape::pushStmtData
+      /// \copydoc codi::JacobianBaseTape::pushStmtData <br><br>
       /// Only the number of arguments is required for linear index managers.
       CODI_INLINE void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments) {
         CODI_UNUSED(index);
