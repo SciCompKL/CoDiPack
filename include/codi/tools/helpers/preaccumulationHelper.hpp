@@ -122,6 +122,8 @@ namespace codi {
       void start(Inputs const&... inputs) {
         Tape& tape = Type::getTape();
 
+        EventSystem<Tape>::notifyPreaccStartListeners(tape);
+
         if (tape.isActive()) {
           inputData.clear();
           outputData.clear();
@@ -163,11 +165,14 @@ namespace codi {
             restoreInputAdjoints();
           }
         }
+
+        EventSystem<Tape>::notifyPreaccFinishListeners(tape);
       }
 
     private:
 
       void addInputLogic(Type const& input) {
+        EventSystem<Tape>::notifyPreaccAddInputListeners(Type::getTape(), input);
         Identifier const& identifier = input.getIdentifier();
         if (0 != identifier) {
           inputData.push_back(identifier);
@@ -186,6 +191,7 @@ namespace codi {
       }
 
       void addOutputLogic(Type& output) {
+        EventSystem<Tape>::notifyPreaccAddOutputListeners(Type::getTape(), output);
         Identifier const& identifier = output.getIdentifier();
         if (0 != identifier) {
           outputData.push_back(identifier);

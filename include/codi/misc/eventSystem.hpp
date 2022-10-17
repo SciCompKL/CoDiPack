@@ -63,6 +63,11 @@ namespace codi {
         TapeRegisterOutput,
         TapeEvaluate,
         TapeReset,
+        /* Preaccumulation */
+        PreaccStart,
+        PreaccFinish,
+        PreaccAddInput,
+        PreaccAddOutput,
         /* ... */
         /* low-level events */
         /*... */
@@ -146,6 +151,47 @@ namespace codi {
 
       static CODI_INLINE void notifyTapeResetListeners(Tape& tape, Position const& position, bool clearAdjoints) {
         internalNotifyListeners<void (*)(Tape&, Position const&, bool, void*)>(Config::HighLevelEvents, Event::TapeReset, tape, position, clearAdjoints);
+      }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Preaccumulation
+      /// @{
+
+      static CODI_INLINE void registerPreaccStartListener(void (*callback)(Tape&, void*), void* customData = nullptr) {
+        internalRegisterListener(Event::PreaccStart, callback, customData);
+      }
+
+      static CODI_INLINE void notifyPreaccStartListeners(Tape& tape) {
+        internalNotifyListeners<void (*)(Tape&, void*)>(Config::HighLevelEvents, Event::PreaccStart, tape);
+      }
+
+      static CODI_INLINE void registerPreaccFinishListener(void (*callback)(Tape&, void*), void* customData = nullptr) {
+        internalRegisterListener(Event::PreaccFinish, callback, customData);
+      }
+
+      static CODI_INLINE void notifyPreaccFinishListeners(Tape& tape) {
+        internalNotifyListeners<void (*)(Tape&, void*)>(Config::HighLevelEvents, Event::PreaccFinish, tape);
+      }
+
+      template<typename Lhs>
+      static CODI_INLINE void registerPreaccAddInputListener(void (*callback)(Tape&, Lhs&, void*), void* customData = nullptr) {
+        internalRegisterListener(Event::PreaccAddInput, callback, customData);
+      }
+
+      template<typename Lhs>
+      static CODI_INLINE void notifyPreaccAddInputListeners(Tape& tape, Lhs& value) {
+        internalNotifyListeners<void (*)(Tape&, Lhs&, void*)>(Config::HighLevelEvents, Event::PreaccAddInput, tape, value);
+      }
+
+      template<typename Lhs>
+      static CODI_INLINE void registerPreaccAddOutputListener(void (*callback)(Tape&, Lhs&, void*), void* customData = nullptr) {
+        internalRegisterListener(Event::PreaccAddOutput, callback, customData);
+      }
+
+      template<typename Lhs>
+      static CODI_INLINE void notifyPreaccAddOutputListeners(Tape& tape, Lhs& value) {
+        internalNotifyListeners<void (*)(Tape&, Lhs&, void*)>(Config::HighLevelEvents, Event::PreaccAddOutput, tape, value);
       }
 
       /// @}
