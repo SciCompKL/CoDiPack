@@ -44,6 +44,18 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  namespace Events {
+    enum class Direction {
+      Forward,
+      Reverse
+    };
+
+    enum class Endpoint {
+      Begin,
+      End
+    };
+  }
+
   template<typename T_Tape>
   struct EventSystem {
     public:
@@ -136,13 +148,13 @@ namespace codi {
       }
 
       template<typename Adjoint>
-      static CODI_INLINE void registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&, Adjoint*, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&, Adjoint*, Events::Direction, Events::Endpoint, void*), void* customData = nullptr) {
         internalRegisterListener(Event::TapeEvaluate, callback, customData);
       }
 
       template<typename Adjoint>
-      static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end, Adjoint* adjoint) {
-        internalNotifyListeners<void (*)(Tape&, Position const&, Position const&, Adjoint*, void*)>(Config::HighLevelEvents, Event::TapeEvaluate, tape, start, end, adjoint);
+      static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end, Adjoint* adjoint, Events::Direction direction, Events::Endpoint endpoint) {
+        internalNotifyListeners<void (*)(Tape&, Position const&, Position const&, Adjoint*, Events::Direction, Events::Endpoint, void*)>(Config::HighLevelEvents, Event::TapeEvaluate, tape, start, end, adjoint, direction, endpoint);
       }
 
       static CODI_INLINE void registerTapeResetListener(void (*callback)(Tape&, Position const&, bool, void*), void* customData = nullptr) {
