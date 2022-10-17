@@ -470,6 +470,7 @@ namespace codi {
       template<typename Lhs>
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         internalRegisterInput(value, true);
+        EventSystem<Impl>::notifyTapeRegisterInputListeners(this->cast(), value.cast());
       }
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
