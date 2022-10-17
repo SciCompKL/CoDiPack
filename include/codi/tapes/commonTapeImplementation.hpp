@@ -211,19 +211,19 @@ namespace codi {
       /// \copydoc codi::ReverseTapeInterface::registerOutput()
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        EventSystem<Impl>::notifyTapeRegisterOutputListeners(this->cast(), value.cast());
+        EventSystem<Impl>::notifyTapeRegisterOutputListeners(cast(), value.cast());
         cast().template store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
       }
 
       /// \copydoc codi::ReverseTapeInterface::setActive()
       void setActive() {
-        EventSystem<Impl>::notifyTapeStartRecordingListeners(this->cast());
+        EventSystem<Impl>::notifyTapeStartRecordingListeners(cast());
         active = true;
       }
 
       /// \copydoc codi::ReverseTapeInterface::setPassive()
       void setPassive() {
-        EventSystem<Impl>::notifyTapeStopRecordingListeners(this->cast());
+        EventSystem<Impl>::notifyTapeStopRecordingListeners(cast());
         active = false;
       }
 
@@ -262,7 +262,7 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
-        EventSystem<Impl>::notifyTapeResetListeners(this->cast(), this->getZeroPosition(), resetAdjoints);
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), resetAdjoints);
 
         if (resetAdjoints) {
           cast().clearAdjoints();
@@ -469,7 +469,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true) {
-        EventSystem<Impl>::notifyTapeResetListeners(this->cast(), pos, resetAdjoints);
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, resetAdjoints);
 
         if (resetAdjoints) {
           Impl& impl = cast();

@@ -408,7 +408,7 @@ namespace codi {
 
         indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
 
-        EventSystem<Impl>::notifyTapeRegisterInputListeners(this->cast(), value.cast());
+        EventSystem<Impl>::notifyTapeRegisterInputListeners(cast(), value.cast());
 
         if (TapeTypes::IsLinearIndexHandler) {
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
@@ -530,7 +530,7 @@ namespace codi {
       CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
         VectorAccess<Adjoint> adjointWrapper(data);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(this->cast(), start, end, data);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data);
 
         Base::internalEvaluateReverse_Step1_ExtFunc(
             start, end, JacobianBaseTape::template internalEvaluateReverse_Step2_DataExtraction<Adjoint>,
