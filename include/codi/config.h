@@ -244,17 +244,23 @@ namespace codi {
     /// @{
     ///
 
-#ifndef CODI_HighLevelEvents
-  #define CODI_HighLevelEvents false
+#ifndef CODI_ADWorkflowEvents
+  #define CODI_ADWorkflowEvents false
 #endif
-    bool constexpr HighLevelEvents = CODI_HighLevelEvents;
-#undef CODI_HighLevelEvents
+    bool constexpr ADWorkflowEvents = CODI_ADWorkflowEvents;
+#undef CODI_ADWorkflowEvents
 
-#ifndef CODI_LowLevelEvents
-  #define CODI_LowLevelEvents false
+#ifndef CODI_PreaccEvents
+  #define CODI_PreaccEvents false
 #endif
-    bool constexpr LowLevelEvents = CODI_LowLevelEvents;
-#undef CODI_LowLevelEvents
+    bool constexpr PreaccEvents = CODI_PreaccEvents;
+#undef CODI_PreaccEvents
+
+#ifndef CODI_IndexEvents
+  #define CODI_IndexEvents false
+#endif
+    bool constexpr IndexEvents = CODI_IndexEvents;
+#undef CODI_IndexEvents
 
     /// @}
     /*******************************************************************************/

@@ -108,6 +108,7 @@ namespace codi {
       /// Implementation: Freed indices are ignored.
       template<typename Tape>
       CODI_INLINE void freeIndex(Index& index) const {
+        EventSystem<Tape>::notifyIndexFreeListeners(index);
         index = Base::InactiveIndex;
       }
 
@@ -132,6 +133,7 @@ namespace codi {
       /// \copydoc IndexManagerInterface::copyIndex
       template<typename Tape>
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
+        EventSystem<Tape>::notifyIndexCopyListeners(rhs);
         lhs = rhs;
       }
 

@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "../../misc/eventSystem.hpp"
 #include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../data/emptyData.hpp"
@@ -152,6 +153,8 @@ namespace codi {
           }
         }
 
+        EventSystem<Tape>::notifyIndexAssignListeners(index);
+
         return generatedNewIndex;
       }
 
@@ -168,6 +171,8 @@ namespace codi {
 
         unusedIndicesPos -= 1;
         index = unusedIndices[unusedIndicesPos];
+
+        EventSystem<Tape>::notifyIndexAssignListeners(index);
 
         return generatedNewIndex;
       }
@@ -186,6 +191,8 @@ namespace codi {
       template<typename Tape>
       CODI_INLINE void freeIndex(Index& index) {
         if (valid && Base::InactiveIndex != index) {  // Do not free the zero index.
+
+          EventSystem<Tape>::notifyIndexFreeListeners(index);
 
           if (usedIndicesPos == usedIndices.size()) {
             increaseIndicesSize(usedIndices);

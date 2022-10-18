@@ -145,8 +145,9 @@ namespace codi {
             freeIndex<Tape>(lhs);
 
             if (Base::InactiveIndex != rhs) {  // Do not handle the zero index.
-              indexUse[rhs] += 1;
+              EventSystem<Tape>::notifyIndexCopyListeners(rhs);
 
+              indexUse[rhs] += 1;
               lhs = rhs;
             }
           }
