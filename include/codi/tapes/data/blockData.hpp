@@ -159,6 +159,12 @@ namespace codi {
         return Position(0, nested->getZeroPosition());
       }
 
+      /// \copydoc DataInterface::getDataPointers
+      template<typename... Data>
+      CODI_INLINE void getDataPointers(InternalPosHandle const& startPos, Data*&... data) {
+        chunk.dataPointer(startPos, data...);
+      }
+
       /*******************************************************************************/
       /// @name Misc functions
 

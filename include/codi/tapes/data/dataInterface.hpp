@@ -198,6 +198,16 @@ namespace codi {
       CODI_INLINE Position getZeroPosition() const; /**< @return The start position of the DataInterface and all nested
                                                                  interfaces. */
 
+      /**
+       * @brief Obtain pointers to internal data.
+       *
+       * @tparam     Data      Types of the stored data.
+       * @param[in]  startPos  Internal position handle, usually obtained by a call to reserveItems.
+       * @param[out] data      Returned pointers.
+       */
+      template<typename... Data>
+      CODI_INLINE void getDataPointers(InternalPosHandle const& startPos, Data*&... data);
+
       /*******************************************************************************/
       /// @name Misc functions
 
