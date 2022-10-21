@@ -82,7 +82,7 @@ namespace codi {
       /// Constructor
       CODI_INLINE ReferenceActiveType(Type& v) : reference(v), jacobian() {}
 
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
+      /// See LhsExpressionInterface::operator=(ExpressionInterface const&).
       CODI_INLINE ReferenceActiveType<Tape>& operator=(ReferenceActiveType<Tape> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ReferenceActiveType>&>(*this) = v;
         return *this;

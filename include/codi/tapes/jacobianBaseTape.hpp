@@ -357,6 +357,20 @@ namespace codi {
           if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments)) {
             indexManager.get().template assignIndex<Impl>(lhs.cast().getIdentifier());
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
+
+            if (Config::StatementEvents) {
+
+              Real* jacobians;
+              Identifier* rhsIdentifiers;
+              jacobianData.getDataPointers(jacobianStart, jacobians, rhsIdentifiers);
+
+              EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(),
+                                                                     lhs.cast().getIdentifier(),
+                                                                     rhs.cast().getValue(),
+                                                                     numberOfArguments,
+                                                                     rhsIdentifiers,
+                                                                     jacobians);
+            }
           } else {
             indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
           }
@@ -485,10 +499,12 @@ namespace codi {
       /// Start for reverse evaluation between external function.
       template<typename Adjoint>
       CODI_NO_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start,
-                                                                              NestedPosition const& end, Adjoint* data,
+                                                                              NestedPosition const& end,
+                                                                              Impl& tape,
+                                                                              Adjoint* data,
                                                                               JacobianData& jacobianData) {
         Wrap_internalEvaluateReverse_Step3_EvalStatements<Adjoint> evalFunc;
-        jacobianData.evaluateReverse(start, end, evalFunc, data);
+        jacobianData.evaluateReverse(start, end, evalFunc, tape, data);
       }
 
       /// Performs the AD \ref sec_forwardAD "forward" equation for a statement.
@@ -512,10 +528,12 @@ namespace codi {
       /// Start for forward evaluation between external function.
       template<typename Adjoint>
       CODI_NO_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start,
-                                                                              NestedPosition const& end, Adjoint* data,
+                                                                              NestedPosition const& end,
+                                                                              Impl& tape,
+                                                                              Adjoint* data,
                                                                               JacobianData& jacobianData) {
         Wrap_internalEvaluateForward_Step3_EvalStatements<Adjoint> evalFunc;
-        jacobianData.evaluateForward(start, end, evalFunc, data);
+        jacobianData.evaluateForward(start, end, evalFunc, tape, data);
       }
 
     public:
@@ -534,7 +552,7 @@ namespace codi {
 
         Base::internalEvaluateReverse_Step1_ExtFunc(
             start, end, JacobianBaseTape::template internalEvaluateReverse_Step2_DataExtraction<Adjoint>,
-            &adjointWrapper, data, jacobianData);
+            &adjointWrapper, cast(), data, jacobianData);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data, Events::Direction::Reverse, Events::Endpoint::End);
       }
@@ -548,7 +566,7 @@ namespace codi {
 
         Base::internalEvaluateForward_Step1_ExtFunc(
             start, end, JacobianBaseTape::template internalEvaluateForward_Step2_DataExtraction<Adjoint>,
-            &adjointWrapper, data, jacobianData);
+            &adjointWrapper, cast(), data, jacobianData);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data, Events::Direction::Forward, Events::Endpoint::End);
       }

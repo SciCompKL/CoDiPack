@@ -256,6 +256,12 @@ namespace codi {
     bool constexpr PreaccEvents = CODI_PreaccEvents;
 #undef CODI_PreaccEvents
 
+#ifndef CODI_StatementEvents
+  #define CODI_StatementEvents false
+#endif
+    bool constexpr StatementEvents = CODI_StatementEvents;
+#undef CODI_StatementEvents
+
 #ifndef CODI_IndexEvents
   #define CODI_IndexEvents false
 #endif

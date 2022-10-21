@@ -110,6 +110,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
+          JacobianLinearTape& tape,
           Adjoint* adjointVector,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
@@ -128,8 +129,15 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           if (Config::StatementInputTag != argsSize) {
-            Adjoint lhsAdjoint = Adjoint();
+            EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(tape,
+                                                                              adjointVector,
+                                                                              curAdjointPos,
+                                                                              argsSize,
+                                                                              rhsIdentifiers,
+                                                                              rhsJacobians,
+                                                                              Events::Direction::Forward);
 
+            Adjoint lhsAdjoint = Adjoint();
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
           }
@@ -142,6 +150,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
+          JacobianLinearTape& tape,
           Adjoint* adjointVector,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
@@ -163,6 +172,14 @@ namespace codi {
 
           if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation.
+
+            EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(tape,
+                                                                              adjointVector,
+                                                                              curAdjointPos,
+                                                                              argsSize,
+                                                                              rhsIdentifiers,
+                                                                              rhsJacobians,
+                                                                              Events::Direction::Reverse);
 
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();

@@ -91,12 +91,22 @@ namespace codi {
       /// Constructor
       CODI_INLINE ActiveType(ActiveType<Tape> const& v) : primalValue(), identifier() {
         Base::init();
+        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
+                                                          Real(),
+                                                          Identifier(),
+                                                          v.getValue(),
+                                                          Events::Statement::Copy);
         this->getTape().store(*this, v);
       }
 
       /// Constructor
       CODI_INLINE ActiveType(Real const& value) : primalValue(value), identifier() {
         Base::init();
+        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
+                                                          Real(),
+                                                          Identifier(),
+                                                          value,
+                                                          Events::Statement::Passive);
       }
 
       /// Constructor
@@ -104,12 +114,22 @@ namespace codi {
       CODI_INLINE ActiveType(PassiveReal const& value) :
         primalValue(value), identifier() {
         Base::init();
+        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
+                                                          Real(),
+                                                          Identifier(),
+                                                          value,
+                                                          Events::Statement::Passive);
       }
 
       /// Constructor
       template<typename Rhs>
       CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
         Base::init();
+        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
+                                                          Real(),
+                                                          Identifier(),
+                                                          rhs.cast().getValue(),
+                                                          Events::Statement::Expression);
         this->getTape().store(*this, rhs.cast());
       }
 
@@ -117,6 +137,11 @@ namespace codi {
       template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
       CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : primalValue(rhs.cast()), identifier() {
         Base::init();
+        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
+                                                          Real(),
+                                                          Identifier(),
+                                                          rhs.cast().getValue(),
+                                                          Events::Statement::Passive);
       }
 
       /// Destructor
@@ -124,7 +149,7 @@ namespace codi {
         Base::destroy();
       }
 
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
+      /// See LhsExpressionInterface::operator=(ExpressionInterface const&).
       CODI_INLINE ActiveType<Tape>& operator=(ActiveType<Tape> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ActiveType>&>(*this) = v;
         return *this;

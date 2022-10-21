@@ -34,6 +34,7 @@
  */
 #pragma once
 
+#include "../misc/eventSystem.hpp"
 #include "../misc/macros.hpp"
 #include "../config.h"
 #include "../tapes/interfaces/fullTapeInterface.hpp"
@@ -130,13 +131,23 @@ namespace codi {
 
       /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
       CODI_INLINE Impl& operator=(Real const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(),
+                                                          cast().getValue(),
+                                                          cast().getIdentifier(),
+                                                          rhs,
+                                                          Events::Statement::Passive);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }
 
       /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE Impl & operator=(PassiveReal const& rhs) {
+      CODI_INLINE Impl& operator=(PassiveReal const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(),
+                                                          cast().getValue(),
+                                                          cast().getIdentifier(),
+                                                          rhs,
+                                                          Events::Statement::Passive);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }
@@ -144,6 +155,11 @@ namespace codi {
       /// Assignment operator for expressions. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename Rhs>
       CODI_INLINE Impl& operator=(ExpressionInterface<Real, Rhs> const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(),
+                                                          cast().getValue(),
+                                                          cast().getIdentifier(),
+                                                          rhs.cast().getValue(),
+                                                          Events::Statement::Expression);
         Impl::getTape().store(cast(), rhs.cast());
         return cast();
       }
@@ -151,12 +167,22 @@ namespace codi {
       /// Assignment operator for expressions. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
       CODI_INLINE Impl& operator=(ExpressionInterface<typename U::Real, Rhs> const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(),
+                                                          cast().getValue(),
+                                                          cast().getIdentifier(),
+                                                          rhs.cast().getValue(),
+                                                          Events::Statement::Passive);
         Impl::getTape().store(cast(), Real(rhs));
         return cast();
       }
 
       /// Assignment operator for lhs expressions. Calls store on the InternalStatementRecordingTapeInterface.
       CODI_INLINE Impl& operator=(LhsExpressionInterface const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(),
+                                                          cast().getValue(),
+                                                          cast().getIdentifier(),
+                                                          rhs.cast().getValue(),
+                                                          Events::Statement::Copy);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }

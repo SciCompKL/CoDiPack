@@ -352,6 +352,22 @@ namespace codi {
           }
       };
 
+      struct JacobianExtractionLogic : public JacobianComputationLogic<JacobianExtractionLogic> {
+        private:
+          size_t pos;
+
+        public:
+
+          JacobianExtractionLogic() : pos(0) {}
+
+          template<typename Node, typename Jacobian>
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, Identifier* rhsIdentifiers, Real* jacobians) {
+            rhsIdentifiers[pos] = node.getIdentifier();
+            jacobians[pos] = ComputationTraits::adjointConversion<Real>(jacobianExpr);
+            pos++;
+          }
+      };
+
     public:
 
       /// @{
@@ -389,6 +405,20 @@ namespace codi {
                                 StatementEvaluator::template createHandle<Impl, Impl, Rhs>());
 
             primalEntry = rhs.cast().getValue();
+
+            if (Config::StatementEvents) {
+              JacobianExtractionLogic getRhsIdentifiersAndJacobians;
+              std::vector<Identifier> rhsIdentifiers(MaxActiveArgs);
+              std::vector<Real> jacobians(MaxActiveArgs);
+              getRhsIdentifiersAndJacobians.eval(rhs.cast(), Real(1.0), rhsIdentifiers.data(), jacobians.data());
+
+              EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(),
+                                                                     lhs.cast().getIdentifier(),
+                                                                     rhs.cast().getValue(),
+                                                                     MaxActiveArgs,
+                                                                     rhsIdentifiers.data(),
+                                                                     jacobians.data());
+            }
           } else {
             indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
           }

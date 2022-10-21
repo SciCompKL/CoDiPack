@@ -112,6 +112,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
+          JacobianReuseTape& tape,
           Adjoint* adjointVector,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
@@ -122,6 +123,14 @@ namespace codi {
         CODI_UNUSED(endJacobianPos);
 
         while (curStmtPos < endStmtPos) {
+          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape,
+                                                                           adjointVector,
+                                                                           lhsIdentifiers[curStmtPos],
+                                                                           numberOfJacobians[curStmtPos],
+                                                                           rhsIdentifiers,
+                                                                           rhsJacobians,
+                                                                           Events::Direction::Forward);
+
           Adjoint lhsAdjoint = Adjoint();
           Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
                                   rhsJacobians, rhsIdentifiers);
@@ -136,6 +145,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
+          JacobianReuseTape& tape,
           Adjoint* adjointVector,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
@@ -147,6 +157,14 @@ namespace codi {
 
         while (curStmtPos > endStmtPos) {
           curStmtPos -= 1;
+
+          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape,
+                                                                           adjointVector,
+                                                                           lhsIdentifiers[curStmtPos],
+                                                                           numberOfJacobians[curStmtPos],
+                                                                           rhsIdentifiers,
+                                                                           rhsJacobians,
+                                                                           Events::Direction::Reverse);
 
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
           adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
