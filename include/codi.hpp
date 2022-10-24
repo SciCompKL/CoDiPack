@@ -62,6 +62,7 @@
 #include "codi/tools/algorithms/blackBox.hpp"
 #include "codi/tools/algorithms/blackBoxWithCheckpoints.hpp"
 #include "codi/tools/algorithms/checkpointTest.hpp"
+#include "codi/tools/algorithms/forwardMode.hpp"
 #include "codi/tools/algorithms/primalEvaluation.hpp"
 #include "codi/tools/algorithms/reverseAccumulation.hpp"
 #include "codi/tools/data/aggregatedTypeVectorAccessWrapper.hpp"
