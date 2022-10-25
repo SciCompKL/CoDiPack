@@ -373,7 +373,7 @@ namespace codi {
             }
         };
 
-        static void registerInitInput(Type& value) {
+        static void registerInitInput(Type& value, void*) {
           Type::getTape().registerInput(value);
         }
 

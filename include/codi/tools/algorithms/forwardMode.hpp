@@ -47,10 +47,11 @@ namespace codi {
   namespace algorithms {
 
     struct ForwardModeSettings {
-        int maxIterations;  ///< Maximum number of adjoint iterations.
+        int maxIterations; ///< Maximum number of forward iterations.
+        std::vector<double> seeding;
 
         ForwardModeSettings()
-            : maxIterations(1000)
+            : maxIterations(1000), seeding(1, 1.0)
          {}
     };
 
@@ -69,9 +70,10 @@ namespace codi {
         using RealVector = typename Base::RealVector;
 
         ForwardModeSettings settings;
+        size_t initSeedingPos;
 
-        ForwardMode() : settings() {}
-        ForwardMode(ForwardModeSettings settings) : settings(settings) {}
+        ForwardMode() : settings(), initSeedingPos() {}
+        ForwardMode(ForwardModeSettings settings) : settings(settings), initSeedingPos() {}
 
         ForwardModeSettings const* getSettings() const {
           return &settings;
@@ -84,13 +86,23 @@ namespace codi {
           bool isFinished = false;
 
           if(ApplicationFlags::InitializationComputesP & app.getHints()) {
-            app.setInitializationHandlingFunction(setGradientInit);
+            initSeedingPos = 0;
+            app.setInitializationHandlingFunction(setGradientInit, this);
           }
 
           app.initialize();
 
+          if(!(
+             1 == settings.seeding.size() ||
+             app.getSizeX() * GT::dim == settings.seeding.size())
+           ) {
+            CODI_EXCEPTION("Seeding of forward mode has the size '%d'. It needs either be one or '%d'.",
+                           (int)settings.seeding.size(),
+                           (int)app.getSizeX());
+          }
+
           if(!(ApplicationFlags::InitializationComputesP & app.getHints())) {
-            app.iterateX(setGradient);
+            app.iterateX(SetGradient(settings.seeding));
           }
 
           app.evaluateP();
@@ -125,14 +137,35 @@ namespace codi {
             }
         };
 
-        static void setGradientInit(Type& value) {
-          value.setGradient(1.0);
+        static void setGradientInit(Type& value, void* d) {
+          ForwardMode* data = (ForwardMode*)d;
+
+          if(data->settings.seeding.size() != 1 && data->initSeedingPos >= data->settings.seeding.size()) {
+            CODI_EXCEPTION("Not enough seeding entries.");
+          }
+          setGradient(value, data->initSeedingPos * GT::dim, data->settings.seeding);
+          data->initSeedingPos += 1;
         }
 
-        static void setGradient(Type& value, size_t pos) {
-          CODI_UNUSED(pos);
+        struct SetGradient {
+          public:
+            std::vector<double>& seeding;
+            SetGradient(std::vector<double>& seeding) : seeding(seeding) {}
 
-          value.setGradient(1.0);
+            void operator()(Type& value, size_t pos) {
+              setGradient(value, pos * GT::dim, seeding);
+            }
+        };
+
+        static void setGradient(Type& value, size_t pos, std::vector<double>& seeding) {
+          for(size_t d = 0; d < GT::dim; d += 1) {
+            if(1 == seeding.size()) {
+              GT::at(value.gradient(), d) = seeding[0];
+
+            } else {
+              GT::at(value.gradient(), d) = seeding[pos + d];
+            }
+          }
         }
     };
   }

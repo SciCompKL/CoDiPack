@@ -124,6 +124,16 @@ void runProblem(VectorConfig<Type> const& vecConf, std::vector<AppConfig> const&
   }
 }
 
+void runForwardTests()
+{
+  codi::algorithms::ForwardModeSettings settings;
+  settings.maxIterations = 455;
+
+  runProblem<codi::algorithms::ForwardMode>(VectorConfig<codi::RealForward>("Vec1", 1), select(appConfigs, {1}), settings, "forward");
+  runProblem<codi::algorithms::ForwardMode>(VectorConfig<codi::RealForwardVec<2>>("Vec2", 2), select(appConfigs, {1}), settings, "forward");
+}
+
+
 void runRATests()
 {
   codi::algorithms::ReverseAccumulationSettings settings;
@@ -206,6 +216,8 @@ int main(int nargs, char** args) {
   runBBTests(app);
 
   runBBWCTests();
+
+  runForwardTests();
 
   prepare(app, codi::StringUtil::format("%s/checkpointTest", OUTPUT_DIR), "run.out");
   app.setIteration(0);

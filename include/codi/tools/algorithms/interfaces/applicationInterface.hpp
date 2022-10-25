@@ -116,11 +116,12 @@ namespace codi {
         using Real = RealTraits::Real<Type>;
         using Res = Residuum<Real>;
 
-        using InitFunc = void (*)(Type& value);
+        using InitFunc = void (*)(Type& value, void* data);
 
         InitFunc initFunc;
+        void* initData;
 
-        ApplicationInterface() = default;
+        ApplicationInterface() : initFunc(nullptr), initData(nullptr) {}
 
         virtual ~ApplicationInterface() {}
 
@@ -162,10 +163,13 @@ namespace codi {
         bool isStop();
 
         // Init variable handling
-        void setInitializationHandlingFunction(InitFunc const& func) { initFunc = func; }
+        void setInitializationHandlingFunction(InitFunc const& func, void* data = nullptr) {
+          initFunc = func;
+          initData = data;
+        }
         void handleInitializationVariable(Type& value) {
           if(nullptr != initFunc) {
-            initFunc(value);
+            initFunc(value, initData);
           }
         }
     };
