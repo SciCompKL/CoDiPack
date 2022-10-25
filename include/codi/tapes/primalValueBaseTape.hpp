@@ -408,8 +408,8 @@ namespace codi {
 
             if (Config::StatementEvents) {
               JacobianExtractionLogic getRhsIdentifiersAndJacobians;
-              std::vector<Identifier> rhsIdentifiers(MaxActiveArgs);
-              std::vector<Real> jacobians(MaxActiveArgs);
+              std::array<Identifier, MaxActiveArgs> rhsIdentifiers;
+              std::array<Real, MaxActiveArgs> jacobians;
               getRhsIdentifiersAndJacobians.eval(rhs.cast(), Real(1.0), rhsIdentifiers.data(), jacobians.data());
 
               EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(),
@@ -500,7 +500,7 @@ namespace codi {
       template<typename Lhs>
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         internalRegisterInput(value, true);
-        EventSystem<Impl>::notifyTapeRegisterInputListeners(cast(), value.cast());
+        EventSystem<Impl>::notifyTapeRegisterInputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
       }
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
@@ -619,8 +619,6 @@ namespace codi {
       /// Internal method for the forward evaluation of the whole tape.
       template<bool copyPrimal, typename Adjoint>
       CODI_NO_INLINE void internalEvaluateForward(Position const& start, Position const& end, Adjoint* data) {
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data, Events::Direction::Forward, Events::Endpoint::Begin);
-
         std::vector<Real> primalsCopy(0);
         Real* primalData = primals.data();
 
@@ -633,10 +631,12 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(&vectorAccess, data);
 
-        Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
-                                                    &vectorAccess, primalData, dataVector, constantValueData);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, Events::Direction::Forward, Events::Endpoint::Begin);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data, Events::Direction::Forward, Events::Endpoint::End);
+        Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
+                                                    &vectorAccess, primalData, vectorAccess, constantValueData);
+
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, Events::Direction::Forward, Events::Endpoint::End);
       }
 
       /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes.

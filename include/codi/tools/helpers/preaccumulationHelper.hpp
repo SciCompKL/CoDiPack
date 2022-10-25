@@ -172,7 +172,7 @@ namespace codi {
     private:
 
       void addInputLogic(Type const& input) {
-        EventSystem<Tape>::notifyPreaccAddInputListeners(Type::getTape(), input);
+        EventSystem<Tape>::notifyPreaccAddInputListeners(Type::getTape(), input.getValue(), input.getIdentifier());
         Identifier const& identifier = input.getIdentifier();
         if (0 != identifier) {
           inputData.push_back(identifier);
@@ -191,7 +191,7 @@ namespace codi {
       }
 
       void addOutputLogic(Type& output) {
-        EventSystem<Tape>::notifyPreaccAddOutputListeners(Type::getTape(), output);
+        EventSystem<Tape>::notifyPreaccAddOutputListeners(Type::getTape(), output.value(), output.getIdentifier());
         Identifier const& identifier = output.getIdentifier();
         if (0 != identifier) {
           outputData.push_back(identifier);

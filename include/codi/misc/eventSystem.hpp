@@ -60,6 +60,11 @@ namespace codi {
       Copy,
       Passive
     };
+    enum class Reset {
+      Full,
+      Hard,
+      To
+    };
   }
 
   template<typename T_Tape>
@@ -71,6 +76,7 @@ namespace codi {
       using Identifier = typename Tape::Identifier;
       using Index = typename Tape::Identifier;
       using Position = typename Tape::Position;
+      using VectorAccess = VectorAccessInterface<Real, Identifier>;
 
     private:
       enum class Event {
@@ -98,7 +104,8 @@ namespace codi {
       };
 
       using Callback = void*;
-      static std::map<Event, std::list<std::pair<Callback, void*>>> listeners;
+      using EventListenerMap = std::map<Event, std::list<std::pair<Callback, void*>>>;
+      static EventListenerMap listeners;
 
       template<typename TypedCallback>
       static CODI_INLINE void internalRegisterListener(Event event, TypedCallback callback, void* customData) {
@@ -136,42 +143,36 @@ namespace codi {
         internalNotifyListeners<void (*)(Tape&, void*)>(Config::ADWorkflowEvents, Event::TapeStopRecording, tape);
       }
 
-      template<typename Lhs>
-      static CODI_INLINE void registerTapeRegisterInputListener(void (*callback)(Tape&, Lhs&, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerTapeRegisterInputListener(void (*callback)(Tape&, Real&, Identifier&, void*), void* customData = nullptr) {
         internalRegisterListener(Event::TapeRegisterInput, callback, customData);
       }
 
-      template<typename Lhs>
-      static CODI_INLINE void notifyTapeRegisterInputListeners(Tape& tape, Lhs& value) {
-        internalNotifyListeners<void (*)(Tape&, Lhs&, void*)>(Config::ADWorkflowEvents, Event::TapeRegisterInput, tape, value);
+      static CODI_INLINE void notifyTapeRegisterInputListeners(Tape& tape, Real& value, Identifier& identifier) {
+        internalNotifyListeners<void (*)(Tape&, Real&, Identifier&, void*)>(Config::ADWorkflowEvents, Event::TapeRegisterInput, tape, value, identifier);
       }
 
-      template<typename Lhs>
-      static CODI_INLINE void registerTapeRegisterOutputListener(void (*callback)(Tape&, Lhs&, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerTapeRegisterOutputListener(void (*callback)(Tape&, Real&, Identifier&, void*), void* customData = nullptr) {
         internalRegisterListener(Event::TapeRegisterOutput, callback, customData);
       }
 
-      template<typename Lhs>
-      static CODI_INLINE void notifyTapeRegisterOutputListeners(Tape& tape, Lhs& value) {
-        internalNotifyListeners<void (*)(Tape&, Lhs&, void*)>(Config::ADWorkflowEvents, Event::TapeRegisterOutput, tape, value);
+      static CODI_INLINE void notifyTapeRegisterOutputListeners(Tape& tape, Real& value, Identifier& identifier) {
+        internalNotifyListeners<void (*)(Tape&, Real&, Identifier&, void*)>(Config::ADWorkflowEvents, Event::TapeRegisterOutput, tape, value, identifier);
       }
 
-      template<typename Adjoint>
-      static CODI_INLINE void registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&, Adjoint*, Events::Direction, Events::Endpoint, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&, VectorAccess*, Events::Direction, Events::Endpoint, void*), void* customData = nullptr) {
         internalRegisterListener(Event::TapeEvaluate, callback, customData);
       }
 
-      template<typename Adjoint>
-      static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end, Adjoint* adjoint, Events::Direction direction, Events::Endpoint endpoint) {
-        internalNotifyListeners<void (*)(Tape&, Position const&, Position const&, Adjoint*, Events::Direction, Events::Endpoint, void*)>(Config::ADWorkflowEvents, Event::TapeEvaluate, tape, start, end, adjoint, direction, endpoint);
+      static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end, VectorAccess* adjoint, Events::Direction direction, Events::Endpoint endpoint) {
+        internalNotifyListeners<void (*)(Tape&, Position const&, Position const&, VectorAccess*, Events::Direction, Events::Endpoint, void*)>(Config::ADWorkflowEvents, Event::TapeEvaluate, tape, start, end, adjoint, direction, endpoint);
       }
 
-      static CODI_INLINE void registerTapeResetListener(void (*callback)(Tape&, Position const&, bool, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerTapeResetListener(void (*callback)(Tape&, Position const&, Events::Reset, bool, void*), void* customData = nullptr) {
         internalRegisterListener(Event::TapeReset, callback, customData);
       }
 
-      static CODI_INLINE void notifyTapeResetListeners(Tape& tape, Position const& position, bool clearAdjoints) {
-        internalNotifyListeners<void (*)(Tape&, Position const&, bool, void*)>(Config::ADWorkflowEvents, Event::TapeReset, tape, position, clearAdjoints);
+      static CODI_INLINE void notifyTapeResetListeners(Tape& tape, Position const& position, Events::Reset kind, bool clearAdjoints) {
+        internalNotifyListeners<void (*)(Tape&, Position const&, Events::Reset, bool, void*)>(Config::ADWorkflowEvents, Event::TapeReset, tape, position, kind, clearAdjoints);
       }
 
       /// @}
@@ -195,24 +196,20 @@ namespace codi {
         internalNotifyListeners<void (*)(Tape&, void*)>(Config::PreaccEvents, Event::PreaccFinish, tape);
       }
 
-      template<typename Lhs>
-      static CODI_INLINE void registerPreaccAddInputListener(void (*callback)(Tape&, Lhs&, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerPreaccAddInputListener(void (*callback)(Tape&, Real const&, Identifier const&, void*), void* customData = nullptr) {
         internalRegisterListener(Event::PreaccAddInput, callback, customData);
       }
 
-      template<typename Lhs>
-      static CODI_INLINE void notifyPreaccAddInputListeners(Tape& tape, Lhs& value) {
-        internalNotifyListeners<void (*)(Tape&, Lhs&, void*)>(Config::PreaccEvents, Event::PreaccAddInput, tape, value);
+      static CODI_INLINE void notifyPreaccAddInputListeners(Tape& tape, Real const& value, Identifier const& identifier) {
+        internalNotifyListeners<void (*)(Tape&, Real const&, Identifier const&, void*)>(Config::PreaccEvents, Event::PreaccAddInput, tape, value, identifier);
       }
 
-      template<typename Lhs>
-      static CODI_INLINE void registerPreaccAddOutputListener(void (*callback)(Tape&, Lhs&, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerPreaccAddOutputListener(void (*callback)(Tape&, Real&, Identifier&, void*), void* customData = nullptr) {
         internalRegisterListener(Event::PreaccAddOutput, callback, customData);
       }
 
-      template<typename Lhs>
-      static CODI_INLINE void notifyPreaccAddOutputListeners(Tape& tape, Lhs& value) {
-        internalNotifyListeners<void (*)(Tape&, Lhs&, void*)>(Config::PreaccEvents, Event::PreaccAddOutput, tape, value);
+      static CODI_INLINE void notifyPreaccAddOutputListeners(Tape& tape, Real& value, Identifier& identifier) {
+        internalNotifyListeners<void (*)(Tape&, Real&, Identifier&, void*)>(Config::PreaccEvents, Event::PreaccAddOutput, tape, value, identifier);
       }
 
       /// @}
@@ -279,5 +276,5 @@ namespace codi {
   };
 
   template<typename Tape>
-  std::map<typename EventSystem<Tape>::Event, std::list<std::pair<typename EventSystem<Tape>::Callback, void*>>> EventSystem<Tape>::listeners;
+  typename EventSystem<Tape>::EventListenerMap EventSystem<Tape>::listeners;
 }

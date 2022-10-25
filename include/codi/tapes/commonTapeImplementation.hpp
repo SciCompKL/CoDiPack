@@ -211,7 +211,7 @@ namespace codi {
       /// \copydoc codi::ReverseTapeInterface::registerOutput()
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        EventSystem<Impl>::notifyTapeRegisterOutputListeners(cast(), value.cast());
+        EventSystem<Impl>::notifyTapeRegisterOutputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
         cast().template store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
       }
 
@@ -262,7 +262,7 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
-        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), resetAdjoints);
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), Events::Reset::Full, resetAdjoints);
 
         if (resetAdjoints) {
           cast().clearAdjoints();
@@ -294,6 +294,7 @@ namespace codi {
       void resetHard() {
         Impl& impl = cast();
 
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), Events::Reset::Hard, true);
         impl.reset();
         impl.deleteAdjointVector();
 
@@ -469,7 +470,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true) {
-        EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, resetAdjoints);
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, Events::Reset::To, resetAdjoints);
 
         if (resetAdjoints) {
           Impl& impl = cast();
