@@ -129,7 +129,7 @@ namespace codi {
                                                                            numberOfJacobians[curStmtPos],
                                                                            rhsIdentifiers,
                                                                            rhsJacobians,
-                                                                           Events::Direction::Forward);
+                                                                           EventHints::Direction::Forward);
 
           Adjoint lhsAdjoint = Adjoint();
           Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
@@ -164,7 +164,7 @@ namespace codi {
                                                                            numberOfJacobians[curStmtPos],
                                                                            rhsIdentifiers,
                                                                            rhsJacobians,
-                                                                           Events::Direction::Reverse);
+                                                                           EventHints::Direction::Reverse);
 
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
           adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();

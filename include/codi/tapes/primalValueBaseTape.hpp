@@ -631,12 +631,12 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(&vectorAccess, data);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, Events::Direction::Forward, Events::Endpoint::Begin);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Forward, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
                                                     &vectorAccess, primalData, vectorAccess, constantValueData);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, Events::Direction::Forward, Events::Endpoint::End);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Forward, EventHints::Endpoint::End);
       }
 
       /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes.
@@ -675,7 +675,7 @@ namespace codi {
       /// Internal method for the reverse evaluation of the whole tape.
       template<bool copyPrimal, typename Adjoint>
       CODI_INLINE void internalEvaluateReverse(Position const& start, Position const& end, Adjoint* data) {
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data, Events::Direction::Reverse, Events::Endpoint::Begin);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data, EventHints::Direction::Reverse, EventHints::Endpoint::Begin);
 
         Real* primalData = primals.data();
 
@@ -691,7 +691,7 @@ namespace codi {
         Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction,
                                                     &vectorAccess, primalData, dataVector, constantValueData);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data, Events::Direction::Reverse, Events::Endpoint::End);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, data, EventHints::Direction::Reverse, EventHints::Endpoint::End);
       }
 
     public:

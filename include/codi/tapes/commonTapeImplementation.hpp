@@ -262,7 +262,7 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
-        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), Events::Reset::Full, resetAdjoints);
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), EventHints::Reset::Full, resetAdjoints);
 
         if (resetAdjoints) {
           cast().clearAdjoints();
@@ -294,7 +294,7 @@ namespace codi {
       void resetHard() {
         Impl& impl = cast();
 
-        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), Events::Reset::Hard, true);
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), EventHints::Reset::Hard, true);
         impl.reset();
         impl.deleteAdjointVector();
 
@@ -470,7 +470,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true) {
-        EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, Events::Reset::To, resetAdjoints);
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, EventHints::Reset::To, resetAdjoints);
 
         if (resetAdjoints) {
           Impl& impl = cast();

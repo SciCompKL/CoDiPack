@@ -95,7 +95,7 @@ namespace codi {
                                                           Real(),
                                                           Identifier(),
                                                           v.getValue(),
-                                                          Events::Statement::Copy);
+                                                          EventHints::Statement::Copy);
         this->getTape().store(*this, v);
       }
 
@@ -106,7 +106,7 @@ namespace codi {
                                                           Real(),
                                                           Identifier(),
                                                           value,
-                                                          Events::Statement::Passive);
+                                                          EventHints::Statement::Passive);
       }
 
       /// Constructor
@@ -118,7 +118,7 @@ namespace codi {
                                                           Real(),
                                                           Identifier(),
                                                           value,
-                                                          Events::Statement::Passive);
+                                                          EventHints::Statement::Passive);
       }
 
       /// Constructor
@@ -129,7 +129,7 @@ namespace codi {
                                                           Real(),
                                                           Identifier(),
                                                           rhs.cast().getValue(),
-                                                          Events::Statement::Expression);
+                                                          EventHints::Statement::Expression);
         this->getTape().store(*this, rhs.cast());
       }
 
@@ -141,7 +141,7 @@ namespace codi {
                                                           Real(),
                                                           Identifier(),
                                                           rhs.cast().getValue(),
-                                                          Events::Statement::Passive);
+                                                          EventHints::Statement::Passive);
       }
 
       /// Destructor

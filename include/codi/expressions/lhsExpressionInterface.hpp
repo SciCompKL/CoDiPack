@@ -135,7 +135,7 @@ namespace codi {
                                                           cast().getValue(),
                                                           cast().getIdentifier(),
                                                           rhs,
-                                                          Events::Statement::Passive);
+                                                          EventHints::Statement::Passive);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }
@@ -147,7 +147,7 @@ namespace codi {
                                                           cast().getValue(),
                                                           cast().getIdentifier(),
                                                           rhs,
-                                                          Events::Statement::Passive);
+                                                          EventHints::Statement::Passive);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }
@@ -159,7 +159,7 @@ namespace codi {
                                                           cast().getValue(),
                                                           cast().getIdentifier(),
                                                           rhs.cast().getValue(),
-                                                          Events::Statement::Expression);
+                                                          EventHints::Statement::Expression);
         Impl::getTape().store(cast(), rhs.cast());
         return cast();
       }
@@ -171,7 +171,7 @@ namespace codi {
                                                           cast().getValue(),
                                                           cast().getIdentifier(),
                                                           rhs.cast().getValue(),
-                                                          Events::Statement::Passive);
+                                                          EventHints::Statement::Passive);
         Impl::getTape().store(cast(), Real(rhs));
         return cast();
       }
@@ -182,7 +182,7 @@ namespace codi {
                                                           cast().getValue(),
                                                           cast().getIdentifier(),
                                                           rhs.cast().getValue(),
-                                                          Events::Statement::Copy);
+                                                          EventHints::Statement::Copy);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }

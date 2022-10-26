@@ -44,7 +44,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  namespace Events {
+  namespace EventHints {
     enum class Direction {
       Forward,
       Reverse
@@ -60,6 +60,7 @@ namespace codi {
       Copy,
       Passive
     };
+
     enum class Reset {
       Full,
       Hard,
@@ -159,20 +160,20 @@ namespace codi {
         internalNotifyListeners<void (*)(Tape&, Real&, Identifier&, void*)>(Config::ADWorkflowEvents, Event::TapeRegisterOutput, tape, value, identifier);
       }
 
-      static CODI_INLINE void registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&, VectorAccess*, Events::Direction, Events::Endpoint, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&, VectorAccess*, EventHints::Direction, EventHints::Endpoint, void*), void* customData = nullptr) {
         internalRegisterListener(Event::TapeEvaluate, callback, customData);
       }
 
-      static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end, VectorAccess* adjoint, Events::Direction direction, Events::Endpoint endpoint) {
-        internalNotifyListeners<void (*)(Tape&, Position const&, Position const&, VectorAccess*, Events::Direction, Events::Endpoint, void*)>(Config::ADWorkflowEvents, Event::TapeEvaluate, tape, start, end, adjoint, direction, endpoint);
+      static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end, VectorAccess* adjoint, EventHints::Direction direction, EventHints::Endpoint endpoint) {
+        internalNotifyListeners<void (*)(Tape&, Position const&, Position const&, VectorAccess*, EventHints::Direction, EventHints::Endpoint, void*)>(Config::ADWorkflowEvents, Event::TapeEvaluate, tape, start, end, adjoint, direction, endpoint);
       }
 
-      static CODI_INLINE void registerTapeResetListener(void (*callback)(Tape&, Position const&, Events::Reset, bool, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerTapeResetListener(void (*callback)(Tape&, Position const&, EventHints::Reset, bool, void*), void* customData = nullptr) {
         internalRegisterListener(Event::TapeReset, callback, customData);
       }
 
-      static CODI_INLINE void notifyTapeResetListeners(Tape& tape, Position const& position, Events::Reset kind, bool clearAdjoints) {
-        internalNotifyListeners<void (*)(Tape&, Position const&, Events::Reset, bool, void*)>(Config::ADWorkflowEvents, Event::TapeReset, tape, position, kind, clearAdjoints);
+      static CODI_INLINE void notifyTapeResetListeners(Tape& tape, Position const& position, EventHints::Reset kind, bool clearAdjoints) {
+        internalNotifyListeners<void (*)(Tape&, Position const&, EventHints::Reset, bool, void*)>(Config::ADWorkflowEvents, Event::TapeReset, tape, position, kind, clearAdjoints);
       }
 
       /// @}
@@ -217,12 +218,12 @@ namespace codi {
       /// @name Statements
       /// @{
 
-      static CODI_INLINE void registerStatementPrimalListener(void (*callback)(Tape&, Real const&, Identifier const&, Real const&, Events::Statement, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerStatementPrimalListener(void (*callback)(Tape&, Real const&, Identifier const&, Real const&, EventHints::Statement, void*), void* customData = nullptr) {
         internalRegisterListener(Event::StatementPrimal, callback, customData);
       }
 
-      static CODI_INLINE void notifyStatementPrimalListeners(Tape& tape, Real const& lhsValue, Identifier const& lhsIdentifier, Real const& rhsValue, Events::Statement statement) {
-        internalNotifyListeners<void (*)(Tape&, Real const&, Identifier const&, Real const&, Events::Statement, void*)>(Config::StatementEvents, Event::StatementPrimal, tape, lhsValue, lhsIdentifier, rhsValue, statement);
+      static CODI_INLINE void notifyStatementPrimalListeners(Tape& tape, Real const& lhsValue, Identifier const& lhsIdentifier, Real const& rhsValue, EventHints::Statement statement) {
+        internalNotifyListeners<void (*)(Tape&, Real const&, Identifier const&, Real const&, EventHints::Statement, void*)>(Config::StatementEvents, Event::StatementPrimal, tape, lhsValue, lhsIdentifier, rhsValue, statement);
       }
 
       static CODI_INLINE void registerStatementStoreOnTapeListener(void (*callback)(Tape&, Identifier const&, Real const&, size_t, Identifier const*, Real const*, void*), void* customData = nullptr) {
@@ -234,13 +235,13 @@ namespace codi {
       }
 
       template<typename Adjoint>
-      static CODI_INLINE void registerStatementEvaluateListener(void (*callback)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, Events::Direction, void*), void* customData = nullptr) {
-        internalRegisterListener<void (*)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, Events::Direction, void*)>(Event::StatementEvaluate, callback, customData);
+      static CODI_INLINE void registerStatementEvaluateListener(void (*callback)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, EventHints::Direction, void*), void* customData = nullptr) {
+        internalRegisterListener<void (*)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, EventHints::Direction, void*)>(Event::StatementEvaluate, callback, customData);
       }
 
       template<typename Adjoint>
-      static CODI_INLINE void notifyStatementEvaluateListeners(Tape& tape, Adjoint const* adjoints, Identifier const& lhsIdentifier, size_t numRhsVariables, Identifier const* rhsIdentifiers, Real const* jacobians, Events::Direction direction) {
-        internalNotifyListeners<void (*)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, Events::Direction, void*)>(Config::StatementEvents, Event::StatementEvaluate, tape, adjoints, lhsIdentifier, numRhsVariables, rhsIdentifiers, jacobians, direction);
+      static CODI_INLINE void notifyStatementEvaluateListeners(Tape& tape, Adjoint const* adjoints, Identifier const& lhsIdentifier, size_t numRhsVariables, Identifier const* rhsIdentifiers, Real const* jacobians, EventHints::Direction direction) {
+        internalNotifyListeners<void (*)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, EventHints::Direction, void*)>(Config::StatementEvents, Event::StatementEvaluate, tape, adjoints, lhsIdentifier, numRhsVariables, rhsIdentifiers, jacobians, direction);
       }
 
       /// @}

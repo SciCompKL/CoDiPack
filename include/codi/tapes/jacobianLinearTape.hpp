@@ -135,7 +135,7 @@ namespace codi {
                                                                               argsSize,
                                                                               rhsIdentifiers,
                                                                               rhsJacobians,
-                                                                              Events::Direction::Forward);
+                                                                              EventHints::Direction::Forward);
 
             Adjoint lhsAdjoint = Adjoint();
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
@@ -179,7 +179,7 @@ namespace codi {
                                                                               argsSize,
                                                                               rhsIdentifiers,
                                                                               rhsJacobians,
-                                                                              Events::Direction::Reverse);
+                                                                              EventHints::Direction::Reverse);
 
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();
