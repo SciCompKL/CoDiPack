@@ -85,63 +85,38 @@ namespace codi {
 
       /// Constructor
       CODI_INLINE ActiveType() : primalValue(), identifier() {
-        Base::init();
+        Base::init(Real(), EventHints::Statement::Passive);
       }
 
       /// Constructor
       CODI_INLINE ActiveType(ActiveType<Tape> const& v) : primalValue(), identifier() {
-        Base::init();
-        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
-                                                          Real(),
-                                                          Identifier(),
-                                                          v.getValue(),
-                                                          EventHints::Statement::Copy);
+        Base::init(v.getValue(), EventHints::Statement::Copy);
         this->getTape().store(*this, v);
       }
 
       /// Constructor
       CODI_INLINE ActiveType(Real const& value) : primalValue(value), identifier() {
-        Base::init();
-        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
-                                                          Real(),
-                                                          Identifier(),
-                                                          value,
-                                                          EventHints::Statement::Passive);
+        Base::init(value, EventHints::Statement::Passive);
       }
 
       /// Constructor
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
       CODI_INLINE ActiveType(PassiveReal const& value) :
         primalValue(value), identifier() {
-        Base::init();
-        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
-                                                          Real(),
-                                                          Identifier(),
-                                                          value,
-                                                          EventHints::Statement::Passive);
+        Base::init(value, EventHints::Statement::Passive);
       }
 
       /// Constructor
       template<typename Rhs>
       CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
-        Base::init();
-        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
-                                                          Real(),
-                                                          Identifier(),
-                                                          rhs.cast().getValue(),
-                                                          EventHints::Statement::Expression);
+        Base::init(rhs.cast().getValue(), EventHints::Statement::Expression);
         this->getTape().store(*this, rhs.cast());
       }
 
       /// Constructor
       template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
       CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : primalValue(rhs.cast()), identifier() {
-        Base::init();
-        EventSystem<Tape>::notifyStatementPrimalListeners(getTape(),
-                                                          Real(),
-                                                          Identifier(),
-                                                          rhs.cast().getValue(),
-                                                          EventHints::Statement::Passive);
+        Base::init(rhs.cast().getValue(), EventHints::Statement::Passive);
       }
 
       /// Destructor

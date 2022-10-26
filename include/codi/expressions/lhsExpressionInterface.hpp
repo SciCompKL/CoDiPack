@@ -211,8 +211,13 @@ namespace codi {
       /// Helper function to initialize the primal value and the identifier by the tape.
       ///
       /// To be called in constructors of the implementing class.
-      CODI_INLINE void init() {
+      CODI_INLINE void init(Real const& rhsValue, EventHints::Statement statementType) {
         Impl::getTape().initIdentifier(cast().value(), cast().getIdentifier());
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(),
+                                                          Real(),
+                                                          Identifier(),
+                                                          rhsValue,
+                                                          statementType);
       }
 
       /// Helper function to deconstruct the primal value and the identifier by the tape.
