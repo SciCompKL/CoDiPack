@@ -151,6 +151,21 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
+      CODI_INLINE void resetInternal(bool resetAdjoints, EventHints::Reset kind) {
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), kind, resetAdjoints);
+
+        if (resetAdjoints) {
+          cast().clearAdjoints();
+        }
+
+        deleteExternalFunctionUserData(cast().getZeroPosition());
+
+        externalFunctionData.reset();
+
+        // Requires extra reset since the default vector implementation forwards to resetTo
+        cast().indexManager.get().reset();
+      }
+
     protected:
 
       /*******************************************************************************/
@@ -262,18 +277,7 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
-        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), EventHints::Reset::Full, resetAdjoints);
-
-        if (resetAdjoints) {
-          cast().clearAdjoints();
-        }
-
-        deleteExternalFunctionUserData(cast().getZeroPosition());
-
-        externalFunctionData.reset();
-
-        // Requires extra reset since the default vector implementation forwards to resetTo
-        cast().indexManager.get().reset();
+        resetInternal(resetAdjoints, EventHints::Reset::Full);
       }
 
       // clearAdjoints and reset(Position) are not implemented.
@@ -292,10 +296,13 @@ namespace codi {
 
       /// \copydoc codi::DataManagementTapeInterface::resetHard()
       void resetHard() {
+
         Impl& impl = cast();
 
-        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), EventHints::Reset::Hard, true);
-        impl.reset();
+        // First perform a regular reset.
+        resetInternal(false, EventHints::Reset::Hard);
+
+        // Then perform the hard resets.
         impl.deleteAdjointVector();
 
         externalFunctionData.resetHard();
