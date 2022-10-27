@@ -129,17 +129,13 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           if (Config::StatementInputTag != argsSize) {
-            EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(tape,
-                                                                              adjointVector,
-                                                                              curAdjointPos,
-                                                                              argsSize,
-                                                                              rhsIdentifiers,
-                                                                              rhsJacobians,
-                                                                              EventHints::Direction::Forward);
-
             Adjoint lhsAdjoint = Adjoint();
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
+
+            EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
+                                                                  tape, curAdjointPos, GradientTraits::dim<Adjoint>(),
+                                                                  GradientTraits::toArray(lhsAdjoint).data());
           }
 
           curStmtPos += 1;
@@ -173,13 +169,9 @@ namespace codi {
           if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation.
 
-            EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(tape,
-                                                                              adjointVector,
-                                                                              curAdjointPos,
-                                                                              argsSize,
-                                                                              rhsIdentifiers,
-                                                                              rhsJacobians,
-                                                                              EventHints::Direction::Reverse);
+            EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
+                                                                  tape, curAdjointPos, GradientTraits::dim<Adjoint>(),
+                                                                  GradientTraits::toArray(lhsAdjoint).data());
 
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();

@@ -123,19 +123,15 @@ namespace codi {
         CODI_UNUSED(endJacobianPos);
 
         while (curStmtPos < endStmtPos) {
-          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape,
-                                                                           adjointVector,
-                                                                           lhsIdentifiers[curStmtPos],
-                                                                           numberOfJacobians[curStmtPos],
-                                                                           rhsIdentifiers,
-                                                                           rhsJacobians,
-                                                                           EventHints::Direction::Forward);
-
           Adjoint lhsAdjoint = Adjoint();
           Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
                                   rhsJacobians, rhsIdentifiers);
 
           adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
+
+          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(
+                                                      tape, lhsIdentifiers[curStmtPos], GradientTraits::dim<Adjoint>(),
+                                                      GradientTraits::toArray(lhsAdjoint).data());
 
           curStmtPos += 1;
         }
@@ -158,17 +154,13 @@ namespace codi {
         while (curStmtPos > endStmtPos) {
           curStmtPos -= 1;
 
-          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape,
-                                                                           adjointVector,
-                                                                           lhsIdentifiers[curStmtPos],
-                                                                           numberOfJacobians[curStmtPos],
-                                                                           rhsIdentifiers,
-                                                                           rhsJacobians,
-                                                                           EventHints::Direction::Reverse);
-
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
-          adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
 
+          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(
+                                                      tape, lhsIdentifiers[curStmtPos], GradientTraits::dim<Adjoint>(),
+                                                      GradientTraits::toArray(lhsAdjoint).data());
+
+          adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
           Base::incrementAdjoints(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
                                   rhsJacobians, rhsIdentifiers);
         }

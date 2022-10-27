@@ -105,7 +105,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueLinearTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -137,6 +137,10 @@ namespace codi {
             adjointVector->setLhsTangent(curAdjointPos);
 #else
             adjointVector[curAdjointPos] = lhsTangent;
+
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(
+                                                                  tape, curAdjointPos, GradientTraits::dim<Gradient>(),
+                                                                  GradientTraits::toArray(lhsTangent).data());
 #endif
           }
 
@@ -181,7 +185,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateReverse_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueLinearTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -208,6 +212,11 @@ namespace codi {
             adjointVector->setLhsAdjoint(curAdjointPos);
 #else
             Gradient const lhsAdjoint = adjointVector[curAdjointPos];
+
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(
+                                                                  tape, curAdjointPos, GradientTraits::dim<Gradient>(),
+                                                                  GradientTraits::toArray(lhsAdjoint).data());
+
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Gradient();
             }

@@ -234,14 +234,12 @@ namespace codi {
         internalNotifyListeners<void (*)(Tape&, Identifier const&, Real const&, size_t, Identifier const*, Real const*, void*)>(Config::StatementEvents, Event::StatementStoreOnTape, tape, lhsIdentifier, rhsValue, numActiveVariables, rhsIdentifiers, jacobians);
       }
 
-      template<typename Adjoint>
-      static CODI_INLINE void registerStatementEvaluateListener(void (*callback)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, EventHints::Direction, void*), void* customData = nullptr) {
-        internalRegisterListener<void (*)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, EventHints::Direction, void*)>(Event::StatementEvaluate, callback, customData);
+      static CODI_INLINE void registerStatementEvaluateListener(void (*callback)(Tape&, Identifier const&, size_t, Real const*, void*), void* customData = nullptr) {
+        internalRegisterListener<void (*)(Tape&, Identifier const&, size_t, Real const*, void*)>(Event::StatementEvaluate, callback, customData);
       }
 
-      template<typename Adjoint>
-      static CODI_INLINE void notifyStatementEvaluateListeners(Tape& tape, Adjoint const* adjoints, Identifier const& lhsIdentifier, size_t numRhsVariables, Identifier const* rhsIdentifiers, Real const* jacobians, EventHints::Direction direction) {
-        internalNotifyListeners<void (*)(Tape&, Adjoint const*, Identifier const&, size_t, Identifier const*, Real const*, EventHints::Direction, void*)>(Config::StatementEvents, Event::StatementEvaluate, tape, adjoints, lhsIdentifier, numRhsVariables, rhsIdentifiers, jacobians, direction);
+      static CODI_INLINE void notifyStatementEvaluateListeners(Tape& tape, Identifier const& lhsIdentifier, size_t sizeLhsAdjoint, Real const* lhsAdjoint) {
+        internalNotifyListeners<void (*)(Tape&, Identifier const&, size_t, Real const*, void*)>(Config::StatementEvents, Event::StatementEvaluate, tape, lhsIdentifier, sizeLhsAdjoint, lhsAdjoint);
       }
 
       /// @}

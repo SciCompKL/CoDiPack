@@ -78,6 +78,11 @@ namespace codi {
           CODI_UNUSED(dim);
           return gradient;
         }
+
+        /// Converts the (possibly multi-component) gradient to an array of Reals.
+        CODI_INLINE static std::array<Real, dim> toArray(Gradient const& gradient) {
+          return std::array<Real, dim>{at(gradient, 0)};
+        }
     };
 
     /// \copydoc codi::GradientTraits::TraitsImplementation::Real
@@ -100,6 +105,12 @@ namespace codi {
     template<typename Gradient>
     CODI_INLINE typename TraitsImplementation<Gradient>::Real const& at(Gradient const& gradient, size_t dim) {
       return TraitsImplementation<Gradient>::at(gradient, dim);
+    }
+
+    /// \copydoc codi::GradientTraits::TraitsImplementation::toArray()
+    template<typename Gradient>
+    CODI_INLINE std::array<typename TraitsImplementation<Gradient>::Real, TraitsImplementation<Gradient>::dim> toArray(Gradient const& gradient) {
+      return TraitsImplementation<Gradient>::toArray(gradient);
     }
 
     /// @}

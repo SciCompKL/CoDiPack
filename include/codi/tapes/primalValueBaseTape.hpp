@@ -609,11 +609,13 @@ namespace codi {
 
       /// Forward evaluation of an inner tape part between two external functions.
       CODI_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start,
-                                                                           NestedPosition const& end, Real* primalData,
+                                                                           NestedPosition const& end,
+                                                                           Impl& tape,
+                                                                           Real* primalData,
                                                                            ADJOINT_VECTOR_TYPE* data,
                                                                            ConstantValueData& constantValueData) {
         Wrap_internalEvaluateForward_Step3_EvalStatements evalFunc{};
-        constantValueData.evaluateForward(start, end, evalFunc, primalData, data);
+        constantValueData.evaluateForward(start, end, evalFunc, tape, primalData, data);
       }
 
       /// Internal method for the forward evaluation of the whole tape.
@@ -634,7 +636,7 @@ namespace codi {
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Forward, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
-                                                    &vectorAccess, primalData, vectorAccess, constantValueData);
+                                                    &vectorAccess, cast(), primalData, dataVector, constantValueData);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Forward, EventHints::Endpoint::End);
       }
@@ -665,11 +667,13 @@ namespace codi {
 
       /// Reverse evaluation of an inner tape part between two external functions.
       CODI_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start,
-                                                                           NestedPosition const& end, Real* primalData,
+                                                                           NestedPosition const& end,
+                                                                           Impl& tape,
+                                                                           Real* primalData,
                                                                            ADJOINT_VECTOR_TYPE* data,
                                                                            ConstantValueData& constantValueData) {
         Wrap_internalEvaluateReverse_Step3_EvalStatements evalFunc;
-        constantValueData.evaluateReverse(start, end, evalFunc, primalData, data);
+        constantValueData.evaluateReverse(start, end, evalFunc, tape, primalData, data);
       }
 
       /// Internal method for the reverse evaluation of the whole tape.
@@ -689,7 +693,7 @@ namespace codi {
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Reverse, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction,
-                                                    &vectorAccess, primalData, dataVector, constantValueData);
+                                                    &vectorAccess, cast(), primalData, dataVector, constantValueData);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Reverse, EventHints::Endpoint::End);
       }

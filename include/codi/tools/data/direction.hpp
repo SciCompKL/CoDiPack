@@ -336,6 +336,14 @@ namespace codi {
         CODI_INLINE static Real const& at(Gradient const& gradient, size_t dim) {
           return gradient[dim];
         }
+
+        CODI_INLINE static std::array<Real, dim> toArray(Gradient const& gradient) {
+          std::array<Real, dim> result;
+          for (size_t i = 0; i < dim; ++i) {
+            result[i] = at(gradient, i);
+          }
+          return result;
+        }
     };
   }
 #endif
