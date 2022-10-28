@@ -163,11 +163,11 @@ namespace codi {
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          Adjoint const lhsAdjoint = adjointVector[curAdjointPos];  // We do not use the zero index, decrement of
-                                                                    // curAdjointPos at the end of the loop.
-
           if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation.
+
+            Adjoint const lhsAdjoint = adjointVector[curAdjointPos];  // We do not use the zero index, decrement of
+                                                                      // curAdjointPos at the end of the loop.
 
             EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
                                                                   tape, curAdjointPos, GradientTraits::dim<Adjoint>(),
