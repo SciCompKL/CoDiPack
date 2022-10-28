@@ -74,6 +74,10 @@ namespace codi {
       CODI_INLINE StaticContextActiveType(Real const& primal, Identifier const& identifier)
           : primal(primal), identifier(identifier) {}
 
+      /// Constructor
+      CODI_INLINE StaticContextActiveType(StaticContextActiveType const& other)
+        : primal(other.primal), identifier(other.identifier) {}
+
       /*******************************************************************************/
       /// @name Partial implementation of LhsExpressionInterface
       /// @{
