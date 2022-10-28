@@ -65,6 +65,12 @@ namespace codi {
       using ActiveResult = CODI_UNDEFINED;  ///< Type into which the expression can be converted. Usually also the type
                                             ///< from which is constructed.
 
+      /// Constructor
+      ExpressionInterface() {}
+
+      /// Constructor
+      ExpressionInterface(ExpressionInterface const&) {}
+
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);
