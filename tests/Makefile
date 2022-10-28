@@ -52,7 +52,7 @@ else
   $(warning EIGEN_DIR not defined. Testing without Eigen.)
 endif
 
-FLAGS = -Wall -Werror=return-type -Wextra -pedantic -std=c++11 -DCODI_IgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(INCLUDE_DIR) $(CODI_INCLUDE) $(EIGEN_DEFINE)
+FLAGS = -Wall -Werror=return-type -Wextra -pedantic -std=c++11 -DCODI_IgnoreInvalidJacobians=true -DCODI_EnableAssert=true -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -I$(INCLUDE_DIR) $(CODI_INCLUDE) $(EIGEN_DEFINE)
 
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
