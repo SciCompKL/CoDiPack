@@ -37,7 +37,8 @@ CODI_DIR = ..
 
 CXX ?= g++
 
-allTypes = RealForward RealReverse RealReverseIndex RealReversePrimal RealReversePrimalIndex
+scalarTypes = RealForward RealReverse RealReverseIndex RealReversePrimal RealReversePrimalIndex
+allTypes = $(scalarTypes) $(foreach type,$(scalarTypes),$(type)Vec)
 
 .PHONY: clean
 clean:
@@ -47,8 +48,10 @@ HEADERS = $(shell find include -name '*.hpp')
 
 getDriver = $(if $(findstring Forward,$1),Forward,Reverse)
 
+addVectorDimIfNeeded = $(if $(findstring Vec,$1),$1<4>,$1)
+
 build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS)
-	$(CXX) src/driver$(call getDriver,$*).cpp -o $@ $(CXXFLGS) -DNUMBER=codi::$* -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents
+	$(CXX) src/driver$(call getDriver,$*).cpp -o $@ $(CXXFLGS) -DNUMBER='codi::$(call addVectorDimIfNeeded,$*)' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents
 	
 build/%.out: build/%.exe
 	./$< > $@
