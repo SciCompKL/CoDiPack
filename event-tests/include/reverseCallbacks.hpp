@@ -115,6 +115,27 @@ void onStatementPrimal(Tape&, typename Tape::Real const& lhsValue, typename Tape
 }
 
 template<typename Tape>
+struct GlobalStatementCounters {
+  public:
+    static size_t storeOnTape;
+    static size_t evaluate;
+
+    static void assertEqual() {
+      if (storeOnTape != evaluate) {
+        std::cerr << "StatementStoreOnTape count (" << storeOnTape << ") does not match StatementEvaluate count ("
+                  << evaluate << ")" << std::endl;
+        abort();
+      }
+    }
+};
+
+template<typename Tape>
+size_t GlobalStatementCounters<Tape>::storeOnTape = 0;
+
+template<typename Tape>
+size_t GlobalStatementCounters<Tape>::evaluate = 0;
+
+template<typename Tape>
 void onStatementStoreOnTape(Tape&, typename Tape::Identifier const& lhsIdentifier, typename Tape::Real const& rhsValue,
                             size_t numActiveVariables, typename Tape::Identifier const* rhsIdentifiers,
                             typename Tape::Real const* jacobians, void*) {
@@ -124,6 +145,8 @@ void onStatementStoreOnTape(Tape&, typename Tape::Identifier const& lhsIdentifie
     std::cout << rhsIdentifiers[i] << " " << jacobians[i] << "; ";
   }
   std::cout << std::endl;
+
+  ++GlobalStatementCounters<Tape>::storeOnTape;
 }
 
 template<typename Tape>
@@ -135,6 +158,8 @@ void onStatementEvaluate(Tape&, typename Tape::Identifier const& lhsIdentifier, 
     std::cout << adjoints[i] << " ";
   }
   std::cout << std::endl;
+
+  ++GlobalStatementCounters<Tape>::evaluate;
 }
 
 /// @}

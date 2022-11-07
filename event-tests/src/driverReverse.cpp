@@ -78,6 +78,8 @@ int main() {
 
     tape.evaluate();
 
+    GlobalStatementCounters<Tape>::assertEqual();
+
     tape.reset();
   }
 
