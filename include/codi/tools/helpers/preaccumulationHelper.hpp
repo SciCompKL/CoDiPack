@@ -286,12 +286,27 @@ namespace codi {
               }
               nonZerosLeft -= jacobiansForStatement;  // Update nonzeros so that we know if it is the last round.
 
+              // containers for event data
+              std::vector<Real> jacobians;
+              std::vector<Identifier> identifiers;
+
+              if (Config::StatementEvents) {
+                jacobians.reserve(jacobiansForStatement + (int)staggeringActive);
+                identifiers.reserve(jacobiansForStatement + (int)staggeringActive);
+              }
+
               Identifier storedIdentifier = lastIdentifier;
               // storeManual creates a new identifier which is either the identifier of the output w or the temporary
               // staggering variables t_1, t_2, ...
               tape.storeManual(value.getValue(), lastIdentifier, jacobiansForStatement + (int)staggeringActive);
               if (staggeringActive) {  // Not the first staggering so push the last output.
                 tape.pushJacobiManual(1.0, 0.0, storedIdentifier);
+
+                if (Config::StatementEvents) {
+                  // collect event data
+                  jacobians.push_back(1.0);
+                  identifiers.push_back(storedIdentifier);
+                }
               }
 
               // Push the rest of the Jacobians for the statement.
@@ -299,8 +314,19 @@ namespace codi {
                 if (Real() != (Real)jacobian(curOut, curIn)) {
                   tape.pushJacobiManual(jacobian(curOut, curIn), 0.0, inputData[curIn]);
                   jacobiansForStatement -= 1;
+
+                  if (Config::StatementEvents) {
+                    // collect event data
+                    jacobians.push_back(jacobian(curOut, curIn));
+                    identifiers.push_back(inputData[curIn]);
+                  }
                 }
                 curIn += 1;
+              }
+
+              if (Config::StatementEvents) {
+                EventSystem<Tape>::notifyStatementStoreOnTapeListeners(tape, lastIdentifier, 0.0, jacobians.size(),
+                                                                       identifiers.data(), jacobians.data());
               }
 
               staggeringActive = true;

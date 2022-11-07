@@ -100,6 +100,8 @@ StatementEvaluate lhsIdentifier 32758 numAdjoints 1
 	1.32718 
 TapeEvaluate forward end from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 38, [0, 19, []]]]
 TapeReset to position [0, 0, [0, 32, [0, 16, []]]] clear adjoints 1
+StatementStoreOnTape lhsIdentifier 32758 rhsValue 0 numActiveVariables 1
+	32764 1.32718; 
 TapeStartRecording
 PreaccFinish
 StatementPrimal copy lhsValue 0 lhsIdentifier 0 rhsValue 2.99776
@@ -307,6 +309,8 @@ StatementEvaluate lhsIdentifier 32758 numAdjoints 1
 	1.32718 
 TapeEvaluate forward end from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 38, [0, 19, []]]]
 TapeReset to position [0, 0, [0, 32, [0, 16, []]]] clear adjoints 1
+StatementStoreOnTape lhsIdentifier 32758 rhsValue 0 numActiveVariables 1
+	32765 1.32718; 
 TapeStartRecording
 PreaccFinish
 StatementPrimal copy lhsValue 0 lhsIdentifier 0 rhsValue 2.99776
@@ -510,6 +514,8 @@ StatementEvaluate lhsIdentifier 32758 numAdjoints 1
 	1.32718 
 TapeEvaluate forward end from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 38, [0, 19, []]]]
 TapeReset to position [0, 0, [0, 32, [0, 16, []]]] clear adjoints 1
+StatementStoreOnTape lhsIdentifier 32758 rhsValue 0 numActiveVariables 1
+	32761 1.32718; 
 TapeStartRecording
 PreaccFinish
 StatementPrimal copy lhsValue 0 lhsIdentifier 0 rhsValue 2.99776
@@ -713,6 +719,8 @@ StatementEvaluate lhsIdentifier 32758 numAdjoints 1
 	1.32718 
 TapeEvaluate forward end from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 38, [0, 19, []]]]
 TapeReset to position [0, 0, [0, 32, [0, 16, []]]] clear adjoints 1
+StatementStoreOnTape lhsIdentifier 32758 rhsValue 0 numActiveVariables 1
+	32765 1.32718; 
 TapeStartRecording
 PreaccFinish
 StatementPrimal copy lhsValue 0 lhsIdentifier 0 rhsValue 2.99776

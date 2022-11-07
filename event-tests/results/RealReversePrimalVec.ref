@@ -117,6 +117,8 @@ StatementEvaluate lhsIdentifier 277 numAdjoints 4
 TapeEvaluate forward end from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 4, [0, 4, [0, 42, [0, 23, 277]]]]]
 TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] clear adjoints 1
 IndexAssign index 275
+StatementStoreOnTape lhsIdentifier 275 rhsValue 0 numActiveVariables 1
+	271 1.32718; 
 TapeStartRecording
 PreaccFinish
 StatementPrimal copy lhsValue 0 lhsIdentifier 0 rhsValue 2.99776
