@@ -60,7 +60,7 @@ int main() {
     tape.setActive();
 
     for (size_t i = 0; i < nInputs; ++i) {
-      inputs[i] = sin(i);
+      inputs[i] = sin(i + 1);
       tape.registerInput(inputs[i]);
     }
 

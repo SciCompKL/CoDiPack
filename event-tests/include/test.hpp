@@ -52,12 +52,25 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
 
   // computations
 
-  // TODO
+  codi::PreaccumulationHelper<ActiveType> ph;
+
+  ph.start(a);
+
+  ActiveType q = a * a;
+  ActiveType v = q * cos(a);
+  ActiveType w = q * v;
+
+  ph.finish(false, w);
+
+  ActiveType x = b;
+  ActiveType y = c * d;
+  ActiveType z = d;
+  z = exp(c);
 
   // produce outputs
 
   for (size_t i = 0; i < nInputs; ++i) {
-    outputs[i] = sin(i * (a + b)) + cos(c * d / (i + 2));
+    outputs[i] = sin(i * (w + x)) + cos(y * z / (i + 1));
   }
 
 }

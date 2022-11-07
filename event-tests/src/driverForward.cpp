@@ -56,7 +56,7 @@ int main() {
   for (int offset = 0; offset < nInputs; offset += dim) {
 
     for (size_t i = 0; i < nInputs; ++i) {
-      inputs[i] = sin(i);
+      inputs[i] = sin(i + 1);
     }
 
     for (size_t currentDim = 0; currentDim < dim && offset + currentDim < nInputs; ++currentDim) {
