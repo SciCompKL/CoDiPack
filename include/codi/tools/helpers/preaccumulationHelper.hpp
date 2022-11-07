@@ -99,13 +99,13 @@ namespace codi {
 
       Position startPos;                     ///< Starting position for the region.
       std::vector<Gradient> storedAdjoints;  ///< If adjoints of inputs should be stored, before the preaccumulation.
-      JacobianCountNonZerosRow<Real> jacobiean;  ///< Jacobian for the preaccumulation.
+      JacobianCountNonZerosRow<Real> jacobian;  ///< Jacobian for the preaccumulation.
 
     public:
 
       /// Constructor
       PreaccumulationHelper()
-          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobiean(0, 0) {}
+          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobian(0, 0) {}
 
       /// Add multiple additional inputs. Inputs need to be of type `Type`. Called after start().
       template<typename... Inputs>
@@ -239,21 +239,21 @@ namespace codi {
         Tape& tape = Type::getTape();
 
         Position endPos = tape.getPosition();
-        if (jacobiean.getM() != outputData.size() || jacobiean.getN() != inputData.size()) {
-          jacobiean.resize(outputData.size(), inputData.size());
+        if (jacobian.getM() != outputData.size() || jacobian.getN() != inputData.size()) {
+          jacobian.resize(outputData.size(), inputData.size());
         }
 
         Algorithms<Type, false>::computeJacobian(startPos, endPos, inputData.data(), inputData.size(),
-                                                 outputData.data(), outputData.size(), jacobiean);
+                                                 outputData.data(), outputData.size(), jacobian);
 
         // Store the Jacobian matrix.
         tape.resetTo(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
           Type& value = *outputValues[curOut];
-          if (0 != jacobiean.nonZerosRow(curOut)) {
-            int nonZerosLeft = jacobiean.nonZerosRow(curOut);
-            jacobiean.nonZerosRow(curOut) = 0;
+          if (0 != jacobian.nonZerosRow(curOut)) {
+            int nonZerosLeft = jacobian.nonZerosRow(curOut);
+            jacobian.nonZerosRow(curOut) = 0;
 
             // We need to initialize with the output's current identifier such that it is correctly deleted in
             // storeManual.
@@ -296,8 +296,8 @@ namespace codi {
 
               // Push the rest of the Jacobians for the statement.
               while (jacobiansForStatement > 0) {
-                if (Real() != (Real)jacobiean(curOut, curIn)) {
-                  tape.pushJacobiManual(jacobiean(curOut, curIn), 0.0, inputData[curIn]);
+                if (Real() != (Real)jacobian(curOut, curIn)) {
+                  tape.pushJacobiManual(jacobian(curOut, curIn), 0.0, inputData[curIn]);
                   jacobiansForStatement -= 1;
                 }
                 curIn += 1;
