@@ -32,20 +32,54 @@
  *    - Former members:
  *      - Tim Albring
  */
-#pragma once
 
-#include <codi.hpp>
+#include "../include/reverseCallbacks.hpp"
+#include "../include/test.hpp"
 
-#include "string_conversions.hpp"
+#ifndef NUMBER
+  #error Please define NUMBER as a CoDiPack type.
+#endif
 
-template<typename Tape>
-void onStatementPrimal(Tape&, typename Tape::Real const& lhsValue, typename Tape::Identifier const& lhsDotValue,
-                       typename Tape::Real const& rhsValue, codi::EventHints::Statement statement, void*) {
-  std::cout << "StatementPrimal " << to_string(statement) << " lhsValue " << lhsValue << " lhsDotValue "
-            << lhsDotValue << " rhsValue " << rhsValue << std::endl;
-}
+int main() {
 
-template<typename Tape>
-void registerForwardCallbacks() {
-  codi::EventSystem<Tape>::registerStatementPrimalListener(onStatementPrimal<Tape>);
+  using Tape = NUMBER::Tape;
+  size_t constexpr dim = codi::GradientTraits::dim<Tape::Gradient>();
+
+  auto& tape = NUMBER::getTape();
+
+  size_t constexpr nInputs = 4;
+  size_t constexpr nOutputs = 4;
+
+  registerReverseCallbacks<Tape>();
+
+  NUMBER inputs[nInputs] = {};
+  NUMBER outputs[nOutputs] = {};
+
+  for (int offset = 0; offset < nOutputs; offset += dim) {
+
+    tape.setActive();
+
+    for (size_t i = 0; i < nInputs; ++i) {
+      inputs[i] = sin(i);
+      tape.registerInput(inputs[i]);
+    }
+
+    test<NUMBER>(nInputs, inputs, nOutputs, outputs);
+
+    for (size_t j = 0; j < nOutputs; ++j) {
+      tape.registerOutput(outputs[j]);
+    }
+
+    tape.setPassive();
+
+    for (size_t currentDim = 0; currentDim < dim && offset + currentDim < nOutputs; ++currentDim) {
+      codi::GradientTraits::at(outputs[offset + currentDim].gradient(), currentDim) = 1.0;
+    }
+
+    tape.evaluate();
+
+    tape.reset();
+  }
+
+  return 0;
 }

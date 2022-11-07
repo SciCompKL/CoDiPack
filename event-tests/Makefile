@@ -37,7 +37,7 @@ CODI_DIR = ..
 
 CXX ?= g++
 
-allTypes = RealForward
+allTypes = RealForward RealReverse RealReverseIndex RealReversePrimal RealReversePrimalIndex
 
 .PHONY: clean
 clean:
@@ -47,7 +47,7 @@ HEADERS = $(shell find include -name '*.hpp')
 
 getDriver = $(if $(findstring Forward,$1),Forward,Reverse)
 
-build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS) clean
+build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS)
 	$(CXX) src/driver$(call getDriver,$*).cpp -o $@ $(CXXFLGS) -DNUMBER=codi::$* -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents
 	
 build/%.out: build/%.exe
@@ -59,3 +59,12 @@ build/%.diff: build/%.out
 .PHONY: all
 all: $(foreach type,$(allTypes),build/$(type).diff build/$(type).out build/$(type).exe)
 
+.PHONY: cleanReference
+cleanReference:
+	rm -f results/*
+
+results/%.ref: build/%.exe
+	./$< > $@
+
+.PHONY: reference
+reference: $(foreach type,$(allTypes),results/$(type).ref build/$(type).exe)
