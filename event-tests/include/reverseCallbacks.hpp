@@ -109,9 +109,9 @@ void onPreaccAddOutput(Tape&, typename Tape::Real& value, typename Tape::Identif
 
 template<typename Tape>
 void onStatementPrimal(Tape&, typename Tape::Real const& lhsValue, typename Tape::Identifier const& lhsIdentifier,
-                       typename Tape::Real const& rhsValue, codi::EventHints::Statement statement, void*) {
+                       typename Tape::Real const& newValue, codi::EventHints::Statement statement, void*) {
   std::cout << "StatementPrimal " << to_string(statement) << " lhsValue " << lhsValue << " lhsIdentifier "
-            << lhsIdentifier << " rhsValue " << rhsValue << std::endl;
+            << lhsIdentifier << " newValue " << newValue << std::endl;
 }
 
 template<typename Tape>
@@ -136,10 +136,10 @@ template<typename Tape>
 size_t GlobalStatementCounters<Tape>::evaluate = 0;
 
 template<typename Tape>
-void onStatementStoreOnTape(Tape&, typename Tape::Identifier const& lhsIdentifier, typename Tape::Real const& rhsValue,
+void onStatementStoreOnTape(Tape&, typename Tape::Identifier const& lhsIdentifier, typename Tape::Real const& newValue,
                             size_t numActiveVariables, typename Tape::Identifier const* rhsIdentifiers,
                             typename Tape::Real const* jacobians, void*) {
-  std::cout << "StatementStoreOnTape lhsIdentifier " << lhsIdentifier << " rhsValue " << rhsValue
+  std::cout << "StatementStoreOnTape lhsIdentifier " << lhsIdentifier << " newValue " << newValue
             << " numActiveVariables " << numActiveVariables << std::endl << "\t";
   for (size_t i = 0; i < numActiveVariables; ++i) {
     std::cout << rhsIdentifiers[i] << " " << jacobians[i] << "; ";

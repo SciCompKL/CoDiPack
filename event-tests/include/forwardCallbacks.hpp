@@ -40,9 +40,9 @@
 
 template<typename Tape>
 void onStatementPrimal(Tape&, typename Tape::Real const& lhsValue, typename Tape::Identifier const& lhsDotValue,
-                       typename Tape::Real const& rhsValue, codi::EventHints::Statement statement, void*) {
+                       typename Tape::Real const& newValue, codi::EventHints::Statement statement, void*) {
   std::cout << "StatementPrimal " << to_string(statement) << " lhsValue " << lhsValue << " lhsDotValue "
-            << lhsDotValue << " rhsValue " << rhsValue << std::endl;
+            << lhsDotValue << " newValue " << newValue << std::endl;
 }
 
 template<typename Tape>

@@ -130,8 +130,8 @@ namespace codi {
         internalRegisterListener(Config::StatementEvents, Event::StatementPrimal, callback, customData);
       }
 
-      static CODI_INLINE void notifyStatementPrimalListeners(Tape& tape, Real const& lhsValue, Identifier const& lhsIdentifier, Real const& rhsValue, EventHints::Statement statement) {
-        internalNotifyListeners<void (*)(Tape&, Real const&, Identifier const&, Real const&, EventHints::Statement, void*)>(Config::StatementEvents, Event::StatementPrimal, tape, lhsValue, lhsIdentifier, rhsValue, statement);
+      static CODI_INLINE void notifyStatementPrimalListeners(Tape& tape, Real const& lhsValue, Identifier const& lhsIdentifier, Real const& newValue, EventHints::Statement statement) {
+        internalNotifyListeners<void (*)(Tape&, Real const&, Identifier const&, Real const&, EventHints::Statement, void*)>(Config::StatementEvents, Event::StatementPrimal, tape, lhsValue, lhsIdentifier, newValue, statement);
       }
 
       /// @}
@@ -252,8 +252,8 @@ namespace codi {
         Base::template internalRegisterListener(Config::PreaccEvents, Event::StatementStoreOnTape, callback, customData);
       }
 
-      static CODI_INLINE void notifyStatementStoreOnTapeListeners(Tape& tape, Identifier const& lhsIdentifier, Real const& rhsValue, size_t numActiveVariables, Identifier const* rhsIdentifiers, Real const* jacobians) {
-        Base::template internalNotifyListeners<void (*)(Tape&, Identifier const&, Real const&, size_t, Identifier const*, Real const*, void*)>(Config::StatementEvents, Event::StatementStoreOnTape, tape, lhsIdentifier, rhsValue, numActiveVariables, rhsIdentifiers, jacobians);
+      static CODI_INLINE void notifyStatementStoreOnTapeListeners(Tape& tape, Identifier const& lhsIdentifier, Real const& newValue, size_t numActiveVariables, Identifier const* rhsIdentifiers, Real const* jacobians) {
+        Base::template internalNotifyListeners<void (*)(Tape&, Identifier const&, Real const&, size_t, Identifier const*, Real const*, void*)>(Config::StatementEvents, Event::StatementStoreOnTape, tape, lhsIdentifier, newValue, numActiveVariables, rhsIdentifiers, jacobians);
       }
 
       static CODI_INLINE void registerStatementEvaluateListener(void (*callback)(Tape&, Identifier const&, size_t, Real const*, void*), void* customData = nullptr) {
