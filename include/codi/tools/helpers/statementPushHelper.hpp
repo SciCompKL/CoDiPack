@@ -192,7 +192,7 @@ namespace codi {
             tape.storeManual(primal, lhs.getIdentifier(), dataPos);
 
             for (size_t i = 0; i < dataPos; ++i) {
-              tape.pushJacobiManual(jacobianData[i], 0.0, indexData[i]);
+              tape.pushJacobianManual(jacobianData[i], 0.0, indexData[i]);
             }
           }
         }

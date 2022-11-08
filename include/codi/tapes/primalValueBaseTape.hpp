@@ -971,8 +971,8 @@ namespace codi {
       /// @name Functions from ManualStatementPushTapeInterface
       /// @{
 
-      /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobiManual()
-      void pushJacobiManual(Real const& jacobian, Real const& value, Identifier const& index) {
+      /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobianManual()
+      void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
         passiveValueData.pushData(jacobian);

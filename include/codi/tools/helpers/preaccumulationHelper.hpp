@@ -300,7 +300,7 @@ namespace codi {
               // staggering variables t_1, t_2, ...
               tape.storeManual(value.getValue(), lastIdentifier, jacobiansForStatement + (int)staggeringActive);
               if (staggeringActive) {  // Not the first staggering so push the last output.
-                tape.pushJacobiManual(1.0, 0.0, storedIdentifier);
+                tape.pushJacobianManual(1.0, 0.0, storedIdentifier);
 
                 if (Config::StatementEvents) {
                   // collect event data
@@ -312,7 +312,7 @@ namespace codi {
               // Push the rest of the Jacobians for the statement.
               while (jacobiansForStatement > 0) {
                 if (Real() != (Real)jacobian(curOut, curIn)) {
-                  tape.pushJacobiManual(jacobian(curOut, curIn), 0.0, inputData[curIn]);
+                  tape.pushJacobianManual(jacobian(curOut, curIn), 0.0, inputData[curIn]);
                   jacobiansForStatement -= 1;
 
                   if (Config::StatementEvents) {
