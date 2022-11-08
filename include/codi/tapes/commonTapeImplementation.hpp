@@ -226,8 +226,8 @@ namespace codi {
       /// \copydoc codi::ReverseTapeInterface::registerOutput()
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        EventSystem<Impl>::notifyTapeRegisterOutputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
         cast().template store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
+        EventSystem<Impl>::notifyTapeRegisterOutputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
       }
 
       /// \copydoc codi::ReverseTapeInterface::setActive()
