@@ -35,10 +35,13 @@
 
 CODI_DIR = ..
 
+# regards CXX already set
 CXX ?= g++
 
+# set to yes to compile with debugging flags
 DEBUG = no
 
+# regards CXXFLAGS already set
 FLAGS = $(CXXFLAGS)
 
 ifeq ($(DEBUG),yes)
@@ -47,37 +50,63 @@ else
 	FLAGS += -O3
 endif
 
-scalarTypes = RealForward RealReverse RealReverseIndex RealReversePrimal RealReversePrimalIndex
-allTypes = $(scalarTypes) $(foreach type,$(scalarTypes),$(type)Vec)
+# default target
+all:
 
+# disable deletion of intermediate targets
+.SECONDARY:
+
+# scalar types covered by the tests
+scalarTypes = RealForward RealReverse RealReverseIndex RealReversePrimal RealReversePrimalIndex
+
+# vector types derived from scalar types
+vectorTypes = $(foreach type,$(scalarTypes),$(type)Vec)
+
+allTypes = $(scalarTypes) $(vectorTypes)
+
+# ensure that the build directory exists
+.PHONY: prepare
+prepare:
+	@mkdir -p build
+
+# delete executables and output files
 .PHONY: clean
 clean:
 	rm -f build/*
 
 HEADERS = $(shell find include -name '*.hpp')
 
-getDriver = $(if $(findstring Forward,$1),Forward,Reverse)
+# given a type, decide whether it needs the forward or the reverse driver
+getDriver = $(if $(findstring Reverse,$1),Reverse,Forward)
 
+# given a type, add the vector dimension if needed (e.g., RealReverseVec -> RealReverseVec<4>)
 addVectorDimIfNeeded = $(if $(findstring Vec,$1),$1<4>,$1)
 
-build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS)
+# compile tests for a specific type, create executable
+build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS) prepare
 	$(CXX) src/driver$(call getDriver,$*).cpp -o $@ $(FLAGS) -DNUMBER='codi::$(call addVectorDimIfNeeded,$*)' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents
 	
+# run executable, create output file
 build/%.out: build/%.exe
 	./$< > $@
-	
+
+# compare output file against reference file
 build/%.diff: build/%.out
 	@if cmp -s $< results/$*.ref; then echo -e $* "\e[0;32mOK\e[0m"; else echo -e $* "\e[0;31mFAILED\e[0m"; diff $< results/$*.ref || true; fi
 
-.PHONY: all
-all: $(foreach type,$(allTypes),build/$(type).diff build/$(type).out build/$(type).exe)
-
+# delete reference files
 .PHONY: cleanReference
 cleanReference:
 	rm -f results/*
 
+# run executable, create reference file
 results/%.ref: build/%.exe
 	./$< > $@
 
+# create all reference files
 .PHONY: reference
-reference: $(foreach type,$(allTypes),results/$(type).ref build/$(type).exe)
+reference: $(foreach type,$(allTypes),results/$(type).ref)
+
+# run all tests
+.PHONY: all
+all: $(foreach type,$(allTypes),build/$(type).diff)
