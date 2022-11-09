@@ -411,6 +411,24 @@ namespace codi {
       }
 
       /// @}
+
+    protected:
+
+      template<typename Lhs>
+      CODI_INLINE void internalRegisterInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
+        if (TapeTypes::IsLinearIndexHandler) {
+          statementData.reserveItems(1);
+        }
+
+        indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
+
+        if (TapeTypes::IsLinearIndexHandler) {
+          cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
+        }
+      }
+
+    public:
+
       /*******************************************************************************/
       /// @name Functions from ReverseTapeInterface
       /// @{
@@ -418,17 +436,8 @@ namespace codi {
       /// \copydoc codi::ReverseTapeInterface::registerInput()
       template<typename Lhs>
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        if (TapeTypes::IsLinearIndexHandler) {
-          statementData.reserveItems(1);
-        }
-
-        indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
-
+        internalRegisterInput(value);
         EventSystem<Impl>::notifyTapeRegisterInputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
-
-        if (TapeTypes::IsLinearIndexHandler) {
-          cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
-        }
       }
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
@@ -658,7 +667,7 @@ namespace codi {
       /// \copydoc codi::ExternalFunctionTapeInterface::registerExternalFunctionOutput()
       template<typename Lhs>
       Real registerExternalFunctionOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        cast().registerInput(value);
+        internalRegisterInput(value);
 
         return Real();
       }
