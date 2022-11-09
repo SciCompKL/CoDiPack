@@ -63,6 +63,8 @@ namespace codi {
       using Real = typename Tape::Real;              ///< See TapeTypesInterface.
       using Identifier = typename Tape::Identifier;  ///< See TapeTypesInterface.
 
+      using Base = ExpressionInterface<Real, StaticContextActiveType>;  ///< Base class abbreviation.
+
     private:
 
       Real const primal;
@@ -76,7 +78,7 @@ namespace codi {
 
       /// Constructor
       CODI_INLINE StaticContextActiveType(StaticContextActiveType const& other)
-        : primal(other.primal), identifier(other.identifier) {}
+        : Base(static_cast<Base const&>(other)), primal(other.primal), identifier(other.identifier) {}
 
       /*******************************************************************************/
       /// @name Partial implementation of LhsExpressionInterface

@@ -185,8 +185,8 @@ namespace codi {
 
       /// Constructor
       CommonTapeImplementation() : active(false), options(), externalFunctionData(Config::SmallChunkSize),
-                                   manualPushLhsValue(), manualPushLhsIdentifier(), manualPushCounter(),
-                                   manualPushGoal() {
+                                   manualPushLhsValue(), manualPushLhsIdentifier(), manualPushGoal(),
+                                   manualPushCounter() {
         options.insert(TapeParameters::ExternalFunctionsSize);
       }
 
