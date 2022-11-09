@@ -245,7 +245,7 @@ namespace codi {
     ///
 
 #ifndef CODI_ADWorkflowEvents
-  #define CODI_ADWorkflowEvents false
+  #define CODI_ADWorkflowEvents true
 #endif
     bool constexpr ADWorkflowEvents = CODI_ADWorkflowEvents;
 #undef CODI_ADWorkflowEvents
