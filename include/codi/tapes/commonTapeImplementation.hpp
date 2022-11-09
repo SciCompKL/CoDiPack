@@ -141,6 +141,11 @@ namespace codi {
 
       ExternalFunctionData externalFunctionData;  ///< Data vector for external function data.
 
+      Real manualPushLhsValue;                 ///< For storeManual, remember the value assigned to the lhs.
+      Identifier manualPushLhsIdentifier;      ///< For storeManual, remember the identifier assigned to the lhs.
+      Config::ArgumentSize manualPushGoal;     ///< Store the number of expected pushes after a storeManual call.
+      Config::ArgumentSize manualPushCounter;  ///< Count the pushes after storeManual, to identify the last push.
+
     private:
 
       CODI_INLINE Impl const& cast() const {
@@ -179,7 +184,9 @@ namespace codi {
     public:
 
       /// Constructor
-      CommonTapeImplementation() : active(false), options(), externalFunctionData(Config::SmallChunkSize) {
+      CommonTapeImplementation() : active(false), options(), externalFunctionData(Config::SmallChunkSize),
+                                   manualPushLhsValue(), manualPushLhsIdentifier(), manualPushCounter(),
+                                   manualPushGoal() {
         options.insert(TapeParameters::ExternalFunctionsSize);
       }
 

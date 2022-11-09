@@ -977,6 +977,30 @@ namespace codi {
 
         passiveValueData.pushData(jacobian);
         rhsIdentiferData.pushData(index);
+
+        if (Config::StatementEvents) {
+          this->manualPushCounter += 1;
+
+          if (this->manualPushCounter == this->manualPushGoal) {
+            // emit statement event
+            Real* jacobians;
+            Identifier* rhsIdentifiers;
+            passiveValueData.getDataPointers(passiveValueData.getPushedDataCount(0), jacobians);
+            rhsIdentiferData.getDataPointers(rhsIdentiferData.getPushedDataCount(0), rhsIdentifiers);
+            jacobians -= this->manualPushGoal;
+            rhsIdentifiers -= this->manualPushGoal;
+
+            EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(),
+                                                                   this->manualPushLhsIdentifier,
+                                                                   this->manualPushLhsValue,
+                                                                   this->manualPushGoal,
+                                                                   rhsIdentifiers,
+                                                                   jacobians);
+
+            this->manualPushCounter = 0;
+            this->manualPushGoal = 0;
+          }
+        }
       }
 
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
@@ -994,6 +1018,12 @@ namespace codi {
         cast().pushStmtData(lhsIndex, size, primalEntry, PrimalValueBaseTape::jacobianExpressions[size]);
 
         primalEntry = lhsValue;
+
+        if (Config::StatementEvents) {
+          this->manualPushLhsValue = lhsValue;
+          this->manualPushLhsIdentifier = lhsIndex;
+          this->manualPushGoal = size;
+        }
       }
 
       /// @}
