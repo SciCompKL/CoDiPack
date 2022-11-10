@@ -251,7 +251,7 @@ namespace codi {
       /// @{
 
       static CODI_INLINE void registerStatementStoreOnTapeListener(void (*callback)(Tape&, Identifier const&, Real const&, size_t, Identifier const*, Real const*, void*), void* customData = nullptr) {
-        Base::template internalRegisterListener(Config::PreaccEvents, Event::StatementStoreOnTape, callback, customData);
+        Base::template internalRegisterListener(Config::StatementEvents, Event::StatementStoreOnTape, callback, customData);
       }
 
       static CODI_INLINE void notifyStatementStoreOnTapeListeners(Tape& tape, Identifier const& lhsIdentifier, Real const& newValue, size_t numActiveVariables, Identifier const* rhsIdentifiers, Real const* jacobians) {
@@ -259,7 +259,7 @@ namespace codi {
       }
 
       static CODI_INLINE void registerStatementEvaluateListener(void (*callback)(Tape&, Identifier const&, size_t, Real const*, void*), void* customData = nullptr) {
-        Base::template internalRegisterListener<void (*)(Tape&, Identifier const&, size_t, Real const*, void*)>(Config::PreaccEvents, Event::StatementEvaluate, callback, customData);
+        Base::template internalRegisterListener<void (*)(Tape&, Identifier const&, size_t, Real const*, void*)>(Config::StatementEvents, Event::StatementEvaluate, callback, customData);
       }
 
       static CODI_INLINE void notifyStatementEvaluateListeners(Tape& tape, Identifier const& lhsIdentifier, size_t sizeLhsAdjoint, Real const* lhsAdjoint) {
