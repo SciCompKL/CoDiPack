@@ -135,6 +135,9 @@ namespace codi {
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
             adjointVector->setLhsTangent(curAdjointPos);
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(
+                                                                  tape, curAdjointPos, adjointVector->getVectorSize(),
+                                                                  adjointVector->getAdjointVec(curAdjointPos));
 #else
             adjointVector[curAdjointPos] = lhsTangent;
 
@@ -211,6 +214,11 @@ namespace codi {
 
           if (Config::StatementInputTag != nPassiveValues) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
+
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(
+                                                                  tape, curAdjointPos, adjointVector->getVectorSize(),
+                                                                  adjointVector->getAdjointVec(curAdjointPos));
+
             Gradient const lhsAdjoint{};
             adjointVector->setLhsAdjoint(curAdjointPos);
 #else

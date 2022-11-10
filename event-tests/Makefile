@@ -104,8 +104,8 @@ $(foreach type,$(allTypes),$(eval $(call setType,$(type))))
 
 # compile tests for a specific type, create executable
 build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS) prepare
-	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='codi::$(call addVectorDimIfNeeded,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST=$(TEST)
-	
+	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='codi::$(call addVectorDimIfNeeded,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DCODI_VariableAdjointInterfaceInPrimalTapes -DTEST=$(TEST)
+
 # run executable, create output file
 build/%.out: build/%.exe
 	./$< > $@

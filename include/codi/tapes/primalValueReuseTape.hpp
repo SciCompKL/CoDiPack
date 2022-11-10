@@ -136,6 +136,9 @@ namespace codi {
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
           adjointVector->setLhsTangent(lhsIdentifier);
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluateListeners(
+                                                                tape, lhsIdentifier, adjointVector->getVectorSize(),
+                                                                adjointVector->getAdjointVec(lhsIdentifier));
 #else
           adjointVector[lhsIdentifier] = lhsTangent;
           EventSystem<PrimalValueReuseTape>::notifyStatementEvaluateListeners(
@@ -200,6 +203,9 @@ namespace codi {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluateListeners(
+                                                                tape, lhsIdentifier, adjointVector->getVectorSize(),
+                                                                adjointVector->getAdjointVec(lhsIdentifier));
           Gradient const lhsAdjoint{};
           adjointVector->setLhsAdjoint(lhsIdentifier);
 #else
