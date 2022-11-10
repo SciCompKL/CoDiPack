@@ -559,13 +559,13 @@ namespace codi {
       CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
         VectorAccess<Adjoint> adjointWrapper(data);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::Direction::Reverse, EventHints::Endpoint::Begin);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateReverse_Step1_ExtFunc(
             start, end, JacobianBaseTape::template internalEvaluateReverse_Step2_DataExtraction<Adjoint>,
             &adjointWrapper, cast(), data, jacobianData);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::Direction::Reverse, EventHints::Endpoint::End);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
       }
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::evaluate()
@@ -573,13 +573,13 @@ namespace codi {
       CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
         VectorAccess<Adjoint> adjointWrapper(data);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::Direction::Forward, EventHints::Endpoint::Begin);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateForward_Step1_ExtFunc(
             start, end, JacobianBaseTape::template internalEvaluateForward_Step2_DataExtraction<Adjoint>,
             &adjointWrapper, cast(), data, jacobianData);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::Direction::Forward, EventHints::Endpoint::End);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
       }
 
       /// @}

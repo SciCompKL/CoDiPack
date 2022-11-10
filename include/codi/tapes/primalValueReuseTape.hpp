@@ -150,7 +150,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluatePrimal_Step3_EvalStatements
       CODI_INLINE static void internalEvaluatePrimal_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector,
+          PrimalValueReuseTape& tape, Real* primalVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -170,6 +170,9 @@ namespace codi {
           primalVector[lhsIdentifier] = StatementEvaluator::template callPrimal<PrimalValueReuseTape>(
               stmtEvalhandle[curStatementPos], primalVector, numberOfPassiveArguments[curStatementPos], curConstantPos,
               constantValues, curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
+
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluatePrimalListeners(
+                tape, lhsIdentifier, primalVector[lhsIdentifier]);
 
           curStatementPos += 1;
         }

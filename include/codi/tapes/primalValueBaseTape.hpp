@@ -633,12 +633,12 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(&vectorAccess, data);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Forward, EventHints::Endpoint::Begin);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
                                                     &vectorAccess, cast(), primalData, dataVector, constantValueData);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Forward, EventHints::Endpoint::End);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
       }
 
       /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes.
@@ -690,12 +690,12 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(&vectorAccess, data);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Reverse, EventHints::Endpoint::Begin);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction,
                                                     &vectorAccess, cast(), primalData, dataVector, constantValueData);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::Direction::Reverse, EventHints::Endpoint::End);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
       }
 
     public:
@@ -1084,10 +1084,11 @@ namespace codi {
 
       /// Start for primal evaluation between external function.
       CODI_INLINE static void internalEvaluatePrimal_Step2_DataExtraction(NestedPosition const& start,
-                                                                          NestedPosition const& end, Real* primalData,
+                                                                          NestedPosition const& end, Impl& tape,
+                                                                          Real* primalData,
                                                                           ConstantValueData& constantValueData) {
         Wrap_internalEvaluatePrimal_Step3_EvalStatements evalFunc{};
-        constantValueData.evaluateForward(start, end, evalFunc, primalData);
+        constantValueData.evaluateForward(start, end, evalFunc, tape, primalData);
       }
 
     public:
@@ -1104,9 +1105,13 @@ namespace codi {
         // TODO: implement primal value only accessor
         PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals.data());
 
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess, EventHints::EvaluationKind::Primal, EventHints::Endpoint::Begin);
+
         Base::internalEvaluatePrimal_Step1_ExtFunc(start, end,
                                                    PrimalValueBaseTape::internalEvaluatePrimal_Step2_DataExtraction,
-                                                   &primalAdjointAccess, primals.data(), constantValueData);
+                                                   &primalAdjointAccess, cast(), primals.data(), constantValueData);
+
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess, EventHints::EvaluationKind::Primal, EventHints::Endpoint::End);
       }
 
       /// \copydoc codi::PrimalEvaluationTapeInterface::primal(Identifier const&)

@@ -36,11 +36,13 @@
 
 #include "codi.hpp"
 
-std::string to_string(codi::EventHints::Direction direction) {
-  switch (direction) {
-    case codi::EventHints::Direction::Forward:
+std::string to_string(codi::EventHints::EvaluationKind kind) {
+  switch (kind) {
+    case codi::EventHints::EvaluationKind::Primal:
+      return "primal";
+    case codi::EventHints::EvaluationKind::Forward:
       return "forward";
-    case codi::EventHints::Direction::Reverse:
+    case codi::EventHints::EvaluationKind::Reverse:
       return "reverse";
     default:
       return "unknown";

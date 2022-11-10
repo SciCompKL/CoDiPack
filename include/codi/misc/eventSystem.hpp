@@ -45,7 +45,8 @@
 namespace codi {
 
   namespace EventHints {
-    enum class Direction {
+    enum class EvaluationKind {
+      Primal,
       Forward,
       Reverse
     };
@@ -93,6 +94,7 @@ namespace codi {
         StatementPrimal,
         StatementStoreOnTape,
         StatementEvaluate,
+        StatementEvaluatePrimal,
         /* index management events */
         IndexCreate,
         IndexAssign,
@@ -190,12 +192,12 @@ namespace codi {
         Base::template internalNotifyListeners<void (*)(Tape&, Real&, Identifier&, void*)>(Config::ADWorkflowEvents, Event::TapeRegisterOutput, tape, value, identifier);
       }
 
-      static CODI_INLINE void registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&, VectorAccess*, EventHints::Direction, EventHints::Endpoint, void*), void* customData = nullptr) {
+      static CODI_INLINE void registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&, VectorAccess*, EventHints::EvaluationKind, EventHints::Endpoint, void*), void* customData = nullptr) {
         Base::template internalRegisterListener(Config::ADWorkflowEvents, Event::TapeEvaluate, callback, customData);
       }
 
-      static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end, VectorAccess* adjoint, EventHints::Direction direction, EventHints::Endpoint endpoint) {
-        Base::template internalNotifyListeners<void (*)(Tape&, Position const&, Position const&, VectorAccess*, EventHints::Direction, EventHints::Endpoint, void*)>(Config::ADWorkflowEvents, Event::TapeEvaluate, tape, start, end, adjoint, direction, endpoint);
+      static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end, VectorAccess* adjoint, EventHints::EvaluationKind direction, EventHints::Endpoint endpoint) {
+        Base::template internalNotifyListeners<void (*)(Tape&, Position const&, Position const&, VectorAccess*, EventHints::EvaluationKind, EventHints::Endpoint, void*)>(Config::ADWorkflowEvents, Event::TapeEvaluate, tape, start, end, adjoint, direction, endpoint);
       }
 
       static CODI_INLINE void registerTapeResetListener(void (*callback)(Tape&, Position const&, EventHints::Reset, bool, void*), void* customData = nullptr) {
@@ -262,6 +264,14 @@ namespace codi {
 
       static CODI_INLINE void notifyStatementEvaluateListeners(Tape& tape, Identifier const& lhsIdentifier, size_t sizeLhsAdjoint, Real const* lhsAdjoint) {
         Base::template internalNotifyListeners<void (*)(Tape&, Identifier const&, size_t, Real const*, void*)>(Config::StatementEvents, Event::StatementEvaluate, tape, lhsIdentifier, sizeLhsAdjoint, lhsAdjoint);
+      }
+
+      static CODI_INLINE void registerStatementEvaluatePrimalListener(void (*callback)(Tape&, Identifier const&, Real const&, void*), void* customData = nullptr) {
+        Base::template internalRegisterListener<void (*)(Tape&, Identifier const&, Real const&, void*)>(Config::StatementEvents, Event::StatementEvaluatePrimal, callback, customData);
+      }
+
+      static CODI_INLINE void notifyStatementEvaluatePrimalListeners(Tape& tape, Identifier const& lhsIdentifier, Real const& lhsValue) {
+        Base::template internalNotifyListeners<void (*)(Tape&, Identifier const&, Real const&, void*)>(Config::StatementEvents, Event::StatementEvaluatePrimal, tape, lhsIdentifier, lhsValue);
       }
 
       /// @}

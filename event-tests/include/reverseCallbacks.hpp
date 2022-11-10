@@ -65,7 +65,7 @@ void onTapeRegisterOutput(Tape&, typename Tape::Real& value, typename Tape::Iden
 template<typename Tape>
 void onTapeEvaluate(Tape&, typename Tape::Position const& start, typename Tape::Position const& end,
                     codi::VectorAccessInterface<typename Tape::Real, typename Tape::Identifier>*,
-                    codi::EventHints::Direction direction, codi::EventHints::Endpoint endpoint, void*) {
+                    codi::EventHints::EvaluationKind direction, codi::EventHints::Endpoint endpoint, void*) {
   std::cout << "TapeEvaluate " << to_string(direction) << " " << to_string(endpoint) << " from " << start << " to "
             << end << std::endl;
 }
@@ -119,11 +119,17 @@ struct GlobalStatementCounters {
   public:
     static size_t storeOnTape;
     static size_t evaluate;
+    static size_t evaluatePrimal;
 
     static void assertEqual() {
       if (storeOnTape != evaluate) {
         std::cerr << "StatementStoreOnTape count (" << storeOnTape << ") does not match StatementEvaluate count ("
                   << evaluate << ")" << std::endl;
+        abort();
+      }
+      if(evaluatePrimal != 0 && storeOnTape != evaluate) {
+        std::cerr << "StatementStoreOnTape count (" << storeOnTape << ") does not match StatementEvaluatePrimal count ("
+                  << evaluatePrimal << ")" << std::endl;
         abort();
       }
     }
@@ -134,6 +140,9 @@ size_t GlobalStatementCounters<Tape>::storeOnTape = 0;
 
 template<typename Tape>
 size_t GlobalStatementCounters<Tape>::evaluate = 0;
+
+template<typename Tape>
+size_t GlobalStatementCounters<Tape>::evaluatePrimal = 0;
 
 template<typename Tape>
 void onStatementStoreOnTape(Tape&, typename Tape::Identifier const& lhsIdentifier, typename Tape::Real const& newValue,
@@ -160,6 +169,14 @@ void onStatementEvaluate(Tape&, typename Tape::Identifier const& lhsIdentifier, 
   std::cout << std::endl;
 
   ++GlobalStatementCounters<Tape>::evaluate;
+}
+
+template<typename Tape>
+void onStatementEvaluatePrimal(Tape&, typename Tape::Identifier const& lhsIdentifier,
+                         typename Tape::Real const& lhsValue, void*) {
+  std::cout << "StatementEvaluatePrimal lhsIdentifier " << lhsIdentifier << " lhsValue " << lhsValue << std::endl;
+
+  ++GlobalStatementCounters<Tape>::evaluatePrimal;
 }
 
 /// @}
@@ -199,6 +216,7 @@ void registerReverseCallbacks() {
   codi::EventSystem<Tape>::registerStatementPrimalListener(onStatementPrimal<Tape>);
   codi::EventSystem<Tape>::registerStatementStoreOnTapeListener(onStatementStoreOnTape<Tape>);
   codi::EventSystem<Tape>::registerStatementEvaluateListener(onStatementEvaluate<Tape>);
+  codi::EventSystem<Tape>::registerStatementEvaluatePrimalListener(onStatementEvaluatePrimal<Tape>);
   codi::EventSystem<Tape>::registerIndexAssignListener(onIndexAssign<Tape>);
   codi::EventSystem<Tape>::registerIndexFreeListener(onIndexFree<Tape>);
   codi::EventSystem<Tape>::registerIndexCopyListener(onIndexCopy<Tape>);
