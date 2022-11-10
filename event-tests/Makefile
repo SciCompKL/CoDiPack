@@ -39,7 +39,7 @@ CODI_DIR = ..
 CXX ?= g++
 
 # set to yes to compile with debugging flags
-DEBUG = no
+DEBUG ?= no
 
 # regards CXXFLAGS already set
 FLAGS = $(CXXFLAGS)
@@ -84,27 +84,34 @@ HEADERS = $(shell find include -name '*.hpp')
 # given a type, decide whether it needs the forward or the reverse driver
 getDriver = $(if $(findstring Reverse,$1),Reverse,Forward)
 
+# given a type, decide whether it uses a forward or reverse tape, and produce a corresponding preprocessor flag
+getTapeFlag = $(if $(findstring Reverse,$1),-DREVERSE_TAPE,-DFORWARD_TAPE)
+
 # given a type, add the vector dimension if needed (e.g., RealReverseVec -> RealReverseVec<4>)
 addVectorDimIfNeeded = $(if $(findstring Vec,$1),$1<4>,$1)
 
 # define variables that describe the characteristics of a test case
 
+# test-specific variables
 define setTest
-build/%$1.exe: TEST=$1
+build/%$1.exe: TEST_NAME=$1
+build/$1%.exe: TEST_FLAGS=
 endef
 
 $(foreach test,$(allTests),$(eval $(call setTest,$(test))))
 
+# type-specific variables
 define setType
 build/$1%.exe: TYPE=$1
 build/$1%.exe: DRIVER=$(call getDriver,$1)
+build/$1%.exe: TYPE_FLAGS=$(call getTapeFlag,$1)
 endef
 
 $(foreach type,$(allTypes),$(eval $(call setType,$(type))))
 
 # compile tests for a specific type, create executable
 build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS) prepare
-	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='codi::$(call addVectorDimIfNeeded,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DCODI_VariableAdjointInterfaceInPrimalTapes -DTEST=$(TEST)
+	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='codi::$(call addVectorDimIfNeeded,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DCODI_VariableAdjointInterfaceInPrimalTapes -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS)
 
 # run executable, create output file
 build/%.out: build/%.exe

@@ -34,16 +34,20 @@
  */
 #pragma once
 
-#ifndef TEST
-  #error Please define TEST as one of the tests.
+#define TestStatement 1
+#define TestPreacc 2
+#define TestTape 3
+
+#ifndef TEST_NAME
+  #error Please define TEST_NAME as one of the tests.
 #endif
 
-#if TEST == Statement
+#if (TEST_NAME == TestStatement)
   #include "testStatement.hpp"
-#elif TEST == Preacc
+#elif (TEST_NAME == TestPreacc)
   #include "testPreacc.hpp"
-#elif TEST == Tape
+#elif (TEST_NAME == TestTape)
   #include "testTape.hpp"
 #else
-  #error Unknown test TEST
+  #error Unknown test, please define TEST_NAME as one of the tests.
 #endif

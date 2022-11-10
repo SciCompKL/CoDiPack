@@ -57,6 +57,8 @@ int main() {
 
   for (int offset = 0; offset < nOutputs; offset += dim) {
 
+    tape.reset();
+
     tape.setActive();
 
     for (size_t i = 0; i < nInputs; ++i) {
@@ -79,9 +81,9 @@ int main() {
     tape.evaluate();
 
     GlobalStatementCounters<Tape>::assertEqual();
-
-    tape.reset();
   }
+
+  tape.resetHard();
 
   return 0;
 }

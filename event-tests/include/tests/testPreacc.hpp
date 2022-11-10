@@ -56,28 +56,27 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
 
   codi::PreaccumulationHelper<ActiveType> ph;
 
-  ph.start(a, b);
+  ph.start(a);
 
-  ActiveType u = a * b;
-  ActiveType v = u * cos(a);
-  ActiveType w = u * v;
-  ActiveType x = b + b * v;
+  ActiveType v = a * a;
+  ActiveType w = v * cos(a);
+  ActiveType x = v * w;
+  ActiveType y = b + b * w;
 
-  ph.finish(false, q, v, w, x);
+  ph.finish(false, v, w, x, y);
 
   // reverse mode preacc
 
   ph.start(a, b, c, d);
 
-  ActiveType y = a * b + c * d;
-  ActiveType z = a * c + b * d;
+  ActiveType z = a * b + c * d;
 
-  ph.finish(false, y, z);
+  ph.finish(false, z);
 
   // produce outputs
 
   for (size_t i = 0; i < nOutputs; ++i) {
-    outputs[i] = exp(u * v / (i + 1)) + sin(i * (w + x)) + cos(y * z / (i + 1));
+    outputs[i] = exp(v * w / (i + 1)) + sin(i * (x + y)) + cos(z / (i + 1));
   }
 
 }

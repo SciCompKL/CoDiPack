@@ -41,18 +41,37 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
 
   // process inputs
 
-  ActiveType a = 0.0;
+  ActiveType a = 0.0, b = 0.0, c = 0.0, d = 0.0;
 
   for (size_t i = 0; i < nInputs; ++i) {
     a += sin(inputs[i]);
+    b += cos(inputs[i]);
+    c += 3.0 * inputs[i];
+    d += inputs[i] * inputs[i];
   }
 
-  // no further computations, focus is on the AD workflow, that is, the Tape* events
+  ActiveType x, y;
+
+  // resetTo
+
+#ifdef REVERSE_TAPE
+  auto& tape = ActiveType::getTape();
+  auto position = tape.getPosition();
+#endif
+
+  x = sin(a * b);
+  y = cos(c + d);
+
+#ifdef REVERSE_TAPE
+  tape.setPassive();
+  tape.evaluate(tape.getPosition(), position);  // match store and eval counters
+  tape.resetTo(position);
+  tape.setActive();
+#endif
 
   // produce outputs
 
   for (size_t i = 0; i < nInputs; ++i) {
-    outputs[i] = sin(a * i);
+    outputs[i] = sin(x * y * i);
   }
-
 }

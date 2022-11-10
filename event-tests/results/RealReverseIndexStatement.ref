@@ -6,6 +6,7 @@ StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
+TapeReset full position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 1
 TapeStartRecording
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0.841471
 IndexAssign index 32768
@@ -908,7 +909,7 @@ StatementEvaluate lhsIdentifier 32766 numAdjoints 1
 StatementEvaluate lhsIdentifier 32765 numAdjoints 1
 	0 
 TapeEvaluate reverse end from [0, 0, [0, 70, [0, 34, []]]] to [0, 0, [0, 0, [0, 0, []]]]
-TapeReset full position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 1
+TapeReset hard position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 0
 IndexFree index 32756
 IndexFree index 32757
 IndexFree index 32758
