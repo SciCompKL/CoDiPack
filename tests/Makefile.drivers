@@ -61,6 +61,8 @@ $(eval $(call define_codi_driver,D1_rwsJacLin,"drivers/codi/reverse1stOrder.hpp"
 $(eval $(call define_codi_driver,D1_rwsJacInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseIndex,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D1_rwsPrimLin,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimal,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D1_rwsPrimInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimalIndex,$(ALL_TESTS),-DREVERSE_TAPE))
+$(eval $(call define_codi_driver,D1_rwsPrimLinInterface,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimal,$(ALL_TESTS),-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes))
+$(eval $(call define_codi_driver,D1_rwsPrimIndInterface,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimalIndex,$(ALL_TESTS),-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes))
 
 $(eval $(call define_codi_driver,D1_rwsJacLinVec,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseVec<$(VECTOR_DIM)>,$(ALL_TESTS),-DREVERSE_TAPE))
 $(eval $(call define_codi_driver,D1_rwsJacIndVec,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseIndexVec<$(VECTOR_DIM)>,$(ALL_TESTS),-DREVERSE_TAPE))

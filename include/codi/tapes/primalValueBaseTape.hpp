@@ -1237,7 +1237,11 @@ namespace codi {
         curPassivePos -= numberOfPassiveArguments;
         curRhsIdentifiersPos -= maxActiveArgs;
 
+#if CODI_VariableAdjointInterfaceInPrimalTapes
+        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !adjointVector->isLhsZero())) {
+#else
         if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) {
+#endif
           for (Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
             primalVector[curPos] = passiveValues[curPassivePos + curPos];
           }
