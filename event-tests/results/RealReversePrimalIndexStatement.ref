@@ -166,76 +166,112 @@ TapeStopRecording
 TapeEvaluate reverse begin from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.509427
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.637194
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -0.940931
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	1 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.509427
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.637194
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -0.940931
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	1 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0
 StatementEvaluate lhsIdentifier 33009 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 7.24489
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.917842
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 1.47803
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue 0.940599
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue -0.97784
 StatementEvaluate lhsIdentifier 33013 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33013 lhsValue 2.96403
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue -0.563117
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.583102
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -1.71937
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0.95891
 StatementEvaluate lhsIdentifier 33013 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33013 lhsValue 7.24489
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 2.96403
 StatementEvaluate lhsIdentifier 33015 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33015 lhsValue 2.12756
 StatementEvaluate lhsIdentifier 33016 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33016 lhsValue 3.40526
 StatementEvaluate lhsIdentifier 33017 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33017 lhsValue 2.99776
 StatementEvaluate lhsIdentifier 33018 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33018 lhsValue 0.988748
 StatementEvaluate lhsIdentifier 33015 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33015 lhsValue 1.55481
 StatementEvaluate lhsIdentifier 33016 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33016 lhsValue 5.67567
 StatementEvaluate lhsIdentifier 33017 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33017 lhsValue 2.27073
 StatementEvaluate lhsIdentifier 33018 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33018 lhsValue 1.67535
 StatementEvaluate lhsIdentifier 33015 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33015 lhsValue 1.5349
 StatementEvaluate lhsIdentifier 33016 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33016 lhsValue 5.25231
 StatementEvaluate lhsIdentifier 33017 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33017 lhsValue 1.28067
 StatementEvaluate lhsIdentifier 33018 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33018 lhsValue 1.5347
 StatementEvaluate lhsIdentifier 33015 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33015 lhsValue 0.708073
 StatementEvaluate lhsIdentifier 33016 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33016 lhsValue 2.52441
 StatementEvaluate lhsIdentifier 33017 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33017 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 33018 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33018 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]] clear adjoints 1
 TapeStartRecording
@@ -398,76 +434,112 @@ TapeStopRecording
 TapeEvaluate reverse begin from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.509427
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.637194
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	1 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -0.940931
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.509427
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.637194
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	1 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -0.940931
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0
 StatementEvaluate lhsIdentifier 33013 numAdjoints 1
 	-0.338597 
+StatementEvaluatePrimal lhsIdentifier 33013 lhsValue 7.24489
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.917842
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 1.47803
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue 0.940599
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue -0.97784
 StatementEvaluate lhsIdentifier 33009 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 2.96403
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue -0.563117
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.583102
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -1.71937
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0.95891
 StatementEvaluate lhsIdentifier 33009 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 7.24489
 StatementEvaluate lhsIdentifier 33013 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33013 lhsValue 2.96403
 StatementEvaluate lhsIdentifier 33022 numAdjoints 1
 	-1.15301 
+StatementEvaluatePrimal lhsIdentifier 33022 lhsValue 2.12756
 StatementEvaluate lhsIdentifier 33021 numAdjoints 1
 	-1.05898 
+StatementEvaluatePrimal lhsIdentifier 33021 lhsValue 3.40526
 StatementEvaluate lhsIdentifier 33020 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33020 lhsValue 2.99776
 StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 0.988748
 StatementEvaluate lhsIdentifier 33022 numAdjoints 1
 	-1.15301 
+StatementEvaluatePrimal lhsIdentifier 33022 lhsValue 1.55481
 StatementEvaluate lhsIdentifier 33021 numAdjoints 1
 	-1.05898 
+StatementEvaluatePrimal lhsIdentifier 33021 lhsValue 5.67567
 StatementEvaluate lhsIdentifier 33020 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33020 lhsValue 2.27073
 StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 1.67535
 StatementEvaluate lhsIdentifier 33022 numAdjoints 1
 	-1.15301 
+StatementEvaluatePrimal lhsIdentifier 33022 lhsValue 1.5349
 StatementEvaluate lhsIdentifier 33021 numAdjoints 1
 	-1.05898 
+StatementEvaluatePrimal lhsIdentifier 33021 lhsValue 5.25231
 StatementEvaluate lhsIdentifier 33020 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33020 lhsValue 1.28067
 StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 1.5347
 StatementEvaluate lhsIdentifier 33022 numAdjoints 1
 	-1.15301 
+StatementEvaluatePrimal lhsIdentifier 33022 lhsValue 0.708073
 StatementEvaluate lhsIdentifier 33021 numAdjoints 1
 	-1.05898 
+StatementEvaluatePrimal lhsIdentifier 33021 lhsValue 2.52441
 StatementEvaluate lhsIdentifier 33020 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33020 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]] clear adjoints 1
 TapeStartRecording
@@ -630,76 +702,112 @@ TapeStopRecording
 TapeEvaluate reverse begin from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.509427
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	1 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.637194
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -0.940931
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.509427
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	1 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.637194
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -0.940931
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0
 StatementEvaluate lhsIdentifier 33013 numAdjoints 1
 	-1.54141 
+StatementEvaluatePrimal lhsIdentifier 33013 lhsValue 7.24489
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.917842
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 1.47803
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue 0.940599
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue -0.97784
 StatementEvaluate lhsIdentifier 33009 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 2.96403
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue -0.563117
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.583102
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -1.71937
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0.95891
 StatementEvaluate lhsIdentifier 33009 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 7.24489
 StatementEvaluate lhsIdentifier 33013 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33013 lhsValue 2.96403
 StatementEvaluate lhsIdentifier 33018 numAdjoints 1
 	-5.24889 
+StatementEvaluatePrimal lhsIdentifier 33018 lhsValue 2.12756
 StatementEvaluate lhsIdentifier 33017 numAdjoints 1
 	-4.82084 
+StatementEvaluatePrimal lhsIdentifier 33017 lhsValue 3.40526
 StatementEvaluate lhsIdentifier 33016 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33016 lhsValue 2.99776
 StatementEvaluate lhsIdentifier 33015 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33015 lhsValue 0.988748
 StatementEvaluate lhsIdentifier 33018 numAdjoints 1
 	-5.24889 
+StatementEvaluatePrimal lhsIdentifier 33018 lhsValue 1.55481
 StatementEvaluate lhsIdentifier 33017 numAdjoints 1
 	-4.82084 
+StatementEvaluatePrimal lhsIdentifier 33017 lhsValue 5.67567
 StatementEvaluate lhsIdentifier 33016 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33016 lhsValue 2.27073
 StatementEvaluate lhsIdentifier 33015 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33015 lhsValue 1.67535
 StatementEvaluate lhsIdentifier 33018 numAdjoints 1
 	-5.24889 
+StatementEvaluatePrimal lhsIdentifier 33018 lhsValue 1.5349
 StatementEvaluate lhsIdentifier 33017 numAdjoints 1
 	-4.82084 
+StatementEvaluatePrimal lhsIdentifier 33017 lhsValue 5.25231
 StatementEvaluate lhsIdentifier 33016 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33016 lhsValue 1.28067
 StatementEvaluate lhsIdentifier 33015 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33015 lhsValue 1.5347
 StatementEvaluate lhsIdentifier 33018 numAdjoints 1
 	-5.24889 
+StatementEvaluatePrimal lhsIdentifier 33018 lhsValue 0.708073
 StatementEvaluate lhsIdentifier 33017 numAdjoints 1
 	-4.82084 
+StatementEvaluatePrimal lhsIdentifier 33017 lhsValue 2.52441
 StatementEvaluate lhsIdentifier 33016 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33016 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 33015 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33015 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]] clear adjoints 1
 TapeStartRecording
@@ -862,76 +970,112 @@ TapeStopRecording
 TapeEvaluate reverse begin from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	1 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.509427
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.637194
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -0.940931
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	1 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.509427
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.637194
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -0.940931
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0
 StatementEvaluate lhsIdentifier 33013 numAdjoints 1
 	2.58154 
+StatementEvaluatePrimal lhsIdentifier 33013 lhsValue 7.24489
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.917842
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 1.47803
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue 0.940599
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue -0.97784
 StatementEvaluate lhsIdentifier 33009 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 2.96403
 StatementEvaluate lhsIdentifier 33010 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33010 lhsValue -0.563117
 StatementEvaluate lhsIdentifier 33011 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.583102
 StatementEvaluate lhsIdentifier 33012 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33012 lhsValue -1.71937
 StatementEvaluate lhsIdentifier 33014 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33014 lhsValue 0.95891
 StatementEvaluate lhsIdentifier 33009 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 7.24489
 StatementEvaluate lhsIdentifier 33013 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33013 lhsValue 2.96403
 StatementEvaluate lhsIdentifier 33022 numAdjoints 1
 	8.79082 
+StatementEvaluatePrimal lhsIdentifier 33022 lhsValue 2.12756
 StatementEvaluate lhsIdentifier 33021 numAdjoints 1
 	8.07393 
+StatementEvaluatePrimal lhsIdentifier 33021 lhsValue 3.40526
 StatementEvaluate lhsIdentifier 33020 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33020 lhsValue 2.99776
 StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 0.988748
 StatementEvaluate lhsIdentifier 33022 numAdjoints 1
 	8.79082 
+StatementEvaluatePrimal lhsIdentifier 33022 lhsValue 1.55481
 StatementEvaluate lhsIdentifier 33021 numAdjoints 1
 	8.07393 
+StatementEvaluatePrimal lhsIdentifier 33021 lhsValue 5.67567
 StatementEvaluate lhsIdentifier 33020 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33020 lhsValue 2.27073
 StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 1.67535
 StatementEvaluate lhsIdentifier 33022 numAdjoints 1
 	8.79082 
+StatementEvaluatePrimal lhsIdentifier 33022 lhsValue 1.5349
 StatementEvaluate lhsIdentifier 33021 numAdjoints 1
 	8.07393 
+StatementEvaluatePrimal lhsIdentifier 33021 lhsValue 5.25231
 StatementEvaluate lhsIdentifier 33020 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33020 lhsValue 1.28067
 StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 1.5347
 StatementEvaluate lhsIdentifier 33022 numAdjoints 1
 	8.79082 
+StatementEvaluatePrimal lhsIdentifier 33022 lhsValue 0.708073
 StatementEvaluate lhsIdentifier 33021 numAdjoints 1
 	8.07393 
+StatementEvaluatePrimal lhsIdentifier 33021 lhsValue 2.52441
 StatementEvaluate lhsIdentifier 33020 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33020 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0 
+StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]] clear adjoints 1
 IndexFree index 33010

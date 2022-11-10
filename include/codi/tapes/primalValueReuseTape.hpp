@@ -145,6 +145,8 @@ namespace codi {
                                                                   tape, lhsIdentifier, GradientTraits::dim<Gradient>(),
                                                                   GradientTraits::toArray(lhsTangent).data());
 #endif
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluatePrimalListeners(
+                                                                tape, lhsIdentifier, primalVector[lhsIdentifier]);
 
           curStatementPos += 1;
         }
@@ -215,6 +217,8 @@ namespace codi {
                                                                   GradientTraits::toArray(lhsAdjoint).data());
           adjointVector[lhsIdentifier] = Gradient();
 #endif
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluatePrimalListeners(
+                                                                tape, lhsIdentifier, primalVector[lhsIdentifier]);
 
           primalVector[lhsIdentifier] = oldPrimalValues[curStatementPos];
 

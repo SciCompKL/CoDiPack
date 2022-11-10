@@ -145,6 +145,8 @@ namespace codi {
                                                                   tape, curAdjointPos, GradientTraits::dim<Gradient>(),
                                                                   GradientTraits::toArray(lhsTangent).data());
 #endif
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluatePrimalListeners(
+                                                                  tape, curAdjointPos, primalVector[curAdjointPos]);
           }
 
           curStatementPos += 1;
@@ -232,6 +234,8 @@ namespace codi {
               adjointVector[curAdjointPos] = Gradient();
             }
 #endif
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluatePrimalListeners(
+                                                                  tape, curAdjointPos, primalVector[curAdjointPos]);
 
             StatementEvaluator::template callReverse<PrimalValueLinearTape>(
                 stmtEvalhandle[curStatementPos], primalVector, adjointVector, lhsAdjoint, nPassiveValues,
