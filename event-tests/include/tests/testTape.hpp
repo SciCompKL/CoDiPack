@@ -41,36 +41,18 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
 
   // process inputs
 
-  ActiveType a = 0.0, b = 0.0, c = 0.0, d = 0.0;
+  ActiveType a = 0.0;
 
   for (size_t i = 0; i < nInputs; ++i) {
     a += sin(inputs[i]);
-    b += cos(inputs[i]);
-    c += 3.0 * inputs[i];
-    d += inputs[i] * inputs[i];
   }
 
-  // computations
-
-  codi::PreaccumulationHelper<ActiveType> ph;
-
-  ph.start(a);
-
-  ActiveType q = a * a;
-  ActiveType v = q * cos(a);
-  ActiveType w = q * v;
-
-  ph.finish(false, w);
-
-  ActiveType x = b;
-  ActiveType y = c * d;
-  ActiveType z = d;
-  z = exp(c);
+  // no further computations, focus is on the AD workflow, that is, the Tape* events
 
   // produce outputs
 
   for (size_t i = 0; i < nInputs; ++i) {
-    outputs[i] = sin(i * (w + x)) + cos(y * z / (i + 1));
+    outputs[i] = sin(a * i);
   }
 
 }

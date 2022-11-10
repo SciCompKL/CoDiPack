@@ -34,7 +34,7 @@
  */
 
 #include "../include/reverseCallbacks.hpp"
-#include "../include/test.hpp"
+#include "../include/tests/test.hpp"
 
 #ifndef NUMBER
   #error Please define NUMBER as a CoDiPack type.

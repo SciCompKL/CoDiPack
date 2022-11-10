@@ -32,39 +32,52 @@
  *    - Former members:
  *      - Tim Albring
  */
+#pragma once
 
-#include "../include/forwardCallbacks.hpp"
-#include "../include/tests/test.hpp"
+#include <codi.hpp>
 
-#ifndef NUMBER
-  #error Please define NUMBER as a CoDiPack type.
-#endif
+template<typename ActiveType>
+void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outputs) {
 
-int main() {
+  // process inputs
 
-  using Tape = NUMBER::Tape;
-  size_t constexpr dim = codi::GradientTraits::dim<Tape::Gradient>();
+  ActiveType a = 0.0, b = 0.0, c = 0.0, d = 0.0;
 
-  size_t constexpr nInputs = 4;
-  size_t constexpr nOutputs = 4;
-
-  registerForwardCallbacks<Tape>();
-
-  NUMBER inputs[nInputs] = {};
-  NUMBER outputs[nOutputs] = {};
-
-  for (int offset = 0; offset < nInputs; offset += dim) {
-
-    for (size_t i = 0; i < nInputs; ++i) {
-      inputs[i] = sin(i + 1);
-    }
-
-    for (size_t currentDim = 0; currentDim < dim && offset + currentDim < nInputs; ++currentDim) {
-      codi::GradientTraits::at(inputs[offset + currentDim].gradient(), currentDim) = 1.0;
-    }
-
-    test<NUMBER>(nInputs, inputs, nOutputs, outputs);
+  for (size_t i = 0; i < nInputs; ++i) {
+    a += sin(inputs[i]);
+    b += cos(inputs[i]);
+    c += 3.0 * inputs[i];
+    d += inputs[i] * inputs[i];
   }
 
-  return 0;
+  // computations
+
+  // forward mode preacc
+
+  codi::PreaccumulationHelper<ActiveType> ph;
+
+  ph.start(a, b);
+
+  ActiveType u = a * b;
+  ActiveType v = u * cos(a);
+  ActiveType w = u * v;
+  ActiveType x = b + b * v;
+
+  ph.finish(false, q, v, w, x);
+
+  // reverse mode preacc
+
+  ph.start(a, b, c, d);
+
+  ActiveType y = a * b + c * d;
+  ActiveType z = a * c + b * d;
+
+  ph.finish(false, y, z);
+
+  // produce outputs
+
+  for (size_t i = 0; i < nOutputs; ++i) {
+    outputs[i] = exp(u * v / (i + 1)) + sin(i * (w + x)) + cos(y * z / (i + 1));
+  }
+
 }

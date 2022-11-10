@@ -64,6 +64,11 @@ vectorTypes = $(foreach type,$(scalarTypes),$(type)Vec)
 
 allTypes = $(scalarTypes) $(vectorTypes)
 
+allTests = Tape Statement Preacc
+
+# test cases are all combinations of types and tests
+allCases = $(foreach type,$(allTypes),$(foreach test,$(allTests),$(type)$(test)))
+
 # ensure that the build directory exists
 .PHONY: prepare
 prepare:
@@ -82,9 +87,24 @@ getDriver = $(if $(findstring Reverse,$1),Reverse,Forward)
 # given a type, add the vector dimension if needed (e.g., RealReverseVec -> RealReverseVec<4>)
 addVectorDimIfNeeded = $(if $(findstring Vec,$1),$1<4>,$1)
 
+# define variables that describe the characteristics of a test case
+
+define setTest
+build/%$1.exe: TEST=$1
+endef
+
+$(foreach test,$(allTests),$(eval $(call setTest,$(test))))
+
+define setType
+build/$1%.exe: TYPE=$1
+build/$1%.exe: DRIVER=$(call getDriver,$1)
+endef
+
+$(foreach type,$(allTypes),$(eval $(call setType,$(type))))
+
 # compile tests for a specific type, create executable
 build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS) prepare
-	$(CXX) src/driver$(call getDriver,$*).cpp -o $@ $(FLAGS) -DNUMBER='codi::$(call addVectorDimIfNeeded,$*)' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents
+	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='codi::$(call addVectorDimIfNeeded,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST=$(TEST)
 	
 # run executable, create output file
 build/%.out: build/%.exe
@@ -105,8 +125,8 @@ results/%.ref: build/%.exe
 
 # create all reference files
 .PHONY: reference
-reference: $(foreach type,$(allTypes),results/$(type).ref)
+reference: $(foreach case,$(allCases),results/$(case).ref)
 
 # run all tests
 .PHONY: all
-all: $(foreach type,$(allTypes),build/$(type).diff)
+all: $(foreach case,$(allCases),build/$(case).diff)

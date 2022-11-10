@@ -32,39 +32,18 @@
  *    - Former members:
  *      - Tim Albring
  */
+#pragma once
 
-#include "../include/forwardCallbacks.hpp"
-#include "../include/tests/test.hpp"
-
-#ifndef NUMBER
-  #error Please define NUMBER as a CoDiPack type.
+#ifndef TEST
+  #error Please define TEST as one of the tests.
 #endif
 
-int main() {
-
-  using Tape = NUMBER::Tape;
-  size_t constexpr dim = codi::GradientTraits::dim<Tape::Gradient>();
-
-  size_t constexpr nInputs = 4;
-  size_t constexpr nOutputs = 4;
-
-  registerForwardCallbacks<Tape>();
-
-  NUMBER inputs[nInputs] = {};
-  NUMBER outputs[nOutputs] = {};
-
-  for (int offset = 0; offset < nInputs; offset += dim) {
-
-    for (size_t i = 0; i < nInputs; ++i) {
-      inputs[i] = sin(i + 1);
-    }
-
-    for (size_t currentDim = 0; currentDim < dim && offset + currentDim < nInputs; ++currentDim) {
-      codi::GradientTraits::at(inputs[offset + currentDim].gradient(), currentDim) = 1.0;
-    }
-
-    test<NUMBER>(nInputs, inputs, nOutputs, outputs);
-  }
-
-  return 0;
-}
+#if TEST == Statement
+  #include "testStatement.hpp"
+#elif TEST == Preacc
+  #include "testPreacc.hpp"
+#elif TEST == Tape
+  #include "testTape.hpp"
+#else
+  #error Unknown test TEST
+#endif
