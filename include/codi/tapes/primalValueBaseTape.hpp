@@ -942,6 +942,7 @@ namespace codi {
                                           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
                                           size_t endRhsIdentifiersPos) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
+            CODI_UNUSED(lhsAdjoint);
             bool const lhsZero = adjointVector->isLhsZero();
 #else
             bool const lhsZero = RealTraits::isTotalZero(lhsAdjoint);
