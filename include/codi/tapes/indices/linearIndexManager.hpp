@@ -119,7 +119,12 @@ namespace codi {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or a reuse index manager.");
         }
         count += 1;
-        EventSystem<Tape>::notifyIndexAssignListeners(count);
+        if (Config::IndexEvents) {
+          if (Base::InactiveIndex != index && Base::InvalidIndex != index) {
+            EventSystem<Tape>::notifyIndexFreeListeners(index);
+          }
+          EventSystem<Tape>::notifyIndexAssignListeners(count);
+        }
         index = count;
         return true;
       }
@@ -133,7 +138,12 @@ namespace codi {
       /// \copydoc IndexManagerInterface::copyIndex
       template<typename Tape>
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
-        EventSystem<Tape>::notifyIndexCopyListeners(rhs);
+        if (Config::IndexEvents) {
+          if (Base::InactiveIndex != lhs && Base::InvalidIndex != lhs) {
+            EventSystem<Tape>::notifyIndexFreeListeners(lhs);
+          }
+          EventSystem<Tape>::notifyIndexCopyListeners(rhs);
+        }
         lhs = rhs;
       }
 

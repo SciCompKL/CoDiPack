@@ -105,6 +105,8 @@ namespace codi {
         }
 
         if (Base::InactiveIndex != index && 0 == indexUse[index]) {
+          EventSystem<Tape>::notifyIndexFreeListeners(index);
+          EventSystem<Tape>::notifyIndexAssignListeners(index);
           indexUse[index] = 1;
           // Index would be freed and used again so we keep it.
         } else {
