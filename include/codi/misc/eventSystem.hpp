@@ -104,19 +104,23 @@ namespace codi {
 
       using Callback = void*;
       using EventListenerMap = std::map<Event, std::list<std::pair<Callback, void*>>>;
-      static EventListenerMap listeners;
+
+      static EventListenerMap& getListeners() {
+        static EventListenerMap* const listeners = new EventListenerMap;
+        return *listeners;
+      }
 
       template<typename TypedCallback>
       static CODI_INLINE void internalRegisterListener(bool const& enabled, Event event, TypedCallback callback, void* customData) {
         if (enabled) {
-          listeners[event].push_back(std::make_pair((void*)callback, customData));
+          getListeners()[event].push_back(std::make_pair((void*)callback, customData));
         }
       }
 
       template<typename TypedCallback, typename... Args>
       static CODI_INLINE void internalNotifyListeners(bool const& enabled, Event event, Args&&... args) {
         if (enabled) {
-          for (auto const& listener : listeners[event]) {
+          for (auto const& listener : getListeners()[event]) {
             ((TypedCallback) listener.first)(std::forward<Args>(args)..., listener.second);
           }
         }
@@ -138,9 +142,6 @@ namespace codi {
 
       /// @}
   };
-
-  template<typename Tape>
-  typename EventSystemBase<Tape>::EventListenerMap EventSystemBase<Tape>::listeners;
 
   template<typename T_Tape>
   struct EventSystem : public EventSystemBase<T_Tape> {
