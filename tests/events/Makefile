@@ -50,6 +50,9 @@ else
 	FLAGS += -O3
 endif
 
+# vector dimension used for vector mode tests
+VECTOR_DIM ?= 4
+
 # default target
 all:
 
@@ -107,7 +110,7 @@ getVariableAdjointInterfaceFlag = $(if $(findstring VariableAdjointInterface,$1)
 removeSecondaryIndicators = $(subst VariableAdjointInterface,,$1)
 
 # given a type, add the vector dimension if needed (e.g., RealReverseVec -> RealReverseVec<4>)
-addVectorDimIfNeeded = $(patsubst %Vec,%Vec<4>,$1)
+addVectorDimIfNeeded = $(patsubst %Vec,%Vec<$(VECTOR_DIM)>,$1)
 
 # given a type, expand it to a second order CoDiPackType type (e.g., RealReverseSec -> RealReverseGen<RealForward>)
 expandSecondOrderTypeIfNeeded = $(patsubst %Sec,%Gen<codi::RealForward>,$1)
