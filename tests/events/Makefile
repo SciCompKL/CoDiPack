@@ -39,7 +39,7 @@ CODI_DIR = ../..
 CXX ?= g++
 
 # set to yes to compile with debugging flags
-DEBUG ?= no
+DEBUG ?= yes
 
 # regards CXXFLAGS already set
 FLAGS = $(CXXFLAGS)
