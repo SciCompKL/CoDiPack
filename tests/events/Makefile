@@ -86,10 +86,28 @@ allTypes = $(scalarTypes) $(vectorTypes) $(secondOrderTypes)
 
 allTests = Tape Statement Preacc
 
-# test cases are all combinations of types and tests
-allCases = $(foreach type,$(allTypes),$(foreach test,$(allTests),$(type)$(test)))
+$(info [info] all types: $(allTypes))
+$(info [info] all tests: $(allTests))
 
-HEADERS = $(shell find include -name '*.hpp')
+# user selection of types
+TYPES ?= $(allTypes)
+
+# user selection of tests
+TESTS ?= $(allTests)
+
+# filter against known types
+usedTypes = $(filter $(allTypes),$(TYPES))
+$(if $(filter-out $(allTypes),$(TYPES)),$(error Unknown type(s) $(filter-out $(allTypes),$(TYPES))))
+
+# filter against known tests
+usedTests = $(filter $(allTests),$(TESTS))
+$(if $(filter-out $(allTests),$(TESTS)),$(error Unknown test(s) $(filter-out $(allTests),$(TESTS))))
+
+$(info [info] used types: $(usedTypes))
+$(info [info] used tests: $(usedTests))
+
+# test cases are combinations of used types and tests
+usedCases = $(foreach type,$(usedTypes),$(foreach test,$(usedTests),$(type)$(test)))
 
 # given a type, decide whether it needs the forward, the reverse, or the reversePrimal driver
 getDriver = $(if $(findstring ReversePrimal,$1),ReversePrimal,$(if $(findstring Reverse,$1),Reverse,Forward))
@@ -126,7 +144,7 @@ build/%$1.exe: TEST_NAME=$1
 build/%$1.exe: TEST_FLAGS=
 endef
 
-$(foreach test,$(allTests),$(eval $(call setTest,$(test))))
+$(foreach test,$(usedTests),$(eval $(call setTest,$(test))))
 
 # type-specific variables
 define setType
@@ -135,7 +153,7 @@ build/$1%.exe: DRIVER=$(call getDriver,$1)
 build/$1%.exe: TYPE_FLAGS=$(call getTapeFlag,$1) $(call getOrderFlag,$1) $(call getChunkSizeFlags,$1) $(call getVariableAdjointInterfaceFlag,$1)
 endef
 
-$(foreach type,$(allTypes),$(eval $(call setType,$(type))))
+$(foreach type,$(usedTypes),$(eval $(call setType,$(type))))
 
 # compile tests for a specific type, create executable
 build/%.exe:
@@ -162,11 +180,11 @@ results/%.ref: build/%.exe
 
 # create all reference files
 .PHONY: reference
-reference: $(foreach case,$(allCases),results/$(case).ref)
+reference: $(foreach case,$(usedCases),results/$(case).ref)
 
 # run all tests
 .PHONY: all
-all: $(foreach case,$(allCases),build/$(case).diff)
+all: $(foreach case,$(usedCases),build/$(case).diff)
 
 DEPENDENCIES = $(shell find build -name '*.d')
 
