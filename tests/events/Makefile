@@ -135,9 +135,10 @@ endef
 $(foreach type,$(allTypes),$(eval $(call setType,$(type))))
 
 # compile tests for a specific type, create executable
-build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS)
+build/%.exe:
 	@mkdir -p build;
-	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='$(call getCoDiPackType,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS) $(DRIVER_FLAGS)
+	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='$(call getCoDiPackType,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS) $(DRIVER_FLAGS);
+	@$(CXX) src/driver$(DRIVER).cpp $(FLAGS) -DNUMBER='$(call getCoDiPackType,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS) $(DRIVER_FLAGS) -MM -MP -MT $@ -MF $@.d
 
 # run executable, create output file
 build/%.out: build/%.exe
@@ -163,3 +164,7 @@ reference: $(foreach case,$(allCases),results/$(case).ref)
 # run all tests
 .PHONY: all
 all: $(foreach case,$(allCases),build/$(case).diff)
+
+DEPENDENCIES = $(shell find build -name '*.d')
+
+-include $(DEPENDENCIES)
