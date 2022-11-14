@@ -38,13 +38,13 @@ CODI_DIR = ../..
 # regards CXX already set
 CXX ?= g++
 
-# set to yes to compile with debugging flags
-DEBUG ?= yes
+# set to yes to compile with optimization flags
+OPT ?= no
 
 # regards CXXFLAGS already set
 FLAGS = $(CXXFLAGS)
 
-ifeq ($(DEBUG),yes)
+ifeq ($(OPT),no)
 	FLAGS += -O0 -ggdb
 else
 	FLAGS += -O3
