@@ -53,6 +53,11 @@ endif
 # default target
 all:
 
+# delete executables and output files
+.PHONY: clean
+clean:
+	rm -rf build/*
+
 # disable deletion of intermediate targets
 .SECONDARY:
 
@@ -80,16 +85,6 @@ allTests = Tape Statement Preacc
 
 # test cases are all combinations of types and tests
 allCases = $(foreach type,$(allTypes),$(foreach test,$(allTests),$(type)$(test)))
-
-# ensure that the build directory exists
-.PHONY: prepare
-prepare:
-	@mkdir -p build
-
-# delete executables and output files
-.PHONY: clean
-clean:
-	rm -f build/*
 
 HEADERS = $(shell find include -name '*.hpp')
 
@@ -140,7 +135,8 @@ endef
 $(foreach type,$(allTypes),$(eval $(call setType,$(type))))
 
 # compile tests for a specific type, create executable
-build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS) prepare
+build/%.exe: src/driver$(call getDriver,$*).cpp $(HEADERS)
+	@mkdir -p build;
 	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='$(call getCoDiPackType,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS) $(DRIVER_FLAGS)
 
 # run executable, create output file
