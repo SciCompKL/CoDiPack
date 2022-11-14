@@ -61,7 +61,9 @@ int main() {
   NUMBER inputs[nInputs] = {};
   NUMBER outputs[nOutputs] = {};
 
-  for (int offset = 0; offset < nOutputs; offset += dim) {
+  size_t constexpr maxRuns = 2;
+
+  for (size_t run = 0; run < maxRuns; run += 1) {
 
     tape.reset();
 
@@ -85,8 +87,10 @@ int main() {
 
     tape.setPassive();
 
-    for (size_t currentDim = 0; currentDim < dim && offset + currentDim < nOutputs; ++currentDim) {
-      codi::GradientTraits::at(outputs[offset + currentDim].gradient(), currentDim) = 1.0;
+    for (size_t j = 0; j < nOutputs; ++j) {
+      for (size_t currentDim = 0; currentDim < dim; ++currentDim) {
+        codi::GradientTraits::at(outputs[j].gradient(), currentDim) = cos(dim * j + currentDim);
+      }
     }
 
     tape.evaluate();

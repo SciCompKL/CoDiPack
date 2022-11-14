@@ -51,7 +51,7 @@ else
 endif
 
 # vector dimension used for vector mode tests
-VECTOR_DIM ?= 4
+VECTOR_DIM ?= 2
 
 # default target
 all:

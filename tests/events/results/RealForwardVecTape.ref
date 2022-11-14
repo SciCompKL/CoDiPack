@@ -1,40 +1,40 @@
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.841471
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.909297
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.14112
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue -0.756802
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.745624
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.666367
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 2.52441
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.708073
-StatementPrimal expression lhsValue 0.745624 lhsDotValue {0.666367, 0, 0, 0} newValue 1.5347
-StatementPrimal expression lhsValue 0.666367 lhsDotValue {-0.745624, 0, 0, 0} newValue 1.28067
-StatementPrimal expression lhsValue 2.52441 lhsDotValue {3, 0, 0, 0} newValue 5.25231
-StatementPrimal expression lhsValue 0.708073 lhsDotValue {1.68294, 0, 0, 0} newValue 1.5349
-StatementPrimal expression lhsValue 1.5347 lhsDotValue {0.666367, 0.6143, 0, 0} newValue 1.67535
-StatementPrimal expression lhsValue 1.28067 lhsDotValue {-0.745624, -0.789072, 0, 0} newValue 2.27073
-StatementPrimal expression lhsValue 5.25231 lhsDotValue {3, 3, 0, 0} newValue 5.67567
-StatementPrimal expression lhsValue 1.5349 lhsDotValue {1.68294, 1.81859, 0, 0} newValue 1.55481
-StatementPrimal expression lhsValue 1.67535 lhsDotValue {0.666367, 0.6143, 0.990059, 0} newValue 0.988748
-StatementPrimal expression lhsValue 2.27073 lhsDotValue {-0.745624, -0.789072, -0.140652, 0} newValue 2.99776
-StatementPrimal expression lhsValue 5.67567 lhsDotValue {3, 3, 3, 0} newValue 3.40526
-StatementPrimal expression lhsValue 1.55481 lhsDotValue {1.68294, 1.81859, 0.28224, 0} newValue 2.12756
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.17663
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.731438
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.128835
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.255522
-StatementPrimal expression lhsValue 0 lhsDotValue {0, 0, 0, 0} newValue 0.37795
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0.841471
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0.909297
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0.14112
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue -0.756802
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.745624
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.666367
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 2.52441
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.708073
+StatementPrimal expression lhsValue 0.745624 lhsDotValue {0.666367, 0.360039} newValue 1.5347
+StatementPrimal expression lhsValue 0.666367 lhsDotValue {-0.745624, -0.402862} newValue 1.28067
+StatementPrimal expression lhsValue 2.52441 lhsDotValue {3, 1.62091} newValue 5.25231
+StatementPrimal expression lhsValue 0.708073 lhsDotValue {1.68294, 0.909297} newValue 1.5349
+StatementPrimal expression lhsValue 1.5347 lhsDotValue {0.410728, -0.248113} newValue 1.67535
+StatementPrimal expression lhsValue 1.28067 lhsDotValue {-0.417254, 0.378313} newValue 2.27073
+StatementPrimal expression lhsValue 5.25231 lhsDotValue {1.75156, -1.34907} newValue 5.67567
+StatementPrimal expression lhsValue 1.5349 lhsDotValue {0.926139, -0.891098} newValue 1.55481
+StatementPrimal expression lhsValue 1.67535 lhsDotValue {-0.236418, 0.0327291} newValue 0.988748
+StatementPrimal expression lhsValue 2.27073 lhsDotValue {-0.325318, 0.338416} newValue 2.99776
+StatementPrimal expression lhsValue 5.67567 lhsDotValue {-0.209371, -0.498084} newValue 3.40526
+StatementPrimal expression lhsValue 1.55481 lhsDotValue {0.741655, -0.811037} newValue 2.12756
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.17663
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.731438
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.128835
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.255522
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.37795

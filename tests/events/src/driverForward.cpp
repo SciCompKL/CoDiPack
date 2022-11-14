@@ -58,18 +58,20 @@ int main() {
   NUMBER inputs[nInputs] = {};
   NUMBER outputs[nOutputs] = {};
 
-  for (int offset = 0; offset < nInputs; offset += dim) {
+  size_t constexpr maxRuns = 1;
+
+  for (size_t run = 0; run < maxRuns; run += 1) {
 
     for (size_t i = 0; i < nInputs; ++i) {
       inputs[i] = sin(i + 1);
 
+      for (size_t currentDim = 0; currentDim < dim; ++currentDim) {
+        codi::GradientTraits::at(inputs[i].gradient(), currentDim) = cos(dim * i + currentDim);
+      }
+
 #ifdef SECOND_ORDER
       inputs[i].value().setGradient(i + 1);
 #endif
-    }
-
-    for (size_t currentDim = 0; currentDim < dim && offset + currentDim < nInputs; ++currentDim) {
-      codi::GradientTraits::at(inputs[offset + currentDim].gradient(), currentDim) = 1.0;
     }
 
     test<NUMBER>(nInputs, inputs, nOutputs, outputs);
