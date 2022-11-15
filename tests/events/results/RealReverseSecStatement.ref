@@ -93,7 +93,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 IndexAssign index 5
 StatementStoreOnTape lhsIdentifier 5 newValue 0.745624 numActiveVariables 1
-	0 2.03209e-320; 
+	0 2.01628e-320; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.745624
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
@@ -1060,7 +1060,7 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.416147
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-TapeEvaluate reverse begin from [0, 0, [0, 70, [0, 38, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
+TapeEvaluate reverse begin from [0, 0, [0, 70, [1, 6, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementEvaluate lhsIdentifier 38 numAdjoints 1
@@ -1294,7 +1294,7 @@ StatementEvaluate lhsIdentifier 5 numAdjoints 1
 	0 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-TapeEvaluate reverse end from [0, 0, [0, 70, [0, 38, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
+TapeEvaluate reverse end from [0, 0, [0, 70, [1, 6, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, 0]]] clear adjoints 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 0
@@ -1434,7 +1434,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0.666367 lhsDotValue -0.745624 newValue 0.666367
 IndexAssign index 5
 StatementStoreOnTape lhsIdentifier 5 newValue 0.745624 numActiveVariables 1
-	0 2.03209e-320; 
+	0 2.01628e-320; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.745624
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
@@ -2365,7 +2365,7 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.416147
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-TapeEvaluate reverse begin from [0, 0, [0, 70, [0, 38, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
+TapeEvaluate reverse begin from [0, 0, [0, 70, [1, 6, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementEvaluate lhsIdentifier 38 numAdjoints 1
@@ -2599,7 +2599,7 @@ StatementEvaluate lhsIdentifier 5 numAdjoints 1
 	0 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-TapeEvaluate reverse end from [0, 0, [0, 70, [0, 38, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
+TapeEvaluate reverse end from [0, 0, [0, 70, [1, 6, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
 TapeReset hard position [0, 0, [0, 0, [0, 0, 0]]] clear adjoints 0
 IndexFree index 38
 IndexFree index 37

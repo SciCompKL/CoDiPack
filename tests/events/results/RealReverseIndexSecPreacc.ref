@@ -38,26 +38,26 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0.841471
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.841471
-IndexAssign index 256
-TapeRegisterInput value 0.841471 identifier 256
+IndexAssign index 32
+TapeRegisterInput value 0.841471 identifier 32
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0.909297
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.909297
-IndexAssign index 255
-TapeRegisterInput value 0.909297 identifier 255
+IndexAssign index 31
+TapeRegisterInput value 0.909297 identifier 31
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0.14112
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.14112
-IndexAssign index 254
-TapeRegisterInput value 0.14112 identifier 254
+IndexAssign index 30
+TapeRegisterInput value 0.14112 identifier 30
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.756802
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue -0.756802
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.756802
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.756802
-IndexAssign index 253
-TapeRegisterInput value -0.756802 identifier 253
+IndexAssign index 29
+TapeRegisterInput value -0.756802 identifier 29
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -87,9 +87,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
-IndexAssign index 252
-StatementStoreOnTape lhsIdentifier 252 newValue 0.745624 numActiveVariables 1
-	0 2.03209e-320; 
+IndexAssign index 28
+StatementStoreOnTape lhsIdentifier 28 newValue 0.745624 numActiveVariables 1
+	0 2.01628e-320; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.745624
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
@@ -104,9 +104,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.745624
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.745624
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.745624
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.745624
-IndexAssign index 251
-StatementStoreOnTape lhsIdentifier 251 newValue 0.666367 numActiveVariables 1
-	256 0.666367; 
+IndexAssign index 27
+StatementStoreOnTape lhsIdentifier 27 newValue 0.666367 numActiveVariables 1
+	32 0.666367; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.52441
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.52441
@@ -122,9 +122,9 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
-IndexAssign index 250
-StatementStoreOnTape lhsIdentifier 250 newValue 2.52441 numActiveVariables 1
-	256 -0.745624; 
+IndexAssign index 26
+StatementStoreOnTape lhsIdentifier 26 newValue 2.52441 numActiveVariables 1
+	32 -0.745624; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.52441
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.708073
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.708073
@@ -143,14 +143,14 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.841471
-IndexAssign index 249
-StatementStoreOnTape lhsIdentifier 249 newValue 0.708073 numActiveVariables 2
-	256 -0.745624; 256 3; 
+IndexAssign index 25
+StatementStoreOnTape lhsIdentifier 25 newValue 0.708073 numActiveVariables 2
+	32 -0.745624; 32 3; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.708073
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.789072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.789072
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.5347
-StatementPrimal expression lhsValue 0.745624 lhsIdentifier 252 newValue 1.5347
+StatementPrimal expression lhsValue 0.745624 lhsIdentifier 28 newValue 1.5347
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -161,15 +161,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.6143
-IndexFree index 252
-IndexAssign index 252
-StatementStoreOnTape lhsIdentifier 252 newValue 1.5347 numActiveVariables 2
-	256 0.841471; 256 0.841471; 
+IndexFree index 28
+IndexAssign index 28
+StatementStoreOnTape lhsIdentifier 28 newValue 1.5347 numActiveVariables 2
+	32 0.841471; 32 0.841471; 
 StatementPrimal copy lhsValue 0.745624 lhsDotValue 0.666367 newValue 1.5347
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.28067
-StatementPrimal expression lhsValue 0.666367 lhsIdentifier 251 newValue 1.28067
+StatementPrimal expression lhsValue 0.666367 lhsIdentifier 27 newValue 1.28067
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -180,15 +180,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.789072
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.789072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.789072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.789072
-IndexFree index 251
-IndexAssign index 251
-StatementStoreOnTape lhsIdentifier 251 newValue 1.28067 numActiveVariables 2
-	252 1; 255 0.6143; 
+IndexFree index 27
+IndexAssign index 27
+StatementStoreOnTape lhsIdentifier 27 newValue 1.28067 numActiveVariables 2
+	28 1; 31 0.6143; 
 StatementPrimal copy lhsValue 0.666367 lhsDotValue -0.745624 newValue 1.28067
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.72789
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.72789
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 5.25231
-StatementPrimal expression lhsValue 2.52441 lhsIdentifier 250 newValue 5.25231
+StatementPrimal expression lhsValue 2.52441 lhsIdentifier 26 newValue 5.25231
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -200,15 +200,15 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
-IndexFree index 250
-IndexAssign index 250
-StatementStoreOnTape lhsIdentifier 250 newValue 5.25231 numActiveVariables 2
-	251 1; 255 -0.789072; 
+IndexFree index 26
+IndexAssign index 26
+StatementStoreOnTape lhsIdentifier 26 newValue 5.25231 numActiveVariables 2
+	27 1; 31 -0.789072; 
 StatementPrimal copy lhsValue 2.52441 lhsDotValue 3 newValue 5.25231
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.826822
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.826822
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.5349
-StatementPrimal expression lhsValue 0.708073 lhsIdentifier 249 newValue 1.5349
+StatementPrimal expression lhsValue 0.708073 lhsIdentifier 25 newValue 1.5349
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -223,15 +223,15 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.909297
-IndexFree index 249
-IndexAssign index 249
-StatementStoreOnTape lhsIdentifier 249 newValue 1.5349 numActiveVariables 3
-	255 -0.789072; 250 1; 255 3; 
+IndexFree index 25
+IndexAssign index 25
+StatementStoreOnTape lhsIdentifier 25 newValue 1.5349 numActiveVariables 3
+	31 -0.789072; 26 1; 31 3; 
 StatementPrimal copy lhsValue 0.708073 lhsDotValue 1.68294 newValue 1.5349
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.140652
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.140652
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.67535
-StatementPrimal expression lhsValue 1.5347 lhsIdentifier 252 newValue 1.67535
+StatementPrimal expression lhsValue 1.5347 lhsIdentifier 28 newValue 1.67535
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -242,15 +242,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.990059
-IndexFree index 252
-IndexAssign index 252
-StatementStoreOnTape lhsIdentifier 252 newValue 1.67535 numActiveVariables 2
-	255 0.909297; 255 0.909297; 
+IndexFree index 28
+IndexAssign index 28
+StatementStoreOnTape lhsIdentifier 28 newValue 1.67535 numActiveVariables 2
+	31 0.909297; 31 0.909297; 
 StatementPrimal copy lhsValue 1.5347 lhsDotValue 1.89497 newValue 1.67535
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.27073
-StatementPrimal expression lhsValue 1.28067 lhsIdentifier 251 newValue 2.27073
+StatementPrimal expression lhsValue 1.28067 lhsIdentifier 27 newValue 2.27073
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -261,15 +261,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.140652
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.140652
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.140652
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.140652
-IndexFree index 251
-IndexAssign index 251
-StatementStoreOnTape lhsIdentifier 251 newValue 2.27073 numActiveVariables 2
-	252 1; 254 0.990059; 
+IndexFree index 27
+IndexAssign index 27
+StatementStoreOnTape lhsIdentifier 27 newValue 2.27073 numActiveVariables 2
+	28 1; 30 0.990059; 
 StatementPrimal copy lhsValue 1.28067 lhsDotValue -2.32377 newValue 2.27073
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.42336
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.42336
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 5.67567
-StatementPrimal expression lhsValue 5.25231 lhsIdentifier 250 newValue 5.67567
+StatementPrimal expression lhsValue 5.25231 lhsIdentifier 26 newValue 5.67567
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -281,15 +281,15 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
-IndexFree index 250
-IndexAssign index 250
-StatementStoreOnTape lhsIdentifier 250 newValue 5.67567 numActiveVariables 2
-	251 1; 254 -0.140652; 
+IndexFree index 26
+IndexAssign index 26
+StatementStoreOnTape lhsIdentifier 26 newValue 5.67567 numActiveVariables 2
+	27 1; 30 -0.140652; 
 StatementPrimal copy lhsValue 5.25231 lhsDotValue 9 newValue 5.67567
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.0199149
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.0199149
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.55481
-StatementPrimal expression lhsValue 1.5349 lhsIdentifier 249 newValue 1.55481
+StatementPrimal expression lhsValue 1.5349 lhsIdentifier 25 newValue 1.55481
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -304,15 +304,15 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.14112
-IndexFree index 249
-IndexAssign index 249
-StatementStoreOnTape lhsIdentifier 249 newValue 1.55481 numActiveVariables 3
-	254 -0.140652; 250 1; 254 3; 
+IndexFree index 25
+IndexAssign index 25
+StatementStoreOnTape lhsIdentifier 25 newValue 1.55481 numActiveVariables 3
+	30 -0.140652; 26 1; 30 3; 
 StatementPrimal copy lhsValue 1.5349 lhsDotValue 5.32013 newValue 1.55481
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.6866
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.6866
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.988748
-StatementPrimal expression lhsValue 1.67535 lhsIdentifier 252 newValue 0.988748
+StatementPrimal expression lhsValue 1.67535 lhsIdentifier 28 newValue 0.988748
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -323,15 +323,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.727035
-IndexFree index 252
-IndexAssign index 252
-StatementStoreOnTape lhsIdentifier 252 newValue 0.988748 numActiveVariables 2
-	254 0.14112; 254 0.14112; 
+IndexFree index 28
+IndexAssign index 28
+StatementStoreOnTape lhsIdentifier 28 newValue 0.988748 numActiveVariables 2
+	30 0.14112; 30 0.14112; 
 StatementPrimal copy lhsValue 1.67535 lhsDotValue 4.86514 newValue 0.988748
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.99776
-StatementPrimal expression lhsValue 2.27073 lhsIdentifier 251 newValue 2.99776
+StatementPrimal expression lhsValue 2.27073 lhsIdentifier 27 newValue 2.99776
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -342,15 +342,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6866
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6866
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.6866
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.6866
-IndexFree index 251
-IndexAssign index 251
-StatementStoreOnTape lhsIdentifier 251 newValue 2.99776 numActiveVariables 2
-	252 1; 253 0.727035; 
+IndexFree index 27
+IndexAssign index 27
+StatementStoreOnTape lhsIdentifier 27 newValue 2.99776 numActiveVariables 2
+	28 1; 29 0.727035; 
 StatementPrimal copy lhsValue 2.27073 lhsDotValue -2.74573 newValue 2.99776
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -2.27041
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -2.27041
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.40526
-StatementPrimal expression lhsValue 5.67567 lhsIdentifier 250 newValue 3.40526
+StatementPrimal expression lhsValue 5.67567 lhsIdentifier 26 newValue 3.40526
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -362,15 +362,15 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
-IndexFree index 250
-IndexAssign index 250
-StatementStoreOnTape lhsIdentifier 250 newValue 3.40526 numActiveVariables 2
-	251 1; 253 0.6866; 
+IndexFree index 26
+IndexAssign index 26
+StatementStoreOnTape lhsIdentifier 26 newValue 3.40526 numActiveVariables 2
+	27 1; 29 0.6866; 
 StatementPrimal copy lhsValue 5.67567 lhsDotValue 18 newValue 3.40526
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.57275
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.57275
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.12756
-StatementPrimal expression lhsValue 1.55481 lhsIdentifier 249 newValue 2.12756
+StatementPrimal expression lhsValue 1.55481 lhsIdentifier 25 newValue 2.12756
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -385,13 +385,13 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.756802
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.756802
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.756802
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.756802
-IndexFree index 249
-IndexAssign index 249
-StatementStoreOnTape lhsIdentifier 249 newValue 2.12756 numActiveVariables 3
-	253 0.6866; 250 1; 253 3; 
+IndexFree index 25
+IndexAssign index 25
+StatementStoreOnTape lhsIdentifier 25 newValue 2.12756 numActiveVariables 3
+	29 0.6866; 26 1; 29 3; 
 StatementPrimal copy lhsValue 1.55481 lhsDotValue 6.16685 newValue 2.12756
 PreaccStart
-PreaccAddInput value 0.988748 identifier 252
+PreaccAddInput value 0.988748 identifier 28
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -405,9 +405,9 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.988748
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.988748
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.988748
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.988748
-IndexAssign index 248
-StatementStoreOnTape lhsIdentifier 248 newValue 0.977623 numActiveVariables 2
-	253 -0.756802; 253 -0.756802; 
+IndexAssign index 24
+StatementStoreOnTape lhsIdentifier 24 newValue 0.977623 numActiveVariables 2
+	29 -0.756802; 29 -0.756802; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.549736
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.549736
@@ -425,9 +425,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.835339
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.816646
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.816646
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.816646
-IndexAssign index 247
-StatementStoreOnTape lhsIdentifier 247 newValue 0.537435 numActiveVariables 2
-	252 0.988748; 252 0.988748; 
+IndexAssign index 23
+StatementStoreOnTape lhsIdentifier 23 newValue 0.537435 numActiveVariables 2
+	28 0.988748; 28 0.988748; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.537435
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.525408
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -442,9 +442,9 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.977623
-IndexAssign index 246
-StatementStoreOnTape lhsIdentifier 246 newValue 0.525408 numActiveVariables 2
-	248 0.549736; 252 -0.816646; 
+IndexAssign index 22
+StatementStoreOnTape lhsIdentifier 22 newValue 0.525408 numActiveVariables 2
+	24 0.549736; 28 -0.816646; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.525408
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.6111
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.6111
@@ -466,244 +466,20 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.99776
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.99776
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.99776
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.99776
-IndexAssign index 245
-StatementStoreOnTape lhsIdentifier 245 newValue 4.60886 numActiveVariables 3
-	252 -0.816646; 248 0.537435; 247 0.977623; 
+IndexAssign index 21
+StatementStoreOnTape lhsIdentifier 21 newValue 4.60886 numActiveVariables 3
+	28 -0.816646; 24 0.537435; 23 0.977623; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 4.60886
-PreaccAddOutput value 0.977623 identifier 248
-PreaccAddOutput value 0.537435 identifier 247
-PreaccAddOutput value 0.525408 identifier 246
-PreaccAddOutput value 4.60886 identifier 245
+PreaccAddOutput value 0.977623 identifier 24
+PreaccAddOutput value 0.537435 identifier 23
+PreaccAddOutput value 0.525408 identifier 22
+PreaccAddOutput value 4.60886 identifier 21
 TapeStopRecording
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -746,21 +522,21 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.988748
 StatementPrimal expression lhsValue 0.988748 lhsDotValue 7.77329 newValue 1.9775
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.9775
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.9775
-StatementEvaluate lhsIdentifier 248 numAdjoints 1
+StatementEvaluate lhsIdentifier 24 numAdjoints 1
 	1.9775 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.0871
 StatementPrimal expression lhsValue 1.0871 lhsDotValue -4.29402 newValue 0.270455
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.270455
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.270455
-StatementEvaluate lhsIdentifier 247 numAdjoints 1
+StatementEvaluate lhsIdentifier 23 numAdjoints 1
 	0.270455 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.06278
 StatementPrimal expression lhsValue 1.06278 lhsDotValue 12.5126 newValue 1.32718
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.32718
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.32718
-StatementEvaluate lhsIdentifier 246 numAdjoints 1
+StatementEvaluate lhsIdentifier 22 numAdjoints 1
 	1.32718 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0
@@ -768,7 +544,7 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.810758
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.810758
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.810758
-StatementEvaluate lhsIdentifier 245 numAdjoints 1
+StatementEvaluate lhsIdentifier 21 numAdjoints 1
 	0.810758 
 TapeEvaluate forward end from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 41, [0, 20, []]]]
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -810,53 +586,53 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-IndexFree index 248
-IndexAssign index 248
+IndexFree index 24
+IndexAssign index 24
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.9775
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.9775
 StatementPrimal copy lhsValue 0.988748 lhsDotValue 7.77329 newValue 1.9775
-StatementStoreOnTape lhsIdentifier 248 newValue 0.977623 numActiveVariables 1
-	252 1.9775; 
-IndexFree index 247
-IndexAssign index 247
+StatementStoreOnTape lhsIdentifier 24 newValue 0.977623 numActiveVariables 1
+	28 1.9775; 
+IndexFree index 23
+IndexAssign index 23
 StatementPrimal copy lhsValue 0.977623 lhsDotValue 15.3716 newValue 0.537435
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.270455
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.270455
 StatementPrimal copy lhsValue 0.988748 lhsDotValue 7.77329 newValue 0.270455
-StatementStoreOnTape lhsIdentifier 247 newValue 0.537435 numActiveVariables 1
-	252 0.270455; 
-IndexFree index 246
-IndexAssign index 246
+StatementStoreOnTape lhsIdentifier 23 newValue 0.537435 numActiveVariables 1
+	28 0.270455; 
+IndexFree index 22
+IndexAssign index 22
 StatementPrimal copy lhsValue 0.537435 lhsDotValue 2.10232 newValue 0.525408
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.32718
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.32718
 StatementPrimal copy lhsValue 0.549736 lhsDotValue -6.49332 newValue 1.32718
-StatementStoreOnTape lhsIdentifier 246 newValue 0.525408 numActiveVariables 1
-	252 1.32718; 
-IndexFree index 245
-IndexAssign index 245
+StatementStoreOnTape lhsIdentifier 22 newValue 0.525408 numActiveVariables 1
+	28 1.32718; 
+IndexFree index 21
+IndexAssign index 21
 StatementPrimal copy lhsValue 0.525408 lhsDotValue 10.3165 newValue 4.60886
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.810758
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.810758
 StatementPrimal copy lhsValue -0.816646 lhsDotValue -17.0182 newValue 0.810758
-StatementStoreOnTape lhsIdentifier 245 newValue 4.60886 numActiveVariables 1
-	252 0.810758; 
+StatementStoreOnTape lhsIdentifier 21 newValue 4.60886 numActiveVariables 1
+	28 0.810758; 
 TapeStartRecording
 PreaccFinish
 PreaccStart
-PreaccAddInput value 0.988748 identifier 252
-PreaccAddInput value 2.99776 identifier 251
-PreaccAddInput value 3.40526 identifier 250
-PreaccAddInput value 2.12756 identifier 249
+PreaccAddInput value 0.988748 identifier 28
+PreaccAddInput value 2.99776 identifier 27
+PreaccAddInput value 3.40526 identifier 26
+PreaccAddInput value 2.12756 identifier 25
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 7.24489
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.96403
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.96403
@@ -884,11 +660,11 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal copy lhsValue 0.537435 lhsDotValue 2.10232 newValue 3.40526
-IndexAssign index 244
-StatementStoreOnTape lhsIdentifier 244 newValue 10.2089 numActiveVariables 4
-	252 1.9775; 252 0.270455; 252 1.32718; 252 0.810758; 
+IndexAssign index 20
+StatementStoreOnTape lhsIdentifier 20 newValue 10.2089 numActiveVariables 4
+	28 1.9775; 28 0.270455; 28 1.32718; 28 0.810758; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 10.2089
-PreaccAddOutput value 10.2089 identifier 244
+PreaccAddOutput value 10.2089 identifier 20
 TapeStopRecording
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
@@ -897,7 +673,7 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 TapeEvaluate reverse begin from [0, 0, [0, 40, [0, 21, []]]] to [0, 0, [0, 36, [0, 20, []]]]
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-StatementEvaluate lhsIdentifier 244 numAdjoints 1
+StatementEvaluate lhsIdentifier 20 numAdjoints 1
 	1 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 0
@@ -927,8 +703,8 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 TapeReset to position [0, 0, [0, 36, [0, 20, []]]] clear adjoints 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-IndexFree index 244
-IndexAssign index 244
+IndexFree index 20
+IndexAssign index 20
 StatementPrimal copy lhsValue 4.60886 lhsDotValue 6.30329 newValue 10.2089
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.99776
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -950,8 +726,8 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal copy lhsValue 3.40526 lhsDotValue 30 newValue 3.40526
-StatementStoreOnTape lhsIdentifier 244 newValue 10.2089 numActiveVariables 4
-	252 2.99776; 251 0.988748; 250 2.12756; 249 3.40526; 
+StatementStoreOnTape lhsIdentifier 20 newValue 10.2089 numActiveVariables 4
+	28 2.99776; 27 0.988748; 26 2.12756; 25 3.40526; 
 TapeStartRecording
 PreaccFinish
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 10.2089
@@ -1018,9 +794,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.706219
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.706219
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.706219
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -10.2089
-IndexAssign index 243
-StatementStoreOnTape lhsIdentifier 243 newValue 0.983156 numActiveVariables 3
-	251 0.988748; 250 2.12756; 249 3.40526; 
+IndexAssign index 19
+StatementStoreOnTape lhsIdentifier 19 newValue 0.983156 numActiveVariables 3
+	27 0.988748; 26 2.12756; 25 3.40526; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.983156
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 5.10446
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 5.10446
@@ -1088,9 +864,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.46206
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.46206
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.46206
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -2.55223
-IndexAssign index 242
-StatementStoreOnTape lhsIdentifier 242 newValue 0.770226 numActiveVariables 5
-	250 2.12756; 249 3.40526; 248 0.908882; 247 1.65331; 244 0.706219; 
+IndexAssign index 18
+StatementStoreOnTape lhsIdentifier 18 newValue 0.770226 numActiveVariables 5
+	26 2.12756; 25 3.40526; 24 0.908882; 23 1.65331; 20 0.706219; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.770226
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.40297
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40297
@@ -1158,9 +934,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.0861384
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.0861384
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.0861384
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -1.13432
-IndexAssign index 241
-StatementStoreOnTape lhsIdentifier 241 newValue -0.521775 numActiveVariables 5
-	248 0.349451; 247 0.635671; 246 0.409477; 245 0.409477; 244 0.46206; 
+IndexAssign index 17
+StatementStoreOnTape lhsIdentifier 17 newValue -0.521775 numActiveVariables 5
+	24 0.349451; 23 0.635671; 22 0.409477; 21 0.409477; 20 0.46206; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.521775
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.55223
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.55223
@@ -1228,63 +1004,63 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.138958
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.138958
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.138958
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.638058
-IndexAssign index 240
-StatementStoreOnTape lhsIdentifier 240 newValue 0.609513 numActiveVariables 5
-	248 0.213435; 247 0.38825; 246 -1.32931; 245 -1.32931; 244 0.0861384; 
+IndexAssign index 16
+StatementStoreOnTape lhsIdentifier 16 newValue 0.609513 numActiveVariables 5
+	24 0.213435; 23 0.38825; 22 -1.32931; 21 -1.32931; 20 0.0861384; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.609513
-IndexFree index 244
-IndexFree index 245
-IndexFree index 246
-IndexFree index 247
-IndexFree index 248
-IndexFree index 249
-IndexFree index 250
-IndexFree index 251
-IndexFree index 252
+IndexFree index 20
+IndexFree index 21
+IndexFree index 22
+IndexFree index 23
+IndexFree index 24
+IndexFree index 25
+IndexFree index 26
+IndexFree index 27
+IndexFree index 28
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-IndexFree index 243
-IndexAssign index 243
-StatementStoreOnTape lhsIdentifier 243 newValue 0.983156 numActiveVariables 1
-	244 -0.138958; 
+IndexFree index 19
+IndexAssign index 19
+StatementStoreOnTape lhsIdentifier 19 newValue 0.983156 numActiveVariables 1
+	20 -0.138958; 
 StatementPrimal copy lhsValue 0.983156 lhsDotValue 79.25 newValue 0.983156
-TapeRegisterOutput value 0.983156 identifier 243
+TapeRegisterOutput value 0.983156 identifier 19
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-IndexFree index 242
-IndexAssign index 242
-StatementStoreOnTape lhsIdentifier 242 newValue 0.770226 numActiveVariables 1
-	243 1; 
+IndexFree index 18
+IndexAssign index 18
+StatementStoreOnTape lhsIdentifier 18 newValue 0.770226 numActiveVariables 1
+	19 1; 
 StatementPrimal copy lhsValue 0.770226 lhsDotValue 53.9496 newValue 0.770226
-TapeRegisterOutput value 0.770226 identifier 242
+TapeRegisterOutput value 0.770226 identifier 18
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-IndexFree index 241
-IndexAssign index 241
-StatementStoreOnTape lhsIdentifier 241 newValue -0.521775 numActiveVariables 1
-	242 1; 
+IndexFree index 17
+IndexAssign index 17
+StatementStoreOnTape lhsIdentifier 17 newValue -0.521775 numActiveVariables 1
+	18 1; 
 StatementPrimal copy lhsValue -0.521775 lhsDotValue -10.4577 newValue -0.521775
-TapeRegisterOutput value -0.521775 identifier 241
+TapeRegisterOutput value -0.521775 identifier 17
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-IndexFree index 240
-IndexAssign index 240
-StatementStoreOnTape lhsIdentifier 240 newValue 0.609513 numActiveVariables 1
-	241 1; 
+IndexFree index 16
+IndexAssign index 16
+StatementStoreOnTape lhsIdentifier 16 newValue 0.609513 numActiveVariables 1
+	17 1; 
 StatementPrimal copy lhsValue 0.609513 lhsDotValue -56.7754 newValue 0.609513
-TapeRegisterOutput value 0.609513 identifier 240
+TapeRegisterOutput value 0.609513 identifier 16
 TapeStopRecording
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.540302
@@ -1295,35 +1071,35 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 TapeEvaluate reverse begin from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 0, []]]]
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
-StatementEvaluate lhsIdentifier 240 numAdjoints 1
+StatementEvaluate lhsIdentifier 16 numAdjoints 1
 	-0.989992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue -0.989992 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.416147
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.416147
-StatementEvaluate lhsIdentifier 241 numAdjoints 1
+StatementEvaluate lhsIdentifier 17 numAdjoints 1
 	-0.416147 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue -0.416147 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.416147
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.540302
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.540302
-StatementEvaluate lhsIdentifier 242 numAdjoints 1
+StatementEvaluate lhsIdentifier 18 numAdjoints 1
 	0.540302 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0.540302 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.540302
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-StatementEvaluate lhsIdentifier 243 numAdjoints 1
+StatementEvaluate lhsIdentifier 19 numAdjoints 1
 	1 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
-StatementEvaluate lhsIdentifier 240 numAdjoints 1
+StatementEvaluate lhsIdentifier 16 numAdjoints 1
 	-0.989992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue -0.989992 lhsDotValue 0 newValue 0
@@ -1334,7 +1110,7 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.275924
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.151685
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.416147
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.416147
-StatementEvaluate lhsIdentifier 241 numAdjoints 1
+StatementEvaluate lhsIdentifier 17 numAdjoints 1
 	-0.416147 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue -0.416147 lhsDotValue 0 newValue 0
@@ -1345,7 +1121,7 @@ StatementPrimal expression lhsValue -0.275924 lhsDotValue -5.05013 newValue -0.4
 StatementPrimal expression lhsValue -0.151685 lhsDotValue -0.984573 newValue -0.240505
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.540302
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.540302
-StatementEvaluate lhsIdentifier 242 numAdjoints 1
+StatementEvaluate lhsIdentifier 18 numAdjoints 1
 	0.540302 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0.540302 lhsDotValue 0 newValue 0
@@ -1356,7 +1132,7 @@ StatementPrimal expression lhsValue -0.437492 lhsDotValue -8.14616 newValue -0.0
 StatementPrimal expression lhsValue -0.240505 lhsDotValue -1.63746 newValue -0.051696
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-StatementEvaluate lhsIdentifier 243 numAdjoints 1
+StatementEvaluate lhsIdentifier 19 numAdjoints 1
 	1 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 0
@@ -1365,7 +1141,7 @@ StatementPrimal expression lhsValue -0.0940379 lhsDotValue -0.974227 newValue 1.
 StatementPrimal expression lhsValue -0.051696 lhsDotValue 0.075051 newValue 0.857186
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.05759
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.05759
-StatementEvaluate lhsIdentifier 244 numAdjoints 1
+StatementEvaluate lhsIdentifier 20 numAdjoints 1
 	1.05759 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.05759 lhsDotValue 49.0313 newValue 0
@@ -1375,35 +1151,35 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.17041
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.6072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.6072
-StatementEvaluate lhsIdentifier 245 numAdjoints 1
+StatementEvaluate lhsIdentifier 21 numAdjoints 1
 	3.6072 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.6072 lhsDotValue 32.0118 newValue 0
 StatementPrimal expression lhsValue 3.17041 lhsDotValue 146.985 newValue 6.09497
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.6072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.6072
-StatementEvaluate lhsIdentifier 246 numAdjoints 1
+StatementEvaluate lhsIdentifier 22 numAdjoints 1
 	3.6072 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.6072 lhsDotValue 32.0118 newValue 0
 StatementPrimal expression lhsValue 6.09497 lhsDotValue -57.5203 newValue 10.8824
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.55927
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.55927
-StatementEvaluate lhsIdentifier 247 numAdjoints 1
+StatementEvaluate lhsIdentifier 23 numAdjoints 1
 	1.55927 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.55927 lhsDotValue 42.0779 newValue 0
 StatementPrimal expression lhsValue 10.8824 lhsDotValue -30.0602 newValue 11.3041
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.857186
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.857186
-StatementEvaluate lhsIdentifier 248 numAdjoints 1
+StatementEvaluate lhsIdentifier 24 numAdjoints 1
 	0.857186 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0.857186 lhsDotValue 13.0069 newValue 0
 StatementPrimal expression lhsValue 11.3041 lhsDotValue -51.9114 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
-StatementEvaluate lhsIdentifier 249 numAdjoints 1
+StatementEvaluate lhsIdentifier 25 numAdjoints 1
 	3.60137 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.60137 lhsDotValue 198.692 newValue 0
@@ -1412,7 +1188,7 @@ StatementPrimal expression lhsValue -2.72553 lhsDotValue -135.965 newValue -5.45
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
-StatementEvaluate lhsIdentifier 250 numAdjoints 1
+StatementEvaluate lhsIdentifier 26 numAdjoints 1
 	2.25009 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 2.25009 lhsDotValue 104.436 newValue 0
@@ -1420,7 +1196,7 @@ StatementPrimal expression lhsValue -5.45106 lhsDotValue -271.93 newValue 1.2992
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
-StatementEvaluate lhsIdentifier 251 numAdjoints 1
+StatementEvaluate lhsIdentifier 27 numAdjoints 1
 	1.04569 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.04569 lhsDotValue 56.7006 newValue 0
@@ -1428,7 +1204,7 @@ StatementPrimal expression lhsValue 1.29922 lhsDotValue 41.3777 newValue 2.01719
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
-StatementEvaluate lhsIdentifier 252 numAdjoints 1
+StatementEvaluate lhsIdentifier 28 numAdjoints 1
 	12.9992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
@@ -1436,7 +1212,7 @@ StatementPrimal expression lhsValue 2.01719 lhsDotValue 77.2673 newValue 11.468
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
-StatementEvaluate lhsIdentifier 249 numAdjoints 1
+StatementEvaluate lhsIdentifier 25 numAdjoints 1
 	3.60137 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.60137 lhsDotValue 198.692 newValue 0
@@ -1445,7 +1221,7 @@ StatementPrimal expression lhsValue 0.508226 lhsDotValue 38.8435 newValue 1.0164
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
-StatementEvaluate lhsIdentifier 250 numAdjoints 1
+StatementEvaluate lhsIdentifier 26 numAdjoints 1
 	2.25009 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 2.25009 lhsDotValue 104.436 newValue 0
@@ -1453,7 +1229,7 @@ StatementPrimal expression lhsValue 1.01645 lhsDotValue 77.6871 newValue 7.76672
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
-StatementEvaluate lhsIdentifier 251 numAdjoints 1
+StatementEvaluate lhsIdentifier 27 numAdjoints 1
 	1.04569 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.04569 lhsDotValue 56.7006 newValue 0
@@ -1461,7 +1237,7 @@ StatementPrimal expression lhsValue 7.76672 lhsDotValue 390.995 newValue 7.61965
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
-StatementEvaluate lhsIdentifier 252 numAdjoints 1
+StatementEvaluate lhsIdentifier 28 numAdjoints 1
 	12.9992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
@@ -1469,7 +1245,7 @@ StatementPrimal expression lhsValue 7.61965 lhsDotValue 379.914 newValue 20.4896
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
-StatementEvaluate lhsIdentifier 249 numAdjoints 1
+StatementEvaluate lhsIdentifier 25 numAdjoints 1
 	3.60137 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.60137 lhsDotValue 198.692 newValue 0
@@ -1478,7 +1254,7 @@ StatementPrimal expression lhsValue 3.27472 lhsDotValue 187.873 newValue 6.54944
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
-StatementEvaluate lhsIdentifier 250 numAdjoints 1
+StatementEvaluate lhsIdentifier 26 numAdjoints 1
 	2.25009 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 2.25009 lhsDotValue 104.436 newValue 0
@@ -1486,7 +1262,7 @@ StatementPrimal expression lhsValue 6.54944 lhsDotValue 375.746 newValue 13.2997
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
-StatementEvaluate lhsIdentifier 251 numAdjoints 1
+StatementEvaluate lhsIdentifier 27 numAdjoints 1
 	1.04569 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.04569 lhsDotValue 56.7006 newValue 0
@@ -1494,7 +1270,7 @@ StatementPrimal expression lhsValue 13.2997 lhsDotValue 689.054 newValue 12.4746
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
-StatementEvaluate lhsIdentifier 252 numAdjoints 1
+StatementEvaluate lhsIdentifier 28 numAdjoints 1
 	12.9992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
@@ -1502,7 +1278,7 @@ StatementPrimal expression lhsValue 12.4746 lhsDotValue 643.028 newValue 20.46
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
-StatementEvaluate lhsIdentifier 249 numAdjoints 1
+StatementEvaluate lhsIdentifier 25 numAdjoints 1
 	3.60137 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.60137 lhsDotValue 198.692 newValue 0
@@ -1510,475 +1286,27 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.03045
 StatementPrimal expression lhsValue 3.03045 lhsDotValue 170.795 newValue 6.0609
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
-StatementEvaluate lhsIdentifier 250 numAdjoints 1
+StatementEvaluate lhsIdentifier 26 numAdjoints 1
 	2.25009 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 2.25009 lhsDotValue 104.436 newValue 0
 StatementPrimal expression lhsValue 6.0609 lhsDotValue 341.59 newValue 12.8112
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
-StatementEvaluate lhsIdentifier 251 numAdjoints 1
+StatementEvaluate lhsIdentifier 27 numAdjoints 1
 	1.04569 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.04569 lhsDotValue 56.7006 newValue 0
 StatementPrimal expression lhsValue 12.8112 lhsDotValue 654.898 newValue 12.0315
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
-StatementEvaluate lhsIdentifier 252 numAdjoints 1
+StatementEvaluate lhsIdentifier 28 numAdjoints 1
 	12.9992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
 StatementPrimal expression lhsValue 12.0315 lhsDotValue 611.924 newValue 20.6937
 TapeEvaluate reverse end from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 0, []]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 1
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -2047,33 +1375,33 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 20.6937 lhsDotValue 593.659 newValue 0
 TapeStartRecording
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.841471
-StatementPrimal passive lhsValue 0.841471 lhsIdentifier 256 newValue 0.841471
+StatementPrimal passive lhsValue 0.841471 lhsIdentifier 32 newValue 0.841471
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.841471
-IndexFree index 256
+IndexFree index 32
 StatementPrimal copy lhsValue 0.841471 lhsDotValue 1 newValue 0.841471
-IndexAssign index 252
-TapeRegisterInput value 0.841471 identifier 252
+IndexAssign index 28
+TapeRegisterInput value 0.841471 identifier 28
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.909297
-StatementPrimal passive lhsValue 0.909297 lhsIdentifier 255 newValue 0.909297
+StatementPrimal passive lhsValue 0.909297 lhsIdentifier 31 newValue 0.909297
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.909297
-IndexFree index 255
+IndexFree index 31
 StatementPrimal copy lhsValue 0.909297 lhsDotValue 2 newValue 0.909297
-IndexAssign index 251
-TapeRegisterInput value 0.909297 identifier 251
+IndexAssign index 27
+TapeRegisterInput value 0.909297 identifier 27
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.14112
-StatementPrimal passive lhsValue 0.14112 lhsIdentifier 254 newValue 0.14112
+StatementPrimal passive lhsValue 0.14112 lhsIdentifier 30 newValue 0.14112
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.14112
-IndexFree index 254
+IndexFree index 30
 StatementPrimal copy lhsValue 0.14112 lhsDotValue 3 newValue 0.14112
-IndexAssign index 250
-TapeRegisterInput value 0.14112 identifier 250
+IndexAssign index 26
+TapeRegisterInput value 0.14112 identifier 26
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.756802
-StatementPrimal passive lhsValue -0.756802 lhsIdentifier 253 newValue -0.756802
+StatementPrimal passive lhsValue -0.756802 lhsIdentifier 29 newValue -0.756802
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.756802
-IndexFree index 253
+IndexFree index 29
 StatementPrimal copy lhsValue -0.756802 lhsDotValue 4 newValue -0.756802
-IndexAssign index 249
-TapeRegisterInput value -0.756802 identifier 249
+IndexAssign index 25
+TapeRegisterInput value -0.756802 identifier 25
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -2103,9 +1431,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0.666367 lhsDotValue -0.745624 newValue 0.666367
-IndexAssign index 253
-StatementStoreOnTape lhsIdentifier 253 newValue 0.745624 numActiveVariables 1
-	0 2.03209e-320; 
+IndexAssign index 29
+StatementStoreOnTape lhsIdentifier 29 newValue 0.745624 numActiveVariables 1
+	0 2.01628e-320; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.745624
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
@@ -2120,9 +1448,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.745624
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.745624
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.745624
 StatementPrimal copy lhsValue -0.745624 lhsDotValue -0.666367 newValue -0.745624
-IndexAssign index 254
-StatementStoreOnTape lhsIdentifier 254 newValue 0.666367 numActiveVariables 1
-	252 0.666367; 
+IndexAssign index 30
+StatementStoreOnTape lhsIdentifier 30 newValue 0.666367 numActiveVariables 1
+	28 0.666367; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.52441
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.52441
@@ -2138,9 +1466,9 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 3 lhsDotValue 0 newValue 3
-IndexAssign index 255
-StatementStoreOnTape lhsIdentifier 255 newValue 2.52441 numActiveVariables 1
-	252 -0.745624; 
+IndexAssign index 31
+StatementStoreOnTape lhsIdentifier 31 newValue 2.52441 numActiveVariables 1
+	28 -0.745624; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.52441
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.708073
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.708073
@@ -2159,14 +1487,14 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal copy lhsValue 0.841471 lhsDotValue 1 newValue 0.841471
-IndexAssign index 256
-StatementStoreOnTape lhsIdentifier 256 newValue 0.708073 numActiveVariables 2
-	252 -0.745624; 252 3; 
+IndexAssign index 32
+StatementStoreOnTape lhsIdentifier 32 newValue 0.708073 numActiveVariables 2
+	28 -0.745624; 28 3; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.708073
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.789072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.789072
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.5347
-StatementPrimal expression lhsValue 0.745624 lhsIdentifier 253 newValue 1.5347
+StatementPrimal expression lhsValue 0.745624 lhsIdentifier 29 newValue 1.5347
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2177,15 +1505,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal copy lhsValue 0.6143 lhsDotValue -1.57814 newValue 0.6143
-IndexFree index 253
-IndexAssign index 253
-StatementStoreOnTape lhsIdentifier 253 newValue 1.5347 numActiveVariables 2
-	252 0.841471; 252 0.841471; 
+IndexFree index 29
+IndexAssign index 29
+StatementStoreOnTape lhsIdentifier 29 newValue 1.5347 numActiveVariables 2
+	28 0.841471; 28 0.841471; 
 StatementPrimal copy lhsValue 0.745624 lhsDotValue 0.666367 newValue 1.5347
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.6143
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.28067
-StatementPrimal expression lhsValue 0.666367 lhsIdentifier 254 newValue 1.28067
+StatementPrimal expression lhsValue 0.666367 lhsIdentifier 30 newValue 1.28067
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2196,15 +1524,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.789072
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.789072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.789072
 StatementPrimal copy lhsValue -0.789072 lhsDotValue -1.2286 newValue -0.789072
-IndexFree index 254
-IndexAssign index 254
-StatementStoreOnTape lhsIdentifier 254 newValue 1.28067 numActiveVariables 2
-	253 1; 251 0.6143; 
+IndexFree index 30
+IndexAssign index 30
+StatementStoreOnTape lhsIdentifier 30 newValue 1.28067 numActiveVariables 2
+	29 1; 27 0.6143; 
 StatementPrimal copy lhsValue 0.666367 lhsDotValue -0.745624 newValue 1.28067
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.72789
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.72789
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 5.25231
-StatementPrimal expression lhsValue 2.52441 lhsIdentifier 255 newValue 5.25231
+StatementPrimal expression lhsValue 2.52441 lhsIdentifier 31 newValue 5.25231
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2216,15 +1544,15 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 3 lhsDotValue 0 newValue 3
-IndexFree index 255
-IndexAssign index 255
-StatementStoreOnTape lhsIdentifier 255 newValue 5.25231 numActiveVariables 2
-	254 1; 251 -0.789072; 
+IndexFree index 31
+IndexAssign index 31
+StatementStoreOnTape lhsIdentifier 31 newValue 5.25231 numActiveVariables 2
+	30 1; 27 -0.789072; 
 StatementPrimal copy lhsValue 2.52441 lhsDotValue 3 newValue 5.25231
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.826822
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.826822
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.5349
-StatementPrimal expression lhsValue 0.708073 lhsIdentifier 256 newValue 1.5349
+StatementPrimal expression lhsValue 0.708073 lhsIdentifier 32 newValue 1.5349
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2239,15 +1567,15 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal copy lhsValue 0.909297 lhsDotValue 2 newValue 0.909297
-IndexFree index 256
-IndexAssign index 256
-StatementStoreOnTape lhsIdentifier 256 newValue 1.5349 numActiveVariables 3
-	251 -0.789072; 255 1; 251 3; 
+IndexFree index 32
+IndexAssign index 32
+StatementStoreOnTape lhsIdentifier 32 newValue 1.5349 numActiveVariables 3
+	27 -0.789072; 31 1; 27 3; 
 StatementPrimal copy lhsValue 0.708073 lhsDotValue 1.68294 newValue 1.5349
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.140652
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.140652
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.67535
-StatementPrimal expression lhsValue 1.5347 lhsIdentifier 253 newValue 1.67535
+StatementPrimal expression lhsValue 1.5347 lhsIdentifier 29 newValue 1.67535
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2258,15 +1586,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal copy lhsValue 0.990059 lhsDotValue -0.421956 newValue 0.990059
-IndexFree index 253
-IndexAssign index 253
-StatementStoreOnTape lhsIdentifier 253 newValue 1.67535 numActiveVariables 2
-	251 0.909297; 251 0.909297; 
+IndexFree index 29
+IndexAssign index 29
+StatementStoreOnTape lhsIdentifier 29 newValue 1.67535 numActiveVariables 2
+	27 0.909297; 27 0.909297; 
 StatementPrimal copy lhsValue 1.5347 lhsDotValue 1.89497 newValue 1.67535
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.990059
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.27073
-StatementPrimal expression lhsValue 1.28067 lhsIdentifier 254 newValue 2.27073
+StatementPrimal expression lhsValue 1.28067 lhsIdentifier 30 newValue 2.27073
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2277,15 +1605,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.140652
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.140652
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.140652
 StatementPrimal copy lhsValue -0.140652 lhsDotValue -2.97018 newValue -0.140652
-IndexFree index 254
-IndexAssign index 254
-StatementStoreOnTape lhsIdentifier 254 newValue 2.27073 numActiveVariables 2
-	253 1; 250 0.990059; 
+IndexFree index 30
+IndexAssign index 30
+StatementStoreOnTape lhsIdentifier 30 newValue 2.27073 numActiveVariables 2
+	29 1; 26 0.990059; 
 StatementPrimal copy lhsValue 1.28067 lhsDotValue -2.32377 newValue 2.27073
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.42336
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.42336
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 5.67567
-StatementPrimal expression lhsValue 5.25231 lhsIdentifier 255 newValue 5.67567
+StatementPrimal expression lhsValue 5.25231 lhsIdentifier 31 newValue 5.67567
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2297,15 +1625,15 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 3 lhsDotValue 0 newValue 3
-IndexFree index 255
-IndexAssign index 255
-StatementStoreOnTape lhsIdentifier 255 newValue 5.67567 numActiveVariables 2
-	254 1; 250 -0.140652; 
+IndexFree index 31
+IndexAssign index 31
+StatementStoreOnTape lhsIdentifier 31 newValue 5.67567 numActiveVariables 2
+	30 1; 26 -0.140652; 
 StatementPrimal copy lhsValue 5.25231 lhsDotValue 9 newValue 5.67567
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.0199149
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.0199149
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.55481
-StatementPrimal expression lhsValue 1.5349 lhsIdentifier 256 newValue 1.55481
+StatementPrimal expression lhsValue 1.5349 lhsIdentifier 32 newValue 1.55481
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2320,15 +1648,15 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal copy lhsValue 0.14112 lhsDotValue 3 newValue 0.14112
-IndexFree index 256
-IndexAssign index 256
-StatementStoreOnTape lhsIdentifier 256 newValue 1.55481 numActiveVariables 3
-	250 -0.140652; 255 1; 250 3; 
+IndexFree index 32
+IndexAssign index 32
+StatementStoreOnTape lhsIdentifier 32 newValue 1.55481 numActiveVariables 3
+	26 -0.140652; 31 1; 26 3; 
 StatementPrimal copy lhsValue 1.5349 lhsDotValue 5.32013 newValue 1.55481
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.6866
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.6866
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.988748
-StatementPrimal expression lhsValue 1.67535 lhsIdentifier 253 newValue 0.988748
+StatementPrimal expression lhsValue 1.67535 lhsIdentifier 29 newValue 0.988748
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2339,15 +1667,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal copy lhsValue 0.727035 lhsDotValue 2.7464 newValue 0.727035
-IndexFree index 253
-IndexAssign index 253
-StatementStoreOnTape lhsIdentifier 253 newValue 0.988748 numActiveVariables 2
-	250 0.14112; 250 0.14112; 
+IndexFree index 29
+IndexAssign index 29
+StatementStoreOnTape lhsIdentifier 29 newValue 0.988748 numActiveVariables 2
+	26 0.14112; 26 0.14112; 
 StatementPrimal copy lhsValue 1.67535 lhsDotValue 4.86514 newValue 0.988748
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.727035
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.99776
-StatementPrimal expression lhsValue 2.27073 lhsIdentifier 254 newValue 2.99776
+StatementPrimal expression lhsValue 2.27073 lhsIdentifier 30 newValue 2.99776
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2358,15 +1686,15 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6866
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.6866
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.6866
 StatementPrimal copy lhsValue 0.6866 lhsDotValue -2.90814 newValue 0.6866
-IndexFree index 254
-IndexAssign index 254
-StatementStoreOnTape lhsIdentifier 254 newValue 2.99776 numActiveVariables 2
-	253 1; 249 0.727035; 
+IndexFree index 30
+IndexAssign index 30
+StatementStoreOnTape lhsIdentifier 30 newValue 2.99776 numActiveVariables 2
+	29 1; 25 0.727035; 
 StatementPrimal copy lhsValue 2.27073 lhsDotValue -2.74573 newValue 2.99776
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -2.27041
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -2.27041
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.40526
-StatementPrimal expression lhsValue 5.67567 lhsIdentifier 255 newValue 3.40526
+StatementPrimal expression lhsValue 5.67567 lhsIdentifier 31 newValue 3.40526
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2378,15 +1706,15 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3
 StatementPrimal copy lhsValue 3 lhsDotValue 0 newValue 3
-IndexFree index 255
-IndexAssign index 255
-StatementStoreOnTape lhsIdentifier 255 newValue 3.40526 numActiveVariables 2
-	254 1; 249 0.6866; 
+IndexFree index 31
+IndexAssign index 31
+StatementStoreOnTape lhsIdentifier 31 newValue 3.40526 numActiveVariables 2
+	30 1; 25 0.6866; 
 StatementPrimal copy lhsValue 5.67567 lhsDotValue 18 newValue 3.40526
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.57275
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.57275
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.12756
-StatementPrimal expression lhsValue 1.55481 lhsIdentifier 256 newValue 2.12756
+StatementPrimal expression lhsValue 1.55481 lhsIdentifier 32 newValue 2.12756
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
@@ -2401,13 +1729,13 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.756802
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.756802
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.756802
 StatementPrimal copy lhsValue -0.756802 lhsDotValue 4 newValue -0.756802
-IndexFree index 256
-IndexAssign index 256
-StatementStoreOnTape lhsIdentifier 256 newValue 2.12756 numActiveVariables 3
-	249 0.6866; 255 1; 249 3; 
+IndexFree index 32
+IndexAssign index 32
+StatementStoreOnTape lhsIdentifier 32 newValue 2.12756 numActiveVariables 3
+	25 0.6866; 31 1; 25 3; 
 StatementPrimal copy lhsValue 1.55481 lhsDotValue 6.16685 newValue 2.12756
 PreaccStart
-PreaccAddInput value 0.988748 identifier 253
+PreaccAddInput value 0.988748 identifier 29
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -2421,9 +1749,9 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.988748
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.988748
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.988748
 StatementPrimal copy lhsValue 0.270455 lhsDotValue -21.3122 newValue 0.988748
-IndexAssign index 248
-StatementStoreOnTape lhsIdentifier 248 newValue 0.977623 numActiveVariables 2
-	249 -0.756802; 249 -0.756802; 
+IndexAssign index 24
+StatementStoreOnTape lhsIdentifier 24 newValue 0.977623 numActiveVariables 2
+	25 -0.756802; 25 -0.756802; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.549736
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.549736
@@ -2441,9 +1769,9 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.835339
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.816646
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.816646
 StatementPrimal copy lhsValue 0.810758 lhsDotValue -63.8886 newValue -0.816646
-IndexAssign index 247
-StatementStoreOnTape lhsIdentifier 247 newValue 0.537435 numActiveVariables 2
-	253 0.988748; 253 0.988748; 
+IndexAssign index 23
+StatementStoreOnTape lhsIdentifier 23 newValue 0.537435 numActiveVariables 2
+	29 0.988748; 29 0.988748; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.537435
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.525408
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -2458,9 +1786,9 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal copy lhsValue 0.988748 lhsDotValue 7.77329 newValue 0.977623
-IndexAssign index 246
-StatementStoreOnTape lhsIdentifier 246 newValue 0.525408 numActiveVariables 2
-	248 0.549736; 253 -0.816646; 
+IndexAssign index 22
+StatementStoreOnTape lhsIdentifier 22 newValue 0.525408 numActiveVariables 2
+	24 0.549736; 29 -0.816646; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.525408
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.6111
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.6111
@@ -2482,14 +1810,14 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.99776
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.99776
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.99776
 StatementPrimal copy lhsValue 0.908882 lhsDotValue 12.9318 newValue 2.99776
-IndexAssign index 245
-StatementStoreOnTape lhsIdentifier 245 newValue 4.60886 numActiveVariables 3
-	253 -0.816646; 248 0.537435; 247 0.977623; 
+IndexAssign index 21
+StatementStoreOnTape lhsIdentifier 21 newValue 4.60886 numActiveVariables 3
+	29 -0.816646; 24 0.537435; 23 0.977623; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 4.60886
-PreaccAddOutput value 0.977623 identifier 248
-PreaccAddOutput value 0.537435 identifier 247
-PreaccAddOutput value 0.525408 identifier 246
-PreaccAddOutput value 4.60886 identifier 245
+PreaccAddOutput value 0.977623 identifier 24
+PreaccAddOutput value 0.537435 identifier 23
+PreaccAddOutput value 0.525408 identifier 22
+PreaccAddOutput value 4.60886 identifier 21
 TapeStopRecording
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -2505,21 +1833,21 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.988748
 StatementPrimal expression lhsValue 0.988748 lhsDotValue 7.77329 newValue 1.9775
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.9775
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.9775
-StatementEvaluate lhsIdentifier 248 numAdjoints 1
+StatementEvaluate lhsIdentifier 24 numAdjoints 1
 	1.9775 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.0871
 StatementPrimal expression lhsValue 1.0871 lhsDotValue -4.29402 newValue 0.270455
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.270455
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.270455
-StatementEvaluate lhsIdentifier 247 numAdjoints 1
+StatementEvaluate lhsIdentifier 23 numAdjoints 1
 	0.270455 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.06278
 StatementPrimal expression lhsValue 1.06278 lhsDotValue 12.5126 newValue 1.32718
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.32718
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.32718
-StatementEvaluate lhsIdentifier 246 numAdjoints 1
+StatementEvaluate lhsIdentifier 22 numAdjoints 1
 	1.32718 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0
@@ -2527,7 +1855,7 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.810758
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.810758
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.810758
-StatementEvaluate lhsIdentifier 245 numAdjoints 1
+StatementEvaluate lhsIdentifier 21 numAdjoints 1
 	0.810758 
 TapeEvaluate forward end from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 41, [0, 20, []]]]
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -2569,53 +1897,53 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-IndexFree index 248
-IndexAssign index 248
+IndexFree index 24
+IndexAssign index 24
 StatementPrimal copy lhsValue 10.2089 lhsDotValue 87.5128 newValue 0.977623
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.9775
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.9775
 StatementPrimal copy lhsValue 0.988748 lhsDotValue 7.77329 newValue 1.9775
-StatementStoreOnTape lhsIdentifier 248 newValue 0.977623 numActiveVariables 1
-	253 1.9775; 
-IndexFree index 247
-IndexAssign index 247
+StatementStoreOnTape lhsIdentifier 24 newValue 0.977623 numActiveVariables 1
+	29 1.9775; 
+IndexFree index 23
+IndexAssign index 23
 StatementPrimal copy lhsValue 0.977623 lhsDotValue 15.3716 newValue 0.537435
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.270455
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.270455
 StatementPrimal copy lhsValue 0.988748 lhsDotValue 7.77329 newValue 0.270455
-StatementStoreOnTape lhsIdentifier 247 newValue 0.537435 numActiveVariables 1
-	253 0.270455; 
-IndexFree index 246
-IndexAssign index 246
+StatementStoreOnTape lhsIdentifier 23 newValue 0.537435 numActiveVariables 1
+	29 0.270455; 
+IndexFree index 22
+IndexAssign index 22
 StatementPrimal copy lhsValue 0.537435 lhsDotValue 2.10232 newValue 0.525408
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.32718
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.32718
 StatementPrimal copy lhsValue 0.549736 lhsDotValue -6.49332 newValue 1.32718
-StatementStoreOnTape lhsIdentifier 246 newValue 0.525408 numActiveVariables 1
-	253 1.32718; 
-IndexFree index 245
-IndexAssign index 245
+StatementStoreOnTape lhsIdentifier 22 newValue 0.525408 numActiveVariables 1
+	29 1.32718; 
+IndexFree index 21
+IndexAssign index 21
 StatementPrimal copy lhsValue 0.525408 lhsDotValue 10.3165 newValue 4.60886
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.810758
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.810758
 StatementPrimal copy lhsValue -0.816646 lhsDotValue -17.0182 newValue 0.810758
-StatementStoreOnTape lhsIdentifier 245 newValue 4.60886 numActiveVariables 1
-	253 0.810758; 
+StatementStoreOnTape lhsIdentifier 21 newValue 4.60886 numActiveVariables 1
+	29 0.810758; 
 TapeStartRecording
 PreaccFinish
 PreaccStart
-PreaccAddInput value 0.988748 identifier 253
-PreaccAddInput value 2.99776 identifier 254
-PreaccAddInput value 3.40526 identifier 255
-PreaccAddInput value 2.12756 identifier 256
+PreaccAddInput value 0.988748 identifier 29
+PreaccAddInput value 2.99776 identifier 30
+PreaccAddInput value 3.40526 identifier 31
+PreaccAddInput value 2.12756 identifier 32
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 7.24489
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.96403
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.96403
@@ -2643,11 +1971,11 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal copy lhsValue 0.537435 lhsDotValue 2.10232 newValue 3.40526
-IndexAssign index 244
-StatementStoreOnTape lhsIdentifier 244 newValue 10.2089 numActiveVariables 4
-	253 1.9775; 253 0.270455; 253 1.32718; 253 0.810758; 
+IndexAssign index 20
+StatementStoreOnTape lhsIdentifier 20 newValue 10.2089 numActiveVariables 4
+	29 1.9775; 29 0.270455; 29 1.32718; 29 0.810758; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 10.2089
-PreaccAddOutput value 10.2089 identifier 244
+PreaccAddOutput value 10.2089 identifier 20
 TapeStopRecording
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
@@ -2656,7 +1984,7 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 TapeEvaluate reverse begin from [0, 0, [0, 40, [0, 21, []]]] to [0, 0, [0, 36, [0, 20, []]]]
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-StatementEvaluate lhsIdentifier 244 numAdjoints 1
+StatementEvaluate lhsIdentifier 20 numAdjoints 1
 	1 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 0
@@ -2686,8 +2014,8 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 TapeReset to position [0, 0, [0, 36, [0, 20, []]]] clear adjoints 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
-IndexFree index 244
-IndexAssign index 244
+IndexFree index 20
+IndexAssign index 20
 StatementPrimal copy lhsValue 4.60886 lhsDotValue 6.30329 newValue 10.2089
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.99776
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -2709,8 +2037,8 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal copy lhsValue 3.40526 lhsDotValue 30 newValue 3.40526
-StatementStoreOnTape lhsIdentifier 244 newValue 10.2089 numActiveVariables 4
-	253 2.99776; 254 0.988748; 255 2.12756; 256 3.40526; 
+StatementStoreOnTape lhsIdentifier 20 newValue 10.2089 numActiveVariables 4
+	29 2.99776; 30 0.988748; 31 2.12756; 32 3.40526; 
 TapeStartRecording
 PreaccFinish
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 10.2089
@@ -2745,7 +2073,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.69115
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 10.2089
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.707993
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.983156
-StatementPrimal expression lhsValue 0.983156 lhsIdentifier 243 newValue 0.983156
+StatementPrimal expression lhsValue 0.983156 lhsIdentifier 19 newValue 0.983156
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
@@ -2777,10 +2105,10 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.706219
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.706219
 StatementPrimal copy lhsValue 0.706219 lhsDotValue 61.9584 newValue 0.706219
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -10.2089
-IndexFree index 243
-IndexAssign index 243
-StatementStoreOnTape lhsIdentifier 243 newValue 0.983156 numActiveVariables 3
-	254 0.988748; 255 2.12756; 256 3.40526; 
+IndexFree index 19
+IndexAssign index 19
+StatementStoreOnTape lhsIdentifier 19 newValue 0.983156 numActiveVariables 3
+	30 0.988748; 31 2.12756; 32 3.40526; 
 StatementPrimal copy lhsValue 0.983156 lhsDotValue 79.25 newValue 0.983156
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 5.10446
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 5.10446
@@ -2814,7 +2142,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.388122
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 5.10446
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.382104
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.770226
-StatementPrimal expression lhsValue 0.770226 lhsIdentifier 242 newValue 0.770226
+StatementPrimal expression lhsValue 0.770226 lhsIdentifier 18 newValue 0.770226
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
@@ -2848,10 +2176,10 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.46206
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.46206
 StatementPrimal copy lhsValue 0.46206 lhsDotValue -8.35975 newValue 0.46206
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -2.55223
-IndexFree index 242
-IndexAssign index 242
-StatementStoreOnTape lhsIdentifier 242 newValue 0.770226 numActiveVariables 5
-	255 2.12756; 256 3.40526; 248 0.908882; 247 1.65331; 244 0.706219; 
+IndexFree index 18
+IndexAssign index 18
+StatementStoreOnTape lhsIdentifier 18 newValue 0.770226 numActiveVariables 5
+	31 2.12756; 32 3.40526; 24 0.908882; 23 1.65331; 20 0.706219; 
 StatementPrimal copy lhsValue 0.770226 lhsDotValue 53.9496 newValue 0.770226
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.40297
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40297
@@ -2885,7 +2213,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.444259
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40297
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.966034
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.521775
-StatementPrimal expression lhsValue -0.521775 lhsIdentifier 241 newValue -0.521775
+StatementPrimal expression lhsValue -0.521775 lhsIdentifier 17 newValue -0.521775
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
@@ -2919,10 +2247,10 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.0861384
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.0861384
 StatementPrimal copy lhsValue 0.0861384 lhsDotValue 9.39337 newValue 0.0861384
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -1.13432
-IndexFree index 241
-IndexAssign index 241
-StatementStoreOnTape lhsIdentifier 241 newValue -0.521775 numActiveVariables 5
-	248 0.349451; 247 0.635671; 246 0.409477; 245 0.409477; 244 0.46206; 
+IndexFree index 17
+IndexAssign index 17
+StatementStoreOnTape lhsIdentifier 17 newValue -0.521775 numActiveVariables 5
+	24 0.349451; 23 0.635671; 22 0.409477; 21 0.409477; 20 0.46206; 
 StatementPrimal copy lhsValue -0.521775 lhsDotValue -10.4577 newValue -0.521775
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.55223
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.55223
@@ -2956,7 +2284,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.44081
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.55223
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.831295
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.609513
-StatementPrimal expression lhsValue 0.609513 lhsIdentifier 240 newValue 0.609513
+StatementPrimal expression lhsValue 0.609513 lhsIdentifier 16 newValue 0.609513
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
@@ -2990,64 +2318,64 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.138958
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.138958
 StatementPrimal copy lhsValue -0.138958 lhsDotValue 4.54681 newValue -0.138958
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.638058
-IndexFree index 240
-IndexAssign index 240
-StatementStoreOnTape lhsIdentifier 240 newValue 0.609513 numActiveVariables 5
-	248 0.213435; 247 0.38825; 246 -1.32931; 245 -1.32931; 244 0.0861384; 
+IndexFree index 16
+IndexAssign index 16
+StatementStoreOnTape lhsIdentifier 16 newValue 0.609513 numActiveVariables 5
+	24 0.213435; 23 0.38825; 22 -1.32931; 21 -1.32931; 20 0.0861384; 
 StatementPrimal copy lhsValue 0.609513 lhsDotValue -56.7754 newValue 0.609513
-IndexFree index 244
-IndexFree index 245
-IndexFree index 246
-IndexFree index 247
-IndexFree index 248
-IndexFree index 256
-IndexFree index 255
-IndexFree index 254
-IndexFree index 253
+IndexFree index 20
+IndexFree index 21
+IndexFree index 22
+IndexFree index 23
+IndexFree index 24
+IndexFree index 32
+IndexFree index 31
+IndexFree index 30
+IndexFree index 29
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 1
-IndexFree index 243
-IndexAssign index 243
-StatementStoreOnTape lhsIdentifier 243 newValue 0.983156 numActiveVariables 1
-	244 -0.138958; 
+IndexFree index 19
+IndexAssign index 19
+StatementStoreOnTape lhsIdentifier 19 newValue 0.983156 numActiveVariables 1
+	20 -0.138958; 
 StatementPrimal copy lhsValue 0.983156 lhsDotValue 79.25 newValue 0.983156
-TapeRegisterOutput value 0.983156 identifier 243
+TapeRegisterOutput value 0.983156 identifier 19
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 1
-IndexFree index 242
-IndexAssign index 242
-StatementStoreOnTape lhsIdentifier 242 newValue 0.770226 numActiveVariables 1
-	243 1; 
+IndexFree index 18
+IndexAssign index 18
+StatementStoreOnTape lhsIdentifier 18 newValue 0.770226 numActiveVariables 1
+	19 1; 
 StatementPrimal copy lhsValue 0.770226 lhsDotValue 53.9496 newValue 0.770226
-TapeRegisterOutput value 0.770226 identifier 242
+TapeRegisterOutput value 0.770226 identifier 18
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 1
-IndexFree index 241
-IndexAssign index 241
-StatementStoreOnTape lhsIdentifier 241 newValue -0.521775 numActiveVariables 1
-	242 1; 
+IndexFree index 17
+IndexAssign index 17
+StatementStoreOnTape lhsIdentifier 17 newValue -0.521775 numActiveVariables 1
+	18 1; 
 StatementPrimal copy lhsValue -0.521775 lhsDotValue -10.4577 newValue -0.521775
-TapeRegisterOutput value -0.521775 identifier 241
+TapeRegisterOutput value -0.521775 identifier 17
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 1
-IndexFree index 240
-IndexAssign index 240
-StatementStoreOnTape lhsIdentifier 240 newValue 0.609513 numActiveVariables 1
-	241 1; 
+IndexFree index 16
+IndexAssign index 16
+StatementStoreOnTape lhsIdentifier 16 newValue 0.609513 numActiveVariables 1
+	17 1; 
 StatementPrimal copy lhsValue 0.609513 lhsDotValue -56.7754 newValue 0.609513
-TapeRegisterOutput value 0.609513 identifier 240
+TapeRegisterOutput value 0.609513 identifier 16
 TapeStopRecording
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.540302
@@ -3058,35 +2386,35 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 TapeEvaluate reverse begin from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 0, []]]]
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
-StatementEvaluate lhsIdentifier 240 numAdjoints 1
+StatementEvaluate lhsIdentifier 16 numAdjoints 1
 	-0.989992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue -0.989992 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.416147
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.416147
-StatementEvaluate lhsIdentifier 241 numAdjoints 1
+StatementEvaluate lhsIdentifier 17 numAdjoints 1
 	-0.416147 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue -0.416147 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.416147
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.540302
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.540302
-StatementEvaluate lhsIdentifier 242 numAdjoints 1
+StatementEvaluate lhsIdentifier 18 numAdjoints 1
 	0.540302 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0.540302 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.540302
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-StatementEvaluate lhsIdentifier 243 numAdjoints 1
+StatementEvaluate lhsIdentifier 19 numAdjoints 1
 	1 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.989992
-StatementEvaluate lhsIdentifier 240 numAdjoints 1
+StatementEvaluate lhsIdentifier 16 numAdjoints 1
 	-0.989992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue -0.989992 lhsDotValue 0 newValue 0
@@ -3097,7 +2425,7 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.275924
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.151685
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.416147
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.416147
-StatementEvaluate lhsIdentifier 241 numAdjoints 1
+StatementEvaluate lhsIdentifier 17 numAdjoints 1
 	-0.416147 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue -0.416147 lhsDotValue 0 newValue 0
@@ -3108,7 +2436,7 @@ StatementPrimal expression lhsValue -0.275924 lhsDotValue -5.05013 newValue -0.4
 StatementPrimal expression lhsValue -0.151685 lhsDotValue -0.984573 newValue -0.240505
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.540302
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.540302
-StatementEvaluate lhsIdentifier 242 numAdjoints 1
+StatementEvaluate lhsIdentifier 18 numAdjoints 1
 	0.540302 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0.540302 lhsDotValue 0 newValue 0
@@ -3119,7 +2447,7 @@ StatementPrimal expression lhsValue -0.437492 lhsDotValue -8.14616 newValue -0.0
 StatementPrimal expression lhsValue -0.240505 lhsDotValue -1.63746 newValue -0.051696
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1
-StatementEvaluate lhsIdentifier 243 numAdjoints 1
+StatementEvaluate lhsIdentifier 19 numAdjoints 1
 	1 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1 lhsDotValue 0 newValue 0
@@ -3128,7 +2456,7 @@ StatementPrimal expression lhsValue -0.0940379 lhsDotValue -0.974227 newValue 1.
 StatementPrimal expression lhsValue -0.051696 lhsDotValue 0.075051 newValue 0.857186
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.05759
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.05759
-StatementEvaluate lhsIdentifier 244 numAdjoints 1
+StatementEvaluate lhsIdentifier 20 numAdjoints 1
 	1.05759 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.05759 lhsDotValue 49.0313 newValue 0
@@ -3138,35 +2466,35 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.17041
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.6072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.6072
-StatementEvaluate lhsIdentifier 245 numAdjoints 1
+StatementEvaluate lhsIdentifier 21 numAdjoints 1
 	3.6072 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.6072 lhsDotValue 32.0118 newValue 0
 StatementPrimal expression lhsValue 3.17041 lhsDotValue 146.985 newValue 6.09497
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.6072
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.6072
-StatementEvaluate lhsIdentifier 246 numAdjoints 1
+StatementEvaluate lhsIdentifier 22 numAdjoints 1
 	3.6072 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.6072 lhsDotValue 32.0118 newValue 0
 StatementPrimal expression lhsValue 6.09497 lhsDotValue -57.5203 newValue 10.8824
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.55927
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.55927
-StatementEvaluate lhsIdentifier 247 numAdjoints 1
+StatementEvaluate lhsIdentifier 23 numAdjoints 1
 	1.55927 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.55927 lhsDotValue 42.0779 newValue 0
 StatementPrimal expression lhsValue 10.8824 lhsDotValue -30.0602 newValue 11.3041
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.857186
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.857186
-StatementEvaluate lhsIdentifier 248 numAdjoints 1
+StatementEvaluate lhsIdentifier 24 numAdjoints 1
 	0.857186 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0.857186 lhsDotValue 13.0069 newValue 0
 StatementPrimal expression lhsValue 11.3041 lhsDotValue -51.9114 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
-StatementEvaluate lhsIdentifier 256 numAdjoints 1
+StatementEvaluate lhsIdentifier 32 numAdjoints 1
 	3.60137 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.60137 lhsDotValue 198.692 newValue 0
@@ -3175,7 +2503,7 @@ StatementPrimal expression lhsValue -2.72553 lhsDotValue -135.965 newValue -5.45
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
-StatementEvaluate lhsIdentifier 255 numAdjoints 1
+StatementEvaluate lhsIdentifier 31 numAdjoints 1
 	2.25009 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 2.25009 lhsDotValue 104.436 newValue 0
@@ -3183,7 +2511,7 @@ StatementPrimal expression lhsValue -5.45106 lhsDotValue -271.93 newValue 1.2992
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
-StatementEvaluate lhsIdentifier 254 numAdjoints 1
+StatementEvaluate lhsIdentifier 30 numAdjoints 1
 	1.04569 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.04569 lhsDotValue 56.7006 newValue 0
@@ -3191,7 +2519,7 @@ StatementPrimal expression lhsValue 1.29922 lhsDotValue 41.3777 newValue 2.01719
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
-StatementEvaluate lhsIdentifier 253 numAdjoints 1
+StatementEvaluate lhsIdentifier 29 numAdjoints 1
 	12.9992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
@@ -3199,7 +2527,7 @@ StatementPrimal expression lhsValue 2.01719 lhsDotValue 77.2673 newValue 11.468
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
-StatementEvaluate lhsIdentifier 256 numAdjoints 1
+StatementEvaluate lhsIdentifier 32 numAdjoints 1
 	3.60137 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.60137 lhsDotValue 198.692 newValue 0
@@ -3208,7 +2536,7 @@ StatementPrimal expression lhsValue 0.508226 lhsDotValue 38.8435 newValue 1.0164
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
-StatementEvaluate lhsIdentifier 255 numAdjoints 1
+StatementEvaluate lhsIdentifier 31 numAdjoints 1
 	2.25009 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 2.25009 lhsDotValue 104.436 newValue 0
@@ -3216,7 +2544,7 @@ StatementPrimal expression lhsValue 1.01645 lhsDotValue 77.6871 newValue 7.76672
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
-StatementEvaluate lhsIdentifier 254 numAdjoints 1
+StatementEvaluate lhsIdentifier 30 numAdjoints 1
 	1.04569 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.04569 lhsDotValue 56.7006 newValue 0
@@ -3224,7 +2552,7 @@ StatementPrimal expression lhsValue 7.76672 lhsDotValue 390.995 newValue 7.61965
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
-StatementEvaluate lhsIdentifier 253 numAdjoints 1
+StatementEvaluate lhsIdentifier 29 numAdjoints 1
 	12.9992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
@@ -3232,7 +2560,7 @@ StatementPrimal expression lhsValue 7.61965 lhsDotValue 379.914 newValue 20.4896
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
-StatementEvaluate lhsIdentifier 256 numAdjoints 1
+StatementEvaluate lhsIdentifier 32 numAdjoints 1
 	3.60137 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.60137 lhsDotValue 198.692 newValue 0
@@ -3241,7 +2569,7 @@ StatementPrimal expression lhsValue 3.27472 lhsDotValue 187.873 newValue 6.54944
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
-StatementEvaluate lhsIdentifier 255 numAdjoints 1
+StatementEvaluate lhsIdentifier 31 numAdjoints 1
 	2.25009 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 2.25009 lhsDotValue 104.436 newValue 0
@@ -3249,7 +2577,7 @@ StatementPrimal expression lhsValue 6.54944 lhsDotValue 375.746 newValue 13.2997
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
-StatementEvaluate lhsIdentifier 254 numAdjoints 1
+StatementEvaluate lhsIdentifier 30 numAdjoints 1
 	1.04569 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.04569 lhsDotValue 56.7006 newValue 0
@@ -3257,7 +2585,7 @@ StatementPrimal expression lhsValue 13.2997 lhsDotValue 689.054 newValue 12.4746
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
-StatementEvaluate lhsIdentifier 253 numAdjoints 1
+StatementEvaluate lhsIdentifier 29 numAdjoints 1
 	12.9992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
@@ -3265,7 +2593,7 @@ StatementPrimal expression lhsValue 12.4746 lhsDotValue 643.028 newValue 20.46
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.60137
-StatementEvaluate lhsIdentifier 256 numAdjoints 1
+StatementEvaluate lhsIdentifier 32 numAdjoints 1
 	3.60137 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 3.60137 lhsDotValue 198.692 newValue 0
@@ -3273,32 +2601,32 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.03045
 StatementPrimal expression lhsValue 3.03045 lhsDotValue 170.795 newValue 6.0609
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.25009
-StatementEvaluate lhsIdentifier 255 numAdjoints 1
+StatementEvaluate lhsIdentifier 31 numAdjoints 1
 	2.25009 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 2.25009 lhsDotValue 104.436 newValue 0
 StatementPrimal expression lhsValue 6.0609 lhsDotValue 341.59 newValue 12.8112
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 1.04569
-StatementEvaluate lhsIdentifier 254 numAdjoints 1
+StatementEvaluate lhsIdentifier 30 numAdjoints 1
 	1.04569 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 1.04569 lhsDotValue 56.7006 newValue 0
 StatementPrimal expression lhsValue 12.8112 lhsDotValue 654.898 newValue 12.0315
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 12.9992
-StatementEvaluate lhsIdentifier 253 numAdjoints 1
+StatementEvaluate lhsIdentifier 29 numAdjoints 1
 	12.9992 
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
 StatementPrimal expression lhsValue 12.0315 lhsDotValue 611.924 newValue 20.6937
 TapeEvaluate reverse end from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 0, []]]]
 TapeReset hard position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 0
-IndexFree index 240
-IndexFree index 241
-IndexFree index 242
-IndexFree index 243
-IndexFree index 249
-IndexFree index 250
-IndexFree index 251
-IndexFree index 252
+IndexFree index 16
+IndexFree index 17
+IndexFree index 18
+IndexFree index 19
+IndexFree index 25
+IndexFree index 26
+IndexFree index 27
+IndexFree index 28

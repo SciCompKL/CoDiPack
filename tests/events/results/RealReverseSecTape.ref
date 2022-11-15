@@ -93,7 +93,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 IndexAssign index 5
 StatementStoreOnTape lhsIdentifier 5 newValue 0.745624 numActiveVariables 1
-	0 2.03209e-320; 
+	0 2.01628e-320; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.745624
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
@@ -910,7 +910,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0.666367 lhsDotValue -0.745624 newValue 0.666367
 IndexAssign index 5
 StatementStoreOnTape lhsIdentifier 5 newValue 0.745624 numActiveVariables 1
-	0 2.03209e-320; 
+	0 2.01628e-320; 
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.745624
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.666367
