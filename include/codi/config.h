@@ -245,26 +245,34 @@ namespace codi {
     ///
 
 #ifndef CODI_ADWorkflowEvents
+  /// See codi::Config::ADWorkflowEvents.
   #define CODI_ADWorkflowEvents true
 #endif
+    /// Enable AD workflow events, also known as Tape* events. Enabled by default.
     bool constexpr ADWorkflowEvents = CODI_ADWorkflowEvents;
 #undef CODI_ADWorkflowEvents
 
 #ifndef CODI_PreaccEvents
+    /// See codi::Config::PreaccEvents.
   #define CODI_PreaccEvents false
 #endif
+    /// Enable preaccumulation events. Disabled by default.
     bool constexpr PreaccEvents = CODI_PreaccEvents;
 #undef CODI_PreaccEvents
 
 #ifndef CODI_StatementEvents
+    /// See codi::Config::StatementEvents.
   #define CODI_StatementEvents false
 #endif
+    /// Enable statement events. Disabled by default.
     bool constexpr StatementEvents = CODI_StatementEvents;
 #undef CODI_StatementEvents
 
 #ifndef CODI_IndexEvents
+    /// See codi::Config::IndexEvents.
   #define CODI_IndexEvents false
 #endif
+    /// Enable index management events. Disabled by default.
     bool constexpr IndexEvents = CODI_IndexEvents;
 #undef CODI_IndexEvents
 
