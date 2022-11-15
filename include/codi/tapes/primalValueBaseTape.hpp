@@ -1316,7 +1316,9 @@ namespace codi {
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
         if (TapeTypes::IsLinearIndexHandler) {
           if (indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
-            resizePrimalVector(primals.size() + Config::ChunkSize);
+            size_t newTargetSize = indexManager.get().getLargestCreatedIndex() + 1;
+            size_t newChunkCount = (newTargetSize + Config::ChunkSize - 1) / Config::ChunkSize;
+            resizePrimalVector(newChunkCount * Config::ChunkSize);
           }
         } else {
           if (generatedNewIndex) {
