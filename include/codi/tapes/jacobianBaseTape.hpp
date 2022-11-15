@@ -204,7 +204,9 @@ namespace codi {
 #endif
             indexManager(0),  // Reserve the zero index.
             statementData(Config::ChunkSize),
-            jacobianData(Config::ChunkSize),
+            jacobianData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),  // Chunk must be large enough to store
+                                                                                 // data for all arguments of one
+                                                                                 // statement.
             adjoints(1)  // Ensure that adjoint[0] exists, see its use in gradient() const.
       {
         statementData.setNested(&indexManager.get());

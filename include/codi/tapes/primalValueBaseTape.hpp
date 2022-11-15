@@ -235,9 +235,10 @@ namespace codi {
           : Base(),
             indexManager(Config::MaxArgumentSize),  // Reserve first items for passive values.
             statementData(Config::ChunkSize),
-            rhsIdentiferData(Config::ChunkSize),
-            passiveValueData(Config::ChunkSize),
-            constantValueData(Config::ChunkSize),
+            // The following chunks must be large enough to store data for all arguments of one statement.
+            rhsIdentiferData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
+            passiveValueData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
+            constantValueData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
             adjoints(1),  // Ensure that adjoint[0] exists, see its use in gradient() const.
             primals(0),
             primalsCopy(0) {
