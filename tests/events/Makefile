@@ -119,7 +119,7 @@ getTapeFlag = $(if $(findstring Reverse,$1),-DREVERSE_TAPE,-DFORWARD_TAPE)
 getOrderFlag = $(if $(findstring Sec,$1),-DSECOND_ORDER,-DFIRST_ORDER)
 
 # reduce the chunk size for primal value tapes, to not clutter the result files of second order tests with primal value vector allocations
-getChunkSizeFlags = $(if $(findstring Sec,$1),-DCODI_ChunkSize=32 -DCODI_SmallChunkSize=32)
+getChunkSizeFlags = $(if $(findstring Sec,$1),-DCODI_ChunkSize=1 -DCODI_SmallChunkSize=1)
 
 # if needed, produce a flag that enables variable adjoint interfaces
 getVariableAdjointInterfaceFlag = $(if $(findstring VariableAdjointInterface,$1),-DCODI_VariableAdjointInterfaceInPrimalTapes)
@@ -171,7 +171,7 @@ build/%.diff: build/%.out
 
 # delete reference files
 .PHONY: cleanReference
-cleanReference:
+cleanReference: clean
 	rm -f results/*
 
 # run executable, create reference file
