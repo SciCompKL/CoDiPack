@@ -130,7 +130,7 @@ namespace codi {
 
       virtual Real getAdjoint(Identifier const& index, size_t dim) = 0;          ///< Get the adjoint component.
       virtual void getAdjointVec(Identifier const& index, Real* const vec) = 0;  ///< Get the adjoint entry.
-      virtual Real* const getAdjointVec(Identifier const& index) = 0;            ///< Get the adjoint entry.
+      virtual Real const* getAdjointVec(Identifier const& index) = 0;            ///< Get the adjoint entry.
 
       virtual void updateAdjoint(Identifier const& index, size_t dim,
                                  Real const& adjoint) = 0;  ///< Update the adjoint component.
