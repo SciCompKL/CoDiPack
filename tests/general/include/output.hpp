@@ -37,11 +37,10 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include <string>
-#include <vector>
-
 #include <codi/tools/data/hessian.hpp>
 #include <codi/tools/data/jacobian.hpp>
+#include <string>
+#include <vector>
 
 char const* const HEADER_FORMAT = "%6s_%03zd";
 char const* const VALUE_FORMAT = "%10g";

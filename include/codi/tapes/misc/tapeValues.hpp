@@ -39,8 +39,8 @@
 #include <string>
 #include <vector>
 
-#include "../../misc/exceptions.hpp"
 #include "../../config.h"
+#include "../../misc/exceptions.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -72,8 +72,7 @@ namespace codi {
    */
   struct TapeValues {
     private:
-      enum class EntryType
-      {
+      enum class EntryType {
         Double,
         Long,
         UnsignedLong

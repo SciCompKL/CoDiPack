@@ -37,11 +37,11 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../misc/macros.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
 #include "indices/linearIndexManager.hpp"
@@ -110,8 +110,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          JacobianLinearTape& tape,
-          Adjoint* adjointVector,
+          JacobianLinearTape& tape, Adjoint* adjointVector,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -134,8 +133,7 @@ namespace codi {
             adjointVector[curAdjointPos] = lhsAdjoint;
 
             EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
-                                                                  tape, curAdjointPos, GradientTraits::dim<Adjoint>(),
-                                                                  GradientTraits::toArray(lhsAdjoint).data());
+                tape, curAdjointPos, GradientTraits::dim<Adjoint>(), GradientTraits::toArray(lhsAdjoint).data());
           }
 
           curStmtPos += 1;
@@ -146,8 +144,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          JacobianLinearTape& tape,
-          Adjoint* adjointVector,
+          JacobianLinearTape& tape, Adjoint* adjointVector,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -170,8 +167,7 @@ namespace codi {
                                                                       // curAdjointPos at the end of the loop.
 
             EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
-                                                                  tape, curAdjointPos, GradientTraits::dim<Adjoint>(),
-                                                                  GradientTraits::toArray(lhsAdjoint).data());
+                tape, curAdjointPos, GradientTraits::dim<Adjoint>(), GradientTraits::toArray(lhsAdjoint).data());
 
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();

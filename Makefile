@@ -120,7 +120,7 @@ doc:
 
 .PHONY: format
 format:
-	find include tests/include tests/src -type f -exec $(CLANG_FORMAT) -i {} \;
+	find include tests/general/include tests/general/src tests/events/include tests/events/src -type f -exec $(CLANG_FORMAT) -i {} \;
 
 .PHONY: clean
 clean:

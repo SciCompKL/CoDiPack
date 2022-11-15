@@ -37,9 +37,9 @@
 #include <algorithm>
 #include <vector>
 
+#include "../../config.h"
 #include "../../misc/eventSystem.hpp"
 #include "../../misc/macros.hpp"
-#include "../../config.h"
 #include "../data/emptyData.hpp"
 #include "indexManagerInterface.hpp"
 

@@ -42,7 +42,6 @@
 #endif
 
 int main() {
-
   using Tape = NUMBER::Tape;
   size_t constexpr dim = codi::GradientTraits::dim<Tape::Gradient>();
 
@@ -64,7 +63,6 @@ int main() {
   size_t constexpr maxRuns = 2;
 
   for (size_t run = 0; run < maxRuns; run += 1) {
-
     tape.reset();
 
     tape.setActive();

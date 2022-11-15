@@ -37,11 +37,11 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../misc/macros.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
 #include "indices/indexManagerInterface.hpp"
@@ -112,8 +112,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          JacobianReuseTape& tape,
-          Adjoint* adjointVector,
+          JacobianReuseTape& tape, Adjoint* adjointVector,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -129,9 +128,9 @@ namespace codi {
 
           adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
 
-          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(
-                                                      tape, lhsIdentifiers[curStmtPos], GradientTraits::dim<Adjoint>(),
-                                                      GradientTraits::toArray(lhsAdjoint).data());
+          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape, lhsIdentifiers[curStmtPos],
+                                                                           GradientTraits::dim<Adjoint>(),
+                                                                           GradientTraits::toArray(lhsAdjoint).data());
 
           curStmtPos += 1;
         }
@@ -141,8 +140,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          JacobianReuseTape& tape,
-          Adjoint* adjointVector,
+          JacobianReuseTape& tape, Adjoint* adjointVector,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -156,9 +154,9 @@ namespace codi {
 
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
 
-          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(
-                                                      tape, lhsIdentifiers[curStmtPos], GradientTraits::dim<Adjoint>(),
-                                                      GradientTraits::toArray(lhsAdjoint).data());
+          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape, lhsIdentifiers[curStmtPos],
+                                                                           GradientTraits::dim<Adjoint>(),
+                                                                           GradientTraits::toArray(lhsAdjoint).data());
 
           adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
           Base::incrementAdjoints(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,

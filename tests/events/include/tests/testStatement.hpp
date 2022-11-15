@@ -38,7 +38,6 @@
 
 template<typename ActiveType>
 void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outputs) {
-
   // process inputs
 
   ActiveType a = 0.0, b = 0.0, c = 0.0, d = 0.0;

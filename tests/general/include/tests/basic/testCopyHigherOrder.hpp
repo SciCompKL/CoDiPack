@@ -48,7 +48,6 @@ struct TestCopyHigherOrder : public TestInterface {
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-
       Number temp1 = codi::RealTraits::getValue(x[0]);
       Number temp2 = codi::RealTraits::getPassiveValue(x[0]);
 

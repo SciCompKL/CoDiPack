@@ -36,10 +36,10 @@
 
 #include <iostream>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../expressions/logic/traversalLogic.hpp"
+#include "../../misc/macros.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "../../traits/realTraits.hpp"
 #include "../misc/tapeValues.hpp"

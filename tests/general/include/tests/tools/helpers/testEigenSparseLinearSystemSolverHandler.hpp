@@ -62,7 +62,7 @@ struct TestEigenSparseLinearSystemSolverHandler : public TestInterface {
         using VectorReal = typename Base::VectorReal;
 
         void solveSystem(MatrixReal const* A, VectorReal const* b, VectorReal* x) {
-          Eigen::SparseLU<MatrixReal, Eigen::COLAMDOrdering<int> > solver;
+          Eigen::SparseLU<MatrixReal, Eigen::COLAMDOrdering<int>> solver;
           solver.analyzePattern(*A);
           solver.factorize(*A);
           *x = solver.solve(*b);
@@ -72,9 +72,8 @@ struct TestEigenSparseLinearSystemSolverHandler : public TestInterface {
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-
 #if CODI_EnableEigen
-      Matrix<Number> A(2,2);
+      Matrix<Number> A(2, 2);
 
       std::vector<Eigen::Triplet<Number>> entries(4);
       entries.push_back(Eigen::Triplet<Number>(0, 0, x[0]));
@@ -87,7 +86,7 @@ struct TestEigenSparseLinearSystemSolverHandler : public TestInterface {
 
       using Solver = EigenLinearSystemTest<Number>;
 #else
-      Number A[4] = {x[0], x[1], Number(), x[2]} ;
+      Number A[4] = {x[0], x[1], Number(), x[2]};
       Number b[2] = {x[3], x[4]};
       Number sol[2];
 

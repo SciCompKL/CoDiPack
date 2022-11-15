@@ -36,8 +36,8 @@
 
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../misc/tapeValues.hpp"
 #include "chunk.hpp"
 #include "position.hpp"

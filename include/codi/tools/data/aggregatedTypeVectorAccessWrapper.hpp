@@ -37,9 +37,9 @@
 #include <complex>
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
+#include "../../misc/macros.hpp"
 #include "../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../traits/computationTraits.hpp"
 #include "../../traits/expressionTraits.hpp"
@@ -111,7 +111,8 @@ namespace codi {
 
       /// Constructor
       AggregatedTypeVectorAccessWrapperBase(InnerInterface* innerInterface)
-          : innerInterface(*innerInterface), lhs(innerInterface->getVectorSize()),
+          : innerInterface(*innerInterface),
+            lhs(innerInterface->getVectorSize()),
             buffer(innerInterface->getVectorSize()) {}
 
       /*******************************************************************************/

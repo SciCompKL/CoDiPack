@@ -41,7 +41,6 @@
 #endif
 
 int main() {
-
   using Tape = NUMBER::Tape;
   size_t constexpr dim = codi::GradientTraits::dim<Tape::Gradient>();
 
@@ -61,7 +60,6 @@ int main() {
   size_t constexpr maxRuns = 1;
 
   for (size_t run = 0; run < maxRuns; run += 1) {
-
     for (size_t i = 0; i < nInputs; ++i) {
       inputs[i] = sin(i + 1);
 

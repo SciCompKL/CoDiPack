@@ -51,8 +51,7 @@ struct Settings {
     std::vector<std::string> fileNames;
 };
 
-enum class DerivCase
-{
+enum class DerivCase {
   D0,
   D1,
   D2,

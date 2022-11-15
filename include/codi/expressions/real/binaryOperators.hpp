@@ -37,9 +37,9 @@
 #include <cmath>
 #include <utility>
 
+#include "../../config.h"
 #include "../../misc/exceptions.hpp"
 #include "../../misc/macros.hpp"
-#include "../../config.h"
 #include "../../traits/realTraits.hpp"
 #include "../binaryExpression.hpp"
 #include "../constantExpression.hpp"
@@ -201,13 +201,13 @@ namespace codi {
 
   using std::atan2;
   using std::copysign;
+  using std::fmax;
+  using std::fmin;
   using std::frexp;
   using std::hypot;
   using std::ldexp;
   using std::max;
   using std::min;
-  using std::fmin;
-  using std::fmax;
   using std::pow;
   using std::remainder;
 

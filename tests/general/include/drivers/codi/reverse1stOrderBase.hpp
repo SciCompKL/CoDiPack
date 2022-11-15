@@ -44,8 +44,8 @@
 struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
   public:
 
-    using Number = CODI_DECLARE_DEFAULT(CODI_TYPE,
-        CODI_TEMPLATE(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+    using Number = CODI_DECLARE_DEFAULT(
+        CODI_TYPE, CODI_TEMPLATE(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
     using Tape = CODI_DD(typename Number::Tape, CODI_T(codi::FullTapeInterface<double, double, int, CODI_ANY>));
     using Base = Driver1stOrderBase<Number>;

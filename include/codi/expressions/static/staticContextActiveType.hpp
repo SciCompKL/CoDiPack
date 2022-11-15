@@ -34,8 +34,8 @@
  */
 #pragma once
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../../tapes/interfaces/gradientAccessTapeInterface.hpp"
 #include "../../tapes/interfaces/internalStatementRecordingTapeInterface.hpp"
 #include "../../traits/realTraits.hpp"
@@ -78,7 +78,7 @@ namespace codi {
 
       /// Constructor
       CODI_INLINE StaticContextActiveType(StaticContextActiveType const& other)
-        : Base(static_cast<Base const&>(other)), primal(other.primal), identifier(other.identifier) {}
+          : Base(static_cast<Base const&>(other)), primal(other.primal), identifier(other.identifier) {}
 
       /*******************************************************************************/
       /// @name Partial implementation of LhsExpressionInterface

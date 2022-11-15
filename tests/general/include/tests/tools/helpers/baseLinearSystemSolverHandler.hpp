@@ -37,7 +37,6 @@
 
 #include <codi.hpp>
 
-
 struct BaseLinearSystemSolverHandler {
   public:
 
@@ -45,18 +44,17 @@ struct BaseLinearSystemSolverHandler {
     static void solveSystemDirect(Number* A, Number* b, Number* x) {
       Number det = 1.0 / (A[0] * A[3] - A[1] * A[2]);
 
-      x[0] = (A[3] * b[0] - A[1] * b[1] ) * det;
-      x[1] = (-A[2] * b[0] + A[0] * b[1] ) * det;
+      x[0] = (A[3] * b[0] - A[1] * b[1]) * det;
+      x[1] = (-A[2] * b[0] + A[0] * b[1]) * det;
     }
 
     template<typename Solver, typename M, typename V, typename Number>
     static void func(Solver solver, M& A, V& b, V& sol, Number scale) {
-
-      for(int i = 0; i < 2; i += 1) {
+      for (int i = 0; i < 2; i += 1) {
         sol[i] = scale * b[i];
       }
 
-      for(int i = 0; i < 2; i += 1) {
+      for (int i = 0; i < 2; i += 1) {
         b[i] = sol[i] / scale;
       }
 

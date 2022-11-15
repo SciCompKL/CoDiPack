@@ -37,16 +37,16 @@
 #include <algorithm>
 #include <type_traits>
 
+#include "../config.h"
 #include "../misc/eventSystem.hpp"
 #include "../misc/fileIo.hpp"
 #include "../misc/macros.hpp"
-#include "../config.h"
-#include "misc/externalFunction.hpp"
-#include "misc/vectorAccessInterface.hpp"
 #include "data/dataInterface.hpp"
 #include "data/position.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "interfaces/fullTapeInterface.hpp"
+#include "misc/externalFunction.hpp"
+#include "misc/vectorAccessInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -184,9 +184,14 @@ namespace codi {
     public:
 
       /// Constructor
-      CommonTapeImplementation() : active(false), options(), externalFunctionData(Config::SmallChunkSize),
-                                   manualPushLhsValue(), manualPushLhsIdentifier(), manualPushGoal(),
-                                   manualPushCounter() {
+      CommonTapeImplementation()
+          : active(false),
+            options(),
+            externalFunctionData(Config::SmallChunkSize),
+            manualPushLhsValue(),
+            manualPushLhsIdentifier(),
+            manualPushGoal(),
+            manualPushCounter() {
         options.insert(TapeParameters::ExternalFunctionsSize);
       }
 
@@ -234,7 +239,8 @@ namespace codi {
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         cast().template store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
-        EventSystem<Impl>::notifyTapeRegisterOutputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
+        EventSystem<Impl>::notifyTapeRegisterOutputListeners(cast(), value.cast().value(),
+                                                             value.cast().getIdentifier());
       }
 
       /// \copydoc codi::ReverseTapeInterface::setActive()
@@ -303,7 +309,6 @@ namespace codi {
 
       /// \copydoc codi::DataManagementTapeInterface::resetHard()
       void resetHard() {
-
         Impl& impl = cast();
 
         // First perform a regular reset.

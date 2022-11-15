@@ -37,8 +37,8 @@
 
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../../traits/misc/enableIfHelpers.hpp"
 #include "chunk.hpp"
 #include "dataInterface.hpp"

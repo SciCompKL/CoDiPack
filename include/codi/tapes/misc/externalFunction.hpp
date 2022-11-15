@@ -34,13 +34,13 @@
  */
 #pragma once
 
-#include "../../misc/exceptions.hpp"
-#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
-#include "../misc/vectorAccessInterface.hpp"
+#include "../../misc/exceptions.hpp"
+#include "../../misc/macros.hpp"
 #include "../data/position.hpp"
 #include "../interfaces/externalFunctionTapeInterface.hpp"
+#include "../misc/vectorAccessInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

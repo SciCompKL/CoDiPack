@@ -37,9 +37,9 @@
 
 #include <vector>
 
-#include "../../misc/exceptions.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
+#include "../../misc/exceptions.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../traits/gradientTraits.hpp"
 #include "../../traits/tapeTraits.hpp"
@@ -97,8 +97,8 @@ namespace codi {
 
     protected:
 
-      Position startPos;                     ///< Starting position for the region.
-      std::vector<Gradient> storedAdjoints;  ///< If adjoints of inputs should be stored, before the preaccumulation.
+      Position startPos;                        ///< Starting position for the region.
+      std::vector<Gradient> storedAdjoints;     ///< If adjoints of inputs should be stored, before the preaccumulation.
       JacobianCountNonZerosRow<Real> jacobian;  ///< Jacobian for the preaccumulation.
 
     public:

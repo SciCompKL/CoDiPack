@@ -46,8 +46,7 @@
 struct CompareOutput {
   public:
 
-    enum struct Color
-    {
+    enum struct Color {
       Red = 31,
       Green = 32,
       Yellow = 33

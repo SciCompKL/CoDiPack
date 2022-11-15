@@ -36,8 +36,8 @@
 
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../misc/tapeValues.hpp"
 
 /** \copydoc codi::Namespace */
@@ -93,8 +93,8 @@ namespace codi {
           CODI_UNDEFINED_VALUE;  ///< True if identifiers are coupled to the statements. See IndexManagerInterface.
 
       template<typename Tape>
-      bool assignIndex(Index& index);        ///< Call on assignment on a primal value e.g. on `w` for  `w = a + b`.
-                                             ///< @return true if new indices have been generated internally.
+      bool assignIndex(Index& index);  ///< Call on assignment on a primal value e.g. on `w` for  `w = a + b`.
+                                       ///< @return true if new indices have been generated internally.
       template<typename Tape>
       bool assignUnusedIndex(Index& index);  ///< Call on registering input values.
                                              ///< @return true if new indices have been generated internally.
@@ -123,9 +123,8 @@ namespace codi {
       Index getLargestCreatedIndex() const;
   };
 
-
-	template<typename Index>
+  template<typename Index>
   Index constexpr IndexManagerInterface<Index>::InactiveIndex;
-	template<typename Index>
+  template<typename Index>
   Index constexpr IndexManagerInterface<Index>::InvalidIndex;
 }

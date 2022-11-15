@@ -38,8 +38,6 @@
 #include <cmath>
 #include <type_traits>
 
-#include "../misc/macros.hpp"
-#include "../misc/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
@@ -47,14 +45,16 @@
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../expressions/referenceActiveType.hpp"
+#include "../misc/macros.hpp"
+#include "../misc/memberStore.hpp"
 #include "../traits/computationTraits.hpp"
 #include "../traits/expressionTraits.hpp"
-#include "misc/adjointVectorAccess.hpp"
-#include "misc/duplicateJacobianRemover.hpp"
 #include "commonTapeImplementation.hpp"
 #include "data/chunk.hpp"
 #include "data/chunkedData.hpp"
 #include "indices/indexManagerInterface.hpp"
+#include "misc/adjointVectorAccess.hpp"
+#include "misc/duplicateJacobianRemover.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -361,19 +361,15 @@ namespace codi {
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
 
             if (Config::StatementEvents) {
-
               Real* jacobians;
               Identifier* rhsIdentifiers;
               jacobianData.getDataPointers(jacobianStart, jacobians, rhsIdentifiers);
               jacobians -= numberOfArguments;
               rhsIdentifiers -= numberOfArguments;
 
-              EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(),
-                                                                     lhs.cast().getIdentifier(),
-                                                                     rhs.cast().getValue(),
-                                                                     numberOfArguments,
-                                                                     rhsIdentifiers,
-                                                                     jacobians);
+              EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), lhs.cast().getIdentifier(),
+                                                                     rhs.cast().getValue(), numberOfArguments,
+                                                                     rhsIdentifiers, jacobians);
             }
           } else {
             indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
@@ -512,8 +508,7 @@ namespace codi {
       /// Start for reverse evaluation between external function.
       template<typename Adjoint>
       CODI_NO_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start,
-                                                                              NestedPosition const& end,
-                                                                              Impl& tape,
+                                                                              NestedPosition const& end, Impl& tape,
                                                                               Adjoint* data,
                                                                               JacobianData& jacobianData) {
         Wrap_internalEvaluateReverse_Step3_EvalStatements<Adjoint> evalFunc;
@@ -541,8 +536,7 @@ namespace codi {
       /// Start for forward evaluation between external function.
       template<typename Adjoint>
       CODI_NO_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start,
-                                                                              NestedPosition const& end,
-                                                                              Impl& tape,
+                                                                              NestedPosition const& end, Impl& tape,
                                                                               Adjoint* data,
                                                                               JacobianData& jacobianData) {
         Wrap_internalEvaluateForward_Step3_EvalStatements<Adjoint> evalFunc;
@@ -561,13 +555,15 @@ namespace codi {
       CODI_NO_INLINE void evaluate(Position const& start, Position const& end, Adjoint* data) {
         VectorAccess<Adjoint> adjointWrapper(data);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(
+            cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateReverse_Step1_ExtFunc(
             start, end, JacobianBaseTape::template internalEvaluateReverse_Step2_DataExtraction<Adjoint>,
             &adjointWrapper, cast(), data, jacobianData);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
+                                                       EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
       }
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::evaluate()
@@ -575,13 +571,15 @@ namespace codi {
       CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, Adjoint* data) {
         VectorAccess<Adjoint> adjointWrapper(data);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(
+            cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
         Base::internalEvaluateForward_Step1_ExtFunc(
             start, end, JacobianBaseTape::template internalEvaluateForward_Step2_DataExtraction<Adjoint>,
             &adjointWrapper, cast(), data, jacobianData);
 
-        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
+                                                       EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
       }
 
       /// @}
@@ -710,12 +708,9 @@ namespace codi {
             jacobians -= this->manualPushGoal;
             rhsIdentifiers -= this->manualPushGoal;
 
-            EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(),
-                                                                   this->manualPushLhsIdentifier,
-                                                                   this->manualPushLhsValue,
-                                                                   this->manualPushGoal,
-                                                                   rhsIdentifiers,
-                                                                   jacobians);
+            EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), this->manualPushLhsIdentifier,
+                                                                   this->manualPushLhsValue, this->manualPushGoal,
+                                                                   rhsIdentifiers, jacobians);
 
             this->manualPushCounter = 0;
             this->manualPushGoal = 0;

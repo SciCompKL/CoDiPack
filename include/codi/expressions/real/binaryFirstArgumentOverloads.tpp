@@ -61,8 +61,8 @@
 #ifndef FUNCTION
   #define PROXY
 
-  #include "../../misc/macros.hpp"
   #include "../../config.h"
+  #include "../../misc/macros.hpp"
   #include "../../traits/realTraits.hpp"
   #include "../binaryExpression.hpp"
   #include "../constantExpression.hpp"

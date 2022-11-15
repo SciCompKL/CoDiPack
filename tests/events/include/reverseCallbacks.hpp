@@ -129,9 +129,9 @@ namespace ReverseCallbacks {
                     << evaluate << ")" << std::endl;
           abort();
         }
-        if(evaluatePrimal != 0 && storeOnTape != evaluate) {
-          std::cerr << "StatementStoreOnTape count (" << storeOnTape << ") does not match StatementEvaluatePrimal count ("
-                    << evaluatePrimal << ")" << std::endl;
+        if (evaluatePrimal != 0 && storeOnTape != evaluate) {
+          std::cerr << "StatementStoreOnTape count (" << storeOnTape
+                    << ") does not match StatementEvaluatePrimal count (" << evaluatePrimal << ")" << std::endl;
           abort();
         }
       }
@@ -147,11 +147,13 @@ namespace ReverseCallbacks {
   size_t GlobalStatementCounters<Tape>::evaluatePrimal = 0;
 
   template<typename Tape>
-  void onStatementStoreOnTape(Tape&, typename Tape::Identifier const& lhsIdentifier, typename Tape::Real const& newValue,
-                              size_t numActiveVariables, typename Tape::Identifier const* rhsIdentifiers,
-                              typename Tape::Real const* jacobians, void*) {
+  void onStatementStoreOnTape(Tape&, typename Tape::Identifier const& lhsIdentifier,
+                              typename Tape::Real const& newValue, size_t numActiveVariables,
+                              typename Tape::Identifier const* rhsIdentifiers, typename Tape::Real const* jacobians,
+                              void*) {
     std::cout << "StatementStoreOnTape lhsIdentifier " << lhsIdentifier << " newValue " << newValue
-              << " numActiveVariables " << numActiveVariables << std::endl << "\t";
+              << " numActiveVariables " << numActiveVariables << std::endl
+              << "\t";
     for (size_t i = 0; i < numActiveVariables; ++i) {
       std::cout << rhsIdentifiers[i] << " " << jacobians[i] << "; ";
     }
@@ -175,7 +177,7 @@ namespace ReverseCallbacks {
 
   template<typename Tape>
   void onStatementEvaluatePrimal(Tape&, typename Tape::Identifier const& lhsIdentifier,
-                           typename Tape::Real const& lhsValue, void*) {
+                                 typename Tape::Real const& lhsValue, void*) {
     std::cout << "StatementEvaluatePrimal lhsIdentifier " << lhsIdentifier << " lhsValue " << lhsValue << std::endl;
 
     ++GlobalStatementCounters<Tape>::evaluatePrimal;

@@ -38,8 +38,7 @@
 
 #include "../testInterface.hpp"
 
-enum class DriverOrder
-{
+enum class DriverOrder {
   Deriv0th,
   Deriv1st,
   Deriv2nd

@@ -69,7 +69,6 @@ struct TestEigenLinearSystemSolverHandler : public TestInterface {
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-
 #if CODI_EnableEigen
       Matrix<Number> A;
       A << x[0], x[1], x[2], x[3];

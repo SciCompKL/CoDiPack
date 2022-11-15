@@ -34,11 +34,11 @@
  */
 #pragma once
 
-#include <cstddef>
 #include <array>
+#include <cstddef>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../../tools/data/direction.hpp"
 #include "../../traits/realTraits.hpp"
 #include "vectorAccessInterface.hpp"

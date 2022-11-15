@@ -109,7 +109,8 @@ namespace codi {
 
     /// \copydoc codi::GradientTraits::TraitsImplementation::toArray()
     template<typename Gradient>
-    CODI_INLINE std::array<typename TraitsImplementation<Gradient>::Real, TraitsImplementation<Gradient>::dim> toArray(Gradient const& gradient) {
+    CODI_INLINE std::array<typename TraitsImplementation<Gradient>::Real, TraitsImplementation<Gradient>::dim> toArray(
+        Gradient const& gradient) {
       return TraitsImplementation<Gradient>::toArray(gradient);
     }
 

@@ -32,10 +32,10 @@
  *    - Former members:
  *      - Tim Albring
  */
+#include <codi.hpp>
 #include <type_traits>
 #include <vector>
 
-#include <codi.hpp>
 #include "../../testInterface.hpp"
 
 struct TestNumericLimits : public TestInterface {
