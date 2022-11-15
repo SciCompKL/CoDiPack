@@ -180,7 +180,7 @@ namespace codi {
       }
 
       /// \copydoc VectorAccessInterface::getAdjointVec()
-      Real* const getAdjointVec(Identifier const& index) {
+      Real const* getAdjointVec(Identifier const& index) {
         getAdjointVec(index, buffer.data());
         return buffer.data();
       }
