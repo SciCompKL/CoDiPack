@@ -40,6 +40,7 @@ template<typename ActiveType>
 void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outputs) {
   // process inputs
 
+  std::cout << "# Active type computations" << std::endl;
   ActiveType a = 0.0, b = 0.0, c = 0.0, d = 0.0;
 
   for (size_t i = 0; i < nInputs; ++i) {
@@ -54,6 +55,7 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
   // resetTo
 
 #ifdef REVERSE_TAPE
+  std::cout << "# Store position" << std::endl;
   auto& tape = ActiveType::getTape();
   auto position = tape.getPosition();
 #endif
@@ -62,6 +64,7 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
   y = cos(c + d);
 
 #ifdef REVERSE_TAPE
+  std::cout << "# Reset position" << std::endl;
   tape.setPassive();
   tape.evaluate(tape.getPosition(), position);  // match store and eval counters
   tape.resetTo(position);
@@ -70,6 +73,7 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
 
   // produce outputs
 
+  std::cout << "# Assign outputs" << std::endl;
   for (size_t i = 0; i < nInputs; ++i) {
     outputs[i] = sin(x * y * i);
   }

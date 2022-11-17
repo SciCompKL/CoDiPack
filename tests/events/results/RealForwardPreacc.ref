@@ -6,10 +6,13 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
+# Seed inputs
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.756802
+# Run test
+# Active type computations
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -30,11 +33,13 @@ StatementPrimal expression lhsValue 1.67535 lhsDotValue 0.586265 newValue 0.9887
 StatementPrimal expression lhsValue 2.27073 lhsDotValue -1.11343 newValue 2.99776
 StatementPrimal expression lhsValue 5.67567 lhsDotValue 3.37247 newValue 3.40526
 StatementPrimal expression lhsValue 1.55481 lhsDotValue 2.54808 newValue 2.12756
+# Preaccumulation
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.977623
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.537435
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.525408
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 4.60886
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 10.2089
+# Assign outputs
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.983156
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.770226
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.521775

@@ -108,7 +108,11 @@ namespace codi {
       /// Implementation: Freed indices are ignored.
       template<typename Tape>
       CODI_INLINE void freeIndex(Index& index) const {
-        EventSystem<Tape>::notifyIndexFreeListeners(index);
+        if (Config::IndexEvents) {
+          if (Base::InactiveIndex != index && Base::InvalidIndex != index) {
+            EventSystem<Tape>::notifyIndexFreeListeners(index);
+          }
+        }
         index = Base::InactiveIndex;
       }
 

@@ -155,7 +155,8 @@ namespace ReverseCallbacks {
               << " numActiveVariables " << numActiveVariables << std::endl
               << "\t";
     for (size_t i = 0; i < numActiveVariables; ++i) {
-      std::cout << rhsIdentifiers[i] << " " << jacobians[i] << "; ";
+      if(i != 0) { std::cout << " "; }
+      std::cout << rhsIdentifiers[i] << " " << jacobians[i] << ";";
     }
     std::cout << std::endl;
 
@@ -168,7 +169,8 @@ namespace ReverseCallbacks {
     std::cout << "StatementEvaluate lhsIdentifier " << lhsIdentifier << " numAdjoints " << numAdjoints << std::endl
               << "\t";
     for (size_t i = 0; i < numAdjoints; ++i) {
-      std::cout << adjoints[i] << " ";
+      if(i != 0) { std::cout << " "; }
+      std::cout << adjoints[i];
     }
     std::cout << std::endl;
 

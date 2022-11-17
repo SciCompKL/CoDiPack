@@ -364,8 +364,6 @@ namespace codi {
               Real* jacobians;
               Identifier* rhsIdentifiers;
               jacobianData.getDataPointers(jacobianStart, jacobians, rhsIdentifiers);
-              jacobians -= numberOfArguments;
-              rhsIdentifiers -= numberOfArguments;
 
               EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), lhs.cast().getIdentifier(),
                                                                      rhs.cast().getValue(), numberOfArguments,

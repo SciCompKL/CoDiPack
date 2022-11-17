@@ -60,6 +60,8 @@ int main() {
   size_t constexpr maxRuns = 1;
 
   for (size_t run = 0; run < maxRuns; run += 1) {
+
+    std::cout << "# Seed inputs" << std::endl;
     for (size_t i = 0; i < nInputs; ++i) {
       inputs[i] = sin(i + 1);
 
@@ -72,6 +74,7 @@ int main() {
 #endif
     }
 
+    std::cout << "# Run test" << std::endl;
     test<NUMBER>(nInputs, inputs, nOutputs, outputs);
   }
 
