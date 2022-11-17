@@ -6,10 +6,13 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
+# Seed inputs
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.841471
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.909297
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0.14112
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue -0.756802
+# Run test
+# Active type computations
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -36,19 +39,24 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 2.96403
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 7.24489
 StatementPrimal copy lhsValue 0.988748 lhsDotValue -0.133495 newValue 2.99776
 StatementPrimal passive lhsValue 2.96403 lhsDotValue -2.17317 newValue 2
+# Assign outputs
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.95891
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -1.71937
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.583102
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue -0.563117
+# Active type wrapper computations
 StatementPrimal passive lhsValue 7.24489 lhsDotValue 14.6358 newValue 0
 StatementPrimal copy lhsValue 2.99776 lhsDotValue -1.79316 newValue 0.988748
 StatementPrimal expression lhsValue 2 lhsDotValue 0 newValue 2.96403
+# Assign outputs
 StatementPrimal expression lhsValue 0.95891 lhsDotValue -1.01748 newValue -0.97784
 StatementPrimal expression lhsValue -1.71937 lhsDotValue -8.52446 newValue 0.940599
 StatementPrimal expression lhsValue 0.583102 lhsDotValue -0.579374 newValue 1.47803
 StatementPrimal expression lhsValue -0.563117 lhsDotValue 30.6585 newValue 0.917842
+# Immutable active type computations
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 7.24489
 StatementPrimal expression lhsValue 0.988748 lhsDotValue -0.133495 newValue 3.40526
+# Assign outputs
 StatementPrimal expression lhsValue -0.97784 lhsDotValue 0.532674 newValue 0
 StatementPrimal expression lhsValue 0.940599 lhsDotValue 1.19175 newValue -0.940931
 StatementPrimal expression lhsValue 1.47803 lhsDotValue 0.808517 newValue 0.637194

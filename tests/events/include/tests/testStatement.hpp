@@ -40,6 +40,7 @@ template<typename ActiveType>
 void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outputs) {
   // process inputs
 
+  std::cout << "# Active type computations" << std::endl;
   ActiveType a = 0.0, b = 0.0, c = 0.0, d = 0.0;
 
   for (size_t i = 0; i < nInputs; ++i) {
@@ -59,12 +60,14 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
   y = b;      // copy
   z = 2.0;    // passive
 
+  std::cout << "# Assign outputs" << std::endl;
   for (size_t i = 0; i < nInputs; ++i) {
     outputs[i] = sin(i * (x + y)) + cos(y * z / (i + 1));
   }
 
   // active type wrapper
 
+  std::cout << "# Active type wrapper computations" << std::endl;
   codi::ActiveTypeWrapper<ActiveType> aRef(a.value(), a.getIdentifier());
   codi::ActiveTypeWrapper<ActiveType> bRef(b.value(), b.getIdentifier());
 
@@ -76,18 +79,20 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
   yRef = aRef;         // copy
   zRef = aRef * bRef;  // expression
 
+  std::cout << "# Assign outputs" << std::endl;
   for (size_t i = 0; i < nInputs; ++i) {
     outputs[i] = sin(i * (xRef + yRef)) + cos(yRef * zRef / (i + 1));
   }
 
   // active type copy
-
+  std::cout << "# Immutable active type computations" << std::endl;
   codi::ImmutableActiveType<ActiveType> cCopy(c.value(), c.getIdentifier());
   codi::ImmutableActiveType<ActiveType> dCopy(d.value(), d.getIdentifier());
 
   x = cCopy * dCopy;  // expression
   y = cCopy;          // copy
 
+  std::cout << "# Assign outputs" << std::endl;
   for (size_t i = 0; i < nInputs; ++i) {
     outputs[i] = sin(i * (x + y));
   }
