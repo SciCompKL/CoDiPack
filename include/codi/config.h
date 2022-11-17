@@ -290,8 +290,8 @@ namespace codi {
     // Do not undefine
 
 #ifndef CODI_EnableMPI
-    /// See codi::Config::EnableMPI.
-    #define CODI_EnableMPI false
+  /// See codi::Config::EnableMPI.
+  #define CODI_EnableMPI false
 #endif
     /// Add MPI and MeDiPack specific headers.
     bool constexpr EnableMPI = CODI_EnableMPI;
