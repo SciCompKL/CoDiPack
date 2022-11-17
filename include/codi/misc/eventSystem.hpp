@@ -45,7 +45,7 @@
 namespace codi {
 
   /**
-   * Namespace for
+   * Namespace for enums that describe event characteristics.
    */
   namespace EventHints {
     /// Classify tape evaluations.
@@ -68,7 +68,7 @@ namespace codi {
       Passive
     };
 
-    /// Characterize the tape reset.
+    /// Characterize a tape reset.
     enum class Reset {
       Full,
       Hard,
@@ -77,7 +77,7 @@ namespace codi {
   }
 
   /**
-   * @brief Basis class for the CoDiPack event system.
+   * @brief Base class for the CoDiPack event system.
    *
    * CoDiPack provides an event system that can be used to, e.g.,
    * - gain insight into CoDiPack's internal workflow,
@@ -92,12 +92,13 @@ namespace codi {
    * notify*Listeners call. Please refer to the individual register*Listener functions for the callback signatures.
    * Each callback can be associated with custom data that is provided to each callback invocation. This can be used,
    * e.g., to register the same callback function multiple times with different data. The functions are written such
-   * that the required callback signatures should be printed by code completion tools and IDE tooltips.
+   * that the required callback signatures should be displayed by code completion tools and IDE tooltips.
    *
    * The event system is a tape-specific, global entitiy that is shared by all tapes of the same type. Different tape
-   * types use different event system, e.g., second order types have different event systems for outer and inner tapes.
+   * types use different event systems, e.g., second order types have different event systems for outer and inner tapes.
    *
-   * This base class defines methods for the StatementPrimal event that is common to forward and reverse tapes.
+   * This base class defines general functionality as well as methods for the StatementPrimal event that is common to
+   * forward and reverse tapes.
    *
    * @tparam T_Tape Tape type associated with the event system.
    */
@@ -137,7 +138,7 @@ namespace codi {
       };
 
       using Callback = void*;  ///< Internal, typeless callback storage.
-      /// Map that links events and registered callbacks.
+      /// Map that links events to registered callbacks and their associated custom data.
       using EventListenerMap = std::map<Event, std::list<std::pair<Callback, void*>>>;
 
       /**
@@ -156,10 +157,10 @@ namespace codi {
        *
        * Stores the callback together with customData in the event entry of the static EventListenerMap.
        *
-       * @param enabled     Whether or not the event is active, obtained from Config.
-       * @param event       The event for which we register a callback.
-       * @param callback    The callback to register.
-       * @param customData  A pointer to custom data that is provided whenever the callback is invoked.
+       * @param enabled         Whether or not the event is active, obtained from Config.
+       * @param event           The event for which we register a callback.
+       * @param callback        The callback to register.
+       * @param customData      A pointer to custom data that is provided whenever the callback is invoked.
        * @tparam TypedCallback  Type of the callback to register.
        */
       template<typename TypedCallback>
@@ -173,12 +174,12 @@ namespace codi {
       /**
        * @brief Internal method for callback invocation.
        *
-       * Invokes all callbacks stored for the event entry in the static EventListenerMap.
-       * Passes custom data to the callback.
+       * Invokes all callbacks stored for the given event in the static EventListenerMap.
+       * Passes associated custom data to the callback.
        *
-       * @param enabled  Whether or not the event is active, obtained from Config.
-       * @param event    The event for which we register a callback.
-       * @param args     Arguments for the callback.
+       * @param enabled         Whether or not the event is active, obtained from Config.
+       * @param event           The event for which we register a callback.
+       * @param args            Arguments for the callback.
        * @tparam TypedCallback  Type of the callback to invoke.
        * @tparam Args           Types of the callback arguments.
        */
@@ -200,7 +201,7 @@ namespace codi {
       /**
        * @brief Register callbacks for StatementPrimal events.
        *
-       * See notifyStatementPrimalListeners for the callback parameters and event order.
+       * See notifyStatementPrimalListeners for callback parameters and event order.
        *
        * @param callback    Callback to be invoked.
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
@@ -222,7 +223,7 @@ namespace codi {
        * @param lhsValue       Value of the left hand side before the assignment.
        * @param lhsIdentifier  Identifier (or gradient in forward mode) of the left hand side before the assignment.
        * @param newValue       Value of the right hand side that is assigned.
-       * @param statement      Type of statement.
+       * @param statement      Classifies the statement.
        */
       static CODI_INLINE void notifyStatementPrimalListeners(Tape& tape, Real const& lhsValue,
                                                              Identifier const& lhsIdentifier, Real const& newValue,
@@ -249,15 +250,16 @@ namespace codi {
     public:
       /// See EventSystem.
       using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-      using Real = typename Tape::Real;
-      using Gradient = typename Tape::Gradient;
-      using Identifier = typename Tape::Identifier;
-      using Index = typename Tape::Identifier;
-      using Position = typename Tape::Position;
+      using Real = typename Tape::Real;              ///< Floating point type the tape is based on.
+      using Gradient = typename Tape::Gradient;      ///< Gradient type used by the tape.
+      using Identifier = typename Tape::Identifier;  ///< Identifier type used by the tape.
+      using Index = typename Tape::Identifier;       ///< Index type used by the tape.
+      using Position = typename Tape::Position;      ///< Position used by the tapoe
+      /// Vector access interface that is compatible with the Tape.
       using VectorAccess = VectorAccessInterface<Real, Identifier>;
 
-      using Base = EventSystemBase<Tape>;
-      using Event = typename Base::Event;
+      using Base = EventSystemBase<Tape>;  ///< Base class abbreviation.
+      using Event = typename Base::Event;  ///< See EventSystemBase.
 
       /*******************************************************************************/
       /// @name AD workflow
@@ -280,8 +282,8 @@ namespace codi {
       /**
        * @brief Invoke callbacks for TapeStartRecording events.
        *
-       * A TapeStartRecording event is triggered whenever a tape of the associated type is about to be set active,
-       * that is, after the setActive call but before the internal status change.
+       * A TapeStartRecording event is triggered whenever an associated tape is set active. The event occurs before the
+       * internal tape status change.
        *
        * @param tape  Reference to the tape.
        */
@@ -307,8 +309,8 @@ namespace codi {
       /**
        * @brief Invoke callbacks for TapeStopRecording events.
        *
-       * A TapeStopRecording event is triggered whenever a tape of the associated type is about to be set passive,
-       * that is, after the setPassive call but before the internal status change.
+       * A TapeStopRecording event is triggered whenever an associated type is set passive. The event occurs before the
+       * internal tape status change.
        *
        * @param tape  Reference to the tape.
        */
@@ -334,8 +336,8 @@ namespace codi {
       /**
        * @brief Invoke callbacks for TapeRegisterInput events.
        *
-       * A registerInput event occurs whenever registerInput calls are made to the tape, after the internal input
-       * registration is completed.
+       * A TapeRegisterInput event occurs whenever registerInput calls are made to an associated tape, after the
+       * internal input registration is completed.
        *
        * @param tape        Reference to the tape.
        * @param value       The value of the input that has been registered.
@@ -363,7 +365,7 @@ namespace codi {
       /**
        * @brief Invoke callbacks for TapeRegisterOutput events.
        *
-       * A registerInput event occurs whenever registerOutput calls are made to the tape, after the internal output
+       * A TapeRegisterOutput event occurs whenever registerOutput calls are made to the tape, after the internal output
        * registration is completed.
        *
        * @param tape        Reference to the tape.
@@ -391,18 +393,17 @@ namespace codi {
       }
 
       /**
-       * @brief Invoke callbacks for TapeRegisterOutput events.
+       * @brief Invoke callbacks for TapeEvaluate events.
        *
-       * Since a tape evaluation is not a singular event but a process, TapeEvaluate events occur both prior to and
-       * after it, with correspondingly different endpoint parameter. The type of tape evaluation is indicated by the
-       * evalKind parameter.
+       * TapeEvaluate events occur both prior to and after the evaluation process, with correspondingly different
+       * endpoint parameter. The tape evaluation is classified by the evalKind parameter.
        *
        * @param tape       Reference to the tape.
        * @param start      Starting position of the evaluation.
        * @param end        End position of the evaluation.
        * @param adjoint    Vector access interface that provides access to adjoint variables.
        * @param evalKind   Indicates whether the evaluation is primal, forward, or reverse.
-       * @param endpoint   Indicates whether the event occurs before or after the tape evaluation.
+       * @param endpoint   Indicates whether this is the event before or after the tape evaluation.
        */
       static CODI_INLINE void notifyTapeEvaluateListeners(Tape& tape, Position const& start, Position const& end,
                                                           VectorAccess* adjoint, EventHints::EvaluationKind evalKind,
@@ -429,8 +430,8 @@ namespace codi {
       /**
        * @brief Invoke callbacks for TapeReset events.
        *
-       * A TapeReset event occurs in the course of reset, resetTo, and resetHard calls made to a tape, the respective
-       * origin indicated by kind. The event occurs before any internal reset takes place.
+       * A TapeReset event occurs in the course of reset, resetTo, and resetHard calls made to an associated tape, the
+       * respective origin indicated by kind. The event occurs before any internal reset takes place.
        *
        * @param tape           Reference to the tape.
        * @param position       Position to which we reset, zero position for full and hard resets.
@@ -451,7 +452,7 @@ namespace codi {
       /**
        * @brief Register callbacks for PreaccStart events.
        *
-       * See notifyPreaccFinishListeners for the callback parameters and event order.
+       * See notifyPreaccStartListeners for the callback parameters and event order.
        *
        * @param callback    Callback to be invoked.
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
@@ -514,7 +515,7 @@ namespace codi {
       /**
        * @brief Invoke callbacks for PreaccAddInput events.
        *
-       * A PreaccAddInput event occurs when an input is added via a PreaccumulationHelper, either by passing them to
+       * A PreaccAddInput event occurs when an input is added via a PreaccumulationHelper, e.g., by passing them to
        * start or by calling addInput. The event occurs before the internal registration.
        *
        * @param tape        Reference to the tape.
@@ -543,7 +544,7 @@ namespace codi {
       /**
        * @brief Invoke callbacks for PreaccAddOutput events.
        *
-       * A PreaccAddOutput event occurs when an output is added via a PreaccumulationHelper, either by passing them to
+       * A PreaccAddOutput event occurs when an output is added via a PreaccumulationHelper, e.g., by passing them to
        * finish or by calling addOutput. The event occurs before the internal registration.
        *
        * @param tape        Reference to the tape.
@@ -578,13 +579,13 @@ namespace codi {
       /**
        * @brief Invoke callbacks for StatementStoreOnTape events.
        *
-       * A StatementStoreOnTape event occurs whenever a statement is stored on the tape. Note that statements might not
-       * be stored on the tape, for example because nothing is active, but still emit StatementPrimal events. The event
-       * is emitted after storing all data on the tape, after the left hand side has been assigned an identifier but
-       * before the left hand side updates its primal value.
+       * A StatementStoreOnTape event occurs whenever a statement is stored on an associated tape. Note that all
+       * statements emit StatementPrimal events, but might not be stored on the tape, for example because nothing is
+       * active. The event is emitted after storing all data on the tape, after the left hand side has been assigned an
+       * identifier, but before the left hand side updates its primal value.
        *
        * @param tape                Reference to the tape.
-       * @param lhsIdentifier       Identifier assigned to the left hand side in the course of the statement.
+       * @param lhsIdentifier       Identifier assigned to the left hand side.
        * @param newValue            Value that is assigned to the left hand side.
        * @param numActiveVariables  Number of active variables on the right hand side.
        * @param rhsIdentifiers      Pointer to numActiveVariables identifiers.
@@ -618,7 +619,9 @@ namespace codi {
       /**
        * @brief Invoke callbacks for StatementEvaluate events.
        *
-       * A StatementEvaluate occurs whenever a tape evaluates a statement.
+       * A StatementEvaluate occurs whenever a tape evaluates a statement. For forward evaluations, the event occurs
+       * after the statement evaluation. For reverse evaluations, the event occurs before statement evaluation and
+       * before the left hand side adjoint is zeroed, if applicable.
        *
        * @param tape            Reference to the tape.
        * @param lhsIdentifier   Left hand side identifier.
@@ -632,9 +635,9 @@ namespace codi {
       }
 
       /**
-       * @brief Register callbacks for TapeStopRecording events.
+       * @brief Register callbacks for StatementEvaluatePrimal events.
        *
-       * See notifyTapeStopRecording for the callback parameters and event order.
+       * See notifyStatementEvaluatePrimalListeners for the callback parameters and event order.
        *
        * @param callback    Callback to be invoked.
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
@@ -646,6 +649,18 @@ namespace codi {
             Config::StatementEvents, Event::StatementEvaluatePrimal, callback, customData);
       }
 
+      /**
+       * @brief Invoke callbacks for StatementEvaluatePrimal events.
+       *
+       * A StatementEvaluatePrimal occurs whenever a primal value tape evaluates a statement. For forward and reverse
+       * evaluations, it occurs in addition to StatementEvaluate events. Primal tape evaluations produce only
+       * StatementEvaluatePrimal events. StatementEvaluatePrimal events occur after StatementEvaluate events. For primal
+       * evaluations, they occur after the evaluation of the primal statement.
+       *
+       * @param tape           Reference to the tape.
+       * @param lhsIdentifier  Identifier of the left hand side variable.
+       * @param lhsValue       Value of the left hand side variable.
+       */
       static CODI_INLINE void notifyStatementEvaluatePrimalListeners(Tape& tape, Identifier const& lhsIdentifier,
                                                                      Real const& lhsValue) {
         Base::template internalNotifyListeners<void (*)(Tape&, Identifier const&, Real const&, void*)>(
@@ -658,9 +673,9 @@ namespace codi {
       /// @{
 
       /**
-       * @brief Register callbacks for TapeStopRecording events.
+       * @brief Register callbacks for IndexAssign events.
        *
-       * See notifyTapeStopRecording for the callback parameters and event order.
+       * See notifyIndexAssignListeners for the callback parameters and event order.
        *
        * @param callback    Callback to be invoked.
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
@@ -670,15 +685,24 @@ namespace codi {
         Base::template internalRegisterListener(Config::IndexEvents, Event::IndexAssign, callback, customData);
       }
 
+      /**
+       * @brief Invoke callbacks for IndexAssign events.
+       *
+       * IndexAssign events occur when an index management assigns an index to a left hand side variable. This includes
+       * cases where an index is left in place, in the sense that it is freed and immediately assigned again. It is
+       * unspecified whether the event occurs before or after the actual index assignment.
+       *
+       * @param index  The assigned index.
+       */
       static CODI_INLINE void notifyIndexAssignListeners(Index const& index) {
         Base::template internalNotifyListeners<void (*)(Index const&, void*)>(Config::IndexEvents, Event::IndexAssign,
                                                                               index);
       }
 
       /**
-       * @brief Register callbacks for TapeStopRecording events.
+       * @brief Register callbacks for IndexFree events.
        *
-       * See notifyTapeStopRecording for the callback parameters and event order.
+       * See notifyIndexFreeListeners for the callback parameters and event order.
        *
        * @param callback    Callback to be invoked.
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
@@ -688,15 +712,25 @@ namespace codi {
         Base::template internalRegisterListener(Config::IndexEvents, Event::IndexFree, callback, customData);
       }
 
+      /**
+       * @brief Invoke callbacks for IndexFree events.
+       *
+       * IndexFree events occur when an index management frees an index of a left hand side variable. This includes
+       * cases where an existing index is overwritten by a new one, and cases where an index is left in place (in the
+       * sense that it is freed and immediately assigned again). It is unspecified whether the event occurs before or
+       * after the actual index free operation.
+       *
+       * @param index  The freed index.
+       */
       static CODI_INLINE void notifyIndexFreeListeners(Index const& index) {
         Base::template internalNotifyListeners<void (*)(Index const&, void*)>(Config::IndexEvents, Event::IndexFree,
                                                                               index);
       }
 
       /**
-       * @brief Register callbacks for TapeStopRecording events.
+       * @brief Register callbacks for IndexCopy events.
        *
-       * See notifyTapeStopRecording for the callback parameters and event order.
+       * See notifyIndexCopyListeners for the callback parameters and event order.
        *
        * @param callback    Callback to be invoked.
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
@@ -706,6 +740,15 @@ namespace codi {
         Base::template internalRegisterListener(Config::IndexEvents, Event::IndexCopy, callback, customData);
       }
 
+      /**
+       * @brief Invoke callbacks for IndexCopy events.
+       *
+       * IndexCopy events occur when an index management assigns an index to a left hand side variable by copying it
+       * from the right hand side variable. It is unspecified whether the event occurs before or after the actual index
+       * copy operation.
+       *
+       * @param index  The copied index.
+       */
       static CODI_INLINE void notifyIndexCopyListeners(Index const& index) {
         Base::template internalNotifyListeners<void (*)(Index const&, void*)>(Config::IndexEvents, Event::IndexCopy,
                                                                               index);
@@ -714,11 +757,11 @@ namespace codi {
       /// @}
   };
 
-  /* specialization for the forward evaluation "tape" is identical to EventSystemBase */
-
+  /* forward declaration */
   template<typename Real, typename Gradient>
   struct ForwardEvaluation;
 
+  /* specialization for ForwardEvaluation is identical to EventSystemBase */
   template<typename Real, typename Gradient>
   struct EventSystem<ForwardEvaluation<Real, Gradient>> : public EventSystemBase<ForwardEvaluation<Real, Gradient>> {};
 
