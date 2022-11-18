@@ -60,8 +60,7 @@ int main() {
   size_t constexpr maxRuns = 2;
 
   for (size_t run = 0; run < maxRuns; run += 1) {
-
-    if (run == maxRuns - 1) {  /* last run, deregister all listeners */
+    if (run == maxRuns - 1) { /* last run, deregister all listeners */
       deregisterCallbacks<Tape>(forwardCallbacks);
 #ifdef SECOND_ORDER
       deregisterCallbacks<InnerTape>(innerCallbacks);
@@ -84,8 +83,6 @@ int main() {
     std::cout << "# Run test" << std::endl;
     test<NUMBER>(nInputs, inputs, nOutputs, outputs);
   }
-
-
 
   return 0;
 }

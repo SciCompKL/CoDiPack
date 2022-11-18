@@ -110,7 +110,7 @@ namespace codi {
       using Real = typename Tape::Real;              ///< Floating point type the tape is based on.
       using Identifier = typename Tape::Identifier;  ///< Identifier type used by the tape.
 
-      using Handle = size_t;   ///< Handle that identifies a registered callback.
+      using Handle = size_t;  ///< Handle that identifies a registered callback.
 
     protected:
       /// Full set of events.
@@ -175,7 +175,7 @@ namespace codi {
        */
       template<typename TypedCallback>
       static CODI_INLINE Handle internalRegisterListener(bool const& enabled, Event event, TypedCallback callback,
-                                                       void* customData) {
+                                                         void* customData) {
         if (enabled) {
           nextHandle = nextHandle + 1;
           Handle handle = nextHandle;
@@ -222,9 +222,9 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerStatementPrimalListener(void (*callback)(Tape&, Real const&, Identifier const&,
-                                                                               Real const&, EventHints::Statement,
-                                                                               void*),
-                                                              void* customData = nullptr) {
+                                                                                 Real const&, EventHints::Statement,
+                                                                                 void*),
+                                                                void* customData = nullptr) {
         return internalRegisterListener(Config::StatementEvents, Event::StatementPrimal, callback, customData);
       }
 
@@ -323,7 +323,7 @@ namespace codi {
       static CODI_INLINE Handle registerTapeStartRecordingListener(void (*callback)(Tape&, void*),
                                                                    void* customData = nullptr) {
         return Base::internalRegisterListener(Config::ADWorkflowEvents, Event::TapeStartRecording, callback,
-                                                customData);
+                                              customData);
       }
 
       /**
@@ -348,9 +348,8 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerTapeStopRecordingListener(void (*callback)(Tape&, void*),
-                                                                void* customData = nullptr) {
-        return Base::internalRegisterListener(Config::ADWorkflowEvents, Event::TapeStopRecording, callback,
-                                                customData);
+                                                                  void* customData = nullptr) {
+        return Base::internalRegisterListener(Config::ADWorkflowEvents, Event::TapeStopRecording, callback, customData);
       }
 
       /**
@@ -375,9 +374,8 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerTapeRegisterInputListener(void (*callback)(Tape&, Real&, Identifier&, void*),
-                                                                void* customData = nullptr) {
-        return Base::internalRegisterListener(Config::ADWorkflowEvents, Event::TapeRegisterInput, callback,
-                                                customData);
+                                                                  void* customData = nullptr) {
+        return Base::internalRegisterListener(Config::ADWorkflowEvents, Event::TapeRegisterInput, callback, customData);
       }
 
       /**
@@ -404,9 +402,9 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerTapeRegisterOutputListener(void (*callback)(Tape&, Real&, Identifier&, void*),
-                                                                 void* customData = nullptr) {
+                                                                   void* customData = nullptr) {
         return Base::internalRegisterListener(Config::ADWorkflowEvents, Event::TapeRegisterOutput, callback,
-                                                customData);
+                                              customData);
       }
 
       /**
@@ -433,9 +431,9 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerTapeEvaluateListener(void (*callback)(Tape&, Position const&, Position const&,
-                                                                            VectorAccess*, EventHints::EvaluationKind,
-                                                                            EventHints::Endpoint, void*),
-                                                           void* customData = nullptr) {
+                                                                              VectorAccess*, EventHints::EvaluationKind,
+                                                                              EventHints::Endpoint, void*),
+                                                             void* customData = nullptr) {
         return Base::internalRegisterListener(Config::ADWorkflowEvents, Event::TapeEvaluate, callback, customData);
       }
 
@@ -469,8 +467,8 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerTapeResetListener(void (*callback)(Tape&, Position const&, EventHints::Reset,
-                                                                         bool, void*),
-                                                        void* customData = nullptr) {
+                                                                           bool, void*),
+                                                          void* customData = nullptr) {
         return Base::internalRegisterListener(Config::ADWorkflowEvents, Event::TapeReset, callback, customData);
       }
 
@@ -504,7 +502,8 @@ namespace codi {
        * @param callback    Callback to be invoked.
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
-      static CODI_INLINE Handle registerPreaccStartListener(void (*callback)(Tape&, void*), void* customData = nullptr) {
+      static CODI_INLINE Handle registerPreaccStartListener(void (*callback)(Tape&, void*),
+                                                            void* customData = nullptr) {
         return Base::internalRegisterListener(Config::PreaccEvents, Event::PreaccStart, callback, customData);
       }
 
@@ -528,7 +527,8 @@ namespace codi {
        * @param callback    Callback to be invoked.
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
-      static CODI_INLINE Handle registerPreaccFinishListener(void (*callback)(Tape&, void*), void* customData = nullptr) {
+      static CODI_INLINE Handle registerPreaccFinishListener(void (*callback)(Tape&, void*),
+                                                             void* customData = nullptr) {
         return Base::internalRegisterListener(Config::PreaccEvents, Event::PreaccFinish, callback, customData);
       }
 
@@ -554,8 +554,8 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerPreaccAddInputListener(void (*callback)(Tape&, Real const&, Identifier const&,
-                                                                              void*),
-                                                             void* customData = nullptr) {
+                                                                                void*),
+                                                               void* customData = nullptr) {
         return Base::internalRegisterListener(Config::PreaccEvents, Event::PreaccAddInput, callback, customData);
       }
 
@@ -584,7 +584,7 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerPreaccAddOutputListener(void (*callback)(Tape&, Real&, Identifier&, void*),
-                                                              void* customData = nullptr) {
+                                                                void* customData = nullptr) {
         return Base::internalRegisterListener(Config::PreaccEvents, Event::PreaccAddOutput, callback, customData);
       }
 
@@ -620,7 +620,7 @@ namespace codi {
           void (*callback)(Tape&, Identifier const&, Real const&, size_t, Identifier const*, Real const*, void*),
           void* customData = nullptr) {
         return Base::internalRegisterListener(Config::StatementEvents, Event::StatementStoreOnTape, callback,
-                                                customData);
+                                              customData);
       }
 
       /**
@@ -657,10 +657,9 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerStatementEvaluateListener(void (*callback)(Tape&, Identifier const&, size_t,
-                                                                                 Real const*, void*),
-                                                                void* customData = nullptr) {
-        return Base::internalRegisterListener(
-            Config::StatementEvents, Event::StatementEvaluate, callback, customData);
+                                                                                   Real const*, void*),
+                                                                  void* customData = nullptr) {
+        return Base::internalRegisterListener(Config::StatementEvents, Event::StatementEvaluate, callback, customData);
       }
 
       /**
@@ -690,10 +689,10 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerStatementEvaluatePrimalListener(void (*callback)(Tape&, Identifier const&,
-                                                                                       Real const&, void*),
-                                                                      void* customData = nullptr) {
-        return Base::internalRegisterListener(
-            Config::StatementEvents, Event::StatementEvaluatePrimal, callback, customData);
+                                                                                         Real const&, void*),
+                                                                        void* customData = nullptr) {
+        return Base::internalRegisterListener(Config::StatementEvents, Event::StatementEvaluatePrimal, callback,
+                                              customData);
       }
 
       /**
@@ -728,7 +727,7 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerIndexAssignListener(void (*callback)(Index const&, void*),
-                                                          void* customData = nullptr) {
+                                                            void* customData = nullptr) {
         return Base::internalRegisterListener(Config::IndexEvents, Event::IndexAssign, callback, customData);
       }
 
@@ -755,7 +754,7 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerIndexFreeListener(void (*callback)(Index const&, void*),
-                                                        void* customData = nullptr) {
+                                                          void* customData = nullptr) {
         return Base::internalRegisterListener(Config::IndexEvents, Event::IndexFree, callback, customData);
       }
 
@@ -783,7 +782,7 @@ namespace codi {
        * @param customData  Optional. Custom data that should be linked with the callback, otherwise nullptr.
        */
       static CODI_INLINE Handle registerIndexCopyListener(void (*callback)(Index const&, void*),
-                                                        void* customData = nullptr) {
+                                                          void* customData = nullptr) {
         return Base::internalRegisterListener(Config::IndexEvents, Event::IndexCopy, callback, customData);
       }
 

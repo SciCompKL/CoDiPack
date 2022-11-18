@@ -63,7 +63,7 @@ int main() {
   size_t constexpr maxRuns = 3;
 
   for (size_t run = 0; run < maxRuns; run += 1) {
-    if (run == maxRuns - 1) {  /* last run, deregister all listeners */
+    if (run == maxRuns - 1) { /* last run, deregister all listeners */
       deregisterCallbacks<Tape>(reverseCallbacks);
 #ifdef SECOND_ORDER
       deregisterCallbacks<InnerTape>(innerCallbacks);

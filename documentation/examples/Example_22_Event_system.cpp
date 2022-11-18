@@ -31,8 +31,7 @@ void onTapeRegisterOutput(Tape&, Real& value, Identifier& identifier, void*) {
   std::cout << "TapeRegisterOutput value " << value << " identifier " << identifier << std::endl;
 }
 
-void onTapeEvaluate(Tape&, Position const& start, Position const& end,
-                    VectorAccess*,
+void onTapeEvaluate(Tape&, Position const& start, Position const& end, VectorAccess*,
                     codi::EventHints::EvaluationKind, codi::EventHints::Endpoint endpoint, void*) {
 
   auto to_string = [](codi::EventHints::Endpoint endpoint) -> std::string {
@@ -50,8 +49,7 @@ void onTapeEvaluate(Tape&, Position const& start, Position const& end,
             << end << std::endl;
 }
 
-void onTapeReset(Tape&, Position const& position, codi::EventHints::Reset, bool clearAdjoints,
-                 void*) {
+void onTapeReset(Tape&, Position const& position, codi::EventHints::Reset, bool clearAdjoints, void*) {
   std::cout << "TapeReset position " << position << " clear adjoints " << clearAdjoints
             << std::endl;
 }
@@ -60,10 +58,8 @@ void onTapeReset(Tape&, Position const& position, codi::EventHints::Reset, bool 
 
 //! [Statement callback definitions]
 
-void onStatementStoreOnTape(Tape&, Identifier const& lhsIdentifier,
-                            Real const& newValue, size_t numActiveVariables,
-                            Identifier const* rhsIdentifiers, Real const* jacobians,
-                            void*) {
+void onStatementStoreOnTape(Tape&, Identifier const& lhsIdentifier, Real const& newValue, size_t numActiveVariables,
+                            Identifier const* rhsIdentifiers, Real const* jacobians, void*) {
   std::cout << "StatementStoreOnTape lhsIdentifier " << lhsIdentifier << " newValue " << newValue
             << " numActiveVariables " << numActiveVariables << std::endl
             << "\t";
@@ -76,8 +72,7 @@ void onStatementStoreOnTape(Tape&, Identifier const& lhsIdentifier,
   std::cout << std::endl;
 }
 
-void onStatementEvaluate(Tape&, Identifier const& lhsIdentifier, size_t numAdjoints,
-                         Real const* adjoints, void*) {
+void onStatementEvaluate(Tape&, Identifier const& lhsIdentifier, size_t numAdjoints, Real const* adjoints, void*) {
   std::cout << "StatementEvaluate lhsIdentifier " << lhsIdentifier << " numAdjoints " << numAdjoints << std::endl
             << "\t";
   for (size_t i = 0; i < numAdjoints; ++i) {
@@ -149,8 +144,11 @@ int main(int nargs, char** args) {
   tape.evaluate();
 
   std::cout << "f(1 .. 5) = (" << y[0] << ", " << y[1] << ")" << std::endl;
-  std::cout << "df/dx (1 .. 5) [1 2]^T = (" << x[0].getGradient() << " " <<
-            x[1].getGradient() << " " << x[2].getGradient() << " " << x[3].getGradient() << " " << x[4].getGradient() << ")" << std::endl;
+  std::cout << "df/dx (1 .. 5) [1 2]^T = (" << x[0].getGradient() << " "
+                                            << x[1].getGradient() << " "
+                                            << x[2].getGradient() << " "
+                                            << x[3].getGradient() << " "
+                                            << x[4].getGradient() << ")" << std::endl;
 
   tape.reset();
 

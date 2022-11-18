@@ -227,7 +227,8 @@ namespace ReverseCallbacks {
     handles.push_back(codi::EventSystem<Tape>::registerStatementPrimalListener(onStatementPrimal<Tape>));
     handles.push_back(codi::EventSystem<Tape>::registerStatementStoreOnTapeListener(onStatementStoreOnTape<Tape>));
     handles.push_back(codi::EventSystem<Tape>::registerStatementEvaluateListener(onStatementEvaluate<Tape>));
-    handles.push_back(codi::EventSystem<Tape>::registerStatementEvaluatePrimalListener(onStatementEvaluatePrimal<Tape>));
+    handles.push_back(
+        codi::EventSystem<Tape>::registerStatementEvaluatePrimalListener(onStatementEvaluatePrimal<Tape>));
     handles.push_back(codi::EventSystem<Tape>::registerIndexAssignListener(onIndexAssign<Tape>));
     handles.push_back(codi::EventSystem<Tape>::registerIndexFreeListener(onIndexFree<Tape>));
     handles.push_back(codi::EventSystem<Tape>::registerIndexCopyListener(onIndexCopy<Tape>));
