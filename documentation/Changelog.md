@@ -4,6 +4,7 @@ Changelog {#Changelog}
 ### v 2.* - ????-??-??
  - Features:
    * Helpers for linear system solvers. See Example 21 for details.
+   * Event system. See Example 22 for details.
 
  - Bugfix:
    * Initialization fixes.
