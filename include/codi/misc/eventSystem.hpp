@@ -253,6 +253,13 @@ namespace codi {
       /// @name General methods
       /// @{
 
+      /**
+       * @brief Deregister a listener.
+       *
+       * To deregister a listener, use the handle that was returned upon registration.
+       *
+       * @param handle  Handle of the listener that should be deregistered.
+       */
       static CODI_INLINE void deregisterListener(Handle const& handle) {
         for (auto& listenersForEvent : getListeners()) {
           auto iterator = listenersForEvent.second.begin();
@@ -293,7 +300,7 @@ namespace codi {
       using Gradient = typename Tape::Gradient;      ///< Gradient type used by the tape.
       using Identifier = typename Tape::Identifier;  ///< Identifier type used by the tape.
       using Index = typename Tape::Identifier;       ///< Index type used by the tape.
-      using Position = typename Tape::Position;      ///< Position used by the tapoe
+      using Position = typename Tape::Position;      ///< Position used by the tape.
       /// Vector access interface that is compatible with the Tape.
       using VectorAccess = VectorAccessInterface<Real, Identifier>;
 
@@ -801,7 +808,14 @@ namespace codi {
   template<typename Real, typename Gradient>
   struct ForwardEvaluation;
 
-  /* specialization for ForwardEvaluation is identical to EventSystemBase */
+  /**
+   * @brief Specialization for ForwardEvaluation.
+   *
+   * See EventSystem and EventSystemBase.
+   *
+   * @tparam Real      Floating point the forward tape is based on.
+   * @tparam Gradient  Gradient type used by the forward tape.
+   */
   template<typename Real, typename Gradient>
   struct EventSystem<ForwardEvaluation<Real, Gradient>> : public EventSystemBase<ForwardEvaluation<Real, Gradient>> {};
 
