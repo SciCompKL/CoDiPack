@@ -48,7 +48,16 @@ namespace ForwardCallbacks {
   }
 
   template<typename Tape>
-  void registerAll() {
-    codi::EventSystem<Tape>::registerStatementPrimalListener(onStatementPrimal<Tape>);
+  std::list<typename codi::EventSystem<Tape>::Handle> registerAll() {
+    std::list<typename codi::EventSystem<Tape>::Handle> handles;
+    handles.push_back(codi::EventSystem<Tape>::registerStatementPrimalListener(onStatementPrimal<Tape>));
+    return handles;
+  }
+}
+
+template<typename Tape>
+void deregisterCallbacks(std::list<typename codi::EventSystem<Tape>::Handle> const& handles) {
+  for (auto const& handle : handles) {
+    codi::EventSystem<Tape>::deregisterListener(handle);
   }
 }

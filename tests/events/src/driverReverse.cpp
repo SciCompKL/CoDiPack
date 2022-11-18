@@ -50,19 +50,26 @@ int main() {
   size_t constexpr nInputs = 4;
   size_t constexpr nOutputs = 4;
 
-  ReverseCallbacks::registerAll<Tape>();
+  auto reverseCallbacks = ReverseCallbacks::registerAll<Tape>();
 
 #ifdef SECOND_ORDER
   using InnerTape = Tape::Real::Tape;
-  ForwardCallbacks::registerAll<InnerTape>();
+  auto innerCallbacks = ForwardCallbacks::registerAll<InnerTape>();
 #endif
 
   NUMBER inputs[nInputs] = {};
   NUMBER outputs[nOutputs] = {};
 
-  size_t constexpr maxRuns = 2;
+  size_t constexpr maxRuns = 3;
 
   for (size_t run = 0; run < maxRuns; run += 1) {
+    if (run == maxRuns - 1) {  /* last run, deregister all listeners */
+      deregisterCallbacks<Tape>(reverseCallbacks);
+#ifdef SECOND_ORDER
+      deregisterCallbacks<InnerTape>(innerCallbacks);
+#endif
+    }
+
     tape.reset();
 
     tape.setActive();
@@ -99,6 +106,12 @@ int main() {
 
     ReverseCallbacks::GlobalStatementCounters<Tape>::assertEqual();
   }
+
+  /* re-register for testing resetHard */
+  ReverseCallbacks::registerAll<Tape>();
+#ifdef SECOND_ORDER
+  ForwardCallbacks::registerAll<InnerTape>();
+#endif
 
   tape.resetHard();
 

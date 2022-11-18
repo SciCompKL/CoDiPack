@@ -579,6 +579,16 @@ StatementEvaluate lhsIdentifier 6 numAdjoints 2
 StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	0 0
 TapeEvaluate reverse end from [0, 0, [0, 70, [0, 38, 38]]] to [0, 0, [0, 0, [0, 0, 0]]]
+# Register inputs
+# Run test
+# Active type computations
+# Assign outputs
+# Active type wrapper computations
+# Assign outputs
+# Immutable active type computations
+# Assign outputs
+# Register outputs
+# Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, 0]]] clear adjoints 0
 IndexFree index 38
 IndexFree index 37

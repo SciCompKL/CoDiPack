@@ -47,19 +47,27 @@ int main() {
   size_t constexpr nInputs = 4;
   size_t constexpr nOutputs = 4;
 
-  ForwardCallbacks::registerAll<Tape>();
+  auto forwardCallbacks = ForwardCallbacks::registerAll<Tape>();
 
 #ifdef SECOND_ORDER
   using InnerTape = Tape::Real::Tape;
-  ForwardCallbacks::registerAll<InnerTape>();
+  auto innerCallbacks = ForwardCallbacks::registerAll<InnerTape>();
 #endif
 
   NUMBER inputs[nInputs] = {};
   NUMBER outputs[nOutputs] = {};
 
-  size_t constexpr maxRuns = 1;
+  size_t constexpr maxRuns = 2;
 
   for (size_t run = 0; run < maxRuns; run += 1) {
+
+    if (run == maxRuns - 1) {  /* last run, deregister all listeners */
+      deregisterCallbacks<Tape>(forwardCallbacks);
+#ifdef SECOND_ORDER
+      deregisterCallbacks<InnerTape>(innerCallbacks);
+#endif
+    }
+
     std::cout << "# Seed inputs" << std::endl;
     for (size_t i = 0; i < nInputs; ++i) {
       inputs[i] = sin(i + 1);
@@ -76,6 +84,8 @@ int main() {
     std::cout << "# Run test" << std::endl;
     test<NUMBER>(nInputs, inputs, nOutputs, outputs);
   }
+
+
 
   return 0;
 }

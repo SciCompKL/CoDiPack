@@ -2603,12 +2603,19 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 12.9992 lhsDotValue -12.864 newValue 0
 StatementPrimal expression lhsValue 12.0315 lhsDotValue 611.924 newValue 20.6937
 TapeEvaluate reverse end from [0, 0, [0, 62, [28, 1, []]]] to [0, 0, [0, 0, [0, 0, []]]]
+# Register inputs
+# Run test
+# Active type computations
+# Preaccumulation
+# Assign outputs
+# Register outputs
+# Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 0
 IndexFree index 17
 IndexFree index 16
 IndexFree index 15
 IndexFree index 14
-IndexFree index 10
-IndexFree index 11
-IndexFree index 12
-IndexFree index 13
+IndexFree index 6
+IndexFree index 7
+IndexFree index 8
+IndexFree index 9

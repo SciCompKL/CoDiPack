@@ -1522,11 +1522,19 @@ StatementEvaluate lhsIdentifier 4 numAdjoints 1
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 TapeEvaluate reverse end from [0, 0, [0, 41, [21, 1, []]]] to [0, 0, [0, 0, [0, 0, []]]]
+# Register inputs
+# Run test
+# Active type computations
+# Store position
+# Reset position
+# Assign outputs
+# Register outputs
+# Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 0
 IndexFree index 13
 IndexFree index 12
 IndexFree index 11
-IndexFree index 7
-IndexFree index 8
-IndexFree index 9
-IndexFree index 10
+IndexFree index 3
+IndexFree index 4
+IndexFree index 5
+IndexFree index 6

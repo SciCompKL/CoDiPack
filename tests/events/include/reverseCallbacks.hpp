@@ -212,24 +212,26 @@ namespace ReverseCallbacks {
   /// @}
 
   template<typename Tape>
-  void registerAll() {
-    codi::EventSystem<Tape>::registerTapeStartRecordingListener(onTapeStartRecording<Tape>);
-    codi::EventSystem<Tape>::registerTapeStopRecordingListener(onTapeStopRecording<Tape>);
-    codi::EventSystem<Tape>::registerTapeRegisterInputListener(onTapeRegisterInput<Tape>);
-    codi::EventSystem<Tape>::registerTapeRegisterOutputListener(onTapeRegisterOutput<Tape>);
-    codi::EventSystem<Tape>::registerTapeEvaluateListener(onTapeEvaluate<Tape>);
-    codi::EventSystem<Tape>::registerTapeResetListener(onTapeReset<Tape>);
-    codi::EventSystem<Tape>::registerPreaccStartListener(onPreaccStart<Tape>);
-    codi::EventSystem<Tape>::registerPreaccFinishListener(onPreaccFinish<Tape>);
-    codi::EventSystem<Tape>::registerPreaccAddInputListener(onPreaccAddInput<Tape>);
-    codi::EventSystem<Tape>::registerPreaccAddOutputListener(onPreaccAddOutput<Tape>);
-    codi::EventSystem<Tape>::registerStatementPrimalListener(onStatementPrimal<Tape>);
-    codi::EventSystem<Tape>::registerStatementStoreOnTapeListener(onStatementStoreOnTape<Tape>);
-    codi::EventSystem<Tape>::registerStatementEvaluateListener(onStatementEvaluate<Tape>);
-    codi::EventSystem<Tape>::registerStatementEvaluatePrimalListener(onStatementEvaluatePrimal<Tape>);
-    codi::EventSystem<Tape>::registerIndexAssignListener(onIndexAssign<Tape>);
-    codi::EventSystem<Tape>::registerIndexFreeListener(onIndexFree<Tape>);
-    codi::EventSystem<Tape>::registerIndexCopyListener(onIndexCopy<Tape>);
+  std::list<typename codi::EventSystem<Tape>::Handle> registerAll() {
+    std::list<typename codi::EventSystem<Tape>::Handle> handles;
+    handles.push_back(codi::EventSystem<Tape>::registerTapeStartRecordingListener(onTapeStartRecording<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerTapeStopRecordingListener(onTapeStopRecording<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerTapeRegisterInputListener(onTapeRegisterInput<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerTapeRegisterOutputListener(onTapeRegisterOutput<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerTapeEvaluateListener(onTapeEvaluate<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerTapeResetListener(onTapeReset<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerPreaccStartListener(onPreaccStart<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerPreaccFinishListener(onPreaccFinish<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerPreaccAddInputListener(onPreaccAddInput<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerPreaccAddOutputListener(onPreaccAddOutput<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerStatementPrimalListener(onStatementPrimal<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerStatementStoreOnTapeListener(onStatementStoreOnTape<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerStatementEvaluateListener(onStatementEvaluate<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerStatementEvaluatePrimalListener(onStatementEvaluatePrimal<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerIndexAssignListener(onIndexAssign<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerIndexFreeListener(onIndexFree<Tape>));
+    handles.push_back(codi::EventSystem<Tape>::registerIndexCopyListener(onIndexCopy<Tape>));
+    return handles;
   }
 
 }

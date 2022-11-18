@@ -61,3 +61,11 @@ StatementPrimal expression lhsValue -0.97784 lhsDotValue {-0.641287, -0.896058} 
 StatementPrimal expression lhsValue 0.940599 lhsDotValue {-1.2693, -1.80888} newValue -0.940931
 StatementPrimal expression lhsValue 1.47803 lhsDotValue {-1.21147, -1.64195} newValue 0.637194
 StatementPrimal expression lhsValue 0.917842 lhsDotValue {-1.87595, -2.43151} newValue 0.509427
+# Seed inputs
+# Run test
+# Active type computations
+# Assign outputs
+# Active type wrapper computations
+# Assign outputs
+# Immutable active type computations
+# Assign outputs

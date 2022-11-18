@@ -42,3 +42,7 @@ StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0
 StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.128835
 StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.255522
 StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.37795
+# Seed inputs
+# Run test
+# Active type computations
+# Assign outputs
