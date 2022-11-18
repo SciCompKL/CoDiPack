@@ -52,10 +52,10 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
 
   // computations
 
-  // forward mode preacc
-
   std::cout << "# Preaccumulation" << std::endl;
   codi::PreaccumulationHelper<ActiveType> ph;
+
+  // forward mode preacc
 
   ph.start(a);
 

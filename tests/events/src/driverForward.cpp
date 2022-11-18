@@ -72,7 +72,7 @@ int main() {
       inputs[i] = sin(i + 1);
 
       for (size_t currentDim = 0; currentDim < dim; ++currentDim) {
-        codi::GradientTraits::at(inputs[i].gradient(), currentDim) = cos(dim * i + currentDim);
+        codi::GradientTraits::at(inputs[i].gradient(), currentDim) = cos(i + currentDim * nInputs);
       }
 
 #ifdef SECOND_ORDER
