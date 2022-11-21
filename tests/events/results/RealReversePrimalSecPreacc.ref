@@ -836,7 +836,7 @@ StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.756802
 TapeRegisterInput value -0.756802 identifier 258
-# Run tests
+# Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -5034,7 +5034,7 @@ IndexAssign index 258
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue -0.756802
 TapeRegisterInput value -0.756802 identifier 258
-# Run tests
+# Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsDotValue 0 newValue 0
@@ -7449,6 +7449,13 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 0.666367
 StatementPrimal expression lhsValue 12.0315 lhsDotValue 611.924 newValue 20.6937
 TapeEvaluate reverse end from [0, 0, [0, 16, [0, 12, [0, 68, [32, 1, 287]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+# Register inputs
+# Run test
+# Active type computations
+# Preaccumulation
+# Assign outputs
+# Register outputs
+# Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] clear adjoints 0
 IndexFree index 287
 IndexFree index 286

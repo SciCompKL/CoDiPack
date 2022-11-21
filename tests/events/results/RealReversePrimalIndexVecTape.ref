@@ -21,7 +21,7 @@ TapeRegisterInput value 0.14112 identifier 33020
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue -0.756802
 IndexAssign index 33019
 TapeRegisterInput value -0.756802 identifier 33019
-# Run tests
+# Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
@@ -174,28 +174,28 @@ TapeStopRecording
 # Tape evaluate
 TapeEvaluate reverse begin from [0, 0, [0, 8, [0, 4, [0, 48, [0, 24, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 StatementEvaluate lhsIdentifier 33009 numAdjoints 2
-	-0.989992 0.283662
+	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 0.37795
 StatementEvaluate lhsIdentifier 33010 numAdjoints 2
-	-0.416147 -0.653644
+	-0.416147 0.96017
 StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.255522
 StatementEvaluate lhsIdentifier 33011 numAdjoints 2
-	0.540302 -0.989992
+	0.540302 0.283662
 StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.128835
 StatementEvaluate lhsIdentifier 33012 numAdjoints 2
-	1 -0.416147
+	1 -0.653644
 StatementEvaluatePrimal lhsIdentifier 33012 lhsValue 0
 StatementEvaluate lhsIdentifier 33009 numAdjoints 2
-	-0.989992 0.283662
+	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 0.37795
 StatementEvaluate lhsIdentifier 33010 numAdjoints 2
-	-0.416147 -0.653644
+	-0.416147 0.96017
 StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.255522
 StatementEvaluate lhsIdentifier 33011 numAdjoints 2
-	0.540302 -0.989992
+	0.540302 0.283662
 StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.128835
 StatementEvaluate lhsIdentifier 33012 numAdjoints 2
-	1 -0.416147
+	1 -0.653644
 StatementEvaluatePrimal lhsIdentifier 33012 lhsValue 0
 StatementEvaluate lhsIdentifier 33015 numAdjoints 2
 	0 0
@@ -265,7 +265,7 @@ StatementPrimal passive lhsValue -0.756802 lhsIdentifier 33019 newValue -0.75680
 IndexFree index 33019
 IndexAssign index 33015
 TapeRegisterInput value -0.756802 identifier 33015
-# Run tests
+# Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
@@ -422,28 +422,28 @@ TapeStopRecording
 # Tape evaluate
 TapeEvaluate reverse begin from [0, 0, [0, 8, [0, 4, [0, 48, [0, 24, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
 StatementEvaluate lhsIdentifier 33009 numAdjoints 2
-	-0.989992 0.283662
+	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 0.37795
 StatementEvaluate lhsIdentifier 33010 numAdjoints 2
-	-0.416147 -0.653644
+	-0.416147 0.96017
 StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.255522
 StatementEvaluate lhsIdentifier 33011 numAdjoints 2
-	0.540302 -0.989992
+	0.540302 0.283662
 StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.128835
 StatementEvaluate lhsIdentifier 33012 numAdjoints 2
-	1 -0.416147
+	1 -0.653644
 StatementEvaluatePrimal lhsIdentifier 33012 lhsValue 0
 StatementEvaluate lhsIdentifier 33009 numAdjoints 2
-	-0.989992 0.283662
+	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 33009 lhsValue 0.37795
 StatementEvaluate lhsIdentifier 33010 numAdjoints 2
-	-0.416147 -0.653644
+	-0.416147 0.96017
 StatementEvaluatePrimal lhsIdentifier 33010 lhsValue 0.255522
 StatementEvaluate lhsIdentifier 33011 numAdjoints 2
-	0.540302 -0.989992
+	0.540302 0.283662
 StatementEvaluatePrimal lhsIdentifier 33011 lhsValue 0.128835
 StatementEvaluate lhsIdentifier 33012 numAdjoints 2
-	1 -0.416147
+	1 -0.653644
 StatementEvaluatePrimal lhsIdentifier 33012 lhsValue 0
 StatementEvaluate lhsIdentifier 33022 numAdjoints 2
 	0 0
@@ -494,12 +494,20 @@ StatementEvaluate lhsIdentifier 33019 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 8, [0, 4, [0, 48, [0, 24, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
+# Register inputs
+# Run test
+# Active type computations
+# Store position
+# Reset position
+# Assign outputs
+# Register outputs
+# Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]] clear adjoints 0
 IndexFree index 33009
 IndexFree index 33010
 IndexFree index 33011
 IndexFree index 33012
-IndexFree index 33015
-IndexFree index 33016
-IndexFree index 33017
-IndexFree index 33018
+IndexFree index 33019
+IndexFree index 33020
+IndexFree index 33021
+IndexFree index 33022

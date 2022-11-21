@@ -21,7 +21,7 @@ TapeRegisterInput value 0.14112 identifier 257
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue -0.756802
 IndexAssign index 258
 TapeRegisterInput value -0.756802 identifier 258
-# Run tests
+# Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
@@ -174,28 +174,28 @@ TapeStopRecording
 # Tape evaluate
 TapeEvaluate reverse begin from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
 StatementEvaluate lhsIdentifier 282 numAdjoints 2
-	-0.989992 0.283662
+	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 282 lhsValue 0.37795
 StatementEvaluate lhsIdentifier 281 numAdjoints 2
-	-0.416147 -0.653644
+	-0.416147 0.96017
 StatementEvaluatePrimal lhsIdentifier 281 lhsValue 0.255522
 StatementEvaluate lhsIdentifier 280 numAdjoints 2
-	0.540302 -0.989992
+	0.540302 0.283662
 StatementEvaluatePrimal lhsIdentifier 280 lhsValue 0.128835
 StatementEvaluate lhsIdentifier 279 numAdjoints 2
-	1 -0.416147
+	1 -0.653644
 StatementEvaluatePrimal lhsIdentifier 279 lhsValue 0
 StatementEvaluate lhsIdentifier 278 numAdjoints 2
-	-0.989992 0.283662
+	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 278 lhsValue 0.37795
 StatementEvaluate lhsIdentifier 277 numAdjoints 2
-	-0.416147 -0.653644
+	-0.416147 0.96017
 StatementEvaluatePrimal lhsIdentifier 277 lhsValue 0.255522
 StatementEvaluate lhsIdentifier 276 numAdjoints 2
-	0.540302 -0.989992
+	0.540302 0.283662
 StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0.128835
 StatementEvaluate lhsIdentifier 275 numAdjoints 2
-	0.579745 -0.60248
+	0.579745 -0.0783053
 StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0
 StatementEvaluate lhsIdentifier 274 numAdjoints 2
 	0 0
@@ -265,7 +265,7 @@ StatementPrimal passive lhsValue -0.756802 lhsIdentifier 258 newValue -0.756802
 IndexFree index 258
 IndexAssign index 258
 TapeRegisterInput value -0.756802 identifier 258
-# Run tests
+# Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
@@ -422,28 +422,28 @@ TapeStopRecording
 # Tape evaluate
 TapeEvaluate reverse begin from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
 StatementEvaluate lhsIdentifier 282 numAdjoints 2
-	-0.989992 0.283662
+	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 282 lhsValue 0.37795
 StatementEvaluate lhsIdentifier 281 numAdjoints 2
-	-0.416147 -0.653644
+	-0.416147 0.96017
 StatementEvaluatePrimal lhsIdentifier 281 lhsValue 0.255522
 StatementEvaluate lhsIdentifier 280 numAdjoints 2
-	0.540302 -0.989992
+	0.540302 0.283662
 StatementEvaluatePrimal lhsIdentifier 280 lhsValue 0.128835
 StatementEvaluate lhsIdentifier 279 numAdjoints 2
-	1 -0.416147
+	1 -0.653644
 StatementEvaluatePrimal lhsIdentifier 279 lhsValue 0
 StatementEvaluate lhsIdentifier 278 numAdjoints 2
-	-0.989992 0.283662
+	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 278 lhsValue 0.37795
 StatementEvaluate lhsIdentifier 277 numAdjoints 2
-	-0.416147 -0.653644
+	-0.416147 0.96017
 StatementEvaluatePrimal lhsIdentifier 277 lhsValue 0.255522
 StatementEvaluate lhsIdentifier 276 numAdjoints 2
-	0.540302 -0.989992
+	0.540302 0.283662
 StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0.128835
 StatementEvaluate lhsIdentifier 275 numAdjoints 2
-	0.579745 -0.60248
+	0.579745 -0.0783053
 StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0
 StatementEvaluate lhsIdentifier 274 numAdjoints 2
 	0 0
@@ -494,6 +494,14 @@ StatementEvaluate lhsIdentifier 259 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+# Register inputs
+# Run test
+# Active type computations
+# Store position
+# Reset position
+# Assign outputs
+# Register outputs
+# Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] clear adjoints 0
 IndexFree index 282
 IndexFree index 281

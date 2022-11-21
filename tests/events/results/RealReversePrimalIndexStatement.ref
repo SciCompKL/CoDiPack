@@ -21,7 +21,7 @@ TapeRegisterInput value 0.14112 identifier 33020
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue -0.756802
 IndexAssign index 33019
 TapeRegisterInput value -0.756802 identifier 33019
-# Run tests
+# Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
@@ -351,7 +351,7 @@ StatementPrimal passive lhsValue -0.756802 lhsIdentifier 33019 newValue -0.75680
 IndexFree index 33019
 IndexAssign index 33015
 TapeRegisterInput value -0.756802 identifier 33015
-# Run tests
+# Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
@@ -666,12 +666,22 @@ StatementEvaluate lhsIdentifier 33019 numAdjoints 1
 	0
 StatementEvaluatePrimal lhsIdentifier 33019 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [0, 36, []]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]]
+# Register inputs
+# Run test
+# Active type computations
+# Assign outputs
+# Active type wrapper computations
+# Assign outputs
+# Immutable active type computations
+# Assign outputs
+# Register outputs
+# Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, []]]]]] clear adjoints 0
 IndexFree index 33010
 IndexFree index 33011
 IndexFree index 33012
 IndexFree index 33014
-IndexFree index 33015
-IndexFree index 33016
-IndexFree index 33017
-IndexFree index 33018
+IndexFree index 33019
+IndexFree index 33020
+IndexFree index 33021
+IndexFree index 33022
