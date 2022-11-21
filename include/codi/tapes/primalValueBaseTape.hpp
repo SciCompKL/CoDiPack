@@ -511,11 +511,11 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
-        Base::reset(resetAdjoints);
-
         for (Real& primal : primals) {
           primal = Real();
         }
+
+        Base::reset(resetAdjoints);
       }
 
       /// @}
@@ -1037,9 +1037,9 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos) {
-        Base::resetTo(pos);
-
         cast().internalResetPrimalValues(pos);
+
+        Base::resetTo(pos);
       }
 
       /// @}
