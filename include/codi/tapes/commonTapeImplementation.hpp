@@ -143,8 +143,8 @@ namespace codi {
 
       Real manualPushLhsValue;                 ///< For storeManual, remember the value assigned to the lhs.
       Identifier manualPushLhsIdentifier;      ///< For storeManual, remember the identifier assigned to the lhs.
-      Config::ArgumentSize manualPushGoal;     ///< Store the number of expected pushes after a storeManual call.
-      Config::ArgumentSize manualPushCounter;  ///< Count the pushes after storeManual, to identify the last push.
+      size_t manualPushGoal;     ///< Store the number of expected pushes after a storeManual call.
+      size_t manualPushCounter;  ///< Count the pushes after storeManual, to identify the last push.
 
     private:
 
@@ -169,6 +169,28 @@ namespace codi {
 
         // Requires extra reset since the default vector implementation forwards to resetTo
         cast().indexManager.get().reset();
+      }
+
+    protected:
+
+      /// Check and reset the current counters for the manual tape push.
+      CODI_INLINE void resetStoreManualCheckAndEvent(Real const& lhsValue, Identifier const& lhsIndex, size_t size) {
+        codiAssert(this->manualPushGoal == this->manualPushCounter);
+        if (Config::StatementEvents || Config::EnableAssert) {
+          this->manualPushLhsValue = lhsValue;
+          this->manualPushLhsIdentifier = lhsIndex;
+          this->manualPushCounter = 0;
+          this->manualPushGoal = size;
+        }
+      }
+
+      /// Check and increment counters for the manual tape push.
+      CODI_INLINE void checkStoreManualJacobianPush() {
+        codiAssert(this->manualPushCounter < this->manualPushGoal);
+
+        if (Config::StatementEvents || Config::EnableAssert) {
+          this->manualPushCounter += 1;
+        }
       }
 
     protected:

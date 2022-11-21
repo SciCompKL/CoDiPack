@@ -693,11 +693,11 @@ namespace codi {
       void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
+        cast().checkStoreManualJacobianPush();
+
         jacobianData.pushData(jacobian, index);
 
         if (Config::StatementEvents) {
-          this->manualPushCounter += 1;
-
           if (this->manualPushCounter == this->manualPushGoal) {
             // emit statement event
             Real* jacobians;
@@ -709,9 +709,6 @@ namespace codi {
             EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), this->manualPushLhsIdentifier,
                                                                    this->manualPushLhsValue, this->manualPushGoal,
                                                                    rhsIdentifiers, jacobians);
-
-            this->manualPushCounter = 0;
-            this->manualPushGoal = 0;
           }
         }
       }
@@ -728,11 +725,7 @@ namespace codi {
         indexManager.get().template assignIndex<Impl>(lhsIndex);
         cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);
 
-        if (Config::StatementEvents) {
-          this->manualPushLhsValue = lhsValue;
-          this->manualPushLhsIdentifier = lhsIndex;
-          this->manualPushGoal = size;
-        }
+        cast().resetStoreManualCheckAndEvent(lhsValue, lhsIndex, size);
       }
 
       /// @}
