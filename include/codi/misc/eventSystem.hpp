@@ -86,7 +86,9 @@ namespace codi {
    * - monitor the performance of individual AD constructs.
    *
    * For this, a set of events is defined and for each event, custom callbacks can be registered. As the event occurs,
-   * CoDiPack invokes the custom callbacks and passes them details about the event itself and related AD data.
+   * CoDiPack invokes the custom callbacks and passes them details about the event itself and related AD data. AD
+   * workflow events are enabled by default. All other events need to be enable with the corresponding switches in
+   * #codi::Config e.g. #Config::StatementEvents.
    *
    * A callback is registered by a register*Listener call and is subsequently invoked by CoDiPack by the corresponding
    * notify*Listeners call. Please refer to the individual register*Listener functions for the callback signatures.
@@ -94,7 +96,7 @@ namespace codi {
    * e.g., to register the same callback function multiple times with different data. The functions are written such
    * that the required callback signatures should be displayed by code completion tools and IDE tooltips.
    *
-   * The event system is a tape-specific, global entitiy that is shared by all tapes of the same type. Different tape
+   * The event system is a tape-specific, global entity that is shared by all tapes of the same type. Different tape
    * types use different event systems, e.g., second order types have different event systems for outer and inner tapes.
    *
    * This base class defines general functionality as well as methods for the StatementPrimal event that is common to
@@ -210,7 +212,7 @@ namespace codi {
     public:
 
       /*******************************************************************************/
-      /// @name Statements
+      /// @name Statement events
       /// @{
 
       /**
@@ -231,8 +233,12 @@ namespace codi {
       /**
        * @brief Invoke callbacks for StatementPrimal events.
        *
-       * A StatementPrimal event is triggered whenever a code statement x = f(y) with some ActiveType x is executed.
-       * The callback is invoked before the assigment is executed.
+       * A StatementPrimal event is triggered whenever a assignment (e.g. x = ...)  or construction (e.g. x(...)) with
+       * some ActiveType x is executed.
+       *
+       * In case of the assignment the callback is invoked before the assignment is executed. In case of the constructor
+       * the callback is invoked before or after the assignment is executed.
+       *
        *
        * @param tape           Reference to the tape.
        * @param lhsValue       Value of the left hand side before the assignment.
@@ -309,7 +315,7 @@ namespace codi {
       using Handle = typename Base::Handle;  ///< See EventSystemBase.
 
       /*******************************************************************************/
-      /// @name AD workflow
+      /// @name AD workflow events
       /// @{
 
       /**
@@ -476,7 +482,7 @@ namespace codi {
        * @brief Invoke callbacks for TapeReset events.
        *
        * A TapeReset event occurs in the course of reset, resetTo, and resetHard calls made to an associated tape, the
-       * respective origin indicated by kind. The event occurs before any internal reset takes place.
+       * respective origin is indicated by kind. The event occurs before any internal reset takes place.
        *
        * @param tape           Reference to the tape.
        * @param position       Position to which we reset, zero position for full and hard resets.
@@ -491,7 +497,7 @@ namespace codi {
 
       /// @}
       /*******************************************************************************/
-      /// @name Preaccumulation
+      /// @name Preaccumulation events
       /// @{
 
       /**
@@ -605,7 +611,7 @@ namespace codi {
 
       /// @}
       /*******************************************************************************/
-      /// @name Statements
+      /// @name Statement events
       /// @{
 
       /**
@@ -715,7 +721,7 @@ namespace codi {
 
       /// @}
       /*******************************************************************************/
-      /// @name Index handling
+      /// @name Index handling events
       /// @{
 
       /**

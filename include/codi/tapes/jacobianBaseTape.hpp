@@ -702,7 +702,7 @@ namespace codi {
             // emit statement event
             Real* jacobians;
             Identifier* rhsIdentifiers;
-            jacobianData.getDataPointers(jacobianData.getPushedDataCount(0), jacobians, rhsIdentifiers);
+            jacobianData.getDataPointers(jacobianData.reserveItems(0), jacobians, rhsIdentifiers);
             jacobians -= this->manualPushGoal;
             rhsIdentifiers -= this->manualPushGoal;
 

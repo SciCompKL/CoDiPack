@@ -33,7 +33,7 @@ We complement the AD workflow callbacks by callbacks for individual statements.
 
 AD workflow events are enabled by default. Statement events have to be enabled by compiling with
 `-DCODI_StatementEvents`. There are also events for preaccumulation and index management, both with corresponding
-switches.
+switches, e.g. [Config::StatementEvents](@ref codi::Config::StatementEvents).
 
 At the beginning of the usual AD workflow, we have to register the callbacks.
 

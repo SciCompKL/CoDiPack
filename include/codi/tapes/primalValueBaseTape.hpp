@@ -985,8 +985,8 @@ namespace codi {
             // emit statement event
             Real* jacobians;
             Identifier* rhsIdentifiers;
-            passiveValueData.getDataPointers(passiveValueData.getPushedDataCount(0), jacobians);
-            rhsIdentiferData.getDataPointers(rhsIdentiferData.getPushedDataCount(0), rhsIdentifiers);
+            passiveValueData.getDataPointers(passiveValueData.reserveItems(0), jacobians);
+            rhsIdentiferData.getDataPointers(rhsIdentiferData.reserveItems(0), rhsIdentifiers);
             jacobians -= this->manualPushGoal;
             rhsIdentifiers -= this->manualPushGoal;
 
