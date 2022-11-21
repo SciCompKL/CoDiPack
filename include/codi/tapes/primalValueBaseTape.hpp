@@ -353,14 +353,17 @@ namespace codi {
           }
       };
 
+      /// Computes Jacobian entries for the event system.
       struct JacobianExtractionLogic : public JacobianComputationLogic<JacobianExtractionLogic> {
         private:
           size_t pos;
 
         public:
 
+          /// Constructor
           JacobianExtractionLogic() : pos(0) {}
 
+          /// Stores the identifiers and jacobians.
           template<typename Node, typename Jacobian>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, Identifier* rhsIdentifiers,
                                                   Real* jacobians) {

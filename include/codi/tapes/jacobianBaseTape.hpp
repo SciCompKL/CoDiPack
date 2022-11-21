@@ -407,9 +407,13 @@ namespace codi {
       }
 
       /// @}
+      /*******************************************************************************
+       * Protected helper function for ReverseTapeInterface
+       */
 
     protected:
 
+      /// Add a new input to the tape.
       template<typename Lhs>
       CODI_INLINE void internalRegisterInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         if (TapeTypes::IsLinearIndexHandler) {
