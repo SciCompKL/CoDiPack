@@ -246,6 +246,32 @@ StatementEvaluate lhsIdentifier 259 numAdjoints 1
 	0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]]
+StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
+StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
+StatementEvaluatePrimal lhsIdentifier 261 lhsValue 2.52441
+StatementEvaluatePrimal lhsIdentifier 262 lhsValue 0.708073
+StatementEvaluatePrimal lhsIdentifier 263 lhsValue 1.5347
+StatementEvaluatePrimal lhsIdentifier 264 lhsValue 1.28067
+StatementEvaluatePrimal lhsIdentifier 265 lhsValue 5.25231
+StatementEvaluatePrimal lhsIdentifier 266 lhsValue 1.5349
+StatementEvaluatePrimal lhsIdentifier 267 lhsValue 1.67535
+StatementEvaluatePrimal lhsIdentifier 268 lhsValue 2.27073
+StatementEvaluatePrimal lhsIdentifier 269 lhsValue 5.67567
+StatementEvaluatePrimal lhsIdentifier 270 lhsValue 1.55481
+StatementEvaluatePrimal lhsIdentifier 271 lhsValue 0.988748
+StatementEvaluatePrimal lhsIdentifier 272 lhsValue 2.99776
+StatementEvaluatePrimal lhsIdentifier 273 lhsValue 3.40526
+StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
+StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 277 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 278 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 279 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 280 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 281 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 282 lhsValue 0
+TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] clear adjoints 1
 TapeStartRecording
 # Register inputs
@@ -494,6 +520,32 @@ StatementEvaluate lhsIdentifier 259 numAdjoints 1
 	0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 TapeEvaluate reverse end from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]]
+StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
+StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
+StatementEvaluatePrimal lhsIdentifier 261 lhsValue 2.52441
+StatementEvaluatePrimal lhsIdentifier 262 lhsValue 0.708073
+StatementEvaluatePrimal lhsIdentifier 263 lhsValue 1.5347
+StatementEvaluatePrimal lhsIdentifier 264 lhsValue 1.28067
+StatementEvaluatePrimal lhsIdentifier 265 lhsValue 5.25231
+StatementEvaluatePrimal lhsIdentifier 266 lhsValue 1.5349
+StatementEvaluatePrimal lhsIdentifier 267 lhsValue 1.67535
+StatementEvaluatePrimal lhsIdentifier 268 lhsValue 2.27073
+StatementEvaluatePrimal lhsIdentifier 269 lhsValue 5.67567
+StatementEvaluatePrimal lhsIdentifier 270 lhsValue 1.55481
+StatementEvaluatePrimal lhsIdentifier 271 lhsValue 0.988748
+StatementEvaluatePrimal lhsIdentifier 272 lhsValue 2.99776
+StatementEvaluatePrimal lhsIdentifier 273 lhsValue 3.40526
+StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
+StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 277 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 278 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 279 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 280 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 281 lhsValue 0
+StatementEvaluatePrimal lhsIdentifier 282 lhsValue 0
+TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]]
 # Register inputs
 # Run test
 # Active type computations

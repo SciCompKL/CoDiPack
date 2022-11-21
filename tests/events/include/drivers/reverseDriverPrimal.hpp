@@ -9,5 +9,9 @@ struct ReverseDriverPrimal : public ReverseDriver<Number> {
 
     void evaluate(Tape& tape) {
       tape.evaluate();
+
+#if (TEST_NAME != TestPreacc)
+      tape.evaluatePrimal();
+#endif
     }
 };
