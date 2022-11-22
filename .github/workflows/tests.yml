@@ -19,10 +19,12 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y clang
-    - name: Start Tests
+    - name: General Tests
       run: |
         cd tests/general/
         make CXX=clang++
-        cd ../events/
+    - name: Event Tests
+      run: |
+        cd tests/events/
         make CXX=clang++
 
