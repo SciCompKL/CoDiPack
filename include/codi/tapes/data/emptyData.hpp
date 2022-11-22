@@ -116,7 +116,7 @@ namespace codi {
         return Position();
       }
 
-      /// \copydoc DataInterface::getDataPointers
+      /// \copybrief DataInterface::getDataPointers
       CODI_INLINE void getDataPointers(InternalPosHandle const& startPos) {
         CODI_UNUSED(startPos);
       }

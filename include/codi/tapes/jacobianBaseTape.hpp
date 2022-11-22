@@ -407,9 +407,13 @@ namespace codi {
       }
 
       /// @}
+      /*******************************************************************************
+       * Protected helper function for ReverseTapeInterface
+       */
 
     protected:
 
+      /// Add a new input to the tape.
       template<typename Lhs>
       CODI_INLINE void internalRegisterInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         if (TapeTypes::IsLinearIndexHandler) {
@@ -693,25 +697,22 @@ namespace codi {
       void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
+        cast().checkStoreManualJacobianPush();
+
         jacobianData.pushData(jacobian, index);
 
         if (Config::StatementEvents) {
-          this->manualPushCounter += 1;
-
           if (this->manualPushCounter == this->manualPushGoal) {
             // emit statement event
             Real* jacobians;
             Identifier* rhsIdentifiers;
-            jacobianData.getDataPointers(jacobianData.getPushedDataCount(0), jacobians, rhsIdentifiers);
+            jacobianData.getDataPointers(jacobianData.reserveItems(0), jacobians, rhsIdentifiers);
             jacobians -= this->manualPushGoal;
             rhsIdentifiers -= this->manualPushGoal;
 
             EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), this->manualPushLhsIdentifier,
                                                                    this->manualPushLhsValue, this->manualPushGoal,
                                                                    rhsIdentifiers, jacobians);
-
-            this->manualPushCounter = 0;
-            this->manualPushGoal = 0;
           }
         }
       }
@@ -728,11 +729,7 @@ namespace codi {
         indexManager.get().template assignIndex<Impl>(lhsIndex);
         cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);
 
-        if (Config::StatementEvents) {
-          this->manualPushLhsValue = lhsValue;
-          this->manualPushLhsIdentifier = lhsIndex;
-          this->manualPushGoal = size;
-        }
+        cast().resetStoreManualCheckAndEvent(lhsValue, lhsIndex, size);
       }
 
       /// @}

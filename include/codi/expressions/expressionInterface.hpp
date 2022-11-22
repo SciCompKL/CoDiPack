@@ -66,10 +66,10 @@ namespace codi {
                                             ///< from which is constructed.
 
       /// Constructor
-      ExpressionInterface() {}
+      ExpressionInterface() = default;
 
       /// Constructor
-      ExpressionInterface(ExpressionInterface const&) {}
+      ExpressionInterface(ExpressionInterface const&) = default;
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {

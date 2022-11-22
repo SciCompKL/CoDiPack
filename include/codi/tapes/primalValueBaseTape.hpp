@@ -353,14 +353,17 @@ namespace codi {
           }
       };
 
+      /// Computes Jacobian entries for the event system.
       struct JacobianExtractionLogic : public JacobianComputationLogic<JacobianExtractionLogic> {
         private:
           size_t pos;
 
         public:
 
+          /// Constructor
           JacobianExtractionLogic() : pos(0) {}
 
+          /// Stores the identifiers and jacobians.
           template<typename Node, typename Jacobian>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, Identifier* rhsIdentifiers,
                                                   Real* jacobians) {
@@ -511,11 +514,11 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
-        Base::reset(resetAdjoints);
-
         for (Real& primal : primals) {
           primal = Real();
         }
+
+        Base::reset(resetAdjoints);
       }
 
       /// @}
@@ -975,27 +978,24 @@ namespace codi {
       void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
+        cast().checkStoreManualJacobianPush();
+
         passiveValueData.pushData(jacobian);
         rhsIdentiferData.pushData(index);
 
         if (Config::StatementEvents) {
-          this->manualPushCounter += 1;
-
           if (this->manualPushCounter == this->manualPushGoal) {
             // emit statement event
             Real* jacobians;
             Identifier* rhsIdentifiers;
-            passiveValueData.getDataPointers(passiveValueData.getPushedDataCount(0), jacobians);
-            rhsIdentiferData.getDataPointers(rhsIdentiferData.getPushedDataCount(0), rhsIdentifiers);
+            passiveValueData.getDataPointers(passiveValueData.reserveItems(0), jacobians);
+            rhsIdentiferData.getDataPointers(rhsIdentiferData.reserveItems(0), rhsIdentifiers);
             jacobians -= this->manualPushGoal;
             rhsIdentifiers -= this->manualPushGoal;
 
             EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), this->manualPushLhsIdentifier,
                                                                    this->manualPushLhsValue, this->manualPushGoal,
                                                                    rhsIdentifiers, jacobians);
-
-            this->manualPushCounter = 0;
-            this->manualPushGoal = 0;
           }
         }
       }
@@ -1016,11 +1016,7 @@ namespace codi {
 
         primalEntry = lhsValue;
 
-        if (Config::StatementEvents) {
-          this->manualPushLhsValue = lhsValue;
-          this->manualPushLhsIdentifier = lhsIndex;
-          this->manualPushGoal = size;
-        }
+        cast().resetStoreManualCheckAndEvent(lhsValue, lhsIndex, size);
       }
 
       /// @}
@@ -1037,9 +1033,9 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos) {
-        Base::resetTo(pos);
-
         cast().internalResetPrimalValues(pos);
+
+        Base::resetTo(pos);
       }
 
       /// @}

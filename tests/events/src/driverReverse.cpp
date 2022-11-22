@@ -33,87 +33,17 @@
  *      - Tim Albring
  */
 
-#include "../include/forwardCallbacks.hpp"
-#include "../include/reverseCallbacks.hpp"
-#include "../include/tests/test.hpp"
+#include "../include/drivers/reverseDriver.hpp"
 
 #ifndef NUMBER
   #error Please define NUMBER as a CoDiPack type.
 #endif
 
 int main() {
-  using Tape = NUMBER::Tape;
-  size_t constexpr dim = codi::GradientTraits::dim<Tape::Gradient>();
 
-  auto& tape = NUMBER::getTape();
+  ReverseDriver<NUMBER> driver;
 
-  size_t constexpr nInputs = 4;
-  size_t constexpr nOutputs = 4;
-
-  auto reverseCallbacks = ReverseCallbacks::registerAll<Tape>();
-
-#ifdef SECOND_ORDER
-  using InnerTape = Tape::Real::Tape;
-  auto innerCallbacks = ForwardCallbacks::registerAll<InnerTape>();
-#endif
-
-  NUMBER inputs[nInputs] = {};
-  NUMBER outputs[nOutputs] = {};
-
-  size_t constexpr maxRuns = 3;
-
-  for (size_t run = 0; run < maxRuns; run += 1) {
-    if (run == maxRuns - 1) { /* last run, deregister all listeners */
-      deregisterCallbacks<Tape>(reverseCallbacks);
-#ifdef SECOND_ORDER
-      deregisterCallbacks<InnerTape>(innerCallbacks);
-#endif
-    }
-
-    tape.reset();
-
-    tape.setActive();
-
-    std::cout << "# Register inputs" << std::endl;
-    for (size_t i = 0; i < nInputs; ++i) {
-      inputs[i] = sin(i + 1);
-
-#ifdef SECOND_ORDER
-      inputs[i].value().setGradient(i + 1);
-#endif
-
-      tape.registerInput(inputs[i]);
-    }
-
-    std::cout << "# Run test" << std::endl;
-    test<NUMBER>(nInputs, inputs, nOutputs, outputs);
-
-    std::cout << "# Register outputs" << std::endl;
-    for (size_t j = 0; j < nOutputs; ++j) {
-      tape.registerOutput(outputs[j]);
-    }
-
-    tape.setPassive();
-
-    for (size_t j = 0; j < nOutputs; ++j) {
-      for (size_t currentDim = 0; currentDim < dim; ++currentDim) {
-        codi::GradientTraits::at(outputs[j].gradient(), currentDim) = cos(j + currentDim * nOutputs);
-      }
-    }
-
-    std::cout << "# Tape evaluate" << std::endl;
-    tape.evaluate();
-
-    ReverseCallbacks::GlobalStatementCounters<Tape>::assertEqual();
-  }
-
-  /* re-register for testing resetHard */
-  ReverseCallbacks::registerAll<Tape>();
-#ifdef SECOND_ORDER
-  ForwardCallbacks::registerAll<InnerTape>();
-#endif
-
-  tape.resetHard();
+  driver.run();
 
   return 0;
 }
