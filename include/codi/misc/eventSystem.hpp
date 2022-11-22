@@ -88,7 +88,7 @@ namespace codi {
    * For this, a set of events is defined and for each event, custom callbacks can be registered. As the event occurs,
    * CoDiPack invokes the custom callbacks and passes them details about the event itself and related AD data. AD
    * workflow events are enabled by default. All other events need to be enable with the corresponding switches in
-   * #codi::Config e.g. #Config::StatementEvents.
+   * #codi::Config, e.g. #Config::StatementEvents.
    *
    * A callback is registered by a register*Listener call and is subsequently invoked by CoDiPack by the corresponding
    * notify*Listeners call. Please refer to the individual register*Listener functions for the callback signatures.
@@ -233,7 +233,7 @@ namespace codi {
       /**
        * @brief Invoke callbacks for StatementPrimal events.
        *
-       * A StatementPrimal event is triggered whenever a assignment (e.g. x = ...)  or construction (e.g. x(...)) with
+       * A StatementPrimal event is triggered whenever an assignment (e.g. x = ...) or construction (e.g. x(...)) with
        * some ActiveType x is executed.
        *
        * In case of the assignment the callback is invoked before the assignment is executed. In case of the constructor

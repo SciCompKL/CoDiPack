@@ -363,7 +363,7 @@ namespace codi {
           /// Constructor
           JacobianExtractionLogic() : pos(0) {}
 
-          /// Stores the identifiers and jacobians.
+          /// Stores the identifiers and Jacobians.
           template<typename Node, typename Jacobian>
           CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, Identifier* rhsIdentifiers,
                                                   Real* jacobians) {
