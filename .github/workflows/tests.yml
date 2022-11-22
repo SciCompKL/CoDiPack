@@ -21,6 +21,8 @@ jobs:
         sudo apt install -y clang
     - name: Start Tests
       run: |
-        cd tests/ 
+        cd tests/general/
+        make CXX=clang++
+        cd ../events/
         make CXX=clang++
 
