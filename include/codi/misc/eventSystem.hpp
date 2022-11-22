@@ -482,7 +482,9 @@ namespace codi {
        * @brief Invoke callbacks for TapeReset events.
        *
        * A TapeReset event occurs in the course of reset, resetTo, and resetHard calls made to an associated tape, the
-       * respective origin is indicated by kind. The event occurs before any internal reset takes place.
+       * respective origin is indicated by kind. For Jacobian tapes, the event occurs before any internal reset takes
+       * place. For primal value tapes, some internal reset operations have already been performed when the event
+       * occurs.
        *
        * @param tape           Reference to the tape.
        * @param position       Position to which we reset, zero position for full and hard resets.
