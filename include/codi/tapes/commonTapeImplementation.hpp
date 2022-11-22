@@ -141,10 +141,10 @@ namespace codi {
 
       ExternalFunctionData externalFunctionData;  ///< Data vector for external function data.
 
-      Real manualPushLhsValue;                 ///< For storeManual, remember the value assigned to the lhs.
-      Identifier manualPushLhsIdentifier;      ///< For storeManual, remember the identifier assigned to the lhs.
-      size_t manualPushGoal;     ///< Store the number of expected pushes after a storeManual call.
-      size_t manualPushCounter;  ///< Count the pushes after storeManual, to identify the last push.
+      Real manualPushLhsValue;             ///< For storeManual, remember the value assigned to the lhs.
+      Identifier manualPushLhsIdentifier;  ///< For storeManual, remember the identifier assigned to the lhs.
+      size_t manualPushGoal;               ///< Store the number of expected pushes after a storeManual call.
+      size_t manualPushCounter;            ///< Count the pushes after storeManual, to identify the last push.
 
     private:
 

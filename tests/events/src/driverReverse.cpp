@@ -40,7 +40,6 @@
 #endif
 
 int main() {
-
   ReverseDriver<NUMBER> driver;
 
   driver.run();

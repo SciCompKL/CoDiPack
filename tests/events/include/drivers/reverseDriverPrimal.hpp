@@ -4,7 +4,6 @@
 
 template<typename Number>
 struct ReverseDriverPrimal : public ReverseDriver<Number> {
-
     using Tape = typename Number::Tape;
 
     void evaluate(Tape& tape) {

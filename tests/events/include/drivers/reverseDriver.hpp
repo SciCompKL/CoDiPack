@@ -6,7 +6,6 @@
 
 template<typename Number>
 struct ReverseDriver {
-
     using Tape = typename Number::Tape;
 
     void run() {
@@ -19,10 +18,10 @@ struct ReverseDriver {
 
       auto reverseCallbacks = ReverseCallbacks::registerAll<Tape>();
 
-    #ifdef SECOND_ORDER
+#ifdef SECOND_ORDER
       using InnerTape = typename Tape::Real::Tape;
       auto innerCallbacks = ForwardCallbacks::registerAll<InnerTape>();
-    #endif
+#endif
 
       Number inputs[nInputs] = {};
       Number outputs[nOutputs] = {};
@@ -32,9 +31,9 @@ struct ReverseDriver {
       for (size_t run = 0; run < maxRuns; run += 1) {
         if (run == maxRuns - 1) { /* last run, deregister all listeners */
           deregisterCallbacks<Tape>(reverseCallbacks);
-    #ifdef SECOND_ORDER
+#ifdef SECOND_ORDER
           deregisterCallbacks<InnerTape>(innerCallbacks);
-    #endif
+#endif
         }
 
         tape.reset();
@@ -45,9 +44,9 @@ struct ReverseDriver {
         for (size_t i = 0; i < nInputs; ++i) {
           inputs[i] = sin(i + 1);
 
-    #ifdef SECOND_ORDER
+#ifdef SECOND_ORDER
           inputs[i].value().setGradient(i + 1);
-    #endif
+#endif
 
           tape.registerInput(inputs[i]);
         }
@@ -76,12 +75,11 @@ struct ReverseDriver {
 
       /* re-register for testing resetHard */
       ReverseCallbacks::registerAll<Tape>();
-    #ifdef SECOND_ORDER
+#ifdef SECOND_ORDER
       ForwardCallbacks::registerAll<InnerTape>();
-    #endif
+#endif
 
       tape.resetHard();
-
     }
 
     virtual void evaluate(Tape& tape) {
