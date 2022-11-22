@@ -236,8 +236,8 @@ namespace codi {
        * A StatementPrimal event is triggered whenever an assignment (e.g. x = ...) or construction (e.g. x(...)) with
        * some ActiveType x is executed.
        *
-       * In case of the assignment the callback is invoked before the assignment is executed. In case of the constructor
-       * the callback is invoked before or after the assignment is executed.
+       * In case of an assignment, the callback is invoked before the assignment is executed. In case of a
+       * constructor, the order of callback invocation and assignment is unspecified.
        *
        *
        * @param tape           Reference to the tape.
