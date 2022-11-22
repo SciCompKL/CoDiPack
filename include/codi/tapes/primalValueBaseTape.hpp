@@ -978,7 +978,7 @@ namespace codi {
       void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
-        cast().checkStoreManualJacobianPush();
+        cast().incrementManualPushCounter();
 
         passiveValueData.pushData(jacobian);
         rhsIdentiferData.pushData(index);
@@ -1016,7 +1016,7 @@ namespace codi {
 
         primalEntry = lhsValue;
 
-        cast().resetStoreManualCheckAndEvent(lhsValue, lhsIndex, size);
+        cast().initializeManualPushData(lhsValue, lhsIndex, size);
       }
 
       /// @}

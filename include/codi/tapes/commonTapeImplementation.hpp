@@ -173,8 +173,8 @@ namespace codi {
 
     protected:
 
-      /// Check and reset the current counters for the manual tape push.
-      CODI_INLINE void resetStoreManualCheckAndEvent(Real const& lhsValue, Identifier const& lhsIndex, size_t size) {
+      /// Initialize all manual push data, including the counter. Check that a previous manual store is completed.
+      CODI_INLINE void initializeManualPushData(Real const& lhsValue, Identifier const& lhsIndex, size_t size) {
         codiAssert(this->manualPushGoal == this->manualPushCounter);
         if (Config::StatementEvents || Config::EnableAssert) {
           this->manualPushLhsValue = lhsValue;
@@ -184,8 +184,8 @@ namespace codi {
         }
       }
 
-      /// Check and increment counters for the manual tape push.
-      CODI_INLINE void checkStoreManualJacobianPush() {
+      /// Increment the manual push counter. Check against the declared push goal.
+      CODI_INLINE void incrementManualPushCounter() {
         codiAssert(this->manualPushCounter < this->manualPushGoal);
 
         if (Config::StatementEvents || Config::EnableAssert) {

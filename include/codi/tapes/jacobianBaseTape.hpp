@@ -697,7 +697,7 @@ namespace codi {
       void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
-        cast().checkStoreManualJacobianPush();
+        cast().incrementManualPushCounter();
 
         jacobianData.pushData(jacobian, index);
 
@@ -729,7 +729,7 @@ namespace codi {
         indexManager.get().template assignIndex<Impl>(lhsIndex);
         cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);
 
-        cast().resetStoreManualCheckAndEvent(lhsValue, lhsIndex, size);
+        cast().initializeManualPushData(lhsValue, lhsIndex, size);
       }
 
       /// @}
