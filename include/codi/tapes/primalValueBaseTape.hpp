@@ -48,6 +48,7 @@
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../misc/macros.hpp"
+#include "../misc/mathUtility.hpp"
 #include "../misc/memberStore.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "commonTapeImplementation.hpp"
@@ -1307,25 +1308,20 @@ namespace codi {
       }
 
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
-        if (TapeTypes::IsLinearIndexHandler) {
-          if (indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
-            size_t newTargetSize = indexManager.get().getLargestCreatedIndex() + 1;
-            size_t newChunkCount = (newTargetSize + Config::ChunkSize - 1) / Config::ChunkSize;
-            resizePrimalVector(newChunkCount * Config::ChunkSize);
-          }
-        } else {
-          if (generatedNewIndex) {
-            resizePrimalVector(indexManager.get().getLargestCreatedIndex() + 1);
-          }
+        CODI_UNUSED(generatedNewIndex);
+        if (indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
+          resizePrimalVector();
         }
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
-        adjoints.resize(indexManager.get().getLargestCreatedIndex() + 1);
+        // overallocate as next multiple of Config::ChunkSize
+        adjoints.resize(getNextMultiple((size_t)indexManager.get().getLargestCreatedIndex() + 1, Config::ChunkSize));
       }
 
-      CODI_NO_INLINE void resizePrimalVector(size_t newSize) {
-        primals.resize(newSize);
+      CODI_NO_INLINE void resizePrimalVector() {
+        // overallocate as next multiple of Config::ChunkSize
+        primals.resize(getNextMultiple((size_t)indexManager.get().getLargestCreatedIndex() + 1, Config::ChunkSize));
       }
   };
 

@@ -46,6 +46,7 @@
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../expressions/referenceActiveType.hpp"
 #include "../misc/macros.hpp"
+#include "../misc/mathUtility.hpp"
 #include "../misc/memberStore.hpp"
 #include "../traits/computationTraits.hpp"
 #include "../traits/expressionTraits.hpp"
@@ -803,7 +804,8 @@ namespace codi {
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
-        adjoints.resize(indexManager.get().getLargestCreatedIndex() + 1);
+        // overallocate as next multiple of Config::ChunkSize
+        adjoints.resize(getNextMultiple((size_t)indexManager.get().getLargestCreatedIndex() + 1, Config::ChunkSize));
       }
   };
 }
