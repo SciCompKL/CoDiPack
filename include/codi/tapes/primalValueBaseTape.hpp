@@ -1308,8 +1308,7 @@ namespace codi {
       }
 
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
-        CODI_UNUSED(generatedNewIndex);
-        if (indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
+        if (generatedNewIndex && indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
           resizePrimalVector();
         }
       }
