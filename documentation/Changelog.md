@@ -10,9 +10,10 @@ Changelog {#Changelog}
    * Initialization fixes.
    * Initialization of passive values.
    * Preaccumulation disables the tape during the algorithm.
-   * Proper assigning 1st order derivatives to 2nd order derivatives.
+   * Proper assigning of 1st order derivatives to 2nd order derivatives.
    * Proper reset of reuse index mangers.
    * Swap of primal value tapes resizes primal value vectors.
+   * Tapes handle small chunk sizes correctly.
 
  - Other:
    * Expression trait for the number of operations.
