@@ -152,7 +152,7 @@ $(BUILD_DIR)/%.run : $(BUILD_DIR)/%.runner.exe
 	$< | tee $@
 
 # rule for all tests file generation
-$(BUILD_DIR)/allTests.hpp: $(INCLUDE_DIR)/tests/allTests.hpp
+$(BUILD_DIR)/allTests.hpp: $(INCLUDE_DIR)/tests/allTests.hpp $(BUILD_DIR)/conf.d
 	echo "#define ALL_TESTS $(call createTests,$(ALL_TESTS))" > $@
 
 # output dependencies and rule
