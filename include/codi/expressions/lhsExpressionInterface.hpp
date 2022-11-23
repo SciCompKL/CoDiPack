@@ -172,6 +172,15 @@ namespace codi {
         return cast();
       }
 
+      /// Assignment operator for lhs expressions. Calls store on the InternalStatementRecordingTapeInterface.
+      template<typename Rhs>
+      CODI_INLINE Impl& operator=(LhsExpressionInterface<Real, Gradient, Tape, Rhs> const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(), cast().getValue(), cast().getIdentifier(),
+                                                          rhs.cast().getValue(), EventHints::Statement::Copy);
+        Impl::getTape().store(cast(), rhs);
+        return cast();
+      }
+
       /// @}
       /*******************************************************************************/
       /// @name Implementation of NodeInterface

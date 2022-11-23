@@ -170,7 +170,7 @@ StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 7.24489
 IndexAssign index 32755
 StatementStoreOnTape lhsIdentifier 32755 newValue 7.24489 numActiveVariables 2
 	32762 2.12756; 32761 3.40526;
-StatementPrimal expression lhsValue 0.988748 lhsIdentifier 32764 newValue 3.40526
+StatementPrimal copy lhsValue 0.988748 lhsIdentifier 32764 newValue 3.40526
 IndexCopy index 32762
 # Assign outputs
 StatementPrimal expression lhsValue -0.97784 lhsIdentifier 32760 newValue 0
@@ -456,7 +456,7 @@ StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 7.24489
 IndexAssign index 32755
 StatementStoreOnTape lhsIdentifier 32755 newValue 7.24489 numActiveVariables 2
 	32767 2.12756; 32768 3.40526;
-StatementPrimal expression lhsValue 0.988748 lhsIdentifier 32765 newValue 3.40526
+StatementPrimal copy lhsValue 0.988748 lhsIdentifier 32765 newValue 3.40526
 IndexCopy index 32767
 # Assign outputs
 StatementPrimal expression lhsValue -0.97784 lhsIdentifier 32760 newValue 0

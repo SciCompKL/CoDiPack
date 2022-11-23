@@ -1789,8 +1789,6 @@ StatementStoreOnTape lhsIdentifier 285 newValue 0.917842 numActiveVariables 4
 StatementPrimal copy lhsValue -0.563117 lhsDotValue 148.814 newValue 0.917842
 # Immutable active type computations
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.12756
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.12756
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 7.24489
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 7.24489
@@ -1811,7 +1809,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementStoreOnTape lhsIdentifier 286 newValue 7.24489 numActiveVariables 2
 	273 2.12756; 274 3.40526;
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 7.24489
-StatementPrimal expression lhsValue 0.988748 lhsIdentifier 271 newValue 3.40526
+StatementPrimal copy lhsValue 0.988748 lhsIdentifier 271 newValue 3.40526
 IndexFree index 271
 IndexCopy index 273
 StatementPrimal copy lhsValue 0.988748 lhsDotValue 7.77329 newValue 3.40526
@@ -5989,8 +5987,6 @@ StatementStoreOnTape lhsIdentifier 285 newValue 0.917842 numActiveVariables 4
 StatementPrimal copy lhsValue -0.563117 lhsDotValue 148.814 newValue 0.917842
 # Immutable active type computations
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
-StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.12756
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 2.12756
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 7.24489
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 7.24489
@@ -6010,7 +6006,7 @@ StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementStoreOnTape lhsIdentifier 286 newValue 7.24489 numActiveVariables 2
 	273 2.12756; 274 3.40526;
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 7.24489
-StatementPrimal expression lhsValue 0.988748 lhsIdentifier 271 newValue 3.40526
+StatementPrimal copy lhsValue 0.988748 lhsIdentifier 271 newValue 3.40526
 IndexFree index 271
 IndexCopy index 273
 StatementPrimal copy lhsValue 0.988748 lhsDotValue 7.77329 newValue 3.40526

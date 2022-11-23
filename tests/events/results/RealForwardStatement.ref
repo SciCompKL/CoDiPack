@@ -55,7 +55,7 @@ StatementPrimal expression lhsValue 0.583102 lhsDotValue -0.579374 newValue 1.47
 StatementPrimal expression lhsValue -0.563117 lhsDotValue 30.6585 newValue 0.917842
 # Immutable active type computations
 StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 7.24489
-StatementPrimal expression lhsValue 0.988748 lhsDotValue -0.133495 newValue 3.40526
+StatementPrimal copy lhsValue 0.988748 lhsDotValue -0.133495 newValue 3.40526
 # Assign outputs
 StatementPrimal expression lhsValue -0.97784 lhsDotValue 0.532674 newValue 0
 StatementPrimal expression lhsValue 0.940599 lhsDotValue 1.19175 newValue -0.940931
