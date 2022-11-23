@@ -809,7 +809,7 @@ StatementPrimal expression lhsValue 0 lhsDotValue 0 newValue 3.40526
 StatementPrimal expression lhsValue 0.856319 lhsDotValue 0.0452525 newValue 14.6358
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 7.24489
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 14.6358
-StatementPrimal expression lhsValue 0.988748 lhsDotValue -0.133495 newValue 3.40526
+StatementPrimal copy lhsValue 0.988748 lhsDotValue -0.133495 newValue 3.40526
 StatementPrimal copy lhsValue 0.988748 lhsDotValue 7.77329 newValue 3.40526
 StatementPrimal copy lhsValue 0 lhsDotValue 0 newValue 0.402489
 StatementPrimal copy lhsValue -0.133495 lhsDotValue -4.14162 newValue 0.402489
