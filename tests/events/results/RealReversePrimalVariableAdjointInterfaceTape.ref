@@ -128,75 +128,21 @@ TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] clear adjoin
 TapeStartRecording
 # Assign outputs
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
-IndexAssign index 275
-StatementStoreOnTape lhsIdentifier 275 newValue 0 numActiveVariables 2
-	275 0; 276 0;
-StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.128835
-IndexAssign index 276
-StatementStoreOnTape lhsIdentifier 276 newValue 0.128835 numActiveVariables 2
-	275 0.725343; 276 0.175158;
-StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.255522
-IndexAssign index 277
-StatementStoreOnTape lhsIdentifier 277 newValue 0.255522 numActiveVariables 2
-	275 1.41431; 276 0.341532;
-StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.37795
-IndexAssign index 278
-StatementStoreOnTape lhsIdentifier 278 newValue 0.37795 numActiveVariables 2
-	275 2.03155; 276 0.490585;
-IndexFree index 276
-IndexFree index 275
+StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
+StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
+StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
 IndexFree index 274
 IndexFree index 273
 IndexFree index 272
 IndexFree index 271
 # Register outputs
-IndexFree index 275
-IndexAssign index 279
-StatementStoreOnTape lhsIdentifier 279 newValue 0 numActiveVariables 1
-	279 1;
-TapeRegisterOutput value 0 identifier 279
-IndexFree index 276
-IndexAssign index 280
-StatementStoreOnTape lhsIdentifier 280 newValue 0.128835 numActiveVariables 1
-	280 1;
-TapeRegisterOutput value 0.128835 identifier 280
-IndexFree index 277
-IndexAssign index 281
-StatementStoreOnTape lhsIdentifier 281 newValue 0.255522 numActiveVariables 1
-	281 1;
-TapeRegisterOutput value 0.255522 identifier 281
-IndexFree index 278
-IndexAssign index 282
-StatementStoreOnTape lhsIdentifier 282 newValue 0.37795 numActiveVariables 1
-	282 1;
-TapeRegisterOutput value 0.37795 identifier 282
+TapeRegisterOutput value 0 identifier 0
+TapeRegisterOutput value 0 identifier 0
+TapeRegisterOutput value 0 identifier 0
+TapeRegisterOutput value 0 identifier 0
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
-StatementEvaluate lhsIdentifier 282 numAdjoints 1
-	-0.989992
-StatementEvaluatePrimal lhsIdentifier 282 lhsValue 0.37795
-StatementEvaluate lhsIdentifier 281 numAdjoints 1
-	-0.416147
-StatementEvaluatePrimal lhsIdentifier 281 lhsValue 0.255522
-StatementEvaluate lhsIdentifier 280 numAdjoints 1
-	0.540302
-StatementEvaluatePrimal lhsIdentifier 280 lhsValue 0.128835
-StatementEvaluate lhsIdentifier 279 numAdjoints 1
-	1
-StatementEvaluatePrimal lhsIdentifier 279 lhsValue 0
-StatementEvaluate lhsIdentifier 278 numAdjoints 1
-	-0.989992
-StatementEvaluatePrimal lhsIdentifier 278 lhsValue 0.37795
-StatementEvaluate lhsIdentifier 277 numAdjoints 1
-	-0.416147
-StatementEvaluatePrimal lhsIdentifier 277 lhsValue 0.255522
-StatementEvaluate lhsIdentifier 276 numAdjoints 1
-	0.540302
-StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0.128835
-StatementEvaluate lhsIdentifier 275 numAdjoints 1
-	0.579745
-StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0
+TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
 StatementEvaluate lhsIdentifier 274 numAdjoints 1
 	0
 StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
@@ -245,8 +191,8 @@ StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 259 numAdjoints 1
 	0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
-TapeEvaluate reverse end from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
-TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]]
+TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluatePrimal lhsIdentifier 261 lhsValue 2.52441
@@ -263,15 +209,7 @@ StatementEvaluatePrimal lhsIdentifier 271 lhsValue 0.988748
 StatementEvaluatePrimal lhsIdentifier 272 lhsValue 2.99776
 StatementEvaluatePrimal lhsIdentifier 273 lhsValue 3.40526
 StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
-StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 277 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 278 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 279 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 280 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 281 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 282 lhsValue 0
-TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]]
+TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] clear adjoints 1
 TapeStartRecording
 # Register inputs
@@ -397,80 +335,22 @@ TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 40, [0, 22, 276]]]]] to [
 TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] clear adjoints 1
 TapeStartRecording
 # Assign outputs
-StatementPrimal expression lhsValue 0 lhsIdentifier 279 newValue 0
-IndexFree index 279
-IndexAssign index 275
-StatementStoreOnTape lhsIdentifier 275 newValue 0 numActiveVariables 2
-	275 0; 276 0;
-StatementPrimal expression lhsValue 0.128835 lhsIdentifier 280 newValue 0.128835
-IndexFree index 280
-IndexAssign index 276
-StatementStoreOnTape lhsIdentifier 276 newValue 0.128835 numActiveVariables 2
-	275 0.725343; 276 0.175158;
-StatementPrimal expression lhsValue 0.255522 lhsIdentifier 281 newValue 0.255522
-IndexFree index 281
-IndexAssign index 277
-StatementStoreOnTape lhsIdentifier 277 newValue 0.255522 numActiveVariables 2
-	275 1.41431; 276 0.341532;
-StatementPrimal expression lhsValue 0.37795 lhsIdentifier 282 newValue 0.37795
-IndexFree index 282
-IndexAssign index 278
-StatementStoreOnTape lhsIdentifier 278 newValue 0.37795 numActiveVariables 2
-	275 2.03155; 276 0.490585;
-IndexFree index 276
-IndexFree index 275
+StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
+StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
+StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
+StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
 IndexFree index 274
 IndexFree index 273
 IndexFree index 272
 IndexFree index 271
 # Register outputs
-IndexFree index 275
-IndexAssign index 279
-StatementStoreOnTape lhsIdentifier 279 newValue 0 numActiveVariables 1
-	279 1;
-TapeRegisterOutput value 0 identifier 279
-IndexFree index 276
-IndexAssign index 280
-StatementStoreOnTape lhsIdentifier 280 newValue 0.128835 numActiveVariables 1
-	280 1;
-TapeRegisterOutput value 0.128835 identifier 280
-IndexFree index 277
-IndexAssign index 281
-StatementStoreOnTape lhsIdentifier 281 newValue 0.255522 numActiveVariables 1
-	281 1;
-TapeRegisterOutput value 0.255522 identifier 281
-IndexFree index 278
-IndexAssign index 282
-StatementStoreOnTape lhsIdentifier 282 newValue 0.37795 numActiveVariables 1
-	282 1;
-TapeRegisterOutput value 0.37795 identifier 282
+TapeRegisterOutput value 0 identifier 0
+TapeRegisterOutput value 0 identifier 0
+TapeRegisterOutput value 0 identifier 0
+TapeRegisterOutput value 0 identifier 0
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
-StatementEvaluate lhsIdentifier 282 numAdjoints 1
-	-0.989992
-StatementEvaluatePrimal lhsIdentifier 282 lhsValue 0.37795
-StatementEvaluate lhsIdentifier 281 numAdjoints 1
-	-0.416147
-StatementEvaluatePrimal lhsIdentifier 281 lhsValue 0.255522
-StatementEvaluate lhsIdentifier 280 numAdjoints 1
-	0.540302
-StatementEvaluatePrimal lhsIdentifier 280 lhsValue 0.128835
-StatementEvaluate lhsIdentifier 279 numAdjoints 1
-	1
-StatementEvaluatePrimal lhsIdentifier 279 lhsValue 0
-StatementEvaluate lhsIdentifier 278 numAdjoints 1
-	-0.989992
-StatementEvaluatePrimal lhsIdentifier 278 lhsValue 0.37795
-StatementEvaluate lhsIdentifier 277 numAdjoints 1
-	-0.416147
-StatementEvaluatePrimal lhsIdentifier 277 lhsValue 0.255522
-StatementEvaluate lhsIdentifier 276 numAdjoints 1
-	0.540302
-StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0.128835
-StatementEvaluate lhsIdentifier 275 numAdjoints 1
-	0.579745
-StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0
+TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
 StatementEvaluate lhsIdentifier 274 numAdjoints 1
 	0
 StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
@@ -519,8 +399,8 @@ StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 259 numAdjoints 1
 	0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
-TapeEvaluate reverse end from [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
-TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]]
+TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluatePrimal lhsIdentifier 261 lhsValue 2.52441
@@ -537,15 +417,7 @@ StatementEvaluatePrimal lhsIdentifier 271 lhsValue 0.988748
 StatementEvaluatePrimal lhsIdentifier 272 lhsValue 2.99776
 StatementEvaluatePrimal lhsIdentifier 273 lhsValue 3.40526
 StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
-StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 277 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 278 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 279 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 280 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 281 lhsValue 0
-StatementEvaluatePrimal lhsIdentifier 282 lhsValue 0
-TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 8, [0, 4, [0, 48, [0, 28, 282]]]]]
+TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
 # Register inputs
 # Run test
 # Active type computations
@@ -555,10 +427,6 @@ TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 
 # Register outputs
 # Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] clear adjoints 0
-IndexFree index 282
-IndexFree index 281
-IndexFree index 280
-IndexFree index 279
 IndexFree index 258
 IndexFree index 257
 IndexFree index 256
