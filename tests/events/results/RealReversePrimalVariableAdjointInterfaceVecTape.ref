@@ -116,15 +116,15 @@ StatementStoreOnTape lhsIdentifier 276 newValue 0.731438 numActiveVariables 2
 	273 0.681908; 274 0.681908;
 # Reset position
 TapeStopRecording
-TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 40, [0, 22, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
+TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 40, [21, 1, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
 StatementEvaluate lhsIdentifier 276 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0.731438
 StatementEvaluate lhsIdentifier 275 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0.17663
-TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 40, [0, 22, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
-TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] clear adjoints 1
+TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 40, [21, 1, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
+TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]] clear adjoints 1
 TapeStartRecording
 # Assign outputs
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
@@ -142,7 +142,7 @@ TapeRegisterOutput value 0 identifier 0
 TapeRegisterOutput value 0 identifier 0
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
 StatementEvaluate lhsIdentifier 274 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
@@ -191,8 +191,8 @@ StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 259 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
-TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
-TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
+TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluatePrimal lhsIdentifier 261 lhsValue 2.52441
@@ -209,7 +209,7 @@ StatementEvaluatePrimal lhsIdentifier 271 lhsValue 0.988748
 StatementEvaluatePrimal lhsIdentifier 272 lhsValue 2.99776
 StatementEvaluatePrimal lhsIdentifier 273 lhsValue 3.40526
 StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
-TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
+TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] clear adjoints 1
 TapeStartRecording
 # Register inputs
@@ -324,15 +324,15 @@ StatementStoreOnTape lhsIdentifier 276 newValue 0.731438 numActiveVariables 2
 	273 0.681908; 274 0.681908;
 # Reset position
 TapeStopRecording
-TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 40, [0, 22, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
+TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 40, [21, 1, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
 StatementEvaluate lhsIdentifier 276 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 276 lhsValue 0.731438
 StatementEvaluate lhsIdentifier 275 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0.17663
-TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 40, [0, 22, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
-TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] clear adjoints 1
+TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 40, [21, 1, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
+TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]] clear adjoints 1
 TapeStartRecording
 # Assign outputs
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
@@ -350,7 +350,7 @@ TapeRegisterOutput value 0 identifier 0
 TapeRegisterOutput value 0 identifier 0
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate reverse begin from [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
 StatementEvaluate lhsIdentifier 274 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
@@ -399,8 +399,8 @@ StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 259 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
-TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
-TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
+TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluatePrimal lhsIdentifier 261 lhsValue 2.52441
@@ -417,7 +417,7 @@ StatementEvaluatePrimal lhsIdentifier 271 lhsValue 0.988748
 StatementEvaluatePrimal lhsIdentifier 272 lhsValue 2.99776
 StatementEvaluatePrimal lhsIdentifier 273 lhsValue 3.40526
 StatementEvaluatePrimal lhsIdentifier 274 lhsValue 2.12756
-TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [0, 20, 274]]]]]
+TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
 # Register inputs
 # Run test
 # Active type computations

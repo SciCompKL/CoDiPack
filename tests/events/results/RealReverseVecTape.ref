@@ -116,13 +116,13 @@ StatementStoreOnTape lhsIdentifier 22 newValue 0.731438 numActiveVariables 2
 	19 0.681908; 20 0.681908;
 # Reset position
 TapeStopRecording
-TapeEvaluate reverse begin from [0, 0, [0, 36, [0, 22, 22]]] to [0, 0, [0, 32, [0, 20, 20]]]
+TapeEvaluate reverse begin from [0, 0, [0, 36, [21, 1, 22]]] to [0, 0, [0, 32, [19, 1, 20]]]
 StatementEvaluate lhsIdentifier 22 numAdjoints 2
 	0 0
 StatementEvaluate lhsIdentifier 21 numAdjoints 2
 	0 0
-TapeEvaluate reverse end from [0, 0, [0, 36, [0, 22, 22]]] to [0, 0, [0, 32, [0, 20, 20]]]
-TapeReset to position [0, 0, [0, 32, [0, 20, 20]]] clear adjoints 1
+TapeEvaluate reverse end from [0, 0, [0, 36, [21, 1, 22]]] to [0, 0, [0, 32, [19, 1, 20]]]
+TapeReset to position [0, 0, [0, 32, [19, 1, 20]]] clear adjoints 1
 TapeStartRecording
 # Assign outputs
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
@@ -140,7 +140,7 @@ TapeRegisterOutput value 0 identifier 0
 TapeRegisterOutput value 0 identifier 0
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 32, [0, 20, 20]]] to [0, 0, [0, 0, [0, 0, 0]]]
+TapeEvaluate reverse begin from [0, 0, [0, 32, [20, 0, 20]]] to [0, 0, [0, 0, [0, 0, 0]]]
 StatementEvaluate lhsIdentifier 20 numAdjoints 2
 	0 0
 StatementEvaluate lhsIdentifier 19 numAdjoints 2
@@ -173,7 +173,7 @@ StatementEvaluate lhsIdentifier 6 numAdjoints 2
 	0 0
 StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	0 0
-TapeEvaluate reverse end from [0, 0, [0, 32, [0, 20, 20]]] to [0, 0, [0, 0, [0, 0, 0]]]
+TapeEvaluate reverse end from [0, 0, [0, 32, [20, 0, 20]]] to [0, 0, [0, 0, [0, 0, 0]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, 0]]] clear adjoints 1
 TapeStartRecording
 # Register inputs
@@ -288,13 +288,13 @@ StatementStoreOnTape lhsIdentifier 22 newValue 0.731438 numActiveVariables 2
 	19 0.681908; 20 0.681908;
 # Reset position
 TapeStopRecording
-TapeEvaluate reverse begin from [0, 0, [0, 36, [0, 22, 22]]] to [0, 0, [0, 32, [0, 20, 20]]]
+TapeEvaluate reverse begin from [0, 0, [0, 36, [21, 1, 22]]] to [0, 0, [0, 32, [19, 1, 20]]]
 StatementEvaluate lhsIdentifier 22 numAdjoints 2
 	0 0
 StatementEvaluate lhsIdentifier 21 numAdjoints 2
 	0 0
-TapeEvaluate reverse end from [0, 0, [0, 36, [0, 22, 22]]] to [0, 0, [0, 32, [0, 20, 20]]]
-TapeReset to position [0, 0, [0, 32, [0, 20, 20]]] clear adjoints 1
+TapeEvaluate reverse end from [0, 0, [0, 36, [21, 1, 22]]] to [0, 0, [0, 32, [19, 1, 20]]]
+TapeReset to position [0, 0, [0, 32, [19, 1, 20]]] clear adjoints 1
 TapeStartRecording
 # Assign outputs
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
@@ -312,7 +312,7 @@ TapeRegisterOutput value 0 identifier 0
 TapeRegisterOutput value 0 identifier 0
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 32, [0, 20, 20]]] to [0, 0, [0, 0, [0, 0, 0]]]
+TapeEvaluate reverse begin from [0, 0, [0, 32, [20, 0, 20]]] to [0, 0, [0, 0, [0, 0, 0]]]
 StatementEvaluate lhsIdentifier 20 numAdjoints 2
 	0 0
 StatementEvaluate lhsIdentifier 19 numAdjoints 2
@@ -345,7 +345,7 @@ StatementEvaluate lhsIdentifier 6 numAdjoints 2
 	0 0
 StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	0 0
-TapeEvaluate reverse end from [0, 0, [0, 32, [0, 20, 20]]] to [0, 0, [0, 0, [0, 0, 0]]]
+TapeEvaluate reverse end from [0, 0, [0, 32, [20, 0, 20]]] to [0, 0, [0, 0, [0, 0, 0]]]
 # Register inputs
 # Run test
 # Active type computations

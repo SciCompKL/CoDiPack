@@ -118,8 +118,9 @@ getTapeFlag = $(if $(findstring Reverse,$1),-DREVERSE_TAPE,-DFORWARD_TAPE)
 # given a type, decide whether it is a second order type, and produce a corresponding preprocessor flag
 getOrderFlag = $(if $(findstring Sec,$1),-DSECOND_ORDER,-DFIRST_ORDER)
 
-# reduce the chunk size for primal value tapes, to not clutter the result files of second order tests with primal value vector allocations
-getChunkSizeFlags = $(if $(findstring Sec,$1),-DCODI_ChunkSize=1 -DCODI_SmallChunkSize=1)
+# to not clutter the result files of second order tests with primal value vector allocations, reduce the chunk sizes
+# this is especially important for primal value tapes, but for consistency, it is applied everywhere
+getChunkSizeFlags = -DCODI_ChunkSize=1 -DCODI_SmallChunkSize=1
 
 # if needed, produce a flag that enables variable adjoint interfaces
 getVariableAdjointInterfaceFlag = $(if $(findstring VariableAdjointInterface,$1),-DCODI_VariableAdjointInterfaceInPrimalTapes)

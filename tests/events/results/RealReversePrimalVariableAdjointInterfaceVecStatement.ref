@@ -226,7 +226,7 @@ StatementStoreOnTape lhsIdentifier 294 newValue 0.509427 numActiveVariables 1
 TapeRegisterOutput value 0.509427 identifier 294
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 24, [0, 12, [0, 88, [0, 40, 294]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate reverse begin from [0, 0, [0, 24, [0, 12, [0, 88, [39, 1, 294]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
 StatementEvaluate lhsIdentifier 294 numAdjoints 2
 	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 294 lhsValue 0.509427
@@ -335,8 +335,8 @@ StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 259 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
-TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [0, 40, 294]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
-TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 24, [0, 12, [0, 88, [0, 40, 294]]]]]
+TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [39, 1, 294]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 24, [0, 12, [0, 88, [39, 1, 294]]]]]
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluatePrimal lhsIdentifier 261 lhsValue 2.52441
@@ -373,7 +373,7 @@ StatementEvaluatePrimal lhsIdentifier 291 lhsValue 0
 StatementEvaluatePrimal lhsIdentifier 292 lhsValue -0.940931
 StatementEvaluatePrimal lhsIdentifier 293 lhsValue 0.637194
 StatementEvaluatePrimal lhsIdentifier 294 lhsValue 0.509427
-TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 24, [0, 12, [0, 88, [0, 40, 294]]]]]
+TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 24, [0, 12, [0, 88, [39, 1, 294]]]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] clear adjoints 1
 TapeStartRecording
 # Register inputs
@@ -602,7 +602,7 @@ StatementStoreOnTape lhsIdentifier 294 newValue 0.509427 numActiveVariables 1
 TapeRegisterOutput value 0.509427 identifier 294
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 24, [0, 12, [0, 88, [0, 40, 294]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate reverse begin from [0, 0, [0, 24, [0, 12, [0, 88, [39, 1, 294]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
 StatementEvaluate lhsIdentifier 294 numAdjoints 2
 	-0.989992 0.753902
 StatementEvaluatePrimal lhsIdentifier 294 lhsValue 0.509427
@@ -711,8 +711,8 @@ StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluate lhsIdentifier 259 numAdjoints 2
 	0 0
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
-TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [0, 40, 294]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
-TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 24, [0, 12, [0, 88, [0, 40, 294]]]]]
+TapeEvaluate reverse end from [0, 0, [0, 24, [0, 12, [0, 88, [39, 1, 294]]]]] to [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]]
+TapeEvaluate primal begin from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 24, [0, 12, [0, 88, [39, 1, 294]]]]]
 StatementEvaluatePrimal lhsIdentifier 259 lhsValue 0.745624
 StatementEvaluatePrimal lhsIdentifier 260 lhsValue 0.666367
 StatementEvaluatePrimal lhsIdentifier 261 lhsValue 2.52441
@@ -749,7 +749,7 @@ StatementEvaluatePrimal lhsIdentifier 291 lhsValue 0
 StatementEvaluatePrimal lhsIdentifier 292 lhsValue -0.940931
 StatementEvaluatePrimal lhsIdentifier 293 lhsValue 0.637194
 StatementEvaluatePrimal lhsIdentifier 294 lhsValue 0.509427
-TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 24, [0, 12, [0, 88, [0, 40, 294]]]]]
+TapeEvaluate primal end from [0, 0, [0, 0, [0, 0, [0, 0, [0, 0, 254]]]]] to [0, 0, [0, 24, [0, 12, [0, 88, [39, 1, 294]]]]]
 # Register inputs
 # Run test
 # Active type computations

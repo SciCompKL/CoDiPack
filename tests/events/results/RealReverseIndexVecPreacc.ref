@@ -10,17 +10,17 @@ TapeReset full position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 1
 TapeStartRecording
 # Register inputs
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0.841471
-IndexAssign index 32768
-TapeRegisterInput value 0.841471 identifier 32768
+IndexAssign index 1
+TapeRegisterInput value 0.841471 identifier 1
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0.909297
-IndexAssign index 32767
-TapeRegisterInput value 0.909297 identifier 32767
+IndexAssign index 2
+TapeRegisterInput value 0.909297 identifier 2
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0.14112
-IndexAssign index 32766
-TapeRegisterInput value 0.14112 identifier 32766
+IndexAssign index 3
+TapeRegisterInput value 0.14112 identifier 3
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue -0.756802
-IndexAssign index 32765
-TapeRegisterInput value -0.756802 identifier 32765
+IndexAssign index 4
+TapeRegisterInput value -0.756802 identifier 4
 # Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
@@ -28,284 +28,284 @@ StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.745624
-IndexAssign index 32764
-StatementStoreOnTape lhsIdentifier 32764 newValue 0.745624 numActiveVariables 1
-	32768 0.666367;
+IndexAssign index 5
+StatementStoreOnTape lhsIdentifier 5 newValue 0.745624 numActiveVariables 1
+	1 0.666367;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.666367
-IndexAssign index 32763
-StatementStoreOnTape lhsIdentifier 32763 newValue 0.666367 numActiveVariables 1
-	32768 -0.745624;
+IndexAssign index 6
+StatementStoreOnTape lhsIdentifier 6 newValue 0.666367 numActiveVariables 1
+	1 -0.745624;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 2.52441
-IndexAssign index 32762
-StatementStoreOnTape lhsIdentifier 32762 newValue 2.52441 numActiveVariables 1
-	32768 3;
+IndexAssign index 7
+StatementStoreOnTape lhsIdentifier 7 newValue 2.52441 numActiveVariables 1
+	1 3;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.708073
-IndexAssign index 32761
-StatementStoreOnTape lhsIdentifier 32761 newValue 0.708073 numActiveVariables 2
-	32768 0.841471; 32768 0.841471;
-StatementPrimal expression lhsValue 0.745624 lhsIdentifier 32764 newValue 1.5347
-IndexFree index 32764
-IndexAssign index 32764
-StatementStoreOnTape lhsIdentifier 32764 newValue 1.5347 numActiveVariables 2
-	32764 1; 32767 0.6143;
-StatementPrimal expression lhsValue 0.666367 lhsIdentifier 32763 newValue 1.28067
-IndexFree index 32763
-IndexAssign index 32763
-StatementStoreOnTape lhsIdentifier 32763 newValue 1.28067 numActiveVariables 2
-	32763 1; 32767 -0.789072;
-StatementPrimal expression lhsValue 2.52441 lhsIdentifier 32762 newValue 5.25231
-IndexFree index 32762
-IndexAssign index 32762
-StatementStoreOnTape lhsIdentifier 32762 newValue 5.25231 numActiveVariables 2
-	32762 1; 32767 3;
-StatementPrimal expression lhsValue 0.708073 lhsIdentifier 32761 newValue 1.5349
-IndexFree index 32761
-IndexAssign index 32761
-StatementStoreOnTape lhsIdentifier 32761 newValue 1.5349 numActiveVariables 3
-	32761 1; 32767 0.909297; 32767 0.909297;
-StatementPrimal expression lhsValue 1.5347 lhsIdentifier 32764 newValue 1.67535
-IndexFree index 32764
-IndexAssign index 32764
-StatementStoreOnTape lhsIdentifier 32764 newValue 1.67535 numActiveVariables 2
-	32764 1; 32766 0.990059;
-StatementPrimal expression lhsValue 1.28067 lhsIdentifier 32763 newValue 2.27073
-IndexFree index 32763
-IndexAssign index 32763
-StatementStoreOnTape lhsIdentifier 32763 newValue 2.27073 numActiveVariables 2
-	32763 1; 32766 -0.140652;
-StatementPrimal expression lhsValue 5.25231 lhsIdentifier 32762 newValue 5.67567
-IndexFree index 32762
-IndexAssign index 32762
-StatementStoreOnTape lhsIdentifier 32762 newValue 5.67567 numActiveVariables 2
-	32762 1; 32766 3;
-StatementPrimal expression lhsValue 1.5349 lhsIdentifier 32761 newValue 1.55481
-IndexFree index 32761
-IndexAssign index 32761
-StatementStoreOnTape lhsIdentifier 32761 newValue 1.55481 numActiveVariables 3
-	32761 1; 32766 0.14112; 32766 0.14112;
-StatementPrimal expression lhsValue 1.67535 lhsIdentifier 32764 newValue 0.988748
-IndexFree index 32764
-IndexAssign index 32764
-StatementStoreOnTape lhsIdentifier 32764 newValue 0.988748 numActiveVariables 2
-	32764 1; 32765 0.727035;
-StatementPrimal expression lhsValue 2.27073 lhsIdentifier 32763 newValue 2.99776
-IndexFree index 32763
-IndexAssign index 32763
-StatementStoreOnTape lhsIdentifier 32763 newValue 2.99776 numActiveVariables 2
-	32763 1; 32765 0.6866;
-StatementPrimal expression lhsValue 5.67567 lhsIdentifier 32762 newValue 3.40526
-IndexFree index 32762
-IndexAssign index 32762
-StatementStoreOnTape lhsIdentifier 32762 newValue 3.40526 numActiveVariables 2
-	32762 1; 32765 3;
-StatementPrimal expression lhsValue 1.55481 lhsIdentifier 32761 newValue 2.12756
-IndexFree index 32761
-IndexAssign index 32761
-StatementStoreOnTape lhsIdentifier 32761 newValue 2.12756 numActiveVariables 3
-	32761 1; 32765 -0.756802; 32765 -0.756802;
+IndexAssign index 8
+StatementStoreOnTape lhsIdentifier 8 newValue 0.708073 numActiveVariables 2
+	1 0.841471; 1 0.841471;
+StatementPrimal expression lhsValue 0.745624 lhsIdentifier 5 newValue 1.5347
+IndexFree index 5
+IndexAssign index 5
+StatementStoreOnTape lhsIdentifier 5 newValue 1.5347 numActiveVariables 2
+	5 1; 2 0.6143;
+StatementPrimal expression lhsValue 0.666367 lhsIdentifier 6 newValue 1.28067
+IndexFree index 6
+IndexAssign index 6
+StatementStoreOnTape lhsIdentifier 6 newValue 1.28067 numActiveVariables 2
+	6 1; 2 -0.789072;
+StatementPrimal expression lhsValue 2.52441 lhsIdentifier 7 newValue 5.25231
+IndexFree index 7
+IndexAssign index 7
+StatementStoreOnTape lhsIdentifier 7 newValue 5.25231 numActiveVariables 2
+	7 1; 2 3;
+StatementPrimal expression lhsValue 0.708073 lhsIdentifier 8 newValue 1.5349
+IndexFree index 8
+IndexAssign index 8
+StatementStoreOnTape lhsIdentifier 8 newValue 1.5349 numActiveVariables 3
+	8 1; 2 0.909297; 2 0.909297;
+StatementPrimal expression lhsValue 1.5347 lhsIdentifier 5 newValue 1.67535
+IndexFree index 5
+IndexAssign index 5
+StatementStoreOnTape lhsIdentifier 5 newValue 1.67535 numActiveVariables 2
+	5 1; 3 0.990059;
+StatementPrimal expression lhsValue 1.28067 lhsIdentifier 6 newValue 2.27073
+IndexFree index 6
+IndexAssign index 6
+StatementStoreOnTape lhsIdentifier 6 newValue 2.27073 numActiveVariables 2
+	6 1; 3 -0.140652;
+StatementPrimal expression lhsValue 5.25231 lhsIdentifier 7 newValue 5.67567
+IndexFree index 7
+IndexAssign index 7
+StatementStoreOnTape lhsIdentifier 7 newValue 5.67567 numActiveVariables 2
+	7 1; 3 3;
+StatementPrimal expression lhsValue 1.5349 lhsIdentifier 8 newValue 1.55481
+IndexFree index 8
+IndexAssign index 8
+StatementStoreOnTape lhsIdentifier 8 newValue 1.55481 numActiveVariables 3
+	8 1; 3 0.14112; 3 0.14112;
+StatementPrimal expression lhsValue 1.67535 lhsIdentifier 5 newValue 0.988748
+IndexFree index 5
+IndexAssign index 5
+StatementStoreOnTape lhsIdentifier 5 newValue 0.988748 numActiveVariables 2
+	5 1; 4 0.727035;
+StatementPrimal expression lhsValue 2.27073 lhsIdentifier 6 newValue 2.99776
+IndexFree index 6
+IndexAssign index 6
+StatementStoreOnTape lhsIdentifier 6 newValue 2.99776 numActiveVariables 2
+	6 1; 4 0.6866;
+StatementPrimal expression lhsValue 5.67567 lhsIdentifier 7 newValue 3.40526
+IndexFree index 7
+IndexAssign index 7
+StatementStoreOnTape lhsIdentifier 7 newValue 3.40526 numActiveVariables 2
+	7 1; 4 3;
+StatementPrimal expression lhsValue 1.55481 lhsIdentifier 8 newValue 2.12756
+IndexFree index 8
+IndexAssign index 8
+StatementStoreOnTape lhsIdentifier 8 newValue 2.12756 numActiveVariables 3
+	8 1; 4 -0.756802; 4 -0.756802;
 # Preaccumulation
 PreaccStart
-PreaccAddInput value 0.988748 identifier 32764
+PreaccAddInput value 0.988748 identifier 5
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.977623
-IndexAssign index 32760
-StatementStoreOnTape lhsIdentifier 32760 newValue 0.977623 numActiveVariables 2
-	32764 0.988748; 32764 0.988748;
+IndexAssign index 9
+StatementStoreOnTape lhsIdentifier 9 newValue 0.977623 numActiveVariables 2
+	5 0.988748; 5 0.988748;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.537435
-IndexAssign index 32759
-StatementStoreOnTape lhsIdentifier 32759 newValue 0.537435 numActiveVariables 2
-	32760 0.549736; 32764 -0.816646;
+IndexAssign index 10
+StatementStoreOnTape lhsIdentifier 10 newValue 0.537435 numActiveVariables 2
+	9 0.549736; 5 -0.816646;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.525408
-IndexAssign index 32758
-StatementStoreOnTape lhsIdentifier 32758 newValue 0.525408 numActiveVariables 2
-	32760 0.537435; 32759 0.977623;
+IndexAssign index 11
+StatementStoreOnTape lhsIdentifier 11 newValue 0.525408 numActiveVariables 2
+	9 0.537435; 10 0.977623;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 4.60886
-IndexAssign index 32757
-StatementStoreOnTape lhsIdentifier 32757 newValue 4.60886 numActiveVariables 3
-	32763 1; 32763 0.537435; 32759 2.99776;
-PreaccAddOutput value 0.977623 identifier 32760
-PreaccAddOutput value 0.537435 identifier 32759
-PreaccAddOutput value 0.525408 identifier 32758
-PreaccAddOutput value 4.60886 identifier 32757
+IndexAssign index 12
+StatementStoreOnTape lhsIdentifier 12 newValue 4.60886 numActiveVariables 3
+	6 1; 6 0.537435; 10 2.99776;
+PreaccAddOutput value 0.977623 identifier 9
+PreaccAddOutput value 0.537435 identifier 10
+PreaccAddOutput value 0.525408 identifier 11
+PreaccAddOutput value 4.60886 identifier 12
 TapeStopRecording
-TapeEvaluate forward begin from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 41, [0, 20, []]]]
-StatementEvaluate lhsIdentifier 32760 numAdjoints 2
+TapeEvaluate forward begin from [0, 0, [0, 32, [15, 1, []]]] to [0, 0, [0, 41, [19, 1, []]]]
+StatementEvaluate lhsIdentifier 9 numAdjoints 2
 	1.9775 0
-StatementEvaluate lhsIdentifier 32759 numAdjoints 2
+StatementEvaluate lhsIdentifier 10 numAdjoints 2
 	0.270455 0
-StatementEvaluate lhsIdentifier 32758 numAdjoints 2
+StatementEvaluate lhsIdentifier 11 numAdjoints 2
 	1.32718 0
-StatementEvaluate lhsIdentifier 32757 numAdjoints 2
+StatementEvaluate lhsIdentifier 12 numAdjoints 2
 	0.810758 0
-TapeEvaluate forward end from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 41, [0, 20, []]]]
-TapeReset to position [0, 0, [0, 32, [0, 16, []]]] clear adjoints 1
-IndexFree index 32760
-IndexAssign index 32760
-StatementStoreOnTape lhsIdentifier 32760 newValue 0.977623 numActiveVariables 1
-	32764 1.9775;
-IndexFree index 32759
-IndexAssign index 32759
-StatementStoreOnTape lhsIdentifier 32759 newValue 0.537435 numActiveVariables 1
-	32764 0.270455;
-IndexFree index 32758
-IndexAssign index 32758
-StatementStoreOnTape lhsIdentifier 32758 newValue 0.525408 numActiveVariables 1
-	32764 1.32718;
-IndexFree index 32757
-IndexAssign index 32757
-StatementStoreOnTape lhsIdentifier 32757 newValue 4.60886 numActiveVariables 1
-	32764 0.810758;
+TapeEvaluate forward end from [0, 0, [0, 32, [15, 1, []]]] to [0, 0, [0, 41, [19, 1, []]]]
+TapeReset to position [0, 0, [0, 32, [15, 1, []]]] clear adjoints 1
+IndexFree index 9
+IndexAssign index 9
+StatementStoreOnTape lhsIdentifier 9 newValue 0.977623 numActiveVariables 1
+	5 1.9775;
+IndexFree index 10
+IndexAssign index 10
+StatementStoreOnTape lhsIdentifier 10 newValue 0.537435 numActiveVariables 1
+	5 0.270455;
+IndexFree index 11
+IndexAssign index 11
+StatementStoreOnTape lhsIdentifier 11 newValue 0.525408 numActiveVariables 1
+	5 1.32718;
+IndexFree index 12
+IndexAssign index 12
+StatementStoreOnTape lhsIdentifier 12 newValue 4.60886 numActiveVariables 1
+	5 0.810758;
 TapeStartRecording
 PreaccFinish
 PreaccStart
-PreaccAddInput value 0.988748 identifier 32764
-PreaccAddInput value 2.99776 identifier 32763
-PreaccAddInput value 3.40526 identifier 32762
-PreaccAddInput value 2.12756 identifier 32761
+PreaccAddInput value 0.988748 identifier 5
+PreaccAddInput value 2.99776 identifier 6
+PreaccAddInput value 3.40526 identifier 7
+PreaccAddInput value 2.12756 identifier 8
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 10.2089
-IndexAssign index 32756
-StatementStoreOnTape lhsIdentifier 32756 newValue 10.2089 numActiveVariables 4
-	32764 2.99776; 32763 0.988748; 32762 2.12756; 32761 3.40526;
-PreaccAddOutput value 10.2089 identifier 32756
+IndexAssign index 13
+StatementStoreOnTape lhsIdentifier 13 newValue 10.2089 numActiveVariables 4
+	5 2.99776; 6 0.988748; 7 2.12756; 8 3.40526;
+PreaccAddOutput value 10.2089 identifier 13
 TapeStopRecording
-TapeEvaluate reverse begin from [0, 0, [0, 40, [0, 21, []]]] to [0, 0, [0, 36, [0, 20, []]]]
-StatementEvaluate lhsIdentifier 32756 numAdjoints 2
+TapeEvaluate reverse begin from [0, 0, [0, 40, [20, 1, []]]] to [0, 0, [0, 36, [19, 1, []]]]
+StatementEvaluate lhsIdentifier 13 numAdjoints 2
 	1 0
-TapeEvaluate reverse end from [0, 0, [0, 40, [0, 21, []]]] to [0, 0, [0, 36, [0, 20, []]]]
-TapeReset to position [0, 0, [0, 36, [0, 20, []]]] clear adjoints 1
-IndexFree index 32756
-IndexAssign index 32756
-StatementStoreOnTape lhsIdentifier 32756 newValue 10.2089 numActiveVariables 4
-	32764 2.99776; 32763 0.988748; 32762 2.12756; 32761 3.40526;
+TapeEvaluate reverse end from [0, 0, [0, 40, [20, 1, []]]] to [0, 0, [0, 36, [19, 1, []]]]
+TapeReset to position [0, 0, [0, 36, [19, 1, []]]] clear adjoints 1
+IndexFree index 13
+IndexAssign index 13
+StatementStoreOnTape lhsIdentifier 13 newValue 10.2089 numActiveVariables 4
+	5 2.99776; 6 0.988748; 7 2.12756; 8 3.40526;
 TapeStartRecording
 PreaccFinish
 # Assign outputs
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.983156
-IndexAssign index 32755
-StatementStoreOnTape lhsIdentifier 32755 newValue 0.983156 numActiveVariables 3
-	32760 0.908882; 32759 1.65331; 32756 0.706219;
+IndexAssign index 14
+StatementStoreOnTape lhsIdentifier 14 newValue 0.983156 numActiveVariables 3
+	9 0.908882; 10 1.65331; 13 0.706219;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.770226
-IndexAssign index 32754
-StatementStoreOnTape lhsIdentifier 32754 newValue 0.770226 numActiveVariables 5
-	32760 0.349451; 32759 0.635671; 32758 0.409477; 32757 0.409477; 32756 0.46206;
+IndexAssign index 15
+StatementStoreOnTape lhsIdentifier 15 newValue 0.770226 numActiveVariables 5
+	9 0.349451; 10 0.635671; 11 0.409477; 12 0.409477; 13 0.46206;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue -0.521775
-IndexAssign index 32753
-StatementStoreOnTape lhsIdentifier 32753 newValue -0.521775 numActiveVariables 5
-	32760 0.213435; 32759 0.38825; 32758 -1.32931; 32757 -1.32931; 32756 0.0861384;
+IndexAssign index 16
+StatementStoreOnTape lhsIdentifier 16 newValue -0.521775 numActiveVariables 5
+	9 0.213435; 10 0.38825; 11 -1.32931; 12 -1.32931; 13 0.0861384;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.609513
-IndexAssign index 32752
-StatementStoreOnTape lhsIdentifier 32752 newValue 0.609513 numActiveVariables 5
-	32760 0.153218; 32759 0.278713; 32758 -2.8614; 32757 -2.8614; 32756 -0.138958;
-IndexFree index 32756
-IndexFree index 32757
-IndexFree index 32758
-IndexFree index 32759
-IndexFree index 32760
-IndexFree index 32761
-IndexFree index 32762
-IndexFree index 32763
-IndexFree index 32764
+IndexAssign index 17
+StatementStoreOnTape lhsIdentifier 17 newValue 0.609513 numActiveVariables 5
+	9 0.153218; 10 0.278713; 11 -2.8614; 12 -2.8614; 13 -0.138958;
+IndexFree index 13
+IndexFree index 12
+IndexFree index 11
+IndexFree index 10
+IndexFree index 9
+IndexFree index 8
+IndexFree index 7
+IndexFree index 6
+IndexFree index 5
 # Register outputs
-IndexFree index 32755
-IndexAssign index 32755
-StatementStoreOnTape lhsIdentifier 32755 newValue 0.983156 numActiveVariables 1
-	32755 1;
-TapeRegisterOutput value 0.983156 identifier 32755
-IndexFree index 32754
-IndexAssign index 32754
-StatementStoreOnTape lhsIdentifier 32754 newValue 0.770226 numActiveVariables 1
-	32754 1;
-TapeRegisterOutput value 0.770226 identifier 32754
-IndexFree index 32753
-IndexAssign index 32753
-StatementStoreOnTape lhsIdentifier 32753 newValue -0.521775 numActiveVariables 1
-	32753 1;
-TapeRegisterOutput value -0.521775 identifier 32753
-IndexFree index 32752
-IndexAssign index 32752
-StatementStoreOnTape lhsIdentifier 32752 newValue 0.609513 numActiveVariables 1
-	32752 1;
-TapeRegisterOutput value 0.609513 identifier 32752
+IndexFree index 14
+IndexAssign index 14
+StatementStoreOnTape lhsIdentifier 14 newValue 0.983156 numActiveVariables 1
+	14 1;
+TapeRegisterOutput value 0.983156 identifier 14
+IndexFree index 15
+IndexAssign index 15
+StatementStoreOnTape lhsIdentifier 15 newValue 0.770226 numActiveVariables 1
+	15 1;
+TapeRegisterOutput value 0.770226 identifier 15
+IndexFree index 16
+IndexAssign index 16
+StatementStoreOnTape lhsIdentifier 16 newValue -0.521775 numActiveVariables 1
+	16 1;
+TapeRegisterOutput value -0.521775 identifier 16
+IndexFree index 17
+IndexAssign index 17
+StatementStoreOnTape lhsIdentifier 17 newValue 0.609513 numActiveVariables 1
+	17 1;
+TapeRegisterOutput value 0.609513 identifier 17
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 0, []]]]
-StatementEvaluate lhsIdentifier 32752 numAdjoints 2
+TapeEvaluate reverse begin from [0, 0, [0, 62, [28, 1, []]]] to [0, 0, [0, 0, [0, 0, []]]]
+StatementEvaluate lhsIdentifier 17 numAdjoints 2
 	-0.989992 0.753902
-StatementEvaluate lhsIdentifier 32753 numAdjoints 2
+StatementEvaluate lhsIdentifier 16 numAdjoints 2
 	-0.416147 0.96017
-StatementEvaluate lhsIdentifier 32754 numAdjoints 2
+StatementEvaluate lhsIdentifier 15 numAdjoints 2
 	0.540302 0.283662
-StatementEvaluate lhsIdentifier 32755 numAdjoints 2
+StatementEvaluate lhsIdentifier 14 numAdjoints 2
 	1 -0.653644
-StatementEvaluate lhsIdentifier 32752 numAdjoints 2
+StatementEvaluate lhsIdentifier 17 numAdjoints 2
 	-0.989992 0.753902
-StatementEvaluate lhsIdentifier 32753 numAdjoints 2
+StatementEvaluate lhsIdentifier 16 numAdjoints 2
 	-0.416147 0.96017
-StatementEvaluate lhsIdentifier 32754 numAdjoints 2
+StatementEvaluate lhsIdentifier 15 numAdjoints 2
 	0.540302 0.283662
-StatementEvaluate lhsIdentifier 32755 numAdjoints 2
+StatementEvaluate lhsIdentifier 14 numAdjoints 2
 	1 -0.653644
-StatementEvaluate lhsIdentifier 32756 numAdjoints 2
+StatementEvaluate lhsIdentifier 13 numAdjoints 2
 	1.05759 -0.3526
-StatementEvaluate lhsIdentifier 32757 numAdjoints 2
+StatementEvaluate lhsIdentifier 12 numAdjoints 2
 	3.6072 -3.31743
-StatementEvaluate lhsIdentifier 32758 numAdjoints 2
+StatementEvaluate lhsIdentifier 11 numAdjoints 2
 	3.6072 -3.31743
-StatementEvaluate lhsIdentifier 32759 numAdjoints 2
+StatementEvaluate lhsIdentifier 10 numAdjoints 2
 	1.55927 -0.31745
-StatementEvaluate lhsIdentifier 32760 numAdjoints 2
+StatementEvaluate lhsIdentifier 9 numAdjoints 2
 	0.857186 -0.174514
-StatementEvaluate lhsIdentifier 32761 numAdjoints 2
+StatementEvaluate lhsIdentifier 8 numAdjoints 2
 	3.60137 -1.20069
-StatementEvaluate lhsIdentifier 32762 numAdjoints 2
+StatementEvaluate lhsIdentifier 7 numAdjoints 2
 	2.25009 -0.750178
-StatementEvaluate lhsIdentifier 32763 numAdjoints 2
+StatementEvaluate lhsIdentifier 6 numAdjoints 2
 	1.04569 -0.348633
-StatementEvaluate lhsIdentifier 32764 numAdjoints 2
+StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	12.9992 -8.58042
-StatementEvaluate lhsIdentifier 32761 numAdjoints 2
+StatementEvaluate lhsIdentifier 8 numAdjoints 2
 	3.60137 -1.20069
-StatementEvaluate lhsIdentifier 32762 numAdjoints 2
+StatementEvaluate lhsIdentifier 7 numAdjoints 2
 	2.25009 -0.750178
-StatementEvaluate lhsIdentifier 32763 numAdjoints 2
+StatementEvaluate lhsIdentifier 6 numAdjoints 2
 	1.04569 -0.348633
-StatementEvaluate lhsIdentifier 32764 numAdjoints 2
+StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	12.9992 -8.58042
-StatementEvaluate lhsIdentifier 32761 numAdjoints 2
+StatementEvaluate lhsIdentifier 8 numAdjoints 2
 	3.60137 -1.20069
-StatementEvaluate lhsIdentifier 32762 numAdjoints 2
+StatementEvaluate lhsIdentifier 7 numAdjoints 2
 	2.25009 -0.750178
-StatementEvaluate lhsIdentifier 32763 numAdjoints 2
+StatementEvaluate lhsIdentifier 6 numAdjoints 2
 	1.04569 -0.348633
-StatementEvaluate lhsIdentifier 32764 numAdjoints 2
+StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	12.9992 -8.58042
-StatementEvaluate lhsIdentifier 32761 numAdjoints 2
+StatementEvaluate lhsIdentifier 8 numAdjoints 2
 	3.60137 -1.20069
-StatementEvaluate lhsIdentifier 32762 numAdjoints 2
+StatementEvaluate lhsIdentifier 7 numAdjoints 2
 	2.25009 -0.750178
-StatementEvaluate lhsIdentifier 32763 numAdjoints 2
+StatementEvaluate lhsIdentifier 6 numAdjoints 2
 	1.04569 -0.348633
-StatementEvaluate lhsIdentifier 32764 numAdjoints 2
+StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	12.9992 -8.58042
-TapeEvaluate reverse end from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 0, []]]]
+TapeEvaluate reverse end from [0, 0, [0, 62, [28, 1, []]]] to [0, 0, [0, 0, [0, 0, []]]]
 TapeReset full position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 1
 TapeStartRecording
 # Register inputs
-StatementPrimal passive lhsValue 0.841471 lhsIdentifier 32768 newValue 0.841471
-IndexFree index 32768
-IndexAssign index 32764
-TapeRegisterInput value 0.841471 identifier 32764
-StatementPrimal passive lhsValue 0.909297 lhsIdentifier 32767 newValue 0.909297
-IndexFree index 32767
-IndexAssign index 32763
-TapeRegisterInput value 0.909297 identifier 32763
-StatementPrimal passive lhsValue 0.14112 lhsIdentifier 32766 newValue 0.14112
-IndexFree index 32766
-IndexAssign index 32762
-TapeRegisterInput value 0.14112 identifier 32762
-StatementPrimal passive lhsValue -0.756802 lhsIdentifier 32765 newValue -0.756802
-IndexFree index 32765
-IndexAssign index 32761
-TapeRegisterInput value -0.756802 identifier 32761
+StatementPrimal passive lhsValue 0.841471 lhsIdentifier 1 newValue 0.841471
+IndexFree index 1
+IndexAssign index 13
+TapeRegisterInput value 0.841471 identifier 13
+StatementPrimal passive lhsValue 0.909297 lhsIdentifier 2 newValue 0.909297
+IndexFree index 2
+IndexAssign index 12
+TapeRegisterInput value 0.909297 identifier 12
+StatementPrimal passive lhsValue 0.14112 lhsIdentifier 3 newValue 0.14112
+IndexFree index 3
+IndexAssign index 11
+TapeRegisterInput value 0.14112 identifier 11
+StatementPrimal passive lhsValue -0.756802 lhsIdentifier 4 newValue -0.756802
+IndexFree index 4
+IndexAssign index 10
+TapeRegisterInput value -0.756802 identifier 10
 # Run test
 # Active type computations
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
@@ -313,269 +313,269 @@ StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal passive lhsValue 0 lhsIdentifier 0 newValue 0
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.745624
-IndexAssign index 32765
-StatementStoreOnTape lhsIdentifier 32765 newValue 0.745624 numActiveVariables 1
-	32764 0.666367;
+IndexAssign index 4
+StatementStoreOnTape lhsIdentifier 4 newValue 0.745624 numActiveVariables 1
+	13 0.666367;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.666367
-IndexAssign index 32766
-StatementStoreOnTape lhsIdentifier 32766 newValue 0.666367 numActiveVariables 1
-	32764 -0.745624;
+IndexAssign index 3
+StatementStoreOnTape lhsIdentifier 3 newValue 0.666367 numActiveVariables 1
+	13 -0.745624;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 2.52441
-IndexAssign index 32767
-StatementStoreOnTape lhsIdentifier 32767 newValue 2.52441 numActiveVariables 1
-	32764 3;
+IndexAssign index 2
+StatementStoreOnTape lhsIdentifier 2 newValue 2.52441 numActiveVariables 1
+	13 3;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.708073
-IndexAssign index 32768
-StatementStoreOnTape lhsIdentifier 32768 newValue 0.708073 numActiveVariables 2
-	32764 0.841471; 32764 0.841471;
-StatementPrimal expression lhsValue 0.745624 lhsIdentifier 32765 newValue 1.5347
-IndexFree index 32765
-IndexAssign index 32765
-StatementStoreOnTape lhsIdentifier 32765 newValue 1.5347 numActiveVariables 2
-	32765 1; 32763 0.6143;
-StatementPrimal expression lhsValue 0.666367 lhsIdentifier 32766 newValue 1.28067
-IndexFree index 32766
-IndexAssign index 32766
-StatementStoreOnTape lhsIdentifier 32766 newValue 1.28067 numActiveVariables 2
-	32766 1; 32763 -0.789072;
-StatementPrimal expression lhsValue 2.52441 lhsIdentifier 32767 newValue 5.25231
-IndexFree index 32767
-IndexAssign index 32767
-StatementStoreOnTape lhsIdentifier 32767 newValue 5.25231 numActiveVariables 2
-	32767 1; 32763 3;
-StatementPrimal expression lhsValue 0.708073 lhsIdentifier 32768 newValue 1.5349
-IndexFree index 32768
-IndexAssign index 32768
-StatementStoreOnTape lhsIdentifier 32768 newValue 1.5349 numActiveVariables 3
-	32768 1; 32763 0.909297; 32763 0.909297;
-StatementPrimal expression lhsValue 1.5347 lhsIdentifier 32765 newValue 1.67535
-IndexFree index 32765
-IndexAssign index 32765
-StatementStoreOnTape lhsIdentifier 32765 newValue 1.67535 numActiveVariables 2
-	32765 1; 32762 0.990059;
-StatementPrimal expression lhsValue 1.28067 lhsIdentifier 32766 newValue 2.27073
-IndexFree index 32766
-IndexAssign index 32766
-StatementStoreOnTape lhsIdentifier 32766 newValue 2.27073 numActiveVariables 2
-	32766 1; 32762 -0.140652;
-StatementPrimal expression lhsValue 5.25231 lhsIdentifier 32767 newValue 5.67567
-IndexFree index 32767
-IndexAssign index 32767
-StatementStoreOnTape lhsIdentifier 32767 newValue 5.67567 numActiveVariables 2
-	32767 1; 32762 3;
-StatementPrimal expression lhsValue 1.5349 lhsIdentifier 32768 newValue 1.55481
-IndexFree index 32768
-IndexAssign index 32768
-StatementStoreOnTape lhsIdentifier 32768 newValue 1.55481 numActiveVariables 3
-	32768 1; 32762 0.14112; 32762 0.14112;
-StatementPrimal expression lhsValue 1.67535 lhsIdentifier 32765 newValue 0.988748
-IndexFree index 32765
-IndexAssign index 32765
-StatementStoreOnTape lhsIdentifier 32765 newValue 0.988748 numActiveVariables 2
-	32765 1; 32761 0.727035;
-StatementPrimal expression lhsValue 2.27073 lhsIdentifier 32766 newValue 2.99776
-IndexFree index 32766
-IndexAssign index 32766
-StatementStoreOnTape lhsIdentifier 32766 newValue 2.99776 numActiveVariables 2
-	32766 1; 32761 0.6866;
-StatementPrimal expression lhsValue 5.67567 lhsIdentifier 32767 newValue 3.40526
-IndexFree index 32767
-IndexAssign index 32767
-StatementStoreOnTape lhsIdentifier 32767 newValue 3.40526 numActiveVariables 2
-	32767 1; 32761 3;
-StatementPrimal expression lhsValue 1.55481 lhsIdentifier 32768 newValue 2.12756
-IndexFree index 32768
-IndexAssign index 32768
-StatementStoreOnTape lhsIdentifier 32768 newValue 2.12756 numActiveVariables 3
-	32768 1; 32761 -0.756802; 32761 -0.756802;
+IndexAssign index 1
+StatementStoreOnTape lhsIdentifier 1 newValue 0.708073 numActiveVariables 2
+	13 0.841471; 13 0.841471;
+StatementPrimal expression lhsValue 0.745624 lhsIdentifier 4 newValue 1.5347
+IndexFree index 4
+IndexAssign index 4
+StatementStoreOnTape lhsIdentifier 4 newValue 1.5347 numActiveVariables 2
+	4 1; 12 0.6143;
+StatementPrimal expression lhsValue 0.666367 lhsIdentifier 3 newValue 1.28067
+IndexFree index 3
+IndexAssign index 3
+StatementStoreOnTape lhsIdentifier 3 newValue 1.28067 numActiveVariables 2
+	3 1; 12 -0.789072;
+StatementPrimal expression lhsValue 2.52441 lhsIdentifier 2 newValue 5.25231
+IndexFree index 2
+IndexAssign index 2
+StatementStoreOnTape lhsIdentifier 2 newValue 5.25231 numActiveVariables 2
+	2 1; 12 3;
+StatementPrimal expression lhsValue 0.708073 lhsIdentifier 1 newValue 1.5349
+IndexFree index 1
+IndexAssign index 1
+StatementStoreOnTape lhsIdentifier 1 newValue 1.5349 numActiveVariables 3
+	1 1; 12 0.909297; 12 0.909297;
+StatementPrimal expression lhsValue 1.5347 lhsIdentifier 4 newValue 1.67535
+IndexFree index 4
+IndexAssign index 4
+StatementStoreOnTape lhsIdentifier 4 newValue 1.67535 numActiveVariables 2
+	4 1; 11 0.990059;
+StatementPrimal expression lhsValue 1.28067 lhsIdentifier 3 newValue 2.27073
+IndexFree index 3
+IndexAssign index 3
+StatementStoreOnTape lhsIdentifier 3 newValue 2.27073 numActiveVariables 2
+	3 1; 11 -0.140652;
+StatementPrimal expression lhsValue 5.25231 lhsIdentifier 2 newValue 5.67567
+IndexFree index 2
+IndexAssign index 2
+StatementStoreOnTape lhsIdentifier 2 newValue 5.67567 numActiveVariables 2
+	2 1; 11 3;
+StatementPrimal expression lhsValue 1.5349 lhsIdentifier 1 newValue 1.55481
+IndexFree index 1
+IndexAssign index 1
+StatementStoreOnTape lhsIdentifier 1 newValue 1.55481 numActiveVariables 3
+	1 1; 11 0.14112; 11 0.14112;
+StatementPrimal expression lhsValue 1.67535 lhsIdentifier 4 newValue 0.988748
+IndexFree index 4
+IndexAssign index 4
+StatementStoreOnTape lhsIdentifier 4 newValue 0.988748 numActiveVariables 2
+	4 1; 10 0.727035;
+StatementPrimal expression lhsValue 2.27073 lhsIdentifier 3 newValue 2.99776
+IndexFree index 3
+IndexAssign index 3
+StatementStoreOnTape lhsIdentifier 3 newValue 2.99776 numActiveVariables 2
+	3 1; 10 0.6866;
+StatementPrimal expression lhsValue 5.67567 lhsIdentifier 2 newValue 3.40526
+IndexFree index 2
+IndexAssign index 2
+StatementStoreOnTape lhsIdentifier 2 newValue 3.40526 numActiveVariables 2
+	2 1; 10 3;
+StatementPrimal expression lhsValue 1.55481 lhsIdentifier 1 newValue 2.12756
+IndexFree index 1
+IndexAssign index 1
+StatementStoreOnTape lhsIdentifier 1 newValue 2.12756 numActiveVariables 3
+	1 1; 10 -0.756802; 10 -0.756802;
 # Preaccumulation
 PreaccStart
-PreaccAddInput value 0.988748 identifier 32765
+PreaccAddInput value 0.988748 identifier 4
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.977623
-IndexAssign index 32760
-StatementStoreOnTape lhsIdentifier 32760 newValue 0.977623 numActiveVariables 2
-	32765 0.988748; 32765 0.988748;
+IndexAssign index 9
+StatementStoreOnTape lhsIdentifier 9 newValue 0.977623 numActiveVariables 2
+	4 0.988748; 4 0.988748;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.537435
-IndexAssign index 32759
-StatementStoreOnTape lhsIdentifier 32759 newValue 0.537435 numActiveVariables 2
-	32760 0.549736; 32765 -0.816646;
+IndexAssign index 8
+StatementStoreOnTape lhsIdentifier 8 newValue 0.537435 numActiveVariables 2
+	9 0.549736; 4 -0.816646;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0.525408
-IndexAssign index 32758
-StatementStoreOnTape lhsIdentifier 32758 newValue 0.525408 numActiveVariables 2
-	32760 0.537435; 32759 0.977623;
+IndexAssign index 7
+StatementStoreOnTape lhsIdentifier 7 newValue 0.525408 numActiveVariables 2
+	9 0.537435; 8 0.977623;
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 4.60886
-IndexAssign index 32757
-StatementStoreOnTape lhsIdentifier 32757 newValue 4.60886 numActiveVariables 3
-	32766 1; 32766 0.537435; 32759 2.99776;
-PreaccAddOutput value 0.977623 identifier 32760
-PreaccAddOutput value 0.537435 identifier 32759
-PreaccAddOutput value 0.525408 identifier 32758
-PreaccAddOutput value 4.60886 identifier 32757
+IndexAssign index 6
+StatementStoreOnTape lhsIdentifier 6 newValue 4.60886 numActiveVariables 3
+	3 1; 3 0.537435; 8 2.99776;
+PreaccAddOutput value 0.977623 identifier 9
+PreaccAddOutput value 0.537435 identifier 8
+PreaccAddOutput value 0.525408 identifier 7
+PreaccAddOutput value 4.60886 identifier 6
 TapeStopRecording
-TapeEvaluate forward begin from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 41, [0, 20, []]]]
-StatementEvaluate lhsIdentifier 32760 numAdjoints 2
+TapeEvaluate forward begin from [0, 0, [0, 32, [15, 1, []]]] to [0, 0, [0, 41, [19, 1, []]]]
+StatementEvaluate lhsIdentifier 9 numAdjoints 2
 	1.9775 0
-StatementEvaluate lhsIdentifier 32759 numAdjoints 2
+StatementEvaluate lhsIdentifier 8 numAdjoints 2
 	0.270455 0
-StatementEvaluate lhsIdentifier 32758 numAdjoints 2
+StatementEvaluate lhsIdentifier 7 numAdjoints 2
 	1.32718 0
-StatementEvaluate lhsIdentifier 32757 numAdjoints 2
+StatementEvaluate lhsIdentifier 6 numAdjoints 2
 	0.810758 0
-TapeEvaluate forward end from [0, 0, [0, 32, [0, 16, []]]] to [0, 0, [0, 41, [0, 20, []]]]
-TapeReset to position [0, 0, [0, 32, [0, 16, []]]] clear adjoints 1
-IndexFree index 32760
-IndexAssign index 32760
-StatementStoreOnTape lhsIdentifier 32760 newValue 0.977623 numActiveVariables 1
-	32765 1.9775;
-IndexFree index 32759
-IndexAssign index 32759
-StatementStoreOnTape lhsIdentifier 32759 newValue 0.537435 numActiveVariables 1
-	32765 0.270455;
-IndexFree index 32758
-IndexAssign index 32758
-StatementStoreOnTape lhsIdentifier 32758 newValue 0.525408 numActiveVariables 1
-	32765 1.32718;
-IndexFree index 32757
-IndexAssign index 32757
-StatementStoreOnTape lhsIdentifier 32757 newValue 4.60886 numActiveVariables 1
-	32765 0.810758;
+TapeEvaluate forward end from [0, 0, [0, 32, [15, 1, []]]] to [0, 0, [0, 41, [19, 1, []]]]
+TapeReset to position [0, 0, [0, 32, [15, 1, []]]] clear adjoints 1
+IndexFree index 9
+IndexAssign index 9
+StatementStoreOnTape lhsIdentifier 9 newValue 0.977623 numActiveVariables 1
+	4 1.9775;
+IndexFree index 8
+IndexAssign index 8
+StatementStoreOnTape lhsIdentifier 8 newValue 0.537435 numActiveVariables 1
+	4 0.270455;
+IndexFree index 7
+IndexAssign index 7
+StatementStoreOnTape lhsIdentifier 7 newValue 0.525408 numActiveVariables 1
+	4 1.32718;
+IndexFree index 6
+IndexAssign index 6
+StatementStoreOnTape lhsIdentifier 6 newValue 4.60886 numActiveVariables 1
+	4 0.810758;
 TapeStartRecording
 PreaccFinish
 PreaccStart
-PreaccAddInput value 0.988748 identifier 32765
-PreaccAddInput value 2.99776 identifier 32766
-PreaccAddInput value 3.40526 identifier 32767
-PreaccAddInput value 2.12756 identifier 32768
+PreaccAddInput value 0.988748 identifier 4
+PreaccAddInput value 2.99776 identifier 3
+PreaccAddInput value 3.40526 identifier 2
+PreaccAddInput value 2.12756 identifier 1
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 10.2089
-IndexAssign index 32756
-StatementStoreOnTape lhsIdentifier 32756 newValue 10.2089 numActiveVariables 4
-	32765 2.99776; 32766 0.988748; 32767 2.12756; 32768 3.40526;
-PreaccAddOutput value 10.2089 identifier 32756
+IndexAssign index 5
+StatementStoreOnTape lhsIdentifier 5 newValue 10.2089 numActiveVariables 4
+	4 2.99776; 3 0.988748; 2 2.12756; 1 3.40526;
+PreaccAddOutput value 10.2089 identifier 5
 TapeStopRecording
-TapeEvaluate reverse begin from [0, 0, [0, 40, [0, 21, []]]] to [0, 0, [0, 36, [0, 20, []]]]
-StatementEvaluate lhsIdentifier 32756 numAdjoints 2
+TapeEvaluate reverse begin from [0, 0, [0, 40, [20, 1, []]]] to [0, 0, [0, 36, [19, 1, []]]]
+StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	1 0
-TapeEvaluate reverse end from [0, 0, [0, 40, [0, 21, []]]] to [0, 0, [0, 36, [0, 20, []]]]
-TapeReset to position [0, 0, [0, 36, [0, 20, []]]] clear adjoints 1
-IndexFree index 32756
-IndexAssign index 32756
-StatementStoreOnTape lhsIdentifier 32756 newValue 10.2089 numActiveVariables 4
-	32765 2.99776; 32766 0.988748; 32767 2.12756; 32768 3.40526;
+TapeEvaluate reverse end from [0, 0, [0, 40, [20, 1, []]]] to [0, 0, [0, 36, [19, 1, []]]]
+TapeReset to position [0, 0, [0, 36, [19, 1, []]]] clear adjoints 1
+IndexFree index 5
+IndexAssign index 5
+StatementStoreOnTape lhsIdentifier 5 newValue 10.2089 numActiveVariables 4
+	4 2.99776; 3 0.988748; 2 2.12756; 1 3.40526;
 TapeStartRecording
 PreaccFinish
 # Assign outputs
-StatementPrimal expression lhsValue 0.983156 lhsIdentifier 32755 newValue 0.983156
-IndexFree index 32755
-IndexAssign index 32755
-StatementStoreOnTape lhsIdentifier 32755 newValue 0.983156 numActiveVariables 3
-	32760 0.908882; 32759 1.65331; 32756 0.706219;
-StatementPrimal expression lhsValue 0.770226 lhsIdentifier 32754 newValue 0.770226
-IndexFree index 32754
-IndexAssign index 32754
-StatementStoreOnTape lhsIdentifier 32754 newValue 0.770226 numActiveVariables 5
-	32760 0.349451; 32759 0.635671; 32758 0.409477; 32757 0.409477; 32756 0.46206;
-StatementPrimal expression lhsValue -0.521775 lhsIdentifier 32753 newValue -0.521775
-IndexFree index 32753
-IndexAssign index 32753
-StatementStoreOnTape lhsIdentifier 32753 newValue -0.521775 numActiveVariables 5
-	32760 0.213435; 32759 0.38825; 32758 -1.32931; 32757 -1.32931; 32756 0.0861384;
-StatementPrimal expression lhsValue 0.609513 lhsIdentifier 32752 newValue 0.609513
-IndexFree index 32752
-IndexAssign index 32752
-StatementStoreOnTape lhsIdentifier 32752 newValue 0.609513 numActiveVariables 5
-	32760 0.153218; 32759 0.278713; 32758 -2.8614; 32757 -2.8614; 32756 -0.138958;
-IndexFree index 32756
-IndexFree index 32757
-IndexFree index 32758
-IndexFree index 32759
-IndexFree index 32760
-IndexFree index 32768
-IndexFree index 32767
-IndexFree index 32766
-IndexFree index 32765
+StatementPrimal expression lhsValue 0.983156 lhsIdentifier 14 newValue 0.983156
+IndexFree index 14
+IndexAssign index 14
+StatementStoreOnTape lhsIdentifier 14 newValue 0.983156 numActiveVariables 3
+	9 0.908882; 8 1.65331; 5 0.706219;
+StatementPrimal expression lhsValue 0.770226 lhsIdentifier 15 newValue 0.770226
+IndexFree index 15
+IndexAssign index 15
+StatementStoreOnTape lhsIdentifier 15 newValue 0.770226 numActiveVariables 5
+	9 0.349451; 8 0.635671; 7 0.409477; 6 0.409477; 5 0.46206;
+StatementPrimal expression lhsValue -0.521775 lhsIdentifier 16 newValue -0.521775
+IndexFree index 16
+IndexAssign index 16
+StatementStoreOnTape lhsIdentifier 16 newValue -0.521775 numActiveVariables 5
+	9 0.213435; 8 0.38825; 7 -1.32931; 6 -1.32931; 5 0.0861384;
+StatementPrimal expression lhsValue 0.609513 lhsIdentifier 17 newValue 0.609513
+IndexFree index 17
+IndexAssign index 17
+StatementStoreOnTape lhsIdentifier 17 newValue 0.609513 numActiveVariables 5
+	9 0.153218; 8 0.278713; 7 -2.8614; 6 -2.8614; 5 -0.138958;
+IndexFree index 5
+IndexFree index 6
+IndexFree index 7
+IndexFree index 8
+IndexFree index 9
+IndexFree index 1
+IndexFree index 2
+IndexFree index 3
+IndexFree index 4
 # Register outputs
-IndexFree index 32755
-IndexAssign index 32755
-StatementStoreOnTape lhsIdentifier 32755 newValue 0.983156 numActiveVariables 1
-	32755 1;
-TapeRegisterOutput value 0.983156 identifier 32755
-IndexFree index 32754
-IndexAssign index 32754
-StatementStoreOnTape lhsIdentifier 32754 newValue 0.770226 numActiveVariables 1
-	32754 1;
-TapeRegisterOutput value 0.770226 identifier 32754
-IndexFree index 32753
-IndexAssign index 32753
-StatementStoreOnTape lhsIdentifier 32753 newValue -0.521775 numActiveVariables 1
-	32753 1;
-TapeRegisterOutput value -0.521775 identifier 32753
-IndexFree index 32752
-IndexAssign index 32752
-StatementStoreOnTape lhsIdentifier 32752 newValue 0.609513 numActiveVariables 1
-	32752 1;
-TapeRegisterOutput value 0.609513 identifier 32752
+IndexFree index 14
+IndexAssign index 14
+StatementStoreOnTape lhsIdentifier 14 newValue 0.983156 numActiveVariables 1
+	14 1;
+TapeRegisterOutput value 0.983156 identifier 14
+IndexFree index 15
+IndexAssign index 15
+StatementStoreOnTape lhsIdentifier 15 newValue 0.770226 numActiveVariables 1
+	15 1;
+TapeRegisterOutput value 0.770226 identifier 15
+IndexFree index 16
+IndexAssign index 16
+StatementStoreOnTape lhsIdentifier 16 newValue -0.521775 numActiveVariables 1
+	16 1;
+TapeRegisterOutput value -0.521775 identifier 16
+IndexFree index 17
+IndexAssign index 17
+StatementStoreOnTape lhsIdentifier 17 newValue 0.609513 numActiveVariables 1
+	17 1;
+TapeRegisterOutput value 0.609513 identifier 17
 TapeStopRecording
 # Tape evaluate
-TapeEvaluate reverse begin from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 0, []]]]
-StatementEvaluate lhsIdentifier 32752 numAdjoints 2
+TapeEvaluate reverse begin from [0, 0, [0, 62, [28, 1, []]]] to [0, 0, [0, 0, [0, 0, []]]]
+StatementEvaluate lhsIdentifier 17 numAdjoints 2
 	-0.989992 0.753902
-StatementEvaluate lhsIdentifier 32753 numAdjoints 2
+StatementEvaluate lhsIdentifier 16 numAdjoints 2
 	-0.416147 0.96017
-StatementEvaluate lhsIdentifier 32754 numAdjoints 2
+StatementEvaluate lhsIdentifier 15 numAdjoints 2
 	0.540302 0.283662
-StatementEvaluate lhsIdentifier 32755 numAdjoints 2
+StatementEvaluate lhsIdentifier 14 numAdjoints 2
 	1 -0.653644
-StatementEvaluate lhsIdentifier 32752 numAdjoints 2
+StatementEvaluate lhsIdentifier 17 numAdjoints 2
 	-0.989992 0.753902
-StatementEvaluate lhsIdentifier 32753 numAdjoints 2
+StatementEvaluate lhsIdentifier 16 numAdjoints 2
 	-0.416147 0.96017
-StatementEvaluate lhsIdentifier 32754 numAdjoints 2
+StatementEvaluate lhsIdentifier 15 numAdjoints 2
 	0.540302 0.283662
-StatementEvaluate lhsIdentifier 32755 numAdjoints 2
+StatementEvaluate lhsIdentifier 14 numAdjoints 2
 	1 -0.653644
-StatementEvaluate lhsIdentifier 32756 numAdjoints 2
+StatementEvaluate lhsIdentifier 5 numAdjoints 2
 	1.05759 -0.3526
-StatementEvaluate lhsIdentifier 32757 numAdjoints 2
+StatementEvaluate lhsIdentifier 6 numAdjoints 2
 	3.6072 -3.31743
-StatementEvaluate lhsIdentifier 32758 numAdjoints 2
+StatementEvaluate lhsIdentifier 7 numAdjoints 2
 	3.6072 -3.31743
-StatementEvaluate lhsIdentifier 32759 numAdjoints 2
+StatementEvaluate lhsIdentifier 8 numAdjoints 2
 	1.55927 -0.31745
-StatementEvaluate lhsIdentifier 32760 numAdjoints 2
+StatementEvaluate lhsIdentifier 9 numAdjoints 2
 	0.857186 -0.174514
-StatementEvaluate lhsIdentifier 32768 numAdjoints 2
+StatementEvaluate lhsIdentifier 1 numAdjoints 2
 	3.60137 -1.20069
-StatementEvaluate lhsIdentifier 32767 numAdjoints 2
+StatementEvaluate lhsIdentifier 2 numAdjoints 2
 	2.25009 -0.750178
-StatementEvaluate lhsIdentifier 32766 numAdjoints 2
+StatementEvaluate lhsIdentifier 3 numAdjoints 2
 	1.04569 -0.348633
-StatementEvaluate lhsIdentifier 32765 numAdjoints 2
+StatementEvaluate lhsIdentifier 4 numAdjoints 2
 	12.9992 -8.58042
-StatementEvaluate lhsIdentifier 32768 numAdjoints 2
+StatementEvaluate lhsIdentifier 1 numAdjoints 2
 	3.60137 -1.20069
-StatementEvaluate lhsIdentifier 32767 numAdjoints 2
+StatementEvaluate lhsIdentifier 2 numAdjoints 2
 	2.25009 -0.750178
-StatementEvaluate lhsIdentifier 32766 numAdjoints 2
+StatementEvaluate lhsIdentifier 3 numAdjoints 2
 	1.04569 -0.348633
-StatementEvaluate lhsIdentifier 32765 numAdjoints 2
+StatementEvaluate lhsIdentifier 4 numAdjoints 2
 	12.9992 -8.58042
-StatementEvaluate lhsIdentifier 32768 numAdjoints 2
+StatementEvaluate lhsIdentifier 1 numAdjoints 2
 	3.60137 -1.20069
-StatementEvaluate lhsIdentifier 32767 numAdjoints 2
+StatementEvaluate lhsIdentifier 2 numAdjoints 2
 	2.25009 -0.750178
-StatementEvaluate lhsIdentifier 32766 numAdjoints 2
+StatementEvaluate lhsIdentifier 3 numAdjoints 2
 	1.04569 -0.348633
-StatementEvaluate lhsIdentifier 32765 numAdjoints 2
+StatementEvaluate lhsIdentifier 4 numAdjoints 2
 	12.9992 -8.58042
-StatementEvaluate lhsIdentifier 32768 numAdjoints 2
+StatementEvaluate lhsIdentifier 1 numAdjoints 2
 	3.60137 -1.20069
-StatementEvaluate lhsIdentifier 32767 numAdjoints 2
+StatementEvaluate lhsIdentifier 2 numAdjoints 2
 	2.25009 -0.750178
-StatementEvaluate lhsIdentifier 32766 numAdjoints 2
+StatementEvaluate lhsIdentifier 3 numAdjoints 2
 	1.04569 -0.348633
-StatementEvaluate lhsIdentifier 32765 numAdjoints 2
+StatementEvaluate lhsIdentifier 4 numAdjoints 2
 	12.9992 -8.58042
-TapeEvaluate reverse end from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 0, []]]]
+TapeEvaluate reverse end from [0, 0, [0, 62, [28, 1, []]]] to [0, 0, [0, 0, [0, 0, []]]]
 # Register inputs
 # Run test
 # Active type computations
@@ -584,11 +584,11 @@ TapeEvaluate reverse end from [0, 0, [0, 62, [0, 29, []]]] to [0, 0, [0, 0, [0, 
 # Register outputs
 # Tape evaluate
 TapeReset hard position [0, 0, [0, 0, [0, 0, []]]] clear adjoints 0
-IndexFree index 32752
-IndexFree index 32753
-IndexFree index 32754
-IndexFree index 32755
-IndexFree index 32765
-IndexFree index 32766
-IndexFree index 32767
-IndexFree index 32768
+IndexFree index 17
+IndexFree index 16
+IndexFree index 15
+IndexFree index 14
+IndexFree index 6
+IndexFree index 7
+IndexFree index 8
+IndexFree index 9
