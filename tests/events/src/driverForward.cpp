@@ -49,7 +49,7 @@ int main() {
 
   auto forwardCallbacks = ForwardCallbacks::registerAll<Tape>();
 
-#ifdef SECOND_ORDER
+#ifdef USE_INNER_CALLBACKS
   using InnerTape = Tape::Real::Tape;
   auto innerCallbacks = ForwardCallbacks::registerAll<InnerTape>();
 #endif
@@ -62,7 +62,7 @@ int main() {
   for (size_t run = 0; run < maxRuns; run += 1) {
     if (run == maxRuns - 1) { /* last run, deregister all listeners */
       deregisterCallbacks<Tape>(forwardCallbacks);
-#ifdef SECOND_ORDER
+#ifdef USE_INNER_CALLBACKS
       deregisterCallbacks<InnerTape>(innerCallbacks);
 #endif
     }
@@ -75,7 +75,7 @@ int main() {
         codi::GradientTraits::at(inputs[i].gradient(), currentDim) = cos(i + currentDim * nInputs);
       }
 
-#ifdef SECOND_ORDER
+#ifdef USE_INNER_CALLBACKS
       inputs[i].value().setGradient(i + 1);
 #endif
     }

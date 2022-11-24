@@ -53,6 +53,9 @@ endif
 # vector dimension used for vector mode tests
 VECTOR_DIM ?= 2
 
+# whether there should be events for the inner tape in second order tests
+USE_INNER_CALLBACKS = no
+
 # default target
 all:
 
@@ -115,8 +118,12 @@ getDriver = $(if $(findstring ReversePrimal,$1),ReversePrimal,$(if $(findstring 
 # given a type, decide whether it uses a forward or reverse tape, and produce a corresponding preprocessor flag
 getTapeFlag = $(if $(findstring Reverse,$1),-DREVERSE_TAPE,-DFORWARD_TAPE)
 
-# given a type, decide whether it is a second order type, and produce a corresponding preprocessor flag
-getOrderFlag = $(if $(findstring Sec,$1),-DSECOND_ORDER,-DFIRST_ORDER)
+# given a type, decide whether it is a second order type, and if configured, request events for the inner tape
+ifeq ($(USE_INNER_CALLBACKS),yes)
+getInnerCallbacksFlag = $(if $(findstring Sec,$1),-DUSE_INNER_CALLBACKS)
+else
+getInnerCallbacksFlag = 
+endif
 
 # to not clutter the result files of second order tests with primal value vector allocations, reduce the chunk sizes
 # this is especially important for primal value tapes, but for consistency, it is applied everywhere
@@ -151,7 +158,7 @@ $(foreach test,$(usedTests),$(eval $(call setTest,$(test))))
 define setType
 build/$1%.exe: TYPE=$1
 build/$1%.exe: DRIVER=$(call getDriver,$1)
-build/$1%.exe: TYPE_FLAGS=$(call getTapeFlag,$1) $(call getOrderFlag,$1) $(call getChunkSizeFlags,$1) $(call getVariableAdjointInterfaceFlag,$1)
+build/$1%.exe: TYPE_FLAGS=$(call getTapeFlag,$1) $(call getInnerCallbacksFlag,$1) $(call getChunkSizeFlags,$1) $(call getVariableAdjointInterfaceFlag,$1)
 endef
 
 $(foreach type,$(usedTypes),$(eval $(call setType,$(type))))
