@@ -62,10 +62,8 @@ namespace codi {
   template<typename T_TapeTypes>
   struct JacobianReuseTape
       : public JacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>>,
-        public EditingTapeInterface<
-          typename JacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>>::Position,
-                                    JacobianReuseTape<T_TapeTypes>>
-  {
+        public EditingTapeInterface<typename JacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>>::Position,
+                                    JacobianReuseTape<T_TapeTypes>> {
     public:
 
       using TapeTypes = CODI_DD(T_TapeTypes,
@@ -102,7 +100,6 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-
         this->adjoints.beginUse();
         Identifier adjointsSize = (Identifier)this->adjoints.size();
 
@@ -214,7 +211,6 @@ namespace codi {
 
       /// \copydoc codi::EditingTapeInterface::append
       CODI_INLINE void append(JacobianReuseTape& srcTape, Position const& start, Position const& end) {
-
         typename Base::NestedPosition curInnerPos = start.inner;
         auto evalFunc = [&](ExternalFunctionInternalData* extFunc, const typename Base::NestedPosition* endInnerPos) {
           // Append jacobian and statement data.
@@ -226,7 +222,7 @@ namespace codi {
           this->externalFunctionData.reserveItems(1);
           typename Base::NestedPosition innerPosition =
               this->externalFunctionData.template extractPosition<typename Base::NestedPosition>(
-                this->externalFunctionData.getPosition());
+                  this->externalFunctionData.getPosition());
 
           this->externalFunctionData.pushData(*extFunc, innerPosition);
 
@@ -236,8 +232,8 @@ namespace codi {
         srcTape.externalFunctionData.forEachForward(start, end, evalFunc);
 
         // Handle the tail.
-        srcTape.jacobianData.evaluateForward(curInnerPos, end.inner,
-                                             JacobianReuseTape::appendJacobiansAndStatements, this);
+        srcTape.jacobianData.evaluateForward(curInnerPos, end.inner, JacobianReuseTape::appendJacobiansAndStatements,
+                                             this);
       }
 
       /// @}
@@ -253,9 +249,7 @@ namespace codi {
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
-
         while (curStmtPos < endStmtPos) {
-
           // Manual statement push.
           dstTape->statementData.reserveItems(1);
           dstTape->pushStmtData(lhsIdentifiers[curStmtPos], numberOfJacobians[curStmtPos]);
