@@ -507,9 +507,9 @@ namespace codi {
                 ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data, EvalData::delFunc,
                                                EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
           } else {
-            Type::getTape().pushExternalFunction(
-                ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data, nullptr,
-                                               EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
+            Type::getTape().pushExternalFunction(ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data,
+                                                                                nullptr, EvalData::evalForwFuncStatic,
+                                                                                EvalData::evalPrimFuncStatic));
           }
 
           #pragma omp barrier
