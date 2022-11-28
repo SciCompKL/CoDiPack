@@ -98,7 +98,7 @@ namespace codi {
       /// True if the index manager is specific to a tape type (and not a tape instance). See IndexManagerInterface.
       static bool constexpr NeedsStaticStorage = CODI_UNDEFINED_VALUE;
 
-      /// @brief Call on assignment on a primal value e.g. on `w` for  `w = a + b`.
+      /// @brief Call on assignment of a primal value, e.g. on `w` for `w = a + b`.
       /// @return true if new indices have been generated internally.
       template<typename Tape>
       bool assignIndex(Index& index);
@@ -109,7 +109,7 @@ namespace codi {
       bool assignUnusedIndex(Index& index);
 
       template<typename Tape>
-      void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy of a primal value e.g. `w = a`.
+      void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy of a primal value, e.g. `w = a`.
 
       template<typename Tape>
       void freeIndex(Index& index);  ///< Call on destruction of a primal value. Usually called from the destructor.
