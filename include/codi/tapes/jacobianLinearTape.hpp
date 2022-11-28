@@ -37,11 +37,11 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../misc/macros.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
 #include "indices/linearIndexManager.hpp"
@@ -110,7 +110,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          Adjoint* adjointVector,
+          JacobianLinearTape& tape, Adjoint* adjointVector,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -129,9 +129,11 @@ namespace codi {
 
           if (Config::StatementInputTag != argsSize) {
             Adjoint lhsAdjoint = Adjoint();
-
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
+
+            EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
+                tape, curAdjointPos, GradientTraits::dim<Adjoint>(), GradientTraits::toArray(lhsAdjoint).data());
           }
 
           curStmtPos += 1;
@@ -142,7 +144,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          Adjoint* adjointVector,
+          JacobianLinearTape& tape, Adjoint* adjointVector,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -158,11 +160,14 @@ namespace codi {
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          Adjoint const lhsAdjoint = adjointVector[curAdjointPos];  // We do not use the zero index, decrement of
-                                                                    // curAdjointPos at the end of the loop.
-
           if (Config::StatementInputTag != argsSize) {
             // No input value, perform regular statement evaluation.
+
+            Adjoint const lhsAdjoint = adjointVector[curAdjointPos];  // We do not use the zero index, decrement of
+                                                                      // curAdjointPos at the end of the loop.
+
+            EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
+                tape, curAdjointPos, GradientTraits::dim<Adjoint>(), GradientTraits::toArray(lhsAdjoint).data());
 
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();

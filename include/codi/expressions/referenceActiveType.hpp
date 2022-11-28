@@ -34,8 +34,8 @@
  */
 #pragma once
 
-#include "../misc/macros.hpp"
 #include "../config.h"
+#include "../misc/macros.hpp"
 #include "../tapes/interfaces/gradientAccessTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "assignmentOperators.hpp"
@@ -82,7 +82,7 @@ namespace codi {
       /// Constructor
       CODI_INLINE ReferenceActiveType(Type& v) : reference(v), jacobian() {}
 
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&).
+      /// See LhsExpressionInterface::operator=(ExpressionInterface const&).
       CODI_INLINE ReferenceActiveType<Tape>& operator=(ReferenceActiveType<Tape> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ReferenceActiveType>&>(*this) = v;
         return *this;

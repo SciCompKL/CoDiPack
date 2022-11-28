@@ -36,12 +36,12 @@
 
 #include <utility>
 
+#include "../config.h"
+#include "../expressions/lhsExpressionInterface.hpp"
 #include "../misc/binomial.hpp"
 #include "../misc/compileTimeLoop.hpp"
 #include "../misc/exceptions.hpp"
 #include "../misc/macros.hpp"
-#include "../config.h"
-#include "../expressions/lhsExpressionInterface.hpp"
 #include "../traits/realTraits.hpp"
 
 /** \copydoc codi::Namespace */

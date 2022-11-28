@@ -37,8 +37,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "../../../misc/macros.hpp"
 #include "../../../config.h"
+#include "../../../misc/macros.hpp"
 #include "../../../traits/expressionTraits.hpp"
 #include "../traversalLogic.hpp"
 

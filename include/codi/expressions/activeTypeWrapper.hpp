@@ -34,8 +34,8 @@
  */
 #pragma once
 
-#include "../misc/macros.hpp"
 #include "../config.h"
+#include "../misc/macros.hpp"
 #include "../tapes/interfaces/fullTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "activeType.hpp"
@@ -100,7 +100,7 @@ namespace codi {
         // deliberately left empty
       }
 
-      /// See LhsExpressionInterface::operator =(ExpressionInterface const&)
+      /// See LhsExpressionInterface::operator=(ExpressionInterface const&)
       CODI_INLINE ActiveTypeWrapper<ActiveType>& operator=(ActiveTypeWrapper<ActiveType> const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, ActiveTypeWrapper>&>(*this) = v;
         return *this;

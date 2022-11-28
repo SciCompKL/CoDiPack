@@ -34,8 +34,8 @@
  */
 #pragma once
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../../traits/misc/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */

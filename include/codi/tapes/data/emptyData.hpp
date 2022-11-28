@@ -36,8 +36,8 @@
 
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "chunk.hpp"
 #include "dataInterface.hpp"
 #include "position.hpp"
@@ -114,6 +114,11 @@ namespace codi {
       /// \copydoc DataInterface::getZeroPosition
       CODI_INLINE Position getZeroPosition() const {
         return Position();
+      }
+
+      /// \copybrief DataInterface::getDataPointers
+      CODI_INLINE void getDataPointers(InternalPosHandle const& startPos) {
+        CODI_UNUSED(startPos);
       }
 
       /*******************************************************************************/

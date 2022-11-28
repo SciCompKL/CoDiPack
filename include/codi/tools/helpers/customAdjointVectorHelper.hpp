@@ -34,12 +34,12 @@
  */
 #pragma once
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
+#include "../../misc/macros.hpp"
+#include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../tapes/misc/adjointVectorAccess.hpp"
 #include "../../tapes/misc/vectorAccessInterface.hpp"
-#include "../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 
 /** \copydoc codi::Namespace */

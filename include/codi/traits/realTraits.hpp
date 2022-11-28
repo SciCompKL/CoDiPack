@@ -37,8 +37,8 @@
 #include <cmath>
 #include <complex>
 
-#include "../misc/macros.hpp"
 #include "../config.h"
+#include "../misc/macros.hpp"
 #include "expressionTraits.hpp"
 
 /** \copydoc codi::Namespace */

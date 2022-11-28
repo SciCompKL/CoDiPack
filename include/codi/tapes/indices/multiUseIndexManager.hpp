@@ -36,8 +36,8 @@
 
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "reuseIndexManager.hpp"
 
 /** \copydoc codi::Namespace */
@@ -96,6 +96,7 @@ namespace codi {
       }
 
       /// \copydoc ReuseIndexManager::assignIndex
+      template<typename Tape>
       CODI_INLINE bool assignIndex(Index& index) {
         bool generatedNewIndex = false;
 
@@ -104,11 +105,13 @@ namespace codi {
         }
 
         if (Base::InactiveIndex != index && 0 == indexUse[index]) {
+          EventSystem<Tape>::notifyIndexFreeListeners(index);
+          EventSystem<Tape>::notifyIndexAssignListeners(index);
           indexUse[index] = 1;
           // Index would be freed and used again so we keep it.
         } else {
           index = Base::InactiveIndex;  // Reset index here such that the base class will return a new one.
-          generatedNewIndex = Base::assignIndex(index);
+          generatedNewIndex = Base::template assignIndex<Tape>(index);
           if (generatedNewIndex) {
             resizeUseVector();
           }
@@ -120,10 +123,11 @@ namespace codi {
       }
 
       /// \copydoc ReuseIndexManager::assignUnusedIndex
+      template<typename Tape>
       CODI_INLINE bool assignUnusedIndex(Index& index) {
-        freeIndex(index);  // Zero check is performed inside.
+        freeIndex<Tape>(index);  // Zero check is performed inside.
 
-        bool generatedNewIndex = Base::assignUnusedIndex(index);
+        bool generatedNewIndex = Base::template assignUnusedIndex<Tape>(index);
         if (generatedNewIndex) {
           resizeUseVector();
         }
@@ -134,32 +138,35 @@ namespace codi {
       }
 
       /// \copydoc ReuseIndexManager::copyIndex
+      template<typename Tape>
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
         if (Config::CopyOptimization) {
           // Skip the logic if the indices are the same.
           // This also prevents the bug that if &lhs == &rhs, the left hand side will always be deactivated.
           if (lhs != rhs) {
-            freeIndex(lhs);
+            freeIndex<Tape>(lhs);
 
             if (Base::InactiveIndex != rhs) {  // Do not handle the zero index.
-              indexUse[rhs] += 1;
+              EventSystem<Tape>::notifyIndexCopyListeners(rhs);
 
+              indexUse[rhs] += 1;
               lhs = rhs;
             }
           }
         } else {
           // Path if copy optimizations are disabled.
-          assignIndex(lhs);
+          assignIndex<Tape>(lhs);
         }
       }
 
       /// \copydoc ReuseIndexManager::freeIndex
+      template<typename Tape>
       CODI_INLINE void freeIndex(Index& index) {
         if (Base::valid && Base::InactiveIndex != index) {  // Do not free the zero index.
           indexUse[index] -= 1;
 
           if (indexUse[index] == 0) {  // Only free the index if it is not used any longer.
-            Base::freeIndex(index);
+            Base::template freeIndex<Tape>(index);
           } else {
             index = Base::InactiveIndex;
           }

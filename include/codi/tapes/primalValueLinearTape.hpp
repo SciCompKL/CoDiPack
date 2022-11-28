@@ -38,13 +38,13 @@
 #include <functional>
 #include <type_traits>
 
-#include "../misc/macros.hpp"
-#include "../misc/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/constructStaticContext.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../misc/macros.hpp"
+#include "../misc/memberStore.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
 #include "indices/indexManagerInterface.hpp"
@@ -105,7 +105,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueLinearTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -135,9 +135,16 @@ namespace codi {
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
             adjointVector->setLhsTangent(curAdjointPos);
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(
+                tape, curAdjointPos, adjointVector->getVectorSize(), adjointVector->getAdjointVec(curAdjointPos));
 #else
             adjointVector[curAdjointPos] = lhsTangent;
+
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(
+                tape, curAdjointPos, GradientTraits::dim<Gradient>(), GradientTraits::toArray(lhsTangent).data());
 #endif
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluatePrimalListeners(tape, curAdjointPos,
+                                                                                       primalVector[curAdjointPos]);
           }
 
           curStatementPos += 1;
@@ -147,7 +154,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluatePrimal_Step3_EvalStatements
       CODI_INLINE static void internalEvaluatePrimal_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector,
+          PrimalValueLinearTape& tape, Real* primalVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -172,6 +179,9 @@ namespace codi {
             primalVector[curAdjointPos] = StatementEvaluator::template callPrimal<PrimalValueLinearTape>(
                 stmtEvalhandle[curStatementPos], primalVector, nPassiveValues, curConstantPos, constantValues,
                 curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
+
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluatePrimalListeners(tape, curAdjointPos,
+                                                                                       primalVector[curAdjointPos]);
           }
 
           curStatementPos += 1;
@@ -181,7 +191,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateReverse_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueLinearTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -204,14 +214,24 @@ namespace codi {
 
           if (Config::StatementInputTag != nPassiveValues) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
+
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(
+                tape, curAdjointPos, adjointVector->getVectorSize(), adjointVector->getAdjointVec(curAdjointPos));
+
             Gradient const lhsAdjoint{};
             adjointVector->setLhsAdjoint(curAdjointPos);
 #else
             Gradient const lhsAdjoint = adjointVector[curAdjointPos];
+
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(
+                tape, curAdjointPos, GradientTraits::dim<Gradient>(), GradientTraits::toArray(lhsAdjoint).data());
+
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Gradient();
             }
 #endif
+            EventSystem<PrimalValueLinearTape>::notifyStatementEvaluatePrimalListeners(tape, curAdjointPos,
+                                                                                       primalVector[curAdjointPos]);
 
             StatementEvaluator::template callReverse<PrimalValueLinearTape>(
                 stmtEvalhandle[curStatementPos], primalVector, adjointVector, lhsAdjoint, nPassiveValues,

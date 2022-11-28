@@ -40,8 +40,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "../misc/macros.hpp"
-#include "../misc/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
@@ -49,12 +47,15 @@
 #include "../expressions/logic/helpers/forEachLeafLogic.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../misc/macros.hpp"
+#include "../misc/mathUtility.hpp"
+#include "../misc/memberStore.hpp"
 #include "../traits/expressionTraits.hpp"
-#include "misc/primalAdjointVectorAccess.hpp"
 #include "commonTapeImplementation.hpp"
 #include "data/chunk.hpp"
 #include "data/chunkedData.hpp"
 #include "indices/indexManagerInterface.hpp"
+#include "misc/primalAdjointVectorAccess.hpp"
 #include "statementEvaluators/statementEvaluatorInterface.hpp"
 #include "statementEvaluators/statementEvaluatorTapeInterface.hpp"
 
@@ -235,9 +236,10 @@ namespace codi {
           : Base(),
             indexManager(Config::MaxArgumentSize),  // Reserve first items for passive values.
             statementData(Config::ChunkSize),
-            rhsIdentiferData(Config::ChunkSize),
-            passiveValueData(Config::ChunkSize),
-            constantValueData(Config::ChunkSize),
+            // The following chunks must be large enough to store data for all arguments of one statement.
+            rhsIdentiferData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
+            passiveValueData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
+            constantValueData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
             adjoints(1),  // Ensure that adjoint[0] exists, see its use in gradient() const.
             primals(0),
             primalsCopy(0) {
@@ -297,7 +299,7 @@ namespace codi {
       CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        indexManager.get().freeIndex(identifier);
+        indexManager.get().template freeIndex<Impl>(identifier);
       }
 
       /// @}
@@ -352,6 +354,26 @@ namespace codi {
           }
       };
 
+      /// Computes Jacobian entries for the event system.
+      struct JacobianExtractionLogic : public JacobianComputationLogic<JacobianExtractionLogic> {
+        private:
+          size_t pos;
+
+        public:
+
+          /// Constructor
+          JacobianExtractionLogic() : pos(0) {}
+
+          /// Stores the identifiers and Jacobians.
+          template<typename Node, typename Jacobian>
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, Identifier* rhsIdentifiers,
+                                                  Real* jacobians) {
+            rhsIdentifiers[pos] = node.getIdentifier();
+            jacobians[pos] = ComputationTraits::adjointConversion<Real>(jacobianExpr);
+            pos++;
+          }
+      };
+
     public:
 
       /// @{
@@ -381,7 +403,7 @@ namespace codi {
             size_t passiveArguments = 0;
             pushAll.eval(rhs.cast(), rhsIdentiferData, passiveValueData, constantValueData, passiveArguments);
 
-            bool generatedNewIndex = indexManager.get().assignIndex(lhs.cast().getIdentifier());
+            bool generatedNewIndex = indexManager.get().template assignIndex<Impl>(lhs.cast().getIdentifier());
             checkPrimalSize(generatedNewIndex);
 
             Real& primalEntry = primals[lhs.cast().getIdentifier()];
@@ -389,11 +411,22 @@ namespace codi {
                                 StatementEvaluator::template createHandle<Impl, Impl, Rhs>());
 
             primalEntry = rhs.cast().getValue();
+
+            if (Config::StatementEvents) {
+              JacobianExtractionLogic getRhsIdentifiersAndJacobians;
+              std::array<Identifier, MaxActiveArgs> rhsIdentifiers;
+              std::array<Real, MaxActiveArgs> jacobians;
+              getRhsIdentifiersAndJacobians.eval(rhs.cast(), Real(1.0), rhsIdentifiers.data(), jacobians.data());
+
+              EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), lhs.cast().getIdentifier(),
+                                                                     rhs.cast().getValue(), MaxActiveArgs,
+                                                                     rhsIdentifiers.data(), jacobians.data());
+            }
           } else {
-            indexManager.get().freeIndex(lhs.cast().getIdentifier());
+            indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
           }
         } else {
-          indexManager.get().freeIndex(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -407,11 +440,12 @@ namespace codi {
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
+            return;
           } else {
-            indexManager.get().copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
+            indexManager.get().template copyIndex<Impl>(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
           }
         } else {
-          indexManager.get().freeIndex(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -421,7 +455,7 @@ namespace codi {
       /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) {
-        indexManager.get().freeIndex(lhs.cast().getIdentifier());
+        indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
 
         lhs.cast().value() = rhs;
       }
@@ -443,9 +477,9 @@ namespace codi {
 
         bool generatedNewIndex;
         if (unusedIndex) {
-          generatedNewIndex = indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
+          generatedNewIndex = indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
         } else {
-          generatedNewIndex = indexManager.get().assignIndex(value.cast().getIdentifier());
+          generatedNewIndex = indexManager.get().template assignIndex<Impl>(value.cast().getIdentifier());
         }
         checkPrimalSize(generatedNewIndex);
 
@@ -470,6 +504,7 @@ namespace codi {
       template<typename Lhs>
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         internalRegisterInput(value, true);
+        EventSystem<Impl>::notifyTapeRegisterInputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
       }
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
@@ -578,11 +613,11 @@ namespace codi {
 
       /// Forward evaluation of an inner tape part between two external functions.
       CODI_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start,
-                                                                           NestedPosition const& end, Real* primalData,
-                                                                           ADJOINT_VECTOR_TYPE* data,
+                                                                           NestedPosition const& end, Impl& tape,
+                                                                           Real* primalData, ADJOINT_VECTOR_TYPE* data,
                                                                            ConstantValueData& constantValueData) {
         Wrap_internalEvaluateForward_Step3_EvalStatements evalFunc{};
-        constantValueData.evaluateForward(start, end, evalFunc, primalData, data);
+        constantValueData.evaluateForward(start, end, evalFunc, tape, primalData, data);
       }
 
       /// Internal method for the forward evaluation of the whole tape.
@@ -600,8 +635,14 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(&vectorAccess, data);
 
+        EventSystem<Impl>::notifyTapeEvaluateListeners(
+            cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
+
         Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
-                                                    &vectorAccess, primalData, dataVector, constantValueData);
+                                                    &vectorAccess, cast(), primalData, dataVector, constantValueData);
+
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess,
+                                                       EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
       }
 
       /// Perform the adjoint update based on the configuration in codi::Config::VariableAdjointInterfaceInPrimalTapes.
@@ -630,11 +671,11 @@ namespace codi {
 
       /// Reverse evaluation of an inner tape part between two external functions.
       CODI_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start,
-                                                                           NestedPosition const& end, Real* primalData,
-                                                                           ADJOINT_VECTOR_TYPE* data,
+                                                                           NestedPosition const& end, Impl& tape,
+                                                                           Real* primalData, ADJOINT_VECTOR_TYPE* data,
                                                                            ConstantValueData& constantValueData) {
         Wrap_internalEvaluateReverse_Step3_EvalStatements evalFunc;
-        constantValueData.evaluateReverse(start, end, evalFunc, primalData, data);
+        constantValueData.evaluateReverse(start, end, evalFunc, tape, primalData, data);
       }
 
       /// Internal method for the reverse evaluation of the whole tape.
@@ -651,8 +692,14 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(&vectorAccess, data);
 
+        EventSystem<Impl>::notifyTapeEvaluateListeners(
+            cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
+
         Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction,
-                                                    &vectorAccess, primalData, dataVector, constantValueData);
+                                                    &vectorAccess, cast(), primalData, dataVector, constantValueData);
+
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess,
+                                                       EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
       }
 
     public:
@@ -899,6 +946,7 @@ namespace codi {
                                           size_t& curRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
                                           size_t endRhsIdentifiersPos) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
+            CODI_UNUSED(lhsAdjoint);
             bool const lhsZero = adjointVector->isLhsZero();
 #else
             bool const lhsZero = RealTraits::isTotalZero(lhsAdjoint);
@@ -928,12 +976,30 @@ namespace codi {
       /// @name Functions from ManualStatementPushTapeInterface
       /// @{
 
-      /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobiManual()
-      void pushJacobiManual(Real const& jacobian, Real const& value, Identifier const& index) {
+      /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobianManual()
+      void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
+
+        cast().incrementManualPushCounter();
 
         passiveValueData.pushData(jacobian);
         rhsIdentiferData.pushData(index);
+
+        if (Config::StatementEvents) {
+          if (this->manualPushCounter == this->manualPushGoal) {
+            // emit statement event
+            Real* jacobians;
+            Identifier* rhsIdentifiers;
+            passiveValueData.getDataPointers(passiveValueData.reserveItems(0), jacobians);
+            rhsIdentiferData.getDataPointers(rhsIdentiferData.reserveItems(0), rhsIdentifiers);
+            jacobians -= this->manualPushGoal;
+            rhsIdentifiers -= this->manualPushGoal;
+
+            EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), this->manualPushLhsIdentifier,
+                                                                   this->manualPushLhsValue, this->manualPushGoal,
+                                                                   rhsIdentifiers, jacobians);
+          }
+        }
       }
 
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
@@ -946,11 +1012,13 @@ namespace codi {
         rhsIdentiferData.reserveItems(size);
         passiveValueData.reserveItems(size);
 
-        indexManager.get().assignIndex(lhsIndex);
+        indexManager.get().template assignIndex<Impl>(lhsIndex);
         Real& primalEntry = primals[lhsIndex];
         cast().pushStmtData(lhsIndex, size, primalEntry, PrimalValueBaseTape::jacobianExpressions[size]);
 
         primalEntry = lhsValue;
+
+        cast().initializeManualPushData(lhsValue, lhsIndex, size);
       }
 
       /// @}
@@ -1011,10 +1079,11 @@ namespace codi {
 
       /// Start for primal evaluation between external function.
       CODI_INLINE static void internalEvaluatePrimal_Step2_DataExtraction(NestedPosition const& start,
-                                                                          NestedPosition const& end, Real* primalData,
+                                                                          NestedPosition const& end, Impl& tape,
+                                                                          Real* primalData,
                                                                           ConstantValueData& constantValueData) {
         Wrap_internalEvaluatePrimal_Step3_EvalStatements evalFunc{};
-        constantValueData.evaluateForward(start, end, evalFunc, primalData);
+        constantValueData.evaluateForward(start, end, evalFunc, tape, primalData);
       }
 
     public:
@@ -1031,9 +1100,15 @@ namespace codi {
         // TODO: implement primal value only accessor
         PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals.data());
 
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess,
+                                                       EventHints::EvaluationKind::Primal, EventHints::Endpoint::Begin);
+
         Base::internalEvaluatePrimal_Step1_ExtFunc(start, end,
                                                    PrimalValueBaseTape::internalEvaluatePrimal_Step2_DataExtraction,
-                                                   &primalAdjointAccess, primals.data(), constantValueData);
+                                                   &primalAdjointAccess, cast(), primals.data(), constantValueData);
+
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess,
+                                                       EventHints::EvaluationKind::Primal, EventHints::Endpoint::End);
       }
 
       /// \copydoc codi::PrimalEvaluationTapeInterface::primal(Identifier const&)
@@ -1159,7 +1234,11 @@ namespace codi {
         curPassivePos -= numberOfPassiveArguments;
         curRhsIdentifiersPos -= maxActiveArgs;
 
+#if CODI_VariableAdjointInterfaceInPrimalTapes
+        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !adjointVector->isLhsZero())) {
+#else
         if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) {
+#endif
           for (Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
             primalVector[curPos] = passiveValues[curPassivePos + curPos];
           }
@@ -1230,23 +1309,19 @@ namespace codi {
       }
 
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
-        if (TapeTypes::IsLinearIndexHandler) {
-          if (indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
-            resizePrimalVector(primals.size() + Config::ChunkSize);
-          }
-        } else {
-          if (generatedNewIndex) {
-            resizePrimalVector(indexManager.get().getLargestCreatedIndex() + 1);
-          }
+        if (generatedNewIndex && indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
+          resizePrimalVector();
         }
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
-        adjoints.resize(indexManager.get().getLargestCreatedIndex() + 1);
+        // overallocate as next multiple of Config::ChunkSize
+        adjoints.resize(getNextMultiple((size_t)indexManager.get().getLargestCreatedIndex() + 1, Config::ChunkSize));
       }
 
-      CODI_NO_INLINE void resizePrimalVector(size_t newSize) {
-        primals.resize(newSize);
+      CODI_NO_INLINE void resizePrimalVector() {
+        // overallocate as next multiple of Config::ChunkSize
+        primals.resize(getNextMultiple((size_t)indexManager.get().getLargestCreatedIndex() + 1, Config::ChunkSize));
       }
   };
 

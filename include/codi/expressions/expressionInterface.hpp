@@ -36,8 +36,8 @@
 
 #include <iostream>
 
-#include "../misc/macros.hpp"
 #include "../config.h"
+#include "../misc/macros.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
 #include "logic/nodeInterface.hpp"
@@ -64,6 +64,12 @@ namespace codi {
 
       using ActiveResult = CODI_UNDEFINED;  ///< Type into which the expression can be converted. Usually also the type
                                             ///< from which is constructed.
+
+      /// Constructor
+      ExpressionInterface() = default;
+
+      /// Constructor
+      ExpressionInterface(ExpressionInterface const&) = default;
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
