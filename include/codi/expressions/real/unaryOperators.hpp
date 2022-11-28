@@ -36,9 +36,9 @@
 
 #include <cmath>
 
+#include "../../config.h"
 #include "../../misc/exceptions.hpp"
 #include "../../misc/macros.hpp"
-#include "../../config.h"
 #include "../../traits/realTraits.hpp"
 #include "../unaryExpression.hpp"
 

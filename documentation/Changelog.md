@@ -1,6 +1,26 @@
 Changelog {#Changelog}
 ===========================
 
+### v 2.* - ????-??-??
+ - Features:
+   * Helpers for linear system solvers. See Example 21 for details.
+   * Event system. See Example 22 for details.
+
+ - Bugfix:
+   * Initialization fixes.
+   * Initialization of passive values.
+   * Preaccumulation disables the tape during the algorithm.
+   * Proper assigning of 1st order derivatives to 2nd order derivatives.
+   * Proper reset of reuse index mangers.
+   * Swap of primal value tapes resizes primal value vectors.
+   * Tapes handle small chunk sizes correctly.
+
+ - Other:
+   * Expression trait for the number of operations.
+   * Forward tape evaluation tests for primal value tapes.
+   * Gcc warning of no return statement is now an error.
+   * Make std::fmin and std::fmax available in namespace.
+
 ### v 2.0.2 - 2022-06-14
  - Bugfix:
    * Prevent copy constrution of tapes.

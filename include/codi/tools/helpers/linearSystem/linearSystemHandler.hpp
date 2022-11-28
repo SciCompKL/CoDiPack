@@ -231,7 +231,7 @@ namespace codi {
         public:
           using VectorAccessFunctor::VectorAccessFunctor;
 
-          void operator()(Real& value_v, Real& value_d, Identifier const& value_id, Real & oldValue) {
+          void operator()(Real& value_v, Real& value_d, Identifier const& value_id, Real& oldValue) {
             oldValue = this->adjointInterface->getPrimal(value_id);
             this->adjointInterface->setPrimal(value_id, value_v);
             this->adjointInterface->resetAdjoint(value_id, this->dim);

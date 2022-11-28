@@ -36,8 +36,9 @@
 
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/eventSystem.hpp"
+#include "../../misc/macros.hpp"
 #include "../data/dataInterface.hpp"
 #include "indexManagerInterface.hpp"
 
@@ -109,27 +110,48 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::freeIndex <br><br>
       /// Implementation: Freed indices are ignored.
+      template<typename Tape>
       CODI_INLINE void freeIndex(Index& index) const {
+        if (Config::IndexEvents) {
+          if (Base::InactiveIndex != index && Base::InvalidIndex != index) {
+            EventSystem<Tape>::notifyIndexFreeListeners(index);
+          }
+        }
         index = Base::InactiveIndex;
       }
 
       /// \copydoc IndexManagerInterface::assignIndex
+      template<typename Tape>
       CODI_INLINE bool assignIndex(Index& index) {
         if (CODI_ENABLE_CHECK(Config::OverflowCheck, count > count + 1)) {
           CODI_EXCEPTION("Overflow in linear index handler. Use a larger index type or a reuse index manager.");
         }
         count += 1;
+        if (Config::IndexEvents) {
+          if (Base::InactiveIndex != index && Base::InvalidIndex != index) {
+            EventSystem<Tape>::notifyIndexFreeListeners(index);
+          }
+          EventSystem<Tape>::notifyIndexAssignListeners(count);
+        }
         index = count;
         return true;
       }
 
       /// \copydoc IndexManagerInterface::assignUnusedIndex
+      template<typename Tape>
       CODI_INLINE bool assignUnusedIndex(Index& index) {
-        return assignIndex(index);
+        return assignIndex<Tape>(index);
       }
 
       /// \copydoc IndexManagerInterface::copyIndex
+      template<typename Tape>
       CODI_INLINE void copyIndex(Index& lhs, Index const& rhs) {
+        if (Config::IndexEvents) {
+          if (Base::InactiveIndex != lhs && Base::InvalidIndex != lhs) {
+            EventSystem<Tape>::notifyIndexFreeListeners(lhs);
+          }
+          EventSystem<Tape>::notifyIndexCopyListeners(rhs);
+        }
         lhs = rhs;
       }
 

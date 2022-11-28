@@ -55,8 +55,8 @@
 #ifndef FUNCTION
   #define PROXY
 
-  #include "../../misc/macros.hpp"
   #include "../../config.h"
+  #include "../../misc/macros.hpp"
   #include "../expressionInterface.hpp"
   #include "../unaryExpression.hpp"
   #define FUNCTION func

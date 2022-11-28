@@ -34,8 +34,9 @@
  */
 #pragma once
 
-#include "../misc/macros.hpp"
 #include "../config.h"
+#include "../misc/eventSystem.hpp"
+#include "../misc/macros.hpp"
 #include "../tapes/interfaces/fullTapeInterface.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
@@ -130,13 +131,17 @@ namespace codi {
 
       /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
       CODI_INLINE Impl& operator=(Real const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(), cast().getValue(), cast().getIdentifier(),
+                                                          rhs, EventHints::Statement::Passive);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }
 
       /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE Impl & operator=(PassiveReal const& rhs) {
+      CODI_INLINE Impl& operator=(PassiveReal const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(), cast().getValue(), cast().getIdentifier(),
+                                                          rhs, EventHints::Statement::Passive);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }
@@ -144,6 +149,8 @@ namespace codi {
       /// Assignment operator for expressions. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename Rhs>
       CODI_INLINE Impl& operator=(ExpressionInterface<Real, Rhs> const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(), cast().getValue(), cast().getIdentifier(),
+                                                          rhs.cast().getValue(), EventHints::Statement::Expression);
         Impl::getTape().store(cast(), rhs.cast());
         return cast();
       }
@@ -151,12 +158,25 @@ namespace codi {
       /// Assignment operator for expressions. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
       CODI_INLINE Impl& operator=(ExpressionInterface<typename U::Real, Rhs> const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(), cast().getValue(), cast().getIdentifier(),
+                                                          rhs.cast().getValue(), EventHints::Statement::Passive);
         Impl::getTape().store(cast(), Real(rhs));
         return cast();
       }
 
       /// Assignment operator for lhs expressions. Calls store on the InternalStatementRecordingTapeInterface.
       CODI_INLINE Impl& operator=(LhsExpressionInterface const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(), cast().getValue(), cast().getIdentifier(),
+                                                          rhs.cast().getValue(), EventHints::Statement::Copy);
+        Impl::getTape().store(cast(), rhs);
+        return cast();
+      }
+
+      /// Assignment operator for lhs expressions. Calls store on the InternalStatementRecordingTapeInterface.
+      template<typename Rhs>
+      CODI_INLINE Impl& operator=(LhsExpressionInterface<Real, Gradient, Tape, Rhs> const& rhs) {
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(), cast().getValue(), cast().getIdentifier(),
+                                                          rhs.cast().getValue(), EventHints::Statement::Copy);
         Impl::getTape().store(cast(), rhs);
         return cast();
       }
@@ -185,8 +205,10 @@ namespace codi {
       /// Helper function to initialize the primal value and the identifier by the tape.
       ///
       /// To be called in constructors of the implementing class.
-      CODI_INLINE void init() {
+      CODI_INLINE void init(Real const& newValue, EventHints::Statement statementType) {
         Impl::getTape().initIdentifier(cast().value(), cast().getIdentifier());
+        EventSystem<Tape>::notifyStatementPrimalListeners(Impl::getTape(), Real(), Identifier(), newValue,
+                                                          statementType);
       }
 
       /// Helper function to deconstruct the primal value and the identifier by the tape.

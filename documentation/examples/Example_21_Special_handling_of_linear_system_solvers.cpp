@@ -3,6 +3,8 @@
 #include <codi.hpp>
 #include <iostream>
 
+#if CODI_EnableEigen
+
 using Real = codi::RealReverse;
 using Tape = typename Real::Tape;
 using Identifier = typename Real::Identifier;
@@ -35,9 +37,13 @@ struct EigenSolver : public codi::EigenLinearSystem<Number, Matrix, Vector> {
     }
 };
 //! [Specialization of Eigen solver]
+#else
+  #warning EIGEN_DIR not set. Skipping Eigen example.
+#endif
 
 
 int main(int nargs, char** args) {
+#if CODI_EnableEigen
   int size = 10;
 
   Matrix<Real> A(size, size);
@@ -83,6 +89,9 @@ int main(int nargs, char** args) {
   std::cout << "dy/d rhsEntry = " << rhsEntry.getGradient() << std::endl;
 
   tape.reset();
+#else
+  std::cerr << "EIGEN_DIR not set. Skipping Eigen example." << std::endl;
+#endif
 
   return 0;
 }

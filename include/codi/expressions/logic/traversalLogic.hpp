@@ -36,8 +36,8 @@
 
 #include <utility>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */

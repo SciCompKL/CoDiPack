@@ -59,8 +59,8 @@ void positionalExample() {
 
   // Now store the computed gradient data
   tape.storeManual(w.value(), w.getIdentifier(), 2);
-  tape.pushJacobiManual(u1_d, u1.value(), u1.getIdentifier());
-  tape.pushJacobiManual(u2_d, u2.value(), u2.getIdentifier());
+  tape.pushJacobianManual(u1_d, u1.value(), u1.getIdentifier());
+  tape.pushJacobianManual(u2_d, u2.value(), u2.getIdentifier());
 
   Real y = cos(w);
 

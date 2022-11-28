@@ -36,8 +36,8 @@
 
 #include <medi/medi.hpp>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../../traits/tapeTraits.hpp"
 #include "codiForwardMeDiPackTool.hpp"
 #include "codiReverseMeDiPackTool.hpp"
