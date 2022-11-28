@@ -57,7 +57,7 @@ namespace codi {
         using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
         using Impl = CODI_DD(T_Impl, CODI_T(ApplicationInterface<Type>));
 
-        using Real = typename Type::Real;
+        using Real = RealTraits::Real<Type>;
 
         using CheckpointManager = StateBasedCheckpointManager<Type, BinaryFileIO, Impl>;
         using IO = DefaultApplicationIO<Type, TextFileIO, BinaryFileIO>;
@@ -81,7 +81,7 @@ namespace codi {
               hints(ApplicationHints::NONE()) {
           io.restartReadFolder = "restart";
           io.restartWriteFolder = "restart";
-          io.writeFolder = "output";
+          io.setWriteFolder("output");
           io.outputY = true;
           io.outputX = true;
           io.outputP = false;

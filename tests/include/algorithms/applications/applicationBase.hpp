@@ -35,6 +35,8 @@
 
 #pragma once
 
+#include <codi/traits/realTraits.hpp>
+
 #include <codi.hpp>
 #include <cstdlib>
 #include <fstream>
@@ -48,7 +50,7 @@ struct TestApplicationBase : public codi::algorithms::DefaultApplication<T_Type,
 
     using Base = codi::algorithms::DefaultApplication<Type, Impl>;
 
-    using Real = typename Type::Real;
+    using Real = codi::RealTraits::Real<Type>;
     using Res = typename Base::Res;
 
     TestApplicationBase() = default;
@@ -68,7 +70,7 @@ struct TestApplicationBase : public codi::algorithms::DefaultApplication<T_Type,
       typename Base::IO* io = Base::getIOInterface();
       io->restartReadFolder = folder;
       io->restartWriteFolder = folder;
-      io->writeFolder = folder;
+      io->setWriteFolder(folder);
     }
 
     void print(std::string const& line) {

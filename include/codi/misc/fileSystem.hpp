@@ -38,8 +38,10 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "../config.h"
+
 namespace FileSystem {
-  int makePath(char const* dir, mode_t mode = 0755) {
+  CODI_INLINE int makePath(char const* dir, mode_t mode = 0755) {
     struct stat sb;
 
     if (!stat(dir, &sb)) {

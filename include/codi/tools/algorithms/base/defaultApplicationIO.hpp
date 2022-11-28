@@ -39,6 +39,7 @@
 
 #include "../../../config.h"
 #include "../../../expressions/lhsExpressionInterface.hpp"
+#include "../../../misc/fileSystem.hpp"
 #include "../../../misc/macros.hpp"
 #include "../../../misc/stringUtil.hpp"
 #include "../interfaces/applicationInterface.hpp"
@@ -59,7 +60,6 @@ namespace codi {
 
         std::string restartWriteFolder;
         std::string restartReadFolder;
-        std::string writeFolder;
 
         ApplicationInterface<Type>* app;
         WriteIO* writeIO;
@@ -71,10 +71,16 @@ namespace codi {
         bool outputZ;
         bool onlyWriteFinal;
 
+      private:
+
+        std::string writeFolder;
+        std::string offsetWriteFolder;
+
+      public:
+
         DefaultApplicationIO(ApplicationInterface<Type>* app, WriteIO* writeIO, RestartIO* restartIO)
             : restartWriteFolder("."),
               restartReadFolder("."),
-              writeFolder("."),
               app(app),
               writeIO(writeIO),
               restartIO(restartIO),
@@ -82,7 +88,10 @@ namespace codi {
               outputX(true),
               outputP(true),
               outputZ(true),
-              onlyWriteFinal(true) {}
+              onlyWriteFinal(true),
+              writeFolder("."),
+              offsetWriteFolder(writeFolder)
+        {}
 
         void writeRestartY(std::string const& fileName, std::vector<Real> const& v) {
           writeVector(createRestartName(restartWriteFolder, fileName), restartIO, v.data(), v.size());
@@ -117,26 +126,45 @@ namespace codi {
 
         void writeY(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
           if (outputY && checkFinal(flags)) {
-            writeVector(createWriteName(writeFolder, "y", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
+            writeVector(createWriteName(offsetWriteFolder, "y", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
         void writeX(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
           if (outputX && checkFinal(flags)) {
-            writeVector(createWriteName(writeFolder, "x", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
+            writeVector(createWriteName(offsetWriteFolder, "x", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
         void writeP(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
           if (outputP && checkFinal(flags)) {
-            writeVector(createWriteName(writeFolder, "p", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
+            writeVector(createWriteName(offsetWriteFolder, "p", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
         void writeZ(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
           if (outputZ && checkFinal(flags)) {
-            writeVector(createWriteName(writeFolder, "z", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
+            writeVector(createWriteName(offsetWriteFolder, "z", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
+        }
+
+        void setWriteFolder(std::string const& path) {
+          writeFolder = path;
+          offsetWriteFolder = path;
+        }
+
+        void changeFolder(std::string const& path) {
+          if(path.size() != 0) {
+            offsetWriteFolder = writeFolder + "/" + path;
+
+            createFolder(offsetWriteFolder);
+          } else {
+            offsetWriteFolder = writeFolder;
+          }
+        }
+
+        void createFolder(std::string const& path) {
+          FileSystem::makePath(path.c_str());
         }
 
       protected:
@@ -161,7 +189,9 @@ namespace codi {
           }
 
           std::string suffix = "";
-          if((OutputFlags::Derivative & flags) && (app->getNumberOfFunctionals() != 1)) {
+          if(OutputFlags::Vector & flags) {
+            suffix += StringUtil::format("_%04d", vec);
+          } else if((OutputFlags::Derivative & flags) && (app->getNumberOfFunctionals() != 1)) {
             suffix += StringUtil::format("_%02d", vec);
           }
 

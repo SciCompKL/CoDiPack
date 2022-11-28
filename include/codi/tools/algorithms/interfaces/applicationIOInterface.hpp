@@ -62,6 +62,8 @@ namespace codi {
       // Category: version (optional)
       V1,
       V2,
+      // Category: hints (optional)
+      Vector, // Force vector output
       MaxElement
     };
     using OutputHints = EnumBitset<OutputFlags>;
@@ -102,6 +104,16 @@ namespace codi {
         virtual void writeX(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
         virtual void writeP(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
         virtual void writeZ(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
+
+
+        // Utility functions
+
+        /// Always relative to the base path. Only used in write*. Empty for reset.
+        virtual void changeFolder(std::string const& path) = 0;
+
+        virtual void createFolder(std::string const& path) = 0;
+
+        // Helper functions
 
         void writeY(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
           for(size_t i = 0; i < v.size(); i += 1) {

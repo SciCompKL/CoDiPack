@@ -33,11 +33,9 @@
  *      - Tim Albring
  */
 
-#include "../utils/fileSystem.hpp"
-#include "applications/transport1D.hpp"
+#include <codi/misc/fileSystem.hpp>
 
-using Real = codi::RealReverse;
-using Problem = Transport1D<Real>;
+#include "applications/transport1D.hpp"
 
 using codi::algorithms::ApplicationHints;
 using codi::algorithms::ApplicationFlags;
@@ -46,16 +44,6 @@ using codi::algorithms::CheckpointHandle;
 
 char const* const OUTPUT_DIR = "testTransport1D";
 char const* const CHECKPOINT_DIR = "testTransport1D_checkpoints";
-
-template<typename Type>
-void prepare(Transport1D<Type>& app, std::string const& folder, std::string file) {
-  FileSystem::makePath(folder.c_str());
-  app.setOutputFolder(folder);
-  app.setOutputFile(folder + "/" + file);
-  app.initialize();
-
-  std::cout << "Running '" << folder << "'" << std::endl;
-}
 
 struct AppConfig {
     std::string name;
@@ -89,6 +77,18 @@ AppConfig appConfigs[CONFIG_SIZE] = {
   {"InitRecord_FComputeNo", ApplicationFlags::InitializationComputesP | ApplicationFlags::PStateIsAvailable}
 };
 
+AppConfig defaultAppConfig =
+    {"", ApplicationHints::NONE()};
+
+template<typename Type>
+void prepare(Transport1D<Type>& app, std::string const& folder, std::string file) {
+  FileSystem::makePath(folder.c_str());
+  app.setOutputFolder(folder);
+  app.setOutputFile(folder + "/" + file);
+  app.initialize();
+
+  std::cout << "Running '" << folder << "'" << std::endl;
+}
 
 std::vector<AppConfig> selectAll(AppConfig* configs) {
   return std::vector<AppConfig>(&configs[0], &configs[CONFIG_SIZE]);
@@ -106,14 +106,28 @@ std::vector<AppConfig> select(AppConfig* config, std::initializer_list<int> l) {
   return s;
 }
 
+std::vector<AppConfig> selectAll(AppConfig const& config) {
+  std::vector<AppConfig> s(1);
+  s[0] = config;
+
+  return s;
+}
+
 template<template <typename> class Algo, typename Type, typename Settings>
-void runProblem(VectorConfig<Type> const& vecConf, std::vector<AppConfig> const& appConf, Settings& settings, std::string const& prefix) {
+void runProblem(VectorConfig<Type> const& vecConf, std::vector<AppConfig> const& appConf, Settings& settings, std::string const& prefix, bool onlyWriteFinal = true) {
 
   Transport1D<Type> app;
   app.getCheckpointInterface()->setFolder(CHECKPOINT_DIR);
+  app.getIOInterface()->onlyWriteFinal = onlyWriteFinal;
 
   for(AppConfig const& curAppConfig: appConf) {
-    std::string name = codi::StringUtil::format("%s/%s_%s_%s", OUTPUT_DIR, prefix.c_str(), curAppConfig.name.c_str(), vecConf.name.c_str());
+    std::string name = codi::StringUtil::format("%s/%s", OUTPUT_DIR, prefix.c_str());
+    if(0 != curAppConfig.name.size()) {
+      name += "_" + curAppConfig.name;
+    }
+    if(0 != vecConf.name.size()) {
+      name += "_" + vecConf.name;
+    }
 
     app.setHints(curAppConfig.hints);
     app.settings.functionalNumber = vecConf.vectorFunctions;
@@ -124,15 +138,18 @@ void runProblem(VectorConfig<Type> const& vecConf, std::vector<AppConfig> const&
   }
 }
 
-void runForwardTests()
-{
-  codi::algorithms::ForwardModeSettings settings;
-  settings.maxIterations = 455;
-
-  runProblem<codi::algorithms::ForwardMode>(VectorConfig<codi::RealForward>("Vec1", 1), select(appConfigs, {1}), settings, "forward");
-  runProblem<codi::algorithms::ForwardMode>(VectorConfig<codi::RealForwardVec<2>>("Vec2", 2), select(appConfigs, {1}), settings, "forward");
+template<template <typename> class Algo, typename Type, typename Settings>
+void runProblem(Settings& settings, std::string const& prefix, bool onlyWriteFinal = true) {
+  runProblem<Algo>(VectorConfig<Type>("", 1), selectAll(defaultAppConfig), settings, prefix, onlyWriteFinal);
 }
 
+void createBasicCheckpoint() {
+  codi::algorithms::PrimalEvaluationSettings settings;
+  settings.checkRelConvergence = false;
+  settings.absThreshold = 0.000000001;
+  settings.writeFinalCheckpoint = true;
+  runProblem<codi::algorithms::PrimalEvaluation, double>(settings, "primal");
+}
 
 void runRATests()
 {
@@ -153,27 +170,24 @@ void runRATests()
   runProblem<codi::algorithms::ReverseAccumulation>(VectorConfig<codi::RealReverse>("CustomVec_Functional5", 5), select(appConfigs, {0}), settings, "revAcc");
 }
 
-void runBBTests(Problem& app)
+void runBBTests()
 {
-  prepare(app, codi::StringUtil::format("%s/blackBox", OUTPUT_DIR), "run.out");
-  codi::algorithms::BlackBox<Problem> bb{codi::algorithms::BlackBoxSettings()};
-  bb.settings.checkRelConvergence = false;
-  bb.settings.absThreshold = 0.000000001;
-  bb.run(app);
+  codi::algorithms::BlackBoxSettings settings;
+  settings.checkRelConvergence = false;
+  settings.absThreshold = 0.000000001;
+
+  runProblem<codi::algorithms::BlackBox, codi::RealReverse>(settings, "blackBox");
 }
 
 void runBBWCTests()
 {
 
   // Setup checkpoints
-  Problem app;
-  app.getCheckpointInterface()->setFolder(CHECKPOINT_DIR);
-  prepare(app, codi::StringUtil::format("%s/blackBoxWithCheck_writeCheck", OUTPUT_DIR), "run.out");
-  codi::algorithms::PrimalEvaluation<Problem> pe{};
-  pe.settings.checkRelConvergence = false;
-  pe.settings.absThreshold = 0.000000001;
-  pe.settings.writeCheckpoints = true;
-  pe.run(app);
+  codi::algorithms::PrimalEvaluationSettings checkSettings;
+  checkSettings.checkRelConvergence = false;
+  checkSettings.absThreshold = 0.000000001;
+  checkSettings.writeCheckpoints = true;
+  runProblem<codi::algorithms::PrimalEvaluation, double>(checkSettings, "blackBoxWithCheck_writeCheck");
 
   codi::algorithms::BlackBoxWithCheckpointsSettings settings;
   settings.start = 0;
@@ -192,6 +206,37 @@ void runBBWCTests()
   runProblem<codi::algorithms::BlackBoxWithCheckpoints>(VectorConfig<codi::RealReverse>("CustomVec_Functional5", 5), select(appConfigs, {0}), settings, "blackBoxWithCheck");
 }
 
+void runCheckpointTest() {
+  codi::algorithms::CheckpointTestSettings settings{};
+
+  runProblem<codi::algorithms::CheckpointTest, codi::RealReverse>(settings, "checkpointTest");
+}
+
+void runFiniteDifferenceEvaluationTest()
+{
+  codi::algorithms::FiniteDifferenceEvaluationSettings settings{};
+  settings.fullJacobian = true;
+  settings.maxIterations = 455;
+  settings.primalValidationThreshold = 1e-10;
+  settings.relativeStepSize = true;
+  settings.stepSizes = {1e-2};
+
+  runProblem<codi::algorithms::FiniteDifferenceEvaluation, double>(settings, "finiteDifferenceEvaluation");
+}
+
+void runForwardTests()
+{
+  codi::algorithms::ForwardModeSettings settings;
+  settings.maxIterations = 455;
+
+  runProblem<codi::algorithms::ForwardMode>(VectorConfig<codi::RealForward>("Vec1", 1), select(appConfigs, {1}), settings, "forward");
+  runProblem<codi::algorithms::ForwardMode>(VectorConfig<codi::RealForwardVec<2>>("Vec2", 2), select(appConfigs, {1}), settings, "forward");
+
+  settings.fullJacobian = true;
+  settings.primalValidationThreshold = 1e-10;
+  runProblem<codi::algorithms::ForwardMode, codi::RealForward>(settings, "forwardFullJacobian");
+}
+
 int main(int nargs, char** args) {
   (void)nargs;
   (void)args;
@@ -199,32 +244,19 @@ int main(int nargs, char** args) {
   FileSystem::makePath(OUTPUT_DIR);
   FileSystem::makePath(CHECKPOINT_DIR);
 
-  Problem app;
-  app.getCheckpointInterface()->setFolder(CHECKPOINT_DIR);
-  prepare(app, codi::StringUtil::format("%s/primal", OUTPUT_DIR), "run.out");
-  codi::algorithms::PrimalEvaluation<Problem> pe{codi::algorithms::PrimalEvaluationSettings()};
-  pe.settings.checkRelConvergence = false;
-  pe.settings.absThreshold = 0.000000001;
-  pe.run(app);
+  createBasicCheckpoint();
 
-  codi::algorithms::CheckpointManagerInterface* cm = app.getCheckpointInterface();
-  codi::algorithms::CheckpointHandle* checkpoint = cm->create();
-  cm->write(checkpoint);
+  runCheckpointTest();
 
   runRATests();
 
-  runBBTests(app);
+  runBBTests();
 
   runBBWCTests();
 
   runForwardTests();
 
-  prepare(app, codi::StringUtil::format("%s/checkpointTest", OUTPUT_DIR), "run.out");
-  app.setIteration(0);
-  app.initialize();
-  app.getIOInterface()->onlyWriteFinal = false;
-  codi::algorithms::CheckpointTest<Problem> ct{codi::algorithms::CheckpointTestSettings()};
-  ct.run(app);
+  runFiniteDifferenceEvaluationTest();
 
   return 0;
 }

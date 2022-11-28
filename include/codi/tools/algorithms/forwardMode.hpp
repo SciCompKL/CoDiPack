@@ -50,8 +50,11 @@ namespace codi {
         int maxIterations; ///< Maximum number of forward iterations.
         std::vector<double> seeding;
 
+        bool fullJacobian;
+        double primalValidationThreshold;
+
         ForwardModeSettings()
-            : maxIterations(1000), seeding(1, 1.0)
+            : maxIterations(1000), seeding(1, 1.0), fullJacobian(false), primalValidationThreshold(1e-10)
          {}
     };
 
@@ -65,6 +68,7 @@ namespace codi {
 
         using Base = AlgorithmInterface<App>;
 
+        using Real = typename Type::Real;
         using Gradient = typename Type::Gradient;
         using GT = GradientTraits::TraitsImplementation<Gradient>;
         using RealVector = typename Base::RealVector;
@@ -80,10 +84,9 @@ namespace codi {
         }
 
         void run(App& app) {
-          ApplicationIOInterface<Type>* io = app.getIOInterface();
-
-          bool isStop = false;
-          bool isFinished = false;
+          if(ApplicationFlags::InitializationComputesP & app.getHints() && settings.fullJacobian) {
+            CODI_EXCEPTION("Computation of full Jacobian not supported if P can not be recomputed.");
+          }
 
           if(ApplicationFlags::InitializationComputesP & app.getHints()) {
             initSeedingPos = 0;
@@ -91,6 +94,18 @@ namespace codi {
           }
 
           app.initialize();
+
+          app.setInitializationHandlingFunction(nullptr);
+
+          if(!settings.fullJacobian) {
+            runOneTimeMode(app);
+          } else {
+            runJacobianMode(app);
+          }
+        }
+
+        void runOneTimeMode(App& app) {
+          ApplicationIOInterface<Type>* io = app.getIOInterface();
 
           if(!(
              1 == settings.seeding.size() ||
@@ -105,10 +120,68 @@ namespace codi {
             app.iterateX(SetGradient(settings.seeding));
           }
 
+          runApp(app);
+
+          std::vector<RealVector> z(GT::dim, RealVector(app.getSizeZ()));
+          app.iterateZ(GetGradient(z));
+
+          io->writeZ(app.getIteration(), z, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Final);
+        }
+
+        void runJacobianMode(App& app) {
+          ApplicationIOInterface<Type>* io = app.getIOInterface();
+          CheckpointManagerInterface* cpm = app.getCheckpointInterface();
+
+          OutputHints outputHints = OutputFlags::Derivative | OutputFlags::F | OutputFlags::Final | OutputFlags::Vector;
+
+          // Create initial checkpoint
+          CheckpointHandle* cp = nullptr;
+          for(CheckpointHandle* cur : cpm->list()) {
+            if(cur->getIteration() == 0) {
+              cp = cur;
+              break;
+            }
+          }
+          if(nullptr == cp) {
+            cp = cpm->create();
+          }
+
+
+          RealVector zValue(app.getSizeZ());
+          std::vector<RealVector> zGrad(GT::dim, RealVector(app.getSizeZ()));
+
+          size_t sizeX = app.getSizeX();
+          for(size_t curX = 0; curX < sizeX; curX += GT::dim) {
+            app.print(StringUtil::format("Computing %d/%d (Vec: %d)\n", (int)(curX + 1), (int)sizeX, (int)GT::dim));
+            app.iterateX(SetGradientAtPos(1.0, curX, GT::dim));
+
+            runApp(app);
+
+            if(curX + GT::dim >= sizeX) {
+                  zGrad.resize(sizeX - curX); // Resize to last vector dimension
+            }
+            app.iterateZ(GetGradient(zGrad));
+            if(0 == curX) {
+              app.iterateZ(GetValue(zValue));
+            } else {
+              size_t errors = 0;
+              app.iterateZ(ValidateValue(zValue, errors, settings.primalValidationThreshold));
+              if(0 != errors) {
+                app.print(StringUtil::format("Warning: Primal changed in '%d' places in the '%d' run.\n", (int)errors, (int)curX));
+              }
+            }
+
+            io->writeZ(app.getIteration(), zGrad, outputHints, curX);
+
+            cpm->load(cp);
+          }
+        }
+
+        void runApp(App& app) {
           app.evaluateP();
 
-          app.setInitializationHandlingFunction(nullptr);
-
+          bool isStop = false;
+          bool isFinished = false;
           while (!(isFinished || isStop)) {
 
             app.evaluateG();
@@ -118,11 +191,6 @@ namespace codi {
           }
 
           app.evaluateF();
-
-          std::vector<RealVector> z(GT::dim, RealVector(app.getSizeZ()));
-          app.iterateZ(GetGradient(z));
-
-          io->writeZ(app.getIteration(), z, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Final);
         }
 
         struct GetGradient {
@@ -134,6 +202,16 @@ namespace codi {
               for(size_t i = 0; i < GT::dim; i += 1) {
                 vec[i][pos] = GT::at(value.getGradient(), i);
               }
+            }
+        };
+
+        struct GetValue {
+          public:
+            RealVector& vec;
+            GetValue(RealVector& vec) : vec(vec) {}
+
+            void operator()(Type& value, size_t pos) {
+              vec[pos] = value.getValue();
             }
         };
 
@@ -161,12 +239,48 @@ namespace codi {
           for(size_t d = 0; d < GT::dim; d += 1) {
             if(1 == seeding.size()) {
               GT::at(value.gradient(), d) = seeding[0];
-
             } else {
               GT::at(value.gradient(), d) = seeding[pos + d];
             }
           }
         }
+
+        struct SetGradientAtPos {
+          public:
+            Real gradient;
+            size_t pos;
+            size_t vecDim;
+            SetGradientAtPos(Real const& gradient, size_t const& pos, size_t const vecDim) : gradient(gradient), pos(pos), vecDim(vecDim) {}
+
+            void operator()(Type& value, size_t pos) {
+              if(this->pos <= pos && pos < this->pos + vecDim) {
+                size_t dim = pos - this->pos;
+                GT::at(value.gradient(), dim) = gradient;
+              } else {
+                value.setGradient(Gradient());
+              }
+            }
+        };
+
+        struct ValidateValue {
+          public:
+            RealVector const& vec;
+            size_t& errors;
+            double threshold;
+            ValidateValue(RealVector const& vec, size_t errors, double threshold) :
+              vec(vec), errors(errors), threshold(threshold) {}
+
+            void operator()(Type& value, size_t pos) {
+              Real diff = value.getValue() - vec[pos];
+              if(Real() != vec[pos]) {
+                diff = diff / vec[pos];
+              }
+              if(abs(diff) >= threshold) {
+                errors += 1;
+              }
+            }
+        };
+
     };
   }
 }

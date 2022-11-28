@@ -38,11 +38,11 @@
 #include <sys/stat.h>
 
 #include <codi/misc/exceptions.hpp>
+#include <codi/misc/fileSystem.hpp>
 #include <codi/misc/macros.hpp>
 
 #include "../include/drivers/driverInterface.hpp"
 #include "../include/testInterface.hpp"
-#include "../include/utils/fileSystem.hpp"
 
 #ifndef DRIVER
   #error A driver include needs to be specified

@@ -56,6 +56,7 @@ namespace codi {
         double relThreshold;
 
         bool writeCheckpoints;
+        bool writeFinalCheckpoint;
         int checkpointsInterleave;
 
         PrimalEvaluationSettings()
@@ -65,6 +66,7 @@ namespace codi {
               absThreshold(1e-12),
               relThreshold(1e-6),
               writeCheckpoints(false),
+              writeFinalCheckpoint(false),
               checkpointsInterleave(10) {}
     };
 
@@ -145,14 +147,19 @@ namespace codi {
           io->writeZ(app.getIteration(), z, OutputFlags::Primal | OutputFlags::F | OutputFlags::Final);
         }
 
-        void writeCheckpoint(App& app, bool force = false) {
-          if(settings.writeCheckpoints) {
-            if(force || 0 == app.getIteration() % settings.checkpointsInterleave) {
-              CheckpointManagerInterface* cpm = app.getCheckpointInterface();
-              CheckpointHandle* cp = cpm->create();
-              cpm->write(cp);
-              cpm->free(cp);
-            }
+        void writeCheckpoint(App& app, bool final = false) {
+          bool write = false;
+          if(settings.writeCheckpoints && (0 == app.getIteration() % settings.checkpointsInterleave)) {
+            write = true;
+          } else if(settings.writeFinalCheckpoint && final) {
+            write = true;
+          }
+
+          if(write) {
+            CheckpointManagerInterface* cpm = app.getCheckpointInterface();
+            CheckpointHandle* cp = cpm->create();
+            cpm->write(cp);
+            cpm->free(cp);
           }
         }
 
