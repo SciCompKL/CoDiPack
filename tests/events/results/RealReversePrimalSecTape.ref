@@ -125,6 +125,8 @@ StatementEvaluate lhsIdentifier 275 numAdjoints 1
 StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0.17663
 TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 40, [21, 1, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
 TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]] clear adjoints 1
+IndexFree index 275
+IndexFree index 276
 TapeStartRecording
 # Assign outputs
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0
@@ -333,6 +335,8 @@ StatementEvaluate lhsIdentifier 275 numAdjoints 1
 StatementEvaluatePrimal lhsIdentifier 275 lhsValue 0.17663
 TapeEvaluate reverse end from [0, 0, [0, 4, [0, 4, [0, 40, [21, 1, 276]]]]] to [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]]
 TapeReset to position [0, 0, [0, 4, [0, 4, [0, 36, [19, 1, 274]]]]] clear adjoints 1
+IndexFree index 275
+IndexFree index 276
 TapeStartRecording
 # Assign outputs
 StatementPrimal expression lhsValue 0 lhsIdentifier 0 newValue 0

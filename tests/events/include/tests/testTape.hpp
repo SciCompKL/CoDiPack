@@ -69,6 +69,8 @@ void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outpu
   tape.evaluate(tape.getPosition(), position);  // match store and eval counters
   tape.resetTo(position);
   // clean up indices still assigned to x and y
+  x.~ActiveType();
+  y.~ActiveType();
   memset(&x, 0, sizeof(ActiveType));
   memset(&y, 0, sizeof(ActiveType));
   tape.setActive();
