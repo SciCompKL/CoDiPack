@@ -54,8 +54,7 @@ namespace codi {
    * @tparam T_StaticThreadLocalPointer  Static thread-local pointer implementation used by the toolbox.
    *                                     See codi::StaticThreadLocalPointer.
    */
-  template<template<typename> class T_Atomic,
-           typename T_Mutex,
+  template<template<typename> class T_Atomic, typename T_Mutex,
            template<typename, typename> class T_StaticThreadLocalPointer>
   struct ParallelToolbox {
     public:

@@ -37,9 +37,9 @@
 #include <algorithm>
 #include <vector>
 
+#include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../../tools/parallel/parallelToolbox.hpp"
-#include "../../config.h"
 #include "reuseIndexManagerBase.hpp"
 
 /** \copydoc codi::Namespace */
@@ -60,9 +60,10 @@ namespace codi {
       : public ReuseIndexManagerBase<T_Index, ParallelReuseIndexManager<T_Index, T_ParallelToolbox>> {
     public:
 
-      using Index = CODI_DD(T_Index, int);        ///< See ParallelReuseIndexManager.
-      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(codi::ParallelToolbox<CODI_ANY, CODI_ANY>));  ///< See ParallelReuseIndexManager.
-      using Base = ReuseIndexManagerBase<Index, ParallelReuseIndexManager>;  ///< Base class abbreviation.
+      using Index = CODI_DD(T_Index, int);  ///< See ParallelReuseIndexManager.
+      using ParallelToolbox = CODI_DD(
+          T_ParallelToolbox, CODI_T(codi::ParallelToolbox<CODI_ANY, CODI_ANY>));  ///< See ParallelReuseIndexManager.
+      using Base = ReuseIndexManagerBase<Index, ParallelReuseIndexManager>;       ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to access protected and private members.
 
     private:
@@ -78,8 +79,8 @@ namespace codi {
       /// @name IndexManagerInterface: Constants
       /// @{
 
-      using Base::CopyNeedsStatement;  ///< See ReuseIndexManagerBase.
-      using Base::IsLinear;            ///< See ReuseIndexManagerBase.
+      using Base::CopyNeedsStatement;                    ///< See ReuseIndexManagerBase.
+      using Base::IsLinear;                              ///< See ReuseIndexManagerBase.
       static bool constexpr NeedsStaticStorage = false;  ///< Indices are managed globally, but the global part is
                                                          ///< handled by static members of the manager itself.
 
@@ -145,7 +146,7 @@ namespace codi {
 
         codiAssert(this->unusedIndices.size() >= this->indexSizeIncrement);
 
-        Index upperIndexRangeBound = globalMaximumIndex += this->indexSizeIncrement; // note: atomic operation
+        Index upperIndexRangeBound = globalMaximumIndex += this->indexSizeIncrement;  // note: atomic operation
         Index lowerIndexRangeBound = upperIndexRangeBound - this->indexSizeIncrement;
 
         for (size_t pos = 0; pos < this->indexSizeIncrement; ++pos) {
@@ -157,8 +158,8 @@ namespace codi {
   };
 
   template<typename Index, typename ParallelToolbox>
-  typename ParallelToolbox::template Atomic<Index> ParallelReuseIndexManager<Index,
-                                                                             ParallelToolbox>::globalMaximumIndex;
+  typename ParallelToolbox::template Atomic<Index>
+      ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndex;
 
   template<typename Index, typename ParallelToolbox>
   bool ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndexInitialized = false;

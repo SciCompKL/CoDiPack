@@ -312,10 +312,9 @@ namespace codi {
   template<typename T_Type>
   struct AggregatedTypeVectorAccessWrapperFactory<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
     public:
-      using Type = CODI_DD(
-          T_Type,
-          CODI_T(LhsExpressionInterface<double, double,
-                                        CODI_ANY, CODI_ANY>));  ///< See AggregatedTypeVectorAccessWrapperBase.
+      using Type = CODI_DD(T_Type,
+                           CODI_T(LhsExpressionInterface<double, double, CODI_ANY,
+                                                         CODI_ANY>));  ///< See AggregatedTypeVectorAccessWrapperBase.
 
       using RType = VectorAccessInterface<typename Type::Real, typename Type::Identifier>;
 

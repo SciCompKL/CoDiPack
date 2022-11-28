@@ -35,13 +35,14 @@
 #pragma once
 
 #include <omp.h>
+
 #include <vector>
 
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../misc/macros.hpp"
-#include "../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
+#include "../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 #include "../data/externalFunctionUserData.hpp"
 
@@ -506,9 +507,9 @@ namespace codi {
                 ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data, EvalData::delFunc,
                                                EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
           } else {
-            Type::getTape().pushExternalFunction(
-                ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data, nullptr,
-                                               EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
+            Type::getTape().pushExternalFunction(ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data,
+                                                                                nullptr, EvalData::evalForwFuncStatic,
+                                                                                EvalData::evalPrimFuncStatic));
           }
 
           #pragma omp barrier

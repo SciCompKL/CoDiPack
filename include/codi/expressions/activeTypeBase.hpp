@@ -34,8 +34,8 @@
  */
 #pragma once
 
-#include "../misc/macros.hpp"
 #include "../config.h"
+#include "../misc/macros.hpp"
 #include "../tapes/interfaces/fullTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "assignmentOperators.hpp"
@@ -124,7 +124,7 @@ namespace codi {
       /// Constructor
       template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
       CODI_INLINE ActiveTypeBase(ExpressionInterface<typename U::Real, Rhs> const& rhs)
-        : primalValue(rhs.cast()), identifier() {
+          : primalValue(rhs.cast()), identifier() {
         Base::init(rhs.cast().getValue(), EventHints::Statement::Passive);
       }
 

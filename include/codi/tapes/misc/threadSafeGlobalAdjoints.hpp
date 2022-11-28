@@ -66,7 +66,7 @@ namespace codi {
 
       bool inUse;
 
-      static std::vector<Gradient> adjoints; ///< Vector of adjoint variables.
+      static std::vector<Gradient> adjoints;  ///< Vector of adjoint variables.
 
       /// @brief Protects adjoints.
       /// Lock for read stands for lock for using the adjoint vector. Lock for write stands for reallocating it.
@@ -75,8 +75,8 @@ namespace codi {
     public:
 
       /// Constructor
-      ThreadSafeGlobalAdjoints(size_t initialSize) : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize),
-                                                     inUse(false) {}
+      ThreadSafeGlobalAdjoints(size_t initialSize)
+          : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize), inUse(false) {}
 
       /// \copydoc InternalAdjointsInterface::operator[](Identifier const&) <br><br>
       /// Implementation: No locking is performed, beginUse and endUse have to be used accordingly.
@@ -144,5 +144,6 @@ namespace codi {
   std::vector<Gradient> ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjoints(1);
 
   template<typename Gradient, typename Identifier, typename Tape, typename ParallelToolbox>
-  typename ParallelToolbox::ReadWriteMutex ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjointsMutex;
+  typename ParallelToolbox::ReadWriteMutex
+      ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjointsMutex;
 }

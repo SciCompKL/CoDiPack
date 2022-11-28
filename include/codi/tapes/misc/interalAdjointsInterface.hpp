@@ -63,7 +63,9 @@ namespace codi {
 
       /// Constructor
       /// @param initialSize  Initial number of adjoint variables.
-      InternalAdjointsInterface(size_t initialSize) {CODI_UNUSED(initialSize);}
+      InternalAdjointsInterface(size_t initialSize) {
+        CODI_UNUSED(initialSize);
+      }
 
       /// Reference access to the adjoint variable identified by identifier.
       CODI_INLINE Gradient& operator[](Identifier const& identifier);

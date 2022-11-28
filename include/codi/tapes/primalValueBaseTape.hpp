@@ -91,7 +91,7 @@ namespace codi {
 
       constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
       constexpr static bool IsStaticIndexHandler =
-            IndexManager::NeedsStaticStorage; ///< True if the index manager must be stored statically in the tape.
+          IndexManager::NeedsStaticStorage;  ///< True if the index manager must be stored statically in the tape.
 
       using EvalHandle = typename StatementEvaluator::Handle;  ///< Handle type returned by the statement generator.
 

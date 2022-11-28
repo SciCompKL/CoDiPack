@@ -56,13 +56,13 @@ namespace codi {
 
       using Base = ActiveTypeBase<T_Tape, ActiveType>;  ///< Base class abbreviation.
 
-      using typename Base::Real;          ///< See ActiveTypeBase.
-      using typename Base::PassiveReal;   ///< See ActiveTypeBase.
-      using typename Base::Identifier;    ///< See ActiveTypeBase.
-      using typename Base::Gradient;      ///< See ActiveTypeBase.
+      using typename Base::Gradient;     ///< See ActiveTypeBase.
+      using typename Base::Identifier;   ///< See ActiveTypeBase.
+      using typename Base::PassiveReal;  ///< See ActiveTypeBase.
+      using typename Base::Real;         ///< See ActiveTypeBase.
 
-      using typename Base::StoreAs;       ///< See ActiveTypeBase.
       using typename Base::ActiveResult;  ///< See ActiveTypeBase.
+      using typename Base::StoreAs;       ///< See ActiveTypeBase.
 
     private:
 

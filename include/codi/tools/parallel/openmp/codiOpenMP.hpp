@@ -58,10 +58,8 @@ namespace codi {
   template<typename Real, typename Gradient = OpenMPAtomic<Real>,
            typename IndexManager = ParallelReuseIndexManager<int, OpenMPToolbox>>
   using RealReverseIndexOpenMPGen = ParallelActiveType<
-                                      JacobianReuseTape<
-                                        JacobianTapeTypes<Real, Gradient, IndexManager, DefaultChunkedData,
-                                          OpenMPGlobalAdjoints>>,
-                                      OpenMPToolbox>;
+      JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager, DefaultChunkedData, OpenMPGlobalAdjoints>>,
+      OpenMPToolbox>;
 
   /// \copydoc codi::RealReverseIndexOpenMPGen
   using RealReverseIndexOpenMP = RealReverseIndexOpenMPGen<double>;

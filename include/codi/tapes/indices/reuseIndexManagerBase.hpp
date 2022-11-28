@@ -37,8 +37,8 @@
 #include <algorithm>
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../data/emptyData.hpp"
 #include "indexManagerInterface.hpp"
 

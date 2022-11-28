@@ -64,14 +64,13 @@ namespace codi {
       OpenMPAtomicImpl() = delete;  ///< Constructor is non-specialized version is disabled.
   };
 
-
 #ifndef DOXYGEN_DISABLE
 
   // Specialization for arithmetic types.
   template<typename T_Type>
   struct OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>
-      : public AtomicInterface<T_Type,
-                               OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>> {
+      : public AtomicInterface<
+            T_Type, OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>> {
     public:
       using Type = CODI_DD(T_Type, CODI_ANY);
 
@@ -102,7 +101,7 @@ namespace codi {
       }
 
       CODI_INLINE OpenMPAtomicImpl& operator=(OpenMPAtomicImpl const& other) {
-        return operator = (other.getValue());
+        return operator=(other.getValue());
       }
 
       CODI_INLINE OpenMPAtomicImpl& operator=(Type const& other) {
@@ -152,17 +151,16 @@ namespace codi {
         return result;
       }
 
-      CODI_INLINE operator Type () const {
+      CODI_INLINE operator Type() const {
         return getValue();
       }
   };
 
-
   // Specialization for forward CoDiPack types. Acts on value and gradient with individual atomic operations.
   template<typename T_Tape>
   struct OpenMPAtomicImpl<ActiveType<T_Tape>, TapeTraits::EnableIfForwardTape<T_Tape>>
-      : public AtomicInterface<ActiveType<T_Tape>, OpenMPAtomicImpl<ActiveType<T_Tape>,
-                               TapeTraits::EnableIfForwardTape<T_Tape>>>,
+      : public AtomicInterface<ActiveType<T_Tape>,
+                               OpenMPAtomicImpl<ActiveType<T_Tape>, TapeTraits::EnableIfForwardTape<T_Tape>>>,
         public ActiveType<T_Tape> {
     public:
       using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
@@ -191,7 +189,8 @@ namespace codi {
         Type result;
 
         OpenMPAtomicImpl<Real> const* atomicValue = reinterpret_cast<OpenMPAtomicImpl<Real> const*>(&this->value());
-        OpenMPAtomicImpl<Gradient> const* atomicGradient = reinterpret_cast<OpenMPAtomicImpl<Gradient> const*>(&this->gradient());
+        OpenMPAtomicImpl<Gradient> const* atomicGradient =
+            reinterpret_cast<OpenMPAtomicImpl<Gradient> const*>(&this->gradient());
 
         result.value() = *atomicValue;
         result.gradient() = *atomicGradient;
@@ -260,7 +259,7 @@ namespace codi {
         return result;
       }
 
-      CODI_INLINE operator Type () const {
+      CODI_INLINE operator Type() const {
         return atomicGetValue();
       }
   };
@@ -279,11 +278,13 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
   // Specialize IsTotalZero for OpenMPAtomic on arithmetic types.
   template<typename T_Type>
-  struct RealTraits::IsTotalZero<OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>> {
+  struct RealTraits::IsTotalZero<
+      OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>> {
     public:
 
-      using Type = CODI_DD(CODI_T(OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>),
-                           OpenMPAtomic<double>);
+      using Type =
+          CODI_DD(CODI_T(OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>),
+                  OpenMPAtomic<double>);
 
       static CODI_INLINE bool isTotalZero(Type const& v) {
         return typename Type::Type() == v;

@@ -87,11 +87,11 @@ namespace codi {
       template<typename Impl>
       using Adjoints = CODI_DD(CODI_T(T_Adjoints<Gradient, Identifier, Impl>),
                                CODI_T(InternalAdjointsInterface<Gradient, Identifier, CODI_ANY>));
-                                 ///< See JacobianTapeTypes.
+      ///< See JacobianTapeTypes.
 
       static bool constexpr IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
       static bool constexpr IsStaticIndexHandler =
-            IndexManager::NeedsStaticStorage;  ///< True if the index manager must be stored statically in the tape.
+          IndexManager::NeedsStaticStorage;  ///< True if the index manager must be stored statically in the tape.
 
       /// Statement chunk is either \<argument size\> (linear management) or \<lhs identifier, argument size\>
       /// (reuse management).

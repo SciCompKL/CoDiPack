@@ -34,9 +34,8 @@
  */
 #pragma once
 
-#include <sstream>
-
 #include <opdi/tool/toolInterface.hpp>
+#include <sstream>
 
 #include "../../../expressions/lhsExpressionInterface.hpp"
 #include "../../../misc/macros.hpp"
@@ -59,12 +58,12 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
 
   private:
     static void callHandleReverse(Tape*, void* handlePtr, VAI*) {
-      opdi::Handle* handle = (opdi::Handle*) handlePtr;
+      opdi::Handle* handle = (opdi::Handle*)handlePtr;
       handle->reverseFunc(handle->data);
     }
 
     static void callHandleDelete(Tape*, void* handlePtr) {
-      opdi::Handle* handle = (opdi::Handle*) handlePtr;
+      opdi::Handle* handle = (opdi::Handle*)handlePtr;
       if (handle->deleteFunc != nullptr) {
         handle->deleteFunc(handle->data);
       }
@@ -77,11 +76,11 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
     void finalize() {}
 
     void* createTape() {
-      return (void*) new Tape;
+      return (void*)new Tape;
     }
 
     void deleteTape(void* tapePtr) {
-      Tape* tape = (Tape*) tapePtr;
+      Tape* tape = (Tape*)tapePtr;
       delete tape;
     }
 
@@ -90,7 +89,7 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
     }
 
     void freePosition(void* positionPtr) {
-      Position* position = (Position*) positionPtr;
+      Position* position = (Position*)positionPtr;
       delete position;
     }
 
@@ -99,69 +98,66 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
     }
 
     std::string positionToString(void* positionPtr) {
-      Position* position = (Position*) positionPtr;
+      Position* position = (Position*)positionPtr;
       std::stringstream conv;
       conv << *position;
       return conv.str();
     }
 
     void getTapePosition(void* tapePtr, void* positionPtr) {
-      Tape* tape = (Tape*) tapePtr;
-      Position* position = (Position*) positionPtr;
+      Tape* tape = (Tape*)tapePtr;
+      Position* position = (Position*)positionPtr;
 
       *position = tape->getPosition();
     }
 
     void getZeroPosition(void* tapePtr, void* positionPtr) {
-      Tape* tape = (Tape*) tapePtr;
-      Position* position = (Position*) positionPtr;
+      Tape* tape = (Tape*)tapePtr;
+      Position* position = (Position*)positionPtr;
 
       *position = tape->getZeroPosition();
     }
 
     void copyPosition(void* dstPtr, void* srcPtr) {
-      Position* dst = (Position*) dstPtr;
-      Position* src = (Position*) srcPtr;
+      Position* dst = (Position*)dstPtr;
+      Position* src = (Position*)srcPtr;
 
       *dst = *src;
     }
 
     int comparePosition(void* lhsPtr, void* rhsPtr) {
-      Position* lhs = (Position*) lhsPtr;
-      Position* rhs = (Position*) rhsPtr;
+      Position* lhs = (Position*)lhsPtr;
+      Position* rhs = (Position*)rhsPtr;
 
       if (*lhs <= *rhs) {
         if (*rhs <= *lhs) {
           return 0;
-        }
-        else {
+        } else {
           return -1;
         }
-      }
-      else {
+      } else {
         return 1;
       }
     }
 
     bool isActive(void* tapePtr) {
-      Tape* tape = (Tape*) tapePtr;
+      Tape* tape = (Tape*)tapePtr;
       return tape->isActive();
     }
 
     void setActive(void* tapePtr, bool active) {
-      Tape* tape = (Tape*) tapePtr;
+      Tape* tape = (Tape*)tapePtr;
       if (active) {
         tape->setActive();
-      }
-      else {
+      } else {
         tape->setPassive();
       }
     }
 
     void evaluate(void* tapePtr, void* startPtr, void* endPtr, bool useAtomics = true) {
-      Tape* tape = (Tape*) tapePtr;
-      Position* start = (Position*) startPtr;
-      Position* end = (Position*) endPtr;
+      Tape* tape = (Tape*)tapePtr;
+      Position* start = (Position*)startPtr;
+      Position* end = (Position*)endPtr;
 
       if (tape->isActive()) {
         std::cerr << "Warning: OpDiLib evaluation of an active tape." << std::endl;
@@ -172,57 +168,53 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
       using AtomicGradient = codi::OpenMPAtomic<NonAtomicGradient>;
 
       if (useAtomics) {
-        AtomicGradient* safeAdjoints = (AtomicGradient*) adjoints;
+        AtomicGradient* safeAdjoints = (AtomicGradient*)adjoints;
         tape->evaluate(*start, *end, safeAdjoints);
-      }
-      else {
-        NonAtomicGradient* unsafeAdjoints = (NonAtomicGradient*) adjoints;
+      } else {
+        NonAtomicGradient* unsafeAdjoints = (NonAtomicGradient*)adjoints;
         tape->evaluate(*start, *end, unsafeAdjoints);
       }
     }
 
     void reset(void* tapePtr, bool clearAdjoints) {
-      Tape* tape = (Tape*) tapePtr;
+      Tape* tape = (Tape*)tapePtr;
       tape->reset(clearAdjoints);
     }
 
     void reset(void* tapePtr, void* positionPtr, bool clearAdjoints) {
-      Tape* tape = (Tape*) tapePtr;
-      Position* position = (Position*) positionPtr;
+      Tape* tape = (Tape*)tapePtr;
+      Position* position = (Position*)positionPtr;
       tape->resetTo(*position, clearAdjoints);
     }
 
     void* getThreadLocalTape() {
-      return (void*) CoDiType::getTapePtr();
+      return (void*)CoDiType::getTapePtr();
     }
 
     void setThreadLocalTape(void* tapePtr) {
-      Tape* tape = (Tape*) tapePtr;
+      Tape* tape = (Tape*)tapePtr;
       CoDiType::setTapePtr(tape);
     }
 
     void pushExternalFunction(void* tapePtr, opdi::Handle const* handle) {
-      Tape* tape = (Tape*) tapePtr;
-      tape->pushExternalFunction(codi::ExternalFunction<Tape>::create(CoDiOpDiLibTool::callHandleReverse,
-                                                                      (void*) handle,
+      Tape* tape = (Tape*)tapePtr;
+      tape->pushExternalFunction(codi::ExternalFunction<Tape>::create(CoDiOpDiLibTool::callHandleReverse, (void*)handle,
                                                                       CoDiOpDiLibTool::callHandleDelete));
     }
 
     void erase(void* tapePtr, void* startPtr, void* endPtr) {
-
-      Tape* tape = (Tape*) tapePtr;
-      Position* start = (Position*) startPtr;
-      Position* end = (Position*) endPtr;
+      Tape* tape = (Tape*)tapePtr;
+      Position* start = (Position*)startPtr;
+      Position* end = (Position*)endPtr;
 
       tape->erase(*start, *end);
     }
 
     void append(void* dstTapePtr, void* srcTapePtr, void* startPtr, void* endPtr) {
-
-      Tape* dstTape = (Tape*) dstTapePtr;
-      Tape* srcTape = (Tape*) srcTapePtr;
-      Position* start = (Position*) startPtr;
-      Position* end = (Position*) endPtr;
+      Tape* dstTape = (Tape*)dstTapePtr;
+      Tape* srcTape = (Tape*)srcTapePtr;
+      Position* start = (Position*)startPtr;
+      Position* end = (Position*)endPtr;
 
       dstTape->append(*srcTape, *start, *end);
     }

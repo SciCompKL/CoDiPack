@@ -71,7 +71,6 @@ namespace codi {
       CODI_INLINE Type operator--();     ///< Pre-decrement operator.
       CODI_INLINE Type operator--(int);  ///< Post-decrement operator.
 
-      CODI_INLINE operator Type () const;  ///< Implicit cast to underlying type for rhs access.
+      CODI_INLINE operator Type() const;  ///< Implicit cast to underlying type for rhs access.
   };
 }
-
