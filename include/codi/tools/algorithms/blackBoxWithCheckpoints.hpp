@@ -164,8 +164,8 @@ namespace codi {
           CheckpointManagerInterface* cpm = app.getCheckpointInterface();
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
-          bool pStateAvailable = app.getHints() & ApplicationFlags::PStateIsAvailable;
-          bool fAvailable = app.getHints() & ApplicationFlags::FComputationIsAvailable;
+          bool pStateAvailable = app.getHints() & ApplicationHintsFlags::PStateIsAvailable;
+          bool fAvailable = app.getHints() & ApplicationHintsFlags::FComputationIsAvailable;
 
           Base::initVectorMode(app);
 
@@ -187,7 +187,7 @@ namespace codi {
           bool isStop = false;
           bool isFinished = false;
 
-          RecordingInputOutput tapeStatus;
+          TapeRecordingInputOutput tapeStatus;
           data.init(app);
           std::vector<Res> initalResY(app.getNumberOfFunctionals());
           std::vector<Res> resY(app.getNumberOfFunctionals());
@@ -204,21 +204,21 @@ namespace codi {
 
           if(settings.verbose) { app.print(StringUtil::format("Computing adjoint of f at %d.\n", app.getIteration())); }
 
-          tapeStatus = RecodingInputOutputFlags::InP | RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InY |
-                       RecodingInputOutputFlags::OutZ;
+          tapeStatus = TapeRecodingInputOutputFlags::InP | TapeRecodingInputOutputFlags::InX | TapeRecodingInputOutputFlags::InY |
+                       TapeRecodingInputOutputFlags::OutZ;
 
           if(fAvailable) {
             Base::recordTape(app, data, TapeEvaluationFlags::F, tapeStatus);
           } else {
             Base::recordTape(app, data, TapeEvaluationFlags::G, tapeStatus);
           }
-          Base::evaluateTape(app, data, EvaluationInputOutputFlags::GetP | EvaluationInputOutputFlags::GetX |
-                                       EvaluationInputOutputFlags::GetY | EvaluationInputOutputFlags::SetZ);
+          Base::evaluateTape(app, data, TapeEvaluationInputOutputFlags::GetP | TapeEvaluationInputOutputFlags::GetX |
+                                       TapeEvaluationInputOutputFlags::GetY | TapeEvaluationInputOutputFlags::SetZ);
 
-          io->writeY(curAdjIteration, data.realNextY, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
-          io->writeX(curAdjIteration, data.realX, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+          io->writeY(curAdjIteration, data.realNextY, FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F | FileOutputHintsFlags::Intermediate);
+          io->writeX(curAdjIteration, data.realX, FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F | FileOutputHintsFlags::Intermediate);
           if(pStateAvailable) {
-            io->writeP(curAdjIteration, data.realP, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Intermediate);
+            io->writeP(curAdjIteration, data.realP, FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F | FileOutputHintsFlags::Intermediate);
           }
           std::swap(data.realNextY, data.realCurY);
           curAdjIteration -= 1;
@@ -234,16 +234,16 @@ namespace codi {
           while(!(isFinished || isStop)) {
             if(app.getIteration() == curAdjIteration) {
               if(settings.verbose) { app.print(StringUtil::format("Computing adjoint of G at %d.\n", app.getIteration())); }
-              tapeStatus = RecodingInputOutputFlags::InP | RecodingInputOutputFlags::InX | RecodingInputOutputFlags::InY |
-                           RecodingInputOutputFlags::OutY;
+              tapeStatus = TapeRecodingInputOutputFlags::InP | TapeRecodingInputOutputFlags::InX | TapeRecodingInputOutputFlags::InY |
+                           TapeRecodingInputOutputFlags::OutY;
               TapeEvaluation tapeEval = TapeEvaluationFlags::G;
               if(!pStateAvailable) {
                 tapeEval |= TapeEvaluationFlags::P;
               }
               Base::recordTape(app, data, TapeEvaluationFlags::G | TapeEvaluationFlags::P, tapeStatus);
 
-              Base::evaluateTape(app, data, EvaluationInputOutputFlags::UpdateP | EvaluationInputOutputFlags::UpdateX |
-                                            EvaluationInputOutputFlags::GetY | EvaluationInputOutputFlags::SetY);
+              Base::evaluateTape(app, data, TapeEvaluationInputOutputFlags::UpdateP | TapeEvaluationInputOutputFlags::UpdateX |
+                                            TapeEvaluationInputOutputFlags::GetY | TapeEvaluationInputOutputFlags::SetY);
 
 
               for(int i = 0; i < app.getNumberOfFunctionals(); i += 1) {
@@ -252,12 +252,12 @@ namespace codi {
               app.print(Base::formatAdjointEntry(curAdjIteration, resY));
 
               io->writeY(curAdjIteration, data.realNextY,
-                         OutputFlags::Derivative | OutputFlags::G | OutputFlags::Intermediate);
+                         FileOutputHintsFlags::Derivative | FileOutputHintsFlags::G | FileOutputHintsFlags::Intermediate);
               io->writeX(curAdjIteration, data.realX,
-                         OutputFlags::Derivative | OutputFlags::G | OutputFlags::Intermediate);
+                         FileOutputHintsFlags::Derivative | FileOutputHintsFlags::G | FileOutputHintsFlags::Intermediate);
               if(pStateAvailable) {
                 io->writeP(curAdjIteration, data.realP,
-                           OutputFlags::Derivative | OutputFlags::G | OutputFlags::Intermediate);
+                           FileOutputHintsFlags::Derivative | FileOutputHintsFlags::G | FileOutputHintsFlags::Intermediate);
               }
 
               // Prepare next iteration
@@ -278,13 +278,13 @@ namespace codi {
 
           if(pStateAvailable) {
             if(settings.verbose) { app.print(StringUtil::format("Computing adjoint of P at %d.\n", curAdjIteration)); }
-            Base::reverseP(app, data, EvaluationInputOutputFlags::UpdateX);
+            Base::reverseP(app, data, TapeEvaluationInputOutputFlags::UpdateX);
           }
 
-          io->writeY(settings.start, data.realCurY, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
-          io->writeX(settings.start, data.realX, OutputFlags::Derivative | OutputFlags::P | OutputFlags::Final);
+          io->writeY(settings.start, data.realCurY, FileOutputHintsFlags::Derivative | FileOutputHintsFlags::G | FileOutputHintsFlags::Final);
+          io->writeX(settings.start, data.realX, FileOutputHintsFlags::Derivative | FileOutputHintsFlags::P | FileOutputHintsFlags::Final);
           if(pStateAvailable) {
-            io->writeP(settings.start, data.realP, OutputFlags::Derivative | OutputFlags::G | OutputFlags::Final);
+            io->writeP(settings.start, data.realP, FileOutputHintsFlags::Derivative | FileOutputHintsFlags::G | FileOutputHintsFlags::Final);
           }
 
           if(settings.verbose) { app.print(StringUtil::format("Finished.\n")); }

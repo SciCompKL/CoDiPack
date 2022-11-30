@@ -84,11 +84,11 @@ namespace codi {
         }
 
         void run(App& app) {
-          if(ApplicationFlags::InitializationComputesP & app.getHints() && settings.fullJacobian) {
+          if(ApplicationHintsFlags::InitializationComputesP & app.getHints() && settings.fullJacobian) {
             CODI_EXCEPTION("Computation of full Jacobian not supported if P can not be recomputed.");
           }
 
-          if(ApplicationFlags::InitializationComputesP & app.getHints()) {
+          if(ApplicationHintsFlags::InitializationComputesP & app.getHints()) {
             initSeedingPos = 0;
             app.setInitializationHandlingFunction(setGradientInit, this);
           }
@@ -116,7 +116,7 @@ namespace codi {
                            (int)app.getSizeX());
           }
 
-          if(!(ApplicationFlags::InitializationComputesP & app.getHints())) {
+          if(!(ApplicationHintsFlags::InitializationComputesP & app.getHints())) {
             app.iterateX(SetGradient(settings.seeding));
           }
 
@@ -125,14 +125,14 @@ namespace codi {
           std::vector<RealVector> z(GT::dim, RealVector(app.getSizeZ()));
           app.iterateZ(GetGradient(z));
 
-          io->writeZ(app.getIteration(), z, OutputFlags::Derivative | OutputFlags::F | OutputFlags::Final);
+          io->writeZ(app.getIteration(), z, FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F | FileOutputHintsFlags::Final);
         }
 
         void runJacobianMode(App& app) {
           ApplicationIOInterface<Type>* io = app.getIOInterface();
           CheckpointManagerInterface* cpm = app.getCheckpointInterface();
 
-          OutputHints outputHints = OutputFlags::Derivative | OutputFlags::F | OutputFlags::Final | OutputFlags::Vector;
+          FileOutputHints outputHints = FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F | FileOutputHintsFlags::Final | FileOutputHintsFlags::Vector;
 
           // Create initial checkpoint
           CheckpointHandle* cp = nullptr;

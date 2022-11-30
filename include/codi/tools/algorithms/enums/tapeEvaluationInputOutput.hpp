@@ -42,7 +42,7 @@
 namespace codi {
   namespace algorithms {
 
-    enum class EvaluationInputOutputFlags {
+    enum class TapeEvaluationInputOutputFlags {
       SetY,
       SetP,
       SetZ,
@@ -54,9 +54,9 @@ namespace codi {
       UpdateX,
       MaxElement
     };
-    using EvaluationInputOutput = EnumBitset<EvaluationInputOutputFlags>;
+    using TapeEvaluationInputOutput = EnumBitset<TapeEvaluationInputOutputFlags>;
 
-#define ENUM EvaluationInputOutputFlags
+#define ENUM TapeEvaluationInputOutputFlags
 #include "../../../misc/enumOperations.tpp"
 
   }

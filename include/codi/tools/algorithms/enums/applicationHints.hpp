@@ -42,7 +42,7 @@
 namespace codi {
   namespace algorithms {
 
-    enum class ApplicationFlags {
+    enum class ApplicationHintsFlags {
       InitializationRequired,
       InitializationComputesP,
       InitializationWriteTapeToDisk,
@@ -51,9 +51,9 @@ namespace codi {
       FComputationIsAvailable, // TODO: Automatic detection
       MaxElement
     };
-    using ApplicationHints = EnumBitset<ApplicationFlags>;
+    using ApplicationHints = EnumBitset<ApplicationHintsFlags>;
 
-#define ENUM ApplicationFlags
+#define ENUM ApplicationHintsFlags
 #include "../../../misc/enumOperations.tpp"
 
   }

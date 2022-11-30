@@ -38,7 +38,7 @@
 #include "applications/transport1D.hpp"
 
 using codi::algorithms::ApplicationHints;
-using codi::algorithms::ApplicationFlags;
+using codi::algorithms::ApplicationHintsFlags;
 using codi::algorithms::ReverseAccumulationSettings;
 using codi::algorithms::CheckpointHandle;
 
@@ -71,10 +71,10 @@ struct VectorConfig {
 
 size_t constexpr CONFIG_SIZE = 4;
 AppConfig appConfigs[CONFIG_SIZE] = {
-  {"InitRecord", ApplicationFlags::InitializationComputesP | ApplicationFlags::PStateIsAvailable | ApplicationFlags::FComputationIsAvailable},
-  {"InitRecompute_PIterableYes", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::PStateIsAvailable | ApplicationFlags::FComputationIsAvailable},
-  {"InitRecompute_PIterableNo", ApplicationFlags::PComputationIsAvailable | ApplicationFlags::FComputationIsAvailable},
-  {"InitRecord_FComputeNo", ApplicationFlags::InitializationComputesP | ApplicationFlags::PStateIsAvailable}
+  {"InitRecord", ApplicationHintsFlags::InitializationComputesP | ApplicationHintsFlags::PStateIsAvailable | ApplicationHintsFlags::FComputationIsAvailable},
+  {"InitRecompute_PIterableYes", ApplicationHintsFlags::PComputationIsAvailable | ApplicationHintsFlags::PStateIsAvailable | ApplicationHintsFlags::FComputationIsAvailable},
+  {"InitRecompute_PIterableNo", ApplicationHintsFlags::PComputationIsAvailable | ApplicationHintsFlags::FComputationIsAvailable},
+  {"InitRecord_FComputeNo", ApplicationHintsFlags::InitializationComputesP | ApplicationHintsFlags::PStateIsAvailable}
 };
 
 AppConfig defaultAppConfig =

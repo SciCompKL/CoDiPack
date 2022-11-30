@@ -133,8 +133,8 @@ namespace codi {
             isStop = app.isStop();
 
             io->writeY(app.getIteration(), yCur,
-                       OutputFlags::Primal | OutputFlags::G |
-                           ((isFinished | isConverged | isStop) ? OutputFlags::Final : OutputFlags::Intermediate));
+                       FileOutputHintsFlags::Primal | FileOutputHintsFlags::G |
+                           ((isFinished | isConverged | isStop) ? FileOutputHintsFlags::Final : FileOutputHintsFlags::Intermediate));
           }
 
           writeCheckpoint(app, true);
@@ -144,7 +144,7 @@ namespace codi {
           RealVector z(app.getSizeZ());
           app.iterateZ(typename Base::GetPrimal(z));
 
-          io->writeZ(app.getIteration(), z, OutputFlags::Primal | OutputFlags::F | OutputFlags::Final);
+          io->writeZ(app.getIteration(), z, FileOutputHintsFlags::Primal | FileOutputHintsFlags::F | FileOutputHintsFlags::Final);
         }
 
         void writeCheckpoint(App& app, bool final = false) {

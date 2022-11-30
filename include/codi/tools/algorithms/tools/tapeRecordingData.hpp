@@ -46,7 +46,7 @@ namespace codi {
   namespace algorithms {
 
     template<typename T_App>
-    struct AlgorithmData {
+    struct TapeRecordingData {
       public:
         using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
         using Type = typename App::Type;
@@ -58,12 +58,12 @@ namespace codi {
         using RealVector = std::vector<Real>;
         using IdVector = std::vector<Identifier>;
 
-        AlgorithmData() = default;
-        AlgorithmData(App& app) : AlgorithmData() {
+        TapeRecordingData() = default;
+        TapeRecordingData(App& app) : TapeRecordingData() {
           this->init(app);
         }
 
-        ~AlgorithmData() {
+        ~TapeRecordingData() {
           if(nullptr != initTape) {
             delete initTape;
           }
@@ -97,7 +97,7 @@ namespace codi {
 
           realX.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeX()));
 
-          if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
+          if(app.getHints() & ApplicationHintsFlags::PStateIsAvailable) {
             idInP.resize(app.getSizeP());
             idOutP.resize(app.getSizeP());
             realP.resize(app.getNumberOfFunctionals(), RealVector(app.getSizeP()));

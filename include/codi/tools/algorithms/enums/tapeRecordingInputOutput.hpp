@@ -42,14 +42,18 @@
 namespace codi {
   namespace algorithms {
 
-
-    enum class OutputType {
-      P,
-      X,
-      Y,
-      Z,
+    enum class TapeRecodingInputOutputFlags {
+      InY,
+      InP,
+      InX,
+      OutY,
+      OutP,
+      OutZ,
       MaxElement
     };
+    using TapeRecordingInputOutput = EnumBitset<TapeRecodingInputOutputFlags>;
 
+#define ENUM TapeRecodingInputOutputFlags
+#include "../../../misc/enumOperations.tpp"
   }
 }

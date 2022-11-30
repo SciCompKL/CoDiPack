@@ -40,11 +40,11 @@
 #include "../../../misc/macros.hpp"
 #include "../../../traits/gradientTraits.hpp"
 #include "../../helpers/customAdjointVectorHelper.hpp"
-#include "../enums/evaluationInputOutput.hpp"
-#include "../enums/recordingInputOutput.hpp"
+#include "../enums/tapeEvaluationInputOutput.hpp"
+#include "../enums/tapeRecordingInputOutput.hpp"
 #include "../enums/tapeEvaluation.hpp"
 #include "../interfaces/algorithmInterface.hpp"
-#include "../tools/algorithmData.hpp"
+#include "../tools/tapeRecordingData.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -74,7 +74,7 @@ namespace codi {
         using Identifier = typename Type::Identifier;
         using Tape = typename Type::Tape;
 
-        using Data = AlgorithmData<App>;
+        using Data = TapeRecordingData<App>;
         using Res = Residuum<Real>;
 
         using RealVector = typename Data::RealVector;
@@ -127,10 +127,10 @@ namespace codi {
         }
 
         void initializeApp(App& app, Data& data) {
-          bool initialize = app.getHints() & ApplicationFlags::InitializationRequired;
-          bool record = app.getHints() & ApplicationFlags::InitializationComputesP;
-          bool pIsComputable = app.getHints() & ApplicationFlags::PComputationIsAvailable;
-          bool pIsIterable = app.getHints() & ApplicationFlags::PStateIsAvailable;
+          bool initialize = app.getHints() & ApplicationHintsFlags::InitializationRequired;
+          bool record = app.getHints() & ApplicationHintsFlags::InitializationComputesP;
+          bool pIsComputable = app.getHints() & ApplicationHintsFlags::PComputationIsAvailable;
+          bool pIsIterable = app.getHints() & ApplicationHintsFlags::PStateIsAvailable;
 
           if(pIsComputable && record) {
             CODI_EXCEPTION("P can either be defined through the initialization or through the recomputation, but not "
@@ -166,7 +166,7 @@ namespace codi {
               tape.setPassive();
               tape.swap(*data.initTape);
 
-              if(app.getHints() & ApplicationFlags::InitializationWriteTapeToDisk) {
+              if(app.getHints() & ApplicationHintsFlags::InitializationWriteTapeToDisk) {
                 data.initTape->writeToFile(getSettings()->initializationTaperFolder);
                 data.initTape->deleteData();
               }
@@ -194,10 +194,10 @@ namespace codi {
           }
         }
 
-        void reverseP(App& app, Data& data, EvaluationInputOutput evalXFlag) {
-          if(app.getHints() & ApplicationFlags::InitializationComputesP) {
+        void reverseP(App& app, Data& data, TapeEvaluationInputOutput evalXFlag) {
+          if(app.getHints() & ApplicationHintsFlags::InitializationComputesP) {
 
-            if(app.getHints() & ApplicationFlags::InitializationWriteTapeToDisk) {
+            if(app.getHints() & ApplicationHintsFlags::InitializationWriteTapeToDisk) {
               data.initTape->readFromFile(getSettings()->initializationTaperFolder);
             }
 
@@ -219,9 +219,9 @@ namespace codi {
                 vectorHelper->evaluate();
               }
 
-              if (EvaluationInputOutputFlags::GetX & evalXFlag) {
+              if (TapeEvaluationInputOutputFlags::GetX & evalXFlag) {
                 getGradientAndReset(access, data.idInitX, data.realX, vecPos, steps);
-              } else if (EvaluationInputOutputFlags::UpdateX & evalXFlag) {
+              } else if (TapeEvaluationInputOutputFlags::UpdateX & evalXFlag) {
                 updateGradientAndReset(access, data.idInitX, data.realX, vecPos, steps);
               }
             }
@@ -231,19 +231,19 @@ namespace codi {
               vectorHelper->setTape(Type::getTape());
             }
 
-            if(app.getHints() & ApplicationFlags::InitializationWriteTapeToDisk) {
+            if(app.getHints() & ApplicationHintsFlags::InitializationWriteTapeToDisk) {
               data.initTape->deleteData();
             }
 
-          } else if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
+          } else if(app.getHints() & ApplicationHintsFlags::PStateIsAvailable) {
             // Regular recording and reversal
-            recordTape(app, data, TapeEvaluationFlags::P, RecodingInputOutputFlags::InX | RecodingInputOutputFlags::OutP);
+            recordTape(app, data, TapeEvaluationFlags::P, TapeRecodingInputOutputFlags::InX | TapeRecodingInputOutputFlags::OutP);
 
-            evaluateTape(app, data, EvaluationInputOutputFlags::SetP | evalXFlag);
+            evaluateTape(app, data, TapeEvaluationInputOutputFlags::SetP | evalXFlag);
           }
         }
 
-        void recordTape(App& app, Data& data, TapeEvaluation evalOpt, RecordingInputOutput recOpt) {
+        void recordTape(App& app, Data& data, TapeEvaluation evalOpt, TapeRecordingInputOutput recOpt) {
 
           if(!useTapeAdjoint) {
             vectorHelper->deleteAdjointVector();
@@ -255,22 +255,22 @@ namespace codi {
           tape.reset();
           tape.setActive();
 
-          if (RecodingInputOutputFlags::InY & recOpt) {
+          if (TapeRecodingInputOutputFlags::InY & recOpt) {
             app.iterateY(RegisterInput(data.idInY));
           } else {
             app.iterateY(clearInput);
           }
-          if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
-            if (RecodingInputOutputFlags::InP & recOpt) {
+          if(app.getHints() & ApplicationHintsFlags::PStateIsAvailable) {
+            if (TapeRecodingInputOutputFlags::InP & recOpt) {
               app.iterateP(RegisterInput(data.idInP));
             } else {
               app.iterateP(clearInput);
             }
-          } else if(app.getHints() & ApplicationFlags::PComputationIsAvailable){
+          } else if(app.getHints() & ApplicationHintsFlags::PComputationIsAvailable){
             evalOpt |= TapeEvaluationFlags::P; // Force the evaluation of P for clearing.
             // TODO: Force based on last tape recording.
           }
-          if (RecodingInputOutputFlags::InX & recOpt) {
+          if (TapeRecodingInputOutputFlags::InX & recOpt) {
             app.iterateX(RegisterInput(data.idInX));
           } else {
             app.iterateX(clearInput);
@@ -288,17 +288,17 @@ namespace codi {
 
           data.resizeYOut(app);
 
-          if (RecodingInputOutputFlags::OutY & recOpt) {
+          if (TapeRecodingInputOutputFlags::OutY & recOpt) {
             app.iterateY(RegisterOutput(data.idOutY));
           }
 
-          if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
-            if (RecodingInputOutputFlags::OutP & recOpt) {
+          if(app.getHints() & ApplicationHintsFlags::PStateIsAvailable) {
+            if (TapeRecodingInputOutputFlags::OutP & recOpt) {
               app.iterateP(RegisterOutput(data.idOutP));
             }
           }
 
-          if (RecodingInputOutputFlags::OutZ & recOpt) {
+          if (TapeRecodingInputOutputFlags::OutZ & recOpt) {
             app.iterateZ(RegisterOutput(data.idOutZ));
           }
 
@@ -309,7 +309,7 @@ namespace codi {
           }
         }
 
-        void evaluateTape(App& app, Data& data, EvaluationInputOutput operations) {
+        void evaluateTape(App& app, Data& data, TapeEvaluationInputOutput operations) {
           Tape& tape = Type::getTape();
 
           VectorAccess* access = createVectorAccess(tape);
@@ -319,17 +319,17 @@ namespace codi {
           for(int vecPos = 0; vecPos < d; vecPos += d_local) {
             int steps = min(d - vecPos, d_local);
 
-            if (EvaluationInputOutputFlags::SetY & operations) {
+            if (TapeEvaluationInputOutputFlags::SetY & operations) {
               setGradient(access, data.idOutY, data.realCurY, vecPos, steps);
             }
 
-            if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
-              if (EvaluationInputOutputFlags::SetP & operations) {
+            if(app.getHints() & ApplicationHintsFlags::PStateIsAvailable) {
+              if (TapeEvaluationInputOutputFlags::SetP & operations) {
                 setGradient(access, data.idOutP, data.realP, vecPos, steps);
               }
             }
 
-            if (EvaluationInputOutputFlags::SetZ & operations) {
+            if (TapeEvaluationInputOutputFlags::SetZ & operations) {
               setGradient(access, data.idOutZ, 1.0, vecPos, steps);
             }
 
@@ -339,23 +339,23 @@ namespace codi {
               vectorHelper->evaluate();
             }
 
-            if (EvaluationInputOutputFlags::GetY & operations) {
+            if (TapeEvaluationInputOutputFlags::GetY & operations) {
               getGradientAndReset(access, data.idInY, data.realNextY, vecPos, steps);
-            } else if (EvaluationInputOutputFlags::UpdateY & operations) {
+            } else if (TapeEvaluationInputOutputFlags::UpdateY & operations) {
               updateGradientAndReset(access, data.idInY, data.realNextY, vecPos, steps);
             }
 
-            if(app.getHints() & ApplicationFlags::PStateIsAvailable) {
-              if (EvaluationInputOutputFlags::GetP & operations) {
+            if(app.getHints() & ApplicationHintsFlags::PStateIsAvailable) {
+              if (TapeEvaluationInputOutputFlags::GetP & operations) {
                 getGradientAndReset(access, data.idInP, data.realP, vecPos, steps);
-              } else if (EvaluationInputOutputFlags::UpdateP & operations) {
+              } else if (TapeEvaluationInputOutputFlags::UpdateP & operations) {
                 updateGradientAndReset(access, data.idInP, data.realP, vecPos, steps);
               }
             }
 
-            if (EvaluationInputOutputFlags::GetX & operations) {
+            if (TapeEvaluationInputOutputFlags::GetX & operations) {
               getGradientAndReset(access, data.idInX, data.realX, vecPos, steps);
-            } else if (EvaluationInputOutputFlags::UpdateX & operations) {
+            } else if (TapeEvaluationInputOutputFlags::UpdateX & operations) {
               updateGradientAndReset(access, data.idInX, data.realX, vecPos, steps);
             }
           }

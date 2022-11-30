@@ -40,7 +40,7 @@
 #include "../../../misc/macros.hpp"
 #include "../interfaces/algorithmInterface.hpp"
 #include "../interfaces/applicationInterface.hpp"
-#include "algorithmData.hpp"
+#include "tapeRecordingData.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -55,7 +55,7 @@ namespace codi {
         using Type = typename App::Type;
         using Tape = typename Type::Tape;
 
-        using Data = AlgorithmData<App>;
+        using Data = TapeRecordingData<App>;
         using RealVector = typename Data::RealVector;
         using IdVector = typename Data::IdVector;
 
@@ -66,10 +66,10 @@ namespace codi {
         App& app;
         IdVector ids;
         int iteration;
-        OutputType type;
-        OutputHints hints;
+        FileOutputType type;
+        FileOutputHints hints;
 
-        ReverseTapeOutput(App& app, IdVector const& ids, int iteration, OutputType type, OutputHints hints) :
+        ReverseTapeOutput(App& app, IdVector const& ids, int iteration, FileOutputType type, FileOutputHints hints) :
           app(app),
           ids(ids),
           iteration(iteration),
@@ -78,7 +78,7 @@ namespace codi {
 
       public:
 
-        static void addReverseOutput(App& app, IdVector const& ids, OutputType type, OutputHints hints) {
+        static void addReverseOutput(App& app, IdVector const& ids, FileOutputType type, FileOutputHints hints) {
           ReverseTapeOutput* out = new ReverseTapeOutput(app, ids, app.getIteration(), type, hints);
 
           Type::getTape().pushExternalFunction(

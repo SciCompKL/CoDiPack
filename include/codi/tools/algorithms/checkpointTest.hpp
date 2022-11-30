@@ -88,7 +88,7 @@ namespace codi {
           CheckpointManagerInterface* cm = app.getCheckpointInterface();
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
-          if(app.getHints() & ApplicationFlags::InitializationRequired) {
+          if(app.getHints() & ApplicationHintsFlags::InitializationRequired) {
             app.initialize();
           }
 
@@ -151,9 +151,9 @@ namespace codi {
               app.print(StringUtil::format("found %d errors, largest is %0.6e.\n", errorCount, largestError));
               app.print(StringUtil::format("Writing vectors."));
               io->writeY(compareIter, vectors[i],
-                         OutputFlags::Primal | OutputFlags::Intermediate | OutputFlags::G | OutputFlags::V1);
+                         FileOutputHintsFlags::Primal | FileOutputHintsFlags::Intermediate | FileOutputHintsFlags::G | FileOutputHintsFlags::V1);
               io->writeY(compareIter, curPrimal,
-                         OutputFlags::Primal | OutputFlags::Intermediate | OutputFlags::G | OutputFlags::V2);
+                         FileOutputHintsFlags::Primal | FileOutputHintsFlags::Intermediate | FileOutputHintsFlags::G | FileOutputHintsFlags::V2);
             }
           }
         }

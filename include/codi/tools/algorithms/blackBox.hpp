@@ -176,7 +176,7 @@ namespace codi {
 
             Base::getGradientAndReset(access, idX, gradX, vecPos, steps);
 
-            io->writeX(0, gradX, OutputFlags::Final | OutputFlags::Derivative | OutputFlags::F, vecPos);
+            io->writeX(0, gradX, FileOutputHintsFlags::Final | FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F, vecPos);
           }
 
           Base::deleteVectorAccess(tape, access);
@@ -205,20 +205,20 @@ namespace codi {
       private:
 
         void addDebugOutput(App& app) {
-          OutputHints hints = OutputFlags::Intermediate | OutputFlags::Derivative | OutputFlags::G;
+          FileOutputHints hints = FileOutputHintsFlags::Intermediate | FileOutputHintsFlags::Derivative | FileOutputHintsFlags::G;
 
           IdVector idY(app.getSizeY());
           app.iterateY(typename Base::GetId(idY));
-          ReverseTapeOutput<App>::addReverseOutput(app, idY, OutputType::Y, hints);
+          ReverseTapeOutput<App>::addReverseOutput(app, idY, FileOutputType::Y, hints);
 
           IdVector idX(app.getSizeX());
           app.iterateX(typename Base::GetId(idX));
-          ReverseTapeOutput<App>::addReverseOutput(app, idX, OutputType::X, hints);
+          ReverseTapeOutput<App>::addReverseOutput(app, idX, FileOutputType::X, hints);
 
           if(0 != app.getSizeP()) {
             IdVector idP(app.getSizeP());
             app.iterateP(typename Base::GetId(idP));
-            ReverseTapeOutput<App>::addReverseOutput(app, idP, OutputType::P, hints);
+            ReverseTapeOutput<App>::addReverseOutput(app, idP, FileOutputType::P, hints);
           }
         }
     };

@@ -90,11 +90,11 @@ namespace codi {
         }
 
         void run(App& app) {
-          if(ApplicationFlags::InitializationComputesP & app.getHints() && settings.fullJacobian) {
+          if(ApplicationHintsFlags::InitializationComputesP & app.getHints() && settings.fullJacobian) {
             CODI_EXCEPTION("Computation of full Jacobian not supported if P can not be recomputed.");
           }
 
-          if(ApplicationFlags::InitializationComputesP & app.getHints()) {
+          if(ApplicationHintsFlags::InitializationComputesP & app.getHints()) {
             // TODO: Implement direct init.
           }
 
@@ -115,8 +115,8 @@ namespace codi {
           ApplicationIOInterface<Type>* io = app.getIOInterface();
           CheckpointManagerInterface* cpm = app.getCheckpointInterface();
 
-          OutputHints primalHints = OutputFlags::Primal | OutputFlags::F | OutputFlags::Final;
-          OutputHints gradientHints = OutputFlags::Derivative | OutputFlags::F | OutputFlags::Final | OutputFlags::Vector;
+          FileOutputHints primalHints = FileOutputHintsFlags::Primal | FileOutputHintsFlags::F | FileOutputHintsFlags::Final;
+          FileOutputHints gradientHints = FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F | FileOutputHintsFlags::Final | FileOutputHintsFlags::Vector;
 
           // Create initial checkpoint
           CheckpointHandle* cp = nullptr;
@@ -152,9 +152,9 @@ namespace codi {
             size_t errors = 0;
             app.iterateZ(ValidateValue(zBase, errors, settings.primalValidationThreshold));
             if(0 != errors) {
-              io->writeZ(app.getIteration(), zBase,  primalHints | OutputFlags::V1);
+              io->writeZ(app.getIteration(), zBase,  primalHints | FileOutputHintsFlags::V1);
               app.iterateZ(GetValue(zBase));
-              io->writeZ(app.getIteration(), zBase,  primalHints | OutputFlags::V2);
+              io->writeZ(app.getIteration(), zBase,  primalHints | FileOutputHintsFlags::V2);
               CODI_EXCEPTION("Error: Primal changed in '%d' places.\n", (int)errors);
             }
             cpm->load(cp);

@@ -42,29 +42,13 @@
 namespace codi {
   namespace algorithms {
 
-    /// Flags should be one out of each category, that is
-    /// {status} + {function} + {kind} + (optional: {version})
-    enum class OutputFlags {
-      // Category: status
-      Intermediate,
-      Final,
-      // Category: function
-      F,
-      G,
+    enum class FileOutputType {
       P,
-      // Category: kind
-      Primal,
-      Derivative,
-      // Category: version (optional)
-      V1,
-      V2,
-      // Category: hints (optional)
-      Vector, // Force vector output
+      X,
+      Y,
+      Z,
       MaxElement
     };
-    using OutputHints = EnumBitset<OutputFlags>;
 
-#define ENUM OutputFlags
-#include "../../../misc/enumOperations.tpp"
   }
 }

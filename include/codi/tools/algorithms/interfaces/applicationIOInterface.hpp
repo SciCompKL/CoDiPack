@@ -40,8 +40,8 @@
 #include "../../../config.h"
 #include "../../../expressions/lhsExpressionInterface.hpp"
 #include "../../../misc/macros.hpp"
-#include "../enums/outputHints.hpp"
-#include "../enums/outputType.hpp"
+#include "../enums/fileOutputHints.hpp"
+#include "../enums/fileOutputType.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -68,10 +68,10 @@ namespace codi {
 
         virtual void readRestartData(std::string const& filename, char*& data, size_t& length) = 0;
 
-        virtual void writeY(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
-        virtual void writeX(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
-        virtual void writeP(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
-        virtual void writeZ(int iteration, RealVector const& v, OutputHints flags, int vec = 0) = 0;
+        virtual void writeY(int iteration, RealVector const& v, FileOutputHints flags, int vec = 0) = 0;
+        virtual void writeX(int iteration, RealVector const& v, FileOutputHints flags, int vec = 0) = 0;
+        virtual void writeP(int iteration, RealVector const& v, FileOutputHints flags, int vec = 0) = 0;
+        virtual void writeZ(int iteration, RealVector const& v, FileOutputHints flags, int vec = 0) = 0;
 
 
         // Utility functions
@@ -83,47 +83,47 @@ namespace codi {
 
         // Helper functions
 
-        void writeY(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+        void writeY(int iteration, std::vector<RealVector> const& v, FileOutputHints flags, int vecOffset = 0) {
           for(size_t i = 0; i < v.size(); i += 1) {
             writeY(iteration, v[i], flags, i + vecOffset);
           }
         }
 
-        void writeX(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+        void writeX(int iteration, std::vector<RealVector> const& v, FileOutputHints flags, int vecOffset = 0) {
           for(size_t i = 0; i < v.size(); i += 1) {
             writeX(iteration, v[i], flags, i + vecOffset);
           }
         }
 
-        void writeP(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+        void writeP(int iteration, std::vector<RealVector> const& v, FileOutputHints flags, int vecOffset = 0) {
           for(size_t i = 0; i < v.size(); i += 1) {
             writeP(iteration, v[i], flags, i + vecOffset);
           }
         }
 
-        void writeZ(int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+        void writeZ(int iteration, std::vector<RealVector> const& v, FileOutputHints flags, int vecOffset = 0) {
           for(size_t i = 0; i < v.size(); i += 1) {
             writeZ(iteration, v[i], flags, i + vecOffset);
           }
         }
 
-        virtual void write(OutputType type, int iteration, RealVector const& v, OutputHints flags, int vec = 0) {
+        virtual void write(FileOutputType type, int iteration, RealVector const& v, FileOutputHints flags, int vec = 0) {
           switch (type) {
-            case OutputType::P: writeP(iteration, v, flags, vec); break;
-            case OutputType::X: writeX(iteration, v, flags, vec); break;
-            case OutputType::Y: writeY(iteration, v, flags, vec); break;
-            case OutputType::Z: writeZ(iteration, v, flags, vec); break;
+            case FileOutputType::P: writeP(iteration, v, flags, vec); break;
+            case FileOutputType::X: writeX(iteration, v, flags, vec); break;
+            case FileOutputType::Y: writeY(iteration, v, flags, vec); break;
+            case FileOutputType::Z: writeZ(iteration, v, flags, vec); break;
           default:
             CODI_EXCEPTION("Unimplemented switch case.");
           }
         }
 
-        virtual void write(OutputType type, int iteration, std::vector<RealVector> const& v, OutputHints flags, int vecOffset = 0) {
+        virtual void write(FileOutputType type, int iteration, std::vector<RealVector> const& v, FileOutputHints flags, int vecOffset = 0) {
           switch (type) {
-            case OutputType::P: writeP(iteration, v, flags, vecOffset); break;
-            case OutputType::X: writeX(iteration, v, flags, vecOffset); break;
-            case OutputType::Y: writeY(iteration, v, flags, vecOffset); break;
-            case OutputType::Z: writeZ(iteration, v, flags, vecOffset); break;
+            case FileOutputType::P: writeP(iteration, v, flags, vecOffset); break;
+            case FileOutputType::X: writeX(iteration, v, flags, vecOffset); break;
+            case FileOutputType::Y: writeY(iteration, v, flags, vecOffset); break;
+            case FileOutputType::Z: writeZ(iteration, v, flags, vecOffset); break;
           default:
             CODI_EXCEPTION("Unimplemented switch case.");
           }

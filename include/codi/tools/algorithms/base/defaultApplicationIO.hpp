@@ -124,25 +124,25 @@ namespace codi {
           readVector(createRestartName(restartReadFolder, fileName), restartIO, data, length);
         }
 
-        void writeY(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
+        void writeY(int iteration, std::vector<Real> const& v, codi::algorithms::FileOutputHints flags, int vec) {
           if (outputY && checkFinal(flags)) {
             writeVector(createWriteName(offsetWriteFolder, "y", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
-        void writeX(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
+        void writeX(int iteration, std::vector<Real> const& v, codi::algorithms::FileOutputHints flags, int vec) {
           if (outputX && checkFinal(flags)) {
             writeVector(createWriteName(offsetWriteFolder, "x", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
-        void writeP(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
+        void writeP(int iteration, std::vector<Real> const& v, codi::algorithms::FileOutputHints flags, int vec) {
           if (outputP && checkFinal(flags)) {
             writeVector(createWriteName(offsetWriteFolder, "p", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
         }
 
-        void writeZ(int iteration, std::vector<Real> const& v, codi::algorithms::OutputHints flags, int vec) {
+        void writeZ(int iteration, std::vector<Real> const& v, codi::algorithms::FileOutputHints flags, int vec) {
           if (outputZ && checkFinal(flags)) {
             writeVector(createWriteName(offsetWriteFolder, "z", iteration, flags, writeIO, vec), writeIO, v.data(), v.size());
           }
@@ -175,23 +175,23 @@ namespace codi {
 
         template<typename IO>
         std::string createWriteName(std::string const& folder, std::string const& name, int iteration,
-                                    OutputHints flags, CODI_DD(IO, FileIOInterface) * io, int vec) {
+                                    FileOutputHints flags, CODI_DD(IO, FileIOInterface) * io, int vec) {
           std::string prefix = "";
-          if (codi::algorithms::OutputFlags::Primal & flags) {
+          if (codi::algorithms::FileOutputHintsFlags::Primal & flags) {
             prefix = "primal_";
-          } else if (codi::algorithms::OutputFlags::Derivative & flags) {
+          } else if (codi::algorithms::FileOutputHintsFlags::Derivative & flags) {
             prefix = "deriv_";
           }
-          if (codi::algorithms::OutputFlags::V1 & flags) {
+          if (codi::algorithms::FileOutputHintsFlags::V1 & flags) {
             prefix += "v1_";
-          } else if (codi::algorithms::OutputFlags::V2 & flags) {
+          } else if (codi::algorithms::FileOutputHintsFlags::V2 & flags) {
             prefix += "v2_";
           }
 
           std::string suffix = "";
-          if(OutputFlags::Vector & flags) {
+          if(FileOutputHintsFlags::Vector & flags) {
             suffix += StringUtil::format("_%04d", vec);
-          } else if((OutputFlags::Derivative & flags) && (app->getNumberOfFunctionals() != 1)) {
+          } else if((FileOutputHintsFlags::Derivative & flags) && (app->getNumberOfFunctionals() != 1)) {
             suffix += StringUtil::format("_%02d", vec);
           }
 
@@ -220,9 +220,9 @@ namespace codi {
           }
         }
 
-        bool checkFinal(OutputHints flags) {
+        bool checkFinal(FileOutputHints flags) {
           if (onlyWriteFinal) {
-            return flags & OutputFlags::Final;
+            return flags & FileOutputHintsFlags::Final;
           } else {
             return true;
           }

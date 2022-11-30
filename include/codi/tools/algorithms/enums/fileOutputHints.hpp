@@ -42,18 +42,29 @@
 namespace codi {
   namespace algorithms {
 
-    enum class RecodingInputOutputFlags {
-      InY,
-      InP,
-      InX,
-      OutY,
-      OutP,
-      OutZ,
+    /// Flags should be one out of each category, that is
+    /// {status} + {function} + {kind} + (optional: {version})
+    enum class FileOutputHintsFlags {
+      // Category: status
+      Intermediate,
+      Final,
+      // Category: function
+      F,
+      G,
+      P,
+      // Category: kind
+      Primal,
+      Derivative,
+      // Category: version (optional)
+      V1,
+      V2,
+      // Category: hints (optional)
+      Vector, // Force vector output
       MaxElement
     };
-    using RecordingInputOutput = EnumBitset<RecodingInputOutputFlags>;
+    using FileOutputHints = EnumBitset<FileOutputHintsFlags>;
 
-#define ENUM RecodingInputOutputFlags
+#define ENUM FileOutputHintsFlags
 #include "../../../misc/enumOperations.tpp"
   }
 }
