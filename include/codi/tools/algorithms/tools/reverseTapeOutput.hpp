@@ -40,6 +40,7 @@
 #include "../../../misc/macros.hpp"
 #include "../interfaces/algorithmInterface.hpp"
 #include "../interfaces/applicationInterface.hpp"
+#include "algorithmData.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

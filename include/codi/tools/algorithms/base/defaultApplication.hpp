@@ -42,7 +42,10 @@
 #include "../../../misc/enumBitset.hpp"
 #include "../../../misc/macros.hpp"
 #include "../interfaces/applicationInterface.hpp"
-#include "../interfaces/fileIOInterface.hpp"
+#include "../fileIO/fileIOInterface.hpp"
+#include "../fileIO/binaryFileIO.hpp"
+#include "../fileIO/textFileIO.hpp"
+#include "../tools/algorithmData.hpp"
 #include "defaultApplicationIO.hpp"
 #include "stateBasedCheckpointManager.hpp"
 

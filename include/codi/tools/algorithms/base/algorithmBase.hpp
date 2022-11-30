@@ -40,7 +40,11 @@
 #include "../../../misc/macros.hpp"
 #include "../../../traits/gradientTraits.hpp"
 #include "../../helpers/customAdjointVectorHelper.hpp"
+#include "../enums/evaluationInputOutput.hpp"
+#include "../enums/recordingInputOutput.hpp"
+#include "../enums/tapeEvaluation.hpp"
 #include "../interfaces/algorithmInterface.hpp"
+#include "../tools/algorithmData.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

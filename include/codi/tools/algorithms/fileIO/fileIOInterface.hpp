@@ -32,49 +32,41 @@
  *    - Former members:
  *      - Tim Albring
  */
-
 #pragma once
 
+#include <string>
 #include <vector>
+#include <fstream>
+#include <iostream>
 
 #include "../../../config.h"
 #include "../../../misc/macros.hpp"
-#include "applicationInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
   namespace algorithms {
 
-    template<typename T_App>
-    struct AlgorithmInterface {
-      public:
+    struct FileIOInterface {
+        using WriteHandle = void*;
+        using ReadHandle = void*;
 
-        using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
-        using Type = typename App::Type;
+        WriteHandle openWrite(std::string const& filename, size_t totalSize);
+        ReadHandle openRead(std::string const& filename);
 
-        using Real = RealTraits::Real<Type>;
+        void closeWrite(WriteHandle handle);
+        void closeRead(ReadHandle handle);
 
-        using RealVector = std::vector<Real>;
+        std::string getFileEnding();
 
-        void run(App& app);
+        template<typename T>
+        void write(WriteHandle handle, T const* data, size_t elements);
+        template<typename T>
+        void write(WriteHandle handle, T const& data);
 
-      protected:
-
-        void iterateUntil(App& app, int iteration) {
-          while (app.getIteration() < iteration) {
-            app.evaluateG();
-          }
-        }
-
-        struct GetPrimal {
-          public:
-            RealVector& vec;
-            GetPrimal(RealVector& vec) : vec(vec) {}
-
-            void operator()(Type& value, size_t pos) {
-              vec[pos] = RealTraits::getValue(value);
-            }
-        };
+        template<typename T>
+        void read(ReadHandle handle, T* data, size_t elements);
+        template<typename T>
+        void read(ReadHandle handle, T& data);
     };
   }
 }

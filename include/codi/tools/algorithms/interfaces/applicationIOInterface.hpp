@@ -39,45 +39,13 @@
 
 #include "../../../config.h"
 #include "../../../expressions/lhsExpressionInterface.hpp"
-#include "../../../misc/enumBitset.hpp"
 #include "../../../misc/macros.hpp"
+#include "../enums/outputHints.hpp"
+#include "../enums/outputType.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
   namespace algorithms {
-
-    /// Flags should be one out of each category, that is
-    /// {status} + {function} + {kind} + (optional: {version})
-    enum class OutputFlags {
-      // Category: status
-      Intermediate,
-      Final,
-      // Category: function
-      F,
-      G,
-      P,
-      // Category: kind
-      Primal,
-      Derivative,
-      // Category: version (optional)
-      V1,
-      V2,
-      // Category: hints (optional)
-      Vector, // Force vector output
-      MaxElement
-    };
-    using OutputHints = EnumBitset<OutputFlags>;
-
-#define ENUM OutputFlags
-#include "../../../misc/enumOperations.tpp"
-
-    enum class OutputType {
-      P,
-      X,
-      Y,
-      Z,
-      MaxElement
-    };
 
     template<typename T_Type>
     struct ApplicationIOInterface {

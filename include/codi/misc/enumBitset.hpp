@@ -38,6 +38,7 @@
 #include <type_traits>
 
 #include "../config.h"
+#include "enumInterface.hpp"
 #include "macros.hpp"
 
 /** \copydoc codi::Namespace */
@@ -62,7 +63,7 @@ namespace codi {
   template<typename T_Enum>
   struct EnumBitset {
     public:
-      using Enum = CODI_DD(T_Enum, CODI_ANY); ///< See EnumBitset.
+      using Enum = CODI_DD(T_Enum, EnumInterface); ///< See EnumBitset.
 
     private:
       using UnderlyingEnumType = typename std::underlying_type<Enum>::type;

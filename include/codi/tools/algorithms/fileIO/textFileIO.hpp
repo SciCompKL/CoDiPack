@@ -40,37 +40,13 @@
 #include <iostream>
 
 #include "../../../config.h"
-#include "../../../expressions/lhsExpressionInterface.hpp"
-#include "../../../misc/enumBitset.hpp"
 #include "../../../misc/fileIo.hpp"
 #include "../../../misc/macros.hpp"
+#include "fileIOInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
   namespace algorithms {
-
-    struct FileIOInterface {
-        using WriteHandle = void*;
-        using ReadHandle = void*;
-
-        WriteHandle openWrite(std::string const& filename, size_t totalSize);
-        ReadHandle openRead(std::string const& filename);
-
-        void closeWrite(WriteHandle handle);
-        void closeRead(ReadHandle handle);
-
-        std::string getFileEnding();
-
-        template<typename T>
-        void write(WriteHandle handle, T const* data, size_t elements);
-        template<typename T>
-        void write(WriteHandle handle, T const& data);
-
-        template<typename T>
-        void read(ReadHandle handle, T* data, size_t elements);
-        template<typename T>
-        void read(ReadHandle handle, T& data);
-    };
 
     struct TextFileIO : public FileIOInterface {
         using WriteHandle = std::ofstream*;
@@ -138,67 +114,5 @@ namespace codi {
           read(handle, &data, 1);
         }
     };
-
-    struct BinaryFileIO : public FileIOInterface {
-        using WriteHandle = FILE*;
-        using ReadHandle = FILE*;
-
-        WriteHandle openWrite(std::string const& filename, size_t totalSize) {
-          CODI_UNUSED(totalSize);
-
-          FILE* file = fopen(filename.c_str(), "wb");
-
-          if (nullptr == file) {
-            throw IoException(IoError::Open, "Could not open file: " + filename, true);
-          }
-          return file;
-        }
-
-        ReadHandle openRead(std::string const& filename) {
-          FILE* file = fopen(filename.c_str(), "rb");
-
-          if (nullptr == file) {
-            throw IoException(IoError::Open, "Could not open file: " + filename, true);
-          }
-          return file;
-        }
-
-        void closeWrite(WriteHandle handle) {
-          if (nullptr != handle) {
-            fclose(handle);
-          }
-        }
-
-        void closeRead(WriteHandle handle) {
-          if (nullptr != handle) {
-            fclose(handle);
-          }
-        }
-
-        std::string getFileEnding() {
-          return "bin";
-        }
-
-        template<typename T>
-        void write(WriteHandle handle, T const* data, size_t elements) {
-          fwrite(data, sizeof(T), elements, handle);
-        }
-
-        template<typename T>
-        void write(WriteHandle handle, T const& data) {
-          write(handle, &data, 1);
-        }
-
-        template<typename T>
-        void read(ReadHandle handle, T* data, size_t elements) {
-          fread(data, sizeof(T), elements, handle);
-        }
-
-        template<typename T>
-        void read(ReadHandle handle, T& data) {
-          read(handle, &data, 1);
-        }
-    };
-
   }
 }

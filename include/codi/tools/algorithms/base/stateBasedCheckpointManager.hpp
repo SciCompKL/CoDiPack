@@ -50,7 +50,7 @@
 #include "../../../misc/stringUtil.hpp"
 #include "../interfaces/applicationInterface.hpp"
 #include "../interfaces/checkpointManagerInterface.hpp"
-#include "../interfaces/fileIOInterface.hpp"
+#include "../fileIO/fileIOInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

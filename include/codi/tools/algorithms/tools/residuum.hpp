@@ -36,45 +36,57 @@
 #pragma once
 
 #include <vector>
+#include <cmath>
 
-#include "../../../config.h"
 #include "../../../misc/macros.hpp"
-#include "applicationInterface.hpp"
+#include "../../../misc/stringUtil.hpp"
+#include "../../../config.h"
 
 /** \copydoc codi::Namespace */
 namespace codi {
   namespace algorithms {
 
-    template<typename T_App>
-    struct AlgorithmInterface {
-      public:
+    template<typename T_Real>
+    struct Residuum {
+        using Real = CODI_DD(T_Real, double);
 
-        using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
-        using Type = typename App::Type;
+        Real l2;
+        Real l1;
+        Real lMax;
+        size_t lMaxPos;
 
-        using Real = RealTraits::Real<Type>;
+        Residuum() = default;
 
-        using RealVector = std::vector<Real>;
+        static Residuum<Real> vectorBasedResiduum(std::vector<Real> const& v1, std::vector<Real> const& v2) {
+          Residuum<Real> res{};
+          res.lMax = -1e300;
 
-        void run(App& app);
+          codiAssert(v1.size() == v2.size());
 
-      protected:
-
-        void iterateUntil(App& app, int iteration) {
-          while (app.getIteration() < iteration) {
-            app.evaluateG();
+          for (size_t i = 0; i < v1.size(); i += 1) {
+            Real diff = std::abs(v1[i] - v2[i]);
+            res.l1 += diff;
+            res.l2 += diff * diff;
+            if (res.lMax < diff) {
+              res.lMax = diff;
+              res.lMaxPos = i;
+            }
           }
+
+          res.l2 = std::sqrt(res.l2);
+
+          return res;
         }
 
-        struct GetPrimal {
-          public:
-            RealVector& vec;
-            GetPrimal(RealVector& vec) : vec(vec) {}
+        std::string formatHeader(std::string prefix) const {
 
-            void operator()(Type& value, size_t pos) {
-              vec[pos] = RealTraits::getValue(value);
-            }
-        };
+          return StringUtil::format("%sY_L1 %sY_L2 %sY_LMax %sY_LMaxPos", prefix.c_str(),
+                                    prefix.c_str(), prefix.c_str(), prefix.c_str());
+        }
+
+        std::string formatEntry(int width = 6) const {
+          return StringUtil::format("%0.*e %0.*e %0.*e %d", width, l1, width, l2, width, lMax, lMaxPos);
+        }
     };
   }
 }

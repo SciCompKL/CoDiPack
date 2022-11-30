@@ -44,7 +44,7 @@
 #include "../../../misc/stringUtil.hpp"
 #include "../interfaces/applicationInterface.hpp"
 #include "../interfaces/applicationIOInterface.hpp"
-#include "../interfaces/fileIOInterface.hpp"
+#include "../fileIO/fileIOInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

@@ -47,10 +47,11 @@
 #ifndef ENUM
   #define PROXY
 
-  #include "../misc/macros.hpp"
   #include "../config.h"
   #include "enumBitset.hpp"
-  #define ENUM Enum
+  #include "enumInterface.hpp"
+  #include "macros.hpp"
+  #define ENUM EnumInterface
 
 namespace codi {
 #endif

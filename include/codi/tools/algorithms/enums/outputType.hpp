@@ -35,46 +35,21 @@
 
 #pragma once
 
-#include <vector>
-
+#include "../../../misc/enumBitset.hpp"
 #include "../../../config.h"
-#include "../../../misc/macros.hpp"
-#include "applicationInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
   namespace algorithms {
 
-    template<typename T_App>
-    struct AlgorithmInterface {
-      public:
 
-        using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
-        using Type = typename App::Type;
-
-        using Real = RealTraits::Real<Type>;
-
-        using RealVector = std::vector<Real>;
-
-        void run(App& app);
-
-      protected:
-
-        void iterateUntil(App& app, int iteration) {
-          while (app.getIteration() < iteration) {
-            app.evaluateG();
-          }
-        }
-
-        struct GetPrimal {
-          public:
-            RealVector& vec;
-            GetPrimal(RealVector& vec) : vec(vec) {}
-
-            void operator()(Type& value, size_t pos) {
-              vec[pos] = RealTraits::getValue(value);
-            }
-        };
+    enum class OutputType {
+      P,
+      X,
+      Y,
+      Z,
+      MaxElement
     };
+
   }
 }
