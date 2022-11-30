@@ -139,6 +139,10 @@ namespace codi {
           app.print(StringUtil::format("Computing base.\n"));
           runApp(app);
           app.iterateZ(GetValue(zBase));
+          if(settings.writePrimal) {
+            io->changeFolder("base");
+            io->writeZ(app.getIteration(), zBase, primalHints);
+          }
           cpm->load(cp);
 
           // Validate base
@@ -154,11 +158,6 @@ namespace codi {
               CODI_EXCEPTION("Error: Primal changed in '%d' places.\n", (int)errors);
             }
             cpm->load(cp);
-          }
-
-          if(settings.writePrimal) {
-            io->changeFolder("base");
-            io->writeZ(app.getIteration(), zBase, primalHints);
           }
 
           size_t sizeX = app.getSizeX();
@@ -239,7 +238,7 @@ namespace codi {
                 if(relative && Real() != RealTraits::getValue(value)) {
                   actualStepSize *= RealTraits::getValue(value);
                 }
-                value += stepSize;
+                value += actualStepSize;
               }
             }
         };
