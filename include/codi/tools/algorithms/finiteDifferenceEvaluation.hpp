@@ -134,11 +134,11 @@ namespace codi {
           RealVector zBase(app.getSizeZ());
           RealVector zGrad(app.getSizeZ());
 
-          app.iterateX(GetValue(xBase));
+          app.iterateX(typename Base::GetPrimal(xBase));
 
           app.print(StringUtil::format("Computing base.\n"));
           runApp(app);
-          app.iterateZ(GetValue(zBase));
+          app.iterateZ(typename Base::GetPrimal(zBase));
           if(settings.writePrimal) {
             io->changeFolder("base");
             io->writeZ(app.getIteration(), zBase, primalHints);
@@ -153,7 +153,7 @@ namespace codi {
             app.iterateZ(ValidateValue(zBase, errors, settings.primalValidationThreshold));
             if(0 != errors) {
               io->writeZ(app.getIteration(), zBase,  primalHints | FileOutputHintsFlags::V1);
-              app.iterateZ(GetValue(zBase));
+              app.iterateZ(typename Base::GetPrimal(zBase));
               io->writeZ(app.getIteration(), zBase,  primalHints | FileOutputHintsFlags::V2);
               CODI_EXCEPTION("Error: Primal changed in '%d' places.\n", (int)errors);
             }
@@ -173,7 +173,7 @@ namespace codi {
               app.iterateX(SetPrimalOffsetAtPos(xBase, curX, settings.stepSizes[curStep], settings.relativeStepSize, actualStepSize));
 
               runApp(app);
-              app.iterateZ(GetValue(zGrad));
+              app.iterateZ(typename Base::GetPrimal(zGrad));
 
               if(settings.writePrimal) {
                 io->writeZ(app.getIteration(), zGrad, primalHints, curX);
@@ -209,16 +209,6 @@ namespace codi {
             grad[pos] = diff / step;
           }
         }
-
-        struct GetValue {
-          public:
-            RealVector& vec;
-            GetValue(RealVector& vec) : vec(vec) {}
-
-            void operator()(Type& value, size_t pos) {
-              vec[pos] = RealTraits::getValue(value);
-            }
-        };
 
         struct SetPrimalOffsetAtPos {
           public:
