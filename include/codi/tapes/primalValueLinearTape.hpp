@@ -69,7 +69,7 @@ namespace codi {
                   CODI_T(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface,
                                               DefaultChunkedData>));  ///< See PrimalValueLinearTape.
 
-      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>;  ///< Base class abbreviation.
+      using Base = PrimalValueBaseTape<T_TapeTypes, PrimalValueLinearTape<T_TapeTypes>>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
@@ -88,7 +88,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-        using IndexPosition = typename IndexManager::Position;
+        using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
 

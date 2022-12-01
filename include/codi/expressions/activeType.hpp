@@ -65,7 +65,7 @@ namespace codi {
       /// For reverse AD, the tape must implement ReverseTapeInterface.
       /// For forward AD, the 'tape' (that is not a tape, technically) must implement
       /// InternalStatementRecordingTapeInterface and GradientAccessTapeInterface.
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
@@ -171,6 +171,8 @@ namespace codi {
       /// @}
   };
 
+  // clang-format off
   template<typename Tape>
-  Tape ActiveType<Tape>::tape{};
+  CODI_DD(Tape, CODI_DEFAULT_TAPE) ActiveType<Tape>::tape{};
+  // clang-format on
 }

@@ -60,7 +60,7 @@ namespace codi {
     template<typename T_Outer, typename T_Inner, typename = void>
     struct AdjointConversionImpl {
       public:
-        static_assert(false && std::is_void<T_Outer>::value, "Instantiation of unspecialized adjoint conversion.");
+        CODI_STATIC_ASSERT(false && std::is_void<T_Outer>::value, "Instantiation of unspecialized adjoint conversion.");
         using Outer = CODI_DD(T_Outer, CODI_ANY);  ///< See ReduceImpl.
         using Inner = CODI_DD(T_Inner, CODI_ANY);  ///< See ReduceImpl.
 
@@ -90,7 +90,8 @@ namespace codi {
     template<typename T_Jacobian, typename = void>
     struct TransposeImpl {
       public:
-        static_assert(false && std::is_void<T_Jacobian>::value, "Instantiation of unspecialized Jacobian transpose.");
+        CODI_STATIC_ASSERT(false && std::is_void<T_Jacobian>::value,
+                           "Instantiation of unspecialized Jacobian transpose.");
         using Jacobian = CODI_DD(T_Jacobian, CODI_ANY);  ///< See TransposeImpl.
 
         using Return = CODI_ANY;  ///< Deduced return type.

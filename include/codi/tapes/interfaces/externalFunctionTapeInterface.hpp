@@ -35,7 +35,6 @@
 #pragma once
 
 #include "../../config.h"
-#include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../misc/macros.hpp"
 
 /** \copydoc codi::Namespace */
@@ -43,6 +42,9 @@ namespace codi {
 
   template<typename T_Tape>
   struct ExternalFunction;
+
+  template<typename T_Real, typename T_Gradient, typename T_Tape, typename T_Impl>
+  struct LhsExpressionInterface;
 
   /**
    * @brief Add user defined functions to the tape evaluation.
@@ -86,9 +88,11 @@ namespace codi {
       ///         be restored with a call to adjointInterface.setPrimal() during the evaluation of the external function
       ///         in reverse mode. For this purpose, the primal value is identified by the index which the variable
       ///         received when it was registered with registerExternalFunctionOutput.
-      template<typename Lhs>
-      Real registerExternalFunctionOutput(
-          LhsExpressionInterface<Real, Gradient, ExternalFunctionTapeInterface, Lhs>& value);
+      ///
+      /// @tparam Lhs  Class that implements the LhsExpressionInterface. See also LhsExpressionInterface.
+      /// @tparam Tape  Tape implementation used in the LhsExpressionInterface. See also LhsExpressionInterface.
+      template<typename Lhs, typename Tape>
+      Real registerExternalFunctionOutput(LhsExpressionInterface<Real, Gradient, Tape, Lhs>& value);
 
       /// Push an external function to the tape.
       ///
