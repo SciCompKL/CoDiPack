@@ -37,6 +37,7 @@
 #include <type_traits>
 
 #include "../misc/macros.hpp"
+#include "atomicTraits.hpp"
 #include "misc/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */
@@ -80,8 +81,10 @@ namespace codi {
         }
 
         /// Converts the (possibly multi-component) gradient to an array of Reals.
-        CODI_INLINE static std::array<Real, dim> toArray(Gradient const& gradient) {
-          return std::array<Real, dim>{at(gradient, 0)};
+        CODI_INLINE static std::array<AtomicTraits::RemoveAtomic<typename TraitsImplementation<Gradient>::Real>, dim>
+        toArray(Gradient const& gradient) {
+          return std::array<AtomicTraits::RemoveAtomic<typename TraitsImplementation<Gradient>::Real>, dim>{
+              at(gradient, 0)};
         }
     };
 
@@ -109,8 +112,9 @@ namespace codi {
 
     /// \copydoc codi::GradientTraits::TraitsImplementation::toArray()
     template<typename Gradient>
-    CODI_INLINE std::array<typename TraitsImplementation<Gradient>::Real, TraitsImplementation<Gradient>::dim> toArray(
-        Gradient const& gradient) {
+    CODI_INLINE std::array<AtomicTraits::RemoveAtomic<typename TraitsImplementation<Gradient>::Real>,
+                           TraitsImplementation<Gradient>::dim>
+    toArray(Gradient const& gradient) {
       return TraitsImplementation<Gradient>::toArray(gradient);
     }
 

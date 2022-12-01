@@ -35,6 +35,7 @@
 #pragma once
 
 #include "../staticThreadLocalPointerInterface.hpp"
+#include "macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -54,7 +55,7 @@ namespace codi {
 
     private:
       static Type* value;
-      #pragma omp threadprivate(value)
+      CODI_OMP_THREADPRIVATE(value)
 
     public:
 

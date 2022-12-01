@@ -78,13 +78,13 @@ namespace codi {
       Type value;
 
       CODI_INLINE void setValue(Type const& newValue) {
-        #pragma omp atomic write
+        CODI_OMP_ATOMIC(write)
         this->value = newValue;
       }
 
       CODI_INLINE Type getValue() const {
         Type result;
-        #pragma omp atomic read
+        CODI_OMP_ATOMIC(read)
         result = this->value;
         return result;
       }
@@ -115,7 +115,7 @@ namespace codi {
 
       CODI_INLINE Type operator+=(Type const& other) {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         {
           this->value += other;
           result = this->value;
@@ -125,28 +125,28 @@ namespace codi {
 
       CODI_INLINE Type operator++() {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         result = ++this->value;
         return result;
       }
 
       CODI_INLINE Type operator++(int) {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         result = this->value++;
         return result;
       }
 
       CODI_INLINE Type operator--() {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         result = --this->value;
         return result;
       }
 
       CODI_INLINE Type operator--(int) {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         result = this->value--;
         return result;
       }
@@ -233,28 +233,28 @@ namespace codi {
 
       CODI_INLINE Type operator++() {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         result = ++this->value;
         return result;
       }
 
       CODI_INLINE Type operator++(int) {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         result = this->value++;
         return result;
       }
 
       CODI_INLINE Type operator--() {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         result = --this->value;
         return result;
       }
 
       CODI_INLINE Type operator--(int) {
         Type result;
-        #pragma omp atomic capture
+        CODI_OMP_ATOMIC(capture)
         result = this->value--;
         return result;
       }
