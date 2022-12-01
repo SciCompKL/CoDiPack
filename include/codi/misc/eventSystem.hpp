@@ -149,10 +149,22 @@ namespace codi {
        * @brief Access the static EventListenerMap.
        *
        * Both tapes and event systems are static entities in CoDiPack, but the tape depends on the event system. We
-       * ensure with an initialize-on-first-use pattern that the event system is available when needed.
+       * ensure with an initialize-on-first-use pattern that the event system is available when needed. Ensures that the
+       * event listener map has empty entries for all events, so that its size does not change any more. This is
+       * important in a shared memory setting when multiple threads access the listener map simultaneously.
        */
       static EventListenerMap& getListeners() {
-        static EventListenerMap* const listeners = new EventListenerMap;
+        static EventListenerMap* const listeners =
+            new EventListenerMap{{Event::TapeStartRecording, {}}, {Event::TapeStopRecording, {}},
+                                 {Event::TapeRegisterInput, {}},  {Event::TapeRegisterOutput, {}},
+                                 {Event::TapeEvaluate, {}},       {Event::TapeReset, {}},
+                                 {Event::PreaccStart, {}},        {Event::PreaccFinish, {}},
+                                 {Event::PreaccAddInput, {}},     {Event::PreaccAddOutput, {}},
+                                 {Event::StatementPrimal, {}},    {Event::StatementStoreOnTape, {}},
+                                 {Event::StatementEvaluate, {}},  {Event::StatementEvaluatePrimal, {}},
+                                 {Event::IndexCreate, {}},        {Event::IndexAssign, {}},
+                                 {Event::IndexFree, {}},          {Event::IndexCopy, {}}};
+
         return *listeners;
       }
 
