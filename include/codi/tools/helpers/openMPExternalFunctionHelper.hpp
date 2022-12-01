@@ -45,6 +45,7 @@
 #include "../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 #include "../data/externalFunctionUserData.hpp"
+#include "../parallel/openmp/macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -148,8 +149,7 @@ namespace codi {
           void evalForwFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            #pragma omp master
-            {
+            CODI_OMP_MASTER() {
               x_d = new Real[inputIndices.size()];
               y_d = new Real[outputIndices.size()];
 
@@ -160,36 +160,33 @@ namespace codi {
               }
             }
 
-            #pragma omp barrier
+            CODI_OMP_BARRIER()
 
             for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
-              #pragma omp master
-              {
+              CODI_OMP_MASTER() {
                 for (size_t i = 0; i < inputIndices.size(); ++i) {
                   x_d[i] = ra->getAdjoint(inputIndices[i], dim);
                 }
               }
 
-              #pragma omp barrier
+              CODI_OMP_BARRIER()
 
               forwardFunc(inputValues.data(), x_d, inputIndices.size(), outputValues.data(), y_d, outputIndices.size(),
                           &userData);
 
-              #pragma omp barrier
+              CODI_OMP_BARRIER()
 
-              #pragma omp master
-              {
+              CODI_OMP_MASTER() {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   ra->resetAdjoint(outputIndices[i], dim);
                   ra->updateAdjoint(outputIndices[i], dim, y_d[i]);
                 }
               }
 
-              #pragma omp barrier
+              CODI_OMP_BARRIER()
             }
 
-            #pragma omp master
-            {
+            CODI_OMP_MASTER() {
               if (TapeTraits::IsPrimalValueTape<Tape>::value) {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   ra->setPrimal(outputIndices[i], outputValues[i]);
@@ -200,7 +197,7 @@ namespace codi {
               delete[] y_d;
             }
 
-            #pragma omp barrier
+            CODI_OMP_BARRIER()
           }
 
           /// Must be called by all threads of the current team.
@@ -220,8 +217,7 @@ namespace codi {
           void evalPrimFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            #pragma omp master
-            {
+            CODI_OMP_MASTER() {
               if (TapeTraits::IsPrimalValueTape<Tape>::value) {
                 for (size_t i = 0; i < inputIndices.size(); ++i) {
                   inputValues[i] = ra->getPrimal(inputIndices[i]);
@@ -229,14 +225,13 @@ namespace codi {
               }
             }
 
-            #pragma omp barrier
+            CODI_OMP_BARRIER()
 
             primalFunc(inputValues.data(), inputIndices.size(), outputValues.data(), outputIndices.size(), &userData);
 
-            #pragma omp barrier
+            CODI_OMP_BARRIER()
 
-            #pragma omp master
-            {
+            CODI_OMP_MASTER() {
               if (TapeTraits::IsPrimalValueTape<Tape>::value) {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   ra->setPrimal(outputIndices[i], outputValues[i]);
@@ -244,7 +239,7 @@ namespace codi {
               }
             }
 
-            #pragma omp barrier
+            CODI_OMP_BARRIER()
           }
 
           /// Must be called by all threads of the current team.
@@ -264,42 +259,38 @@ namespace codi {
           void evalRevFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            #pragma omp master
-            {
+            CODI_OMP_MASTER() {
               x_b = new Real[inputIndices.size()];
               y_b = new Real[outputIndices.size()];
             }
 
-            #pragma omp barrier
+            CODI_OMP_BARRIER()
 
             for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
-              #pragma omp master
-              {
+              CODI_OMP_MASTER() {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   y_b[i] = ra->getAdjoint(outputIndices[i], dim);
                   ra->resetAdjoint(outputIndices[i], dim);
                 }
               }
 
-              #pragma omp barrier
+              CODI_OMP_BARRIER()
 
               reverseFunc(inputValues.data(), x_b, inputIndices.size(), outputValues.data(), y_b, outputIndices.size(),
                           &userData);
 
-              #pragma omp barrier
+              CODI_OMP_BARRIER()
 
-              #pragma omp master
-              {
+              CODI_OMP_MASTER() {
                 for (size_t i = 0; i < inputIndices.size(); ++i) {
                   ra->updateAdjoint(inputIndices[i], dim, x_b[i]);
                 }
               }
 
-              #pragma omp barrier
+              CODI_OMP_BARRIER()
             }
 
-            #pragma omp master
-            {
+            CODI_OMP_MASTER() {
               if (Tape::RequiresPrimalRestore) {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   ra->setPrimal(outputIndices[i], oldPrimals[i]);
@@ -310,7 +301,7 @@ namespace codi {
               delete[] y_b;
             }
 
-            #pragma omp barrier
+            CODI_OMP_BARRIER()
           }
       };
 
@@ -418,20 +409,19 @@ namespace codi {
 
         func(std::forward<Args>(args)...);
 
-        #pragma omp barrier
+        CODI_OMP_BARRIER()
 
         if (isTapeActive) {
           Type::getTape().setActive();
 
-          #pragma omp master
-          {
+          CODI_OMP_MASTER() {
             for (size_t i = 0; i < outputValues.size(); ++i) {
               addOutputToData(*outputValues[i]);
             }
           }
         }
 
-        #pragma omp barrier
+        CODI_OMP_BARRIER()
       }
 
       /// \copydoc ExternalFunctionHelper::callPrimalFunc <br><br>
@@ -441,21 +431,19 @@ namespace codi {
           // Store the primal function in the external function data so that it can be used for primal evaluations of
           // the tape.
 
-          #pragma omp master
-          {
+          CODI_OMP_MASTER() {
             data->primalFunc = func;
 
             y = new Real[outputValues.size()];
           }
 
-          #pragma omp barrier
+          CODI_OMP_BARRIER()
 
           func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
 
-          #pragma omp barrier
+          CODI_OMP_BARRIER()
 
-          #pragma omp master
-          {
+          CODI_OMP_MASTER() {
             // Set the primal values on the output values and add them to the data for the reverse evaluation.
             for (size_t i = 0; i < outputValues.size(); ++i) {
               outputValues[i]->setValue(y[i]);
@@ -468,8 +456,7 @@ namespace codi {
             delete[] y;
           }
 
-          #pragma omp barrier
-
+          CODI_OMP_BARRIER()
         } else {
           CODI_EXCEPTION(
               "callPrimalFunc() not available if external function helper is initialized with passive function mode "
@@ -481,9 +468,7 @@ namespace codi {
       /// Must be called by all threads of the current team.
       void addToTape(ReverseFunc reverseFunc, ForwardFunc forwardFunc = nullptr, PrimalFunc primalFunc = nullptr) {
         if (Type::getTape().isActive()) {
-
-          #pragma omp master
-          {
+          CODI_OMP_MASTER() {
             data->reverseFunc = reverseFunc;
             data->forwardFunc = forwardFunc;
 
@@ -499,7 +484,7 @@ namespace codi {
             }
           }
 
-          #pragma omp barrier
+          CODI_OMP_BARRIER()
 
           // make sure that the delete handle is pushed onto only one tape in a parallel context
           if (omp_in_parallel() && omp_get_thread_num() == 0) {
@@ -512,28 +497,24 @@ namespace codi {
                                                                                 EvalData::evalPrimFuncStatic));
           }
 
-          #pragma omp barrier
+          CODI_OMP_BARRIER()
 
-          #pragma omp master
-          {
-            data = nullptr;
-          }
+          CODI_OMP_MASTER()
+          data = nullptr;
         } else {
-          #pragma omp master
-          {
+          CODI_OMP_MASTER() {
             // Clear the assembled data.
             delete data;
           }
         }
 
-        #pragma omp master
-        {
+        CODI_OMP_MASTER() {
           // Create a new data object for the next call.
           data = new EvalData();
           outputValues.clear();
         }
 
-        #pragma omp barrier
+        CODI_OMP_BARRIER()
       }
   };
 }

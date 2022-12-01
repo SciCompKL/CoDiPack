@@ -34,42 +34,15 @@
  */
 #pragma once
 
-#include "../staticThreadLocalPointerInterface.hpp"
-#include "macros.hpp"
+#include <omp.h>
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /**
-   * @brief Static thread-local pointers for OpenMP.
-   *
-   * @tparam T_Type   See StaticThreadLocalPointerInterface.
-   * @tparam T_Owner  See StaticThreadLocalPointerInterface.
-   */
-  template<typename T_Type, typename T_Owner>
-  struct OpenMPStaticThreadLocalPointer
-      : public StaticThreadLocalPointerInterface<T_Type, T_Owner, OpenMPStaticThreadLocalPointer<T_Type, T_Owner>> {
-    public:
-      using Type = CODI_DD(T_Type, CODI_ANY);    ///< See OpenMPStaticThreadLocalPointer.
-      using Owner = CODI_DD(T_Owner, CODI_ANY);  ///< See OpenMPStaticThreadLocalPointer.
+#define CODI_PRAGMA(...) _Pragma(#__VA_ARGS__)
+#define CODI_OMP_ATOMIC(...) CODI_PRAGMA(omp atomic __VA_ARGS__)
+#define CODI_OMP_BARRIER(...) CODI_PRAGMA(omp barrier __VA_ARGS__)
+#define CODI_OMP_MASTER(...) CODI_PRAGMA(omp master __VA_ARGS__)
+#define CODI_OMP_THREADPRIVATE(...) CODI_PRAGMA(omp threadprivate(__VA_ARGS__))
 
-    private:
-      static Type* value;
-      CODI_OMP_THREADPRIVATE(value)
-
-    public:
-
-      /// \copydoc StaticThreadLocalPointerInterface::set
-      static CODI_INLINE void set(Type* other) {
-        value = other;
-      }
-
-      /// \copydoc StaticThreadLocalPointerInterface::get
-      static CODI_INLINE Type* get() {
-        return value;
-      }
-  };
-
-  template<typename Type, typename Owner>
-  Type* OpenMPStaticThreadLocalPointer<Type, Owner>::value = new Type();
 }
