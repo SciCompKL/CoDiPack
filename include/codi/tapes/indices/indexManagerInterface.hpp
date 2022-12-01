@@ -120,7 +120,7 @@ namespace codi {
 
 
 	template<typename Index>
-  Index constexpr IndexManagerInterface<Index>::InactiveIndex;
+  CODI_DD(Index, int) constexpr IndexManagerInterface<Index>::InactiveIndex;
 	template<typename Index>
-  Index constexpr IndexManagerInterface<Index>::InvalidIndex;
+  CODI_DD(Index, int) constexpr IndexManagerInterface<Index>::InvalidIndex;
 }

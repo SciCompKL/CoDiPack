@@ -59,8 +59,8 @@ namespace codi {
   struct Hessian : public HessianInterface<T_T> {
     public:
 
-      using T = CODI_DECLARE_DEFAULT(T_T, double);                       ///< See Hessian.
-      using Store = CODI_DECLARE_DEFAULT(T_Store, std::vector<double>);  ///< See Hessian.
+      using T = CODI_DD(T_T, double);                       ///< See Hessian.
+      using Store = CODI_DD(T_Store, std::vector<double>);  ///< See Hessian.
 
     protected:
       Store values;  ///< Storage for the data.

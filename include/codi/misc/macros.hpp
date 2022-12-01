@@ -116,6 +116,23 @@ namespace codi {
 /// Used in interface declarations for variables that have to be defined in the specializations.
 #define CODI_UNDEFINED_VALUE false
 
+#if CODI_IDE
+  #define CODI_STATIC_ASSERT(cond, message) /* Do not check in IDE mode */
+#else
+  #define CODI_STATIC_ASSERT(cond, message) static_assert(cond, message)
+#endif
+
+#if CODI_IDE
+  struct TypeProxy {
+      using Real = double;
+      using Identifier = int;
+  };
+
+#define CODI_TAPE_PROXY FullTapeInterface<double, double, int, EmptyPosition>
+#define CODI_LHS_EXPRESSION_PROXY LhsExpressionInterface<double, double, CODI_TAPE_PROXY, CODI_ANY>
+
+#endif
+
 #ifndef DOXYGEN_DISABLE
   /// Creates a union of interface definitions.
   template<typename First, typename... Tail>

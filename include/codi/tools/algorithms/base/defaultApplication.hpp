@@ -57,7 +57,7 @@ namespace codi {
     struct DefaultApplication : public ApplicationInterface<T_Type> {
       public:
 
-        using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
         using Impl = CODI_DD(T_Impl, CODI_T(ApplicationInterface<Type>));
 
         using Real = RealTraits::Real<Type>;

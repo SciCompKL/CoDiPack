@@ -125,7 +125,7 @@ namespace codi {
       /// See JacobianBaseTape.
       using Impl = CODI_DD(T_Impl, JacobianBaseTape);
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation.
+      using Base = CommonTapeImplementation<T_TapeTypes, T_Impl>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.

@@ -50,7 +50,7 @@ namespace codi {
     struct ReverseTapeOutput {
       public:
 
-        using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
+        using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_LHS_EXPRESSION_PROXY>));
 
         using Type = typename App::Type;
         using Tape = typename Type::Tape;

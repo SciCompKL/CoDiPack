@@ -66,7 +66,7 @@ namespace codi {
                                 CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
                                                          DefaultChunkedData>));  ///< See JacobianReuseTape.
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
+      using Base = JacobianBaseTape<T_TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                    ///< See TapeTypesInterface.
@@ -76,7 +76,7 @@ namespace codi {
       using Position = typename Base::Position;                 ///< See TapeTypesInterface.
       using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
 
-      static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
+      CODI_STATIC_ASSERT(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
       /// Constructor
       JacobianReuseTape() : Base() {}

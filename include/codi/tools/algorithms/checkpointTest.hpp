@@ -172,11 +172,11 @@ namespace codi {
               double rel = diff / abs(base);
               if (rel > settings.maxRelativeError) {
                 errorCount += 1;
-                largestError = max(largestError, rel);
+                largestError = std::max(largestError, rel);
               }
             }
           } else {
-            errorCount = max(v1.size(), v2.size());
+            errorCount = std::max(v1.size(), v2.size());
             largestError = 1.0;
           }
         }

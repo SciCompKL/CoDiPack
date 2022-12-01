@@ -47,7 +47,7 @@
 
 // Create a correct include environment for viewing and programming in an IDE.
 #ifndef OPERATOR
-  #define PROXY
+  #define PROXY_OUTER
 
   #include "../../misc/macros.hpp"
   #include "../../config.h"
@@ -86,8 +86,8 @@ namespace codi {
 #include "conditionalBinaryPassiveOverloads.tpp"
 
 // Create a correct include environment for viewing and programming in an IDE.
-#ifdef PROXY
-  #undef PROXY
+#ifdef PROXY_OUTER
+  #undef PROXY_OUTER
 }
 #endif
 

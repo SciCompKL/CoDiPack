@@ -65,7 +65,7 @@ namespace codi {
   struct BlockData : public DataInterface<T_NestedData> {
     public:
 
-      using Chunk = CODI_DD(T_Chunk, CODI_T(ChunkBase<CODI_ANY>));                      ///< See BlockData
+      using Chunk = CODI_DD(T_Chunk, CODI_T(Chunk1<CODI_ANY>));                      ///< See BlockData
       using NestedData = CODI_DD(T_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< See BlockData
       using PointerInserter = CODI_DD(T_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< See BlockData
 

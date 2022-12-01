@@ -40,6 +40,7 @@
 #include "../traits/gradientTraits.hpp"
 #include "data/dummy.hpp"
 #include "data/staticDummy.hpp"
+#include "data/jacobian.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -67,8 +68,7 @@ namespace codi {
     public:
 
       /// See Algorithms.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
 
       static bool constexpr ActiveChecks = T_ActiveChecks;  ///< See Algorithms.
 
@@ -254,7 +254,7 @@ namespace codi {
                                                                    Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
-        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        using GT2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Real::Gradient, double)>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         // Assume that the tape was just recorded.
@@ -311,7 +311,7 @@ namespace codi {
                                                                    Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
-        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        using GT2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Real::Gradient, double)>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         // Assume that the tape was just recorded.
@@ -409,7 +409,7 @@ namespace codi {
                                                     Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
-        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        using GT2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Real::Gradient, double)>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         Tape& tape = Type::getTape();
@@ -470,7 +470,7 @@ namespace codi {
                                                     Jac& jac = StaticDummy<DummyJacobian>::dummy) {
         using GT1st = GT;
         size_t constexpr gradDim1st = GT1st::dim;
-        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        using GT2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Real::Gradient, double)>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         Tape& tape = Type::getTape();
@@ -536,7 +536,7 @@ namespace codi {
       template<typename T>
       static CODI_INLINE void setGradient2ndOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers,
                                                          size_t const size, T value) {
-        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        using GT2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Real::Gradient, double)>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {
@@ -562,7 +562,7 @@ namespace codi {
       template<typename T>
       static CODI_INLINE void setGradient2ndOnCoDiValue(size_t const pos, Type* identifiers, size_t const size,
                                                         T value) {
-        using GT2nd = GradientTraits::TraitsImplementation<typename Real::Gradient>;
+        using GT2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Real::Gradient, double)>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
         for (size_t curDim = 0; curDim < gradDim2nd && pos + curDim < size; curDim += 1) {

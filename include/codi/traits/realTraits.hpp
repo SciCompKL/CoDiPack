@@ -157,10 +157,10 @@ namespace codi {
     template<typename T_Type, typename = void>
     struct DataExtraction {
       public:
-        static_assert(false && std::is_void<T_Type>::value,
-                      "Instantiation of unspecialized RealTraits::DataExtraction.");
+        CODI_STATIC_ASSERT(false && std::is_void<T_Type>::value,
+                           "Instantiation of unspecialized RealTraits::DataExtraction.");
 
-        using Type = CODI_DD(T_Type, CODI_ANY);  ///< See DataExtraction.
+        using Type = CODI_DD(T_Type, TypeProxy);  ///< See DataExtraction.
 
         using Real = typename Type::Real;  ///< Type of primal values extracted from the type with AD values.
         using Identifier =
@@ -188,8 +188,8 @@ namespace codi {
     template<typename T_Type, typename = void>
     struct TapeRegistration {
       public:
-        static_assert(false && std::is_void<T_Type>::value,
-                      "Instantiation of unspecialized RealTraits::TapeRegistration.");
+        CODI_STATIC_ASSERT(false && std::is_void<T_Type>::value,
+                           "Instantiation of unspecialized RealTraits::TapeRegistration.");
 
         using Type = CODI_DD(T_Type, CODI_ANY);  ///< See TapeRegistration.
 
@@ -275,7 +275,7 @@ namespace codi {
     struct DataExtraction<std::complex<T_InnerType>> {
       public:
 
-        using InnerType = CODI_DD(T_InnerType, CODI_ANY);
+        using InnerType = CODI_DD(T_InnerType, TypeProxy);
         using Type = std::complex<T_InnerType>;  ///< See DataExtraction.
 
         using InnerExtraction = DataExtraction<InnerType>;

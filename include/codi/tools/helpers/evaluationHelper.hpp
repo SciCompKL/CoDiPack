@@ -67,12 +67,11 @@ namespace codi {
     public:
 
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
+      using Func = CODI_DD(T_Func, CODI_T(void(*)(T_InputStore const&, T_OutputStore&)));
       /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
+      using InputStore = CODI_DD(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DD(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
     protected:
 
@@ -136,12 +135,10 @@ namespace codi {
     public:
 
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
-      /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using Func = CODI_DD(T_Func, CODI_T(void(*)(T_InputStore const&, T_OutputStore&)));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);        ///< See EvaluationHandleBase.
+      using InputStore = CODI_DD(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DD(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;  ///< Abbreviation for the base class.
 
@@ -222,7 +219,7 @@ namespace codi {
         using GradientTraits1st = GradientTraits::TraitsImplementation<typename Type::Gradient>;
         size_t constexpr VectorSizeFirstOrder = GradientTraits1st::dim;
 
-        using GradientTraits2nd = GradientTraits::TraitsImplementation<typename Type::Real::Gradient>;
+        using GradientTraits2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Type::Real::Gradient, double)>;
         size_t constexpr VectorSizeSecondOrder = GradientTraits2nd::dim;
 
         for (size_t k = 0; k < locX.size(); k += VectorSizeFirstOrder) {
@@ -288,12 +285,11 @@ namespace codi {
     public:
 
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
+      using Func = CODI_DD(T_Func, CODI_T(void(*)(T_InputStore const&, T_OutputStore&)));
       /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
+      using InputStore = CODI_DD(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DD(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       using Base = EvaluationHandleBase<Func, Type, InputStore, OutputStore>;  ///< Abbreviation for the base class.
 
@@ -390,12 +386,10 @@ namespace codi {
     public:
 
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
-      /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using Func = CODI_DD(T_Func, CODI_T(void(*)(T_InputStore const&, T_OutputStore&)));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);        ///< See EvaluationHandleBase.
+      using InputStore = CODI_DD(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DD(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       /// Abbreviation for the base class.
       using Base = EvaluationHandleReverseBase<Func, Type, InputStore, OutputStore>;
@@ -428,12 +422,10 @@ namespace codi {
       : public EvaluationHandleReverseBase<T_Func, T_Type, T_InputStore, T_OutputStore> {
     public:
       /// See EvaluationHandleBase.
-      using Func = CODI_DECLARE_DEFAULT(T_Func, CODI_TEMPLATE(void()(T_InputStore const&, T_OutputStore&)));
-      /// See EvaluationHandleBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using InputStore = CODI_DECLARE_DEFAULT(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
-      using OutputStore = CODI_DECLARE_DEFAULT(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
+      using Func = CODI_DD(T_Func, CODI_T(void(*)(T_InputStore const&, T_OutputStore&)));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);        ///< See EvaluationHandleBase.
+      using InputStore = CODI_DD(T_InputStore, std::vector<Type>);    ///< See EvaluationHandleBase.
+      using OutputStore = CODI_DD(T_OutputStore, std::vector<Type>);  ///< See EvaluationHandleBase.
 
       /// Abbreviation for the base class.
       using Base = EvaluationHandleReverseBase<Func, Type, InputStore, OutputStore>;

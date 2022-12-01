@@ -58,7 +58,7 @@ namespace codi {
   struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
     public:
 
-      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
 
       using Real = typename Type::Real;
       using Identifier = typename Type::Identifier;
@@ -159,7 +159,7 @@ namespace codi {
     public:
 
       // All type definitions for the interface.
-      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
       using PrimalType = typename Type::Real;
       using AdjointType = void;
       using ModifiedType = Type;

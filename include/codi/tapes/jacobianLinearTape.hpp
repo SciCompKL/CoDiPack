@@ -75,7 +75,7 @@ namespace codi {
       using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
       using Position = typename Base::Position;               ///< See TapeTypesInterface.
 
-      static_assert(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");
+      CODI_STATIC_ASSERT(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");
 
       /// Constructor
       JacobianLinearTape() : Base() {}
@@ -84,7 +84,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-        using IndexPosition = typename IndexManager::Position;
+        using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
 

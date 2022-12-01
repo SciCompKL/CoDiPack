@@ -68,10 +68,10 @@ namespace codi {
     template<typename Type, size_t selectionDepth, size_t order, size_t l>
     struct CheckCompileTimeValues {
       public:
-        static_assert(selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
+        CODI_STATIC_ASSERT(selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
                       "Selection depth must not be higher than the maximum derivative order.");
-        static_assert(order <= selectionDepth, "Derivative order must not be higher than the selection depth.");
-        static_assert(l < maximumDerivatives(selectionDepth, order),
+        CODI_STATIC_ASSERT(order <= selectionDepth, "Derivative order must not be higher than the selection depth.");
+        CODI_STATIC_ASSERT(l < maximumDerivatives(selectionDepth, order),
                       "Selected derivative must not be greater than the number of available derivatives for that"
                       "order.");
 
@@ -98,13 +98,13 @@ namespace codi {
     template<typename T_Type, bool constant, size_t selectionDepth, size_t order, size_t l>
     struct SelectCompileTime<T_Type, constant, selectionDepth, order, l, true> {
       public:
-        using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
 
         using Inner = SelectCompileTime<typename Type::Real, constant, selectionDepth - 1, order, l>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
         using RType = typename Inner::RType;
 
-        static_assert(CheckCompileTimeValues<Type, selectionDepth, order, l>::isValid, "Checks inside of type.");
+        CODI_STATIC_ASSERT(CODI_T(CheckCompileTimeValues<Type, selectionDepth, order, l>::isValid), "Checks inside of type.");
 
         static RType& select(ArgType& value) {
           return Inner::select(value.value());
@@ -115,14 +115,14 @@ namespace codi {
     template<typename T_Type, bool constant, size_t selectionDepth, size_t order, size_t l>
     struct SelectCompileTime<T_Type, constant, selectionDepth, order, l, false> {
       public:
-        using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
 
         using Inner = SelectCompileTime<typename Type::Gradient, constant, selectionDepth - 1, order - 1,
                                         l - maximumDerivativesPrimalBranch(selectionDepth, order)>;
         using ArgType = typename std::conditional<constant, Type const, Type>::type;
         using RType = typename Inner::RType;
 
-        static_assert(CheckCompileTimeValues<Type, selectionDepth, order, l>::isValid, "Checks inside of type.");
+        CODI_STATIC_ASSERT(CODI_T(CheckCompileTimeValues<Type, selectionDepth, order, l>::isValid), "Checks inside of type.");
 
         static RType& select(ArgType& value) {
           return Inner::select(value.gradient());
@@ -153,13 +153,13 @@ namespace codi {
     template<typename T_Type, bool constant, size_t T_selectionDepth>
     struct SelectRunTime {
       public:
-        using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
         static size_t constexpr selectionDepth = CODI_DD(T_selectionDepth, CODI_UNDEFINED_VALUE);
 
-        static_assert(std::is_same<typename Type::Real, typename Type::Gradient>::value,
+        CODI_STATIC_ASSERT(CODI_T(std::is_same<typename Type::Real, typename Type::Gradient>::value),
                       "CoDiPack type needs to have the same real and gradient value for run time derivative "
                       "selection.");
-        static_assert(selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
+        CODI_STATIC_ASSERT(selectionDepth <= RealTraits::MaxDerivativeOrder<Type>(),
                       "Selection depth must not be higher than the maximum derivative order");
 
         using Inner = SelectRunTime<typename Type::Real, constant, selectionDepth - 1>;
@@ -266,7 +266,7 @@ namespace codi {
     public:
 
       /// See DerivativeAccess.
-      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
 
       /// Helper for the run time selection of derivatives.
       template<bool constant, size_t selectionDepth>

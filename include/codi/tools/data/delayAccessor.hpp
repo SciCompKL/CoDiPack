@@ -36,6 +36,7 @@
 
 #include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "jacobianInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -50,7 +51,7 @@ namespace codi {
   struct JacobianDelayAccessor {
     public:
 
-      using Impl = CODI_DD(T_Impl, CODI_ANY);  ///< See DelayAccessor.
+      using Impl = CODI_DD(T_Impl, CODI_T(JacobianInterface<CODI_ANY>));  ///< See DelayAccessor.
 
     private:
 

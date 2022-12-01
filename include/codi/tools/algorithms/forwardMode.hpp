@@ -40,6 +40,7 @@
 #include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../misc/macros.hpp"
 #include "../../misc/stringUtil.hpp"
+#include "../../traits/gradientTraits.hpp"
 #include "interfaces/algorithmInterface.hpp"
 
 /** \copydoc codi::Namespace */

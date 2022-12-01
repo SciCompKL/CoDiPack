@@ -76,9 +76,9 @@ namespace codi {
     template<typename T_Type, typename T_FileIO, typename T_Application>
     struct StateBasedCheckpointManager : public CheckpointManagerInterface {
       public:
-        using Type = CODI_DD(T_Type, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
         using FileIO = CODI_DD(T_FileIO, FileIOInterface);
-        using Application = CODI_DD(T_Application, CODI_T(ApplicationInterface<CODI_ANY>));
+        using Application = CODI_DD(T_Application, CODI_T(ApplicationInterface<CODI_LHS_EXPRESSION_PROXY>));
 
         using PassiveReal = RealTraits::PassiveReal<Type>;
         using Checkpoint = StateVectorCheckpoint<PassiveReal>;

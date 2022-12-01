@@ -143,9 +143,9 @@ namespace codi {
                                 CODI_T(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>,
                                                             StatementEvaluatorInterface, DefaultChunkedData>));
       /// See PrimalValueBaseTape.
-      using Impl = CODI_DD(T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Impl = CODI_DD(T_Impl, CODI_T(PrimalValueBaseTape));
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation.
+      using Base = CommonTapeImplementation<T_TapeTypes, T_Impl>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
@@ -544,7 +544,7 @@ namespace codi {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
         return vectorAccess;
 #else
-        static_assert(std::is_same<Adjoint, Gradient>::value,
+        CODI_STATIC_ASSERT(CODI_T(std::is_same<Adjoint, Gradient>::value),
                       "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
                       " to use custom adjoint vectors in the primal value tapes.");
 
@@ -1274,7 +1274,7 @@ namespace codi {
 
   /// Expressions for manual statement pushes.
   template<typename TapeTypes, typename Impl>
-  const typename TapeTypes::EvalHandle
+  const CODI_DD(typename TapeTypes::EvalHandle, CODI_ANY)
       PrimalValueBaseTape<TapeTypes, Impl>::jacobianExpressions[Config::MaxArgumentSize] = {
           CREATE_EXPRESSION(0),   CREATE_EXPRESSION(1),   CREATE_EXPRESSION(2),   CREATE_EXPRESSION(3),
           CREATE_EXPRESSION(4),   CREATE_EXPRESSION(5),   CREATE_EXPRESSION(6),   CREATE_EXPRESSION(7),

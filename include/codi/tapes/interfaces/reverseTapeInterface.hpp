@@ -38,7 +38,6 @@
 
 #include "../../misc/macros.hpp"
 #include "../../config.h"
-#include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../expressions/logic/traversalLogic.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "../../traits/realTraits.hpp"
@@ -48,6 +47,9 @@
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  template<typename T_Real, typename T_Gradient, typename T_Tape, typename T_Impl>
+  struct LhsExpressionInterface;
 
   /**
    * @brief Minimum tape interface for a working reverse tape implementation.
@@ -72,7 +74,7 @@ namespace codi {
    */
   template<typename T_Real, typename T_Gradient, typename T_Identifier>
   struct ReverseTapeInterface : public virtual InternalStatementRecordingTapeInterface<T_Identifier>,
-                                public virtual GradientAccessTapeInterface<T_Gradient, T_Gradient> {
+                                public virtual GradientAccessTapeInterface<T_Gradient, T_Identifier> {
     public:
       using Real = CODI_DD(T_Real, double);           ///< See ReverseTapeInterface.
       using Gradient = CODI_DD(T_Gradient, double);   ///< See ReverseTapeInterface.
@@ -84,11 +86,11 @@ namespace codi {
       /// @name Recording
 
       /// Mark a value as input (independent) and make it active.
-      template<typename Lhs>
-      void registerInput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
+      template<typename Lhs, typename TapeImpl>
+      void registerInput(LhsExpressionInterface<Real, Gradient, TapeImpl, Lhs>& value);
       /// Mark a value as output (dependent).
-      template<typename Lhs>
-      void registerOutput(LhsExpressionInterface<Real, Gradient, ReverseTapeInterface, Lhs>& value);
+      template<typename Lhs, typename TapeImpl>
+      void registerOutput(LhsExpressionInterface<Real, Gradient, TapeImpl, Lhs>& value);
 
       void setActive();       ///< Start/continue recording of statements.
       void setPassive();      ///< Stop/interrupt recording of statements.

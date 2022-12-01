@@ -63,9 +63,10 @@ namespace codi {
 
       using Real = CODI_DD(T_Real, double);        ///< See LhsExpressionInterface.
       using Gradient = CODI_DD(T_Gradient, Real);  ///< See LhsExpressionInterface.
-      using Tape = CODI_DD(T_Tape,
-                           CODI_T(FullTapeInterface<double, double, int, CODI_ANY>));  ///< See LhsExpressionInterface.
+      using Tape = CODI_DD(T_Tape, CODI_TAPE_PROXY);  ///< See LhsExpressionInterface.
       using Impl = CODI_DD(T_Impl, LhsExpressionInterface);                            ///< See LhsExpressionInterface.
+
+      using Base = ExpressionInterface<T_Real, T_Impl>;
 
       using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
@@ -96,7 +97,7 @@ namespace codi {
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
       }
-      using ExpressionInterface<Real, Impl>::cast;
+      using Base::cast;
 
       /// Get the gradient of this lvalue from the tape.
       CODI_INLINE Gradient& gradient() {
@@ -216,8 +217,7 @@ namespace codi {
   template<typename T_Type>
   struct RealTraits::DataExtraction<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
     public:
-      using Type = CODI_DD(T_Type,
-                           CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See DataExtraction.
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);  ///< See DataExtraction.
 
       using Real = typename Type::Real;              ///< See DataExtraction::Real.
       using Identifier = typename Type::Identifier;  ///< See DataExtraction::Identifier.
@@ -241,8 +241,7 @@ namespace codi {
   /// Specialization of RealTraits::DataRegistration for CoDiPack types.
   template<typename T_Type>
   struct RealTraits::TapeRegistration<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
-      using Type = CODI_DD(T_Type,
-                           CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See DataRegistration.
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);  ///< See DataRegistration.
 
       using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
 

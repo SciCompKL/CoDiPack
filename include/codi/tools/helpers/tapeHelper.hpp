@@ -104,9 +104,8 @@ namespace codi {
     public:
 
       /// See TapeHelperBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
-      using Impl = CODI_DECLARE_DEFAULT(T_Impl, TapeHelperBase);  ///< See TapeHelperBase.
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
+      using Impl = CODI_DD(T_Impl, TapeHelperBase);  ///< See TapeHelperBase.
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
@@ -536,15 +535,15 @@ namespace codi {
   struct TapeHelperNoImpl : public TapeHelperBase<T_Type, TapeHelperNoImpl<T_Type>> {
     public:
 
-      /// See TapeHelperBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      CODI_STATIC_ASSERT(false && std::is_void<T_Type>::value, "Tape helper not implemented for this tape.");
+
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY); ///< See TapeHelperBase.
       using Real = typename Type::Real;  ///< See TapeHelperBase.
 
       using Base = TapeHelperBase<Type, TapeHelperNoImpl<Type>>;  ///< Base class abbreviation.
 
       /// Missing implementation will yield linker errors.
-      virtual void evalPrimal(Real const* x, Real* y = nullptr) = 0;
+      virtual void evalPrimal(Real const* x, Real* y = nullptr) {}
 
       /// Missing implementation will yield linker errors.
       template<typename Jac = DummyJacobian>
@@ -560,9 +559,7 @@ namespace codi {
   struct TapeHelperJacobi : public TapeHelperBase<T_Type, TapeHelperJacobi<T_Type>> {
     public:
 
-      /// See TapeHelperBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);  ///< See TapeHelperBase.
       using Real = typename Type::Real;  ///< See TapeHelperBase.
 
       using Base = TapeHelperBase<Type, TapeHelperJacobi<Type>>;  ///< Base class abbreviation.
@@ -597,9 +594,7 @@ namespace codi {
   struct TapeHelperPrimal : public TapeHelperBase<T_Type, TapeHelperPrimal<T_Type>> {
     public:
 
-      /// See TapeHelperBase.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);  ///< See TapeHelperBase.
       using Real = typename Type::Real;  ///< See TapeHelperBase.
 
       using Base = TapeHelperBase<Type, TapeHelperPrimal<Type>>;  ///< Base class abbreviation.
@@ -642,7 +637,7 @@ namespace codi {
 
   /// See TapeHelperBase.
   template<typename Type, typename = void>
-  struct TapeHelper : public TapeHelperBase<Type, TapeHelperNoImpl<Type>> {};
+  struct TapeHelper : public TapeHelperNoImpl<Type> {};
 
 #ifndef DOXYGEN_DISABLE
   /// See TapeHelperBase.

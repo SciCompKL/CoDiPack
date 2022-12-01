@@ -63,7 +63,7 @@ namespace codi {
     public:
 
       /// See CoDiMpiTypes.
-      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
       using Tool = CODI_DD(T_Tool, medi::ADToolInterface);  ///< See CoDiMpiTypes.
 
       using MPIType = medi::MpiTypeDefault<Tool>;  ///< MeDiPack default implementation.

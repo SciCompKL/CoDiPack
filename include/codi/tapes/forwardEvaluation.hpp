@@ -191,7 +191,7 @@ namespace codi {
   struct RealTraits::IsTotalFinite<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>> {
     public:
 
-      using Type = CODI_DD(T_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingTapeInterface<CODI_ANY>,
                                                                    T_Type>));  ///< See RealTraits::IsTotalFinite.
 
       /// \copydoc codi::RealTraits::IsTotalFinite::isTotalFinite()
@@ -207,7 +207,7 @@ namespace codi {
   struct RealTraits::IsTotalZero<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>> {
     public:
 
-      using Type = CODI_DD(T_Type, TEMPLATE(LhsExpressionInterface<double, double, InternalExpressionTapeInterface<ANY>,
+      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, InternalStatementRecordingTapeInterface<CODI_ANY>,
                                                                    T_Type>));  ///< See RealTraits::IsTotalZero.
       using Real = typename Type::Real;                                        ///< See
                                                                                ///< codi::LhsExpressionInterface::Real.

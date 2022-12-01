@@ -52,7 +52,7 @@ namespace codi {
 
     template<typename T_Type, typename T_WriteIO, typename T_RestartIO>
     struct DefaultApplicationIO : public codi::algorithms::ApplicationIOInterface<T_Type> {
-        using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+        using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
         using WriteIO = CODI_DD(T_WriteIO, FileIOInterface);
         using RestartIO = CODI_DD(T_RestartIO, FileIOInterface);
 

@@ -209,7 +209,7 @@ namespace codi {
             VectorAccess* access = createVectorAccess(*data.initTape);
 
             for(int vecPos = 0; vecPos < d; vecPos += d_local) {
-              int steps = min(d - vecPos, d_local);
+              int steps = std::min(d - vecPos, d_local);
 
               setGradient(access, data.idInitP, data.realP, vecPos, steps);
 
@@ -317,7 +317,7 @@ namespace codi {
           int d = app.getNumberOfFunctionals();
 
           for(int vecPos = 0; vecPos < d; vecPos += d_local) {
-            int steps = min(d - vecPos, d_local);
+            int steps = std::min(d - vecPos, d_local);
 
             if (TapeEvaluationInputOutputFlags::SetY & operations) {
               setGradient(access, data.idOutY, data.realCurY, vecPos, steps);

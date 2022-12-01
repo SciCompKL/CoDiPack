@@ -143,10 +143,13 @@ namespace codi {
   struct DataInterface {
     public:
 
-      using NestedData = CODI_DD(T_NestedData, DataInterface);         ///< See DataInterface
+      using NestedData = T_NestedData;                                 ///< See DataInterface
       using InternalPosHandle = CODI_DD(T_InternalPosHandle, size_t);  ///< See DataInterface
 
       using Position = EmptyPosition;  ///< Contains position data for this DataInterface and all nested interfaces
+
+      /// Constructor
+      DataInterface(size_t chunkSize) { CODI_UNUSED(chunkSize); }
 
       /*******************************************************************************/
       /// @name Adding items

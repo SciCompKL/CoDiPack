@@ -76,16 +76,14 @@ namespace codi {
     public:
 
       /// See PreaccumulationHelper.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_LHS_EXPRESSION_PROXY);
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
       using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface.
 
       /// See LhsExpressionInterface.
-      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape,
-                                        CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
+      using Tape = CODI_DD(typename Type::Tape, CODI_TAPE_PROXY);
       using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface.
 
       std::vector<Identifier> inputData;   ///< List of input identifiers. Can be added manually after start() was

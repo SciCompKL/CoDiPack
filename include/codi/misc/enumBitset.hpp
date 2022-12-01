@@ -63,7 +63,7 @@ namespace codi {
   template<typename T_Enum>
   struct EnumBitset {
     public:
-      using Enum = CODI_DD(T_Enum, EnumInterface); ///< See EnumBitset.
+      using Enum = T_Enum; ///< See EnumBitset.
 
     private:
       using UnderlyingEnumType = typename std::underlying_type<Enum>::type;
