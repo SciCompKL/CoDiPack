@@ -115,8 +115,7 @@ namespace codi {
 
       CODI_INLINE Type operator+=(Type const& other) {
         Type result;
-        CODI_OMP_ATOMIC(capture)
-        {
+        CODI_OMP_ATOMIC(capture) {
           this->value += other;
           result = this->value;
         }

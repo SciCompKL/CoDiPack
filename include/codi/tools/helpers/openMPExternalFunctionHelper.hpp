@@ -149,8 +149,7 @@ namespace codi {
           void evalForwFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            CODI_OMP_MASTER()
-            {
+            CODI_OMP_MASTER() {
               x_d = new Real[inputIndices.size()];
               y_d = new Real[outputIndices.size()];
 
@@ -164,8 +163,7 @@ namespace codi {
             CODI_OMP_BARRIER()
 
             for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
-              CODI_OMP_MASTER()
-              {
+              CODI_OMP_MASTER() {
                 for (size_t i = 0; i < inputIndices.size(); ++i) {
                   x_d[i] = ra->getAdjoint(inputIndices[i], dim);
                 }
@@ -178,8 +176,7 @@ namespace codi {
 
               CODI_OMP_BARRIER()
 
-              CODI_OMP_MASTER()
-              {
+              CODI_OMP_MASTER() {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   ra->resetAdjoint(outputIndices[i], dim);
                   ra->updateAdjoint(outputIndices[i], dim, y_d[i]);
@@ -189,8 +186,7 @@ namespace codi {
               CODI_OMP_BARRIER()
             }
 
-            CODI_OMP_MASTER()
-            {
+            CODI_OMP_MASTER() {
               if (TapeTraits::IsPrimalValueTape<Tape>::value) {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   ra->setPrimal(outputIndices[i], outputValues[i]);
@@ -221,8 +217,7 @@ namespace codi {
           void evalPrimFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            CODI_OMP_MASTER()
-            {
+            CODI_OMP_MASTER() {
               if (TapeTraits::IsPrimalValueTape<Tape>::value) {
                 for (size_t i = 0; i < inputIndices.size(); ++i) {
                   inputValues[i] = ra->getPrimal(inputIndices[i]);
@@ -236,8 +231,7 @@ namespace codi {
 
             CODI_OMP_BARRIER()
 
-            CODI_OMP_MASTER()
-            {
+            CODI_OMP_MASTER() {
               if (TapeTraits::IsPrimalValueTape<Tape>::value) {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   ra->setPrimal(outputIndices[i], outputValues[i]);
@@ -265,8 +259,7 @@ namespace codi {
           void evalRevFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            CODI_OMP_MASTER()
-            {
+            CODI_OMP_MASTER() {
               x_b = new Real[inputIndices.size()];
               y_b = new Real[outputIndices.size()];
             }
@@ -274,8 +267,7 @@ namespace codi {
             CODI_OMP_BARRIER()
 
             for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
-              CODI_OMP_MASTER()
-              {
+              CODI_OMP_MASTER() {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   y_b[i] = ra->getAdjoint(outputIndices[i], dim);
                   ra->resetAdjoint(outputIndices[i], dim);
@@ -289,8 +281,7 @@ namespace codi {
 
               CODI_OMP_BARRIER()
 
-              CODI_OMP_MASTER()
-              {
+              CODI_OMP_MASTER() {
                 for (size_t i = 0; i < inputIndices.size(); ++i) {
                   ra->updateAdjoint(inputIndices[i], dim, x_b[i]);
                 }
@@ -299,8 +290,7 @@ namespace codi {
               CODI_OMP_BARRIER()
             }
 
-            CODI_OMP_MASTER()
-            {
+            CODI_OMP_MASTER() {
               if (Tape::RequiresPrimalRestore) {
                 for (size_t i = 0; i < outputIndices.size(); ++i) {
                   ra->setPrimal(outputIndices[i], oldPrimals[i]);
@@ -424,8 +414,7 @@ namespace codi {
         if (isTapeActive) {
           Type::getTape().setActive();
 
-          CODI_OMP_MASTER()
-          {
+          CODI_OMP_MASTER() {
             for (size_t i = 0; i < outputValues.size(); ++i) {
               addOutputToData(*outputValues[i]);
             }
@@ -442,8 +431,7 @@ namespace codi {
           // Store the primal function in the external function data so that it can be used for primal evaluations of
           // the tape.
 
-          CODI_OMP_MASTER()
-          {
+          CODI_OMP_MASTER() {
             data->primalFunc = func;
 
             y = new Real[outputValues.size()];
@@ -455,8 +443,7 @@ namespace codi {
 
           CODI_OMP_BARRIER()
 
-          CODI_OMP_MASTER()
-          {
+          CODI_OMP_MASTER() {
             // Set the primal values on the output values and add them to the data for the reverse evaluation.
             for (size_t i = 0; i < outputValues.size(); ++i) {
               outputValues[i]->setValue(y[i]);
@@ -481,8 +468,7 @@ namespace codi {
       /// Must be called by all threads of the current team.
       void addToTape(ReverseFunc reverseFunc, ForwardFunc forwardFunc = nullptr, PrimalFunc primalFunc = nullptr) {
         if (Type::getTape().isActive()) {
-          CODI_OMP_MASTER()
-          {
+          CODI_OMP_MASTER() {
             data->reverseFunc = reverseFunc;
             data->forwardFunc = forwardFunc;
 
@@ -516,15 +502,13 @@ namespace codi {
           CODI_OMP_MASTER()
           data = nullptr;
         } else {
-          CODI_OMP_MASTER()
-          {
+          CODI_OMP_MASTER() {
             // Clear the assembled data.
             delete data;
           }
         }
 
-        CODI_OMP_MASTER()
-        {
+        CODI_OMP_MASTER() {
           // Create a new data object for the next call.
           data = new EvalData();
           outputValues.clear();
