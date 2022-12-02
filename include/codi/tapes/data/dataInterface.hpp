@@ -148,8 +148,10 @@ namespace codi {
 
       using Position = EmptyPosition;  ///< Contains position data for this DataInterface and all nested interfaces
 
+#if CODI_IDE
       /// Constructor
       DataInterface(size_t chunkSize) { CODI_UNUSED(chunkSize); }
+#endif
 
       /*******************************************************************************/
       /// @name Adding items
