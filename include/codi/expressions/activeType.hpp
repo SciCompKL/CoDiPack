@@ -101,8 +101,7 @@ namespace codi {
 
       /// Constructor
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveType(PassiveReal const& value) :
-        primalValue(value), identifier() {
+      CODI_INLINE ActiveType(PassiveReal const& value) : primalValue(value), identifier() {
         Base::init();
       }
 
@@ -115,7 +114,8 @@ namespace codi {
 
       /// Constructor
       template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : primalValue(rhs.cast()), identifier() {
+      CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs)
+          : primalValue(rhs.cast()), identifier() {
         Base::init();
       }
 

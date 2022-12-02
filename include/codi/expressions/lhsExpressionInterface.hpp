@@ -136,7 +136,7 @@ namespace codi {
 
       /// Assignment operator for passive values. Calls store on the InternalStatementRecordingTapeInterface.
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE Impl & operator=(PassiveReal const& rhs) {
+      CODI_INLINE Impl& operator=(PassiveReal const& rhs) {
         Impl::getTape().store(cast(), rhs);
         return cast();
       }

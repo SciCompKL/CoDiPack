@@ -72,8 +72,7 @@ namespace codi {
    */
   struct TapeValues {
     private:
-      enum class EntryType
-      {
+      enum class EntryType {
         Double,
         Long,
         UnsignedLong

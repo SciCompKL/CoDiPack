@@ -42,8 +42,7 @@
 namespace codi {
 
   /// Defines all the operations which can be evaluated on a statement by a tape.
-  enum class StatementCall
-  {
+  enum class StatementCall {
     ClearAdjoint,  ///< Clear the adjoints of the expression.
     Forward,       ///< Evaluate expression in a forward mode.
     Primal,        ///< Evaluate primal expression.

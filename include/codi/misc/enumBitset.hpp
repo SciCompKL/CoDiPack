@@ -62,7 +62,7 @@ namespace codi {
   template<typename T_Enum>
   struct EnumBitset {
     public:
-      using Enum = CODI_DD(T_Enum, CODI_ANY); ///< See EnumBitset.
+      using Enum = CODI_DD(T_Enum, CODI_ANY);  ///< See EnumBitset.
 
     private:
       using UnderlyingEnumType = typename std::underlying_type<Enum>::type;
@@ -125,24 +125,24 @@ namespace codi {
       }
 
       /// Or operation of two bitsets.
-      CODI_INLINE EnumBitset& operator |=(EnumBitset const& o) {
+      CODI_INLINE EnumBitset& operator|=(EnumBitset const& o) {
         bitset |= o.bitset;
         return *this;
       }
 
       /// Or operation of the bitset and an enum.
-      CODI_INLINE EnumBitset& operator |=(Enum const& pos) {
+      CODI_INLINE EnumBitset& operator|=(Enum const& pos) {
         return set(pos);
       }
 
       /// And operation of two bitsets.
-      CODI_INLINE EnumBitset& operator &=(EnumBitset const& o) {
+      CODI_INLINE EnumBitset& operator&=(EnumBitset const& o) {
         bitset &= o.bitset;
         return *this;
       }
 
       /// And operation of the bitsets and and enum.
-      CODI_INLINE EnumBitset& operator &=(Enum const& pos) {
+      CODI_INLINE EnumBitset& operator&=(Enum const& pos) {
         return *this &= EnumBitset(pos);
       }
 

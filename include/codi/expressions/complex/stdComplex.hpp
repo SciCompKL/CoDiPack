@@ -154,7 +154,8 @@ namespace codi {
 
       /// Constructor.
       template<typename ArgR, typename ArgI>
-      CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR, ExpressionInterface<InnerReal, ArgI> const& argI)
+      CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR,
+                                ExpressionInterface<InnerReal, ArgI> const& argI)
           : Base() {
         Base::arrayValue[0] = argR;
         Base::arrayValue[1] = argI;
@@ -162,14 +163,16 @@ namespace codi {
 
       /// Constructor.
       template<typename ArgI>
-      CODI_INLINE ActiveComplex(PassiverInnerReal const& argR, ExpressionInterface<InnerReal, ArgI> const& argI) : Base() {
+      CODI_INLINE ActiveComplex(PassiverInnerReal const& argR, ExpressionInterface<InnerReal, ArgI> const& argI)
+          : Base() {
         Base::arrayValue[0] = argR;
         Base::arrayValue[1] = argI;
       }
 
       /// Constructor.
       template<typename ArgR>
-      CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR, PassiverInnerReal const& argI) : Base() {
+      CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR, PassiverInnerReal const& argI)
+          : Base() {
         Base::arrayValue[0] = argR;
         Base::arrayValue[1] = argI;
       }
@@ -180,8 +183,7 @@ namespace codi {
         Base::arrayValue[1] = argI;
       }
 
-      CODI_INLINE ~ActiveComplex() = default; ///< Destructor
-
+      CODI_INLINE ~ActiveComplex() = default;  ///< Destructor
   };
 
   /// Specialization of ActiveResultImpl for std::complex.
@@ -239,10 +241,10 @@ namespace std {
       /// Base class abbreviation.
       using Base = codi::ActiveComplex<codi::ActiveType<Tape>, complex<codi::ActiveType<T_Tape>>>;
 
-      using Base::Base;                               ///< Use Base constructors.
+      using Base::Base;                                           ///< Use Base constructors.
       CODI_INLINE complex(complex const& value) : Base(value) {}  ///< Constructor.
 
-      CODI_INLINE ~complex() = default; ///< Destructor
+      CODI_INLINE ~complex() = default;  ///< Destructor
 
       using Base::operator=;  ///< Use Base assign operators.
 

@@ -371,7 +371,7 @@ namespace codi {
             totalNumberOfArguments = newTotalNumberOfArguments;
           });
 
-          if(0 != totalNumberOfArguments) {
+          if (0 != totalNumberOfArguments) {
             freeAndUpdate = false;
 
             // First get all identifiers to prevent self references
@@ -390,7 +390,8 @@ namespace codi {
 
               if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments[i.value])) {
                 lhs.arrayValue[i.value].getIdentifier() = identifiers[i.value];
-                cast().pushStmtData(lhs.arrayValue[i.value].getIdentifier(), (Config::ArgumentSize)numberOfArguments[i.value]);
+                cast().pushStmtData(lhs.arrayValue[i.value].getIdentifier(),
+                                    (Config::ArgumentSize)numberOfArguments[i.value]);
               }
 
               lhs.arrayValue[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
@@ -398,7 +399,7 @@ namespace codi {
           }
         }
 
-        if(freeAndUpdate) {
+        if (freeAndUpdate) {
           Aggregated real = rhs.cast().getValue();
 
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {

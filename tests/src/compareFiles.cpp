@@ -51,8 +51,7 @@ struct Settings {
     std::vector<std::string> fileNames;
 };
 
-enum class DerivCase
-{
+enum class DerivCase {
   D0,
   D1,
   D2,
@@ -308,7 +307,9 @@ class ResultDiff {
     double parseDouble(std::string const& str) {
       try {
         return std::stod(str);
-      } catch (std::out_of_range const&) { return 0.0; }
+      } catch (std::out_of_range const&) {
+        return 0.0;
+      }
     }
 };
 

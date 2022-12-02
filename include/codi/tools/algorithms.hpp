@@ -81,8 +81,7 @@ namespace codi {
       using GT = GradientTraits::TraitsImplementation<Gradient>;  ///< Shortcut for traits of gradient.
 
       /// Evaluation modes for the derivative computation.
-      enum class EvaluationType
-      {
+      enum class EvaluationType {
         Forward,
         Reverse
       };

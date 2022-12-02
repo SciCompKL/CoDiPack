@@ -1009,8 +1009,8 @@ namespace codi {
 
           /// Construct the statement in the static context.
           CODI_INLINE static StaticRhs constructStatic(Real* __restrict__ primalVector,
-                                           PassiveReal const* const __restrict__ constantValues,
-                                           Identifier const* const __restrict__ identifiers) {
+                                                       PassiveReal const* const __restrict__ constantValues,
+                                                       Identifier const* const __restrict__ identifiers) {
             return Constructor::construct(primalVector, identifiers, constantValues);
           }
       };

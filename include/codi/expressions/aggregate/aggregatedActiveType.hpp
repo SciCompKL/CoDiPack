@@ -155,7 +155,7 @@ namespace codi {
       using Traits = RealTraits::AggregatedTypeTraits<Real>;                   ///< The traits for the aggregated type.
       using PassiveReal = RealTraits::PassiveReal<Real>;                       ///< Passive value type of the real.
 
-      using Base::Base;  ///< Use base constructors.
+      using Base::Base;                               ///< Use base constructors.
       CODI_INLINE ~AggregatedActiveType() = default;  ///< Destructor.
 
       /// Constructor.

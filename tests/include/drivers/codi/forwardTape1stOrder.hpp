@@ -44,8 +44,8 @@
 struct CoDiForwardTape1stOrder : public CoDiReverse1stOrderBase {
   public:
 
-    using Number = CODI_DECLARE_DEFAULT(CODI_TYPE,
-        CODI_TEMPLATE(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+    using Number = CODI_DECLARE_DEFAULT(
+        CODI_TYPE, CODI_TEMPLATE(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
     using Tape = CODI_DD(typename Number::Tape, CODI_T(codi::FullTapeInterface<double, double, int, CODI_ANY>));
     using Base = CoDiReverse1stOrderBase;
@@ -107,12 +107,13 @@ struct CoDiForwardTape1stOrder : public CoDiReverse1stOrderBase {
           codi::GradientTraits::at(accessGradient(x[curRun * gradDim + curDim]), curDim) = 1.0;
         }
 
-        evaluate(); // Forward evaluate in this case
+        evaluate();  // Forward evaluate in this case
 
         for (size_t curOut = 0; curOut < outputs; ++curOut) {
           for (size_t curDim = 0; curDim < curSize; ++curDim) {
 #ifdef SECOND_ORDER
-            jac(curOut, curRun * gradDim + curDim) = codi::GradientTraits::at(accessGradient(y[curOut]), curDim).value();
+            jac(curOut, curRun * gradDim + curDim) =
+                codi::GradientTraits::at(accessGradient(y[curOut]), curDim).value();
 #else
             jac(curOut, curRun * gradDim + curDim) = codi::GradientTraits::at(accessGradient(y[curOut]), curDim);
 #endif

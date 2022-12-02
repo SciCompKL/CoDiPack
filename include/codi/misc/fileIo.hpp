@@ -49,8 +49,7 @@
 namespace codi {
 
   /// Possible IO errors.
-  enum struct IoError
-  {
+  enum struct IoError {
     Mode,
     Open,
     Write,
