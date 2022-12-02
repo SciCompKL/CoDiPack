@@ -48,12 +48,7 @@ namespace codi {
 
     struct PrimalEvaluationSettings {
         int maxIterations;  ///< Maximum number of adjoint iterations.
-
-        bool checkAbsConvergence;
-        bool checkRelConvergence;
-
-        double absThreshold;
-        double relThreshold;
+        bool checkPrimalConvergence;
 
         bool writeCheckpoints;
         bool writeFinalCheckpoint;
@@ -61,10 +56,7 @@ namespace codi {
 
         PrimalEvaluationSettings()
             : maxIterations(1000),
-              checkAbsConvergence(true),
-              checkRelConvergence(true),
-              absThreshold(1e-12),
-              relThreshold(1e-6),
+              checkPrimalConvergence(true),
               writeCheckpoints(false),
               writeFinalCheckpoint(false),
               checkpointsInterleave(10) {}
@@ -94,9 +86,8 @@ namespace codi {
         void run(App& app) {
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
-          bool isConverged = false;
-          bool isStop = false;
-          bool isFinished = false;
+          bool isStart = true;
+          bool continueRunning = true;
 
           RealVector yCur(app.getSizeY());
           RealVector yNext(app.getSizeY());
@@ -109,7 +100,7 @@ namespace codi {
 
           app.iterateY(typename Base::GetPrimal(yCur));
 
-          while (!(isFinished || isStop || isConverged)) {
+          while (continueRunning) {
 
             writeCheckpoint(app);
 
@@ -124,17 +115,17 @@ namespace codi {
             // Prepare next iteration
             std::swap(yCur, yNext);
 
-            isFinished = app.getIteration() >= settings.maxIterations;
-            if (1 == app.getIteration()) {
+            if(settings.checkPrimalConvergence) { continueRunning &= !app.isConverged(); }
+            continueRunning &= app.getIteration() < settings.maxIterations;
+            continueRunning &= !app.isStop();
+            if (isStart) {
+              isStart = false;
               initalResY = resY;
-            } else {
-              isConverged = checkConvergence(initalResY, resY);
             }
-            isStop = app.isStop();
 
             io->writeY(app.getIteration(), yCur,
                        FileOutputHintsFlags::Primal | FileOutputHintsFlags::G |
-                           ((isFinished | isConverged | isStop) ? FileOutputHintsFlags::Final : FileOutputHintsFlags::Intermediate));
+                           (!continueRunning ? FileOutputHintsFlags::Final : FileOutputHintsFlags::Intermediate));
           }
 
           writeCheckpoint(app, true);
@@ -169,18 +160,6 @@ namespace codi {
 
         std::string formatEntry(int iteration, Res resY) {
           return StringUtil::format("%d ", iteration) + resY.formatEntry() + "\n";
-        }
-
-        bool checkConvergence(Res initial, Res cur) {
-          bool converged = false;
-          if (settings.checkAbsConvergence) {
-            converged = cur.l2 < settings.absThreshold;
-          }
-          if (settings.checkRelConvergence) {
-            converged = cur.l2 < settings.relThreshold * initial.l2;
-          }
-
-          return converged;
         }
     };
   }

@@ -52,34 +52,27 @@ namespace codi {
         int maxIterations;  ///< Maximum number of adjoint iterations.
 
         bool outputPrimalConvergence;
-        bool checkAbsConvergence;
-        bool checkRelConvergence;
+        bool checkPrimalConvergence;
 
-        double absThreshold;
-        double relThreshold;
-
-        bool debugOutput;
+        bool intermediateReverseResultsOutput;
 
         BlackBoxSettings()
             : maxIterations(1000),
               outputPrimalConvergence(true),
-              checkAbsConvergence(true),
-              checkRelConvergence(true),
-              absThreshold(1e-12),
-              relThreshold(1e-6),
-              debugOutput(false) {}
+              checkPrimalConvergence(true),
+              intermediateReverseResultsOutput(false) {}
     };
 
     template<typename T_App>
     struct BlackBox : public AlgorithmBase<T_App> {
       public:
 
-        using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_ANY>));
+        using App = CODI_DD(T_App, CODI_T(ApplicationInterface<CODI_LHS_EXPRESSION_PROXY>));
 
         using Type = typename App::Type;
         using Tape = typename Type::Tape;
 
-        using Base = AlgorithmBase<App>;
+        using Base = AlgorithmBase<T_App>;
         using Data = typename Base::Data;
         using Res = typename Base::Res;
         using RealVector = typename Base::RealVector;
@@ -96,9 +89,7 @@ namespace codi {
         void run(App& app) {
           ApplicationIOInterface<Type>* io = app.getIOInterface();
 
-          bool isConverged = false;
-          bool isStop = false;
-          bool isFinished = false;
+          bool continueRunning = true;
 
           app.initialize();
 
@@ -115,8 +106,6 @@ namespace codi {
           IdVector idX(app.getSizeX());
           IdVector idZ(app.getSizeZ());
           std::vector<RealVector> gradX(Base::d_local, RealVector(app.getSizeX()));
-          Res initalResY;
-
 
           Tape& tape = Type::getTape();
           tape.setActive();
@@ -128,7 +117,7 @@ namespace codi {
             app.iterateY(typename Base::GetPrimal(yCur));
           }
 
-          while (!(isFinished || isStop || isConverged)) {
+          while (continueRunning) {
             app.evaluateG();
 
             if(settings.outputPrimalConvergence) {
@@ -140,18 +129,13 @@ namespace codi {
 
               // Prepare next iteration
               std::swap(yCur, yNext);
-
-              if (1 == app.getIteration()) {
-                initalResY = resY;
-              } else {
-                isConverged = checkConvergence(initalResY, resY);
-              }
             }
 
-            if(settings.debugOutput) { addDebugOutput(app); }
+            if(settings.intermediateReverseResultsOutput) { addDebugOutput(app); }
 
-            isFinished = app.getIteration() >= settings.maxIterations;
-            isStop = app.isStop();
+            if(settings.checkPrimalConvergence) { continueRunning &= !app.isConverged(); }
+            continueRunning &= app.getIteration() < settings.maxIterations;
+            continueRunning &= !app.isStop();
           }
 
           app.evaluateF();
@@ -188,18 +172,6 @@ namespace codi {
 
         std::string formatEntry(int iteration, Res resY) {
           return StringUtil::format("%d %0.6e %0.6e %0.6e %d\n", iteration, resY.l1, resY.l2, resY.lMax, resY.lMaxPos);
-        }
-
-        bool checkConvergence(Res initial, Res cur) {
-          bool converged = false;
-          if (settings.checkAbsConvergence) {
-            converged = cur.l2 < settings.absThreshold;
-          }
-          if (settings.checkRelConvergence) {
-            converged = cur.l2 < settings.relThreshold * initial.l2;
-          }
-
-          return converged;
         }
 
       private:

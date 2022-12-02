@@ -43,12 +43,12 @@ namespace codi {
   namespace algorithms {
 
     enum class ApplicationHintsFlags {
+      FComputationIsAvailable, // TODO: Automatic detection
       InitializationRequired,
       InitializationComputesP,
       InitializationWriteTapeToDisk,
       PComputationIsAvailable, // TODO: Automatic detection
       PStateIsAvailable, // TODO: Automatic detection
-      FComputationIsAvailable, // TODO: Automatic detection
       MaxElement
     };
     using ApplicationHints = EnumBitset<ApplicationHintsFlags>;

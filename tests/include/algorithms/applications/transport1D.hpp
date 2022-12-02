@@ -45,7 +45,7 @@
 template<typename T_Type>
 struct Transport1DSettings {
   public:
-    using Type = CODI_DD(T_Type, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+    using Type = CODI_DD(T_Type, double);
 
     Type rho = 1.0;
     Type gamma = 0.1;
@@ -63,7 +63,7 @@ struct Transport1DSettings {
 template<typename T_Type>
 struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
   public:
-    using Type = CODI_DD(T_Type, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+    using Type = CODI_DD(T_Type, double);
     using Base = TestApplicationBase<Type, Transport1D>;
     using Res = typename Base::Res;
     using Settings = Transport1DSettings<Type>;
@@ -258,11 +258,15 @@ struct Transport1D : public TestApplicationBase<T_Type, Transport1D<T_Type>> {
 
         Base::print(codi::StringUtil::format("%d %0.6e\n", Base::getIteration(), res));
 
-        if (res < 0.00000001) {
+        if (isConverged()) {
           break;
         }
       }
 
       evaluateF();
+    }
+
+    bool isConverged() {
+      return res < 0.000000001;
     }
 };

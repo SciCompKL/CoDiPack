@@ -49,13 +49,14 @@ namespace codi {
 
     struct ForwardModeSettings {
         int maxIterations; ///< Maximum number of forward iterations.
+        bool checkPrimalConvergence;
         std::vector<double> seeding;
 
         bool fullJacobian;
         double primalValidationThreshold;
 
         ForwardModeSettings()
-            : maxIterations(1000), seeding(1, 1.0), fullJacobian(false), primalValidationThreshold(1e-10)
+            : maxIterations(1000), checkPrimalConvergence(true), seeding(1, 1.0), fullJacobian(false), primalValidationThreshold(1e-10)
          {}
     };
 
@@ -181,14 +182,13 @@ namespace codi {
         void runApp(App& app) {
           app.evaluateP();
 
-          bool isStop = false;
-          bool isFinished = false;
-          while (!(isFinished || isStop)) {
-
+          bool continueRunning = true;
+          while (continueRunning) {
             app.evaluateG();
 
-            isFinished = app.getIteration() >= settings.maxIterations;
-            isStop = app.isStop();
+            if(settings.checkPrimalConvergence) { continueRunning &= !app.isConverged(); }
+            continueRunning &= app.getIteration() < settings.maxIterations;
+            continueRunning &= !app.isStop();
           }
 
           app.evaluateF();

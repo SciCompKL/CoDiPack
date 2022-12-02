@@ -103,7 +103,8 @@ namespace codi {
         int getIteration();
 
         void print(std::string const& line);
-        bool isStop();
+        bool isConverged();  ///< Check if primal application has converged.
+        bool isStop();       ///< External stop to abort algorithm
 
         // Init variable handling
         void setInitializationHandlingFunction(InitFunc const& func, void* data = nullptr) {

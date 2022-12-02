@@ -145,8 +145,7 @@ void runProblem(Settings& settings, std::string const& prefix, bool onlyWriteFin
 
 void createBasicCheckpoint() {
   codi::algorithms::PrimalEvaluationSettings settings;
-  settings.checkRelConvergence = false;
-  settings.absThreshold = 0.000000001;
+  settings.checkPrimalConvergence = true;
   settings.writeFinalCheckpoint = true;
   runProblem<codi::algorithms::PrimalEvaluation, double>(settings, "primal");
 }
@@ -173,8 +172,7 @@ void runRATests()
 void runBBTests()
 {
   codi::algorithms::BlackBoxSettings settings;
-  settings.checkRelConvergence = false;
-  settings.absThreshold = 0.000000001;
+  settings.checkPrimalConvergence = true;
 
   runProblem<codi::algorithms::BlackBox, codi::RealReverse>(settings, "blackBox");
 }
@@ -184,8 +182,7 @@ void runBBWCTests()
 
   // Setup checkpoints
   codi::algorithms::PrimalEvaluationSettings checkSettings;
-  checkSettings.checkRelConvergence = false;
-  checkSettings.absThreshold = 0.000000001;
+  checkSettings.checkPrimalConvergence = true;
   checkSettings.writeCheckpoints = true;
   runProblem<codi::algorithms::PrimalEvaluation, double>(checkSettings, "blackBoxWithCheck_writeCheck");
 

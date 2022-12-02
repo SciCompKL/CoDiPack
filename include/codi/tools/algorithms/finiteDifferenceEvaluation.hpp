@@ -49,6 +49,7 @@ namespace codi {
 
     struct FiniteDifferenceEvaluationSettings {
         int maxIterations;  ///< Maximum number of adjoint iterations.
+        bool checkPrimalConvergence;
 
         bool fullJacobian;
 
@@ -60,7 +61,7 @@ namespace codi {
         bool writePrimal;
 
         FiniteDifferenceEvaluationSettings()
-            : maxIterations(1000), fullJacobian(false), stepSizes(1),
+            : maxIterations(1000), checkPrimalConvergence(true), fullJacobian(false), stepSizes(1),
               relativeStepSize(true), validateBase(true), primalValidationThreshold(1e-10), writePrimal(false)
          {
           stepSizes[0] = 0.1; // 10% distortion
@@ -169,7 +170,7 @@ namespace codi {
                                            (int)(curStep + 1), (int) settings.stepSizes.size(),
                                            settings.stepSizes[curStep],
                                            (int)(curX + 1), (int)sizeX));
-              Real actualStepSize;
+              Real actualStepSize{};
               app.iterateX(SetPrimalOffsetAtPos(xBase, curX, settings.stepSizes[curStep], settings.relativeStepSize, actualStepSize));
 
               runApp(app);
@@ -190,14 +191,13 @@ namespace codi {
         void runApp(App& app) {
           app.evaluateP();
 
-          bool isStop = false;
-          bool isFinished = false;
-          while (!(isFinished || isStop)) {
-
+          bool continueRunning = true;
+          while (continueRunning) {
             app.evaluateG();
 
-            isFinished = app.getIteration() >= settings.maxIterations;
-            isStop = app.isStop();
+            if(settings.checkPrimalConvergence) { continueRunning &= !app.isConverged(); }
+            continueRunning &= app.getIteration() < settings.maxIterations;
+            continueRunning &= !app.isStop();
           }
 
           app.evaluateF();

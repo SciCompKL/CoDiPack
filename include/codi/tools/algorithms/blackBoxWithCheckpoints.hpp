@@ -48,14 +48,19 @@ namespace codi {
   namespace algorithms {
 
     struct BlackBoxWithCheckpointsSettings : public AlgorithmBaseSettings {
-        int start;          ///< Start iteration.
-        int end;            ///< End iteration, -1 for last checkpoint.
+        int start;        ///< Start iteration, -1 for initial iteration.
+        int end;          ///< End iteration, -1 for last checkpoint.
+        int adjointStep;  ///< Increment for the adjoint step. Usually 1.
+
+        bool checkPrimalConvergence; ///< If a primal converged state can overwrite the end setting.
 
         bool verbose;       ///< Write algorithm actions.
 
         BlackBoxWithCheckpointsSettings()
             : start(0),
               end(0),
+              adjointStep(1),
+              checkPrimalConvergence(false),
               verbose(false) {}
     };
 
@@ -88,13 +93,13 @@ namespace codi {
             curAdjIteration = checkpoints.back()->getIteration();
 
             if(!fAvailable) {
-              curAdjIteration += 1; // Increase iteration by one since we do one additional G iteration to compute f, so that the last checkpoint is used.
+              curAdjIteration += settings.adjointStep; // Increase iteration by one since we do one additional G iteration to compute f, so that the last checkpoint is used.
             }
 
           } else {
             curAdjIteration = settings.end;
             if(!fAvailable) {
-              curAdjIteration -= 1; // Decrease iteration by one since we do one additional G iteration to compute f.
+              curAdjIteration -= settings.adjointStep; // Decrease iteration by one since compute f with the last G iteration.
             }
             while(curAdjIteration < checkpoints.back()->getIteration()) {
               cpm->free(checkpoints.back());
@@ -131,18 +136,23 @@ namespace codi {
           }
         }
 
-        inline void iterateUntilWithCheckpoints(App& app, int until, std::vector<CheckpointHandle*>& checkpoints, CheckpointManagerInterface* cpm) {
+        inline void iterateUntilWithCheckpoints(App& app, int until, std::vector<CheckpointHandle*>& checkpoints,
+                                                CheckpointManagerInterface* cpm, bool checkPrimalConvergence) {
           int start = app.getIteration();
+          bool continueRunning = true;
 
           if(settings.verbose) { app.print(StringUtil::format("Iterating from %d to %d.\n", start, until)); }
 
-          for(int curPos = start; curPos < until; curPos += 1) {
+          for(int curPos = start; continueRunning && curPos < until; curPos += settings.adjointStep) {
             if(start != curPos) {
               if(settings.verbose) { app.print(StringUtil::format("Creating checkpoint at %d.\n", curPos)); }
 
               checkpoints.push_back(cpm->create());
             }
             app.evaluateG();
+
+            if(checkPrimalConvergence) { continueRunning &= !app.isConverged(); }
+            continueRunning &= !app.isStop();
           }
         }
 
@@ -158,6 +168,12 @@ namespace codi {
           cpm->remove(checkpoints.back());
           cpm->free(checkpoints.back());
           checkpoints.pop_back();
+        }
+
+        inline void clearCheckpoints(CheckpointManagerInterface* cpm, std::vector<CheckpointHandle*>& checkpoints) {
+          while(!checkpoints.empty()) {
+            popCheckpoint(cpm, checkpoints);
+          }
         }
 
         void run(App& app) {
@@ -177,11 +193,12 @@ namespace codi {
           prepareCheckpointsAtFront(cpm, checkpoints);
           int curAdjIteration = prepareCheckpointsAtEnd(cpm, checkpoints, fAvailable);
 
-          if(settings.verbose) { app.print(StringUtil::format("Checkpoints avail: %d, first: %d, last: %d\n",
-                                                              checkpoints.size(),
-                                                              checkpoints.front()->getIteration(),
-                                                              checkpoints.back()->getIteration())); }
-
+          if(settings.verbose) {
+            app.print(StringUtil::format("Checkpoints avail: %d, first: %d, last: %d\n",
+                checkpoints.size(),
+                checkpoints.front()->getIteration(),
+                checkpoints.back()->getIteration()));
+          }
 
           bool isFirst = true;
           bool isStop = false;
@@ -196,7 +213,21 @@ namespace codi {
           if(curAdjIteration != app.getIteration()) {
             // Iterates until app.getIteration is at curAdjIteration. No Checkpoint is written for curAdjIteration,
             // therefore we do not need to delete the checkpoint.
-            iterateUntilWithCheckpoints(app, curAdjIteration, checkpoints, cpm);
+            iterateUntilWithCheckpoints(app, curAdjIteration, checkpoints, cpm, settings.checkPrimalConvergence);
+            // Check app state
+            if(app.isStop()) {
+              // Stop algorithm
+              clearCheckpoints(cpm, checkpoints);
+              return;
+            } else if(settings.checkPrimalConvergence && app.isConverged()) {
+              // Readjust end to primal convergence
+              settings.end = app.getIteration();
+              curAdjIteration = prepareCheckpointsAtEnd(cpm, checkpoints, fAvailable);
+              if(!fAvailable) {
+                // In order to compute f at the current position, we have to load the last checkpoint again.
+                loadAndPopCheckpoint(cpm, checkpoints);
+              }
+            }
           } else {
             // Remove the loaded checkpoint.
             popCheckpoint(cpm, checkpoints);
@@ -221,7 +252,7 @@ namespace codi {
             io->writeP(curAdjIteration, data.realP, FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F | FileOutputHintsFlags::Intermediate);
           }
           std::swap(data.realNextY, data.realCurY);
-          curAdjIteration -= 1;
+          curAdjIteration -= settings.adjointStep;
 
           if(checkpoints.back()->getIteration() == curAdjIteration) {
             loadAndPopCheckpoint(cpm, checkpoints);
@@ -263,7 +294,7 @@ namespace codi {
               // Prepare next iteration
               std::swap(data.realNextY, data.realCurY);
               isFinished = curAdjIteration == settings.start;
-              curAdjIteration -= 1;
+              curAdjIteration -= settings.adjointStep;
               if (isFirst) {
                 initalResY = resY;
                 isFirst = false;
@@ -272,7 +303,7 @@ namespace codi {
 
               loadAndPopCheckpoint(cpm, checkpoints);
             } else {
-              iterateUntilWithCheckpoints(app, curAdjIteration, checkpoints, cpm);
+              iterateUntilWithCheckpoints(app, curAdjIteration, checkpoints, cpm, false);
             }
           }
 
