@@ -112,6 +112,7 @@ namespace codi {
           app.iterateX(typename Base::RegisterInput(idX));
 
           app.evaluateP();
+          int startIter = app.getIteration();
 
           if(settings.outputPrimalConvergence) {
             app.iterateY(typename Base::GetPrimal(yCur));
@@ -160,7 +161,7 @@ namespace codi {
 
             Base::getGradientAndReset(access, idX, gradX, vecPos, steps);
 
-            io->writeX(0, gradX, FileOutputHintsFlags::Final | FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F, vecPos);
+            io->writeX(startIter, gradX, FileOutputHintsFlags::Final | FileOutputHintsFlags::Derivative | FileOutputHintsFlags::F, vecPos);
           }
 
           Base::deleteVectorAccess(tape, access);
