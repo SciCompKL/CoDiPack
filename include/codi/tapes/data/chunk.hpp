@@ -237,8 +237,9 @@ namespace codi {
         codiAssert(end <= usedSize);
 
         if (start != end) {
-          for (size_t i = 0; i < usedSize - end; ++i)
+          for (size_t i = 0; i < usedSize - end; ++i) {
             data1[start + i] = data1[end + i];
+          }
           usedSize -= end - start;
         }
       }
@@ -345,10 +346,10 @@ namespace codi {
         codiAssert(end <= usedSize);
 
         if (start != end) {
-          for (size_t i = 0; i < usedSize - end; ++i)
+          for (size_t i = 0; i < usedSize - end; ++i) {
             data1[start + i] = data1[end + i];
-          for (size_t i = 0; i < usedSize - end; ++i)
             data2[start + i] = data2[end + i];
+          }
           usedSize -= end - start;
         }
       }
@@ -472,12 +473,11 @@ namespace codi {
         codiAssert(end <= usedSize);
 
         if (start != end) {
-          for (size_t i = 0; i < usedSize - end; ++i)
+          for (size_t i = 0; i < usedSize - end; ++i) {
             data1[start + i] = data1[end + i];
-          for (size_t i = 0; i < usedSize - end; ++i)
             data2[start + i] = data2[end + i];
-          for (size_t i = 0; i < usedSize - end; ++i)
             data3[start + i] = data3[end + i];
+          }
           usedSize -= end - start;
         }
       }
@@ -618,14 +618,12 @@ namespace codi {
         codiAssert(end <= usedSize);
 
         if (start != end) {
-          for (size_t i = 0; i < usedSize - end; ++i)
+          for (size_t i = 0; i < usedSize - end; ++i) {
             data1[start + i] = data1[end + i];
-          for (size_t i = 0; i < usedSize - end; ++i)
             data2[start + i] = data2[end + i];
-          for (size_t i = 0; i < usedSize - end; ++i)
             data3[start + i] = data3[end + i];
-          for (size_t i = 0; i < usedSize - end; ++i)
             data4[start + i] = data4[end + i];
+          }
           usedSize -= end - start;
         }
       }
