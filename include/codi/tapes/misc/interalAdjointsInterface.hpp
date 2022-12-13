@@ -43,7 +43,7 @@ namespace codi {
   /**
    * @brief Abstracts the internal set of adjoint variables provided as part of the tape.
    *
-   * The set of adjoint variables is usually implemented as a vector.
+   * The set of adjoint variables is usually implemented as a std::vector.
    *
    * Compared to AdjointVectorAccess, this interface is less restricted in terms of what can be done with the adjoint
    * variables, but their type is fixed at compile time.

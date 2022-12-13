@@ -60,16 +60,18 @@ namespace codi {
     public:
       template<typename Type>
       using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));  ///< See codi::AtomicInterface.
-
       using Mutex = CODI_DD(T_Mutex, MutexInterface);            ///< See codi::MutexInterface.
-      using Lock = codi::Lock<Mutex>;                            ///< See codi::Lock.
-      using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;  ///< See codi::ReadWriteMutex.
-      using LockForRead = codi::LockForRead<ReadWriteMutex>;     ///< See codi::LockForRead.
-      using LockForWrite = codi::LockForWrite<ReadWriteMutex>;   ///< See codi::LockForWrite.
 
       /// See codi::StaticThreadLocalPointerInterface.
       template<typename Type, typename Owner>
       using StaticThreadLocalPointer = CODI_DD(CODI_T(T_StaticThreadLocalPointer<Type, Owner>),
                                                CODI_T(StaticThreadLocalPointerInterface<Type, Owner, CODI_ANY>));
+
+      using Lock = codi::Lock<Mutex>;                            ///< See codi::Lock.
+      using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;  ///< See codi::ReadWriteMutex.
+      using LockForRead = codi::LockForRead<ReadWriteMutex>;     ///< See codi::LockForRead.
+      using LockForWrite = codi::LockForWrite<ReadWriteMutex>;   ///< See codi::LockForWrite.
+
+
   };
 }

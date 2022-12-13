@@ -84,10 +84,10 @@ namespace codi {
 
       using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
 
+      /// See JacobianTapeTypes.
       template<typename Impl>
       using Adjoints = CODI_DD(CODI_T(T_Adjoints<Gradient, Identifier, Impl>),
                                CODI_T(InternalAdjointsInterface<Gradient, Identifier, CODI_ANY>));
-      ///< See JacobianTapeTypes.
 
       static bool constexpr IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
       static bool constexpr IsStaticIndexHandler =
