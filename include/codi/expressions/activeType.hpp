@@ -70,32 +70,10 @@ namespace codi {
 
     public:
 
-      /*******************************************************************************/
-      /// @name Constructors (all forwarding to the base class)
-      /// @{
-
-      /// Constructor
-      CODI_INLINE ActiveType() : Base() {}
-
       /// Constructor
       CODI_INLINE ActiveType(ActiveType<Tape> const& v) : Base(static_cast<Base const&>(v)) {}
 
-      /// Constructor
-      CODI_INLINE ActiveType(Real const& value) : Base(value) {}
-
-      /// Constructor
-      template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveType(PassiveReal const& value) : Base(value) {}
-
-      /// Constructor
-      template<typename Rhs>
-      CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : Base(rhs) {}
-
-      /// Constructor
-      template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : Base(rhs) {}
-
-      /// @}
+      using Base::Base;  // Use constructors from base class.
 
       /// Destructor
       CODI_INLINE ~ActiveType() {}
