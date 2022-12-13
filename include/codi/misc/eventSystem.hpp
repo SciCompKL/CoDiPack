@@ -138,7 +138,9 @@ namespace codi {
         IndexCreate,
         IndexAssign,
         IndexFree,
-        IndexCopy
+        IndexCopy,
+        /* count of events */
+        MaxElement
       };
 
       using Callback = void*;  ///< Internal, typeless callback storage.
@@ -164,6 +166,8 @@ namespace codi {
                                  {Event::StatementEvaluate, {}},  {Event::StatementEvaluatePrimal, {}},
                                  {Event::IndexCreate, {}},        {Event::IndexAssign, {}},
                                  {Event::IndexFree, {}},          {Event::IndexCopy, {}}};
+
+        codiAssert(listeners->size() == (size_t)Event::MaxElement);
 
         return *listeners;
       }
