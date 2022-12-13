@@ -72,32 +72,9 @@ namespace codi {
 
     public:
 
-      /*******************************************************************************/
-      /// @name Constructors (all forwarding to the base class)
-      /// @{
-
-      /// Constructor
-      CODI_INLINE ParallelActiveType() : Base() {}
-
-      /// Constructor
       CODI_INLINE ParallelActiveType(ParallelActiveType const& v) : Base(static_cast<Base const&>(v)) {}
 
-      /// Constructor
-      CODI_INLINE ParallelActiveType(Real const& value) : Base(value) {}
-
-      /// Constructor
-      template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ParallelActiveType(PassiveReal const& value) : Base(value) {}
-
-      /// Constructor
-      template<typename Rhs>
-      CODI_INLINE ParallelActiveType(ExpressionInterface<Real, Rhs> const& rhs) : Base(rhs) {}
-
-      /// Constructor
-      template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ParallelActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : Base(rhs) {}
-
-      /// @}
+      using Base::Base;  // Use constructors from base class.
 
       /// Destructor
       CODI_INLINE ~ParallelActiveType() {}
