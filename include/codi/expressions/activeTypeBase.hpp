@@ -134,9 +134,9 @@ namespace codi {
       }
 
       /// See LhsExpressionInterface::operator=(LhsExpressionInterface const&).
-      CODI_INLINE ActiveTypeBase& operator=(ActiveTypeBase const& v) {
+      CODI_INLINE Impl& operator=(ActiveTypeBase const& v) {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, Impl>&>(*this) = v;
-        return *this;
+        return cast();
       }
       using LhsExpressionInterface<Real, Gradient, Tape, Impl>::operator=;
 
