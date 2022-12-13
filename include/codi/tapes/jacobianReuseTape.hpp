@@ -256,7 +256,7 @@ namespace codi {
 
           dstTape->jacobianData.reserveItems(numberOfJacobians[curStmtPos]);
           while (curJacobianPos < endJacobianPos) {
-            dstTape->pushJacobianManual(rhsJacobians[curJacobianPos], 0.0, rhsIdentifiers[curJacobianPos]);
+            dstTape->jacobianData.pushData(rhsJacobians[curJacobianPos], rhsIdentifiers[curJacobianPos]);
             ++curJacobianPos;
           }
 
