@@ -66,9 +66,12 @@ namespace codi {
       using typename Base::ActiveResult;  ///< See ActiveTypeBase.
       using typename Base::StoreAs;       ///< See ActiveTypeBase.
 
+      /// See ParallelToolbox.
+      using LocalTapePointer = typename ParallelToolbox::template StaticThreadLocalPointer<Tape, ParallelActiveType>;
+
     private:
 
-      static typename ParallelToolbox::template StaticThreadLocalPointer<Tape, ParallelActiveType> tape;
+      static LocalTapePointer tape;
 
     public:
 
@@ -120,7 +123,5 @@ namespace codi {
   };
 
   template<typename Tape, typename ParallelToolbox>
-  typename ParallelActiveType<Tape, ParallelToolbox>::ParallelToolbox::template StaticThreadLocalPointer<
-      typename ParallelActiveType<Tape, ParallelToolbox>::Tape, ParallelActiveType<Tape, ParallelToolbox>>
-      ParallelActiveType<Tape, ParallelToolbox>::tape;
+  typename ParallelActiveType<Tape, ParallelToolbox>::LocalTapePointer ParallelActiveType<Tape, ParallelToolbox>::tape;
 }
