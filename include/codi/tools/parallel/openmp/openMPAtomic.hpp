@@ -61,7 +61,8 @@ namespace codi {
     public:
       using Type = CODI_DD(T_Type, CODI_ANY);  ///< See OpenMPAtomicImpl.
 
-      OpenMPAtomicImpl() = delete;  ///< Constructor is non-specialized version is disabled.
+      OpenMPAtomicImpl() = delete;  ///< Constructor is non-specialized, will throw errors for unspecialized
+                                    ///< instantiations.
   };
 
 #ifndef DOXYGEN_DISABLE

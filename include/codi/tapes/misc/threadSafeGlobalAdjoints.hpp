@@ -69,7 +69,7 @@ namespace codi {
       static std::vector<Gradient> adjoints;  ///< Vector of adjoint variables.
 
       /// @brief Protects adjoints.
-      /// Lock for read stands for lock for using the adjoint vector. Lock for write stands for reallocating it.
+      /// Read lock locks for using the adjoint vector. Writ lock locks for reallocating it.
       static ReadWriteMutex adjointsMutex;
 
     public:
@@ -122,7 +122,7 @@ namespace codi {
 
       /// \copydoc InternalAdjointsInterface::swap
       CODI_INLINE void swap(ThreadSafeGlobalAdjoints&) {
-        /* adjoints are global and there is no need to swap them */
+        /* Adjoints in this implementation are a static global member. Threfore, there is no need to swap them. */
       }
 
       /// \copydoc InternalAdjointsInterface::beginUse <br><br>

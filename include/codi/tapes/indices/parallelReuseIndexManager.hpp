@@ -120,8 +120,8 @@ namespace codi {
         unsigned long maximumGlobalIndex = globalMaximumIndex;
 
         values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex);
-        // number of current live indices cannot be computed from one instance alone
-        // it equals maximum live indices minus number of indices stored across all instances
+        // The number of current live indices cannot be computed from one instance alone.
+        // It equals maximum live indices minus number of indices stored across all instances.
 
         Base::addToTapeValues(values);
       }
