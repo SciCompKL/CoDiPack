@@ -34,7 +34,7 @@
  */
 #pragma once
 
-#include "interalAdjointsInterface.hpp"
+#include "internalAdjointsInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
