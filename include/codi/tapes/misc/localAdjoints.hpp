@@ -37,7 +37,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "interalAdjointsInterface.hpp"
+#include "internalAdjointsInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
