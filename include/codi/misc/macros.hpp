@@ -124,7 +124,7 @@ namespace codi {
 
 #if CODI_IDE
   /// Proxy definition for an ActiveType in the real traits.
-  struct TypeProxy {
+  struct ActiveTypeProxy {
       using Real = double;
       using Identifier = int;
   };

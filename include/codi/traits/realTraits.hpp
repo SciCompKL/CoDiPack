@@ -160,7 +160,7 @@ namespace codi {
         CODI_STATIC_ASSERT(false && std::is_void<T_Type>::value,
                            "Instantiation of unspecialized RealTraits::DataExtraction.");
 
-        using Type = CODI_DD(T_Type, TypeProxy);  ///< See DataExtraction.
+        using Type = CODI_DD(T_Type, ActiveTypeProxy);  ///< See DataExtraction.
 
         using Real = typename Type::Real;  ///< Type of primal values extracted from the type with AD values.
         using Identifier =
@@ -275,7 +275,7 @@ namespace codi {
     struct DataExtraction<std::complex<T_InnerType>> {
       public:
 
-        using InnerType = CODI_DD(T_InnerType, TypeProxy);
+        using InnerType = CODI_DD(T_InnerType, ActiveTypeProxy);
         using Type = std::complex<T_InnerType>;  ///< See DataExtraction.
 
         using InnerExtraction = DataExtraction<InnerType>;
