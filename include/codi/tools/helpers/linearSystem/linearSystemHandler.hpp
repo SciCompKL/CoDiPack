@@ -69,10 +69,10 @@ namespace codi {
   struct LinearSystemSolverHandler {
     public:
 
-      using LinearSystem = CODI_DD(T_LinearSystem, LinearSystemInterface);  ///< See LinearSystemSolverHandler.
+      /// See LinearSystemSolverHandler.
+      using LinearSystem = CODI_DD(T_LinearSystem, CODI_T(LinearSystemInterface<LinearSystemInterfaceTypes>));
       /// See LinearSystemInterfaceTypes.
-      using Type = CODI_DD(typename LinearSystem::Type,
-                           CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(typename LinearSystem::Type, CODI_DEFAULT_LHS_EXPRESSION);
 
       using Matrix = typename LinearSystem::Matrix;                      ///< See LinearSystemInterfaceTypes.
       using MatrixReal = typename LinearSystem::MatrixReal;              ///< See LinearSystemInterfaceTypes.
@@ -91,8 +91,7 @@ namespace codi {
       using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface.
 
       /// See LhsExpressionInterface.
-      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape,
-                                        CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
+      using Tape = CODI_DD(typename Type::Tape, CODI_DEFAULT_TAPE);
 
       /// Vector access definition of the tape.
       using VectorAccess = VectorAccessInterface<Real, Identifier>;
@@ -576,9 +575,10 @@ namespace codi {
   struct LinearSystemSolverHandler<T_LinearSystem, RealTraits::EnableIfPassiveReal<typename T_LinearSystem::Type>> {
     public:
 
-      using LinearSystem = CODI_DD(T_LinearSystem, LinearSystemInterface);  ///< See LinearSystemSolverHandler.
-      using Matrix = typename LinearSystem::Matrix;                         ///< See LinearSystemInterfaceTypes.
-      using Vector = typename LinearSystem::Vector;                         ///< See LinearSystemInterfaceTypes.
+      /// See LinearSystemSolverHandler.
+      using LinearSystem = CODI_DD(T_LinearSystem, CODI_T(LinearSystemInterface<LinearSystemInterfaceTypes>));
+      using Matrix = typename LinearSystem::Matrix;  ///< See LinearSystemInterfaceTypes.
+      using Vector = typename LinearSystem::Vector;  ///< See LinearSystemInterfaceTypes.
 
     private:
 
@@ -608,11 +608,12 @@ namespace codi {
                                    TapeTraits::EnableIfForwardTape<typename T_LinearSystem::Type::Tape>> {
     public:
 
-      using LinearSystem = CODI_DD(T_LinearSystem, LinearSystemInterface);  ///< See LinearSystemSolverHandler.
+      using LinearSystem =
+          CODI_DD(T_LinearSystem,
+                  CODI_T(LinearSystemInterface<LinearSystemInterfaceTypes>));  ///< See LinearSystemSolverHandler.
 
-      /// See LinearSystemInterfaceTypes.
       using Type = CODI_DD(typename LinearSystem::Type,
-                           CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+                           CODI_DEFAULT_LHS_EXPRESSION);  ///< See LinearSystemInterfaceTypes.
 
       using Matrix = typename LinearSystem::Matrix;                      ///< See LinearSystemInterfaceTypes.
       using MatrixReal = typename LinearSystem::MatrixReal;              ///< See LinearSystemInterfaceTypes.

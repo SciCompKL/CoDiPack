@@ -39,6 +39,7 @@
 #include "../../tapes/interfaces/reverseTapeInterface.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "../binaryExpression.hpp"
+#include "../constantExpression.hpp"
 #include "../expressionInterface.hpp"
 #include "../static/staticContextActiveType.hpp"
 #include "../unaryExpression.hpp"

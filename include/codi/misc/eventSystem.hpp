@@ -107,10 +107,9 @@ namespace codi {
   template<typename T_Tape>
   struct EventSystemBase {
     public:
-      /// See EventSystemBase.
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-      using Real = typename Tape::Real;              ///< Floating point type the tape is based on.
-      using Identifier = typename Tape::Identifier;  ///< Identifier type used by the tape.
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See EventSystemBase.
+      using Real = typename Tape::Real;                 ///< Floating point type the tape is based on.
+      using Identifier = typename Tape::Identifier;     ///< Identifier type used by the tape.
 
       using Handle = size_t;  ///< Handle that identifies a registered callback.
 
@@ -300,13 +299,12 @@ namespace codi {
   template<typename T_Tape>
   struct EventSystem : public EventSystemBase<T_Tape> {
     public:
-      /// See EventSystem.
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-      using Real = typename Tape::Real;              ///< Floating point type the tape is based on.
-      using Gradient = typename Tape::Gradient;      ///< Gradient type used by the tape.
-      using Identifier = typename Tape::Identifier;  ///< Identifier type used by the tape.
-      using Index = typename Tape::Identifier;       ///< Index type used by the tape.
-      using Position = typename Tape::Position;      ///< Position used by the tape.
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See EventSystem.
+      using Real = typename Tape::Real;                 ///< Floating point type the tape is based on.
+      using Gradient = typename Tape::Gradient;         ///< Gradient type used by the tape.
+      using Identifier = typename Tape::Identifier;     ///< Identifier type used by the tape.
+      using Index = typename Tape::Identifier;          ///< Index type used by the tape.
+      using Position = typename Tape::Position;         ///< Position used by the tape.
       /// Vector access interface that is compatible with the Tape.
       using VectorAccess = VectorAccessInterface<Real, Identifier>;
 

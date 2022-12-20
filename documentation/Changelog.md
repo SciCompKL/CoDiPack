@@ -20,6 +20,7 @@ Changelog {#Changelog}
    * Forward tape evaluation tests for primal value tapes.
    * Gcc warning of no return statement is now an error.
    * Make std::fmin and std::fmax available in namespace.
+   * clangd compatibility with CODI_IDE.
 
 ### v 2.0.2 - 2022-06-14
  - Bugfix:

@@ -64,8 +64,9 @@ namespace codi {
         public IncrementOperators<typename T_ActiveType::Tape, ActiveTypeWrapper<T_ActiveType>> {
     public:
 
-      using ActiveType = CODI_DD(T_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See WritableActiveTypeWrapper.
-      using Tape = typename ActiveType::Tape;                                  ///< See ActiveType.
+      using ActiveType = CODI_DD(T_ActiveType,
+                                 CODI_T(ActiveType<CODI_DEFAULT_TAPE>));  ///< See WritableActiveTypeWrapper.
+      using Tape = typename ActiveType::Tape;                             ///< See ActiveType.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
@@ -89,8 +90,7 @@ namespace codi {
 
       /// Create a reference to an active type. It is assumed that the lifespan of the argument is longer than
       /// the lifespan of the created value.
-      CODI_INLINE ActiveTypeWrapper(ActiveType const& value)
-          : primalValue(value.value()), identifier(value.getIdentifier()) {
+      CODI_INLINE ActiveTypeWrapper(ActiveType& value) : primalValue(value.value()), identifier(value.getIdentifier()) {
         // deliberately left empty
       }
 

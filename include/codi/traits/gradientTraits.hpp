@@ -34,6 +34,7 @@
  */
 #pragma once
 
+#include <array>
 #include <type_traits>
 
 #include "../misc/macros.hpp"
