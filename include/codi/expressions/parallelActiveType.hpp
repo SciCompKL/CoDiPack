@@ -75,6 +75,7 @@ namespace codi {
 
     public:
 
+      /// Constructor
       CODI_INLINE ParallelActiveType(ParallelActiveType const& v) : Base(static_cast<Base const&>(v)) {}
 
       using Base::Base;  // Use constructors from base class.
