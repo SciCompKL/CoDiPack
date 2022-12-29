@@ -179,7 +179,8 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::erase
-      /// Implementation: Memory of chunks that are completely contained in the given range is freed.
+      /// Implementation: If the given range start..end does not only overlap with parts of chunks but contains complete
+      /// chunks, those completely contained chunks are deleted in the course of the erase.
       void erase(Position const& start, Position const& end, bool recursive = true) {
         size_t chunkRange = end.chunk - start.chunk;
 

@@ -45,7 +45,19 @@ namespace codi {
   /**
    * @brief Edit tapes after they have been recorded.
    *
-   * These interface functions can be used to modify the tape after it has been recorded.
+   * These interface functions can be used to modify the tape after it has been recorded. Specifically, they allow to
+   * erase parts of a tape, and to append a specific range of a source tape to a destination tape.
+   *
+   * This interface was introduced for additional flexibility when managing multiple tapes in a shared-memory parallel
+   * context. The erase function, for example, can be used to remove a preliminary recording from the tape once
+   * additional information is available. The append function can be used to move recordings ending up in the wrong tape
+   * to the correct one. This is only required in edge cases and most AD workflows will never make use of this
+   * interface, especially if they use only a single tape. Other cases might be covered by (positional) tape resets.
+   *
+   * Note that tapes with a linear index management strategy (see LinearIndexManager) can't implement this interface
+   * because a statement's left hand side index is implicitly encoded in the statement's position on the tape. Erasing
+   * parts of a tape would produce wrong subsequent left hand side indices, and appending statements from one tape to
+   * another is not meaningful because the sequences of left hand side indices are tape-specific.
    *
    * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
    */

@@ -43,11 +43,15 @@
 namespace codi {
 
   /**
-   * @brief Constructs required to make CoDiPack suitable for a shared memory parallel environment.
+   * @brief Collects parallel programming facilties required to make CoDiPack applicable in a shared memory parallel
+   *        environment.
    *
-   * Hides details of a specific shared memory parallelization approach, such as OpenMP.
+   * The parallel programming facilities provided as template parameters have to be implemented against a specific
+   * shared memory parallelism API, e.g., OpenMP. This class redeclares them and provides further derived types.
+   * CoDiPack uses a ParallelToolbox for defining thread-safe active types and tapes while abstracting away the details
+   * of the specific underlying shared memory parallelism API.
    *
-   * Please refer to the individual constructs for documentation.
+   * Please refer to the individual using declarations for documentation.
    *
    * @tparam T_Atomic                    Atomic implementation used by the toolbox. See codi::Atomic.
    * @tparam T_Mutex                     Mutex implementation used by the toolbox. See codi::Mutex.
@@ -60,7 +64,7 @@ namespace codi {
     public:
       template<typename Type>
       using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));  ///< See codi::AtomicInterface.
-      using Mutex = CODI_DD(T_Mutex, MutexInterface);            ///< See codi::MutexInterface.
+      using Mutex = CODI_DD(T_Mutex, MutexInterface);                                   ///< See codi::MutexInterface.
 
       /// See codi::StaticThreadLocalPointerInterface.
       template<typename Type, typename Owner>
