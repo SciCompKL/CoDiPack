@@ -43,10 +43,21 @@ namespace codi {
   /**
    * @brief Abstracts the internal set of adjoint variables provided as part of the tape.
    *
-   * The set of adjoint variables is usually implemented as a vector.
+   * This interface describes the interaction between a tape and its associated adjoint variables as well as the state
+   * of the adjoint variables. Details on how the adjoint variables are implemented are abstracted away by this
+   * interface.
    *
-   * Compared to AdjointVectorAccess, this interface is less restricted in terms of what can be done with the adjoint
-   * variables, but their type is fixed at compile time.
+   * The adjoint variables can be read and written, resized, zeroed, and swapped. The number of adjoint variables can be
+   * queried, and, if applicable, a raw pointer to an underlying array implementation can be obtained.
+   *
+   * The adjoint variables can be "in use" or "not in use". For example, they should be considered in use during a tape
+   * evaluation, which means that no resizing should take place until the evaluation is finished. The tape is
+   * responsible for setting the state of the adjoint variables accordingly.
+   *
+   * A tape that maintains its adjoints internally against this interface can easily exchange the adjoint
+   * implementation. The principle use case of this interface is, at the moment, replacing a classical, tape-local
+   * adjoint vector by a thread-safe global one for use in a shared-memory parallel setting, see LocalAdjoints and
+   * ThreadSafeGlobalAdjoints.
    *
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
