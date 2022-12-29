@@ -43,7 +43,8 @@ namespace codi {
    * @brief Provides a data type on which operations are performed atomically.
    *
    * If used with an underlying floating point type or an active CoDiPack type, this data type is suitable as an adjoint
-   * variable type. Provides also increment and decrement operators for the use case of an underlying integer type.
+   * variable type. Provides also increment and decrement operators for the use case of an underlying integer type. The
+   * increment and decrement operators don't have to be implemented for underlying non-integer types.
    *
    * Implementations likely require template specializations with respect to the underlying type, especially if it is an
    * active CoDiPack type.

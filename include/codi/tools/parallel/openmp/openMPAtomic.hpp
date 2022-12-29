@@ -176,14 +176,6 @@ namespace codi {
         *atomicGradient = newValue.gradient();
       }
 
-      CODI_INLINE void atomicAddValue(Type const& increment) {
-        OpenMPAtomicImpl<Real>* atomicValue = reinterpret_cast<OpenMPAtomicImpl<Real>*>(&this->value());
-        OpenMPAtomicImpl<Gradient>* atomicGradient = reinterpret_cast<OpenMPAtomicImpl<Gradient>*>(&this->gradient());
-
-        *atomicValue += increment.value();
-        *atomicGradient += increment.gradient();
-      }
-
       CODI_INLINE Type atomicGetValue() const {
         Type result;
 
@@ -228,34 +220,6 @@ namespace codi {
         *atomicValue += other.value();
         *atomicGradient += other.gradient();
         return *this;
-      }
-
-      CODI_INLINE Type operator++() {
-        Type result;
-        CODI_OMP_ATOMIC(capture)
-        result = ++this->value;
-        return result;
-      }
-
-      CODI_INLINE Type operator++(int) {
-        Type result;
-        CODI_OMP_ATOMIC(capture)
-        result = this->value++;
-        return result;
-      }
-
-      CODI_INLINE Type operator--() {
-        Type result;
-        CODI_OMP_ATOMIC(capture)
-        result = --this->value;
-        return result;
-      }
-
-      CODI_INLINE Type operator--(int) {
-        Type result;
-        CODI_OMP_ATOMIC(capture)
-        result = this->value--;
-        return result;
       }
 
       CODI_INLINE operator Type() const {
