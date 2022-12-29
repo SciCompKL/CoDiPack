@@ -71,7 +71,5 @@ namespace codi {
       using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;  ///< See codi::ReadWriteMutex.
       using LockForRead = codi::LockForRead<ReadWriteMutex>;     ///< See codi::LockForRead.
       using LockForWrite = codi::LockForWrite<ReadWriteMutex>;   ///< See codi::LockForWrite.
-
-
   };
 }
