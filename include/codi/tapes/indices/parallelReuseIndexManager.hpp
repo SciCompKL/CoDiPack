@@ -121,7 +121,7 @@ namespace codi {
 
         values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex);
         // The number of current live indices cannot be computed from one instance alone.
-        // It equals maximum live indices minus number of indices stored across all instances.
+        // It equals the number of maximum live indices minus the number of indices stored across all instances.
 
         Base::addToTapeValues(values);
       }

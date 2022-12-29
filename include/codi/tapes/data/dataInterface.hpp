@@ -187,8 +187,8 @@ namespace codi {
       void resetTo(Position const& pos); /**< Reset to the given position. Data is not deallocated. Also called on the
                                               nested interfaces. */
 
-      /// Erase the given range of data. Implementations may choose to free allocated memory. Recursive controls whether
-      /// erase is also called on nested interfaces.
+      /// Erase the given range of data. Implementations may choose to free allocated memory. The parameter recursive
+      /// controls whether erase is also called on nested interfaces.
       void erase(Position const& start, Position const& end, bool recursive = true);
 
       /*******************************************************************************/
