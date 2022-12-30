@@ -82,13 +82,6 @@ namespace codi {
 
       using Base::clearAdjoints;
 
-      /// \copydoc codi::ReverseTapeInterface::getTapeValues()
-      TapeValues internalGetTapeValues() {
-        TapeValues values = TapeValues("CoDi Tape Statistics ( JacobianLinearTape )");
-        Base::internalAddTapeValues(values);
-        return values;
-      }
-
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
         using IndexPosition = typename IndexManager::Position;
