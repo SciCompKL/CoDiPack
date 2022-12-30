@@ -89,13 +89,6 @@ namespace codi {
       /// @name Missing functions from FullTapeInterface
       /// @{
 
-      /// \copydoc codi::ReverseTapeInterface::getTapeValues()
-      TapeValues internalGetTapeValues() {
-        TapeValues values = TapeValues("CoDi Tape Statistics ( JacobianReuseTape )");
-        Base::internalAddTapeValues(values);
-        return values;
-      }
-
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
