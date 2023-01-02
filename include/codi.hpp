@@ -250,3 +250,11 @@ namespace codi {
 }
 
 #include "codi/tools/helpers/evaluationHelper.hpp"
+
+#if CODI_EnableOpenMP
+  #include "codi/tools/parallel/openmp/codiOpenMP.hpp"
+#endif
+
+#if CODI_EnableOpDiLib
+  #include "codi/tools/parallel/openmp/codiOpDiLibTool.hpp"
+#endif
