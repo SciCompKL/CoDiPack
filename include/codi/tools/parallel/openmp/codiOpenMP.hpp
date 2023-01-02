@@ -54,7 +54,7 @@ namespace codi {
   using OpenMPGlobalAdjoints = ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, OpenMPToolbox>;
 
   /// \copydoc codi::RealReverseIndexGen <br><br>
-  /// This a thread-safe implementation for use with OpenMP.
+  /// This a thread-safe implementation for use with OpenMP. See \ref Example_23_OpenMP_Parallel_Codes for an example.
   template<typename Real, typename Gradient = OpenMPAtomic<Real>,
            typename IndexManager = ParallelReuseIndexManager<int, OpenMPToolbox>>
   using RealReverseIndexOpenMPGen = ParallelActiveType<

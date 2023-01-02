@@ -41,6 +41,7 @@ or pointers to other features.
 | \subpage Example_20_Aggregated_active_type_handling "" | Generalized data extraction of aggregated active types in external functions. |
 | \subpage Example_21_Special_handling_of_linear_system_solvers "" | Add special handling linear system solvers. |
 | \subpage Example_22_Event_system "" | Use CoDiPack's event system to gain insight into the AD workflow. |
+| \subpage Example_23_OpenMP_Parallel_Codes "" | Use CoDiPack together with OpDiLib for the differentiation of OpenMP parallel codes. |
 
 The graph shows how the tutorials and examples are connected. Usually it is better to understand first the prerequisites
 of a tutorial/example before reading the actual example.
