@@ -175,7 +175,7 @@ build/%.out: build/%.exe
 
 # compare output file against reference file
 build/%.diff: build/%.out
-	@if cmp -s $< results/$*.ref; then echo -e $* "\e[0;32mOK\e[0m"; else echo -e $* "\e[0;31mFAILED\e[0m"; diff $< results/$*.ref || true; fi
+	@if cmp -s $< results/$*.ref; then printf "%s \e[0;32mOK\e[0m\n" "$*"; else printf "%s \e[0;31mFAILED\e[0m\n" "$*"; diff $< results/$*.ref || true; fi
 
 # delete reference files
 .PHONY: cleanReference
