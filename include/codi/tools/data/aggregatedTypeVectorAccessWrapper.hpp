@@ -307,7 +307,7 @@ namespace codi {
 
       /// \copydoc VectorAccessInterface::clone()
       VectorAccessInterface<Real, Identifier>* clone() const {
-        return new AggregatedTypeVectorAccessWrapper(Base::innerInterface->clone());
+        return new AggregatedTypeVectorAccessWrapper(Base::innerInterface.clone());
       }
   };
 
