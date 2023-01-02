@@ -62,6 +62,8 @@ digraph Tutorials {
 
   E22 [label="E22 - Event system"];
 
+  E23 [label="E23 - OpenMP parallel codes"];
+
   // Edges (sorted)
   E02:e -> E08:w;
   E02:e -> E09:w;
@@ -86,6 +88,7 @@ digraph Tutorials {
   T02:e -> T06:w;
   T02:e -> E21:w;
   T02:e -> E22:w;
+  T02:e -> E23:w;
   T04:e -> E02:w;
   T06:e -> E04:w;
   T06:e -> E05:w;
