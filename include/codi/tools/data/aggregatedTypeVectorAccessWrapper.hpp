@@ -304,6 +304,11 @@ namespace codi {
       Real getPrimal(Identifier const& index) {
         return Real(Base::innerInterface.getPrimal(std::real(index)), Base::innerInterface.getPrimal(std::imag(index)));
       }
+
+      /// \copydoc VectorAccessInterface::clone()
+      VectorAccessInterface<Real, Identifier>* clone() const {
+        return new AggregatedTypeVectorAccessWrapper(Base::innerInterface->clone());
+      }
   };
 
   /// Specialization of AggregatedTypeVectorAccessWrapperFactory for CoDiPack active types.
