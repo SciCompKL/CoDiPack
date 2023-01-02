@@ -604,7 +604,7 @@ namespace codi {
         // Index manager does not need to be swapped, it is either static or swapped with the vector data.
         // Vectors are swapped recursively in the base class.
 
-        std::swap(adjoints, other.adjoints);
+        adjoints.swap(other.adjoints);
 
         Base::swap(other);
       }
