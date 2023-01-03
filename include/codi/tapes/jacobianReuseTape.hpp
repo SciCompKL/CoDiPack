@@ -83,7 +83,7 @@ namespace codi {
       static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
       /// Constructor
-      JacobianReuseTape() : Base(), eraseHelperTape(nullptr) {}
+      JacobianReuseTape() : Base() {}
 
       /*******************************************************************************/
       /// @name Missing functions from FullTapeInterface
