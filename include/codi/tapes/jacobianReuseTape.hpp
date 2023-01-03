@@ -191,7 +191,8 @@ namespace codi {
       /// @name Functions from EditingTapeInterface
       /// @{
 
-      /// \copydoc codi::EditingTapeInterface::erase
+      /// \copydoc codi::EditingTapeInterface::erase <br>
+      /// Implementation: Instantiates a temporary tape. If called often, this can become a bottleneck.
       CODI_INLINE void erase(Position const& start, Position const& end) {
         // Store the tail after the part to be erased in a temporary tape.
         JacobianReuseTape temp;
