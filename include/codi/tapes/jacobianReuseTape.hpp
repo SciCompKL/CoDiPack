@@ -85,14 +85,6 @@ namespace codi {
       /// Constructor
       JacobianReuseTape() : Base(), eraseHelperTape(nullptr) {}
 
-      /// Destructor
-      ~JacobianReuseTape() {
-        if (eraseHelperTape != nullptr) {
-          delete eraseHelperTape;
-          eraseHelperTape = nullptr;
-        }
-      }
-
       /*******************************************************************************/
       /// @name Missing functions from FullTapeInterface
       /// @{
@@ -201,18 +193,13 @@ namespace codi {
 
       /// \copydoc codi::EditingTapeInterface::erase
       CODI_INLINE void erase(Position const& start, Position const& end) {
-        // Store the tail after the part to be erased in a helper tape.
-        if (eraseHelperTape == nullptr) {
-          eraseHelperTape = new JacobianReuseTape;
-        }
-
-        eraseHelperTape->append(*this, end, this->getPosition());
+        // Store the tail after the part to be erased in a temporary tape.
+        JacobianReuseTape temp;
+        temp.append(*this, end, this->getPosition());
         // Reset the tape to before the erased part and re-append the tail. This accounts for external function position
         // correction.
         this->resetTo(start);
-        this->append(*eraseHelperTape, eraseHelperTape->getZeroPosition(), eraseHelperTape->getPosition());
-        // Reset the helper tape.
-        eraseHelperTape->reset();
+        this->append(temp, temp.getZeroPosition(), temp.getPosition());
       }
 
       /// \copydoc codi::EditingTapeInterface::append
@@ -245,8 +232,6 @@ namespace codi {
       /// @}
 
     private:
-
-      JacobianReuseTape* eraseHelperTape;
 
       static CODI_INLINE void appendJacobiansAndStatements(
           /* data from call */
