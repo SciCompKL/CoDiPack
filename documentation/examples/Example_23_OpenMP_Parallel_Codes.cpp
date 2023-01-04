@@ -53,6 +53,9 @@ int main(int nargs, char** args) {
   tape.registerOutput(y);
   tape.setPassive();
   y.setGradient(1.0);
+
+  opdi::logic->prepareEvaluate();  // prepare OpDiLib for evaluation
+
   tape.evaluate();
 
   std::cout << "f(" << x << ") = " << y << std::endl;
