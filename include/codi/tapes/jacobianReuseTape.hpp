@@ -198,7 +198,8 @@ namespace codi {
         erase(start, end, emptyTape);
       }
 
-      /// \copydoc codi::EditingTapeInterface::eraseerase(Position const& start, Position const& end, Impl& temporaryTape) <br>
+      /// \copydoc codi::EditingTapeInterface::erase(Position const& start, Position const& end, Impl&
+      /// temporaryTape)
       CODI_INLINE void erase(Position const& start, Position const& end, JacobianReuseTape& emptyTape) {
         // Store the tail after the part to be erased in the helper tape.
         emptyTape.append(*this, end, this->getPosition());
