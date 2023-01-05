@@ -82,10 +82,8 @@ namespace codi {
         }
 
         /// Converts the (possibly multi-component) gradient to an array of Reals.
-        CODI_INLINE static std::array<AtomicTraits::RemoveAtomic<typename TraitsImplementation<Gradient>::Real>, dim>
-        toArray(Gradient const& gradient) {
-          return std::array<AtomicTraits::RemoveAtomic<typename TraitsImplementation<Gradient>::Real>, dim>{
-              at(gradient, 0)};
+        CODI_INLINE static std::array<AtomicTraits::RemoveAtomic<Real>, dim> toArray(Gradient const& gradient) {
+          return std::array<AtomicTraits::RemoveAtomic<Real>, dim>{at(gradient, 0)};
         }
     };
 

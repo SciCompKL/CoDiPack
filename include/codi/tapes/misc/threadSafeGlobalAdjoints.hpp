@@ -34,6 +34,7 @@
  */
 #pragma once
 
+#include "../../tools/parallel/parallelToolbox.hpp"
 #include "internalAdjointsInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -56,7 +57,7 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, double);   ///< See ThreadSafeGlobalAdjoints.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See ThreadSafeGlobalAdjoints.
       /// See ThreadSafeGlobalAdjoints.
-      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY>));
+      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_DEFAULT_PARALLEL_TOOLBOX);
 
       using ReadWriteMutex = typename ParallelToolbox::ReadWriteMutex;  ///< See ParallelToolbox.
       using LockForUse = typename ParallelToolbox::LockForRead;         ///< See ParallelToolbox.
@@ -141,9 +142,10 @@ namespace codi {
   };
 
   template<typename Gradient, typename Identifier, typename Tape, typename ParallelToolbox>
-  std::vector<Gradient> ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjoints(1);
+  std::vector<CODI_DD(Gradient, double)>
+      ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjoints(1);
 
   template<typename Gradient, typename Identifier, typename Tape, typename ParallelToolbox>
-  typename ParallelToolbox::ReadWriteMutex
+  typename CODI_DD(ParallelToolbox, CODI_DEFAULT_PARALLEL_TOOLBOX)::ReadWriteMutex
       ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjointsMutex;
 }

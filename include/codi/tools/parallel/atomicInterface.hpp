@@ -55,11 +55,13 @@ namespace codi {
   template<typename T_Type, typename T_Impl>
   struct AtomicInterface {
     public:
-      using Type = CODI_DD(T_Type, CODI_ANY);             ///< See AtomicInterface.
-      using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);  ///< See AtomicInterface.
+      using Type = T_Type;  ///< See AtomicInterface.
+      using Impl = T_Impl;  ///< See AtomicInterface.
 
-      CODI_INLINE AtomicInterface() {}  ///< Constructor
-      ~AtomicInterface() {}             ///< Destructor
+      CODI_INLINE AtomicInterface() {}                        ///< Constructor
+      CODI_INLINE AtomicInterface(AtomicInterface const&) {}  ///< Constructor
+      CODI_INLINE AtomicInterface(Type const&) {}             ///< Constructor
+      ~AtomicInterface() {}                                   ///< Destructor
 
       CODI_INLINE Impl& operator=(Impl const& other);  ///< Assignment operator with implementing type as rhs.
       CODI_INLINE Impl& operator=(Type const& other);  ///< Assignment operator with underlying type as rhs.
@@ -74,4 +76,10 @@ namespace codi {
 
       CODI_INLINE operator Type() const;  ///< Implicit cast to underlying type for rhs access.
   };
+
+#if CODI_IDE
+  /// Helper for IDE code completion.
+  template<typename Type>
+  using CODI_DEFAULT_ATOMIC = AtomicInterface<Type, CODI_IMPLEMENTATION>;
+#endif
 }

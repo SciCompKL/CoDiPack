@@ -50,7 +50,7 @@ namespace codi {
   struct OpenMPStaticThreadLocalPointer
       : public StaticThreadLocalPointerInterface<T_Type, T_Owner, OpenMPStaticThreadLocalPointer<T_Type, T_Owner>> {
     public:
-      using Type = CODI_DD(T_Type, CODI_ANY);    ///< See OpenMPStaticThreadLocalPointer.
+      using Type = T_Type;                       ///< See OpenMPStaticThreadLocalPointer.
       using Owner = CODI_DD(T_Owner, CODI_ANY);  ///< See OpenMPStaticThreadLocalPointer.
 
     private:

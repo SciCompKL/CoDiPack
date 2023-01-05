@@ -78,7 +78,7 @@ namespace codi {
       using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
       using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
-      using Base = LhsExpressionInterface<Real, Gradient, Tape, Impl>;  ///< Base class abbreviation.
+      using Base = LhsExpressionInterface<Real, Gradient, T_Tape, T_Impl>;  ///< Base class abbreviation.
 
     private:
 
@@ -138,7 +138,7 @@ namespace codi {
         static_cast<LhsExpressionInterface<Real, Gradient, Tape, Impl>&>(*this) = v;
         return cast();
       }
-      using LhsExpressionInterface<Real, Gradient, Tape, Impl>::operator=;
+      using Base::operator=;
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface
