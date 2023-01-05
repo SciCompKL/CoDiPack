@@ -61,13 +61,11 @@ namespace codi {
    *
    * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
    */
-  template<typename T_Position, typename T_Impl>
+  template<typename T_Position>
   struct EditingTapeInterface {
     public:
 
       using Position = CODI_DD(T_Position, EmptyPosition);  ///< See EditingTapeInterface.
-      /// See EditingTapeInterface.
-      using Impl = CODI_DD(T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -79,10 +77,10 @@ namespace codi {
       /// This variant of erase takes a reference to an empty helper tape. It is used as a buffer to implement erase via
       /// reset and append while avoiding the overhead of allocating a temporary tape for each erase call. Upon
       /// returning, emptyTape is guaranteed to be empty again, in the sense of a tape reset.
-      void erase(Position const& start, Position const& end, Impl& emptyTape);
+      void erase(Position const& start, Position const& end, EditingTapeInterface& emptyTape);
 
       /// Copy the specified range of the source tape and append it to the end of this tape. It has to hold
       /// start <= end.
-      void append(Impl& source, Position const& start, Position const& end);
+      void append(EditingTapeInterface& source, Position const& start, Position const& end);
   };
 }

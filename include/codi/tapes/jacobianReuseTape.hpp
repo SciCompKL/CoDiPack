@@ -62,8 +62,7 @@ namespace codi {
   template<typename T_TapeTypes>
   struct JacobianReuseTape
       : public JacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>>,
-        public EditingTapeInterface<typename JacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>>::Position,
-                                    JacobianReuseTape<T_TapeTypes>> {
+        public EditingTapeInterface<typename JacobianBaseTape<T_TapeTypes, JacobianReuseTape<T_TapeTypes>>::Position> {
     public:
 
       using TapeTypes = CODI_DD(T_TapeTypes,
