@@ -52,7 +52,7 @@ namespace codi {
   struct ActiveType : public ActiveTypeBase<T_Tape, ActiveType<T_Tape>> {
     public:
 
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See ActiveType.
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See ActiveType.
 
       using Base = ActiveTypeBase<T_Tape, ActiveType>;  ///< Base class abbreviation.
 
@@ -103,6 +103,8 @@ namespace codi {
       /// @}
   };
 
+  // clang-format off
   template<typename Tape>
-  Tape ActiveType<Tape>::tape{};
+  CODI_DD(Tape, CODI_DEFAULT_TAPE) ActiveType<Tape>::tape{};
+  // clang-format on
 }

@@ -75,8 +75,8 @@ namespace codi {
    */
   template<typename T_Type, typename = void>
   struct AggregatedTypeVectorAccessWrapper : public VectorAccessInterface<CODI_ANY, CODI_ANY> {
-      static_assert(false && std::is_void<T_Type>::value,
-                    "Instantiation of unspecialized AggregatedTypeVectorAccessWrapper.");
+      CODI_STATIC_ASSERT(false && std::is_void<T_Type>::value,
+                         "Instantiation of unspecialized AggregatedTypeVectorAccessWrapper.");
 
       using Type = CODI_DD(T_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
   };
@@ -245,11 +245,8 @@ namespace codi {
             VectorAccessInterface<typename T_InnerType::Real, typename T_InnerType::Identifier>> {
     public:
 
-      using InnerType = CODI_DD(
-          T_InnerType,
-          CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));  ///< See
-                                                                                ///< AggregatedTypeVectorAccessWrapper.
-      using Type = std::complex<InnerType>;  ///< See AggregatedTypeVectorAccessWrapper.
+      using InnerType = CODI_DD(T_InnerType, CODI_DEFAULT_LHS_EXPRESSION);  ///< See AggregatedTypeVectorAccessWrapper.
+      using Type = std::complex<InnerType>;                                 ///< See AggregatedTypeVectorAccessWrapper.
 
       using InnerInterface = VectorAccessInterface<
           typename InnerType::Real,
@@ -317,9 +314,7 @@ namespace codi {
   template<typename T_Type>
   struct AggregatedTypeVectorAccessWrapperFactory<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
     public:
-      using Type = CODI_DD(T_Type,
-                           CODI_T(LhsExpressionInterface<double, double, CODI_ANY,
-                                                         CODI_ANY>));  ///< See AggregatedTypeVectorAccessWrapperBase.
+      using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);  ///< See AggregatedTypeVectorAccessWrapperBase.
 
       using RType = VectorAccessInterface<typename Type::Real, typename Type::Identifier>;
 

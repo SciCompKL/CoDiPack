@@ -52,10 +52,7 @@ namespace codi {
   struct EigenLinearSystemTypes {
     public:
 
-      using Type = CODI_DECLARE_DEFAULT(
-          T_Type,
-          CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));  ///< See
-                                                                                       ///< LinearSystemInterfaceTypes.
+      using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);  ///< See LinearSystemInterfaceTypes.
 
       using Matrix = CODI_DD(CODI_T(T_Matrix<Type>),
                              CODI_T(Eigen::Matrix<Type, 2, 2>));  ///< See LinearSystemInterfaceTypes.

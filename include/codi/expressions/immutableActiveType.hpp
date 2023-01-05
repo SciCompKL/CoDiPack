@@ -65,8 +65,8 @@ namespace codi {
         public IncrementOperators<typename T_ActiveType::Tape, ImmutableActiveType<T_ActiveType>> {
     public:
 
-      using ActiveType = CODI_DD(T_ActiveType, CODI_T(ActiveType<CODI_ANY>));  ///< See ImmutableActiveType.
-      using Tape = typename ActiveType::Tape;                                  ///< See ActiveType.
+      using ActiveType = CODI_DD(T_ActiveType, CODI_T(ActiveType<CODI_DEFAULT_TAPE>));  ///< See ImmutableActiveType.
+      using Tape = typename ActiveType::Tape;                                           ///< See ActiveType.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.

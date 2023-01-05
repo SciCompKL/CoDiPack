@@ -64,7 +64,7 @@ namespace codi {
   struct BlockData : public DataInterface<T_NestedData> {
     public:
 
-      using Chunk = CODI_DD(T_Chunk, CODI_T(ChunkBase<CODI_ANY>));                      ///< See BlockData
+      using Chunk = CODI_DD(T_Chunk, CODI_T(Chunk1<CODI_ANY>));                         ///< See BlockData
       using NestedData = CODI_DD(T_NestedData, CODI_T(DataInterface<CODI_ANY>));        ///< See BlockData
       using PointerInserter = CODI_DD(T_PointerInserter, CODI_T(PointerStore<Chunk>));  ///< See BlockData
 
@@ -299,4 +299,8 @@ namespace codi {
         }
       }
   };
+
+  /// BlockData DataInterface used in all unchecked tapes.
+  template<typename Chunk, typename NestedData = EmptyData>
+  using DefaultBlockData = BlockData<Chunk, NestedData>;
 }

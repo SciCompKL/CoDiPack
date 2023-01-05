@@ -121,8 +121,7 @@ namespace codi {
     public:
 
       using ImplTapeTypes = CODI_DD(T_ImplTapeTypes, TapeTypesInterface);  ///< See CommonTapeImplementation.
-      using Impl = CODI_DD(
-          T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See CommonTapeImplementation.
+      using Impl = CODI_DD(T_Impl, CommonTapeImplementation);              ///< See CommonTapeImplementation.
 
       using Real = typename ImplTapeTypes::Real;              ///< See TapeTypesInterface.
       using Gradient = typename ImplTapeTypes::Gradient;      ///< See TapeTypesInterface.

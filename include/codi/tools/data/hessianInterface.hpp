@@ -64,7 +64,7 @@ namespace codi {
   struct HessianInterface {
     public:
 
-      using T = CODI_DECLARE_DEFAULT(T_T, double);  ///< See HessianInterface.
+      using T = CODI_DD(T_T, double);  ///< See HessianInterface.
 
       virtual ~HessianInterface() {}  ///< Destructor
 

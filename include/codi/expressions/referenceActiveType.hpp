@@ -60,7 +60,7 @@ namespace codi {
     public:
 
       /// See ReferenceActiveType.
-      using Type = CODI_DD(T_Type, CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);
       using Tape = typename Type::Tape;  ///< See LhsExpressionInterface.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.

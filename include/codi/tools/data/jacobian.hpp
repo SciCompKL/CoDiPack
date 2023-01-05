@@ -185,9 +185,9 @@ namespace codi {
   template<typename T_Nested>
   struct JacobianConvertWrapper {
     public:
-      using Nested = CODI_DECLARE_DEFAULT(T_Nested, JacobianInterface<double>);  ///< See JacobianConvertWrapper.
-      using T = typename Nested::T;                                              ///< See JacobianInterface.
-      using DelayAcc = JacobianDelayAccessor<JacobianConvertWrapper>;            ///< Return type for reference access.
+      using Nested = CODI_DD(T_Nested, JacobianInterface<double>);     ///< See JacobianConvertWrapper.
+      using T = typename Nested::T;                                    ///< See JacobianInterface.
+      using DelayAcc = JacobianDelayAccessor<JacobianConvertWrapper>;  ///< Return type for reference access.
 
     private:
       Nested& nested;
