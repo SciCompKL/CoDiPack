@@ -138,39 +138,45 @@ namespace codi {
 /// Create a specialization of ComputationTraits::AdjointConversionImpl
 ///
 /// Has to be used in the codi namespace.
-#define CODI_CREATE_ADJOINT_CONVERSION(OuterType, InnerType, RType, conversion)     \
-  template<>                                                                        \
-  struct ComputationTraits::AdjointConversionImpl<OuterType, InnerType> {           \
-    public:                                                                         \
-      using Outer = OuteType;                                                       \
-      using Inner = InnerType;                                                      \
-      using Return = RType;                                                         \
-      static Return adjointConversion(Inner const& jacobian) { return conversion; } \
+#define CODI_CREATE_ADJOINT_CONVERSION(OuterType, InnerType, RType, conversion) \
+  template<>                                                                    \
+  struct ComputationTraits::AdjointConversionImpl<OuterType, InnerType> {       \
+    public:                                                                     \
+      using Outer = OuteType;                                                   \
+      using Inner = InnerType;                                                  \
+      using Return = RType;                                                     \
+      static Return adjointConversion(Inner const& jacobian) {                  \
+        return conversion;                                                      \
+      }                                                                         \
   }
 
 /// Create a specialization of ComputationTraits::TransposeImpl
 ///
 /// Has to be used in the codi namespace.
-#define CODI_CREATE_TRANSPOSE(Type, RType, trans)                     \
-  template<>                                                          \
-  struct ComputationTraits::Transpose<Type> {                         \
-    public:                                                           \
-      using Jacobian = Type;                                          \
-      using Return = RType;                                           \
-      static Return transpose(Type const& jacobian) { return trans; } \
+#define CODI_CREATE_TRANSPOSE(Type, RType, trans)     \
+  template<>                                          \
+  struct ComputationTraits::Transpose<Type> {         \
+    public:                                           \
+      using Jacobian = Type;                          \
+      using Return = RType;                           \
+      static Return transpose(Type const& jacobian) { \
+        return trans;                                 \
+      }                                               \
   }
 
 /// Create a specialization of ComputationTraits::UpdateImpl
 ///
 /// Has to be used in the codi namespace.
-#define CODI_CREATE_UPDATE(LhsType, RhsType, up)                    \
-  template<>                                                        \
-  struct ComputationTraits::UpdateImpl<LhsType, RhsType> {          \
-    public:                                                         \
-      using Lhs = LhsType;                                          \
-      using Rhs = RhsType;                                          \
-      using Return = LhsType&;                                      \
-      static Return update(Lhs& lhs, Rhs const& rhs) { return up; } \
+#define CODI_CREATE_UPDATE(LhsType, RhsType, up)           \
+  template<>                                               \
+  struct ComputationTraits::UpdateImpl<LhsType, RhsType> { \
+    public:                                                \
+      using Lhs = LhsType;                                 \
+      using Rhs = RhsType;                                 \
+      using Return = LhsType&;                             \
+      static Return update(Lhs& lhs, Rhs const& rhs) {     \
+        return up;                                         \
+      }                                                    \
   }
 
 #ifndef DOXYGEN_DISABLE
