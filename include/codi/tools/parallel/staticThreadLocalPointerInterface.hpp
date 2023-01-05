@@ -59,4 +59,10 @@ namespace codi {
       static CODI_INLINE void set(Type* other);  ///< Set the pointer.
       static CODI_INLINE Type* get();            ///< Get the pointer.´
   };
+
+#if CODI_IDE
+  /// Helper for IDE code completion.
+  template<typename Type, typename Owner>
+  using CODI_DEFAULT_STATIC_THREAD_LOCAL_POINTER = StaticThreadLocalPointerInterface<Type, Owner, CODI_IMPLEMENTATION>;
+#endif
 }

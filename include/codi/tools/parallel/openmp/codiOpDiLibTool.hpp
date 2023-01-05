@@ -38,7 +38,9 @@
 #include <sstream>
 
 #include "../../../expressions/lhsExpressionInterface.hpp"
+#include "../../../expressions/parallelActiveType.hpp"
 #include "../../../misc/macros.hpp"
+#include "../../../tapes/interfaces/editingTapeInterface.hpp"
 #include "../../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../../traits/atomicTraits.hpp"
 #include "openMPAtomic.hpp"
@@ -48,7 +50,7 @@
 template<typename T_CoDiType>
 struct CoDiOpDiLibTool : public opdi::ToolInterface {
   public:
-    using CoDiType = CODI_DD(T_CoDiType, CODI_T(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+    using CoDiType = CODI_DD(T_CoDiType, codi::CODI_DEFAULT_PARALLEL_ACTIVE_TYPE);
     using Real = typename CoDiType::Real;
     using Identifier = typename CoDiType::Identifier;
     using Tape = typename CoDiType::Tape;

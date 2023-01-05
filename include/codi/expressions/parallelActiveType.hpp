@@ -34,6 +34,8 @@
  */
 #pragma once
 
+#include "../misc/macros.hpp"
+#include "../tapes/interfaces/editingTapeInterface.hpp"
 #include "../tools/parallel/parallelToolbox.hpp"
 #include "activeTypeBase.hpp"
 
@@ -52,9 +54,10 @@ namespace codi {
   struct ParallelActiveType : public ActiveTypeBase<T_Tape, ParallelActiveType<T_Tape, T_ParallelToolbox>> {
     public:
 
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See ActiveType.
       /// See ParallelActiveType.
-      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_T(ParallelToolbox<CODI_ANY, CODI_ANY, CODI_ANY>));
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_PARALLEL_TAPE);
+      /// See ParallelActiveType.
+      using ParallelToolbox = CODI_DD(T_ParallelToolbox, CODI_DEFAULT_PARALLEL_TOOLBOX);
 
       using Base = ActiveTypeBase<Tape, ParallelActiveType>;  ///< Base class abbreviation.
 
@@ -127,4 +130,10 @@ namespace codi {
   template<typename Tape, typename ParallelToolbox>
   typename ParallelActiveType<Tape, ParallelToolbox>::ThreadLocalTapePointer
       ParallelActiveType<Tape, ParallelToolbox>::tape;
+
+#if CODI_IDE
+  /// Helper for IDE code completion.
+  using CODI_DEFAULT_PARALLEL_ACTIVE_TYPE =
+      ParallelActiveType<CODI_DEFAULT_PARALLEL_TAPE, CODI_DEFAULT_PARALLEL_TOOLBOX>;
+#endif
 }

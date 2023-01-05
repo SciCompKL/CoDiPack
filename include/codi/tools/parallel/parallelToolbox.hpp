@@ -63,8 +63,8 @@ namespace codi {
   struct ParallelToolbox {
     public:
       template<typename Type>
-      using Atomic = CODI_DD(T_Atomic<Type>, CODI_T(AtomicInterface<Type, CODI_ANY>));  ///< See codi::AtomicInterface.
-      using Mutex = CODI_DD(T_Mutex, MutexInterface);                                   ///< See codi::MutexInterface.
+      using Atomic = CODI_DD(T_Atomic<Type>, CODI_DEFAULT_ATOMIC<Type>);  ///< See codi::AtomicInterface.
+      using Mutex = CODI_DD(T_Mutex, MutexInterface);                     ///< See codi::MutexInterface.
 
       /// See codi::StaticThreadLocalPointerInterface.
       template<typename Type, typename Owner>
@@ -76,4 +76,10 @@ namespace codi {
       using LockForRead = codi::LockForRead<ReadWriteMutex>;     ///< See codi::LockForRead.
       using LockForWrite = codi::LockForWrite<ReadWriteMutex>;   ///< See codi::LockForWrite.
   };
+
+#if CODI_IDE
+  /// Helper for IDE code completion.
+  using CODI_DEFAULT_PARALLEL_TOOLBOX =
+      ParallelToolbox<CODI_DEFAULT_ATOMIC, MutexInterface, CODI_DEFAULT_STATIC_THREAD_LOCAL_POINTER>;
+#endif
 }

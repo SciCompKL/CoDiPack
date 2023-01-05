@@ -61,9 +61,9 @@ namespace codi {
     public:
 
       using Index = CODI_DD(T_Index, int);  ///< See ParallelReuseIndexManager.
-      using ParallelToolbox = CODI_DD(
-          T_ParallelToolbox, CODI_T(codi::ParallelToolbox<CODI_ANY, CODI_ANY>));  ///< See ParallelReuseIndexManager.
-      using Base = ReuseIndexManagerBase<Index, ParallelReuseIndexManager>;       ///< Base class abbreviation.
+      using ParallelToolbox = CODI_DD(T_ParallelToolbox,
+                                      CODI_DEFAULT_PARALLEL_TOOLBOX);        ///< See ParallelReuseIndexManager.
+      using Base = ReuseIndexManagerBase<Index, ParallelReuseIndexManager>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to access protected and private members.
 
     private:
@@ -88,7 +88,7 @@ namespace codi {
 
     private:
 
-      static Atomic<Index> globalMaximumIndex;        ///< The largest index created across all instances of this class.
+      static Atomic<T_Index> globalMaximumIndex;      ///< The largest index created across all instances of this class.
       static bool globalMaximumIndexInitialized;      ///< Indicates whether globalMaximumIndex is initialized.
       static ReadWriteMutex globalMaximumIndexMutex;  ///< Safeguards globalMaximumIndex, globalMaximumIndexInitialized.
 
@@ -158,12 +158,13 @@ namespace codi {
   };
 
   template<typename Index, typename ParallelToolbox>
-  typename ParallelToolbox::template Atomic<Index>
+  typename ParallelReuseIndexManager<Index, ParallelToolbox>::template Atomic<Index>
       ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndex;
 
   template<typename Index, typename ParallelToolbox>
   bool ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndexInitialized = false;
 
   template<typename Index, typename ParallelToolbox>
-  typename ParallelToolbox::ReadWriteMutex ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndexMutex;
+  typename ParallelReuseIndexManager<Index, ParallelToolbox>::ReadWriteMutex
+      ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndexMutex;
 }

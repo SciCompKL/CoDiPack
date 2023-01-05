@@ -69,7 +69,7 @@ namespace codi {
   template<typename T_AtomicInt>
   struct ReadWriteMutex {
     public:
-      using AtomicInt = CODI_DD(T_AtomicInt, CODI_T(AtomicInterface<int, CODI_ANY>));  ///< See ReadWriteMutex.
+      using AtomicInt = CODI_DD(T_AtomicInt, CODI_DEFAULT_ATOMIC<int>);  ///< See ReadWriteMutex.
 
     private:
       AtomicInt numReaders;
@@ -186,7 +186,7 @@ namespace codi {
   template<typename T_ReadWriteMutex>
   struct LockForRead {
     public:
-      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, codi::ReadWriteMutex<CODI_ANY>);  ///< See LockForRead.
+      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, ReadWriteMutex<CODI_DEFAULT_ATOMIC<int>>);  ///< See LockForRead.
 
     private:
       ReadWriteMutex& mutex;
@@ -211,7 +211,8 @@ namespace codi {
   template<typename T_ReadWriteMutex>
   struct LockForWrite {
     public:
-      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, codi::ReadWriteMutex<CODI_ANY>);  ///< See LockForWrite.
+      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex,
+                                     ReadWriteMutex<CODI_DEFAULT_ATOMIC<int>>);  ///< See LockForWrite.
 
     private:
       ReadWriteMutex& mutex;

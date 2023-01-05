@@ -41,6 +41,7 @@
 #include "../../../traits/realTraits.hpp"
 #include "../../../traits/tapeTraits.hpp"
 #include "../atomicInterface.hpp"
+#include "macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -59,7 +60,7 @@ namespace codi {
   template<typename T_Type, typename T_Sfinae = void>
   struct OpenMPAtomicImpl : public AtomicInterface<T_Type, OpenMPAtomicImpl<T_Type, T_Sfinae>> {
     public:
-      using Type = CODI_DD(T_Type, CODI_ANY);  ///< See OpenMPAtomicImpl.
+      using Type = T_Type;  ///< See OpenMPAtomicImpl.
 
       OpenMPAtomicImpl() = delete;  ///< Constructor is deleted, will throw errors for unspecialized instantiations.
   };
@@ -72,7 +73,7 @@ namespace codi {
       : public AtomicInterface<
             T_Type, OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>> {
     public:
-      using Type = CODI_DD(T_Type, CODI_ANY);
+      using Type = T_Type;
 
     private:
       Type value;

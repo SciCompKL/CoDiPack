@@ -132,6 +132,9 @@ namespace codi {
   /// Declaration of the default full tape interface.
   #define CODI_DEFAULT_TAPE FullTapeInterface<double, double, int, EmptyPosition>
 
+  /// Declaration of a default parallel tape interface.
+  #define CODI_DEFAULT_PARALLEL_TAPE CODI_UNION<CODI_DEFAULT_TAPE, EditingTapeInterface<EmptyPosition>>
+
   /// Declaration of the default lhs expression interface.
   #define CODI_DEFAULT_LHS_EXPRESSION LhsExpressionInterface<double, double, CODI_DEFAULT_TAPE, CODI_ANY>
 #endif
