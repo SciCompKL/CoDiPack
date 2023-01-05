@@ -75,6 +75,12 @@ namespace codi {
       /// Erase a part of the tape. It has to hold start <= end.
       void erase(Position const& start, Position const& end);
 
+      /// @brief Erase a part of the tape. It has to hold start <= end.
+      /// This variant of erase takes a reference to an empty helper tape. It is used as a buffer to implement erase via
+      /// reset and append while avoiding the overhead of allocating a temporary tape for each erase call. Upon
+      /// returning, emptyTape is guaranteed to be empty again, in the sense of a tape reset.
+      void erase(Position const& start, Position const& end, Impl& emptyTape);
+
       /// Copy the specified range of the source tape and append it to the end of this tape. It has to hold
       /// start <= end.
       void append(Impl& source, Position const& start, Position const& end);

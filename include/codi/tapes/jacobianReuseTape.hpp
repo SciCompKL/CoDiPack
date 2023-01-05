@@ -191,16 +191,23 @@ namespace codi {
       /// @name Functions from EditingTapeInterface
       /// @{
 
-      /// \copydoc codi::EditingTapeInterface::erase <br>
-      /// Implementation: Instantiates a temporary tape. If called often, this can become a bottleneck.
+      /// \copydoc codi::EditingTapeInterface::erase(Position const& start, Position const& end) <br>
+      /// Implementation: Instantiates a temporary tape. If called often, this can become a bottleneck. The variant of
+      /// erase that takes a reference to a helper tape should be used in this case.
       CODI_INLINE void erase(Position const& start, Position const& end) {
-        // Store the tail after the part to be erased in a temporary tape.
-        JacobianReuseTape temp;
-        temp.append(*this, end, this->getPosition());
+        JacobianReuseTape emptyTape;
+        erase(start, end, emptyTape);
+      }
+
+      /// \copydoc codi::EditingTapeInterface::eraseerase(Position const& start, Position const& end, Impl& temporaryTape) <br>
+      CODI_INLINE void erase(Position const& start, Position const& end, JacobianReuseTape& emptyTape) {
+        // Store the tail after the part to be erased in the helper tape.
+        emptyTape.append(*this, end, this->getPosition());
         // Reset the tape to before the erased part and re-append the tail. This accounts for external function position
         // correction.
         this->resetTo(start);
-        this->append(temp, temp.getZeroPosition(), temp.getPosition());
+        this->append(emptyTape, emptyTape.getZeroPosition(), emptyTape.getPosition());
+        emptyTape.reset();
       }
 
       /// \copydoc codi::EditingTapeInterface::append
