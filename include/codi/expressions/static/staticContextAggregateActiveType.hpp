@@ -35,8 +35,8 @@
 #pragma once
 
 #include "../../config.h"
+#include "../../misc/compileTimeLoop.hpp"
 #include "../../misc/macros.hpp"
-#include "../../misc/staticFor.hpp"
 #include "../../traits/realTraits.hpp"
 #include "../aggregate/aggregatedActiveType.hpp"
 #include "../logic/constructStaticContext.hpp"

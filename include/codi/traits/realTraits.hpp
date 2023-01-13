@@ -39,8 +39,8 @@
 #include <complex>
 
 #include "../config.h"
+#include "../misc/compileTimeLoop.hpp"
 #include "../misc/macros.hpp"
-#include "../misc/staticFor.hpp"
 #include "computationTraits.hpp"
 #include "expressionTraits.hpp"
 
