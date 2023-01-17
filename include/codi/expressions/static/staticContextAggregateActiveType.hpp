@@ -105,7 +105,7 @@ namespace codi {
         ResultType value;
 
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          new (&value.arrayValue[i.value]) StaticInnerType(InnerConstructor::construct(
+          new (&value.values[i.value]) StaticInnerType(InnerConstructor::construct(
               primalVector, &identifiers[primalValueOffset + i.value], &constantData[constantValueOffset + i.value]));
         });
 

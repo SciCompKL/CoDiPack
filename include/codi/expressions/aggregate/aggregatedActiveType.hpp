@@ -70,7 +70,7 @@ namespace codi {
       using InnerReal = typename Traits::InnerType;       ///< Inner real type of the active type.
       using InnerIdentifier = typename Tape::Identifier;  ///< Identifier of the underlying tape.
 
-      InnerActiveType arrayValue[Elements];  ///< Array representation.
+      InnerActiveType values[Elements];  ///< Array representation.
 
       CODI_INLINE AggregatedActiveTypeBase() = default;                                 ///< Constructor.
       CODI_INLINE AggregatedActiveTypeBase(AggregatedActiveTypeBase const&) = default;  ///< Constructor.
@@ -87,7 +87,7 @@ namespace codi {
       CODI_INLINE Real const getValue() const {
         Real value{};
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          Traits::template arrayAccess<i.value>(value) = arrayValue[i.value].getValue();
+          Traits::template arrayAccess<i.value>(value) = values[i.value].getValue();
         });
         return value;
       }
@@ -107,7 +107,7 @@ namespace codi {
       template<typename Logic, typename... Args>
       CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          logic.cast().template link<i.value>(arrayValue[i.value], *this, std::forward<Args>(args)...);
+          logic.cast().template link<i.value>(values[i.value], *this, std::forward<Args>(args)...);
         });
       }
 
@@ -181,7 +181,7 @@ namespace codi {
       /// Constructor.
       CODI_INLINE AggregatedActiveType(PassiveReal const& expr) : Base() {
         static_for<Base::Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          Base::arrayValue[i.value] = Traits::template arrayAccess<i.value>(expr);
+          Base::values[i.value] = Traits::template arrayAccess<i.value>(expr);
         });
       }
 
@@ -203,7 +203,7 @@ namespace codi {
       /// Assign operation.
       CODI_INLINE Impl& operator=(PassiveReal const& expr) {
         static_for<Base::Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          Base::arrayValue[i.value] = Traits::template arrayAccess<i.value>(expr);
+          Base::values[i.value] = Traits::template arrayAccess<i.value>(expr);
         });
 
         return Base::cast();

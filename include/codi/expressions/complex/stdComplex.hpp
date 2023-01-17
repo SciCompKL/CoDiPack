@@ -144,12 +144,12 @@ namespace codi {
       /// Constructor.
       template<typename ArgR>
       CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR) : Base() {
-        Base::arrayValue[0] = argR;
+        Base::values[0] = argR;
       }
 
       /// Constructor.
       CODI_INLINE ActiveComplex(PassiverInnerReal const& argR) : Base() {
-        Base::arrayValue[0] = argR;
+        Base::values[0] = argR;
       }
 
       /// Constructor.
@@ -157,30 +157,30 @@ namespace codi {
       CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR,
                                 ExpressionInterface<InnerReal, ArgI> const& argI)
           : Base() {
-        Base::arrayValue[0] = argR;
-        Base::arrayValue[1] = argI;
+        Base::values[0] = argR;
+        Base::values[1] = argI;
       }
 
       /// Constructor.
       template<typename ArgI>
       CODI_INLINE ActiveComplex(PassiverInnerReal const& argR, ExpressionInterface<InnerReal, ArgI> const& argI)
           : Base() {
-        Base::arrayValue[0] = argR;
-        Base::arrayValue[1] = argI;
+        Base::values[0] = argR;
+        Base::values[1] = argI;
       }
 
       /// Constructor.
       template<typename ArgR>
       CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR, PassiverInnerReal const& argI)
           : Base() {
-        Base::arrayValue[0] = argR;
-        Base::arrayValue[1] = argI;
+        Base::values[0] = argR;
+        Base::values[1] = argI;
       }
 
       /// Constructor.
       CODI_INLINE ActiveComplex(PassiverInnerReal const& argR, PassiverInnerReal const& argI) : Base() {
-        Base::arrayValue[0] = argR;
-        Base::arrayValue[1] = argI;
+        Base::values[0] = argR;
+        Base::values[1] = argI;
       }
 
       CODI_INLINE ~ActiveComplex() = default;  ///< Destructor

@@ -437,13 +437,13 @@ namespace codi {
           if (storeArgumentData<Lhs>(rhs, dynamicPointers)) {
             bool generatedNewIndex = false;
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-              generatedNewIndex |= indexManager.get().assignIndex(lhs.arrayValue[i.value].getIdentifier());
+              generatedNewIndex |= indexManager.get().assignIndex(lhs.values[i.value].getIdentifier());
             });
             checkPrimalSize(generatedNewIndex);
 
             Aggregated real = rhs.cast().getValue();
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-              Identifier lhsIdentifier = lhs.arrayValue[i.value].getIdentifier();
+              Identifier lhsIdentifier = lhs.values[i.value].getIdentifier();
               Real& primalEntry = primals[lhsIdentifier];
 
               if (!LinearIndexHandling) {
@@ -451,8 +451,8 @@ namespace codi {
                 dynamicPointers.oldPrimalValues[i.value] = primalEntry;
               }
 
-              lhs.arrayValue[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
-              primalEntry = lhs.arrayValue[i.value].getValue();
+              lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
+              primalEntry = lhs.values[i.value].getValue();
             });
 
             primalsStored = true;
@@ -463,8 +463,8 @@ namespace codi {
           Aggregated real = rhs.cast().getValue();
 
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-            lhs.arrayValue[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
-            indexManager.get().freeIndex(lhs.arrayValue[i.value].getIdentifier());
+            lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
+            indexManager.get().freeIndex(lhs.values[i.value].getIdentifier());
           });
         }
       }

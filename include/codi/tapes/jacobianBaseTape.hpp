@@ -386,15 +386,15 @@ namespace codi {
             Aggregated real = rhs.cast().getValue();
 
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-              indexManager.get().freeIndex(lhs.arrayValue[i.value].getIdentifier());
+              indexManager.get().freeIndex(lhs.values[i.value].getIdentifier());
 
               if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments[i.value])) {
-                lhs.arrayValue[i.value].getIdentifier() = identifiers[i.value];
-                cast().pushStmtData(lhs.arrayValue[i.value].getIdentifier(),
+                lhs.values[i.value].getIdentifier() = identifiers[i.value];
+                cast().pushStmtData(lhs.values[i.value].getIdentifier(),
                                     (Config::ArgumentSize)numberOfArguments[i.value]);
               }
 
-              lhs.arrayValue[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
+              lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
             });
           }
         }
@@ -403,8 +403,8 @@ namespace codi {
           Aggregated real = rhs.cast().getValue();
 
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-            lhs.arrayValue[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
-            indexManager.get().freeIndex(lhs.arrayValue[i.value].getIdentifier());
+            lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
+            indexManager.get().freeIndex(lhs.values[i.value].getIdentifier());
           });
         }
       }

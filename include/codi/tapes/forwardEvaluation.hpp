@@ -148,8 +148,8 @@ namespace codi {
 
         Aggregated newValue = rhs.cast().getValue();
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          lhs.arrayValue[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(newValue);
-          lhs.arrayValue[i.value].gradient() = newGradient[i.value];
+          lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(newValue);
+          lhs.values[i.value].gradient() = newGradient[i.value];
         });
       }
 
