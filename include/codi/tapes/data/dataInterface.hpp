@@ -113,6 +113,7 @@ namespace codi {
    *    stmtVector.reset();
    *  \endcode
    *
+   * For an example on how to use #getDataPointers please see the method documentation.
    *
    * The interface defines methods for adding data to the data stream, getting positional information, resetting the
    * data and iterating over the data.
@@ -211,6 +212,8 @@ namespace codi {
        *
        * After a new call to reserveItems(), only this many number of data items can be pushed, leftovers will not
        * accumulate.
+       *
+       * For an example of how to use pushData please see the DataInterface documentation.
        *
        * @param[in] data  The number of arguments has to match the number of data stores of the implementation.
        * @tparam Data Types of the pushed data.
