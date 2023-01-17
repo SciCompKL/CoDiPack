@@ -47,6 +47,8 @@ namespace codi {
   /**
    * @brief Defines an aggregated type via an array and implements the ExpressionInterface.
    *
+   * See AggregatedActiveType for details.
+   *
    * @tparam T_Real Real value of the aggregated type.
    * @tparam T_ActiveInnerType CoDiPack type that composes the aggregated type.
    * @tparam T_Impl The final implementation of the aggregated type.
@@ -129,7 +131,14 @@ namespace codi {
   };
 
   /**
-   * @brief Expression type to include aggregated types into the CoDiPack expression tree.
+   * @brief Represents a concrete aggregated lvalue int the CoDiPack expression tree.
+   *
+   * An aggregated type, in the sense of CoDiPack, is a structure that can be expressed by a set of double values. E.g.
+   * std::complex<double> can be represented by two double values. The use case of this class is to be able to add such
+   * types to the CoDiPack expression tree. If you use std::complex<codi::RealReverse>, then the expression tree for
+   * operations on the complex number is usually quite short. When a and b are complex numbers with a CoDiPack type,
+   * then <code>c = sin(a) + cos(b) </code> would record at least 6 statements. If complex numbers are
+   * integrated into the expression tree, then only one or two statements are recorded.
    *
    * In order to add an aggregated type to the CoDiPack expression tree, the traits
    * codi::RealTraits::AggregatedTypeTraits need to be specialized for the aggregated type. The helper
@@ -139,8 +148,8 @@ namespace codi {
    *
    * TODO: Link Example
    *
-   * @tparam T_Real Real value of the aggregated type.
-   * @tparam T_ActiveInnerType CoDiPack type that composes the aggregated type.
+   * @tparam T_Real Real value of the aggregated type. (E.g. std::complex<double>)
+   * @tparam T_ActiveInnerType CoDiPack type that composes the aggregated type. (E.g. codi::RealReverse)
    * @tparam T_Impl The final implementation of the aggregated type.
    */
   template<typename T_Real, typename T_ActiveInnerType, typename T_Impl>
