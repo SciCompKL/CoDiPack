@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "chunk.hpp"
+#include "byteChunk.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -132,6 +133,9 @@ namespace codi {
         chunk->dataPointer(dataPos, p1);
       }
   };
+
+  template<>
+  struct PointerStore<ByteChunk> : public PointerStore<Chunk1<char>> {};
 
   /**
    * @brief Pointer store for Chunk2 data.

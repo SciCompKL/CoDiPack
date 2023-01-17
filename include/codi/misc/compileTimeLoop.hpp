@@ -101,7 +101,7 @@ namespace codi {
       /// Nothing is evaluated.
       template<typename... Args>
       static CODI_INLINE void eval(Args&&... args) {
-        CODI_UNUSED_ARG(args...);
+        CODI_UNUSED(args...);
       }
   };
 
