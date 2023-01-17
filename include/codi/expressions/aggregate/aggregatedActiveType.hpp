@@ -50,27 +50,27 @@ namespace codi {
    * See AggregatedActiveType for details.
    *
    * @tparam T_Real Real value of the aggregated type.
-   * @tparam T_ActiveInnerType CoDiPack type that composes the aggregated type.
+   * @tparam T_InnerActiveType CoDiPack type that composes the aggregated type.
    * @tparam T_Impl The final implementation of the aggregated type.
    * @tparam T_isStatic If the aggregated type is created in a static context.
    */
-  template<typename T_Real, typename T_ActiveInnerType, typename T_Impl, bool T_isStatic>
+  template<typename T_Real, typename T_InnerActiveType, typename T_Impl, bool T_isStatic>
   struct AggregatedActiveTypeBase : public ExpressionInterface<T_Real, T_Impl> {
     public:
 
       using Real = T_Real;                                                           ///< See AggregatedActiveTypeBase.
-      using ActiveInnerType = CODI_DD(T_ActiveInnerType, CODI_T(ActiveType<void>));  ///< See AggregatedActiveTypeBase.
+      using InnerActiveType = CODI_DD(T_InnerActiveType, CODI_T(ActiveType<void>));  ///< See AggregatedActiveTypeBase.
       using Impl = CODI_DD(T_Impl, CODI_T(AggregatedActiveTypeBase<Type, void>));    ///< See AggregatedActiveTypeBase.
       static bool constexpr isStatic = T_isStatic;                                   ///< See AggregatedActiveTypeBase.
 
-      using Tape = typename ActiveInnerType::Tape;            ///< The tape of the inner active type.
+      using Tape = typename InnerActiveType::Tape;            ///< The tape of the inner active type.
       using Traits = RealTraits::AggregatedTypeTraits<Real>;  ///< The traits for the aggregated type.
       static int constexpr Elements = Traits::Elements;       ///< The number of elements in the aggregated type.
 
       using InnerReal = typename Traits::InnerType;       ///< Inner real type of the active type.
       using InnerIdentifier = typename Tape::Identifier;  ///< Identifier of the underlying tape.
 
-      ActiveInnerType arrayValue[Elements];  ///< Array representation.
+      InnerActiveType arrayValue[Elements];  ///< Array representation.
 
       CODI_INLINE AggregatedActiveTypeBase() = default;                                 ///< Constructor.
       CODI_INLINE AggregatedActiveTypeBase(AggregatedActiveTypeBase const&) = default;  ///< Constructor.
@@ -114,7 +114,7 @@ namespace codi {
       /// \copydoc codi::NodeInterface::forEachLinkConstExpr
       template<typename Logic, typename... Args>
       CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... args) {
-        return Elements * Logic::template link<0, ActiveInnerType, Impl>(std::forward<Args>(args)...);
+        return Elements * Logic::template link<0, InnerActiveType, Impl>(std::forward<Args>(args)...);
       }
 
     protected:
@@ -149,18 +149,18 @@ namespace codi {
    * TODO: Link Example
    *
    * @tparam T_Real Real value of the aggregated type. (E.g. std::complex<double>)
-   * @tparam T_ActiveInnerType CoDiPack type that composes the aggregated type. (E.g. codi::RealReverse)
+   * @tparam T_InnerActiveType CoDiPack type that composes the aggregated type. (E.g. codi::RealReverse)
    * @tparam T_Impl The final implementation of the aggregated type.
    */
-  template<typename T_Real, typename T_ActiveInnerType, typename T_Impl>
-  struct AggregatedActiveType : public AggregatedActiveTypeBase<T_Real, T_ActiveInnerType, T_Impl, false> {
+  template<typename T_Real, typename T_InnerActiveType, typename T_Impl>
+  struct AggregatedActiveType : public AggregatedActiveTypeBase<T_Real, T_InnerActiveType, T_Impl, false> {
     public:
       using Real = T_Real;                                                           ///< See AggregatedActiveType.
-      using ActiveInnerType = CODI_DD(T_ActiveInnerType, CODI_T(ActiveType<void>));  ///< See AggregatedActiveType.
+      using InnerActiveType = CODI_DD(T_InnerActiveType, CODI_T(ActiveType<void>));  ///< See AggregatedActiveType.
       using Impl = CODI_DD(T_Impl, CODI_T(AggregatedActiveTypeBase<Type, void>));    ///< See AggregatedActiveType.
 
       using Base =
-          AggregatedActiveTypeBase<T_Real, T_ActiveInnerType, T_Impl, false>;  ///< Abbreviation for base class.
+          AggregatedActiveTypeBase<T_Real, T_InnerActiveType, T_Impl, false>;  ///< Abbreviation for base class.
       using Traits = RealTraits::AggregatedTypeTraits<Real>;                   ///< The traits for the aggregated type.
       using PassiveReal = RealTraits::PassiveReal<Real>;                       ///< Passive value type of the real.
 
@@ -214,7 +214,7 @@ namespace codi {
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
       template<typename Rhs>
       CODI_INLINE void store(ExpressionInterface<Real, Rhs> const& rhs) {
-        ActiveInnerType::getTape().store(*this, rhs);
+        InnerActiveType::getTape().store(*this, rhs);
       }
   };
 }

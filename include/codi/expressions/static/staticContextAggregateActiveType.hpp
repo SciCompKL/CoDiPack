@@ -50,21 +50,21 @@ namespace codi {
    * See codi::AggregatedActiveType for details.
    *
    * @tparam T_Real Real value of the aggregated type.
-   * @tparam T_ActiveInnerType CoDiPack type that composes the aggregated type.
+   * @tparam T_InnerActiveType CoDiPack type that composes the aggregated type.
    */
-  template<typename T_Real, typename T_ActiveInnerType>
+  template<typename T_Real, typename T_InnerActiveType>
   struct StaticAggregatedActiveType
-      : public AggregatedActiveTypeBase<T_Real, T_ActiveInnerType,
-                                        StaticAggregatedActiveType<T_Real, T_ActiveInnerType>, true> {
+      : public AggregatedActiveTypeBase<T_Real, T_InnerActiveType,
+                                        StaticAggregatedActiveType<T_Real, T_InnerActiveType>, true> {
       using Real = T_Real;  ///< See StaticAggregatedActiveType.
-      using ActiveInnerType = CODI_DD(T_ActiveInnerType,
+      using InnerActiveType = CODI_DD(T_InnerActiveType,
                                       CODI_T(ActiveType<void>));  ///< See StaticAggregatedActiveType.
 
-      using InnerReal = typename ActiveInnerType::Real;              ///< Inner real type of the active type.
-      using InnerIdentifier = typename ActiveInnerType::Identifier;  ///< Inner real type of the active type.
+      using InnerReal = typename InnerActiveType::Real;              ///< Inner real type of the active type.
+      using InnerIdentifier = typename InnerActiveType::Identifier;  ///< Inner real type of the active type.
 
       using Base =
-          AggregatedActiveTypeBase<Real, ActiveInnerType, StaticAggregatedActiveType, true>;  ///< Abbreviation for base
+          AggregatedActiveTypeBase<Real, InnerActiveType, StaticAggregatedActiveType, true>;  ///< Abbreviation for base
                                                                                               ///< class.
 
       CODI_INLINE StaticAggregatedActiveType() : Base() {}  ///< Constructor.
@@ -85,10 +85,10 @@ namespace codi {
       static constexpr size_t constantValueOffset = T_constantValueOffset;
 
       using Real = typename Rhs::Real;
-      using ActiveInnerType = typename Rhs::ActiveInnerType;
+      using InnerActiveType = typename Rhs::InnerActiveType;
       static int constexpr Elements = Rhs::Elements;
 
-      using InnerConstructor = ConstructStaticContextLogic<ActiveInnerType, Tape, 0, 0>;
+      using InnerConstructor = ConstructStaticContextLogic<InnerActiveType, Tape, 0, 0>;
       using StaticInnerType = typename InnerConstructor::ResultType;
 
       using InnerReal = typename Tape::Real;

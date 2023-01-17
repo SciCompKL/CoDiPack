@@ -92,7 +92,7 @@ namespace codi {
       using Type = CODI_DD(
           T_Type,
           CODI_T(AggregatedActiveType<double, CODI_ANY, CODI_ANY>));  ///< See AggregatedTypeVectorAccessWrapper.
-      using InnerType = typename Type::ActiveInnerType;               ///< Active inner type of the aggregate.
+      using InnerType = typename Type::InnerActiveType;               ///< Active inner type of the aggregate.
       static int constexpr Elements = Type::Elements;                 ///< Number of elements in the aggregate.
 
       /// Inner interface expected by this wrapper.

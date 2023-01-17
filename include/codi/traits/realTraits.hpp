@@ -47,7 +47,7 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  template<typename T_Real, typename T_ActiveInnerType, typename T_Impl, bool T_isStatic>
+  template<typename T_Real, typename T_InnerActiveType, typename T_Impl, bool T_isStatic>
   struct AggregatedActiveTypeBase;
 
   /// Traits for values that can be used as real values, e.g. double, float, codi::RealReverse etc..
@@ -401,7 +401,7 @@ namespace codi {
     /// Enable if helper for AggregatedActiveType.
     template<typename Expr>
     using EnableIfAggregatedActiveType =
-        typename enable_if_base_of<AggregatedActiveTypeBase<typename Expr::Real, typename Expr::ActiveInnerType,
+        typename enable_if_base_of<AggregatedActiveTypeBase<typename Expr::Real, typename Expr::InnerActiveType,
                                                             typename Expr::Impl, Expr::isStatic>,
                                    Expr>::type;
 
