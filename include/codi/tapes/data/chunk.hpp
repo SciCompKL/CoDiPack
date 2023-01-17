@@ -179,14 +179,14 @@ namespace codi {
    * @tparam Chunk1  Any type.
    */
   template<typename Data1>
-  struct Chunk1 final : public ChunkBase {
+  struct Chunk1 : public ChunkBase {
     public:
 
       using Base = ChunkBase;  ///< Abbreviation for the base class type.
 
-    private:
+    protected:
 
-      Data1* data1;
+      Data1* data1;  ///< Data pointer for this chunk.
 
     public:
 

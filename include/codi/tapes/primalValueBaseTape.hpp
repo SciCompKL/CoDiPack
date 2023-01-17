@@ -53,6 +53,7 @@
 #include "../misc/memberStore.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "commonTapeImplementation.hpp"
+#include "data/byteChunk.hpp"
 #include "data/chunk.hpp"
 #include "data/chunkedData.hpp"
 #include "indices/indexManagerInterface.hpp"
@@ -100,8 +101,8 @@ namespace codi {
 
       using EvalHandle = typename StatementEvaluator::Handle;  ///< Handle type returned by the statement generator.
 
-      using FixedSizeDataChunk = Chunk1<char>;    ///< Chunk for byte values.
-      using DynamicSizeDataChunk = Chunk1<char>;  ///< Chunk for byte values.
+      using FixedSizeDataChunk = ByteChunk;    ///< Chunk for byte values.
+      using DynamicSizeDataChunk = ByteChunk;  ///< Chunk for byte values.
 
       /// Per statement data that is always read. E.g. the handle for the statement.
       using FixedSizeData = Data<FixedSizeDataChunk, IndexManager>;
