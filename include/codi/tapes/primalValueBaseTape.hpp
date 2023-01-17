@@ -42,7 +42,7 @@
 
 #include "../config.h"
 #include "../expressions/aggregate/aggregatedActiveType.hpp"
-#include "../expressions/assignExpression.hpp"
+#include "../expressions/assignStatement.hpp"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/constructStaticContext.hpp"
@@ -388,7 +388,7 @@ namespace codi {
       template<typename Lhs, typename RhsType, typename Rhs>
       CODI_INLINE bool storeArgumentData(ExpressionInterface<RhsType, Rhs> const& rhs,
                                          StmtDynamicDataEntry& dynamicPointers) {
-        using Expr = AssignExpression<Lhs, Rhs>;
+        using Stmt = AssignStatement<Lhs, Rhs>;
 
         CountActiveArguments countActiveArguments;
         PushStatementData pushStatement;
@@ -402,17 +402,17 @@ namespace codi {
 
         if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != activeArguments)) {
           StmtFixedDataEntry::reserve(fixedSizeData);
-          StmtDynamicDataEntry::reserve(dynamicSizeData, StatementSizes::create<Expr>(), activeArguments);
+          StmtDynamicDataEntry::reserve(dynamicSizeData, StatementSizes::create<Stmt>(), activeArguments);
 
           size_t passiveArguments = 0;
           size_t idPos = 0;
           size_t constantPos = 0;
           dynamicPointers =
-              StmtDynamicDataEntry::store(dynamicSizeData, StatementSizes::create<Expr>(), activeArguments);
+              StmtDynamicDataEntry::store(dynamicSizeData, StatementSizes::create<Stmt>(), activeArguments);
           pushStatement.eval(rhs.cast(), dynamicPointers, passiveArguments, idPos, constantPos);
 
           StmtFixedDataEntry::store(fixedSizeData, (Config::ArgumentSize)passiveArguments,
-                                    StatementEvaluator::template createHandle<Impl, Impl, Expr>());
+                                    StatementEvaluator::template createHandle<Impl, Impl, Stmt>());
 
           return true;
         } else {
@@ -554,7 +554,7 @@ namespace codi {
         if (TapeTypes::IsLinearIndexHandler) {
           StmtFixedDataEntry::store(
               fixedSizeData, Config::StatementInputTag,
-              StatementEvaluator::template createHandle<Impl, Impl, AssignExpression<Lhs, Lhs>>());
+              StatementEvaluator::template createHandle<Impl, Impl, AssignStatement<Lhs, Lhs>>());
         }
 
         Real oldValue = primalEntry;
@@ -993,11 +993,11 @@ namespace codi {
       /// @{
 
       /// Base class for statement call generators. Prepares the static construction context.
-      template<typename Expr>
+      template<typename Stmt>
       struct StatementCallGeneratorBase {
         public:
-          using Lhs = typename Expr::Lhs;                                     ///< \copydoc codi::AssignExpression::Lhs
-          using Rhs = typename Expr::Rhs;                                     ///< \copydoc codi::AssignExpression::Rhs
+          using Lhs = typename Stmt::Lhs;                                     ///< \copydoc codi::AssignStatement::Lhs
+          using Rhs = typename Stmt::Rhs;                                     ///< \copydoc codi::AssignStatement::Rhs
           using LhsReal = typename Lhs::Real;                                 ///< Primal value of lhs.
           using AggregateTraits = RealTraits::AggregatedTypeTraits<LhsReal>;  ///< Traits for aggregated type.
 
@@ -1017,13 +1017,13 @@ namespace codi {
       };
 
       /// \copydoc StatementEvaluatorTapeInterface::StatementCallGenerator
-      template<StatementCall type, typename Expr>
+      template<StatementCall type, typename Stmt>
       struct StatementCallGenerator;
 
       /*******************************************************************************/
       /// ClearAdjoint implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::ClearAdjoint, Expr> {
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::ClearAdjoint, Stmt> {
           /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
           CODI_INLINE static void evaluateInner() {
             // Empty
@@ -1057,17 +1057,17 @@ namespace codi {
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
           CODI_INLINE static void evaluate(STMT_ARGS, ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                            size_t adjointVectorSize) {
-            evaluateFull(evaluateInner, StatementSizes::create<Expr>(), STMT_ARGS_FORWARD, adjointVector,
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, adjointVector,
                          adjointVectorSize);
           }
       };
 
       /*******************************************************************************/
       /// Forward implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::Forward, Expr> : public StatementCallGeneratorBase<Expr> {
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::Forward, Stmt> : public StatementCallGeneratorBase<Stmt> {
         public:
-          using Base = StatementCallGeneratorBase<Expr>;  ///< Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt>;  ///< Base class abbreviation.
           using StaticRhs = typename Base::StaticRhs;     ///< See StatementCallGeneratorBase.
           template<size_t pos>
           using ExtractExpr = typename Base::template ExtractExpr<pos>;  ///< See StatementCallGeneratorBase.
@@ -1155,17 +1155,17 @@ namespace codi {
           CODI_INLINE static void evaluate(STMT_ARGS, Real* __restrict__ primalVector,
                                            ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                            Real* __restrict__ lhsPrimals, Gradient* __restrict__ lhsTangents) {
-            evaluateFull(evaluateInner, StatementSizes::create<Expr>(), STMT_ARGS_FORWARD, primalVector, adjointVector,
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, primalVector, adjointVector,
                          lhsPrimals, lhsTangents);
           }
       };
 
       /*******************************************************************************/
       /// Primal implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::Primal, Expr> : public StatementCallGeneratorBase<Expr> {
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::Primal, Stmt> : public StatementCallGeneratorBase<Stmt> {
         public:
-          using Base = StatementCallGeneratorBase<Expr>;  ///< Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt>;  ///< Base class abbreviation.
           using StaticRhs = typename Base::StaticRhs;     ///< See StatementCallGeneratorBase.
           template<size_t pos>
           using ExtractExpr = typename Base::template ExtractExpr<pos>;  ///< See StatementCallGeneratorBase.
@@ -1207,14 +1207,14 @@ namespace codi {
 
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
           CODI_INLINE static void evaluate(STMT_ARGS, Real* __restrict__ primalVector, Real* __restrict__ lhsPrimals) {
-            evaluateFull(evaluateInner, StatementSizes::create<Expr>(), STMT_ARGS_FORWARD, primalVector, lhsPrimals);
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, primalVector, lhsPrimals);
           }
       };
 
       /*******************************************************************************/
       /// ResetPrimal implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::ResetPrimal, Expr> {
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::ResetPrimal, Stmt> {
           /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
           CODI_INLINE static void evaluateInner() {
             // Empty
@@ -1241,16 +1241,16 @@ namespace codi {
 
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
           CODI_INLINE static void evaluate(STMT_ARGS, Real* __restrict__ primalVector) {
-            evaluateFull(evaluateInner, StatementSizes::create<Expr>(), STMT_ARGS_FORWARD, primalVector);
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, primalVector);
           }
       };
 
       /*******************************************************************************/
       /// Reverse implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::Reverse, Expr> : public StatementCallGeneratorBase<Expr> {
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::Reverse, Stmt> : public StatementCallGeneratorBase<Stmt> {
         public:
-          using Base = StatementCallGeneratorBase<Expr>;  ///< Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt>;  ///< Base class abbreviation.
           using StaticRhs = typename Base::StaticRhs;     ///< See StatementCallGeneratorBase.
           template<size_t pos>
           using ExtractExpr = typename Base::template ExtractExpr<pos>;  ///< See StatementCallGeneratorBase.
@@ -1341,7 +1341,7 @@ namespace codi {
           CODI_INLINE static void evaluate(STMT_ARGS, Real* __restrict__ primalVector,
                                            ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                            Gradient* __restrict__ lhsAdjoints) {
-            evaluateFull(evaluateInner, StatementSizes::create<Expr>(), STMT_ARGS_FORWARD, primalVector, adjointVector,
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, primalVector, adjointVector,
                          lhsAdjoints);
           }
       };
@@ -1419,17 +1419,17 @@ namespace codi {
       /// @{
 
       /// \copydoc StatementEvaluatorTapeInterface::StatementCallGenerator
-      template<StatementCall type, typename Expr>
+      template<StatementCall type, typename Stmt>
       struct StatementCallGenerator;
 
       /// ClearAdjoint implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::ClearAdjoint, Expr>
-          : public TapeImpl::template StatementCallGenerator<StatementCall::ClearAdjoint, Expr> {};
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::ClearAdjoint, Stmt>
+          : public TapeImpl::template StatementCallGenerator<StatementCall::ClearAdjoint, Stmt> {};
 
       /// Forward implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::Forward, Expr> {
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::Forward, Stmt> {
           /// Throws exception.
           static void evaluateInner() {
             CODI_EXCEPTION("Forward evaluation of jacobian statement not possible.");
@@ -1442,8 +1442,8 @@ namespace codi {
       };
 
       /// Primal implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::Primal, Expr> {
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::Primal, Stmt> {
           /// Throws exception.
           static void evaluateInner() {
             CODI_EXCEPTION("Primal evaluation of jacobian statement not possible.");
@@ -1456,13 +1456,13 @@ namespace codi {
       };
 
       /// ResetPrimal implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::ResetPrimal, Expr>
-          : public TapeImpl::template StatementCallGenerator<StatementCall::ResetPrimal, Expr> {};
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::ResetPrimal, Stmt>
+          : public TapeImpl::template StatementCallGenerator<StatementCall::ResetPrimal, Stmt> {};
 
       /// Reverse implementation
-      template<typename Expr>
-      struct StatementCallGenerator<StatementCall::Reverse, Expr> {
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::Reverse, Stmt> {
           /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner
           static void evaluateInner(Real* __restrict__ primalVector, ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                     Gradient* __restrict__ lhsAdjoints,
@@ -1476,7 +1476,7 @@ namespace codi {
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate
           static void evaluate(STMT_ARGS, Real* __restrict__ primalVector,
                                ADJOINT_VECTOR_TYPE* __restrict__ adjointVector, Gradient* __restrict__ lhsAdjoints) {
-            StatementSizes stmtSizes = StatementSizes::create<Expr>();
+            StatementSizes stmtSizes = StatementSizes::create<Stmt>();
             StmtCallArgs stmtArgs = STMT_ARGS_PACK;
             StmtDynamicDataEntry data = StmtDynamicDataEntry::readReverse(stmtSizes, stmtArgs);
 
@@ -1529,7 +1529,7 @@ namespace codi {
 
 #define CREATE_EXPRESSION(size)                                                                      \
   TapeTypes::StatementEvaluator::template createHandle<Impl, JacobianStatementGenerator<Impl, size>, \
-                                                       AssignExpression<ActiveType<Impl>, JacobianExpression<size>>>()
+                                                       AssignStatement<ActiveType<Impl>, JacobianExpression<size>>>()
 
   /// Expressions for manual statement pushes.
   template<typename TapeTypes, typename Impl>

@@ -39,7 +39,7 @@
 #include <type_traits>
 
 #include "../../expressions/activeType.hpp"
-#include "../../expressions/assignExpression.hpp"
+#include "../../expressions/assignStatement.hpp"
 #include "../../misc/macros.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "../misc/statementSizes.hpp"
@@ -67,12 +67,12 @@ namespace codi {
 
   /// Store InnerPrimalTapeStatementData as static variables for each combination of generator (tape) and expression
   /// used in the program.
-  template<typename Generator, typename Expr>
+  template<typename Generator, typename Stmt>
   struct InnerStatementEvaluatorStaticStore {
     public:
 
       /// Static storage. Static construction is done by instantiating the statementEvaluate*Inner functions of the
-      /// generator with Expr. Also evaluates the number of active type arguments and constant type arguments.
+      /// generator with Stmt. Also evaluates the number of active type arguments and constant type arguments.
       static InnerPrimalTapeStatementData const staticStore;  ///< Static storage.
 
       /// Generates the data for the static store.
@@ -82,14 +82,14 @@ namespace codi {
 
         return InnerPrimalTapeStatementData(
             PrimalTapeStatementFunctions(
-                ((Handle)Generator::template StatementCallGenerator<types, Expr>::evaluateInner)...),
-            StatementSizes::create<Expr>());
+                ((Handle)Generator::template StatementCallGenerator<types, Stmt>::evaluateInner)...),
+            StatementSizes::create<Stmt>());
       }
   };
 
-  template<typename Generator, typename Expr>
-  InnerPrimalTapeStatementData const InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore =
-      InnerStatementEvaluatorStaticStore<Generator, Expr>::gen<CODI_STMT_CALL_GEN_ARGS>();
+  template<typename Generator, typename Stmt>
+  InnerPrimalTapeStatementData const InnerStatementEvaluatorStaticStore<Generator, Stmt>::staticStore =
+      InnerStatementEvaluatorStaticStore<Generator, Stmt>::gen<CODI_STMT_CALL_GEN_ARGS>();
 
   /**
    * @brief Expression evaluation in the inner function. Data loading in the compilation context of the tape.
@@ -113,8 +113,8 @@ namespace codi {
       /// \copydoc StatementEvaluatorInterface::call
       template<StatementCall type, typename Tape, typename... Args>
       static void call(Handle const& h, Args&&... args) {
-        using Expr = AssignExpression<ActiveType<Tape>, ActiveType<Tape>>;
-        using CallGen = typename Tape::template StatementCallGenerator<type, Expr>;
+        using Stmt = AssignStatement<ActiveType<Tape>, ActiveType<Tape>>;
+        using CallGen = typename Tape::template StatementCallGenerator<type, Stmt>;
 
         using Function = decltype(&CallGen::evaluateInner);
 
@@ -122,9 +122,9 @@ namespace codi {
       }
 
       /// \copydoc StatementEvaluatorInterface::createHandle
-      template<typename Tape, typename Generator, typename Expr>
+      template<typename Tape, typename Generator, typename Stmt>
       static Handle createHandle() {
-        return &InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
+        return &InnerStatementEvaluatorStaticStore<Generator, Stmt>::staticStore;
       }
 
       /// @}

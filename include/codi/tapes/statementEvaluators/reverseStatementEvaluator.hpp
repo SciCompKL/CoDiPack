@@ -39,7 +39,7 @@
 #include <type_traits>
 
 #include "../../expressions/activeType.hpp"
-#include "../../expressions/assignExpression.hpp"
+#include "../../expressions/assignStatement.hpp"
 #include "../../misc/exceptions.hpp"
 #include "../../misc/macros.hpp"
 #include "../../misc/memberStore.hpp"
@@ -66,8 +66,8 @@ namespace codi {
       /// \copydoc StatementEvaluatorInterface::call
       template<StatementCall type, typename Tape, typename... Args>
       static void call(Handle const& h, Args&&... args) {
-        using Expr = AssignExpression<ActiveType<Tape>, ActiveType<Tape>>;
-        using CallGen = typename Tape::template StatementCallGenerator<type, Expr>;
+        using Stmt = AssignStatement<ActiveType<Tape>, ActiveType<Tape>>;
+        using CallGen = typename Tape::template StatementCallGenerator<type, Stmt>;
 
         using Function = decltype(&CallGen::evaluate);
 
@@ -81,9 +81,9 @@ namespace codi {
       }
 
       /// \copydoc StatementEvaluatorInterface::createHandle
-      template<typename Tape, typename Generator, typename Expr>
+      template<typename Tape, typename Generator, typename Stmt>
       static Handle createHandle() {
-        return (Handle*)Generator::template statementEvaluateReverse<Expr>;
+        return (Handle*)Generator::template statementEvaluateReverse<Stmt>;
       }
 
       /// @}

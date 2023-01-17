@@ -35,7 +35,7 @@
 #pragma once
 
 #include "../../config.h"
-#include "../../expressions/assignExpression.hpp"
+#include "../../expressions/assignStatement.hpp"
 #include "../../misc/macros.hpp"
 #include "../../traits/expressionTraits.hpp"
 
@@ -52,13 +52,13 @@ namespace codi {
       StatementSizes(size_t const inputArgs, size_t const constantArgs, size_t const maxOutputArgs)
           : inputArgs(inputArgs), constantArgs(constantArgs), outputArgs(maxOutputArgs) {}
 
-      /// Creation function from AssignExpression.
-      template<typename T_Expr>
+      /// Creation function from AssignStatement.
+      template<typename T_Stmt>
       static StatementSizes create() {
-        using Expr = CODI_DD(T_Expr, CODI_T(AssignExpression<CODI_ANY, CODI_ANY>));
+        using Stmt = CODI_DD(T_Stmt, CODI_T(AssignStatement<CODI_ANY, CODI_ANY>));
 
-        using Lhs = typename Expr::Lhs;
-        using Rhs = typename Expr::Rhs;
+        using Lhs = typename Stmt::Lhs;
+        using Rhs = typename Stmt::Rhs;
 
         size_t constexpr inputArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
         size_t constexpr constantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
