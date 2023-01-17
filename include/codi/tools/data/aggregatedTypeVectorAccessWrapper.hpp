@@ -122,7 +122,7 @@ namespace codi {
       }
 
       /// \copydoc VectorAccessInterface::isLhsZero()
-      CODI_INLINE bool isLhsZero() {
+      CODI_INLINE bool isLhsZero() const {
         bool isZero = true;
 
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {

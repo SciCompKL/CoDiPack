@@ -42,8 +42,21 @@ namespace codi {
 
   /** Interface for injecting member operations in expressions
    *
-   *  This ExpressionInterface extends from this interface and therefore all methods defined in specializations of
+   *  The ExpressionInterface extends from this interface and therefore all methods defined in specializations of
    *  this class are available in expressions with the specialized Real type.
+   *
+   *  E.g. the complex type has the member operations real() and imag(). Which makes the following code possible.
+   *  \code
+   *  std::complex<double> a,b;
+   *  double z = (a + b).real();
+   *  \endcode
+   *  In an expression framework, the member operator could be implemented in the AggregatedActiveType specialization
+   *  for std::complex but this will not make the member operator available in the expression (a+b). The compiler would
+   *  throw an error that the member operator `real()` is not available in a BinaryExpression.
+   *
+   *  By the specialization of this class, member methods can be injected into arbitrary expression implementations.
+   *  This includes e.g. ActiveType, AggregatedActiveType, BinaryExpression, etc. In the complex case the specialization
+   *  can be viewed in stdComplex.hpp.
    *
    * @tparam T_Real  Original primal value of the statement/expression.
    * @tparam T_Impl  Class implementing this interface.
