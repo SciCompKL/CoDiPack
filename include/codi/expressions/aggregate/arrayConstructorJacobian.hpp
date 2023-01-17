@@ -42,9 +42,15 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /// Helper class for the detection of a Jacobian application for an array constructor.
-  /// @tparam T_Creator The expression creating the Jacobian.
-  /// @tparam T_ReturnType Used in the multiplication detection for the return type.
+  /** Helper class for the detection of a Jacobian application for an array constructor.
+   *
+   *  This class is used to detect the multiplication of a Jacobian e.g. <code>detector * value</code>. It then applies
+   *  the adjoint of a constructor to the value and returns the result. See AggregatedTypeTraits for details.
+   *
+   *  @tparam T_Creator  The expression creating the Jacobian.
+   *  @tparam T_ReturnType  Used in the multiplication detection for the return type.
+   *  @tparam T_index  Index into the Jacobian of the constructor.
+   */
   template<typename T_Creator, typename T_ReturnType, size_t T_index>
   struct ArrayConstructorJacobian {
       using Creator = CODI_DD(T_Creator, CODI_T(ExpressionInterface<double, void>));  ///< See ArrayConstructorJacobian.
@@ -59,9 +65,9 @@ namespace codi {
   };
 
   /// Detection of the application of a Jacobian from an array constructor. See ArrayConstructorJacobian.
-  template<typename Type, typename Creator, typename ReturnType, size_t index>
+  template<typename Jacobian, typename Creator, typename ReturnType, size_t index>
   CODI_INLINE ReturnType operator*(ArrayConstructorJacobian<Creator, ReturnType, index> const& reduce,
-                                   Type const& jac) {
+                                   Jacobian const& jac) {
     return RealTraits::AggregatedTypeTraits<typename Creator::Real>::template adjointOfConstructor<index>(
         reduce.creator.getValue(), jac);
   }
