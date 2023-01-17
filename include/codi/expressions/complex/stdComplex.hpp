@@ -105,25 +105,25 @@ namespace codi {
   /// @tparam T_Impl The implementation if it extends this class, otherwise nothing.
   template<typename T_InnerActive, typename T_Impl = Self>
   struct ActiveComplex : public AggregatedActiveType<std::complex<typename T_InnerActive::Real>, T_InnerActive,
-                                                     ReturnSelf<T_Impl, ActiveComplex<T_InnerActive, T_Impl>>>,
+                                                     ResolveSelf<T_Impl, ActiveComplex<T_InnerActive, T_Impl>>>,
                          public AssignmentOperators<typename T_InnerActive::Real, false,
-                                                    ReturnSelf<T_Impl, ActiveComplex<T_InnerActive, T_Impl>>>,
+                                                    ResolveSelf<T_Impl, ActiveComplex<T_InnerActive, T_Impl>>>,
                          public AssignmentOperators<std::complex<typename T_InnerActive::Real>, false,
-                                                    ReturnSelf<T_Impl, ActiveComplex<T_InnerActive, T_Impl>>> {
+                                                    ResolveSelf<T_Impl, ActiveComplex<T_InnerActive, T_Impl>>> {
     public:
 
       using InnerActive = CODI_DD(T_InnerActive, CODI_T(ActiveType<CODI_ANY>));        ///< See ActiveComplex.
-      using Impl = CODI_DD(CODI_T(ReturnSelf<T_Impl, ActiveComplex>), ActiveComplex);  ///< See ActiveComplex.
+      using Impl = CODI_DD(CODI_T(ResolveSelf<T_Impl, ActiveComplex>), ActiveComplex);  ///< See ActiveComplex.
 
       using InnerReal = typename InnerActive::Real;                  ///< Inner real value.
       using Real = std::complex<InnerReal>;                          ///< Complex value with the inner real.
       using PassiverInnerReal = RealTraits::PassiveReal<InnerReal>;  ///< Passive inner value.
 
       using Base = AggregatedActiveType<Real, InnerActive, Impl>;  ///< Abbreviation for the base class.
-      using AssignReal = AssignmentOperators<InnerReal, false, ReturnSelf<Impl, ActiveComplex>>;  ///< Abbreviation for
+      using AssignReal = AssignmentOperators<InnerReal, false, ResolveSelf<Impl, ActiveComplex>>;  ///< Abbreviation for
                                                                                                   ///< real assignments.
       using AssignComplex =
-          AssignmentOperators<std::complex<InnerReal>, false, ReturnSelf<Impl, ActiveComplex>>;  ///< Abbreviations for
+          AssignmentOperators<std::complex<InnerReal>, false, ResolveSelf<Impl, ActiveComplex>>;  ///< Abbreviations for
                                                                                                  ///< complex
                                                                                                  ///< assignments.
 

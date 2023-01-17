@@ -52,7 +52,7 @@ namespace codi {
   /// else
   ///   return Impl
   template<typename Impl, typename SelfType>
-  using ReturnSelf = typename std::conditional<
+  using ResolveSelf = typename std::conditional<
     std::is_same<Self, Impl>::value, // if
         SelfType,                    // true
         Impl                         // false
