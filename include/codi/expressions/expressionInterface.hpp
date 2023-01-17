@@ -64,7 +64,7 @@ namespace codi {
       using Impl = CODI_DD(T_Impl, ExpressionInterface);  ///< See ExpressionInterface.
 
       using ADLogic = CODI_UNDEFINED;  ///< AD logic that governs the expression. Needs to be the same for all inputs of
-                                       ///< the expression. TODO: Construction
+                                       ///< the expression.
 
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
