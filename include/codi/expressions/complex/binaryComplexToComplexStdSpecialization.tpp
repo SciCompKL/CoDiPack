@@ -51,7 +51,7 @@
   #error Please define the primal function representation.
 #endif
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef FUNCTION
   #include <complex>
 
@@ -70,7 +70,7 @@ namespace std {
 
   // Define complex complex bindings
 
-  /// Function overload for FUNCTION(complex, complex)
+  /// Function overload for FUNCTION(complex, complex).
   template<typename Tape>
   CODI_INLINE codi::BinaryExpression<complex<typename Tape::Real>, complex<codi::ActiveType<Tape>>,
                                      complex<codi::ActiveType<Tape>>, OPERATION_LOGIC>
@@ -81,7 +81,7 @@ namespace std {
 
   // Define complex real bindings
 
-  /// Function overload for FUNCTION(complex, real)
+  /// Function overload for FUNCTION(complex, real).
   template<typename Tape>
   CODI_INLINE codi::BinaryExpression<complex<typename Tape::Real>, complex<codi::ActiveType<Tape>>,
                                      codi::AdjointComplexToRealCast<typename Tape::Real, codi::ActiveType<Tape>>,
@@ -93,7 +93,7 @@ namespace std {
         argA, codi::AdjointComplexToRealCast<typename Tape::Real, codi::ActiveType<Tape>>(argB));
   }
 
-  /// Function overload for FUNCTION(complex, const real)
+  /// Function overload for FUNCTION(complex, const real).
   template<typename Tape>
   CODI_INLINE codi::BinaryExpression<complex<typename Tape::Real>, complex<codi::ActiveType<Tape>>,
                                      codi::ConstantExpression<typename Tape::PassiveReal>, OPERATION_LOGIC>
@@ -105,7 +105,7 @@ namespace std {
 
   // Define real complex bindings
 
-  /// Function overload for FUNCTION(real, complex)
+  /// Function overload for FUNCTION(real, complex).
   template<typename Tape>
   CODI_INLINE codi::BinaryExpression<complex<typename Tape::Real>,
                                      codi::AdjointComplexToRealCast<typename Tape::Real, codi::ActiveType<Tape>>,
@@ -117,7 +117,7 @@ namespace std {
         codi::AdjointComplexToRealCast<typename Tape::Real, codi::ActiveType<Tape>>(argA), argB);
   }
 
-  /// Function overload for FUNCTION(const real, complex)
+  /// Function overload for FUNCTION(const real, complex).
   template<typename Tape>
   CODI_INLINE codi::BinaryExpression<complex<typename Tape::Real>, codi::ConstantExpression<typename Tape::PassiveReal>,
                                      complex<codi::ActiveType<Tape>>, OPERATION_LOGIC>
@@ -127,7 +127,7 @@ namespace std {
         codi::ConstantExpression<typename Tape::PassiveReal>(argA), argB);
   }
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef FUNCTION
 }
 #endif

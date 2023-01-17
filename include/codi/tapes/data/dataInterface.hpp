@@ -122,7 +122,8 @@ namespace codi {
    *                      left.
    *  - pushData():       Add the actual data to the data stream.
    *  - getDataPointer(): Get pointers to the internally allocated data.
-   *  - addDataSize():    Add the number of items written by the pointers from getDataPointer.
+   *  - addDataSize():    After using pointers obtained by getDataPointer and adding data via these pointers, inform
+   *                      about the number of data items added.
    *
    * Positional information:
    *   - getPosition(), getZeroPosition(): Global position of the all nested data interfaces.
@@ -166,13 +167,13 @@ namespace codi {
 
       /**
        * @brief Get pointers to the data from the storage implementation. The method can only be called after a call to
-       *        reserveItems() and data can only be accessed from 0 to the number given by reserveItems. Afterwards
-       *        addDataSize() needs to be called with the actual number of elements, that have been written.
+       *        reserveItems() and data can only be accessed from 0 to the number given by reserveItems. Afterwards,
+       *        addDataSize() needs to be called with the actual number of elements that have been written.
        *
-       * The arrays can be access with less items than indicated with reserveItems(). The call to reserveItems only
-       * represents the maximum number of data items that can be accessed safely.
+       * The call to reserveItems only represents the maximum number of data items that can be accessed safely. It is
+       * fine if less data items are accessed.
        *
-       * After all elements have been written to the arrays addDataSize needs to be called with the final written
+       * After all elements have been written to the arrays, addDataSize needs to be called with the final written
        * number of entries.
        *
        *  Example usage:

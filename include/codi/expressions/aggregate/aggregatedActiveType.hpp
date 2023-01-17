@@ -45,7 +45,7 @@
 namespace codi {
 
   /**
-   * @brief Defines the aggregated type via an array and implements the ExpressionInterface.
+   * @brief Defines an aggregated type via an array and implements the ExpressionInterface.
    *
    * @tparam T_Real Real value of the aggregated type.
    * @tparam T_ActiveInnerType CoDiPack type that composes the aggregated type.
@@ -66,7 +66,7 @@ namespace codi {
       static int constexpr Elements = Traits::Elements;       ///< The number of elements in the aggregated type.
 
       using InnerReal = typename Traits::InnerType;       ///< Inner real type of the active type.
-      using InnerIdentifier = typename Tape::Identifier;  ///< Identifier of the tape.
+      using InnerIdentifier = typename Tape::Identifier;  ///< Identifier of the underlying tape.
 
       ActiveInnerType arrayValue[Elements];  ///< Array representation.
 
@@ -131,7 +131,7 @@ namespace codi {
   /**
    * @brief Expression type to include aggregated types into the CoDiPack expression tree.
    *
-   * In order to add an aggregated type to the CoDiPack expression tree. The traits
+   * In order to add an aggregated type to the CoDiPack expression tree, the traits
    * codi::RealTraits::AggregatedTypeTraits need to be specialized for the aggregated type. The helper
    * codi::RealTraits::ArrayAggregatedTypeTraitsBase can be used if the aggregated type can be interpreted as an array
    * of values. In addition this class needs to be extended and special constructors and assignment operators need

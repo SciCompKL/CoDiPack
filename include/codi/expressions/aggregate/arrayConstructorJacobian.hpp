@@ -58,7 +58,7 @@ namespace codi {
       CODI_INLINE ArrayConstructorJacobian(Creator const& creator) : creator(creator) {}
   };
 
-  /// Detection of the application of an Jacobian from an array constructor. See ArrayConstructorJacobian.
+  /// Detection of the application of a Jacobian from an array constructor. See ArrayConstructorJacobian.
   template<typename Type, typename Creator, typename ReturnType, size_t index>
   CODI_INLINE ReturnType operator*(ArrayConstructorJacobian<Creator, ReturnType, index> const& reduce,
                                    Type const& jac) {

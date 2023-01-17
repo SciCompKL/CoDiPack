@@ -48,7 +48,7 @@ namespace codi {
    * @brief Base implementation for expressions with on argument.
    *
    * Implements the NodeInterface and provides the member for the expression argument. The functions getValue and
-   * getJacobian from the ExpressionInterface are not yet implemented.
+   * getJacobian from the ExpressionInterface have to be implemented by the derived class.
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *

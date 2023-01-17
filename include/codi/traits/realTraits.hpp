@@ -50,7 +50,7 @@ namespace codi {
   template<typename T_Real, typename T_ActiveInnerType, typename T_Impl, bool T_isStatic>
   struct AggregatedActiveTypeBase;
 
-  /// Traits for values that can be used as real values e.g. double, float, codi::RealReverse etc..
+  /// Traits for values that can be used as real values, e.g. double, float, codi::RealReverse etc..
   namespace RealTraits {
 
     /*******************************************************************************/
@@ -66,10 +66,10 @@ namespace codi {
     struct TraitsImplementation {
       public:
 
-        using Type = CODI_DD(T_Type, double);  ///< See TraitsImplementation
+        using Type = CODI_DD(T_Type, double);  ///< See TraitsImplementation.
 
         using Real = Type;         ///< Inner type of the real value.
-        using PassiveReal = Type;  ///< The original computation type, that was used in the application.
+        using PassiveReal = Type;  ///< The original computation type that was used in the application.
 
         static int constexpr MaxDerivativeOrder = 0;  ///< CoDiPack derivative order of the type.
 
@@ -88,7 +88,7 @@ namespace codi {
     struct IsTotalFinite {
       public:
 
-        using Type = CODI_DD(T_Type, double);  ///< See IsTotalFinite
+        using Type = CODI_DD(T_Type, double);  ///< See IsTotalFinite.
 
         /// Checks if the values are all finite.
         static CODI_INLINE bool isTotalFinite(Type const& v) {
@@ -106,7 +106,7 @@ namespace codi {
     struct IsTotalZero {
       public:
 
-        using Type = CODI_DD(T_Type, double);  ///< See IsTotalZero
+        using Type = CODI_DD(T_Type, double);  ///< See IsTotalZero.
 
         /// Checks if the values are completely zero.
         static CODI_INLINE bool isTotalZero(Type const& v) {
@@ -155,8 +155,8 @@ namespace codi {
      * @brief Data handling methods for aggregated types that contain CoDiPack active types.
      *
      * An aggregated type is for example std::complex<codi::RealReverse>, which contains two CoDiPack values. The
-     * accessor methods in this class access each of these value. For `getValue`, for example, a complex type of the
-     * CoDiPack type's inner value is generated.
+     * accessor methods in this class make the corresponding aggregates of primal values and identifiers available,
+     * that is, std::complex<double> for the primal values and std::complex<int> for the identifiers.
      *
      * @tparam T_Type  Any type that contains a CoDiPack type.
      */
@@ -168,17 +168,16 @@ namespace codi {
 
         using Type = CODI_DD(T_Type, CODI_ANY);  ///< See DataExtraction.
 
-        using Real = typename Type::Real;  ///< Type of primal values extracted from the type with AD values.
-        using Identifier =
-            typename Type::Identifier;  ///< Type of identifier values extracted from the type with AD values.
+        using Real = typename Type::Real;  ///< Type of a corresponding aggregate of primal values.
+        using Identifier = typename Type::Identifier;  ///< Type of a corresponding aggregate of identifiers.
 
-        /// Extract the primal values from a type of aggregated active types.
+        /// Extract an aggregate of primal values from an aggregate of active types.
         CODI_INLINE static Real getValue(Type const& v);
 
-        /// Extract the identifiers from a type of aggregated active types.
+        /// Extract an aggregate of identifiers from an aggregate of active types.
         CODI_INLINE static Identifier getIdentifier(Type const& v);
 
-        /// Set the primal values of a type of aggregated active types.
+        /// Set the primal values of an aggregate of active types.
         CODI_INLINE static void setValue(Type& v, Real const& value);
 
         /// Set the identifiers of a type of aggregated active types.
@@ -189,8 +188,8 @@ namespace codi {
      * @brief Tape registration methods for aggregated types that contain CoDiPack active types.
      *
      * An aggregated type is for example std::complex<codi::RealReverse>, which contains two CoDiPack values. The
-     * methods in this class access each of these values in order to register the active types. For `registerInput`, the
-     * real and imaginary part of the complex type are registered.
+     * methods in this class take each of these values into account. For `registerInput`, for example, both the real and
+     * imaginary part of the complex type are registered.
      *
      * @tparam T_Type  Any type that contains a CoDiPack type.
      */
@@ -204,13 +203,13 @@ namespace codi {
 
         using Real = typename DataExtraction<Type>::Real;  ///< See DataExtraction::Real.
 
-        /// Register all active types of a aggregated type as tape input.
+        /// Register all active types of an aggregated type as tape inputs.
         CODI_INLINE static void registerInput(Type& v);
 
-        /// Register all active types of a aggregated type as tape output.
+        /// Register all active types of an aggregated type as tape outputs.
         CODI_INLINE static void registerOutput(Type& v);
 
-        /// Register all active types of a aggregated type as external function outputs.
+        /// Register all active types of an aggregated type as external function outputs.
         CODI_INLINE static Real registerExternalFunctionOutput(Type& v);
     };
 
@@ -232,7 +231,7 @@ namespace codi {
 
         static int constexpr Elements = 0;  ///< Number of elements of the aggregated type.
 
-        /// Array construction of the aggregated type. That is defined as
+        /// Array construction of the aggregated type. It is defined as
         /// \f$ w = T(v_0, v_1, ..., v_N) \f$ where \f$ N \f$  is the number of elements.
         static Type arrayConstructor(InnerType const* v) {
           CODI_UNUSED(v);
@@ -241,7 +240,7 @@ namespace codi {
           return Type{};
         }
 
-        /// Adjoint implementation of element wise construction. That is, T is our aggregated type and the construction
+        /// Adjoint implementation of element-wise construction, that is, T is our aggregated type and the construction
         /// is defined as w = T(v_0, v_1, ..., v_N) where N is the number of elements. Then this function needs to
         /// implement the adjoint formulation of this construction, which is defined as
         ///
@@ -254,8 +253,8 @@ namespace codi {
           return InnerType{};
         }
 
-        /// Implementation of the array access. That is defined as
-        /// \f$ v = w[i] \f$ with \f$ w \f$ is our type.
+        /// Implementation of the array access, which is defined as \f$ v = w[i] \f$ where \f$ w \f$ is an aggregated
+        /// type.
         template<size_t element>
         static InnerType arrayAccess(Type const& w) {
           CODI_UNUSED(w);
@@ -284,7 +283,7 @@ namespace codi {
         }
     };
 
-    /// Base implementation for AggregatedTypeTraits that can be defined as an array.
+    /// Base implementation of AggregatedTypeTraits for aggregated types that can be defined as an array.
     template<typename T_Type, typename T_InnerType, typename T_Real, int T_Elements>
     struct ArrayAggregatedTypeTraitsBase {
       public:

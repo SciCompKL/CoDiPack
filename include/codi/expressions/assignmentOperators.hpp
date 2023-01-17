@@ -107,7 +107,7 @@ namespace codi {
   };
 
   /**
-   * @brief Implementation of assignment operators for LhsExpressionInterface implementations.
+   * @brief Provides assignment operators for LhsExpressionInterface implementations.
    *
    * Implements: +=, -=, *=, /= for Expressions and passive values.
    *

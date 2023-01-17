@@ -1105,7 +1105,7 @@ namespace codi {
 
             static_for<Base::AggregateTraits::Elements>([&](auto i) CODI_LAMBDA_INLINE {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-              adjointVector->setActiveViariableForIndirectAccess(i.value);
+              adjointVector->setActiveVariableForIndirectAccess(i.value);
 #endif
               ExtractExpr<i.value> expr(staticsRhs);
 
@@ -1139,7 +1139,7 @@ namespace codi {
 
               primalVector[lhsIdentifier] = lhsPrimals[iLhs];
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-              adjointVector->setActiveViariableForIndirectAccess(iLhs);
+              adjointVector->setActiveVariableForIndirectAccess(iLhs);
               adjointVector->setLhsTangent(lhsIdentifier);
 #else
               adjointVector[lhsIdentifier] = lhsTangents[iLhs];
@@ -1288,7 +1288,7 @@ namespace codi {
             IncrementReversalLogic incrementReverse;
             static_for<Base::AggregateTraits::Elements>([&](auto i) CODI_LAMBDA_INLINE {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-              adjointVector->setActiveViariableForIndirectAccess(i.value);
+              adjointVector->setActiveVariableForIndirectAccess(i.value);
 #endif
               ExtractExpr<i.value> expr(staticsRhs);
               incrementReverse.eval(expr, Real(1.0), const_cast<Gradient const&>(lhsAdjoints[i.value]), adjointVector);
@@ -1319,7 +1319,7 @@ namespace codi {
               }
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-              adjointVector->setActiveViariableForIndirectAccess(iLhs);
+              adjointVector->setActiveVariableForIndirectAccess(iLhs);
               adjointVector->setLhsAdjoint(lhsIdentifier);
               allZero &= adjointVector->isLhsZero();
 #else
@@ -1491,7 +1491,7 @@ namespace codi {
             }
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-            adjointVector->setActiveViariableForIndirectAccess(0);
+            adjointVector->setActiveVariableForIndirectAccess(0);
             adjointVector->setLhsAdjoint(lhsIdentifier);
 #else
             lhsAdjoints[0] = adjointVector[lhsIdentifier];

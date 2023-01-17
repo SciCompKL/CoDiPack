@@ -126,7 +126,7 @@ namespace codi {
         bool isZero = true;
 
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          innerInterface.setActiveViariableForIndirectAccess(lhsOffset + i.value);
+          innerInterface.setActiveVariableForIndirectAccess(lhsOffset + i.value);
           isZero &= innerInterface.isLhsZero();
         });
 
@@ -139,7 +139,7 @@ namespace codi {
       /// \copydoc codi::VectorAccessInterface::setLhsAdjoint
       CODI_INLINE void setLhsAdjoint(Identifier const& index) {
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          innerInterface.setActiveViariableForIndirectAccess(lhsOffset + i.value);
+          innerInterface.setActiveVariableForIndirectAccess(lhsOffset + i.value);
           innerInterface.setLhsAdjoint(index[i.value]);
         });
       }
@@ -147,7 +147,7 @@ namespace codi {
       /// \copydoc codi::VectorAccessInterface::updateAdjointWithLhs
       CODI_INLINE void updateAdjointWithLhs(Identifier const& index, Real const& jacobian) {
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          innerInterface.setActiveViariableForIndirectAccess(lhsOffset + i.value);
+          innerInterface.setActiveVariableForIndirectAccess(lhsOffset + i.value);
           innerInterface.updateAdjointWithLhs(index[i.value], Traits::template arrayAccess<i.value>(jacobian));
         });
       }
@@ -158,7 +158,7 @@ namespace codi {
       /// \copydoc codi::VectorAccessInterface::setLhsTangent
       CODI_INLINE void setLhsTangent(Identifier const& index) {
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          innerInterface.setActiveViariableForIndirectAccess(lhsOffset + i.value);
+          innerInterface.setActiveVariableForIndirectAccess(lhsOffset + i.value);
           innerInterface.setLhsTangent(index[i.value]);
         });
       }
@@ -166,7 +166,7 @@ namespace codi {
       /// \copydoc codi::VectorAccessInterface::updateTangentWithLhs
       CODI_INLINE void updateTangentWithLhs(Identifier const& index, Real const& jacobian) {
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-          innerInterface.setActiveViariableForIndirectAccess(lhsOffset + i.value);
+          innerInterface.setActiveVariableForIndirectAccess(lhsOffset + i.value);
           innerInterface.updateTangentWithLhs(index[i.value], Traits::template arrayAccess<i.value>(jacobian));
         });
       }
@@ -179,8 +179,8 @@ namespace codi {
         innerInterface.setSizeForIndirectAccess(size * Elements);
       }
 
-      /// \copydoc VectorAccessInterface::setActiveViariableForIndirectAccess()
-      CODI_INLINE void setActiveViariableForIndirectAccess(size_t pos) {
+      /// \copydoc VectorAccessInterface::setActiveVariableForIndirectAccess()
+      CODI_INLINE void setActiveVariableForIndirectAccess(size_t pos) {
         lhsOffset = pos * Elements;
       }
 

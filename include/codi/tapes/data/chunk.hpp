@@ -237,7 +237,7 @@ namespace codi {
       /// \copydoc ChunkBase::pushData
       template<typename Type>
       CODI_INLINE void pushData(Type const& value1) {
-        static_assert(std::is_same<Data1, char>::value, "Typed push data only implemented for byte chunks.");
+        static_assert(std::is_same<Data1, char>::value, "Variable type pushData is only implemented for byte chunks.");
 
         codiAssert(getUnusedSize() != 0);
 

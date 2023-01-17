@@ -43,7 +43,7 @@
 namespace codi {
 
   /**
-   * Pseudo expression that defines a lhs and rhs expression where the rhs is assigned to the lhs.
+   * Pseudo expression that defines an lhs and rhs expression where the rhs is assigned to the lhs.
    *
    * @tparam T_Lhs The type of the left hand side expression that is assigned to.
    * @tparam T_Rhs The type of the right hand side expression that is assigned from.

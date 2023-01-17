@@ -42,7 +42,8 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  struct Self {};  ///< Proxy for detecting a template argument that should be the same as the class.
+  struct Self {};  ///< Proxy for having a template argument defaults to the class itself. See ActiveComplex for a use
+                   ///< case.
 
   // clang-format off
 

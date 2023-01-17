@@ -48,7 +48,7 @@
   #error Please define the operator for the comparison.
 #endif
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef OPERATOR
   #include <complex>
 
@@ -62,7 +62,7 @@
 namespace codi {
 #endif
 
-  // Do not need to define complex complex binding, they are handled by the default real definitions
+  // No need to define complex complex bindings, they are handled by the default real definitions.
 
   /// Function overload for OPERATOR(complex, const real).
   template<typename Real, typename ArgA>
@@ -78,7 +78,7 @@ namespace codi {
     return argA OPERATOR RealTraits::getPassiveValue(argB.cast());
   }
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef OPERATOR
 }
 #endif

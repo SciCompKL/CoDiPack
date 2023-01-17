@@ -90,7 +90,7 @@ namespace codi {
       using type = UnaryExpression<InnerReal, Arg, ArrayAccessOperationImpl<element>::template type>;
   };
 
-  /// Expressions that performs a[element] in a compile time context.
+  /// Expression that performs a[element] in a compile time context.
   template<typename Real, size_t element, typename Arg>
   using ArrayAccessExpression = typename ArrayAccessExpressionImpl<Real>::template type<element, Arg>;
 

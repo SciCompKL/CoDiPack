@@ -51,7 +51,7 @@
   #error Please define the primal function representation.
 #endif
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef FUNCTION
   #include <complex>
 
@@ -74,7 +74,7 @@ namespace std {
     return codi::UnaryExpression<complex<typename Tape::Real>, complex<codi::ActiveType<Tape>>, OPERATION_LOGIC>(arg);
   }
 
-// Create a correct include environment for viewing and programming in an IDE
+// Create a correct include environment for viewing and programming in an IDE.
 #ifndef FUNCTION
 }
 #endif

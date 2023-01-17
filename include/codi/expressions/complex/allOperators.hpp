@@ -60,7 +60,7 @@ namespace codi {
   /// @name Builtin binary operators
   /// @{
 
-// Use the Logic form the real definition
+// Use the Logic from the real definition
 #define OPERATION_LOGIC OperationAdd
 #define FUNCTION operator+
 #include "binaryMixedComplexAndRealOverloads.tpp"

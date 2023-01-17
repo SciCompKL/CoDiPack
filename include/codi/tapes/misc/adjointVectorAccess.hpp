@@ -124,8 +124,8 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::VectorAccessInterface::setActiveViariableForIndirectAccess
-      void setActiveViariableForIndirectAccess(size_t pos) {
+      /// \copydoc codi::VectorAccessInterface::setActiveVariableForIndirectAccess
+      void setActiveVariableForIndirectAccess(size_t pos) {
         codiAssert(pos < lhs.size());
         lhsPos = pos;
       }
