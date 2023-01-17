@@ -83,7 +83,7 @@ namespace codi {
 
       public:
 
-        /// The resulting active type of an expression.
+        /// The resulting AD logic type of an expression.
         using ADLogic = typename std::conditional<isBVoid, LogicA, LogicB>::type;
     };
 
