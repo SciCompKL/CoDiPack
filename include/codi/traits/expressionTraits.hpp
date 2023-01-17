@@ -109,19 +109,6 @@ namespace codi {
     template<typename Real, typename Tape, bool isStatic = false>
     using ActiveResult = typename ActiveResultImpl<Real, Tape, isStatic>::ActiveResult;
 
-    /// Create a CoDiPack active type that can capture the expression result.
-    template<typename T_Expr, bool isStatic = false, typename = void>
-    struct ActiveResultFromExprImpl {
-        using Expr = CODI_DD(T_Expr, CODI_ANY);  ///< See ActiveResultFromExpr.
-
-        /// The resulting active type of an expression.
-        using ActiveResult = Expr;
-    };
-
-    /// \copydoc ActiveResultFromExprImpl
-    template<typename Expr, bool isStatic = false>
-    using ActiveResultFromExpr = typename ActiveResultFromExprImpl<Expr, isStatic>::ActiveResult;
-
     /// @}
     /*******************************************************************************/
     /// @name Detection of specific node types
@@ -279,24 +266,6 @@ namespace codi {
     /// Value entry of NumberOfOperations
     template<typename Expr>
     bool constexpr numberOfOperations = NumberOfOperations<Expr>::value;
-#endif
-
-    /// @}
-    /*******************************************************************************/
-    /// @name Specialization of various definitions.
-    /// @{
-
-#ifndef DOXYGEN_DISABLE
-    // Can not directly be specialized since EnableIfExpression is not available at the time of definition.
-    template<typename T_Expr, bool isStatic>
-    struct ActiveResultFromExprImpl<T_Expr, isStatic, EnableIfExpression<T_Expr>> {
-        using Expr = CODI_DD(T_Expr, CODI_ANY);
-        using Real = typename Expr::Real;
-        using Tape = typename Expr::ADLogic;
-
-        /// The resulting active type of an expression.
-        using ActiveResult = typename ActiveResultImpl<Real, Tape, isStatic>::ActiveResult;
-    };
 #endif
 
     /// @}
