@@ -99,9 +99,9 @@ namespace codi {
         chunk.pushData(data...);
       }
 
-      /// \copydoc DataInterface::getDataPointer
+      /// \copydoc DataInterface::getDataPointers
       template<typename... Data>
-      CODI_INLINE void getDataPointer(Data*&... pointers) {
+      CODI_INLINE void getDataPointers(Data*&... pointers) {
         // This method should only be called if reserveItems has been called.
         chunk.dataPointer(chunk.getUsedSize(), pointers...);
       }

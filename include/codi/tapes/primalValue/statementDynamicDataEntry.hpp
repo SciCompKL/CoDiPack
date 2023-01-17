@@ -139,7 +139,7 @@ namespace codi {
       CODI_INLINE static StatementDynamicDataEntry store(DynamicSizeData& data, StatementSizes const& sizes,
                                                          size_t const& activeArguments) {
         char* dataPointer = nullptr;
-        data.getDataPointer(dataPointer);
+        data.getDataPointers(dataPointer);
         data.addDataSize(computeSize(sizes, activeArguments));
 
         size_t pos = 0;

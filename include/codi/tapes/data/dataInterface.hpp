@@ -118,12 +118,12 @@ namespace codi {
    * data and iterating over the data.
    *
    * Adding data:
-   *  - reserveItems():   Needs to be called before a pushData or getDataPointer call to ensure that enough space is
-   *                      left.
-   *  - pushData():       Add the actual data to the data stream.
-   *  - getDataPointer(): Get pointers to the internally allocated data.
-   *  - addDataSize():    After using pointers obtained by getDataPointer and adding data via these pointers, inform
-   *                      about the number of data items added.
+   *  - reserveItems():    Needs to be called before a pushData or getDataPointers call to ensure that enough space is
+   *                       left.
+   *  - pushData():        Add the actual data to the data stream.
+   *  - getDataPointers(): Get pointers to the internally allocated data.
+   *  - addDataSize():     After using pointers obtained by getDataPointers and adding data via these pointers, inform
+   *                       about the number of data items added.
    *
    * Positional information:
    *   - getPosition(), getZeroPosition(): Global position of the all nested data interfaces.
@@ -156,10 +156,10 @@ namespace codi {
       /// @name Adding items
 
       /**
-       *  @brief Add this many items to the data stream, after the data pointers form getDataPointer have been
+       *  @brief Add this many items to the data stream, after the data pointers form getDataPointers have been
        *         manipulated.
        *
-       *  See getDataPointer for details.
+       *  See getDataPointers for details.
        *
        *  @param[in] size  Number of data items that have been written.
        */
@@ -167,8 +167,8 @@ namespace codi {
 
       /**
        * @brief Get pointers to the data from the storage implementation. The method can only be called after a call to
-       *        reserveItems() and data can only be accessed from 0 to the number given by reserveItems. Afterwards,
-       *        addDataSize() needs to be called with the actual number of elements that have been written.
+       *        reserveItems() and data can only be accessed from 0 to the number given by reserveItems (excluding).
+       *        Afterwards, addDataSize() needs to be called with the actual number of elements that have been written.
        *
        * The call to reserveItems only represents the maximum number of data items that can be accessed safely. It is
        * fine if less data items are accessed.
@@ -186,7 +186,7 @@ namespace codi {
        *    // 2. Add the data.
        *    int* dataInt;
        *    double* dataDouble;
-       *    argVector.getDataPointer(dataInt, dataDouble);
+       *    argVector.getDataPointers(dataInt, dataDouble);
        *    for(int i = 0; i < 5; i += 1) {
        *      dataInt[i] = i + 1;
        *      dataDouble[i] = i + 11;
@@ -200,7 +200,7 @@ namespace codi {
        * @tparam Data Types of the pointers.
        */
       template<typename... Data>
-      CODI_INLINE void getDataPointer(Data*&... pointers);
+      CODI_INLINE void getDataPointers(Data*&... pointers);
 
       /**
        * @brief Add data to the storage allocated by the implementation. The method can only be called after a call to
