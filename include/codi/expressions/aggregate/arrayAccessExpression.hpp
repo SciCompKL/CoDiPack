@@ -42,56 +42,53 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /// Definitions for the ArrayAccessExpression.
+  /// Expression that performs a[element] in a compile time context.
   ///
-  /// @tparam T_Real Return type of the expression.
-  template<typename T_Real>
+  /// Based on the array access operators defined in AggregatedTypeTraits.
+  ///
+  /// @tparam T_Real Aggregated type of a. (E.g. std::complex<double>)
+  /// @tparam T_element Element that is accessed.
+  template<typename T_Aggregated, size_t T_element>
   struct ArrayAccessExpressionImpl {
     public:
-      using Real = CODI_DD(T_Real, CODI_ANY);  ///< See ArrayAccessExpressionImpl.
+      using Aggregated = CODI_DD(T_Aggregated, CODI_ANY);  ///< See ArrayAccessExpressionImpl.
+      static size_t constexpr element = T_element;  ///< See ArrayAccessExpressionImpl.
 
-      using Traits = RealTraits::AggregatedTypeTraits<Real>;  ///< Traits of the aggregated type.
+      using Traits = RealTraits::AggregatedTypeTraits<Aggregated>;  ///< Traits of the aggregated type.
 
       using InnerReal = typename Traits::InnerType;  ///< Inner type of the aggregate.
 
-      /// Implementation of the array access operator for a specific element.
-      /// @tparam T_element Element that is accessed.
-      template<size_t T_element>
-      struct ArrayAccessOperationImpl {
+      /// Operation for array access.
+      /// @tparam T_OpReal Real value of the operator.
+      template<typename T_OpReal>
+      struct ArrayAccessOperation : public UnaryOperation<T_OpReal> {
         public:
-          /// Operation for array access.
-          /// @tparam T_OpReal Real value of the operator.
-          template<typename T_OpReal>
-          struct type : public UnaryOperation<T_OpReal> {
-            public:
 
-              using OpReal = CODI_DD(T_OpReal, double);     ///< See type.
-              static size_t constexpr element = T_element;  ///< See ArrayAccessOperationImpl.
+          using OpReal = CODI_DD(T_OpReal, double);     ///< See type.
 
-              using Jacobian = Real;  ///< Jacobian is the aggregated type.
+          using Jacobian = Aggregated;  ///< Jacobian is the aggregated type.
 
-              /// \copydoc codi::UnaryOperation::primal()
-              template<typename Arg>
-              static CODI_INLINE OpReal primal(Arg const& arg) {
-                return Traits::template arrayAccess<element>(arg);
-              }
+          /// \copydoc codi::UnaryOperation::primal()
+          template<typename Arg>
+          static CODI_INLINE OpReal primal(Arg const& arg) {
+            return Traits::template arrayAccess<element>(arg);
+          }
 
-              /// \copydoc codi::UnaryOperation::gradient()
-              template<typename Arg>
-              static CODI_INLINE Jacobian gradient(Arg const& arg, OpReal const& result) {
-                CODI_UNUSED(result);
-                return Traits::template adjointOfArrayAccess<element>(arg, 1.0);
-              }
-          };
+          /// \copydoc codi::UnaryOperation::gradient()
+          template<typename Arg>
+          static CODI_INLINE Jacobian gradient(Arg const& arg, OpReal const& result) {
+            CODI_UNUSED(result);
+            return Traits::template adjointOfArrayAccess<element>(arg, 1.0);
+          }
       };
 
       /// Definition of the array access expression.
-      template<size_t element, typename Arg>
-      using type = UnaryExpression<InnerReal, Arg, ArrayAccessOperationImpl<element>::template type>;
+      template<typename Arg>
+      using Expression = UnaryExpression<InnerReal, Arg, ArrayAccessOperation>;
   };
 
   /// Expression that performs a[element] in a compile time context.
-  template<typename Real, size_t element, typename Arg>
-  using ArrayAccessExpression = typename ArrayAccessExpressionImpl<Real>::template type<element, Arg>;
+  template<typename Aggregated, size_t element, typename Arg>
+  using ArrayAccessExpression = typename ArrayAccessExpressionImpl<Aggregated, element>::template Expression<Arg>;
 
 }
