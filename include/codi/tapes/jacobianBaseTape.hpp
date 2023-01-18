@@ -269,10 +269,8 @@ namespace codi {
       struct PushJacobianLogic : public JacobianComputationLogic<PushJacobianLogic> {
         public:
           /// General implementation. Checks for invalid and passive values/Jacobians.
-          template<typename Node, typename Jacobian, typename DataVector>
-          CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, DataVector& dataVector) {
-            Real jacobian = jacobianExpr;
-
+          template<typename Node, typename DataVector>
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
               if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
                 if (CODI_ENABLE_CHECK(Config::CheckJacobianIsZero, !RealTraits::isTotalZero(jacobian))) {
@@ -283,12 +281,10 @@ namespace codi {
           }
 
           /// Specialization for ReferenceActiveType nodes. Delays Jacobian push.
-          template<typename Type, typename Jacobian, typename DataVector>
-          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Jacobian jacobianExpr,
+          template<typename Type, typename DataVector>
+          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian,
                                                   DataVector& dataVector) {
             CODI_UNUSED(dataVector);
-
-            Real jacobian = jacobianExpr;
 
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
               // Do a delayed push for these leaf nodes, accumulate the jacobian in the local member.

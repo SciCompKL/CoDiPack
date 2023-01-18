@@ -1078,12 +1078,10 @@ namespace codi {
             public:
 
               /// \copydoc codi::JacobianComputationLogic::handleJacobianOnActive()
-              template<typename Node, typename Jacobian>
-              CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, Gradient& lhsTangent,
+              template<typename Node>
+              CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Gradient& lhsTangent,
                                                       ADJOINT_VECTOR_TYPE* adjointVector) {
                 CODI_UNUSED(lhsTangent);
-
-                Real jacobian = jacobianExpr;
 
                 if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
@@ -1261,12 +1259,10 @@ namespace codi {
             public:
 
               /// See IncrementReversalLogic.
-              template<typename Node, typename Jacobian>
-              CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr,
+              template<typename Node>
+              CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian,
                                                       Gradient const& lhsAdjoint, ADJOINT_VECTOR_TYPE* adjointVector) {
                 CODI_UNUSED(lhsAdjoint);
-
-                Real jacobian = jacobianExpr;
 
                 if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
