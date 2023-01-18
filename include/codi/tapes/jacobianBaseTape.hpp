@@ -370,7 +370,14 @@ namespace codi {
           if (0 != totalNumberOfArguments) {
             freeAndUpdate = false;
 
-            // First get all identifiers to prevent self references
+            // This implementation avoids the creation of self reference adjoint equations. See paper (TODO: add when
+            // released.) Section 4.1 for a detailed description. In short: For e.g. a = a * b with complex numbers
+            // the adjoint assignment of a.i modifies \bar a.r which is used in the adjoint assignment of a.r. This is
+            // wrong since the original value of \bar a.r needs to be used. If now self references are present, this
+            // problem does not arise.
+
+
+            // Create new identifiers to prevent self references.
             std::array<Identifier, Elements> identifiers = {};
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
               if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments[i.value])) {
