@@ -74,6 +74,9 @@ namespace codi {
             T_Type, OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>> {
     public:
       using Type = T_Type;
+      using Base =
+          AtomicInterface<T_Type,
+                          OpenMPAtomicImpl<T_Type, typename std::enable_if<std::is_arithmetic<T_Type>::value>::type>>;
 
     private:
       Type value;
@@ -91,13 +94,13 @@ namespace codi {
       }
 
     public:
-      CODI_INLINE OpenMPAtomicImpl() : value() {}
+      CODI_INLINE OpenMPAtomicImpl() : Base(), value() {}
 
-      CODI_INLINE OpenMPAtomicImpl(OpenMPAtomicImpl const& other) {
+      CODI_INLINE OpenMPAtomicImpl(OpenMPAtomicImpl const& other) : Base() {
         setValue(other.getValue());
       }
 
-      CODI_INLINE OpenMPAtomicImpl(Type const& other) {
+      CODI_INLINE OpenMPAtomicImpl(Type const& other) : Base() {
         setValue(other);
       }
 
@@ -164,6 +167,8 @@ namespace codi {
         public ActiveType<T_Tape> {
     public:
       using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Base = AtomicInterface<ActiveType<T_Tape>,
+                                   OpenMPAtomicImpl<ActiveType<T_Tape>, TapeTraits::EnableIfForwardTape<T_Tape>>>;
       using Type = ActiveType<Tape>;
       using Real = typename Type::Real;
       using Gradient = typename Type::Gradient;
@@ -191,13 +196,13 @@ namespace codi {
       }
 
     public:
-      CODI_INLINE OpenMPAtomicImpl() : Type() {}
+      CODI_INLINE OpenMPAtomicImpl() : Base(), Type() {}
 
-      CODI_INLINE OpenMPAtomicImpl(OpenMPAtomicImpl const& other) : Type() {
+      CODI_INLINE OpenMPAtomicImpl(OpenMPAtomicImpl const& other) : Base(), Type() {
         atomicSetValue(other.atomicGetValue());
       }
 
-      CODI_INLINE OpenMPAtomicImpl(Type const& other) : Type() {
+      CODI_INLINE OpenMPAtomicImpl(Type const& other) : Base(), Type() {
         atomicSetValue(other);
       }
 
