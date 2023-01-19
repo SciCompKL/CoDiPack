@@ -221,26 +221,27 @@ namespace codi {
       using Jacobian = std::complex<Real>;   ///< See UnaryOperation.
 
       /// \copydoc UnaryOperation::primal
-      template<typename Arg>
-      static CODI_INLINE Real primal(Arg const& argument) {
+      template<typename Argument>
+      static CODI_INLINE Real primal(Argument const& argument) {
         return arg(argument);
       }
 
       /// \copydoc UnaryOperation::gradient
-      template<typename Arg>
-      static CODI_INLINE Jacobian gradient(Arg const& argument, Real const& result) {
-        checkResult(result);
+      template<typename Argument>
+      static CODI_INLINE Jacobian gradient(Argument const& argument, Real const& result) {
+
 
         Real divisor = real(argument) * real(argument) + imag(argument) * imag(argument);
+        checkDivisor(divisor);
         divisor = 1.0 / divisor;
 
         return Jacobian(-imag(argument) * divisor, -real(argument) * divisor);
       }
 
     private:
-      static CODI_INLINE void checkResult(Real const& result) {
+      static CODI_INLINE void checkDivisor(Real const& devisor) {
         if (Config::CheckExpressionArguments) {
-          if (RealTraits::getPassiveValue(result) == 0.0) {
+          if (RealTraits::getPassiveValue(devisor) == 0.0) {
             CODI_EXCEPTION("Zero divisor for arg derivative.");
           }
         }
