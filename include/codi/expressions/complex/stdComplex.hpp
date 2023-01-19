@@ -265,6 +265,14 @@ namespace std {
       }
   };
 
+  /// Specialization of operator << for std::complex with active type.
+  template<typename Tape>
+  CODI_INLINE std::ostream& operator<<(std::ostream& out, std::complex<codi::ActiveType<Tape>> const& v) {
+    out << v.getValue();
+
+    return out;
+  }
+
   /// @}
   /*******************************************************************************/
   /// @name Binary operators and standard math library binary function specializations for std::complex.
