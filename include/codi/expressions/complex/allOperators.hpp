@@ -83,22 +83,22 @@ namespace codi {
   /// @{
 
   /// BinaryOperation specialization for complex polar.
-  template<typename T_Real>
-  struct OperationComplexPolar : public BinaryOperation<T_Real> {
+  template<typename T_ComplexReal>
+  struct OperationComplexPolar : public BinaryOperation<T_ComplexReal> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
-      using Jacobian = Real;                 ///< See BinaryOperation.
+      using ComplexReal = CODI_DD(T_ComplexReal, std::complex<double>);  ///< See BinaryOperation.
+      using Jacobian = ComplexReal;                                      ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
+      static CODI_INLINE ComplexReal primal(ArgA const& argA, ArgB const& argB) {
         return polar(argA, argB);
       }
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE ComplexReal gradientA(ArgA const& argA, ArgB const& argB, ComplexReal const& result) {
         CODI_UNUSED(argA, result);
 
         return polar(1.0, argB);
@@ -106,10 +106,10 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE ComplexReal gradientB(ArgA const& argA, ArgB const& argB, ComplexReal const& result) {
         CODI_UNUSED(argA, argB);
 
-        return Real(-imag(result), real(result));
+        return ComplexReal(-imag(result), real(result));
       }
   };
 
@@ -122,17 +122,17 @@ namespace codi {
   struct OperationPow<std::complex<T_Real>> : public BinaryOperation<std::complex<T_Real>> {
     public:
 
-      using Real = CODI_DD(std::complex<T_Real>, double);  ///< See BinaryOperation.
+      using ComplexReal = CODI_DD(std::complex<T_Real>, std::complex<double>);  ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
+      static CODI_INLINE ComplexReal primal(ArgA const& argA, ArgB const& argB) {
         return pow(argA, argB);
       }
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE ComplexReal gradientA(ArgA const& argA, ArgB const& argB, ComplexReal const& result) {
         CODI_UNUSED(result);
 
         return argB * pow(argA, argB - 1.0);
@@ -140,11 +140,11 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE ComplexReal gradientB(ArgA const& argA, ArgB const& argB, ComplexReal const& result) {
         CODI_UNUSED(argB);
 
         // Complex cast for argA, since the real log for negative numbers is not defined.
-        return log(Real(argA)) * result;
+        return log(ComplexReal(argA)) * result;
       }
   };
 
@@ -255,22 +255,22 @@ namespace codi {
   struct RevConj {};  ///< Placeholder to identify the conj operation on the Jacobian.
 
   /// UnaryOperation implementation for complex conj.
-  template<typename T_Real>
-  struct OperationComplexConj : public UnaryOperation<T_Real> {
+  template<typename T_ComplexReal>
+  struct OperationComplexConj : public UnaryOperation<T_ComplexReal> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See UnaryOperation.
-      using Jacobian = RevConj;              ///< See UnaryOperation.
+      using ComplexReal = CODI_DD(T_ComplexReal, std::complex<double>);  ///< See UnaryOperation.
+      using Jacobian = RevConj;                                          ///< See UnaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
-      static CODI_INLINE Real primal(Arg const& arg) {
+      static CODI_INLINE ComplexReal primal(Arg const& arg) {
         return conj(arg);
       }
 
       /// \copydoc UnaryOperation::gradient
       template<typename Arg>
-      static CODI_INLINE Jacobian gradient(Arg const& arg, Real const& result) {
+      static CODI_INLINE Jacobian gradient(Arg const& arg, ComplexReal const& result) {
         CODI_UNUSED(arg, result);
 
         return RevConj();
@@ -342,22 +342,22 @@ namespace codi {
 #include "unaryComplexToRealOverloads.tpp"
 
   /// UnaryOperation implementation for complex proj.
-  template<typename T_Real>
-  struct OperationComplexProj : public UnaryOperation<T_Real> {
+  template<typename T_ComplexReal>
+  struct OperationComplexProj : public UnaryOperation<T_ComplexReal> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See UnaryOperation.
-      using Jacobian = double;               ///< See UnaryOperation.
+      using ComplexReal = CODI_DD(T_ComplexReal, std::complex<double>);  ///< See UnaryOperation.
+      using Jacobian = double;                                           ///< See UnaryOperation.
 
       /// \copydoc UnaryOperation::primal
       template<typename Arg>
-      static CODI_INLINE Real primal(Arg const& argument) {
+      static CODI_INLINE ComplexReal primal(Arg const& argument) {
         return proj(argument);
       }
 
       /// \copydoc UnaryOperation::gradient
       template<typename Arg>
-      static CODI_INLINE Jacobian gradient(Arg const& argument, Real const& result) {
+      static CODI_INLINE Jacobian gradient(Arg const& argument, ComplexReal const& result) {
         CODI_UNUSED(argument, result);
 
         return 1.0;
