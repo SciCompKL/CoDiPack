@@ -201,14 +201,4 @@ struct TestComplexTwoArgumentExpr1 : public TestInterface {
 
       assignToReal(y, yC, out_complex_count);
     }
-
-    template<typename Arg>
-    static codi::RealTraits::PassiveReal<Arg> passive(Arg const& arg) {
-      return codi::RealTraits::getPassiveValue(arg);
-    }
-
-    template<typename Arg>
-    static std::complex<codi::RealTraits::PassiveReal<Arg>> passive(std::complex<Arg> const& arg) {
-      return {codi::RealTraits::getPassiveValue(std::real(arg)), codi::RealTraits::getPassiveValue(std::imag(arg))};
-    }
 };

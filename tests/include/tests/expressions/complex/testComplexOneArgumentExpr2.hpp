@@ -86,10 +86,10 @@ struct TestComplexOneArgumentExpr2 : public TestInterface {
 
       assignToComplex(xC, x, in_complex_count);
 
-      yC[0] = asinh(xC[0]);  // R x R \ {0} x R
-      yC[1] = asin(xC[0]);   // R x R \ R^+ x {0}
-      yC[2] = acos(xC[0]);   // R x R \ R^+ x {0}
-      yC[3] = sqrt(xC[0]);   // R x R \ {0} x R
+      yC[0] = asinh(xC[0]);  // R x R \ {{0, 1}, {0, -1}}
+      yC[1] = asin(xC[0]);   // R x R \ {{1, 0}, {-1, 0}}
+      yC[2] = acos(xC[0]);   // R x R \ {{1, 0}, {-1, 0}}
+      yC[3] = sqrt(xC[0]);   // R x R \ {0, 0}
 
       assignToReal(y, yC, out_complex_count);
     }
