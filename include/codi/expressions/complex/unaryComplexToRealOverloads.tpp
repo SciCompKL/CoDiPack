@@ -34,6 +34,10 @@
  */
 
 /*
+ * This file defines function overloads of the kind:
+ *
+ * UnaryExpression<Real, ...> FUNCTION(ExpressionInterface<std::complex<Real>, Arg> const&);
+ *
  * In order to include this file the user has to define the preprocessor macro OPERATION_LOGIC and FUNCTION.
  * OPERATION_LOGIC contains the name of the operation logic class. FUNCTION represents the normal name of that function
  * e.g. 'operator -' or 'sin'.

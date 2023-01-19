@@ -34,6 +34,13 @@
  */
 
 /*
+ * This file defines function overloads of the kind:
+ *
+ * BinaryExpression<std::complex<Real>, ...> FUNCTION(ExpressionInterface<Real, ArgA> const&, ExpressionInterface<Real, ArgB> const&);
+ * BinaryExpression<std::complex<Real>, ...> FUNCTION(ExpressionInterface<Real, ArgA> const&, PassiveReal const&);
+ * BinaryExpression<std::complex<Real>, ...> FUNCTION(PassiveReal const&,                     ExpressionInterface<Real, ArgB> const&);
+ * BinaryExpression<std::complex<Real>, ...> FUNCTION(ActiveType const&,                      ActiveType const&)
+ *
  * In order to include this file the user has to define the preprocessor macros OPERATION_LOGIC and FUNCTION.
  * OPERATION_LOGIC contains the name of the operation logic class. FUNCTION represents the normal name of that function
  * e.g. 'operator -' or 'sin'.
@@ -79,7 +86,7 @@ namespace codi {
         AdjointComplexToRealCast<Real, ArgA>(argA), AdjointComplexToRealCast<Real, ArgB>(argB));
   }
 
-  /// Function overload for FUNCTION(real, const real).
+  /// Function overload for FUNCTION(real, passive real).
   template<typename Real, typename ArgA>
   CODI_INLINE BinaryExpression<std::complex<Real>, AdjointComplexToRealCast<Real, ArgA>,
                                ConstantExpression<RealTraits::PassiveReal<Real>>, OPERATION_LOGIC>
@@ -89,7 +96,7 @@ namespace codi {
         AdjointComplexToRealCast<Real, ArgA>(argA), ConstantExpression<RealTraits::PassiveReal<Real>>(argB));
   }
 
-  /// Function overload for FUNCTION(const real, real).
+  /// Function overload for FUNCTION(passive real, real).
   template<typename Real, typename ArgB>
   CODI_INLINE BinaryExpression<std::complex<Real>, ConstantExpression<RealTraits::PassiveReal<Real>>,
                                AdjointComplexToRealCast<Real, ArgB>, OPERATION_LOGIC>

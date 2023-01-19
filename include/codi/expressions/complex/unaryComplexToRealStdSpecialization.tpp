@@ -34,6 +34,12 @@
  */
 
 /*
+ * This file defines function overloads of the kind:
+ *
+ * namespace std {
+ *  codi::UnaryExpression<Real, ...> FUNCTION(complex<codi::ActiveType> const&);
+ * }
+ *
  * In order to include this file the user has to define the preprocessor macros OPERATION_LOGIC and FUNCTION.
  * OPERATION_LOGIC contains the name of the operation logic class. FUNCTION represents the normal name of that function
  * e.g. 'operator -' or 'sin'.

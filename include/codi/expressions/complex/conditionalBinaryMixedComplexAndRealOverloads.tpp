@@ -34,6 +34,12 @@
  */
 
 /*
+ * This file defines function overloads of the kind:
+ *
+ * The (complex, complex) case is not defined, since it is handled by the real definitions.
+ * bool operator OPERATOR(ExpressionInterface<std::complex<Real>, ArgA> const&, PassiveReal const&);
+ * bool operator OPERATOR(PassiveReal const&,                                   ExpressionInterface<std::complex<Real>, ArgB> const&)
+ *
  * In order to include this file the user has to define the preprocessor macros OPERATION_LOGIC and FUNCTION.
  * OPERATION_LOGIC contains the name of the operation logic class. FUNCTION represents the normal name of that function
  * e.g. 'operator -' or 'sin'.
@@ -62,16 +68,16 @@
 namespace codi {
 #endif
 
-  // No need to define complex complex bindings, they are handled by the default real definitions.
+  // No need to define (complex, complex) bindings, they are handled by the default real definitions.
 
-  /// Function overload for OPERATOR(complex, const real).
+  /// Function overload for OPERATOR(complex, passive real).
   template<typename Real, typename ArgA>
   CODI_INLINE bool operator OPERATOR(ExpressionInterface<std::complex<Real>, ArgA> const& argA,
                                      RealTraits::PassiveReal<Real> const& argB) {
     return RealTraits::getPassiveValue(argA.cast()) OPERATOR argB;
   }
 
-  /// Function overload for OPERATOR(const real, complex).
+  /// Function overload for OPERATOR(passive real, complex).
   template<typename Real, typename ArgB>
   CODI_INLINE bool operator OPERATOR(RealTraits::PassiveReal<Real> const& argA,
                                      ExpressionInterface<std::complex<Real>, ArgB> const& argB) {
