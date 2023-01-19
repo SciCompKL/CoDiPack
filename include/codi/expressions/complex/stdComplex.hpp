@@ -47,7 +47,7 @@
 #include "../expressionMemberOperations.hpp"
 #include "../real/binaryOperators.hpp"
 #include "../real/unaryOperators.hpp"
-#include "../static/staticContextAggregateActiveType.hpp"
+#include "../static/staticContextAggregatedActiveType.hpp"
 #include "../unaryExpression.hpp"
 #include "allOperators.hpp"
 
