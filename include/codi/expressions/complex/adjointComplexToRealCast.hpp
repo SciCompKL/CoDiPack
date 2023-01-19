@@ -47,16 +47,20 @@ namespace codi {
   struct ReduceToReal {};  ///< Placeholder to identify the operation on the Jacobian.
 
   /**
-   * Returns a proxy object for the gradient that implements the operation in the multiplication of the proxy.
+   * @brief Returns a proxy object for the gradient that implements the operation in the multiplication of the proxy.
    *
-   * @tparam T_Real  Original primal value of the statement/expression.
+   * In CoDiPack the Jacobian is applied to other Jacobians via multiplication. Since the adjoint of this operation can
+   * not be described by a complex or floating point value, that would apply the same logic, a place holder is required.
+   * With this placeholder the multiplication operation is specialized and the custom logic is evaluated.
+   *
+   * @tparam T_Real  Original primal value of the statement/expression. (E.g. for double for complex<double>.)
    */
   template<typename T_Real>
-  struct OperationCastRealToComplex : public UnaryOperation<T_Real> {
+  struct OperationAdjointComplexToRealCast : public UnaryOperation<T_Real> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See OperationCastRealToComplex.
-      using Jacobian = ReduceToReal;         ///< See OperationCastRealToComplex.
+      using Real = CODI_DD(T_Real, double);  ///< See OperationAdjointComplexToRealCast.
+      using Jacobian = ReduceToReal;         ///< See OperationAdjointComplexToRealCast.
 
       /// \copydoc codi::UnaryOperation::primal
       template<typename Arg>
@@ -64,7 +68,7 @@ namespace codi {
         return arg;
       }
 
-      /// See OperationCastRealToComplex.
+      /// See OperationAdjointComplexToRealCast.
       template<typename Arg>
       static CODI_INLINE ReduceToReal gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg, result);
@@ -73,17 +77,18 @@ namespace codi {
       }
   };
 
-  /// Expression that converts in the adjoint evaluation a complex to the real part.
+  /// Expression that converts in the adjoint evaluation a complex to the real part. See
+  /// OperationAdjointComplexToRealCast for details.
   template<typename T_Real, typename T_Arg>
-  using AdjointComplexToRealCast = UnaryExpression<T_Real, T_Arg, OperationCastRealToComplex>;
+  using AdjointComplexToRealCast = UnaryExpression<T_Real, T_Arg, OperationAdjointComplexToRealCast>;
 
-  /// See codi::OperationCastRealToComplex.
+  /// See codi::OperationAdjointComplexToRealCast.
   template<typename Real>
   CODI_INLINE Real operator*(ReduceToReal, std::complex<Real> const& adjoint) {
     return adjoint.real();
   }
 
-  /// See codi::OperationCastRealToComplex.
+  /// See codi::OperationAdjointComplexToRealCast.
   template<typename Real, typename Arg>
   CODI_INLINE ExpressionTraits::ActiveResult<Real, typename Arg::ADLogic> operator*(
       ReduceToReal, ExpressionInterface<std::complex<Real>, Arg> const& adjoint) {
