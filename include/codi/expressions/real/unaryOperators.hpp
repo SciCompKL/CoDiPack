@@ -137,7 +137,7 @@ namespace codi {
         } else if (arg > 0.0) {
           return (Real)1.0;
         } else {
-          return (Real)1.0;
+          return (Real)0.0;
         }
       }
   };

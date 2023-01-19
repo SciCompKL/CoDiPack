@@ -194,7 +194,7 @@ namespace codi {
         if (result != 0.0) {
           return Jacobian(real(arg) / result, -imag(arg) / result);
         } else {
-          return Jacobian(1.0);
+          return Jacobian(0.0);
         }
       }
 
