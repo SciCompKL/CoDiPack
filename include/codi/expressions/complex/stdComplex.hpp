@@ -64,6 +64,7 @@ namespace codi {
   struct ExpressionMemberOperations<
       T_Real, T_Impl,
       typename std::enable_if<std::is_same<T_Real, std::complex<typename T_Real::value_type>>::value>::type> {
+    public:
       using Real = CODI_DD(T_Real, std::complex<double>);                     ///< See ExpressionMemberOperations.
       using Impl = CODI_DD(T_Impl, CODI_T(ExpressionInterface<Real, void>));  ///< See ExpressionMemberOperations.
 
@@ -101,6 +102,11 @@ namespace codi {
   }
 
   /// Implementation of AggregatedActiveType for complex types.
+  ///
+  /// This class implements the full interface of std::complex. It does not specialize std::complex directly for active
+  /// types. This makes it possible to avoid specializations in the std namespace and integrating complex numbers in
+  /// the expression tree.
+  ///
   /// @tparam T_InnerActive The active type which is used in the inner store.
   /// @tparam T_Impl The implementation if it extends this class, otherwise nothing.
   template<typename T_InnerActive, typename T_Impl = Self>
@@ -133,13 +139,13 @@ namespace codi {
       using Base::operator=;  ///< Use Base assign operators.
 
       using AssignReal::operator+=;     ///< Use real operator +=
-      using AssignComplex::operator+=;  ///< Use real operator +=
+      using AssignComplex::operator+=;  ///< Use complex operator +=
       using AssignReal::operator-=;     ///< Use real operator -=
-      using AssignComplex::operator-=;  ///< Use real operator -=
+      using AssignComplex::operator-=;  ///< Use complex operator -=
       using AssignReal::operator*=;     ///< Use real operator *=
-      using AssignComplex::operator*=;  ///< Use real operator *=
+      using AssignComplex::operator*=;  ///< Use complex operator *=
       using AssignReal::operator/=;     ///< Use real operator /=
-      using AssignComplex::operator/=;  ///< Use real operator /=
+      using AssignComplex::operator/=;  ///< Use complex operator /=
 
       /// Constructor.
       template<typename ArgR>
@@ -225,6 +231,9 @@ namespace std {
   /// @{
 
   /// Specialization of std::complex for CoDiPack types.
+  ///
+  /// The full interface is already implemented in ActiveComplex. This implementation just forwards the necessary
+  /// operators.
   /// @tparam T_Tape  The tape that manages all expressions created with this type.
   template<typename T_Tape>
   class complex<codi::ActiveType<T_Tape>>
@@ -258,7 +267,16 @@ namespace std {
 
   /// @}
   /*******************************************************************************/
-  /// @name Binary  operators and standard math library binary functions
+  /// @name Binary operators and standard math library binary function specializations for std::complex.
+  ///
+  /// They specialize the functions with std::complex arguments for the expression template version.
+  ///
+  /// Default pow also fits Real=codi::RealReverse and would not add this function to the expression tree.
+  /// template<Real> complex<Real> pow(complex<Real>, complex<Real>);
+  ///
+  /// Therefore we specialize for ActiveType so that the function is added to the expression tree.
+  /// template<Tape> complex<ActiveType<Tape>> pow(complex<ActiveType<Tape>>, complex<ActiveType<Tape>>);
+  ///
   /// @{
 
   #define FUNCTION operator+
@@ -285,7 +303,16 @@ namespace std {
 
   /// @}
   /*******************************************************************************/
-  /// @name Unary operators and standard math library unary functions
+  /// @name Unary operators and standard math library unary function specializations for std::complex.
+  ///
+  /// They specialize the functions with std::complex arguments for the expression template version.
+  ///
+  /// Default sin also fits Real=codi::RealReverse and would not add this function to the expression tree.
+  /// template<Real> complex<Real> sin(complex<Real>);
+  ///
+  /// Therefore we specialize for ActiveType so that the function is added to the expression tree.
+  /// template<Tape> complex<ActiveType<Tape>> sin(complex<ActiveType<Tape>>);
+  ///
   /// @{
 
   /// Function overload for operator +
