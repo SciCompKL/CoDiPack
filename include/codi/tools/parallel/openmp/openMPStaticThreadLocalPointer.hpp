@@ -54,22 +54,25 @@ namespace codi {
       using Owner = CODI_DD(T_Owner, CODI_ANY);  ///< See OpenMPStaticThreadLocalPointer.
 
     private:
-      static Type* value;
-      CODI_OMP_THREADPRIVATE(value)
+      // Returning the static thread local pointer from a function works around a tls bug of gcc,
+      // see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66944 for details.
+      static CODI_INLINE Type*& getPtr() {
+        static Type* value = new Type();
+        CODI_OMP_THREADPRIVATE(value)
+
+        return value;
+      }
 
     public:
 
       /// \copydoc StaticThreadLocalPointerInterface::set
       static CODI_INLINE void set(Type* other) {
-        value = other;
+        getPtr() = other;
       }
 
       /// \copydoc StaticThreadLocalPointerInterface::get
       static CODI_INLINE Type* get() {
-        return value;
+        return getPtr();
       }
   };
-
-  template<typename Type, typename Owner>
-  Type* OpenMPStaticThreadLocalPointer<Type, Owner>::value = new Type();
 }
