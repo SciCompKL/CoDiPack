@@ -1,4 +1,4 @@
-//! [Example 20 - Aggregated active type handling]
+//! [Example 20 - Aggregated active type handling in external functions]
 
 #include <codi.hpp>
 #include <iostream>
@@ -103,4 +103,4 @@ int main(int nargs, char** args) {
 
   return 0;
 }
-//! [Example 20 - Aggregated active type handling]
+//! [Example 20 - Aggregated active type handling in external functions]

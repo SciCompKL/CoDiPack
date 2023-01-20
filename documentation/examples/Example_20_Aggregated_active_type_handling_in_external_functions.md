@@ -1,4 +1,4 @@
-Example 20 - Aggregated active type handling {#Example_20_Aggregated_active_type_handling}
+Example 20 - Aggregated active type handling in external functions {#Example_20_Aggregated_active_type_handling_in_external_functions}
 =======
 
 **Goal:** Learn how to generalize the data extraction for external functions.
@@ -6,10 +6,10 @@ Example 20 - Aggregated active type handling {#Example_20_Aggregated_active_type
 **Prequesties:** \ref Example_11_External_function_user_data
 
 **Function:** \ref func_simple1to1
-\snippet examples/Example_20_Aggregated_active_type_handling.cpp Function
+\snippet examples/Example_20_Aggregated_active_type_handling_in_external_functions.cpp Function
 
 **Full code:**
-\snippet examples/Example_20_Aggregated_active_type_handling.cpp Example 20 - Aggregated active type handling
+\snippet examples/Example_20_Aggregated_active_type_handling_in_external_functions.cpp Example 20 - Aggregated active type handling in external functions
 
 
 The example shows how a function that can be called with `double` and `std::complex<double>` can be differentiated with

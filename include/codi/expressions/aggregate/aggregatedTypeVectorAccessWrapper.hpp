@@ -63,8 +63,8 @@ namespace codi {
    * RealTraits::DataExtraction for a generalized access to the primal and identifier data of aggregated types.
    *
    * Here is an example for a generalized external function routine
-   * (documentation/examples/Example_20_Aggregated_active_type_handling.cpp): \snippet
-   * examples/Example_20_Aggregated_active_type_handling.cpp Typed external function
+   * (documentation/examples/Example_20_Aggregated_active_type_handling_in_external_functions.cpp): \snippet
+   * examples/Example_20_Aggregated_active_type_handling_in_external_functions.cpp Typed external function
    *
    * In general all implementations of the wrapper will forward all functions calls to the VectorAccessInterface of
    * the underlying tape. For each active type in the structure the corresponding operation should be performed.

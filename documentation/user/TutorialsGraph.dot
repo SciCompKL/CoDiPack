@@ -56,7 +56,7 @@ digraph Tutorials {
 
   E19 [label="E19 - Evaluation helper handle creation"];
 
-  E20 [label="E20 - Aggregated active type handling"];
+  E20 [label="E20 - Aggregated active type handling in external functions"];
 
   E21 [label="E21 - Special handling of linear system solvers"];
 
