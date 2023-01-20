@@ -4,6 +4,7 @@ Changelog {#Changelog}
 ### v 2.?.? - ???-??-??
  - Features:
   * New helper for adding Enzyme-generated derivative functions to the tape. See \ref Example_24_Enzyme_external_function_helper.
+  * Recover primal values from primal values tapes in ExternalFunctionHelper.
 
  - Bugfix:
   * Uninitialized values in external function helper.
