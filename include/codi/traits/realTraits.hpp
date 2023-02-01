@@ -342,6 +342,7 @@ namespace codi {
           CODI_UNUSED(w);
 
           Type w_b{};
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {w_b[i.value] = InnerType(); });
 
           InnerType* w_bArray = reinterpret_cast<InnerType*>(&w_b);
           w_bArray[element] = v_b;

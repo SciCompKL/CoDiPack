@@ -106,7 +106,7 @@ namespace codi {
 /// Has to be used in the codi namespace.
 #define CODI_CREATE_TRANSPOSE(Type, RType, trans)     \
   template<>                                          \
-  struct ComputationTraits::Transpose<Type> {         \
+  struct ComputationTraits::TransposeImpl<Type> {     \
     public:                                           \
       using Jacobian = Type;                          \
       using Return = RType;                           \
