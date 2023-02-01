@@ -88,7 +88,6 @@ namespace codi {
     public:
 
       using ComplexReal = CODI_DD(T_ComplexReal, std::complex<double>);  ///< See BinaryOperation.
-      using Jacobian = ComplexReal;                                      ///< See BinaryOperation.
 
       /// \copydoc codi::BinaryOperation::primal()
       template<typename ArgA, typename ArgB>

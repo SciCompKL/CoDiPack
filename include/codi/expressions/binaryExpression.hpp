@@ -56,7 +56,8 @@ namespace codi {
   struct BinaryOperation {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);     ///< See BinaryOperation.
+      using Jacobian = std::tuple<Real, Real>;  ///< Can be overwritten by the implementation.
 
       /// Compute the primal value from the arguments.
       ///
@@ -68,13 +69,13 @@ namespace codi {
       ///
       /// The type of the arguments is the type of the result of a getValue call on the expressions.
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result);
+      static CODI_INLINE std::tuple_element_t<0, Jacobian> gradientA(ArgA const& argA, ArgB const& argB, Real const& result);
 
       /// Compute the gradient with respect to the second argument
       ///
       /// The type of the arguments is the type of the result of a getValue call on the expressions.
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result);
+      static CODI_INLINE std::tuple_element_t<1, Jacobian> gradientB(ArgA const& argA, ArgB const& argB, Real const& result);
   };
 
   /**
@@ -94,6 +95,8 @@ namespace codi {
       using ArgA = CODI_DD(T_ArgA, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
       using ArgB = CODI_DD(T_ArgB, CODI_T(ExpressionInterface<double, CODI_ANY>));          ///< See BinaryExpression.
       using Operation = CODI_DD(CODI_T(T_Operation<Real>), CODI_T(BinaryOperation<Real>));  ///< See BinaryExpression.
+
+      using Jacobian = typename Operation::Jacobian;  ///< Jacobian defined by the operation.
 
       typename ArgA::StoreAs argA;  ///< First argument of the expression.
       typename ArgB::StoreAs argB;  ///< Second argument of the expression.
@@ -122,14 +125,36 @@ namespace codi {
         return result;
       }
 
+#ifndef DOXYGEN_DISABLE
+    private:
+
+      // The 'Temp' template parameter makes the switch a partial specialization which we can do in this class.
+      // Without it, we would need to specialize 'CallSwitch'it ouside of 'BinaryExpression'.
+      template<typename Temp, bool derivB = false>
+      struct CallSwitch {
+        public:
+          template<typename... Args>
+          CODI_INLINE static auto call(Args&&... args) {
+            return Operation::gradientA(std::forward<Args>(args)...);
+          }
+      };
+
+      template<typename Temp>
+      struct CallSwitch<Temp, true> {
+        public:
+          template<typename... Args>
+          CODI_INLINE static auto call(Args&&... args) {
+            return Operation::gradientB(std::forward<Args>(args)...);
+          }
+      };
+
+    public:
+#endif
+
       /// \copydoc codi::ExpressionInterface::getJacobian()
       template<size_t argNumber>
-      CODI_INLINE Real getJacobian() const {
-        if (0 == argNumber) {
-          return Operation::gradientA(argA.getValue(), argB.getValue(), result);
-        } else {
-          return Operation::gradientB(argA.getValue(), argB.getValue(), result);
-        }
+      CODI_INLINE std::tuple_element_t<argNumber, Jacobian> getJacobian() const {
+        return CallSwitch<void, 1 == argNumber>::call(argA.getValue(), argB.getValue(), result);
       }
 
       /// @}
