@@ -4,6 +4,7 @@ Changelog {#Changelog}
 ### v 2.?.? - ???-??-??
  - Bugfix:
   * Uninitialized values in external function helper.
+  * External function outputs in Jacobian tapes no longer use unused indices.
 
 ### v 2.1.0 - 2023-05-10
  - Features:
