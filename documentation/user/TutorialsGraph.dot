@@ -16,6 +16,8 @@ digraph Tutorials {
 
   T06 [label="T6 - Higher order types helper acces"];
 
+  T07 [label="T7 - Aggregated type implementation"];
+
   // Example nodes
   node [shape=box color=green];
   E01 [label="E1 - Old tangent leftovers forward mode"];
@@ -82,6 +84,7 @@ digraph Tutorials {
   T02:e -> T04:w;
   T02:e -> T05:w;
   T02:e -> T06:w;
+  T02:e -> T07:w;
   T02:e -> E21:w;
   T04:e -> E02:w;
   T06:e -> E04:w;

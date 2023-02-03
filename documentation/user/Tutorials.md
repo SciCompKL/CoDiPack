@@ -15,6 +15,7 @@ or pointers to other features.
 | \subpage Tutorial_04_Vector_mode_AD "" | Vector mode examples with CoDiPack. |
 | \subpage Tutorial_05_Repeated_tape_recordings "" | How different tapes are recorded in in CoDiPack. |
 | \subpage Tutorial_06_Higher_order_types_helper_acces "" | Describes how higher order AD types can be constructed and used. |
+| \subpage Tutorial_07_Aggregated_type_implementation "" | Explains how aggregated types can be added to CoDiPack. |
 
 
 | Example | |

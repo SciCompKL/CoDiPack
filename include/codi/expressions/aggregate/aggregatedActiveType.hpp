@@ -146,7 +146,7 @@ namespace codi {
    * of values. In addition this class needs to be extended and special constructors and assignment operators need
    * to be implemented.
    *
-   * TODO: Link Example
+   * An example is described in \ref Tutorial_07_Aggregated_type_implementation.
    *
    * @tparam T_Real Real value of the aggregated type. (E.g. std::complex<double>)
    * @tparam T_InnerActiveType CoDiPack type that composes the aggregated type. (E.g. codi::RealReverse)
