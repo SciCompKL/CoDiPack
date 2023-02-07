@@ -34,23 +34,37 @@
  */
 #pragma once
 
-#define TestStatement 1
-#define TestPreacc 2
-#define TestTape 3
-#define TestAggregates 4
+#include <codi.hpp>
 
-#ifndef TEST_NAME
-  #error Please define TEST_NAME as one of the tests.
-#endif
+template<typename ActiveType>
+void test(size_t nInputs, ActiveType* inputs, size_t nOutputs, ActiveType* outputs) {
+  // process inputs
 
-#if (TEST_NAME == TestStatement)
-  #include "testStatement.hpp"
-#elif (TEST_NAME == TestPreacc)
-  #include "testPreacc.hpp"
-#elif (TEST_NAME == TestTape)
-  #include "testTape.hpp"
-#elif (TEST_NAME == TestAggregates)
-  #include "testAggregates.hpp"
-#else
-  #error Unknown test, please define TEST_NAME as one of the tests.
-#endif
+  std::cout << "# Active type computations" << std::endl;
+
+  if(nInputs < 4) {
+    std::cerr << "Test requires at least 4 inputs." << std::endl;
+  }
+  if(nOutputs < 4) {
+    std::cerr << "Test requires at least 4 outputs." << std::endl;
+  }
+
+  std::complex<ActiveType> a(inputs[0], inputs[1]);
+  std::complex<ActiveType> b(inputs[0], inputs[1]);
+
+  // active type
+
+  std::complex<ActiveType> x = 0.0;    // passive
+  std::complex<ActiveType> y = a;      // copy
+  std::complex<ActiveType> z = a * b;  // expression
+
+  x = a * b;  // expression
+  y = b;      // copy
+  z = 2.0;    // passive
+
+  std::cout << "# Assign outputs" << std::endl;
+  outputs[0] = a.real();
+  outputs[1] = a.imag();
+  outputs[2] = b.real();
+  outputs[3] = b.imag();
+}

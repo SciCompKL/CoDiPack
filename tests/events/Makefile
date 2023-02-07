@@ -87,7 +87,7 @@ secondOrderTypes = $(foreach type,$(scalarTypes),$(type)Sec)
 
 allTypes = $(scalarTypes) $(vectorTypes) $(secondOrderTypes)
 
-allTests = Tape Statement Preacc
+allTests = Tape Statement Preacc Aggregates
 
 $(info [info] all types: $(allTypes))
 $(info [info] all tests: $(allTests))
