@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/compileTimeLoop.hpp"
 #include "../../misc/macros.hpp"
+#include "../../misc/eventSystem.hpp"
 #include "../../traits/realTraits.hpp"
 #include "../logic/constructStaticContext.hpp"
 #include "arrayConstructorJacobian.hpp"
@@ -170,12 +171,12 @@ namespace codi {
       /// Constructor.
       template<typename Expr>
       CODI_INLINE AggregatedActiveType(ExpressionInterface<Real, Expr> const& expr) : Base() {
-        store(expr);
+        store(expr, EventHints::Statement::Expression);
       }
 
       /// Constructor.
       CODI_INLINE AggregatedActiveType(AggregatedActiveType const& expr) : Base() {
-        store(expr);
+        store(expr, EventHints::Statement::Copy);
       }
 
       /// Constructor.
@@ -188,14 +189,14 @@ namespace codi {
       /// Assign operation.
       template<typename Expr>
       CODI_INLINE Impl& operator=(ExpressionInterface<Real, Expr> const& expr) {
-        store(expr);
+        store(expr, EventHints::Statement::Expression);
 
         return Base::cast();
       }
 
       /// Assign operation.
       CODI_INLINE Impl& operator=(AggregatedActiveType const& expr) {
-        store(expr);
+        store(expr, EventHints::Statement::Copy);
 
         return Base::cast();
       }
@@ -213,8 +214,15 @@ namespace codi {
 
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
       template<typename Rhs>
-      CODI_INLINE void store(ExpressionInterface<Real, Rhs> const& rhs) {
-        InnerActiveType::getTape().store(*this, rhs);
+      CODI_INLINE void store(ExpressionInterface<Real, Rhs> const& rhs, EventHints::Statement const& eventType) {
+        static_for<Traits::Elements>([&] (auto i) {
+          InnerActiveType& lhs = Base::values[i.value];
+          EventSystem<typename InnerActiveType::Tape>::notifyStatementPrimalListeners(
+                InnerActiveType::getTape(), lhs.getValue(), lhs.getIdentifier(),
+                Traits::template arrayAccess<i.value>(rhs.cast().getValue()), eventType);
+        });
+
+        InnerActiveType::getTape().store(*this, rhs.cast());
       }
   };
 }

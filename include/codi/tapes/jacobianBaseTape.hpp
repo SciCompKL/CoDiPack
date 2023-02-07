@@ -389,6 +389,7 @@ namespace codi {
 
             // Update all lhs entries
             Aggregated real = rhs.cast().getValue();
+            size_t eventJacobianOffset = 0;
 
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
               indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
@@ -397,6 +398,20 @@ namespace codi {
                 lhs.values[i.value].getIdentifier() = identifiers[i.value];
                 cast().pushStmtData(lhs.values[i.value].getIdentifier(),
                                     (Config::ArgumentSize)numberOfArguments[i.value]);
+
+                if (Config::StatementEvents) {
+                  Real* jacobians;
+                  Identifier* rhsIdentifiers;
+                  jacobianData.getDataPointers(jacobianStart, jacobians, rhsIdentifiers);
+
+                  EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), lhs.values[i.value].getIdentifier(),
+                                                                         AggregatedTraits::template arrayAccess<i.value>(real),
+                                                                         numberOfArguments[i.value],
+                                                                         &rhsIdentifiers[eventJacobianOffset],
+                                                                         &jacobians[eventJacobianOffset]);
+
+                  eventJacobianOffset += numberOfArguments[i.value];
+                }
               }
 
               lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
@@ -412,6 +427,35 @@ namespace codi {
             indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
           });
         }
+      }
+
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
+      /// Optimization for copy statements of aggregated types.
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             AggregatedActiveType<Aggregated, Type, Rhs> const& rhs) {
+        using AggregatedTraits = RealTraits::AggregatedTypeTraits<Aggregated>;
+
+        int constexpr Elements = AggregatedTraits::Elements;
+
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
+          if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
+            store(lhs, static_cast<ExpressionInterface<Aggregated, Rhs> const&>(rhs));
+            return;
+          } else {
+            static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+              indexManager.get().template copyIndex<Impl>(lhs.values[i.value].getIdentifier(), rhs.values[i.value].getIdentifier());
+            });
+          }
+        } else {
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+          });
+        }
+
+        static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+          lhs.values[i.value].value() = rhs.values[i.value].getValue();
+        });
       }
 
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store()

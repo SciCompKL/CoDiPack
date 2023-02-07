@@ -123,7 +123,7 @@ namespace codi {
 
       using InnerReal = typename InnerActive::Real;                  ///< Inner real value.
       using Real = std::complex<InnerReal>;                          ///< Complex value with the inner real.
-      using PassiverInnerReal = RealTraits::PassiveReal<InnerReal>;  ///< Passive inner value.
+      using PassiveInnerReal = RealTraits::PassiveReal<InnerReal>;  ///< Passive inner value.
 
       using Base = AggregatedActiveType<Real, InnerActive, Impl>;  ///< Abbreviation for the base class.
       using AssignReal = AssignmentOperators<InnerReal, false, ResolveSelf<Impl, ActiveComplex>>;  ///< Abbreviation for
@@ -150,11 +150,11 @@ namespace codi {
       /// Constructor.
       template<typename ArgR>
       CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR) : Base() {
-        Base::values[0] = argR;
+        Base::values[0] = argR.cast();
       }
 
       /// Constructor.
-      CODI_INLINE ActiveComplex(PassiverInnerReal const& argR) : Base() {
+      CODI_INLINE ActiveComplex(PassiveInnerReal const& argR) : Base() {
         Base::values[0] = argR;
       }
 
@@ -163,33 +163,46 @@ namespace codi {
       CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR,
                                 ExpressionInterface<InnerReal, ArgI> const& argI)
           : Base() {
-        Base::values[0] = argR;
-        Base::values[1] = argI;
+        Base::values[0] = argR.cast();
+        Base::values[1] = argI.cast();
       }
 
       /// Constructor.
       template<typename ArgI>
-      CODI_INLINE ActiveComplex(PassiverInnerReal const& argR, ExpressionInterface<InnerReal, ArgI> const& argI)
+      CODI_INLINE ActiveComplex(PassiveInnerReal const& argR, ExpressionInterface<InnerReal, ArgI> const& argI)
           : Base() {
         Base::values[0] = argR;
-        Base::values[1] = argI;
+        Base::values[1] = argI.cast();
       }
 
       /// Constructor.
       template<typename ArgR>
-      CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR, PassiverInnerReal const& argI)
+      CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR, PassiveInnerReal const& argI)
           : Base() {
-        Base::values[0] = argR;
+        Base::values[0] = argR.cast();
         Base::values[1] = argI;
       }
 
       /// Constructor.
-      CODI_INLINE ActiveComplex(PassiverInnerReal const& argR, PassiverInnerReal const& argI) : Base() {
+      CODI_INLINE ActiveComplex(PassiveInnerReal const& argR, PassiveInnerReal const& argI) : Base() {
         Base::values[0] = argR;
         Base::values[1] = argI;
       }
 
       CODI_INLINE ~ActiveComplex() = default;  ///< Destructor
+
+      template<typename ArgR>
+      CODI_INLINE ActiveComplex& operator=(ExpressionInterface<InnerReal, ArgR> const& argR) {
+        Base::values[0] = argR.cast();
+
+        return *this;
+      }
+
+      CODI_INLINE ActiveComplex& operator=(PassiveInnerReal const& argR) {
+        Base::values[0] = argR;
+
+        return *this;
+      }
   };
 
   /// Specialization of ActiveResultImpl for std::complex.
@@ -259,7 +272,7 @@ namespace std {
 
       /// Assign operator.
       CODI_INLINE complex& operator=(complex const& value) {
-        Base::store(value);
+        Base::store(value, codi::EventHints::Statement::Copy);
 
         return *this;
       }

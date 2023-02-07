@@ -42,6 +42,7 @@
 
 #include "../config.h"
 #include "../expressions/aggregate/aggregatedActiveType.hpp"
+#include "../expressions/aggregate/arrayAccessExpression.hpp"
 #include "../expressions/assignStatement.hpp"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
@@ -473,6 +474,19 @@ namespace codi {
                 dynamicPointers.oldPrimalValues[i.value] = primalEntry;
               }
 
+              if (Config::StatementEvents) {
+                size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+
+                JacobianExtractionLogic getRhsIdentifiersAndJacobians;
+                std::array<Identifier, MaxActiveArgs> rhsIdentifiers;
+                std::array<Real, MaxActiveArgs> jacobians;
+                getRhsIdentifiersAndJacobians.eval(ArrayAccessExpression<Aggregated, i.value, Rhs>(rhs), Real(1.0), rhsIdentifiers.data(), jacobians.data());
+
+                EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), lhsIdentifier,
+                                                                       AggregatedTraits::template arrayAccess<i.value>(real),
+                                                                       MaxActiveArgs, rhsIdentifiers.data(), jacobians.data());
+              }
+
               lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
               primalEntry = lhs.values[i.value].getValue();
             });
@@ -489,6 +503,35 @@ namespace codi {
             indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
           });
         }
+      }
+
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
+      /// Optimization for copy statements of aggregated types.
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             AggregatedActiveType<Aggregated, Type, Rhs> const& rhs) {
+        using AggregatedTraits = RealTraits::AggregatedTypeTraits<Aggregated>;
+
+        int constexpr Elements = AggregatedTraits::Elements;
+
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
+          if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
+            store(lhs, static_cast<ExpressionInterface<Aggregated, Rhs> const&>(rhs));
+            return;
+          } else {
+            static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+              indexManager.get().template copyIndex<Impl>(lhs.values[i.value].getIdentifier(), rhs.values[i.value].getIdentifier());
+            });
+          }
+        } else {
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+          });
+        }
+
+        static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+          lhs.values[i.value].value() = rhs.values[i.value].getValue();
+        });
       }
 
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
