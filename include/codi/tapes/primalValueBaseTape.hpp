@@ -50,6 +50,7 @@
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../misc/macros.hpp"
+#include "../misc/mathUtility.hpp"
 #include "../misc/memberStore.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "commonTapeImplementation.hpp"
@@ -143,9 +144,9 @@ namespace codi {
                                 CODI_T(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>,
                                                             StatementEvaluatorInterface, DefaultChunkedData>));
       /// See PrimalValueBaseTape.
-      using Impl = CODI_DD(T_Impl, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Impl = CODI_DD(T_Impl, CODI_T(PrimalValueBaseTape));
 
-      using Base = CommonTapeImplementation<TapeTypes, Impl>;  ///< Base class abbreviation.
+      using Base = CommonTapeImplementation<T_TapeTypes, T_Impl>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
@@ -263,8 +264,9 @@ namespace codi {
       PrimalValueBaseTape()
           : Base(),
             indexManager(Config::MaxArgumentSize),  // Reserve first items for passive values.
-            fixedSizeData(Config::ChunkSize * 8),
-            dynamicSizeData(Config::ChunkSize * 8),
+            // The following chunks must be large enough to store data for all arguments of one statement.
+            fixedSizeData(std::max(Config::ChunkSize * 8, Config::MaxArgumentSize * 32)),
+            dynamicSizeData(std::max(Config::ChunkSize * 8, Config::MaxArgumentSize * 32)),
             manualStatementData(),
             adjoints(1),  // Ensure that adjoint[0] exists, see its use in gradient() const.
             primals(0),
@@ -321,7 +323,7 @@ namespace codi {
       CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
 
-        indexManager.get().freeIndex(identifier);
+        indexManager.get().template freeIndex<Impl>(identifier);
       }
 
       /// @}
@@ -420,6 +422,26 @@ namespace codi {
         }
       }
 
+      /// Computes Jacobian entries for the event system.
+      struct JacobianExtractionLogic : public JacobianComputationLogic<JacobianExtractionLogic> {
+        private:
+          size_t pos;
+
+        public:
+
+          /// Constructor
+          JacobianExtractionLogic() : pos(0) {}
+
+          /// Stores the identifiers and Jacobians.
+          template<typename Node>
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, Identifier* rhsIdentifiers,
+                                                  Real* jacobians) {
+            rhsIdentifiers[pos] = node.getIdentifier();
+            jacobians[pos] = jacobian;
+            pos++;
+          }
+      };
+
     public:
 
       /// @{
@@ -437,7 +459,7 @@ namespace codi {
           if (storeArgumentData<Lhs>(rhs, dynamicPointers)) {
             bool generatedNewIndex = false;
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-              generatedNewIndex |= indexManager.get().assignIndex(lhs.values[i.value].getIdentifier());
+              generatedNewIndex |= indexManager.get().template assignIndex<Impl>(lhs.values[i.value].getIdentifier());
             });
             checkPrimalSize(generatedNewIndex);
 
@@ -464,7 +486,7 @@ namespace codi {
 
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
             lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
-            indexManager.get().freeIndex(lhs.values[i.value].getIdentifier());
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
           });
         }
       }
@@ -477,7 +499,7 @@ namespace codi {
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           StmtDynamicDataEntry dynamicPointers;
           if (storeArgumentData<Lhs>(rhs, dynamicPointers)) {
-            bool generatedNewIndex = indexManager.get().assignIndex(lhs.cast().getIdentifier());
+            bool generatedNewIndex = indexManager.get().template assignIndex<Impl>(lhs.cast().getIdentifier());
             checkPrimalSize(generatedNewIndex);
 
             Real& primalEntry = primals[lhs.cast().getIdentifier()];
@@ -489,11 +511,24 @@ namespace codi {
             primalEntry = rhs.cast().getValue();
 
             primalsStored = true;
+
+            if (Config::StatementEvents) {
+              size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+
+              JacobianExtractionLogic getRhsIdentifiersAndJacobians;
+              std::array<Identifier, MaxActiveArgs> rhsIdentifiers;
+              std::array<Real, MaxActiveArgs> jacobians;
+              getRhsIdentifiersAndJacobians.eval(rhs.cast(), Real(1.0), rhsIdentifiers.data(), jacobians.data());
+
+              EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), lhs.cast().getIdentifier(),
+                                                                     rhs.cast().getValue(), MaxActiveArgs,
+                                                                     rhsIdentifiers.data(), jacobians.data());
+            }
           }
         }
 
         if (!primalsStored) {
-          indexManager.get().freeIndex(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -507,11 +542,12 @@ namespace codi {
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
+            return;
           } else {
-            indexManager.get().copyIndex(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
+            indexManager.get().template copyIndex<Impl>(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
           }
         } else {
-          indexManager.get().freeIndex(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -521,7 +557,7 @@ namespace codi {
       /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) {
-        indexManager.get().freeIndex(lhs.cast().getIdentifier());
+        indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
 
         lhs.cast().value() = rhs;
       }
@@ -543,9 +579,9 @@ namespace codi {
 
         bool generatedNewIndex;
         if (unusedIndex) {
-          generatedNewIndex = indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
+          generatedNewIndex = indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
         } else {
-          generatedNewIndex = indexManager.get().assignIndex(value.cast().getIdentifier());
+          generatedNewIndex = indexManager.get().template assignIndex<Impl>(value.cast().getIdentifier());
         }
         checkPrimalSize(generatedNewIndex);
 
@@ -572,6 +608,7 @@ namespace codi {
       template<typename Lhs>
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         internalRegisterInput(value, true);
+        EventSystem<Impl>::notifyTapeRegisterInputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
       }
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
@@ -642,9 +679,9 @@ namespace codi {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
         return vectorAccess;
 #else
-        static_assert(std::is_same<Adjoint, Gradient>::value,
-                      "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
-                      " to use custom adjoint vectors in the primal value tapes.");
+        CODI_STATIC_ASSERT(CODI_T(std::is_same<Adjoint, Gradient>::value),
+                           "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
+                           " to use custom adjoint vectors in the primal value tapes.");
 
         return data;
 #endif
@@ -656,11 +693,11 @@ namespace codi {
 
       /// Forward evaluation of an inner tape part between two external functions.
       CODI_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start,
-                                                                           NestedPosition const& end, Real* primalData,
-                                                                           ADJOINT_VECTOR_TYPE* data,
+                                                                           NestedPosition const& end, Impl& tape,
+                                                                           Real* primalData, ADJOINT_VECTOR_TYPE* data,
                                                                            DynamicSizeData& dynamicSizeData) {
         Wrap_internalEvaluateForward_Step3_EvalStatements evalFunc{};
-        dynamicSizeData.evaluateForward(start, end, evalFunc, primalData, data);
+        dynamicSizeData.evaluateForward(start, end, evalFunc, tape, primalData, data);
       }
 
       /// Internal method for the forward evaluation of the whole tape.
@@ -678,8 +715,14 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(&vectorAccess, data);
 
+        EventSystem<Impl>::notifyTapeEvaluateListeners(
+            cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
+
         Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
-                                                    &vectorAccess, primalData, dataVector, dynamicSizeData);
+                                                    &vectorAccess, cast(), primalData, dataVector, dynamicSizeData);
+
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess,
+                                                       EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
       }
 
       /// Additional wrapper that triggers compiler optimizations.
@@ -688,11 +731,11 @@ namespace codi {
 
       /// Reverse evaluation of an inner tape part between two external functions.
       CODI_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start,
-                                                                           NestedPosition const& end, Real* primalData,
-                                                                           ADJOINT_VECTOR_TYPE* data,
+                                                                           NestedPosition const& end, Impl& tape,
+                                                                           Real* primalData, ADJOINT_VECTOR_TYPE* data,
                                                                            DynamicSizeData& dynamicSizeData) {
         Wrap_internalEvaluateReverse_Step3_EvalStatements evalFunc;
-        dynamicSizeData.evaluateReverse(start, end, evalFunc, primalData, data);
+        dynamicSizeData.evaluateReverse(start, end, evalFunc, tape, primalData, data);
       }
 
       /// Internal method for the reverse evaluation of the whole tape.
@@ -709,8 +752,14 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = selectAdjointVector(&vectorAccess, data);
 
+        EventSystem<Impl>::notifyTapeEvaluateListeners(
+            cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
+
         Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction,
-                                                    &vectorAccess, primalData, dataVector, dynamicSizeData);
+                                                    &vectorAccess, cast(), primalData, dataVector, dynamicSizeData);
+
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess,
+                                                       EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
       }
 
     public:
@@ -852,13 +901,25 @@ namespace codi {
       /// @name Functions from ManualStatementPushTapeInterface
       /// @{
 
-      /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobiManual()
-      void pushJacobiManual(Real const& jacobian, Real const& value, Identifier const& index) {
+      /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobianManual()
+      void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
         CODI_UNUSED(value);
 
         manualStatementData.passiveValues[manualStatementDataPos] = jacobian;
         manualStatementData.rhsIdentifiers[manualStatementDataPos] = index;
         manualStatementDataPos += 1;
+
+        cast().incrementManualPushCounter();
+
+        if (Config::StatementEvents) {
+          if (this->manualPushCounter == this->manualPushGoal) {
+            // emit statement event
+            EventSystem<Impl>::notifyStatementStoreOnTapeListeners(cast(), this->manualPushLhsIdentifier,
+                                                                   this->manualPushLhsValue, this->manualPushGoal,
+                                                                   manualStatementData.rhsIdentifiers,
+                                                                   manualStatementData.passiveValues);
+          }
+        }
       }
 
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
@@ -879,7 +940,7 @@ namespace codi {
         manualStatementData = StmtDynamicDataEntry::store(dynamicSizeData, stmtSizes, activeArguments);
         manualStatementDataPos = 0;
 
-        bool generatedNewIndex = indexManager.get().assignIndex(lhsIndex);
+        bool generatedNewIndex = indexManager.get().template assignIndex<Impl>(lhsIndex);
         checkPrimalSize(generatedNewIndex);
 
         Real& primalEntry = primals[lhsIndex];
@@ -892,6 +953,8 @@ namespace codi {
                                   PrimalValueBaseTape::jacobianExpressions[size]);
 
         primalEntry = lhsValue;
+
+        cast().initializeManualPushData(lhsValue, lhsIndex, size);
       }
 
       /// @}
@@ -952,10 +1015,11 @@ namespace codi {
 
       /// Start for primal evaluation between external function.
       CODI_INLINE static void internalEvaluatePrimal_Step2_DataExtraction(NestedPosition const& start,
-                                                                          NestedPosition const& end, Real* primalData,
+                                                                          NestedPosition const& end, Impl& tape,
+                                                                          Real* primalData,
                                                                           DynamicSizeData& dynamicSizeData) {
         Wrap_internalEvaluatePrimal_Step3_EvalStatements evalFunc{};
-        dynamicSizeData.evaluateForward(start, end, evalFunc, primalData);
+        dynamicSizeData.evaluateForward(start, end, evalFunc, tape, primalData);
       }
 
     public:
@@ -972,9 +1036,15 @@ namespace codi {
         // TODO: implement primal value only accessor
         PrimalAdjointVectorAccess<Real, Identifier, Gradient> primalAdjointAccess(adjoints.data(), primals.data());
 
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess,
+                                                       EventHints::EvaluationKind::Primal, EventHints::Endpoint::Begin);
+
         Base::internalEvaluatePrimal_Step1_ExtFunc(start, end,
                                                    PrimalValueBaseTape::internalEvaluatePrimal_Step2_DataExtraction,
-                                                   &primalAdjointAccess, primals.data(), dynamicSizeData);
+                                                   &primalAdjointAccess, cast(), primals.data(), dynamicSizeData);
+
+        EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess,
+                                                       EventHints::EvaluationKind::Primal, EventHints::Endpoint::End);
       }
 
       /// \copydoc codi::PrimalEvaluationTapeInterface::primal(Identifier const&)
@@ -1031,10 +1101,10 @@ namespace codi {
 
           /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
           template<typename Func>
-          CODI_INLINE static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS,
+          CODI_INLINE static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS, Impl &__restrict__ tape,
                                                ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                                size_t adjointVectorSize) {
-            CODI_UNUSED(evalInner);
+            CODI_UNUSED(evalInner, tape);
 
             StmtCallArgs stmtArgs = STMT_ARGS_PACK;
             StmtDynamicDataEntry data = StmtDynamicDataEntry::readReverse(stmtSizes, stmtArgs);
@@ -1055,9 +1125,9 @@ namespace codi {
           }
 
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
-          CODI_INLINE static void evaluate(STMT_ARGS, ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
+          CODI_INLINE static void evaluate(STMT_ARGS, Impl &__restrict__ tape, ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                            size_t adjointVectorSize) {
-            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, adjointVector,
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, tape, adjointVector,
                          adjointVectorSize);
           }
       };
@@ -1115,7 +1185,7 @@ namespace codi {
 
           /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
           template<typename Func>
-          CODI_INLINE static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS,
+          CODI_INLINE static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS, Impl &__restrict__ tape,
                                                Real* __restrict__ primalVector,
                                                ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                                Real* __restrict__ lhsPrimals, Gradient* __restrict__ lhsTangents) {
@@ -1128,7 +1198,7 @@ namespace codi {
             data.copyPassiveValuesIntoPrimalVector(stmtArgs, primalVector);
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-            adjointVector->setSizeForIndirectAccess(stmtSizes.maxOutputArgs);
+            adjointVector->setSizeForIndirectAccess(stmtSizes.outputArgs);
 #endif
 
             evalInner(primalVector, adjointVector, lhsPrimals, lhsTangents, data.constantValues, data.rhsIdentifiers);
@@ -1140,20 +1210,26 @@ namespace codi {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->setActiveVariableForIndirectAccess(iLhs);
               adjointVector->setLhsTangent(lhsIdentifier);
+              EventSystem<Impl>::notifyStatementEvaluateListeners(
+                  tape, lhsIdentifier, adjointVector->getVectorSize(), adjointVector->getAdjointVec(lhsIdentifier));
 #else
               adjointVector[lhsIdentifier] = lhsTangents[iLhs];
+              EventSystem<Impl>::notifyStatementEvaluateListeners(
+                  tape, lhsIdentifier, GradientTraits::dim<Gradient>(), GradientTraits::toArray(lhsTangents[iLhs]).data());
               lhsTangents[iLhs] = Gradient();
 #endif
+              EventSystem<Impl>::notifyStatementEvaluatePrimalListeners(tape, lhsIdentifier,
+                                                                        primalVector[lhsIdentifier]);
             }
 
             stmtArgs.updateAdjointPosForward(stmtSizes.outputArgs);
           }
 
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
-          CODI_INLINE static void evaluate(STMT_ARGS, Real* __restrict__ primalVector,
+          CODI_INLINE static void evaluate(STMT_ARGS, Impl &__restrict__ tape, Real* __restrict__ primalVector,
                                            ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                            Real* __restrict__ lhsPrimals, Gradient* __restrict__ lhsTangents) {
-            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, primalVector, adjointVector,
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, tape, primalVector, adjointVector,
                          lhsPrimals, lhsTangents);
           }
       };
@@ -1182,7 +1258,7 @@ namespace codi {
 
           /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
           template<typename Func>
-          static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS,
+          static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS, Impl &__restrict__ tape,
                                    Real* __restrict__ primalVector, Real* __restrict__ lhsPrimals) {
             StmtCallArgs stmtArgs = STMT_ARGS_PACK;
             StmtDynamicDataEntry data = StmtDynamicDataEntry::readForward(stmtSizes, stmtArgs);
@@ -1198,14 +1274,16 @@ namespace codi {
               Identifier const lhsIdentifier = stmtArgs.getLhsIdentifier(iLhs, data.lhsIdentifiers);
 
               primalVector[lhsIdentifier] = lhsPrimals[iLhs];
+              EventSystem<Impl>::notifyStatementEvaluatePrimalListeners(tape, lhsIdentifier,
+                                                                        primalVector[lhsIdentifier]);
             }
 
             stmtArgs.updateAdjointPosForward(stmtSizes.outputArgs);
           }
 
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
-          CODI_INLINE static void evaluate(STMT_ARGS, Real* __restrict__ primalVector, Real* __restrict__ lhsPrimals) {
-            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, primalVector, lhsPrimals);
+          CODI_INLINE static void evaluate(STMT_ARGS, Impl &__restrict__ tape, Real* __restrict__ primalVector, Real* __restrict__ lhsPrimals) {
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, tape, primalVector, lhsPrimals);
           }
       };
 
@@ -1220,9 +1298,9 @@ namespace codi {
 
           /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
           template<typename Func>
-          CODI_INLINE static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS,
+          CODI_INLINE static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS, Impl &__restrict__ tape,
                                                Real* __restrict__ primalVector) {
-            CODI_UNUSED(evalInner);
+            CODI_UNUSED(evalInner, tape);
 
             StmtCallArgs stmtArgs = STMT_ARGS_PACK;
             StmtDynamicDataEntry data = StmtDynamicDataEntry::readReverse(stmtSizes, stmtArgs);
@@ -1238,8 +1316,8 @@ namespace codi {
           }
 
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
-          CODI_INLINE static void evaluate(STMT_ARGS, Real* __restrict__ primalVector) {
-            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, primalVector);
+          CODI_INLINE static void evaluate(STMT_ARGS, Impl &__restrict__ tape, Real* __restrict__ primalVector) {
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, tape, primalVector);
           }
       };
 
@@ -1294,7 +1372,7 @@ namespace codi {
 
           /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
           template<typename Func>
-          CODI_INLINE static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS,
+          CODI_INLINE static void evaluateFull(Func const& evalInner, StatementSizes stmtSizes, STMT_ARGS, Impl &__restrict__ tape,
                                                Real* __restrict__ primalVector,
                                                ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                                Gradient* __restrict__ lhsAdjoints) {
@@ -1304,26 +1382,32 @@ namespace codi {
             stmtArgs.updateAdjointPosReverse(stmtSizes.outputArgs);
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-            adjointVector->setSizeForIndirectAccess(maxOutputArgs);
+            adjointVector->setSizeForIndirectAccess(stmtSizes.outputArgs);
 #endif
 
             bool allZero = true;
             for (size_t iLhs = 0; iLhs < stmtSizes.outputArgs; iLhs += 1) {
               Identifier lhsIdentifier = stmtArgs.getLhsIdentifier(iLhs, data.lhsIdentifiers);
 
-              if (!LinearIndexHandling) {
-                primalVector[lhsIdentifier] = data.oldPrimalValues[iLhs];
-              }
-
 #if CODI_VariableAdjointInterfaceInPrimalTapes
+              EventSystem<Impl>::notifyStatementEvaluateListeners(
+                  tape, lhsIdentifier, adjointVector->getVectorSize(), adjointVector->getAdjointVec(lhsIdentifier));
               adjointVector->setActiveVariableForIndirectAccess(iLhs);
               adjointVector->setLhsAdjoint(lhsIdentifier);
               allZero &= adjointVector->isLhsZero();
 #else
               lhsAdjoints[iLhs] = adjointVector[lhsIdentifier];
+              EventSystem<Impl>::notifyStatementEvaluateListeners(
+                  tape, lhsIdentifier, GradientTraits::dim<Gradient>(), GradientTraits::toArray(lhsAdjoints[iLhs]).data());
               adjointVector[lhsIdentifier] = Gradient();
               allZero &= RealTraits::isTotalZero(lhsAdjoints[iLhs]);
 #endif
+              EventSystem<Impl>::notifyStatementEvaluatePrimalListeners(tape, lhsIdentifier,
+                                                                        primalVector[lhsIdentifier]);
+
+              if (!LinearIndexHandling) {
+                primalVector[lhsIdentifier] = data.oldPrimalValues[iLhs];
+              }
             }
 
             if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !allZero)) {
@@ -1334,10 +1418,10 @@ namespace codi {
           }
 
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
-          CODI_INLINE static void evaluate(STMT_ARGS, Real* __restrict__ primalVector,
+          CODI_INLINE static void evaluate(STMT_ARGS, Impl &__restrict__ tape, Real* __restrict__ primalVector,
                                            ADJOINT_VECTOR_TYPE* __restrict__ adjointVector,
                                            Gradient* __restrict__ lhsAdjoints) {
-            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, primalVector, adjointVector,
+            evaluateFull(evaluateInner, StatementSizes::create<Stmt>(), STMT_ARGS_FORWARD, tape, primalVector, adjointVector,
                          lhsAdjoints);
           }
       };
@@ -1351,23 +1435,19 @@ namespace codi {
       }
 
       CODI_INLINE void checkPrimalSize(bool generatedNewIndex) {
-        if (TapeTypes::IsLinearIndexHandler) {
-          if (indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
-            resizePrimalVector(primals.size() + Config::ChunkSize);
-          }
-        } else {
-          if (generatedNewIndex) {
-            resizePrimalVector(indexManager.get().getLargestCreatedIndex() + 1);
-          }
+        if (generatedNewIndex && indexManager.get().getLargestCreatedIndex() >= (Identifier)primals.size()) {
+          resizePrimalVector();
         }
       }
 
       CODI_NO_INLINE void resizeAdjointsVector() {
-        adjoints.resize(indexManager.get().getLargestCreatedIndex() + 1);
+        // overallocate as next multiple of Config::ChunkSize
+        adjoints.resize(getNextMultiple((size_t)indexManager.get().getLargestCreatedIndex() + 1, Config::ChunkSize));
       }
 
-      CODI_NO_INLINE void resizePrimalVector(size_t newSize) {
-        primals.resize(newSize);
+      CODI_NO_INLINE void resizePrimalVector() {
+        // overallocate as next multiple of Config::ChunkSize
+        primals.resize(getNextMultiple((size_t)indexManager.get().getLargestCreatedIndex() + 1, Config::ChunkSize));
       }
   };
 
@@ -1470,7 +1550,7 @@ namespace codi {
           }
 
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate
-          static void evaluate(STMT_ARGS, Real* __restrict__ primalVector,
+          static void evaluate(STMT_ARGS, TapeImpl &__restrict__ tape, Real* __restrict__ primalVector,
                                ADJOINT_VECTOR_TYPE* __restrict__ adjointVector, Gradient* __restrict__ lhsAdjoints) {
             StatementSizes stmtSizes = StatementSizes::create<Stmt>();
             StmtCallArgs stmtArgs = STMT_ARGS_PACK;
@@ -1483,17 +1563,24 @@ namespace codi {
 #endif
             Identifier lhsIdentifier = stmtArgs.getLhsIdentifier(0, data.lhsIdentifiers);
 
-            if (!LinearIndexHandling) {
-              primalVector[lhsIdentifier] = data.oldPrimalValues[0];
-            }
-
 #if CODI_VariableAdjointInterfaceInPrimalTapes
+            EventSystem<TapeImpl>::notifyStatementEvaluateListeners(
+                tape, lhsIdentifier, adjointVector->getVectorSize(), adjointVector->getAdjointVec(lhsIdentifier));
             adjointVector->setActiveVariableForIndirectAccess(0);
             adjointVector->setLhsAdjoint(lhsIdentifier);
 #else
             lhsAdjoints[0] = adjointVector[lhsIdentifier];
+            EventSystem<TapeImpl>::notifyStatementEvaluateListeners(
+                tape, lhsIdentifier, GradientTraits::dim<Gradient>(), GradientTraits::toArray(lhsAdjoints[0]).data());
             adjointVector[lhsIdentifier] = Gradient();
 #endif
+            EventSystem<TapeImpl>::notifyStatementEvaluatePrimalListeners(tape, lhsIdentifier,
+                                                                          primalVector[lhsIdentifier]);
+
+            if (!LinearIndexHandling) {
+              primalVector[lhsIdentifier] = data.oldPrimalValues[0];
+            }
+
             evalJacobianReverse(adjointVector, lhsAdjoints[0], data.passiveValues, data.rhsIdentifiers);
           }
       };
@@ -1504,6 +1591,8 @@ namespace codi {
 
       static void evalJacobianReverse(ADJOINT_VECTOR_TYPE* adjointVector, Gradient lhsAdjoint,
                                       Real const* const passiveValues, Identifier const* const rhsIdentifiers) {
+        CODI_UNUSED(lhsAdjoint);
+
 #if CODI_VariableAdjointInterfaceInPrimalTapes
         bool const lhsZero = adjointVector->isLhsZero();
 #else
@@ -1529,72 +1618,72 @@ namespace codi {
 
   /// Expressions for manual statement pushes.
   template<typename TapeTypes, typename Impl>
-  const typename TapeTypes::EvalHandle
-      PrimalValueBaseTape<TapeTypes, Impl>::jacobianExpressions[Config::MaxArgumentSize] = {
-          CREATE_EXPRESSION(0),   CREATE_EXPRESSION(1),   CREATE_EXPRESSION(2),   CREATE_EXPRESSION(3),
-          CREATE_EXPRESSION(4),   CREATE_EXPRESSION(5),   CREATE_EXPRESSION(6),   CREATE_EXPRESSION(7),
-          CREATE_EXPRESSION(8),   CREATE_EXPRESSION(9),   CREATE_EXPRESSION(10),  CREATE_EXPRESSION(11),
-          CREATE_EXPRESSION(12),  CREATE_EXPRESSION(13),  CREATE_EXPRESSION(14),  CREATE_EXPRESSION(15),
-          CREATE_EXPRESSION(16),  CREATE_EXPRESSION(17),  CREATE_EXPRESSION(18),  CREATE_EXPRESSION(19),
-          CREATE_EXPRESSION(20),  CREATE_EXPRESSION(21),  CREATE_EXPRESSION(22),  CREATE_EXPRESSION(23),
-          CREATE_EXPRESSION(24),  CREATE_EXPRESSION(25),  CREATE_EXPRESSION(26),  CREATE_EXPRESSION(27),
-          CREATE_EXPRESSION(28),  CREATE_EXPRESSION(29),  CREATE_EXPRESSION(30),  CREATE_EXPRESSION(31),
-          CREATE_EXPRESSION(32),  CREATE_EXPRESSION(33),  CREATE_EXPRESSION(34),  CREATE_EXPRESSION(35),
-          CREATE_EXPRESSION(36),  CREATE_EXPRESSION(37),  CREATE_EXPRESSION(38),  CREATE_EXPRESSION(39),
-          CREATE_EXPRESSION(40),  CREATE_EXPRESSION(41),  CREATE_EXPRESSION(42),  CREATE_EXPRESSION(43),
-          CREATE_EXPRESSION(44),  CREATE_EXPRESSION(45),  CREATE_EXPRESSION(46),  CREATE_EXPRESSION(47),
-          CREATE_EXPRESSION(48),  CREATE_EXPRESSION(49),  CREATE_EXPRESSION(50),  CREATE_EXPRESSION(51),
-          CREATE_EXPRESSION(52),  CREATE_EXPRESSION(53),  CREATE_EXPRESSION(54),  CREATE_EXPRESSION(55),
-          CREATE_EXPRESSION(56),  CREATE_EXPRESSION(57),  CREATE_EXPRESSION(58),  CREATE_EXPRESSION(59),
-          CREATE_EXPRESSION(60),  CREATE_EXPRESSION(61),  CREATE_EXPRESSION(62),  CREATE_EXPRESSION(63),
-          CREATE_EXPRESSION(64),  CREATE_EXPRESSION(65),  CREATE_EXPRESSION(66),  CREATE_EXPRESSION(67),
-          CREATE_EXPRESSION(68),  CREATE_EXPRESSION(69),  CREATE_EXPRESSION(70),  CREATE_EXPRESSION(71),
-          CREATE_EXPRESSION(72),  CREATE_EXPRESSION(73),  CREATE_EXPRESSION(74),  CREATE_EXPRESSION(75),
-          CREATE_EXPRESSION(76),  CREATE_EXPRESSION(77),  CREATE_EXPRESSION(78),  CREATE_EXPRESSION(79),
-          CREATE_EXPRESSION(80),  CREATE_EXPRESSION(81),  CREATE_EXPRESSION(82),  CREATE_EXPRESSION(83),
-          CREATE_EXPRESSION(84),  CREATE_EXPRESSION(85),  CREATE_EXPRESSION(86),  CREATE_EXPRESSION(87),
-          CREATE_EXPRESSION(88),  CREATE_EXPRESSION(89),  CREATE_EXPRESSION(90),  CREATE_EXPRESSION(91),
-          CREATE_EXPRESSION(92),  CREATE_EXPRESSION(93),  CREATE_EXPRESSION(94),  CREATE_EXPRESSION(95),
-          CREATE_EXPRESSION(96),  CREATE_EXPRESSION(97),  CREATE_EXPRESSION(98),  CREATE_EXPRESSION(99),
-          CREATE_EXPRESSION(100), CREATE_EXPRESSION(101), CREATE_EXPRESSION(102), CREATE_EXPRESSION(103),
-          CREATE_EXPRESSION(104), CREATE_EXPRESSION(105), CREATE_EXPRESSION(106), CREATE_EXPRESSION(107),
-          CREATE_EXPRESSION(108), CREATE_EXPRESSION(109), CREATE_EXPRESSION(110), CREATE_EXPRESSION(111),
-          CREATE_EXPRESSION(112), CREATE_EXPRESSION(113), CREATE_EXPRESSION(114), CREATE_EXPRESSION(115),
-          CREATE_EXPRESSION(116), CREATE_EXPRESSION(117), CREATE_EXPRESSION(118), CREATE_EXPRESSION(119),
-          CREATE_EXPRESSION(120), CREATE_EXPRESSION(121), CREATE_EXPRESSION(122), CREATE_EXPRESSION(123),
-          CREATE_EXPRESSION(124), CREATE_EXPRESSION(125), CREATE_EXPRESSION(126), CREATE_EXPRESSION(127),
-          CREATE_EXPRESSION(128), CREATE_EXPRESSION(129), CREATE_EXPRESSION(130), CREATE_EXPRESSION(131),
-          CREATE_EXPRESSION(132), CREATE_EXPRESSION(133), CREATE_EXPRESSION(134), CREATE_EXPRESSION(135),
-          CREATE_EXPRESSION(136), CREATE_EXPRESSION(137), CREATE_EXPRESSION(138), CREATE_EXPRESSION(139),
-          CREATE_EXPRESSION(140), CREATE_EXPRESSION(141), CREATE_EXPRESSION(142), CREATE_EXPRESSION(143),
-          CREATE_EXPRESSION(144), CREATE_EXPRESSION(145), CREATE_EXPRESSION(146), CREATE_EXPRESSION(147),
-          CREATE_EXPRESSION(148), CREATE_EXPRESSION(149), CREATE_EXPRESSION(150), CREATE_EXPRESSION(151),
-          CREATE_EXPRESSION(152), CREATE_EXPRESSION(153), CREATE_EXPRESSION(154), CREATE_EXPRESSION(155),
-          CREATE_EXPRESSION(156), CREATE_EXPRESSION(157), CREATE_EXPRESSION(158), CREATE_EXPRESSION(159),
-          CREATE_EXPRESSION(160), CREATE_EXPRESSION(161), CREATE_EXPRESSION(162), CREATE_EXPRESSION(163),
-          CREATE_EXPRESSION(164), CREATE_EXPRESSION(165), CREATE_EXPRESSION(166), CREATE_EXPRESSION(167),
-          CREATE_EXPRESSION(168), CREATE_EXPRESSION(169), CREATE_EXPRESSION(170), CREATE_EXPRESSION(171),
-          CREATE_EXPRESSION(172), CREATE_EXPRESSION(173), CREATE_EXPRESSION(174), CREATE_EXPRESSION(175),
-          CREATE_EXPRESSION(176), CREATE_EXPRESSION(177), CREATE_EXPRESSION(178), CREATE_EXPRESSION(179),
-          CREATE_EXPRESSION(180), CREATE_EXPRESSION(181), CREATE_EXPRESSION(182), CREATE_EXPRESSION(183),
-          CREATE_EXPRESSION(184), CREATE_EXPRESSION(185), CREATE_EXPRESSION(186), CREATE_EXPRESSION(187),
-          CREATE_EXPRESSION(188), CREATE_EXPRESSION(189), CREATE_EXPRESSION(190), CREATE_EXPRESSION(191),
-          CREATE_EXPRESSION(192), CREATE_EXPRESSION(193), CREATE_EXPRESSION(194), CREATE_EXPRESSION(195),
-          CREATE_EXPRESSION(196), CREATE_EXPRESSION(197), CREATE_EXPRESSION(198), CREATE_EXPRESSION(199),
-          CREATE_EXPRESSION(200), CREATE_EXPRESSION(201), CREATE_EXPRESSION(202), CREATE_EXPRESSION(203),
-          CREATE_EXPRESSION(204), CREATE_EXPRESSION(205), CREATE_EXPRESSION(206), CREATE_EXPRESSION(207),
-          CREATE_EXPRESSION(208), CREATE_EXPRESSION(209), CREATE_EXPRESSION(210), CREATE_EXPRESSION(211),
-          CREATE_EXPRESSION(212), CREATE_EXPRESSION(213), CREATE_EXPRESSION(214), CREATE_EXPRESSION(215),
-          CREATE_EXPRESSION(216), CREATE_EXPRESSION(217), CREATE_EXPRESSION(218), CREATE_EXPRESSION(219),
-          CREATE_EXPRESSION(220), CREATE_EXPRESSION(221), CREATE_EXPRESSION(222), CREATE_EXPRESSION(223),
-          CREATE_EXPRESSION(224), CREATE_EXPRESSION(225), CREATE_EXPRESSION(226), CREATE_EXPRESSION(227),
-          CREATE_EXPRESSION(228), CREATE_EXPRESSION(229), CREATE_EXPRESSION(230), CREATE_EXPRESSION(231),
-          CREATE_EXPRESSION(232), CREATE_EXPRESSION(233), CREATE_EXPRESSION(234), CREATE_EXPRESSION(235),
-          CREATE_EXPRESSION(236), CREATE_EXPRESSION(237), CREATE_EXPRESSION(238), CREATE_EXPRESSION(239),
-          CREATE_EXPRESSION(240), CREATE_EXPRESSION(241), CREATE_EXPRESSION(242), CREATE_EXPRESSION(243),
-          CREATE_EXPRESSION(244), CREATE_EXPRESSION(245), CREATE_EXPRESSION(246), CREATE_EXPRESSION(247),
-          CREATE_EXPRESSION(248), CREATE_EXPRESSION(249), CREATE_EXPRESSION(250), CREATE_EXPRESSION(251),
-          CREATE_EXPRESSION(252), CREATE_EXPRESSION(253)};
+  const CODI_DD(typename TapeTypes::EvalHandle,
+                CODI_ANY) PrimalValueBaseTape<TapeTypes, Impl>::jacobianExpressions[Config::MaxArgumentSize] = {
+      CREATE_EXPRESSION(0),   CREATE_EXPRESSION(1),   CREATE_EXPRESSION(2),   CREATE_EXPRESSION(3),
+      CREATE_EXPRESSION(4),   CREATE_EXPRESSION(5),   CREATE_EXPRESSION(6),   CREATE_EXPRESSION(7),
+      CREATE_EXPRESSION(8),   CREATE_EXPRESSION(9),   CREATE_EXPRESSION(10),  CREATE_EXPRESSION(11),
+      CREATE_EXPRESSION(12),  CREATE_EXPRESSION(13),  CREATE_EXPRESSION(14),  CREATE_EXPRESSION(15),
+      CREATE_EXPRESSION(16),  CREATE_EXPRESSION(17),  CREATE_EXPRESSION(18),  CREATE_EXPRESSION(19),
+      CREATE_EXPRESSION(20),  CREATE_EXPRESSION(21),  CREATE_EXPRESSION(22),  CREATE_EXPRESSION(23),
+      CREATE_EXPRESSION(24),  CREATE_EXPRESSION(25),  CREATE_EXPRESSION(26),  CREATE_EXPRESSION(27),
+      CREATE_EXPRESSION(28),  CREATE_EXPRESSION(29),  CREATE_EXPRESSION(30),  CREATE_EXPRESSION(31),
+      CREATE_EXPRESSION(32),  CREATE_EXPRESSION(33),  CREATE_EXPRESSION(34),  CREATE_EXPRESSION(35),
+      CREATE_EXPRESSION(36),  CREATE_EXPRESSION(37),  CREATE_EXPRESSION(38),  CREATE_EXPRESSION(39),
+      CREATE_EXPRESSION(40),  CREATE_EXPRESSION(41),  CREATE_EXPRESSION(42),  CREATE_EXPRESSION(43),
+      CREATE_EXPRESSION(44),  CREATE_EXPRESSION(45),  CREATE_EXPRESSION(46),  CREATE_EXPRESSION(47),
+      CREATE_EXPRESSION(48),  CREATE_EXPRESSION(49),  CREATE_EXPRESSION(50),  CREATE_EXPRESSION(51),
+      CREATE_EXPRESSION(52),  CREATE_EXPRESSION(53),  CREATE_EXPRESSION(54),  CREATE_EXPRESSION(55),
+      CREATE_EXPRESSION(56),  CREATE_EXPRESSION(57),  CREATE_EXPRESSION(58),  CREATE_EXPRESSION(59),
+      CREATE_EXPRESSION(60),  CREATE_EXPRESSION(61),  CREATE_EXPRESSION(62),  CREATE_EXPRESSION(63),
+      CREATE_EXPRESSION(64),  CREATE_EXPRESSION(65),  CREATE_EXPRESSION(66),  CREATE_EXPRESSION(67),
+      CREATE_EXPRESSION(68),  CREATE_EXPRESSION(69),  CREATE_EXPRESSION(70),  CREATE_EXPRESSION(71),
+      CREATE_EXPRESSION(72),  CREATE_EXPRESSION(73),  CREATE_EXPRESSION(74),  CREATE_EXPRESSION(75),
+      CREATE_EXPRESSION(76),  CREATE_EXPRESSION(77),  CREATE_EXPRESSION(78),  CREATE_EXPRESSION(79),
+      CREATE_EXPRESSION(80),  CREATE_EXPRESSION(81),  CREATE_EXPRESSION(82),  CREATE_EXPRESSION(83),
+      CREATE_EXPRESSION(84),  CREATE_EXPRESSION(85),  CREATE_EXPRESSION(86),  CREATE_EXPRESSION(87),
+      CREATE_EXPRESSION(88),  CREATE_EXPRESSION(89),  CREATE_EXPRESSION(90),  CREATE_EXPRESSION(91),
+      CREATE_EXPRESSION(92),  CREATE_EXPRESSION(93),  CREATE_EXPRESSION(94),  CREATE_EXPRESSION(95),
+      CREATE_EXPRESSION(96),  CREATE_EXPRESSION(97),  CREATE_EXPRESSION(98),  CREATE_EXPRESSION(99),
+      CREATE_EXPRESSION(100), CREATE_EXPRESSION(101), CREATE_EXPRESSION(102), CREATE_EXPRESSION(103),
+      CREATE_EXPRESSION(104), CREATE_EXPRESSION(105), CREATE_EXPRESSION(106), CREATE_EXPRESSION(107),
+      CREATE_EXPRESSION(108), CREATE_EXPRESSION(109), CREATE_EXPRESSION(110), CREATE_EXPRESSION(111),
+      CREATE_EXPRESSION(112), CREATE_EXPRESSION(113), CREATE_EXPRESSION(114), CREATE_EXPRESSION(115),
+      CREATE_EXPRESSION(116), CREATE_EXPRESSION(117), CREATE_EXPRESSION(118), CREATE_EXPRESSION(119),
+      CREATE_EXPRESSION(120), CREATE_EXPRESSION(121), CREATE_EXPRESSION(122), CREATE_EXPRESSION(123),
+      CREATE_EXPRESSION(124), CREATE_EXPRESSION(125), CREATE_EXPRESSION(126), CREATE_EXPRESSION(127),
+      CREATE_EXPRESSION(128), CREATE_EXPRESSION(129), CREATE_EXPRESSION(130), CREATE_EXPRESSION(131),
+      CREATE_EXPRESSION(132), CREATE_EXPRESSION(133), CREATE_EXPRESSION(134), CREATE_EXPRESSION(135),
+      CREATE_EXPRESSION(136), CREATE_EXPRESSION(137), CREATE_EXPRESSION(138), CREATE_EXPRESSION(139),
+      CREATE_EXPRESSION(140), CREATE_EXPRESSION(141), CREATE_EXPRESSION(142), CREATE_EXPRESSION(143),
+      CREATE_EXPRESSION(144), CREATE_EXPRESSION(145), CREATE_EXPRESSION(146), CREATE_EXPRESSION(147),
+      CREATE_EXPRESSION(148), CREATE_EXPRESSION(149), CREATE_EXPRESSION(150), CREATE_EXPRESSION(151),
+      CREATE_EXPRESSION(152), CREATE_EXPRESSION(153), CREATE_EXPRESSION(154), CREATE_EXPRESSION(155),
+      CREATE_EXPRESSION(156), CREATE_EXPRESSION(157), CREATE_EXPRESSION(158), CREATE_EXPRESSION(159),
+      CREATE_EXPRESSION(160), CREATE_EXPRESSION(161), CREATE_EXPRESSION(162), CREATE_EXPRESSION(163),
+      CREATE_EXPRESSION(164), CREATE_EXPRESSION(165), CREATE_EXPRESSION(166), CREATE_EXPRESSION(167),
+      CREATE_EXPRESSION(168), CREATE_EXPRESSION(169), CREATE_EXPRESSION(170), CREATE_EXPRESSION(171),
+      CREATE_EXPRESSION(172), CREATE_EXPRESSION(173), CREATE_EXPRESSION(174), CREATE_EXPRESSION(175),
+      CREATE_EXPRESSION(176), CREATE_EXPRESSION(177), CREATE_EXPRESSION(178), CREATE_EXPRESSION(179),
+      CREATE_EXPRESSION(180), CREATE_EXPRESSION(181), CREATE_EXPRESSION(182), CREATE_EXPRESSION(183),
+      CREATE_EXPRESSION(184), CREATE_EXPRESSION(185), CREATE_EXPRESSION(186), CREATE_EXPRESSION(187),
+      CREATE_EXPRESSION(188), CREATE_EXPRESSION(189), CREATE_EXPRESSION(190), CREATE_EXPRESSION(191),
+      CREATE_EXPRESSION(192), CREATE_EXPRESSION(193), CREATE_EXPRESSION(194), CREATE_EXPRESSION(195),
+      CREATE_EXPRESSION(196), CREATE_EXPRESSION(197), CREATE_EXPRESSION(198), CREATE_EXPRESSION(199),
+      CREATE_EXPRESSION(200), CREATE_EXPRESSION(201), CREATE_EXPRESSION(202), CREATE_EXPRESSION(203),
+      CREATE_EXPRESSION(204), CREATE_EXPRESSION(205), CREATE_EXPRESSION(206), CREATE_EXPRESSION(207),
+      CREATE_EXPRESSION(208), CREATE_EXPRESSION(209), CREATE_EXPRESSION(210), CREATE_EXPRESSION(211),
+      CREATE_EXPRESSION(212), CREATE_EXPRESSION(213), CREATE_EXPRESSION(214), CREATE_EXPRESSION(215),
+      CREATE_EXPRESSION(216), CREATE_EXPRESSION(217), CREATE_EXPRESSION(218), CREATE_EXPRESSION(219),
+      CREATE_EXPRESSION(220), CREATE_EXPRESSION(221), CREATE_EXPRESSION(222), CREATE_EXPRESSION(223),
+      CREATE_EXPRESSION(224), CREATE_EXPRESSION(225), CREATE_EXPRESSION(226), CREATE_EXPRESSION(227),
+      CREATE_EXPRESSION(228), CREATE_EXPRESSION(229), CREATE_EXPRESSION(230), CREATE_EXPRESSION(231),
+      CREATE_EXPRESSION(232), CREATE_EXPRESSION(233), CREATE_EXPRESSION(234), CREATE_EXPRESSION(235),
+      CREATE_EXPRESSION(236), CREATE_EXPRESSION(237), CREATE_EXPRESSION(238), CREATE_EXPRESSION(239),
+      CREATE_EXPRESSION(240), CREATE_EXPRESSION(241), CREATE_EXPRESSION(242), CREATE_EXPRESSION(243),
+      CREATE_EXPRESSION(244), CREATE_EXPRESSION(245), CREATE_EXPRESSION(246), CREATE_EXPRESSION(247),
+      CREATE_EXPRESSION(248), CREATE_EXPRESSION(249), CREATE_EXPRESSION(250), CREATE_EXPRESSION(251),
+      CREATE_EXPRESSION(252), CREATE_EXPRESSION(253)};
 
 #undef CREATE_EXPRESSION
 }

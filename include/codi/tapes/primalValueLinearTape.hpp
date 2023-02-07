@@ -69,7 +69,7 @@ namespace codi {
                   CODI_T(PrimalValueTapeTypes<double, double, IndexManagerInterface<int>, StatementEvaluatorInterface,
                                               DefaultChunkedData>));  ///< See PrimalValueLinearTape.
 
-      using Base = PrimalValueBaseTape<TapeTypes, PrimalValueLinearTape<TapeTypes>>;  ///< Base class abbreviation.
+      using Base = PrimalValueBaseTape<T_TapeTypes, PrimalValueLinearTape<T_TapeTypes>>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
@@ -94,7 +94,7 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end) {
-        using IndexPosition = typename IndexManager::Position;
+        using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
 
@@ -111,7 +111,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueLinearTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from dynamicSizeData */
           size_t& curDynamicSizePos, size_t const& endDynamicPos, char* const dynamicSizeValues,
           /* data from fixedSizeData */
@@ -132,7 +132,7 @@ namespace codi {
           if (Config::StatementInputTag != data.numberOfPassiveArguments) {
             StmtCallArgs stmtArgs{curAdjointPos, data.numberOfPassiveArguments, curDynamicSizePos, dynamicSizeValues};
             StatementEvaluator::template call<StatementCall::Forward, PrimalValueLinearTape>(
-                data.handle, STMT_ARGS_UNPACK(stmtArgs), primalVector, adjointVector, lhsPrimals.data(),
+                data.handle, STMT_ARGS_UNPACK(stmtArgs), tape, primalVector, adjointVector, lhsPrimals.data(),
                 lhsTangents.data());
           } else {
             curAdjointPos += 1;
@@ -143,7 +143,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluatePrimal_Step3_EvalStatements
       CODI_INLINE static void internalEvaluatePrimal_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector,
+          PrimalValueLinearTape& tape, Real* primalVector,
           /* data from dynamicSizeData */
           size_t& curDynamicSizePos, size_t const& endDynamicPos, char* const dynamicSizeValues,
           /* data from fixedSizeData */
@@ -163,7 +163,7 @@ namespace codi {
           if (Config::StatementInputTag != data.numberOfPassiveArguments) {
             StmtCallArgs stmtArgs{curAdjointPos, data.numberOfPassiveArguments, curDynamicSizePos, dynamicSizeValues};
             StatementEvaluator::template call<StatementCall::Primal, PrimalValueLinearTape>(
-                data.handle, STMT_ARGS_UNPACK(stmtArgs), primalVector, lhsPrimals.data());
+                data.handle, STMT_ARGS_UNPACK(stmtArgs), tape, primalVector, lhsPrimals.data());
           } else {
             curAdjointPos += 1;
           }
@@ -173,7 +173,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateReverse_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueLinearTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from dynamicSizeData */
           size_t& curDynamicSizePos, size_t const& endDynamicPos, char* const dynamicSizeValues,
           /* data from fixedSizeData */
@@ -193,7 +193,7 @@ namespace codi {
           if (Config::StatementInputTag != data.numberOfPassiveArguments) {
             StmtCallArgs stmtArgs{curAdjointPos, data.numberOfPassiveArguments, curDynamicSizePos, dynamicSizeValues};
             StatementEvaluator::template call<StatementCall::Reverse, PrimalValueLinearTape>(
-                data.handle, STMT_ARGS_UNPACK(stmtArgs), primalVector, adjointVector, lhsAdjoints.data());
+                data.handle, STMT_ARGS_UNPACK(stmtArgs), tape, primalVector, adjointVector, lhsAdjoints.data());
           } else {
             curAdjointPos -= 1;
           }

@@ -142,7 +142,7 @@ namespace codi {
       /// Create an identifier vector from an existing one. Values do not need to be copied.
       /// @tparam V  V is either Vector or VectorIdentifier.
       template<typename V>
-      VectorIdentifier* createVectorIdentifier(Vector* vec);
+      VectorIdentifier* createVectorIdentifier(V* vec);
 
       /// Delete a real matrix.
       void deleteMatrixReal(MatrixReal* A_v);

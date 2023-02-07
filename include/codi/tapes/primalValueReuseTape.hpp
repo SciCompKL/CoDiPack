@@ -95,7 +95,7 @@ namespace codi {
       void clearAdjoints(Position const& start, Position const& end) {
         auto clearFunc = [](
                              /* data from call */
-                             ADJOINT_VECTOR_TYPE* adjointVector, size_t adjointVectorSize,
+                             PrimalValueReuseTape &tape, ADJOINT_VECTOR_TYPE* adjointVector, size_t adjointVectorSize,
                              /* data from dynamicSizeData */
                              size_t& curDynamicSizePos, size_t const& endDynamicPos, char* const dynamicSizeValues,
                              /* data from fixedSizeData */
@@ -110,7 +110,7 @@ namespace codi {
 
             StmtCallArgs stmtArgs{data.numberOfPassiveArguments, curDynamicSizePos, dynamicSizeValues};
             StatementEvaluator::template call<StatementCall::ClearAdjoint, PrimalValueReuseTape>(
-                data.handle, STMT_ARGS_UNPACK(stmtArgs), adjointVector, adjointVectorSize);
+                data.handle, STMT_ARGS_UNPACK(stmtArgs), tape, adjointVector, adjointVectorSize);
           }
         };
 
@@ -122,7 +122,7 @@ namespace codi {
 
         ADJOINT_VECTOR_TYPE* dataVector = Base::selectAdjointVector(&vectorAccess, Base::adjoints.data());
 
-        this->dynamicSizeData.evaluateReverse(startStmt, endStmt, clearFunc, dataVector, Base::adjoints.size());
+        this->dynamicSizeData.evaluateReverse(startStmt, endStmt, clearFunc, *this, dataVector, Base::adjoints.size());
       }
 
     protected:
@@ -130,7 +130,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueReuseTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from dynamicSizeData */
           size_t& curDynamicSizePos, size_t const& endDynamicPos, char* const dynamicSizeValues,
           /* data from fixedSizeData */
@@ -146,7 +146,7 @@ namespace codi {
 
           StmtCallArgs stmtArgs{data.numberOfPassiveArguments, curDynamicSizePos, dynamicSizeValues};
           StatementEvaluator::template call<StatementCall::Forward, PrimalValueReuseTape>(
-              data.handle, STMT_ARGS_UNPACK(stmtArgs), primalVector, adjointVector, lhsPrimals.data(),
+              data.handle, STMT_ARGS_UNPACK(stmtArgs), tape, primalVector, adjointVector, lhsPrimals.data(),
               lhsTangents.data());
         }
       }
@@ -154,7 +154,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluatePrimal_Step3_EvalStatements
       CODI_INLINE static void internalEvaluatePrimal_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector,
+          PrimalValueReuseTape& tape, Real* primalVector,
           /* data from dynamicSizeData */
           size_t& curDynamicSizePos, size_t const& endDynamicPos, char* const dynamicSizeValues,
           /* data from fixedSizeData */
@@ -169,14 +169,14 @@ namespace codi {
 
           StmtCallArgs stmtArgs{data.numberOfPassiveArguments, curDynamicSizePos, dynamicSizeValues};
           StatementEvaluator::template call<StatementCall::Primal, PrimalValueReuseTape>(
-              data.handle, STMT_ARGS_UNPACK(stmtArgs), primalVector, lhsPrimals.data());
+              data.handle, STMT_ARGS_UNPACK(stmtArgs), tape, primalVector, lhsPrimals.data());
         }
       }
 
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateReverse_Step3_EvalStatements
       CODI_NO_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueReuseTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from dynamicSizeData */
           size_t& curDynamicSizePos, size_t const& endDynamicPos, char* const dynamicSizeValues,
           /* data from fixedSizeData */
@@ -191,7 +191,7 @@ namespace codi {
 
           StmtCallArgs stmtArgs{data.numberOfPassiveArguments, curDynamicSizePos, dynamicSizeValues};
           StatementEvaluator::template call<StatementCall::Reverse, PrimalValueReuseTape>(
-              data.handle, STMT_ARGS_UNPACK(stmtArgs), primalVector, adjointVector, lhsAdjoints.data());
+              data.handle, STMT_ARGS_UNPACK(stmtArgs), tape, primalVector, adjointVector, lhsAdjoints.data());
         }
       }
 
@@ -199,7 +199,7 @@ namespace codi {
       CODI_INLINE void internalResetPrimalValues(Position const& pos) {
         auto clearFunc = [](
                              /* data from call */
-                             Real* primalVector,
+                             PrimalValueReuseTape &tape, Real* primalVector,
                              /* data from dynamicSizeData */
                              size_t& curDynamicSizePos, size_t const& endDynamicPos, char* const dynamicSizeValues,
                              /* data from fixedSizeData */
@@ -214,7 +214,7 @@ namespace codi {
 
             StmtCallArgs stmtArgs{data.numberOfPassiveArguments, curDynamicSizePos, dynamicSizeValues};
             StatementEvaluator::template call<StatementCall::ResetPrimal, PrimalValueReuseTape>(
-                data.handle, STMT_ARGS_UNPACK(stmtArgs), primalVector);
+                data.handle, STMT_ARGS_UNPACK(stmtArgs), tape, primalVector);
           }
         };
 
@@ -223,7 +223,7 @@ namespace codi {
             this->externalFunctionData.template extractPosition<DynamicPosition>(this->getPosition());
         DynamicPosition endStmt = this->externalFunctionData.template extractPosition<DynamicPosition>(pos);
 
-        this->dynamicSizeData.evaluateReverse(startStmt, endStmt, clearFunc, this->primals.data());
+        this->dynamicSizeData.evaluateReverse(startStmt, endStmt, clearFunc, *this, this->primals.data());
       }
 
     public:

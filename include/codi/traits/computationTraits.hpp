@@ -56,7 +56,8 @@ namespace codi {
     template<typename T_Jacobian, typename = void>
     struct TransposeImpl {
       public:
-        static_assert(false && std::is_void<T_Jacobian>::value, "Instantiation of unspecialized Jacobian transpose.");
+        CODI_STATIC_ASSERT(false && std::is_void<T_Jacobian>::value,
+                           "Instantiation of unspecialized Jacobian transpose.");
         using Jacobian = CODI_DD(T_Jacobian, CODI_ANY);  ///< See TransposeImpl.
 
         using Return = CODI_ANY;  ///< Deduced return type.

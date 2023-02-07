@@ -163,10 +163,10 @@ namespace codi {
     template<typename T_Type, typename = void>
     struct DataExtraction {
       public:
-        static_assert(false && std::is_void<T_Type>::value,
-                      "Instantiation of unspecialized RealTraits::DataExtraction.");
+        CODI_STATIC_ASSERT(false && std::is_void<T_Type>::value,
+                           "Instantiation of unspecialized RealTraits::DataExtraction.");
 
-        using Type = CODI_DD(T_Type, CODI_ANY);  ///< See DataExtraction.
+        using Type = CODI_DD(T_Type, ActiveTypeProxy);  ///< See DataExtraction.
 
         using Real = typename Type::Real;  ///< Type of a corresponding aggregate of primal values.
         using Identifier = typename Type::Identifier;  ///< Type of a corresponding aggregate of identifiers.
@@ -196,8 +196,8 @@ namespace codi {
     template<typename T_Type, typename = void>
     struct TapeRegistration {
       public:
-        static_assert(false && std::is_void<T_Type>::value,
-                      "Instantiation of unspecialized RealTraits::TapeRegistration.");
+        CODI_STATIC_ASSERT(false && std::is_void<T_Type>::value,
+                           "Instantiation of unspecialized RealTraits::TapeRegistration.");
 
         using Type = CODI_DD(T_Type, CODI_ANY);  ///< See TapeRegistration.
 
@@ -342,9 +342,8 @@ namespace codi {
           CODI_UNUSED(w);
 
           Type w_b{};
-          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {w_b[i.value] = InnerType(); });
-
           InnerType* w_bArray = reinterpret_cast<InnerType*>(&w_b);
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {w_bArray[i.value] = InnerType(); });
           w_bArray[element] = v_b;
 
           return ComputationTraits::transpose(w_b);

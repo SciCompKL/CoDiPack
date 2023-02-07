@@ -60,8 +60,10 @@ namespace codi {
           T_Tape, CODI_T(CODI_UNION<InternalStatementRecordingTapeInterface<int>,
                                     GradientAccessTapeInterface<double, int>>));  ///< See StaticContextActiveType.
 
-      using Real = typename Tape::Real;              ///< See TapeTypesInterface.
-      using Identifier = typename Tape::Identifier;  ///< See TapeTypesInterface.
+      using Real = CODI_DD(typename Tape::Real, double);  ///< See TapeTypesInterface.
+      using Identifier = typename Tape::Identifier;       ///< See TapeTypesInterface.
+
+      using Base = ExpressionInterface<Real, StaticContextActiveType>;  ///< Base class abbreviation.
 
     private:
 
@@ -74,9 +76,9 @@ namespace codi {
       CODI_INLINE StaticContextActiveType(Real const& primal, Identifier const& identifier)
           : primal(primal), identifier(identifier) {}
 
-      /// Copy Constructor
-      CODI_INLINE StaticContextActiveType(StaticContextActiveType const& value)
-          : primal(value.primal), identifier(value.identifier) {}
+      /// Copy constructor
+      CODI_INLINE StaticContextActiveType(StaticContextActiveType const& other)
+          : Base(static_cast<Base const&>(other)), primal(other.primal), identifier(other.identifier) {}
 
       /// Empty constructor for delayed construction that is overwritten with placement new operators
       CODI_INLINE StaticContextActiveType() : primal(), identifier() {}

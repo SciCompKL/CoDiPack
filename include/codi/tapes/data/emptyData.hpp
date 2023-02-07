@@ -124,6 +124,11 @@ namespace codi {
         return Position();
       }
 
+      /// \copybrief DataInterface::getDataPointers
+      CODI_INLINE void getDataPointers(InternalPosHandle const& startPos) {
+        CODI_UNUSED(startPos);
+      }
+
       /*******************************************************************************/
       /// @name Misc functions
 

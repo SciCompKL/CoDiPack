@@ -79,7 +79,7 @@ namespace codi {
         static bool constexpr isBothSame = std::is_same<LogicA, LogicB>::value;
 
         // Either one can be void (aka. constant value) but not both otherwise both need to be the same.
-        static_assert((!isBothVoid) & (!isAVoid | !isBVoid | isBothSame), "AD logic types need to be the same.");
+        CODI_STATIC_ASSERT((!isBothVoid) & (!isAVoid | !isBVoid | isBothSame), "AD logic types need to be the same.");
 
       public:
 

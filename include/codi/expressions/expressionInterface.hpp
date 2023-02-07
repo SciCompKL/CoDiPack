@@ -66,6 +66,12 @@ namespace codi {
       using ADLogic = CODI_UNDEFINED;  ///< AD logic that governs the expression. Needs to be the same for all inputs of
                                        ///< the expression.
 
+      /// Constructor
+      ExpressionInterface() = default;
+
+      /// Constructor
+      ExpressionInterface(ExpressionInterface const&) = default;
+
       /// Cast to the implementation.
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);

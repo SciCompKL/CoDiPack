@@ -57,7 +57,7 @@ namespace codi {
    * argument is the number of arguments \f$u\f$ from the equations above. This call ensures that `output` gets a
    * proper identifier and the dependency chain is not broken or wrong for this variable.
    *
-   * Afterwards the user has to call pushJacobiManual() for each argument \f$u\f$.
+   * Afterwards the user has to call pushJacobianManual() for each argument \f$u\f$.
    *
    * The user has to ensure that the computations of the Jacobians are evaluated such that the CoDiPack tape does not
    * accidentally record them.
@@ -86,7 +86,7 @@ namespace codi {
       /// @param jacobian  Jacobian \f$ \frac{\d \phi}{\d u_i} \f$ of the argument \f$ u_i \f$.
       /// @param value   Value of the argument \f$ u_i \f$. Usually `u_i.value()`.
       /// @param index   Identifier of the argument \f$ u_i \f$. Usually `u_i.identifier()`.
-      void pushJacobiManual(Real const& jacobian, Real const& value, Identifier const& index);
+      void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index);
 
       /// Initialize the storing of a hand computed statement. The primal value has to be updated already.
       /// @param lhsValue   Value of the result \f$ w \f$. Usually `w.value()`.

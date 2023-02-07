@@ -54,7 +54,7 @@ namespace codi {
   struct JacobianInterface {
     public:
 
-      using T = CODI_DECLARE_DEFAULT(T_T, double);  ///< See JacobianInterface.
+      using T = CODI_DD(T_T, double);  ///< See JacobianInterface.
 
       size_t getM() const;  ///< Get size of rows (output variables).
       size_t getN() const;  ///< Get size of columns (input variables).
@@ -67,6 +67,9 @@ namespace codi {
 
       void resize(size_t const m, size_t const n);  ///< Resize the Jacobian.
       size_t size() const;                          ///< Get total size of the Jacobian.
+
+      /// Interface for the JacobianDelayAccessor
+      void setLogic(size_t const i, size_t const j, T const& v);
   };
 
   /**

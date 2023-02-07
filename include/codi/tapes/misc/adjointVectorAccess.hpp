@@ -34,6 +34,7 @@
  */
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <vector>
 
@@ -67,6 +68,8 @@ namespace codi {
 
       std::vector<Gradient> lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
       size_t lhsPos;              ///< Defines which lhs is currently used. Index into the lhs vector.
+
+      std::array<Real, GradientTraits::dim<Gradient>()> buffer;  ///< Temporary storage for getAdjointVec.
 
     public:
 
@@ -155,6 +158,12 @@ namespace codi {
         for (size_t i = 0; i < getVectorSize(); ++i) {
           vec[i] = (Real)GradientTraits::at(adjointVector[index], i);
         }
+      }
+
+      /// \copydoc codi::VectorAccessInterface::getAdjointVec
+      Real const* getAdjointVec(Identifier const& index) {
+        getAdjointVec(index, buffer.data());
+        return buffer.data();
       }
 
       /// \copydoc codi::VectorAccessInterface::updateAdjoint

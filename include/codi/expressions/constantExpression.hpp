@@ -78,7 +78,7 @@ namespace codi {
   struct ConstantExpression : public ExpressionInterface<T_Real, ConstantExpression<T_Real, T_ConversionOperator>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See ConstantExpression.
+      using Real = T_Real;  ///< See ConstantExpression.
 
       /// See ConstantExpression.
       template<typename T>

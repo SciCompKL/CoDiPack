@@ -66,7 +66,7 @@ namespace codi {
                                 CODI_T(JacobianTapeTypes<double, double, IndexManagerInterface<int>,
                                                          DefaultChunkedData>));  ///< See JacobianReuseTape.
 
-      using Base = JacobianBaseTape<TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
+      using Base = JacobianBaseTape<T_TapeTypes, JacobianReuseTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
       using Real = typename TapeTypes::Real;                    ///< See TapeTypesInterface.
@@ -76,7 +76,7 @@ namespace codi {
       using Position = typename Base::Position;                 ///< See TapeTypesInterface.
       using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
 
-      static_assert(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
+      CODI_STATIC_ASSERT(!IndexManager::IsLinear, "This class requires an index manager with a reuse scheme.");
 
       /// Constructor
       JacobianReuseTape() : Base() {}
@@ -112,7 +112,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          Adjoint* adjointVector,
+          JacobianReuseTape& tape, Adjoint* adjointVector,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -128,6 +128,10 @@ namespace codi {
 
           adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
 
+          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape, lhsIdentifiers[curStmtPos],
+                                                                           GradientTraits::dim<Adjoint>(),
+                                                                           GradientTraits::toArray(lhsAdjoint).data());
+
           curStmtPos += 1;
         }
       }
@@ -136,7 +140,7 @@ namespace codi {
       template<typename Adjoint>
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          Adjoint* adjointVector,
+          JacobianReuseTape& tape, Adjoint* adjointVector,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -149,8 +153,12 @@ namespace codi {
           curStmtPos -= 1;
 
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
-          adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
 
+          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape, lhsIdentifiers[curStmtPos],
+                                                                           GradientTraits::dim<Adjoint>(),
+                                                                           GradientTraits::toArray(lhsAdjoint).data());
+
+          adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
           Base::incrementAdjoints(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
                                   rhsJacobians, rhsIdentifiers);
         }

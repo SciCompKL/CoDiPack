@@ -289,7 +289,7 @@ namespace codi {
   struct RealTraits::IsTotalZero<T_Type, GradientTraits::EnableIfDirection<T_Type>> {
     public:
 
-      using Type = CODI_DD(T_Type, TEMPLATE(Direction<double, 1>));
+      using Type = CODI_DD(T_Type, CODI_T(Direction<double, 1>));
       using Real = typename GradientTraits::Real<Type>;
 
       static CODI_INLINE bool isTotalZero(Type const& v) {
@@ -306,7 +306,7 @@ namespace codi {
   struct RealTraits::IsTotalFinite<T_Type, GradientTraits::EnableIfDirection<T_Type>> {
     public:
 
-      using Type = CODI_DD(T_Type, TEMPLATE(Direction<double, 1>));
+      using Type = CODI_DD(T_Type, CODI_T(Direction<double, 1>));
 
       static CODI_INLINE bool isTotalFinite(Type const& v) {
         for (size_t i = 0; i < GradientTraits::dim<Type>(); ++i) {
@@ -324,7 +324,7 @@ namespace codi {
     struct TraitsImplementation<T_Gradient, EnableIfDirection<T_Gradient>> {
       public:
 
-        using Gradient = CODI_DD(T_Gradient, TEMPLATE(Direction<double, 1>));
+        using Gradient = CODI_DD(T_Gradient, CODI_T(Direction<double, 1>));
         using Real = typename Gradient::Real;
 
         static size_t constexpr dim = Gradient::dim;
@@ -335,6 +335,14 @@ namespace codi {
 
         CODI_INLINE static Real const& at(Gradient const& gradient, size_t dim) {
           return gradient[dim];
+        }
+
+        CODI_INLINE static std::array<Real, dim> toArray(Gradient const& gradient) {
+          std::array<Real, dim> result;
+          for (size_t i = 0; i < dim; ++i) {
+            result[i] = at(gradient, i);
+          }
+          return result;
         }
     };
   }

@@ -36,6 +36,7 @@
 
 #include "../config.h"
 #include "../misc/macros.hpp"
+#include "expressionInterface.hpp"
 #include "logic/compileTimeTraversalLogic.hpp"
 #include "logic/nodeInterface.hpp"
 #include "logic/traversalLogic.hpp"

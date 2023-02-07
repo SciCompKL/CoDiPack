@@ -76,8 +76,8 @@ namespace codi {
    */
   template<typename T_Type, typename = void>
   struct AggregatedTypeVectorAccessWrapper : public VectorAccessInterface<CODI_ANY, CODI_ANY> {
-      static_assert(false && std::is_void<T_Type>::value,
-                    "Instantiation of unspecialized AggregatedTypeVectorAccessWrapper.");
+      CODI_STATIC_ASSERT(false && std::is_void<T_Type>::value,
+                         "Instantiation of unspecialized AggregatedTypeVectorAccessWrapper.");
 
       using Type = CODI_DD(T_Type, CODI_ANY);  ///< See AggregatedTypeVectorAccessWrapperBase.
   };
@@ -107,9 +107,11 @@ namespace codi {
       InnerInterface& innerInterface;  ///< Reference to inner interface.
       int lhsOffset;  ///< Offset of indirect access if this aggregated type is part of an outer aggregated type.
 
+      std::vector<Real> buffer;  ///< Temporary storage for getAdjointVec.
+
       /// Constructor
       CODI_INLINE AggregatedTypeVectorAccessWrapper(InnerInterface* innerInterface)
-          : innerInterface(*innerInterface), lhsOffset(0) {
+          : innerInterface(*innerInterface), lhsOffset(0), buffer(innerInterface->getVectorSize()) {
         innerInterface->setSizeForIndirectAccess(Elements);
       }
 
@@ -215,6 +217,12 @@ namespace codi {
         }
       }
 
+      /// \copydoc VectorAccessInterface::getAdjointVec()
+      Real const* getAdjointVec(Identifier const& index) {
+        getAdjointVec(index, buffer.data());
+        return buffer.data();
+      }
+
       /// \copydoc VectorAccessInterface::updateAdjoint()
       CODI_INLINE void updateAdjoint(Identifier const& index, size_t dim, Real const& adjoint) {
         static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
@@ -295,10 +303,7 @@ namespace codi {
   template<typename T_Type>
   struct AggregatedTypeVectorAccessWrapperFactory<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>> {
     public:
-      using Type = CODI_DD(
-          T_Type,
-          CODI_T(LhsExpressionInterface<double, int, CODI_ANY, CODI_ANY>));  ///< See
-                                                                             ///< AggregatedTypeVectorAccessWrapperBase.
+      using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);  ///< See AggregatedTypeVectorAccessWrapperBase.
 
       using RType = VectorAccessInterface<typename Type::Real, typename Type::Identifier>;
 

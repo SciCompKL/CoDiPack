@@ -88,7 +88,7 @@ namespace codi {
   struct MemberStore<T_Type, T_Parent, true> {
     public:
 
-      using Type = CODI_DD(T_Type, CODI_ANY);      ///< See MemberStore.
+      using Type = T_Type;                         ///< See MemberStore.
       using Parent = CODI_DD(T_Parent, CODI_ANY);  ///< See MemberStore.
 
       static bool constexpr storeStatic = true;  ///< See MemberStore.

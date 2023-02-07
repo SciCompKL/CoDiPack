@@ -76,16 +76,14 @@ namespace codi {
     public:
 
       /// See PreaccumulationHelper.
-      using Type = CODI_DECLARE_DEFAULT(T_Type,
-                                        CODI_TEMPLATE(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+      using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
       using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface.
 
       /// See LhsExpressionInterface.
-      using Tape = CODI_DECLARE_DEFAULT(typename Type::Tape,
-                                        CODI_TEMPLATE(FullTapeInterface<double, double, int, CODI_ANY>));
+      using Tape = CODI_DD(typename Type::Tape, CODI_DEFAULT_TAPE);
       using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface.
 
       std::vector<Identifier> inputData;   ///< List of input identifiers. Can be added manually after start() was
@@ -97,15 +95,15 @@ namespace codi {
 
     protected:
 
-      Position startPos;                     ///< Starting position for the region.
-      std::vector<Gradient> storedAdjoints;  ///< If adjoints of inputs should be stored, before the preaccumulation.
-      JacobianCountNonZerosRow<Real> jacobiean;  ///< Jacobian for the preaccumulation.
+      Position startPos;                        ///< Starting position for the region.
+      std::vector<Gradient> storedAdjoints;     ///< If adjoints of inputs should be stored, before the preaccumulation.
+      JacobianCountNonZerosRow<Real> jacobian;  ///< Jacobian for the preaccumulation.
 
     public:
 
       /// Constructor
       PreaccumulationHelper()
-          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobiean(0, 0) {}
+          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobian(0, 0) {}
 
       /// Add multiple additional inputs. Inputs need to be of type `Type`. Called after start().
       template<typename... Inputs>
@@ -121,6 +119,8 @@ namespace codi {
       template<typename... Inputs>
       void start(Inputs const&... inputs) {
         Tape& tape = Type::getTape();
+
+        EventSystem<Tape>::notifyPreaccStartListeners(tape);
 
         if (tape.isActive()) {
           inputData.clear();
@@ -163,11 +163,14 @@ namespace codi {
             restoreInputAdjoints();
           }
         }
+
+        EventSystem<Tape>::notifyPreaccFinishListeners(tape);
       }
 
     private:
 
       void addInputLogic(Type const& input) {
+        EventSystem<Tape>::notifyPreaccAddInputListeners(Type::getTape(), input.getValue(), input.getIdentifier());
         Identifier const& identifier = input.getIdentifier();
         if (0 != identifier) {
           inputData.push_back(identifier);
@@ -186,6 +189,7 @@ namespace codi {
       }
 
       void addOutputLogic(Type& output) {
+        EventSystem<Tape>::notifyPreaccAddOutputListeners(Type::getTape(), output.value(), output.getIdentifier());
         Identifier const& identifier = output.getIdentifier();
         if (0 != identifier) {
           outputData.push_back(identifier);
@@ -233,21 +237,21 @@ namespace codi {
         Tape& tape = Type::getTape();
 
         Position endPos = tape.getPosition();
-        if (jacobiean.getM() != outputData.size() || jacobiean.getN() != inputData.size()) {
-          jacobiean.resize(outputData.size(), inputData.size());
+        if (jacobian.getM() != outputData.size() || jacobian.getN() != inputData.size()) {
+          jacobian.resize(outputData.size(), inputData.size());
         }
 
         Algorithms<Type, false>::computeJacobian(startPos, endPos, inputData.data(), inputData.size(),
-                                                 outputData.data(), outputData.size(), jacobiean);
+                                                 outputData.data(), outputData.size(), jacobian);
 
         // Store the Jacobian matrix.
         tape.resetTo(startPos);
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
           Type& value = *outputValues[curOut];
-          if (0 != jacobiean.nonZerosRow(curOut)) {
-            int nonZerosLeft = jacobiean.nonZerosRow(curOut);
-            jacobiean.nonZerosRow(curOut) = 0;
+          if (0 != jacobian.nonZerosRow(curOut)) {
+            int nonZerosLeft = jacobian.nonZerosRow(curOut);
+            jacobian.nonZerosRow(curOut) = 0;
 
             // We need to initialize with the output's current identifier such that it is correctly deleted in
             // storeManual.
@@ -285,13 +289,13 @@ namespace codi {
               // staggering variables t_1, t_2, ...
               tape.storeManual(value.getValue(), lastIdentifier, jacobiansForStatement + (int)staggeringActive);
               if (staggeringActive) {  // Not the first staggering so push the last output.
-                tape.pushJacobiManual(1.0, 0.0, storedIdentifier);
+                tape.pushJacobianManual(1.0, 0.0, storedIdentifier);
               }
 
               // Push the rest of the Jacobians for the statement.
               while (jacobiansForStatement > 0) {
-                if (Real() != (Real)jacobiean(curOut, curIn)) {
-                  tape.pushJacobiManual(jacobiean(curOut, curIn), 0.0, inputData[curIn]);
+                if (Real() != (Real)jacobian(curOut, curIn)) {
+                  tape.pushJacobianManual(jacobian(curOut, curIn), 0.0, inputData[curIn]);
                   jacobiansForStatement -= 1;
                 }
                 curIn += 1;

@@ -228,7 +228,7 @@ namespace codi {
       /// \copydoc UnaryOperation::gradient
       template<typename Argument>
       static CODI_INLINE Jacobian gradient(Argument const& argument, Real const& result) {
-
+        CODI_UNUSED(result);
 
         Real divisor = real(argument) * real(argument) + imag(argument) * imag(argument);
         checkDivisor(divisor);

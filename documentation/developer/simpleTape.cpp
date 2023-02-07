@@ -53,6 +53,8 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
     using PrimalData = codi::ChunkedData<codi::Chunk1<double>, IdentifierData>;
 //! [Data stream - Type definition]
 
+    using Position = PrimalData::Position;
+
   private:
     bool active;
 

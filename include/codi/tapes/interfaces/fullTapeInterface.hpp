@@ -84,5 +84,19 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, double);         ///< See FullTapeInterface.
       using Identifier = CODI_DD(T_Identifier, int);        ///< See FullTapeInterface.
       using Position = CODI_DD(T_Position, EmptyPosition);  ///< See FullTapeInterface.
+
+#if CODI_IDE
+      using TapeTypes = CODI_ANY;
+#endif
+
+      using PositionalEvaluationTapeInterface<T_Position>::clearAdjoints;
+      using ReverseTapeInterface<T_Real, T_Gradient, T_Identifier>::clearAdjoints;
+
+      using PositionalEvaluationTapeInterface<T_Position>::evaluate;
+      using ReverseTapeInterface<T_Real, T_Gradient, T_Identifier>::evaluate;
+      using CustomAdjointVectorEvaluationTapeInterface<T_Position>::evaluate;
+
+      using ForwardEvaluationTapeInterface<T_Position>::evaluateForward;
+      using CustomAdjointVectorEvaluationTapeInterface<T_Position>::evaluateForward;
   };
 }

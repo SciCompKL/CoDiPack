@@ -61,7 +61,7 @@ CODI_VERSION = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
 
 CODI_DIR := .
 
-FLAGS = -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE)
+FLAGS = -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE) -DCODI_StatementEvents
 
 ifndef CLANG_FORMAT
   CLANG_FORMAT := clang-format
@@ -120,7 +120,7 @@ doc:
 
 .PHONY: format
 format:
-	find include tests/include tests/src -type f -exec $(CLANG_FORMAT) -i {} \;
+	find include tests/general/include tests/general/src tests/events/include tests/events/src -type f -exec $(CLANG_FORMAT) -i {} \;
 
 .PHONY: clean
 clean:
