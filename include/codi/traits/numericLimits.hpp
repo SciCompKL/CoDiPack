@@ -45,11 +45,14 @@ namespace codi {
 
   template<typename T_Tape>
   struct ActiveType;
+
+  template<typename T_Tape, typename T_ParallelToolbox>
+  struct ParallelActiveType;
 }
 
 namespace std {
 
-  /// Specialization of std::numeric_limits for CoDiPack active types.
+  /// Specialization of std::numeric_limits for the default CoDiPack active types.
   template<typename Tape>
   struct numeric_limits<codi::ActiveType<Tape>> {
     private:
@@ -113,4 +116,8 @@ namespace std {
       static bool constexpr tinyness_before = numeric_limits<Passive>::tinyness_before;       ///< See numeric_limits
       static float_round_style constexpr round_style = numeric_limits<Passive>::round_style;  ///< See numeric_limits
   };
+
+  /// Specialization of std::numeric_limits for parallel CoDiPack active types.
+  template<typename Tape, typename ParallelToolbox>
+  struct numeric_limits<codi::ParallelActiveType<Tape, ParallelToolbox>> : numeric_limits<codi::ActiveType<Tape>> {};
 }
