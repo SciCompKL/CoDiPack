@@ -38,6 +38,7 @@
 
 #include "../../config.h"
 #include "../../misc/macros.hpp"
+#include "../../traits/atomicTraits.hpp"
 #include "../../traits/gradientTraits.hpp"
 #include "../../traits/realTraits.hpp"
 
@@ -154,6 +155,17 @@ namespace codi {
     return r;
   }
 
+  /// Multiplication of a non-atomic scalar with a direction that has atomic reals.
+  template<typename Real, size_t dim, typename = AtomicTraits::EnableIfAtomic<Real>>
+  CODI_INLINE Direction<Real, dim> operator*(AtomicTraits::RemoveAtomic<Real> const& s, Direction<Real, dim> const& v) {
+    Direction<Real, dim> r;
+    for (size_t i = 0; i < dim; ++i) {
+      r[i] = s * v[i];
+    }
+
+    return r;
+  }
+
   /// Multiplication with a scalar.
   template<typename Real, size_t dim>
   CODI_INLINE Direction<Real, dim> operator*(Direction<Real, dim> const& v, Real const& s) {
@@ -163,6 +175,12 @@ namespace codi {
   /// Multiplication with passive a scalar.
   template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator*(Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
+    return s * v;
+  }
+
+  /// Multiplication of a non-atomic scalar with a direction that has atomic reals.
+  template<typename Real, size_t dim, typename = AtomicTraits::EnableIfAtomic<Real>>
+  CODI_INLINE Direction<Real, dim> operator*(Direction<Real, dim> const& v, AtomicTraits::RemoveAtomic<Real> const& s) {
     return s * v;
   }
 
@@ -180,6 +198,17 @@ namespace codi {
   /// Division by a passive scalar.
   template<typename Real, size_t dim, typename = RealTraits::EnableIfNotPassiveReal<Real>>
   CODI_INLINE Direction<Real, dim> operator/(Direction<Real, dim> const& v, RealTraits::PassiveReal<Real> const& s) {
+    Direction<Real, dim> r;
+    for (size_t i = 0; i < dim; ++i) {
+      r[i] = v[i] / s;
+    }
+
+    return r;
+  }
+
+  /// Division of a direction with atomic reals by a non-atomic scalar.
+  template<typename Real, size_t dim, typename = AtomicTraits::EnableIfAtomic<Real>>
+  CODI_INLINE Direction<Real, dim> operator/(Direction<Real, dim> const& v, AtomicTraits::RemoveAtomic<Real> const& s) {
     Direction<Real, dim> r;
     for (size_t i = 0; i < dim; ++i) {
       r[i] = v[i] / s;
@@ -337,8 +366,8 @@ namespace codi {
           return gradient[dim];
         }
 
-        CODI_INLINE static std::array<Real, dim> toArray(Gradient const& gradient) {
-          std::array<Real, dim> result;
+        CODI_INLINE static std::array<AtomicTraits::RemoveAtomic<Real>, dim> toArray(Gradient const& gradient) {
+          std::array<AtomicTraits::RemoveAtomic<Real>, dim> result;
           for (size_t i = 0; i < dim; ++i) {
             result[i] = at(gradient, i);
           }
