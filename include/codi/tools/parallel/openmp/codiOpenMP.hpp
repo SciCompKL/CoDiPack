@@ -38,6 +38,7 @@
 #include "../../../expressions/parallelActiveType.hpp"
 #include "../../../tapes/indices/parallelReuseIndexManager.hpp"
 #include "../../../tapes/misc/threadSafeGlobalAdjoints.hpp"
+#include "../../data/direction.hpp"
 #include "../../helpers/openMPExternalFunctionHelper.hpp"
 #include "openMPAtomic.hpp"
 #include "openMPMutex.hpp"
@@ -63,4 +64,8 @@ namespace codi {
 
   /// \copydoc codi::RealReverseIndexOpenMPGen
   using RealReverseIndexOpenMP = RealReverseIndexOpenMPGen<double>;
+
+  /// \copydoc codi::RealReverseIndexOpenMPGen
+  template<size_t dim>
+  using RealReverseIndexVecOpenMP = RealReverseIndexOpenMPGen<double, Direction<OpenMPAtomic<double>, dim>>;
 }
