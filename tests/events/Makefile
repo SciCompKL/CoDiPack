@@ -67,27 +67,70 @@ clean:
 # disable deletion of intermediate targets
 .SECONDARY:
 
-# basic types covered by the tests
-basicTypes = RealForward RealReverse RealReverseIndex RealReversePrimal RealReversePrimalIndex
+# to not clutter the result files of second order tests with primal value vector allocations, reduce the chunk sizes
+# this is especially important for primal value tapes, but for consistency, it is applied everywhere
+commonFlags = -DCODI_ChunkSize=1 -DCODI_SmallChunkSize=1
 
-# identify primal types among basic types
-primalTypes = $(foreach type,$(basicTypes),$(if $(findstring Primal,$(type)),$(type),))
+# type-specific variables
+define setType
+build/$1%.exe: TYPE=$1
+build/$1%.exe: CODI_TYPE=$2
+build/$1%.exe: DRIVER=$3
+build/$1%.exe: TYPE_FLAGS=$4 $(commonFlags)
+allTypes := $(allTypes) $1
+endef
 
-# primal types with variable adjoint interface
-primalTypesVariableAdjointInterface = $(foreach type,$(primalTypes),$(type)VariableAdjointInterface)
+# scalar types
 
-# all scalar types
-scalarTypes = $(basicTypes) $(primalTypesVariableAdjointInterface)
+$(eval $(call setType,RealForward,codi::RealForward,Forward,-DFORWARD_TAPE))
+$(eval $(call setType,RealReverse,codi::RealReverse,Reverse,-DREVERSE_TAPE))
+$(eval $(call setType,RealReverseIndex,codi::RealReverseIndex,Reverse,-DREVERSE_TAPE))
+$(eval $(call setType,RealReversePrimal,codi::RealReversePrimal,ReversePrimal,-DREVERSE_TAPE))
+$(eval $(call setType,RealReversePrimalIndex,codi::RealReversePrimalIndex,ReversePrimal,-DREVERSE_TAPE))
 
-# vector types derived from scalar types
-vectorTypes = $(foreach type,$(scalarTypes),$(type)Vec)
+$(eval $(call setType,RealReversePrimalVariableAdjointInterface,codi::RealReversePrimal,ReversePrimal,-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes))
+$(eval $(call setType,RealReversePrimalIndexVariableAdjointInterface,codi::RealReversePrimalIndex,ReversePrimal,-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes))
 
-# second order types derived from scalar types
-secondOrderTypes = $(foreach type,$(scalarTypes),$(type)Sec)
+# vector types
 
-allTypes = $(scalarTypes) $(vectorTypes) $(secondOrderTypes)
+$(eval $(call setType,RealForwardVec,codi::RealForwardVec<$(VECTOR_DIM)>,Forward,-DFORWARD_TAPE))
+$(eval $(call setType,RealReverseVec,codi::RealReverseVec<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE))
+$(eval $(call setType,RealReverseIndexVec,codi::RealReverseIndexVec<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE))
+$(eval $(call setType,RealReversePrimalVec,codi::RealReversePrimalVec<$(VECTOR_DIM)>,ReversePrimal,-DREVERSE_TAPE))
+$(eval $(call setType,RealReversePrimalIndexVec,codi::RealReversePrimalIndexVec<$(VECTOR_DIM)>,ReversePrimal,-DREVERSE_TAPE))
 
-allTests = Tape Statement Preacc
+$(eval $(call setType,RealReversePrimalVariableAdjointInterfaceVec,codi::RealReversePrimalVec<$(VECTOR_DIM)>,ReversePrimal,-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes))
+$(eval $(call setType,RealReversePrimalIndexVariableAdjointInterfaceVec,codi::RealReversePrimalIndexVec<$(VECTOR_DIM)>,ReversePrimal,-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes))
+
+# set flag for inner callbacks, depending on config
+ifeq ($(USE_INNER_CALLBACKS),yes)
+innerCallbacksFlag = -DUSE_INNER_CALLBACKS
+else
+innerCallbacksFlag = 
+endif
+
+# second order types
+
+$(eval $(call setType,RealForwardSec,codi::RealForwardGen<codi::RealForward>,Forward,-DFORWARD_TAPE $(innerCallbacksFlag)))
+$(eval $(call setType,RealReverseSec,codi::RealReverseGen<codi::RealForward>,Reverse,-DREVERSE_TAPE $(innerCallbacksFlag)))
+$(eval $(call setType,RealReverseIndexSec,codi::RealReverseIndexGen<codi::RealForward>,Reverse,-DREVERSE_TAPE $(innerCallbacksFlag)))
+$(eval $(call setType,RealReversePrimalSec,codi::RealReversePrimalGen<codi::RealForward>,ReversePrimal,-DREVERSE_TAPE $(innerCallbacksFlag)))
+$(eval $(call setType,RealReversePrimalIndexSec,codi::RealReversePrimalIndexGen<codi::RealForward>,ReversePrimal,-DREVERSE_TAPE $(innerCallbacksFlag)))
+
+$(eval $(call setType,RealReversePrimalVariableAdjointInterfaceSec,codi::RealReversePrimalGen<codi::RealForward>,ReversePrimal,-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes $(innerCallbacksFlag)))
+$(eval $(call setType,RealReversePrimalIndexVariableAdjointInterfaceSec,codi::RealReversePrimalIndexGen<codi::RealForward>,ReversePrimal,-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes $(innerCallbacksFlag)))
+
+# tests
+
+define setTest
+build/%$1.exe: TEST_NAME=$1
+build/%$1.exe: TEST_FLAGS=$2
+allTests := $(allTests) $1
+endef
+
+$(eval $(call setTest,Tape,))
+$(eval $(call setTest,Statement,))
+$(eval $(call setTest,Preacc,))
 
 $(info [info] all types: $(allTypes))
 $(info [info] all tests: $(allTests))
@@ -112,62 +155,11 @@ $(info [info] used tests: $(usedTests))
 # test cases are combinations of used types and tests
 usedCases = $(foreach type,$(usedTypes),$(foreach test,$(usedTests),$(type)$(test)))
 
-# given a type, decide whether it needs the forward, the reverse, or the reversePrimal driver
-getDriver = $(if $(findstring ReversePrimal,$1),ReversePrimal,$(if $(findstring Reverse,$1),Reverse,Forward))
-
-# given a type, decide whether it uses a forward or reverse tape, and produce a corresponding preprocessor flag
-getTapeFlag = $(if $(findstring Reverse,$1),-DREVERSE_TAPE,-DFORWARD_TAPE)
-
-# given a type, decide whether it is a second order type, and if configured, request events for the inner tape
-ifeq ($(USE_INNER_CALLBACKS),yes)
-getInnerCallbacksFlag = $(if $(findstring Sec,$1),-DUSE_INNER_CALLBACKS)
-else
-getInnerCallbacksFlag = 
-endif
-
-# to not clutter the result files of second order tests with primal value vector allocations, reduce the chunk sizes
-# this is especially important for primal value tapes, but for consistency, it is applied everywhere
-getChunkSizeFlags = -DCODI_ChunkSize=1 -DCODI_SmallChunkSize=1
-
-# if needed, produce a flag that enables variable adjoint interfaces
-getVariableAdjointInterfaceFlag = $(if $(findstring VariableAdjointInterface,$1),-DCODI_VariableAdjointInterfaceInPrimalTapes)
-
-# given a type, remove the indicators from the name that are not relevant for deriving the CoDiPack type
-removeSecondaryIndicators = $(subst VariableAdjointInterface,,$1)
-
-# given a type, add the vector dimension if needed (e.g., RealReverseVec -> RealReverseVec<4>)
-addVectorDimIfNeeded = $(patsubst %Vec,%Vec<$(VECTOR_DIM)>,$1)
-
-# given a type, expand it to a second order CoDiPackType type (e.g., RealReverseSec -> RealReverseGen<RealForward>)
-expandSecondOrderTypeIfNeeded = $(patsubst %Sec,%Gen<codi::RealForward>,$1)
-
-# given a type, convert it into the corresponding CoDiPack type
-getCoDiPackType = codi::$(call addVectorDimIfNeeded,$(call expandSecondOrderTypeIfNeeded,$(call removeSecondaryIndicators,$1)))
-
-# define variables that describe the characteristics of a test case
-
-# test-specific variables
-define setTest
-build/%$1.exe: TEST_NAME=$1
-build/%$1.exe: TEST_FLAGS=
-endef
-
-$(foreach test,$(usedTests),$(eval $(call setTest,$(test))))
-
-# type-specific variables
-define setType
-build/$1%.exe: TYPE=$1
-build/$1%.exe: DRIVER=$(call getDriver,$1)
-build/$1%.exe: TYPE_FLAGS=$(call getTapeFlag,$1) $(call getInnerCallbacksFlag,$1) $(call getChunkSizeFlags,$1) $(call getVariableAdjointInterfaceFlag,$1)
-endef
-
-$(foreach type,$(usedTypes),$(eval $(call setType,$(type))))
-
 # compile tests for a specific type, create executable
 build/%.exe:
 	@mkdir -p build;
-	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='$(call getCoDiPackType,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS) $(DRIVER_FLAGS);
-	@$(CXX) src/driver$(DRIVER).cpp $(FLAGS) -DNUMBER='$(call getCoDiPackType,$(TYPE))' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS) $(DRIVER_FLAGS) -MM -MP -MT $@ -MF $@.d
+	$(CXX) src/driver$(DRIVER).cpp -o $@ $(FLAGS) -DNUMBER='$(CODI_TYPE)' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS);
+	@$(CXX) src/driver$(DRIVER).cpp $(FLAGS) -DNUMBER='$(CODI_TYPE)' -I $(CODI_DIR)/include -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -DTEST_NAME=Test$(TEST_NAME) $(TYPE_FLAGS) $(TEST_FLAGS) -MM -MP -MT $@ -MF $@.d
 
 # run executable, create output file
 build/%.out: build/%.exe
