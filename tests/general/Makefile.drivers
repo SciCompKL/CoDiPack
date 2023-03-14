@@ -128,6 +128,7 @@ $(eval $(call define_codi_driver,D2_eh_fwdVec,"drivers/codi/evalHelper2ndOrder.h
 
 $(eval $(call define_codi_driver,D2_eh_rwsJacLin,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseGen<codi::RealForward>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
 $(eval $(call define_codi_driver,D2_eh_rwsJacInd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseIndexGen<codi::RealForward>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
+$(eval $(call define_codi_driver,D2_eh_rwsJacIndOmp,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReverseIndexOpenMPGen<codi::RealForward>,$(EH_JACOBI_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER -DCODI_EnableOpenMP -fopenmp))
 $(eval $(call define_codi_driver,D2_eh_rwsPrimLin,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalGen<codi::RealForward>,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
 $(eval $(call define_codi_driver,D2_eh_rwsPrimInd,"drivers/codi/evalHelper2ndOrder.hpp",CoDiEvalHelper2ndOrder,codi::RealReversePrimalIndexGen<codi::RealForward>,$(EH_PRIMAL_TAPE_TESTS),-DREVERSE_TAPE -DSECOND_ORDER))
 
