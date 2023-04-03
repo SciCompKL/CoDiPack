@@ -415,7 +415,12 @@ namespace codi {
         }
       }
 
+      // createVectorAccess is not implemented.
+      // createVectorAccessCustomAdjoints is not implemented.
+      // resizeAdjointVector is not implemented.
       // deleteAdjointVector is not implemented.
+      // beginUseAdjointVector is not implemented.
+      // endUseAdjointVector is not implemented.
 
       /// @}
       /*******************************************************************************/
