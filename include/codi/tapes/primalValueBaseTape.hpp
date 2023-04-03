@@ -746,6 +746,17 @@ namespace codi {
         adjoints.resize(1);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::resizeAdjointVector()
+      void resizeAdjointVector() {
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+      }
+
+      /// \copydoc codi::DataManagementTapeInterface::beginUseAdjointVector()
+      void beginUseAdjointVector() {}
+
+      /// \copydoc codi::DataManagementTapeInterface::endUseAdjointVector()
+      void endUseAdjointVector() {}
+
       /// \copydoc codi::DataManagementTapeInterface::getParameter()
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {

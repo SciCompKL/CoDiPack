@@ -78,6 +78,23 @@ namespace codi {
    * Implementations may return different types that implement the same interface. Capturing these with auto may
    * improve the performance by eliminating virtual function calls.
    *
+   * \section Adjoint vector management
+   * Tapes manage their internal adjoint vector automatically. This covers all routines offered by the tape itself. This
+   * interface exposes parts of this adjoint vector management for external algorithms that build on top of a tape.
+   *
+   * The functions resizeAdjointVector() and deleteAdjointVector() allow for memory optimizations. resizeAdjointVector()
+   * can be used to guarantee a sufficient adjoint vector size for subsequent access without bounds checking.
+   * deleteAdjointVector() frees the memory consumed by the adjoints.
+   *
+   * beginUseAdjointVector() and endUseAdjointVector() allow for guarding the adjoint vector against resizing, in a way
+   * that is consistent with the internal adjoint vector safeguarding. This is important in multithreaded applications
+   * where multiple tapes compete for using and resizing the same adjoint vector. Multiple threads can use the adjoint
+   * vector simultaneously. Attempts to use and resize the adjoint vector from different threads will be resolved by
+   * using this mechanism. An attempt to resize the adjoint vector vector from a thread while it has also declared usage
+   * results in a deadlock. The user of this interface is responsible for avoiding this, that is, after a thread calls
+   * beginUseAdjointVector(), this thread must not call tape methods that involve resizing and must not call
+   * resizeAdjointVector() until after a call to endUseAdjointVector().
+   *
    * \section misc Misc. functions
    * Some other functions for tape data management. Please see the function documentation.
    *
@@ -118,10 +135,17 @@ namespace codi {
       void deleteVectorAccess(VectorAccessInterface<Real, Identifier>* access);  ///< See \ref vectorAccess.
 
       /*******************************************************************************/
+      /// @name Interface: Adjoint vector management
+
+      void resizeAdjointVector();    ///< Explicitly trigger resizing of the adjoint vector.
+      void deleteAdjointVector();    ///< Delete the adjoint vector.
+      void beginUseAdjointVector();  ///< Declare that the adjoint vector is being used and cannot be resized.
+      void endUseAdjointVector();    ///< Declare that the adjoint vector is no longer used and can be resized.
+
+      /*******************************************************************************/
       /// @name Interface: Misc
 
       void swap(DataManagementTapeInterface& other);  ///< Swap all data with an other tape.
       void resetHard();  ///< Delete everything and return to the state after construction, as far as possible.
-      void deleteAdjointVector();  ///< Delete the adjoint vector.
   };
 }

@@ -613,6 +613,21 @@ namespace codi {
         adjoints.resize(1);
       }
 
+      /// \copydoc codi::DataManagementTapeInterface::resizeAdjointVector()
+      void resizeAdjointVector() {
+        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+      }
+
+      /// \copydoc codi::DataManagementTapeInterface::beginUseAdjointVector()
+      void beginUseAdjointVector() {
+        adjoints.beginUse();
+      }
+
+      /// \copydoc codi::DataManagementTapeInterface::endUseAdjointVector()
+      void endUseAdjointVector() {
+        adjoints.endUse();
+      }
+
       /// \copydoc codi::DataManagementTapeInterface::getParameter()
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {
@@ -811,11 +826,11 @@ namespace codi {
 
       CODI_INLINE void checkAdjointSize(Identifier const& identifier) {
         if (identifier >= (Identifier)adjoints.size()) {
-          resizeAdjointsVector();
+          internalResizeAdjointsVector();
         }
       }
 
-      CODI_NO_INLINE void resizeAdjointsVector() {
+      CODI_NO_INLINE void internalResizeAdjointsVector() {
         // overallocate as next multiple of Config::ChunkSize
         adjoints.resize(getNextMultiple((size_t)indexManager.get().getLargestCreatedIndex() + 1, Config::ChunkSize));
       }
