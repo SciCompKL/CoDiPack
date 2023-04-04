@@ -133,6 +133,9 @@ namespace codi {
           typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData;   ///< See CommonTapeTypes.
       using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;  ///< See TapeTypesInterface.
 
+      /// See GradientAccessTapeInterface.
+      using typename GradientAccessTapeInterface<Gradient, Identifier>::ResizingPolicy;
+
     protected:
 
       bool active;                       ///< Whether or not the tape is in recording mode.
@@ -233,8 +236,9 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::GradientAccessTapeInterface::setGradient()
-      void setGradient(Identifier const& identifier, Gradient const& gradient) {
-        cast().gradient(identifier) = gradient;
+      void setGradient(Identifier const& identifier, Gradient const& gradient,
+                       ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt) {
+        cast().gradient(identifier, resizingPolicy) = gradient;
       }
 
       /// \copydoc codi::GradientAccessTapeInterface::getGradient()
