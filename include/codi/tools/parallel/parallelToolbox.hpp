@@ -75,10 +75,10 @@ namespace codi {
       using StaticThreadLocalPointer = CODI_DD(CODI_T(T_StaticThreadLocalPointer<Type, Owner>),
                                                CODI_T(StaticThreadLocalPointerInterface<Type, Owner, CODI_ANY>));
 
-      using Lock = codi::Lock<Mutex>;                            ///< See codi::Lock.
-      using ReadWriteMutex = codi::ReadWriteMutex<Atomic<int>>;  ///< See codi::ReadWriteMutex.
-      using LockForRead = codi::LockForRead<ReadWriteMutex>;     ///< See codi::LockForRead.
-      using LockForWrite = codi::LockForWrite<ReadWriteMutex>;   ///< See codi::LockForWrite.
+      using Lock = codi::Lock<Mutex>;                                               ///< See codi::Lock.
+      using ReadWriteMutex = codi::ReadWriteMutex<ThreadInformation, Atomic<int>>;  ///< See codi::ReadWriteMutex.
+      using LockForRead = codi::LockForRead<ReadWriteMutex>;                        ///< See codi::LockForRead.
+      using LockForWrite = codi::LockForWrite<ReadWriteMutex>;                      ///< See codi::LockForWrite.
   };
 
 #if CODI_IDE

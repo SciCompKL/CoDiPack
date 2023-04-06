@@ -36,6 +36,7 @@
 
 #include "../../misc/macros.hpp"
 #include "atomicInterface.hpp"
+#include "threadInformationInterface.hpp"
 
 #ifdef __SANITIZE_THREAD__
   #define ANNOTATE_RWLOCK_CREATE(lock) AnnotateRWLockCreate(__FILE__, __LINE__, (void*)lock)
@@ -61,19 +62,24 @@ namespace codi {
    * The custom locking mechanism is annotated for the thread sanitizer so that the synchronization due to this mutex
    * is captured correctly when checking for data races.
    *
-   * The user is responsible for correct pairing lockForRead, unlockForRead and lockForWrite, unlockForWrite,
+   * The user is responsible for correct pairing of lockForRead, unlockForRead and lockForWrite, unlockForWrite,
    * respectively. Use of the RAII locks LockForRead and LockForWrite is advised.
    *
+   * Recursive locking for read is supported.
+   *
+   * @tparam T_ThreadInformation Implementation of ThreadInformationInterface.
    * @tparam T_AtomicInt  Implementation of AtomicInterface, instantiated with an underlying integer type.
    */
-  template<typename T_AtomicInt>
+  template<typename T_ThreadInformation, typename T_AtomicInt>
   struct ReadWriteMutex {
     public:
+      using ThreadInformation = CODI_DD(T_ThreadInformation, ThreadInformationInterface); ///< See ReadWriteMutex.
       using AtomicInt = CODI_DD(T_AtomicInt, CODI_DEFAULT_ATOMIC<int>);  ///< See ReadWriteMutex.
 
     private:
       AtomicInt numReaders;
       AtomicInt numWriters;
+      int* nestingDepth;
 
 #ifdef __SANITIZE_THREAD__
       int dummy;
@@ -83,7 +89,8 @@ namespace codi {
       /// Constructor
       CODI_INLINE ReadWriteMutex()
           : numReaders(0),
-            numWriters(0)
+            numWriters(0),
+            nestingDepth(new int[ThreadInformation::getMaxThreads()]{})
 #ifdef __SANITIZE_THREAD__
             ,
             dummy(0)
@@ -96,6 +103,7 @@ namespace codi {
 
       /// Destructor
       ~ReadWriteMutex() {
+        delete [] nestingDepth;
 #ifdef __SANITIZE_THREAD__
         ANNOTATE_RWLOCK_DESTROY(&dummy);
 #endif
@@ -109,6 +117,13 @@ namespace codi {
       void lockRead() {
         int currentWriters;
         while (true) {
+          // nested lock for read
+          int const threadId = ThreadInformation::getThreadId();
+          if (nestingDepth[threadId] > 0) {
+            ++nestingDepth[threadId];
+            break;
+          }
+
           // wait until there are no writers
           do {
             currentWriters = numWriters;
@@ -118,6 +133,7 @@ namespace codi {
           // success if there are still no writers
           currentWriters = numWriters;
           if (currentWriters == 0) {
+            ++nestingDepth[threadId];
             break;
           }
           // otherwise let writers go first and try again
@@ -134,8 +150,11 @@ namespace codi {
 #ifdef __SANITIZE_THREAD__
         ANNOTATE_RWLOCK_RELEASED(&dummy, false);
 #endif
-
-        --numReaders;
+        int const threadId = ThreadInformation::getThreadId();
+        --nestingDepth[threadId];
+        if (nestingDepth[threadId] == 0) {
+          --numReaders;
+        }
       }
 
       /**
