@@ -38,6 +38,7 @@
 #include "mutexInterface.hpp"
 #include "readWriteMutex.hpp"
 #include "staticThreadLocalPointerInterface.hpp"
+#include "threadInformationInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -53,18 +54,21 @@ namespace codi {
    *
    * Please refer to the individual using declarations for documentation.
    *
-   * @tparam T_Atomic                    Atomic implementation used by the toolbox. See codi::Atomic.
-   * @tparam T_Mutex                     Mutex implementation used by the toolbox. See codi::Mutex.
+   * @tparam T_ThreadInformation         Thread information used by the toolbox. See codi::ThreadInformationInterface.
+   * @tparam T_Atomic                    Atomic implementation used by the toolbox. See codi::AtomicInterface.
+   * @tparam T_Mutex                     Mutex implementation used by the toolbox. See codi::MutexInterface.
    * @tparam T_StaticThreadLocalPointer  Static thread-local pointer implementation used by the toolbox.
-   *                                     See codi::StaticThreadLocalPointer.
+   *                                     See codi::StaticThreadLocalPointerInterface.
    */
-  template<template<typename> class T_Atomic, typename T_Mutex,
+  template<typename T_ThreadInformation, template<typename> class T_Atomic, typename T_Mutex,
            template<typename, typename> class T_StaticThreadLocalPointer>
   struct ParallelToolbox {
     public:
+      /// See codi::ParallelToolbox.
+      using ThreadInformation = CODI_DD(T_ThreadInformation, ThreadInformationInterface);
       template<typename Type>
-      using Atomic = CODI_DD(T_Atomic<Type>, CODI_DEFAULT_ATOMIC<Type>);  ///< See codi::AtomicInterface.
-      using Mutex = CODI_DD(T_Mutex, MutexInterface);                     ///< See codi::MutexInterface.
+      using Atomic = CODI_DD(T_Atomic<Type>, CODI_DEFAULT_ATOMIC<Type>);  ///< See codi::ParallelToolbox.
+      using Mutex = CODI_DD(T_Mutex, MutexInterface);                     ///< See codi::ParallelToolbox.
 
       /// See codi::StaticThreadLocalPointerInterface.
       template<typename Type, typename Owner>

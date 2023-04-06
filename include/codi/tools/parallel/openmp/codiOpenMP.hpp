@@ -43,12 +43,14 @@
 #include "openMPAtomic.hpp"
 #include "openMPMutex.hpp"
 #include "openMPStaticThreadLocalPointer.hpp"
+#include "openMPThreadInformation.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   /// Parallel toolbox for OpenMP.
-  using OpenMPToolbox = ParallelToolbox<OpenMPAtomic, OpenMPMutex, OpenMPStaticThreadLocalPointer>;
+  using OpenMPToolbox = ParallelToolbox<OpenMPThreadInformation, OpenMPAtomic, OpenMPMutex,
+                                        OpenMPStaticThreadLocalPointer>;
 
   /// Thread-safe global adjoints for OpenMP.
   template<typename Gradient, typename Identifier, typename Tape>
