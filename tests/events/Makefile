@@ -85,7 +85,7 @@ endef
 $(eval $(call setType,RealForward,codi::RealForward,Forward,-DFORWARD_TAPE))
 $(eval $(call setType,RealReverse,codi::RealReverse,Reverse,-DREVERSE_TAPE))
 $(eval $(call setType,RealReverseIndex,codi::RealReverseIndex,Reverse,-DREVERSE_TAPE))
-$(eval $(call setType,RealReverseIndexOpenMP,codi::RealReverseIndexOpenMP,Reverse,-DREVERSE_TAPE -DCODI_EnableOpenMP))
+$(eval $(call setType,RealReverseIndexOpenMP,codi::RealReverseIndexOpenMP,Reverse,-DREVERSE_TAPE -fopenmp -DCODI_EnableOpenMP))
 $(eval $(call setType,RealReversePrimal,codi::RealReversePrimal,ReversePrimal,-DREVERSE_TAPE))
 $(eval $(call setType,RealReversePrimalIndex,codi::RealReversePrimalIndex,ReversePrimal,-DREVERSE_TAPE))
 
@@ -97,7 +97,7 @@ $(eval $(call setType,RealReversePrimalIndexVariableAdjointInterface,codi::RealR
 $(eval $(call setType,RealForwardVec,codi::RealForwardVec<$(VECTOR_DIM)>,Forward,-DFORWARD_TAPE))
 $(eval $(call setType,RealReverseVec,codi::RealReverseVec<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE))
 $(eval $(call setType,RealReverseIndexVec,codi::RealReverseIndexVec<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE))
-$(eval $(call setType,RealReverseIndexVecOpenMP,codi::RealReverseIndexVecOpenMP<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE -DCODI_EnableOpenMP))
+$(eval $(call setType,RealReverseIndexVecOpenMP,codi::RealReverseIndexVecOpenMP<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE -fopenmp -DCODI_EnableOpenMP))
 $(eval $(call setType,RealReversePrimalVec,codi::RealReversePrimalVec<$(VECTOR_DIM)>,ReversePrimal,-DREVERSE_TAPE))
 $(eval $(call setType,RealReversePrimalIndexVec,codi::RealReversePrimalIndexVec<$(VECTOR_DIM)>,ReversePrimal,-DREVERSE_TAPE))
 
@@ -116,7 +116,7 @@ endif
 $(eval $(call setType,RealForwardSec,codi::RealForwardGen<codi::RealForward>,Forward,-DFORWARD_TAPE $(innerCallbacksFlag)))
 $(eval $(call setType,RealReverseSec,codi::RealReverseGen<codi::RealForward>,Reverse,-DREVERSE_TAPE $(innerCallbacksFlag)))
 $(eval $(call setType,RealReverseIndexSec,codi::RealReverseIndexGen<codi::RealForward>,Reverse,-DREVERSE_TAPE $(innerCallbacksFlag)))
-$(eval $(call setType,RealReverseIndexSecOpenMP,codi::RealReverseIndexOpenMPGen<codi::RealForward>,Reverse,-DREVERSE_TAPE -DCODI_EnableOpenMP $(innerCallbacksFlag)))
+$(eval $(call setType,RealReverseIndexSecOpenMP,codi::RealReverseIndexOpenMPGen<codi::RealForward>,Reverse,-DREVERSE_TAPE -fopenmp -DCODI_EnableOpenMP $(innerCallbacksFlag)))
 $(eval $(call setType,RealReversePrimalSec,codi::RealReversePrimalGen<codi::RealForward>,ReversePrimal,-DREVERSE_TAPE $(innerCallbacksFlag)))
 $(eval $(call setType,RealReversePrimalIndexSec,codi::RealReversePrimalIndexGen<codi::RealForward>,ReversePrimal,-DREVERSE_TAPE $(innerCallbacksFlag)))
 
