@@ -162,8 +162,8 @@ namespace codi {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
                 jac(outputSize - i - 1, j + curDim) = GT::at(tape.getGradient(output[outputSize - i - 1]), curDim);
                 if (Gradient() != output[i]) {
-                  GT::at(tape.gradient(output[outputSize - i - 1], ResizingPolicy::NoBoundsChecking), curDim)
-                      = typename GT::Real();
+                  GT::at(tape.gradient(output[outputSize - i - 1], ResizingPolicy::NoBoundsChecking), curDim) =
+                      typename GT::Real();
                 }
               }
             }
@@ -593,8 +593,8 @@ namespace codi {
         tape.beginUseAdjointVector();
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim].getIdentifier())) {
-            GT::at(tape.gradient(identifiers[pos + curDim].getIdentifier(), ResizingPolicy::NoBoundsChecking), curDim)
-                = value;
+            GT::at(tape.gradient(identifiers[pos + curDim].getIdentifier(), ResizingPolicy::NoBoundsChecking), curDim) =
+                value;
           }
         }
         tape.endUseAdjointVector();

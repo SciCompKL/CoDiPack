@@ -34,9 +34,9 @@
  */
 #pragma once
 
-#include "../threadInformationInterface.hpp"
-
 #include <omp.h>
+
+#include "../threadInformationInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {

@@ -73,8 +73,8 @@ namespace codi {
   template<typename T_ThreadInformation, typename T_AtomicInt>
   struct ReadWriteMutex {
     public:
-      using ThreadInformation = CODI_DD(T_ThreadInformation, ThreadInformationInterface); ///< See ReadWriteMutex.
-      using AtomicInt = CODI_DD(T_AtomicInt, CODI_DEFAULT_ATOMIC<int>);  ///< See ReadWriteMutex.
+      using ThreadInformation = CODI_DD(T_ThreadInformation, ThreadInformationInterface);  ///< See ReadWriteMutex.
+      using AtomicInt = CODI_DD(T_AtomicInt, CODI_DEFAULT_ATOMIC<int>);                    ///< See ReadWriteMutex.
 
     private:
       AtomicInt numReaders;
@@ -103,7 +103,7 @@ namespace codi {
 
       /// Destructor
       ~ReadWriteMutex() {
-        delete [] nestingDepth;
+        delete[] nestingDepth;
 #ifdef __SANITIZE_THREAD__
         ANNOTATE_RWLOCK_DESTROY(&dummy);
 #endif

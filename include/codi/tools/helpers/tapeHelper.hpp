@@ -526,6 +526,7 @@ namespace codi {
       }
   };
 
+  // clang-format off
   /// TapeHelper for a CoDiPack type that currently do not support a TapeHelper implementation. Will generate errors.
   ///
   /// See TapeHelperBase for details.
@@ -549,6 +550,7 @@ namespace codi {
       template<typename Jac = DummyJacobian>
       void evalHessian(typename Base::HessianType& hes, Jac& jac = StaticDummy<DummyJacobian>::dummy);
   };
+  // clang-format on
 
   /// TapeHelper implementation for the Jacobian taping strategy.
   ///
