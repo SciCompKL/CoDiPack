@@ -37,15 +37,16 @@
 #include <algorithm>
 #include <type_traits>
 
+#include "../config.h"
+#include "../misc/eventSystem.hpp"
 #include "../misc/fileIo.hpp"
 #include "../misc/macros.hpp"
-#include "../config.h"
-#include "misc/externalFunction.hpp"
-#include "misc/vectorAccessInterface.hpp"
 #include "data/dataInterface.hpp"
 #include "data/position.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "interfaces/fullTapeInterface.hpp"
+#include "misc/externalFunction.hpp"
+#include "misc/vectorAccessInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -140,6 +141,11 @@ namespace codi {
 
       ExternalFunctionData externalFunctionData;  ///< Data vector for external function data.
 
+      Real manualPushLhsValue;             ///< For storeManual, remember the value assigned to the lhs.
+      Identifier manualPushLhsIdentifier;  ///< For storeManual, remember the identifier assigned to the lhs.
+      size_t manualPushGoal;               ///< Store the number of expected pushes after a storeManual call.
+      size_t manualPushCounter;            ///< Count the pushes after storeManual, to identify the last push.
+
     private:
 
       CODI_INLINE Impl const& cast() const {
@@ -148,6 +154,43 @@ namespace codi {
 
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
+      }
+
+      CODI_INLINE void resetInternal(bool resetAdjoints, EventHints::Reset kind) {
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), kind, resetAdjoints);
+
+        if (resetAdjoints) {
+          cast().clearAdjoints();
+        }
+
+        deleteExternalFunctionUserData(cast().getZeroPosition());
+
+        externalFunctionData.reset();
+
+        // Requires extra reset since the default vector implementation forwards to resetTo
+        cast().indexManager.get().reset();
+      }
+
+    protected:
+
+      /// Initialize all manual push data, including the counter. Check that a previous manual store is completed.
+      CODI_INLINE void initializeManualPushData(Real const& lhsValue, Identifier const& lhsIndex, size_t size) {
+        codiAssert(this->manualPushGoal == this->manualPushCounter);
+        if (Config::StatementEvents || Config::EnableAssert) {
+          this->manualPushLhsValue = lhsValue;
+          this->manualPushLhsIdentifier = lhsIndex;
+          this->manualPushCounter = 0;
+          this->manualPushGoal = size;
+        }
+      }
+
+      /// Increment the manual push counter. Check against the declared push goal.
+      CODI_INLINE void incrementManualPushCounter() {
+        codiAssert(this->manualPushCounter < this->manualPushGoal);
+
+        if (Config::StatementEvents || Config::EnableAssert) {
+          this->manualPushCounter += 1;
+        }
       }
 
     protected:
@@ -163,7 +206,14 @@ namespace codi {
     public:
 
       /// Constructor
-      CommonTapeImplementation() : active(false), options(), externalFunctionData(Config::SmallChunkSize) {
+      CommonTapeImplementation()
+          : active(false),
+            options(),
+            externalFunctionData(Config::SmallChunkSize),
+            manualPushLhsValue(),
+            manualPushLhsIdentifier(),
+            manualPushGoal(),
+            manualPushCounter() {
         options.insert(TapeParameters::ExternalFunctionsSize);
       }
 
@@ -211,15 +261,19 @@ namespace codi {
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         cast().template store<Lhs, Lhs>(value, static_cast<ExpressionInterface<Real, Lhs> const&>(value));
+        EventSystem<Impl>::notifyTapeRegisterOutputListeners(cast(), value.cast().value(),
+                                                             value.cast().getIdentifier());
       }
 
       /// \copydoc codi::ReverseTapeInterface::setActive()
       void setActive() {
+        EventSystem<Impl>::notifyTapeStartRecordingListeners(cast());
         active = true;
       }
 
       /// \copydoc codi::ReverseTapeInterface::setPassive()
       void setPassive() {
+        EventSystem<Impl>::notifyTapeStopRecordingListeners(cast());
         active = false;
       }
 
@@ -258,16 +312,7 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::reset()
       CODI_INLINE void reset(bool resetAdjoints = true) {
-        if (resetAdjoints) {
-          cast().clearAdjoints();
-        }
-
-        deleteExternalFunctionUserData(cast().getZeroPosition());
-
-        externalFunctionData.reset();
-
-        // Requires extra reset since the default vector implementation forwards to resetTo
-        cast().indexManager.get().reset();
+        resetInternal(resetAdjoints, EventHints::Reset::Full);
       }
 
       // clearAdjoints and reset(Position) are not implemented.
@@ -288,7 +333,10 @@ namespace codi {
       void resetHard() {
         Impl& impl = cast();
 
-        impl.reset();
+        // First perform a regular reset.
+        resetInternal(false, EventHints::Reset::Hard);
+
+        // Then perform the hard resets.
         impl.deleteAdjointVector();
 
         externalFunctionData.resetHard();
@@ -463,6 +511,8 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
       CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true) {
+        EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, EventHints::Reset::To, resetAdjoints);
+
         if (resetAdjoints) {
           Impl& impl = cast();
           impl.clearAdjoints(impl.getPosition(), pos);

@@ -36,8 +36,8 @@
 
 #include <limits>
 
-#include "../misc/macros.hpp"
 #include "../config.h"
+#include "../misc/macros.hpp"
 #include "realTraits.hpp"
 
 /** \copydoc codi::Namespace */

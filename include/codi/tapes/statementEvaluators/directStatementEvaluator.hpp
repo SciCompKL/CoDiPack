@@ -38,8 +38,8 @@
 #include <functional>
 #include <type_traits>
 
-#include "../../misc/macros.hpp"
 #include "../../expressions/activeType.hpp"
+#include "../../misc/macros.hpp"
 #include "statementEvaluatorInterface.hpp"
 
 /** \copydoc codi::Namespace */

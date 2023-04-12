@@ -34,8 +34,8 @@ int main(int nargs, char** args) {
 
   Real w = func(u1.value(), u2.value());
   tape.storeManual(w.value(), w.getIdentifier(), 2);
-  tape.pushJacobiManual(func_dx(u1.value(), u2.value()), u1.value(), u1.getIdentifier());
-  tape.pushJacobiManual(func_dy(u1.value(), u2.value()), u2.value(), u2.getIdentifier());
+  tape.pushJacobianManual(func_dx(u1.value(), u2.value()), u1.value(), u1.getIdentifier());
+  tape.pushJacobianManual(func_dy(u1.value(), u2.value()), u2.value(), u2.getIdentifier());
 
   tape.registerOutput(w);
   tape.setPassive();

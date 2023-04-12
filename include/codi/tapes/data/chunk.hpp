@@ -36,9 +36,9 @@
 
 #include <cstddef>
 
+#include "../../config.h"
 #include "../../misc/fileIo.hpp"
 #include "../../misc/macros.hpp"
-#include "../../config.h"
 
 /** \copydoc codi::Namespace */
 namespace codi {

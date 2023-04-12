@@ -34,10 +34,11 @@
  */
 #pragma once
 
+#include <array>
 #include <cstddef>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../../tools/data/direction.hpp"
 #include "../../traits/realTraits.hpp"
 #include "vectorAccessInterface.hpp"
@@ -68,10 +69,12 @@ namespace codi {
 
       Gradient lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
 
+      std::array<Real, GradientTraits::dim<Gradient>()> buffer;  ///< Temporary storage for getAdjointVec.
+
     public:
 
       /// Constructor. See interface documentation for details about the adjoint vector.
-      AdjointVectorAccess(Gradient* adjointVector) : adjointVector(adjointVector), lhs() {}
+      AdjointVectorAccess(Gradient* adjointVector) : adjointVector(adjointVector), lhs(), buffer() {}
 
       /*******************************************************************************/
       /// @name Misc
@@ -144,6 +147,12 @@ namespace codi {
         for (size_t i = 0; i < getVectorSize(); ++i) {
           vec[i] = (Real)GradientTraits::at(adjointVector[index], i);
         }
+      }
+
+      /// \copydoc codi::VectorAccessInterface::getAdjointVec
+      Real const* getAdjointVec(Identifier const& index) {
+        getAdjointVec(index, buffer.data());
+        return buffer.data();
       }
 
       /// \copydoc codi::VectorAccessInterface::updateAdjoint

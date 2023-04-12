@@ -36,9 +36,9 @@
 
 #include <type_traits>
 
-#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
+#include "../misc/macros.hpp"
 #include "misc/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */
@@ -226,8 +226,7 @@ namespace codi {
 
     /// Counts the number of nodes in the expression.
     template<typename Expr>
-    struct NumberOfOperations
-        : public CompileTimeTraversalLogic<size_t, NumberOfOperations<Expr>> {
+    struct NumberOfOperations : public CompileTimeTraversalLogic<size_t, NumberOfOperations<Expr>> {
       public:
 
         /// \copydoc CompileTimeTraversalLogic::node()

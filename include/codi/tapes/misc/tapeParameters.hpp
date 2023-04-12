@@ -49,8 +49,7 @@ namespace codi {
    *  - W write only access (setParameter)
    *  - RW read and write access (getParameter and setParameters)
    */
-  enum class TapeParameters
-  {
+  enum class TapeParameters {
     AdjointSize,         ///< [A: RW] Current number of adjoint vector entries, not the maximum possible size.
                          ///<         See LargestIdentifier.
     ConstantValuesSize,  ///< [A: RW] Allocated number of entries in  the constant value vector in primal value tapes.

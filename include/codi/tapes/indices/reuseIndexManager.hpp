@@ -34,7 +34,6 @@
  */
 #pragma once
 
-#include "../../misc/macros.hpp"
 #include "reuseIndexManagerBase.hpp"
 
 /** \copydoc codi::Namespace */

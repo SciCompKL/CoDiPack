@@ -34,9 +34,9 @@
  */
 #pragma once
 
-#include "../misc/exceptions.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
+#include "../misc/exceptions.hpp"
 #include "../traits/gradientTraits.hpp"
 #include "data/dummy.hpp"
 #include "data/staticDummy.hpp"
@@ -81,8 +81,7 @@ namespace codi {
       using GT = GradientTraits::TraitsImplementation<Gradient>;  ///< Shortcut for traits of gradient.
 
       /// Evaluation modes for the derivative computation.
-      enum class EvaluationType
-      {
+      enum class EvaluationType {
         Forward,
         Reverse
       };

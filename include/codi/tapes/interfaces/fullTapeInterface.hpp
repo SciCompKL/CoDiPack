@@ -34,8 +34,8 @@
  */
 #pragma once
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "customAdjointVectorEvaluationTapeInterface.hpp"
 #include "dataManagementTapeInterface.hpp"
 #include "externalFunctionTapeInterface.hpp"

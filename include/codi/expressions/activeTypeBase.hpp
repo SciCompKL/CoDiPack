@@ -94,38 +94,38 @@ namespace codi {
 
       /// Constructor
       CODI_INLINE ActiveTypeBase() : primalValue(), identifier() {
-        Base::init();
+        Base::init(Real(), EventHints::Statement::Passive);
       }
 
       /// Constructor
       CODI_INLINE ActiveTypeBase(ActiveTypeBase const& v) : primalValue(), identifier() {
-        Base::init();
+        Base::init(v.getValue(), EventHints::Statement::Copy);
         cast().getTape().store(*this, v);
       }
 
       /// Constructor
       CODI_INLINE ActiveTypeBase(Real const& value) : primalValue(value), identifier() {
-        Base::init();
+        Base::init(value, EventHints::Statement::Passive);
       }
 
       /// Constructor
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveTypeBase(PassiveReal const& value) :
-        primalValue(value), identifier() {
-        Base::init();
+      CODI_INLINE ActiveTypeBase(PassiveReal const& value) : primalValue(value), identifier() {
+        Base::init(value, EventHints::Statement::Passive);
       }
 
       /// Constructor
       template<typename Rhs>
       CODI_INLINE ActiveTypeBase(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
-        Base::init();
+        Base::init(rhs.cast().getValue(), EventHints::Statement::Expression);
         cast().getTape().store(*this, rhs.cast());
       }
 
       /// Constructor
       template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveTypeBase(ExpressionInterface<typename U::Real, Rhs> const& rhs) : primalValue(rhs.cast()), identifier() {
-        Base::init();
+      CODI_INLINE ActiveTypeBase(ExpressionInterface<typename U::Real, Rhs> const& rhs)
+        : primalValue(rhs.cast()), identifier() {
+        Base::init(rhs.cast().getValue(), EventHints::Statement::Passive);
       }
 
       /// Destructor

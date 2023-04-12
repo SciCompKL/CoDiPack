@@ -34,10 +34,10 @@
  */
 #pragma once
 
-#include "../misc/macros.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
+#include "../misc/macros.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
 #include "../traits/tapeTraits.hpp"

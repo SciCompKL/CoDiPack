@@ -38,10 +38,10 @@
 #include <functional>
 #include <type_traits>
 
+#include "../../expressions/activeType.hpp"
 #include "../../misc/exceptions.hpp"
 #include "../../misc/macros.hpp"
 #include "../../misc/memberStore.hpp"
-#include "../../expressions/activeType.hpp"
 #include "statementEvaluatorInterface.hpp"
 
 /** \copydoc codi::Namespace */

@@ -38,13 +38,13 @@
 #include <functional>
 #include <type_traits>
 
-#include "../misc/macros.hpp"
-#include "../misc/memberStore.hpp"
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/constructStaticContext.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../misc/macros.hpp"
+#include "../misc/memberStore.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
 #include "indices/indexManagerInterface.hpp"
@@ -110,7 +110,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueReuseTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -136,9 +136,15 @@ namespace codi {
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
           adjointVector->setLhsTangent(lhsIdentifier);
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluateListeners(
+              tape, lhsIdentifier, adjointVector->getVectorSize(), adjointVector->getAdjointVec(lhsIdentifier));
 #else
           adjointVector[lhsIdentifier] = lhsTangent;
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluateListeners(
+              tape, lhsIdentifier, GradientTraits::dim<Gradient>(), GradientTraits::toArray(lhsTangent).data());
 #endif
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluatePrimalListeners(tape, lhsIdentifier,
+                                                                                    primalVector[lhsIdentifier]);
 
           curStatementPos += 1;
         }
@@ -147,7 +153,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluatePrimal_Step3_EvalStatements
       CODI_INLINE static void internalEvaluatePrimal_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector,
+          PrimalValueReuseTape& tape, Real* primalVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -168,6 +174,9 @@ namespace codi {
               stmtEvalhandle[curStatementPos], primalVector, numberOfPassiveArguments[curStatementPos], curConstantPos,
               constantValues, curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
 
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluatePrimalListeners(tape, lhsIdentifier,
+                                                                                    primalVector[lhsIdentifier]);
+
           curStatementPos += 1;
         }
       }
@@ -175,7 +184,7 @@ namespace codi {
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateReverse_Step3_EvalStatements
       CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
           /* data from call */
-          Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
+          PrimalValueReuseTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -194,12 +203,18 @@ namespace codi {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluateListeners(
+              tape, lhsIdentifier, adjointVector->getVectorSize(), adjointVector->getAdjointVec(lhsIdentifier));
           Gradient const lhsAdjoint{};
           adjointVector->setLhsAdjoint(lhsIdentifier);
 #else
           Gradient const lhsAdjoint = adjointVector[lhsIdentifier];
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluateListeners(
+              tape, lhsIdentifier, GradientTraits::dim<Gradient>(), GradientTraits::toArray(lhsAdjoint).data());
           adjointVector[lhsIdentifier] = Gradient();
 #endif
+          EventSystem<PrimalValueReuseTape>::notifyStatementEvaluatePrimalListeners(tape, lhsIdentifier,
+                                                                                    primalVector[lhsIdentifier]);
 
           primalVector[lhsIdentifier] = oldPrimalValues[curStatementPos];
 

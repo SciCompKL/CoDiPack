@@ -36,11 +36,11 @@
 
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
-#include "../../tapes/misc/vectorAccessInterface.hpp"
+#include "../../misc/macros.hpp"
 #include "../../tapes/interfaces/fullTapeInterface.hpp"
+#include "../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 #include "../data/externalFunctionUserData.hpp"
 

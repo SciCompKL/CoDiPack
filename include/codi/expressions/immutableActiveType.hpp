@@ -34,8 +34,8 @@
  */
 #pragma once
 
-#include "../misc/macros.hpp"
 #include "../config.h"
+#include "../misc/macros.hpp"
 #include "../tapes/interfaces/fullTapeInterface.hpp"
 #include "../traits/realTraits.hpp"
 #include "activeType.hpp"
@@ -84,7 +84,8 @@ namespace codi {
 
       /// The identifier is not initialized. It is assumed to be a valid identifier (either default or assigned by an
       /// expression) and has to be valid throughout the lifespan of this object.
-      CODI_INLINE ImmutableActiveType(Real value, Identifier identifier) : primalValue(value), identifier(identifier) {
+      CODI_INLINE ImmutableActiveType(Real const& value, Identifier const& identifier)
+          : primalValue(value), identifier(identifier) {
         // deliberately left empty
       }
 

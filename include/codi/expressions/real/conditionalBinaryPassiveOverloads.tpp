@@ -52,8 +52,8 @@
 #ifndef OPERATOR
   #define PROXY
 
-  #include "../../misc/macros.hpp"
   #include "../../config.h"
+  #include "../../misc/macros.hpp"
   #include "../../traits/realTraits.hpp"
   #include "../expressionInterface.hpp"
   #define OPERATOR ==

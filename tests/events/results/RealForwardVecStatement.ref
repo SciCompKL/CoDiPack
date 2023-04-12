@@ -1,0 +1,71 @@
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+# Seed inputs
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0.841471
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0.909297
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0.14112
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue -0.756802
+# Run test
+# Active type computations
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.745624
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.666367
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 2.52441
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.708073
+StatementPrimal expression lhsValue 0.745624 lhsDotValue {0.666367, -0.435566} newValue 1.5347
+StatementPrimal expression lhsValue 0.666367 lhsDotValue {-0.745624, 0.487372} newValue 1.28067
+StatementPrimal expression lhsValue 2.52441 lhsDotValue {3, -1.96093} newValue 5.25231
+StatementPrimal expression lhsValue 0.708073 lhsDotValue {1.68294, -1.10004} newValue 1.5349
+StatementPrimal expression lhsValue 1.5347 lhsDotValue {0.998275, -0.261313} newValue 1.67535
+StatementPrimal expression lhsValue 1.28067 lhsDotValue {-1.17196, 0.263542} newValue 2.27073
+StatementPrimal expression lhsValue 5.25231 lhsDotValue {4.62091, -1.10994} newValue 5.67567
+StatementPrimal expression lhsValue 1.5349 lhsDotValue {2.66553, -0.584178} newValue 1.55481
+StatementPrimal expression lhsValue 1.67535 lhsDotValue {0.586265, 0.689313} newValue 0.988748
+StatementPrimal expression lhsValue 2.27073 lhsDotValue {-1.11343, 0.128493} newValue 2.99776
+StatementPrimal expression lhsValue 5.67567 lhsDotValue {3.37247, 1.77057} newValue 3.40526
+StatementPrimal expression lhsValue 1.55481 lhsDotValue {2.54808, -0.313179} newValue 2.12756
+StatementPrimal passive lhsValue 0 lhsDotValue {0, 0} newValue 0
+StatementPrimal copy lhsValue 0 lhsDotValue {0, 0} newValue 0.988748
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 2.96403
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 7.24489
+StatementPrimal copy lhsValue 0.988748 lhsDotValue {-0.133495, 1.23743} newValue 2.99776
+StatementPrimal passive lhsValue 2.96403 lhsDotValue {-2.17317, 4.34836} newValue 2
+# Assign outputs
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.95891
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue -1.71937
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 0.583102
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue -0.563117
+# Active type wrapper computations
+StatementPrimal passive lhsValue 7.24489 lhsDotValue {14.6358, 3.62667} newValue 0
+StatementPrimal copy lhsValue 2.99776 lhsDotValue {-1.79316, 0.646122} newValue 0.988748
+StatementPrimal expression lhsValue 2 lhsDotValue {0, 0} newValue 2.96403
+# Assign outputs
+StatementPrimal expression lhsValue 0.95891 lhsDotValue {-1.01748, 0.366625} newValue -0.97784
+StatementPrimal expression lhsValue -1.71937 lhsDotValue {-8.52446, -3.01424} newValue 0.940599
+StatementPrimal expression lhsValue 0.583102 lhsDotValue {-0.579374, -0.946603} newValue 1.47803
+StatementPrimal expression lhsValue -0.563117 lhsDotValue {30.6585, 9.58044} newValue 0.917842
+# Immutable active type computations
+StatementPrimal expression lhsValue 0 lhsDotValue {0, 0} newValue 7.24489
+StatementPrimal copy lhsValue 0.988748 lhsDotValue {-0.133495, 1.23743} newValue 3.40526
+# Assign outputs
+StatementPrimal expression lhsValue -0.97784 lhsDotValue {0.532674, -1.66795} newValue 0
+StatementPrimal expression lhsValue 0.940599 lhsDotValue {1.19175, -3.28121} newValue -0.940931
+StatementPrimal expression lhsValue 1.47803 lhsDotValue {0.808517, -3.17998} newValue 0.637194
+StatementPrimal expression lhsValue 0.917842 lhsDotValue {0.819803, -4.98758} newValue 0.509427
+# Seed inputs
+# Run test
+# Active type computations
+# Assign outputs
+# Active type wrapper computations
+# Assign outputs
+# Immutable active type computations
+# Assign outputs

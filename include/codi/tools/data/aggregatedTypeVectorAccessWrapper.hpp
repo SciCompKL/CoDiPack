@@ -37,9 +37,9 @@
 #include <complex>
 #include <vector>
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
 #include "../../expressions/lhsExpressionInterface.hpp"
+#include "../../misc/macros.hpp"
 #include "../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../traits/computationTraits.hpp"
 #include "../../traits/expressionTraits.hpp"
@@ -104,13 +104,16 @@ namespace codi {
 
       InnerInterface& innerInterface;  ///< Reference to the accessor of the underlying tape.
 
-      std::vector<Real> lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
+      std::vector<Real> lhs;     ///< Temporary storage for indirect adjoint or tangent updates.
+      std::vector<Real> buffer;  ///< Temporary storage for getAdjointVec access.
 
     public:
 
       /// Constructor
       AggregatedTypeVectorAccessWrapperBase(InnerInterface* innerInterface)
-          : innerInterface(*innerInterface), lhs(innerInterface->getVectorSize()) {}
+          : innerInterface(*innerInterface),
+            lhs(innerInterface->getVectorSize()),
+            buffer(innerInterface->getVectorSize()) {}
 
       /*******************************************************************************/
       /// @name Misc
@@ -175,6 +178,12 @@ namespace codi {
         for (size_t curDim = 0; curDim < lhs.size(); curDim += 1) {
           vec[curDim] = this->getAdjoint(index, curDim);
         }
+      }
+
+      /// \copydoc VectorAccessInterface::getAdjointVec()
+      Real const* getAdjointVec(Identifier const& index) {
+        getAdjointVec(index, buffer.data());
+        return buffer.data();
       }
 
       /// \copydoc VectorAccessInterface::updateAdjointVec()

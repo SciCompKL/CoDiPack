@@ -38,8 +38,8 @@
 #include <vector>
 
 #include "../../../codi.hpp"
-#include "../../misc/constructVector.hpp"
 #include "../../expressions/lhsExpressionInterface.hpp"
+#include "../../misc/constructVector.hpp"
 #include "../../traits/gradientTraits.hpp"
 #include "../../traits/tapeTraits.hpp"
 #include "../data/dummy.hpp"

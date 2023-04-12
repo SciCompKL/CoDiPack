@@ -34,8 +34,8 @@
  */
 #pragma once
 
-#include "../../misc/macros.hpp"
 #include "../../config.h"
+#include "../../misc/macros.hpp"
 #include "../../tapes/interfaces/gradientAccessTapeInterface.hpp"
 #include "../../tapes/interfaces/internalStatementRecordingTapeInterface.hpp"
 #include "../../traits/realTraits.hpp"
@@ -63,6 +63,8 @@ namespace codi {
       using Real = typename Tape::Real;              ///< See TapeTypesInterface.
       using Identifier = typename Tape::Identifier;  ///< See TapeTypesInterface.
 
+      using Base = ExpressionInterface<Real, StaticContextActiveType>;  ///< Base class abbreviation.
+
     private:
 
       Real const primal;
@@ -73,6 +75,10 @@ namespace codi {
       /// Constructor
       CODI_INLINE StaticContextActiveType(Real const& primal, Identifier const& identifier)
           : primal(primal), identifier(identifier) {}
+
+      /// Constructor
+      CODI_INLINE StaticContextActiveType(StaticContextActiveType const& other)
+          : Base(static_cast<Base const&>(other)), primal(other.primal), identifier(other.identifier) {}
 
       /*******************************************************************************/
       /// @name Partial implementation of LhsExpressionInterface
