@@ -55,11 +55,12 @@ namespace codi {
    */
   template<typename T_LinearSystem>
   struct LinearSystemSpecializationDetection {
-      using LinearSystem = CODI_DD(T_LinearSystem, LinearSystemInterface);  ///< See LinearSystemOverloadDetection.
+      using LinearSystem =
+          CODI_DD(T_LinearSystem,
+                  CODI_T(LinearSystemInterface<LinearSystemInterfaceTypes>));  ///< See LinearSystemOverloadDetection.
 
-      /// See LinearSystemInterfaceTypes.
       using Type = CODI_DD(typename LinearSystem::Type,
-                           CODI_T(LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
+                           CODI_DEFAULT_LHS_EXPRESSION);  ///< See LinearSystemInterfaceTypes.
 
       using Matrix = typename LinearSystem::Matrix;                      ///< See LinearSystemInterfaceTypes.
       using MatrixReal = typename LinearSystem::MatrixReal;              ///< See LinearSystemInterfaceTypes.

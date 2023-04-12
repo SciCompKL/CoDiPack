@@ -35,12 +35,14 @@
 #pragma once
 
 #include "../../config.h"
-#include "../../expressions/lhsExpressionInterface.hpp"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  template<typename T_Real, typename T_Gradient, typename T_Tape, typename T_Impl>
+  struct LhsExpressionInterface;
 
   /**
    * @brief General information about the identifiers and checks if variables are active.
@@ -78,7 +80,10 @@ namespace codi {
                                                                ///< tape.
 
       /// Modify the value such that it is no longer active.
-      template<typename Lhs>
-      void deactivateValue(LhsExpressionInterface<Real, Gradient, IdentifierInformationTapeInterface, Lhs>& value);
+      ///
+      /// @tparam Lhs  Class that implements the LhsExpressionInterface. See also LhsExpressionInterface.
+      /// @tparam Tape  Tape implementation used in the LhsExpressionInterface. See also LhsExpressionInterface.
+      template<typename Lhs, typename Tape>
+      void deactivateValue(LhsExpressionInterface<Real, Gradient, Tape, Lhs>& value);
   };
 }

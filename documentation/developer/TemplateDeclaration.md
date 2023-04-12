@@ -23,6 +23,8 @@ type the default type declarations are required. CoDiPack defines preprocessor h
 The first argument is the template argument and the second argument is the default type declaration. Since the
 preprocessor engine does not know about templates, template argument lists are parsed as arguments to the preprocessor
 macro. It is therefore necessary to wrap these declarations in `CODI_TEMPLATE` or short `CODI_T` macros.
+While using defining the defaults for `CODI_IDE` the clangd compatibility should be kept in mind. This may make it
+necessary to not declare a default template argument in special cases.
 
 Example declarations are
 ```{.cpp}
