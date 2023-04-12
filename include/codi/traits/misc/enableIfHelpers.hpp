@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -43,14 +43,14 @@
 namespace codi {
 
   /// Enable if abbreviation for std::is_base_of
-  template<typename Base, typename Impl>
-  using enable_if_base_of = std::enable_if<std::is_base_of<Base, Impl>::value>;
+  template<typename Base, typename Impl, typename R = void>
+  using enable_if_base_of = std::enable_if<std::is_base_of<Base, Impl>::value, R>;
 
   /// Enable if abbreviation for \c "std::is_same"
-  template<typename T1, typename T2>
-  using enable_if_same = std::enable_if<std::is_same<T1, T2>::value>;
+  template<typename T1, typename T2, typename R = void>
+  using enable_if_same = std::enable_if<std::is_same<T1, T2>::value, R>;
 
   /// Enable if abbreviation for \c "!std::is_same"
-  template<typename T1, typename T2>
-  using enable_if_not_same = std::enable_if<!std::is_same<T1, T2>::value>;
+  template<typename T1, typename T2, typename R = void>
+  using enable_if_not_same = std::enable_if<!std::is_same<T1, T2>::value, R>;
 }

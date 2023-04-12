@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -35,7 +35,9 @@
 #pragma once
 
 #include "basic/testCopy.hpp"
+#include "basic/testCopyHigherOrder.hpp"
 #include "basic/testExpr.hpp"
+#include "basic/testExprHigherOrder.hpp"
 #include "basic/testIndices.hpp"
 #include "basic/testOutput.hpp"
 #include "exceptions/testOneArgumentExceptions.hpp"
@@ -55,6 +57,8 @@
 #include "io/testSwap.hpp"
 #include "tools/helpers/testExternalFunctionHelper.hpp"
 #include "tools/helpers/testExternalFunctionHelperPassive.hpp"
+#include "tools/helpers/testEigenLinearSystemSolverHandler.hpp"
+#include "tools/helpers/testEigenSparseLinearSystemSolverHandler.hpp"
 #include "tools/helpers/testPreaccumulation.hpp"
 #include "tools/helpers/testPreaccumulationForward.hpp"
 #include "tools/helpers/testPreaccumulationForwardInvalidAdjoint.hpp"

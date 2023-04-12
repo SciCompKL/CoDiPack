@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -268,8 +268,11 @@ namespace codi {
 
       static CODI_INLINE void createIndex(Type& value, IndexType& index) {
         if (Tape::LinearIndexHandling) {
+          IndexType oldIndex = value.getIdentifier();
           getTape().registerInput(value);
           index = value.getIdentifier();
+          value.getIdentifier() = oldIndex;  // Restore the index here so that the other side can decide of the
+                                             // communication was active or not.
         }
       }
 

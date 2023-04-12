@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -167,6 +167,18 @@ namespace codi {
         options.insert(TapeParameters::ExternalFunctionsSize);
       }
 
+      /// Do not allow copy construction.
+      CommonTapeImplementation(CommonTapeImplementation const&) = delete;
+
+      /// Do not allow copy assignment.
+      CommonTapeImplementation& operator=(CommonTapeImplementation const&) = delete;
+
+      /// Do not allow move construction. Relevant use cases should be covered by \ref swap.
+      CommonTapeImplementation(CommonTapeImplementation&&) = delete;
+
+      /// Do not allow move assignment. Relevant use cases should be covered by \ref swap.
+      CommonTapeImplementation& operator=(CommonTapeImplementation&&) = delete;
+
       /*******************************************************************************/
       /// @name Functions from GradientAccessTapeInterface
       /// @{
@@ -253,6 +265,9 @@ namespace codi {
         deleteExternalFunctionUserData(cast().getZeroPosition());
 
         externalFunctionData.reset();
+
+        // Requires extra reset since the default vector implementation forwards to resetTo
+        cast().indexManager.get().reset();
       }
 
       // clearAdjoints and reset(Position) are not implemented.

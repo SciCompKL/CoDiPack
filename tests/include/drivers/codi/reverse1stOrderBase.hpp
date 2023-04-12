@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -44,8 +44,10 @@
 struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
   public:
 
-    using Number = CODI_TYPE;
+    using Number = CODI_DECLARE_DEFAULT(CODI_TYPE,
+        CODI_TEMPLATE(codi::LhsExpressionInterface<double, double, CODI_ANY, CODI_ANY>));
 
+    using Tape = CODI_DD(typename Number::Tape, CODI_T(codi::FullTapeInterface<double, double, int, CODI_ANY>));
     using Base = Driver1stOrderBase<Number>;
 
     using Gradient = Number::Gradient;
@@ -66,23 +68,15 @@ struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
       using Gradient = typename Number::Gradient;
       size_t constexpr gradDim = codi::GradientTraits::dim<Gradient>();
 
-      Number::Tape& tape = Number::getTape();
+      Tape& tape = Number::getTape();
 
-      // Set sizes for Jacobian tapes
-      if (tape.hasParameter(codi::TapeParameters::JacobianSize)) {
-        tape.setParameter(codi::TapeParameters::JacobianSize, 10000);
-      }
-      if (tape.hasParameter(codi::TapeParameters::StatementSize)) {
-        tape.setParameter(codi::TapeParameters::StatementSize, 10000);
-      }
-      if (tape.hasParameter(codi::TapeParameters::ExternalFunctionsSize)) {
-        tape.setParameter(codi::TapeParameters::ExternalFunctionsSize, 10000);
-      }
+      setTapeSizes(tape);
 
       size_t runs = outputs / gradDim;
       if (outputs % gradDim != 0) {
         runs += 1;
       }
+
       for (size_t curOut = 0; curOut < runs; ++curOut) {
         size_t curSize = gradDim;
         if ((curOut + 1) * gradDim > (size_t)outputs) {
@@ -124,6 +118,21 @@ struct CoDiReverse1stOrderBase : public Driver1stOrderBase<CODI_TYPE> {
         tape.reset();
 
         cleanup();
+      }
+    }
+
+  protected:
+
+    void setTapeSizes(Tape& tape) {
+      // Set sizes for Jacobian tapes
+      if (tape.hasParameter(codi::TapeParameters::JacobianSize)) {
+        tape.setParameter(codi::TapeParameters::JacobianSize, 10000);
+      }
+      if (tape.hasParameter(codi::TapeParameters::StatementSize)) {
+        tape.setParameter(codi::TapeParameters::StatementSize, 10000);
+      }
+      if (tape.hasParameter(codi::TapeParameters::ExternalFunctionsSize)) {
+        tape.setParameter(codi::TapeParameters::ExternalFunctionsSize, 10000);
       }
     }
 };

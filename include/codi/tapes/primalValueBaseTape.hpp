@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -423,7 +423,7 @@ namespace codi {
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Specialization for passive assignments.
       template<typename Lhs>
-      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, PassiveReal const& rhs) {
+      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) {
         indexManager.get().freeIndex(lhs.cast().getIdentifier());
 
         lhs.cast().value() = rhs;
@@ -440,6 +440,10 @@ namespace codi {
       template<typename Lhs>
       CODI_INLINE Real internalRegisterInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value,
                                              bool unusedIndex) {
+        if (TapeTypes::IsLinearIndexHandler) {
+          statementData.reserveItems(1);
+        }
+
         bool generatedNewIndex;
         if (unusedIndex) {
           generatedNewIndex = indexManager.get().assignUnusedIndex(value.cast().getIdentifier());
@@ -450,7 +454,6 @@ namespace codi {
 
         Real& primalEntry = primals[value.cast().getIdentifier()];
         if (TapeTypes::IsLinearIndexHandler) {
-          statementData.reserveItems(1);
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag, primalEntry,
                               StatementEvaluator::template createHandle<Impl, Impl, Lhs>());
         }
@@ -545,7 +548,7 @@ namespace codi {
         return vectorAccess;
 #else
         static_assert(std::is_same<Adjoint, Gradient>::value,
-                      "Please enable 'CODI_VariableAdjointInterfacePrimalInPrimalTapes' in order"
+                      "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
                       " to use custom adjoint vectors in the primal value tapes.");
 
         return data;
@@ -688,6 +691,10 @@ namespace codi {
         std::swap(primals, other.primals);
 
         Base::swap(other);
+
+        // Ensure that the primals vector of both tapes are sized according to the index manager.
+        checkPrimalSize(true);
+        other.checkPrimalSize(true);
       }
 
       /// \copydoc codi::DataManagementTapeInterface::deleteAdjointVector()
@@ -777,7 +784,7 @@ namespace codi {
       /// \copydoc codi::ExternalFunctionTapeInterface::registerExternalFunctionOutput()
       template<typename Lhs>
       Real registerExternalFunctionOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        return internalRegisterInput(value, true);
+        return internalRegisterInput(value, false);
       }
 
       /// @}

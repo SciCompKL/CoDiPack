@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -84,9 +84,9 @@ namespace codi {
       /*******************************************************************************/
       /// @name Global constants
 
-      static Index constexpr InactiveIndex = 0;  ///< Default inactive index for all index managers.
+      static Index constexpr InactiveIndex = Index(0);  ///< Default inactive index for all index managers.
       static Index constexpr InvalidIndex =
-          -1;  ///< Default invalid index for all index mangers (max value for unsigned types).
+          Index(-1);  ///< Default invalid index for all index mangers (max value for unsigned types).
 
       /*******************************************************************************/
       /// @name Identifier handling
@@ -123,4 +123,10 @@ namespace codi {
        */
       Index getLargestCreatedIndex() const;
   };
+
+
+	template<typename Index>
+  Index constexpr IndexManagerInterface<Index>::InactiveIndex;
+	template<typename Index>
+  Index constexpr IndexManagerInterface<Index>::InvalidIndex;
 }

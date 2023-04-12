@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -94,14 +94,6 @@ namespace codi {
     /*******************************************************************************/
     /// @name Compile time flags
     /// @{
-
-#ifndef CODI_EnableMPI
-  /// See codi::Config::EnableMPI.
-  #define CODI_EnableMPI false
-#endif
-    /// Add MPI and MeDiPack specific headers.
-    bool constexpr EnableMPI = CODI_EnableMPI;
-    // Do not undefine.
 
 #ifndef CODI_CheckExpressionArguments
   /// See codi::Config::CheckExpressionArguments.
@@ -245,6 +237,27 @@ namespace codi {
     /// With a linear index management, control if adjoints are set to zero during reversal.
     bool constexpr ReversalZeroesAdjoints = CODI_ReversalZeroesAdjoints;
 #undef CODI_ReversalZeroesAdjoints
+
+    /// @}
+    /*******************************************************************************/
+    /// @name Relations to other libraries
+    /// @{
+
+#ifndef CODI_EnableEigen
+  /// See codi::Config::EnableEigen.
+  #define CODI_EnableEigen 0
+#endif
+    /// Enable Eigen specific implementations.
+    bool constexpr EnableEigen = CODI_EnableEigen;
+    // Do not undefine
+
+#ifndef CODI_EnableMPI
+    /// See codi::Config::EnableMPI.
+    #define CODI_EnableMPI false
+#endif
+    /// Add MPI and MeDiPack specific headers.
+    bool constexpr EnableMPI = CODI_EnableMPI;
+    // Do not undefine.
 
     /// @}
     /*******************************************************************************/

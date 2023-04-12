@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2021 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -95,15 +95,28 @@ namespace codi {
       }
 
       /// Constructor
-      CODI_INLINE ActiveType(PassiveReal const& value) : primalValue(value), identifier() {
+      CODI_INLINE ActiveType(Real const& value) : primalValue(value), identifier() {
         Base::init();
       }
 
       /// Constructor
-      template<class Rhs>
+      template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
+      CODI_INLINE ActiveType(PassiveReal const& value) :
+        primalValue(value), identifier() {
+        Base::init();
+      }
+
+      /// Constructor
+      template<typename Rhs>
       CODI_INLINE ActiveType(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
         Base::init();
         this->getTape().store(*this, rhs.cast());
+      }
+
+      /// Constructor
+      template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
+      CODI_INLINE ActiveType(ExpressionInterface<typename U::Real, Rhs> const& rhs) : primalValue(rhs.cast()), identifier() {
+        Base::init();
       }
 
       /// Destructor
@@ -159,5 +172,5 @@ namespace codi {
   };
 
   template<typename Tape>
-  Tape ActiveType<Tape>::tape = Tape();
+  Tape ActiveType<Tape>::tape{};
 }
