@@ -184,6 +184,9 @@ namespace codi {
     struct NumberOfActiveTypeArguments : public CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>> {
       public:
 
+        /// Abbreviation for the base class type.
+        using Base = CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments<Expr>>;
+
         /// \copydoc CompileTimeTraversalLogic::leaf()
         template<typename Node, typename = ExpressionTraits::EnableIfLhsExpression<Node>>
         CODI_INLINE static size_t constexpr leaf() {
@@ -192,7 +195,7 @@ namespace codi {
         using CompileTimeTraversalLogic<size_t, NumberOfActiveTypeArguments>::leaf;
 
         /// See NumberOfActiveTypeArguments
-        static size_t constexpr value = NumberOfActiveTypeArguments::template eval<Expr>();
+        static size_t constexpr value = Base::template eval<Expr>();
     };
 
 #if CODI_IS_CPP14
@@ -207,6 +210,9 @@ namespace codi {
         : public CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>> {
       public:
 
+        /// Abbreviation for the base class type.
+        using Base = CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments<Expr>>;
+
         /// \copydoc CompileTimeTraversalLogic::leaf()
         template<typename Node, typename = EnableIfConstantExpression<Node>>
         CODI_INLINE static size_t constexpr leaf() {
@@ -215,7 +221,7 @@ namespace codi {
         using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::leaf;
 
         /// See NumberOfConstantTypeArguments
-        static size_t constexpr value = NumberOfConstantTypeArguments::template eval<Expr>();
+        static size_t constexpr value = Base::template eval<Expr>();
     };
 
 #if CODI_IS_CPP14
