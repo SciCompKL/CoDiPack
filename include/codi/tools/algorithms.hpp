@@ -148,7 +148,11 @@ namespace codi {
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
           for (size_t j = 0; j < inputSize; j += gradDim) {
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0));
+            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
+            tape.beginUseAdjointVector();
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0),
+                                    ResizingPolicy::NoBoundsChecking);
+            tape.endUseAdjointVector();
 
             if (keepState) {
               tape.evaluateForwardKeepState(start, end);
@@ -167,16 +171,20 @@ namespace codi {
                 }
               }
             }
-            tape.endUseAdjointVector();
 
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real());
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), ResizingPolicy::NoBoundsChecking);
+            tape.endUseAdjointVector();
           }
 
           tape.clearAdjoints(end, start);
 
         } else if (EvaluationType::Reverse == evalType) {
           for (size_t i = 0; i < outputSize; i += gradDim) {
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0));
+            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
+            tape.beginUseAdjointVector();
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0),
+                                    ResizingPolicy::NoBoundsChecking);
+            tape.endUseAdjointVector();
 
             if (keepState) {
               tape.evaluateKeepState(end, start);
@@ -192,9 +200,9 @@ namespace codi {
                 GT::at(tape.gradient(input[j], ResizingPolicy::NoBoundsChecking), curDim) = typename GT::Real();
               }
             }
-            tape.endUseAdjointVector();
 
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real());
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), ResizingPolicy::NoBoundsChecking);
+            tape.endUseAdjointVector();
 
             if (!Config::ReversalZeroesAdjoints) {
               tape.clearAdjoints(end, start);
@@ -272,9 +280,6 @@ namespace codi {
         using GT2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Real::Gradient, double)>;
         size_t constexpr gradDim2nd = GT2nd::dim;
 
-        // Resize up front for subsequent gradient access without bounds checking.
-        tape.resizeAdjointVector();
-
         // Assume that the tape was just recorded.
         tape.revertPrimals(start);
 
@@ -331,9 +336,6 @@ namespace codi {
         size_t constexpr gradDim1st = GT1st::dim;
         using GT2nd = GradientTraits::TraitsImplementation<CODI_DD(typename Real::Gradient, double)>;
         size_t constexpr gradDim2nd = GT2nd::dim;
-
-        // Resize up front for subsequent gradient access without bounds checking.
-        tape.resizeAdjointVector();
 
         // Assume that the tape was just recorded.
         tape.revertPrimals(start);
@@ -441,9 +443,6 @@ namespace codi {
           // Propagate the new derivative information.
           recordTape(func, input, output);
 
-          // Resize after the recording for subsequent gradient access without bounds checking.
-          tape.resizeAdjointVector();
-
           // The k = j init is no problem, it will evaluate slightly more elements around the diagonal.
           for (size_t k = j; k < input.size(); k += gradDim1st) {
             setGradientOnCoDiValue(tape, k, input.data(), input.size(), typename GT1st::Real(1.0));
@@ -499,9 +498,6 @@ namespace codi {
 
         Tape& tape = Type::getTape();
 
-        // Resize up front for subsequent gradient access without bounds checking.
-        tape.resizeAdjointVector();
-
         for (size_t j = 0; j < input.size(); j += gradDim2nd) {
           setGradient2ndOnCoDiValue(j, input.data(), input.size(), typename GT2nd::Real(1.0));
 
@@ -554,16 +550,15 @@ namespace codi {
        */
       template<typename T>
       static CODI_INLINE void setGradientOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers,
-                                                      size_t const size, T value) {
+                                                      size_t const size, T value,
+                                                      ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt) {
         size_t constexpr gradDim = GT::dim;
 
-        tape.beginUseAdjointVector();
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim])) {
-            GT::at(tape.gradient(identifiers[pos + curDim], ResizingPolicy::NoBoundsChecking), curDim) = value;
+            GT::at(tape.gradient(identifiers[pos + curDim], resizingPolicy), curDim) = value;
           }
         }
-        tape.endUseAdjointVector();
       }
 
       /// Sets the gradient for 2nd order vector modes. Seeds the next GT2nd:dim dimensions.
@@ -590,14 +585,11 @@ namespace codi {
                                                      T value) {
         size_t constexpr gradDim = GT::dim;
 
-        tape.beginUseAdjointVector();
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim].getIdentifier())) {
-            GT::at(tape.gradient(identifiers[pos + curDim].getIdentifier(), ResizingPolicy::NoBoundsChecking), curDim) =
-                value;
+            GT::at(tape.gradient(identifiers[pos + curDim].getIdentifier()), curDim) = value;
           }
         }
-        tape.endUseAdjointVector();
       }
 
       /// Sets the gradient for 2nd order vector modes. Seeds the next GT2nd:dim dimensions.

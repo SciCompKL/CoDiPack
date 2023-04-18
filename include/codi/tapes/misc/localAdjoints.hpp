@@ -60,15 +60,13 @@ namespace codi {
 
     private:
 
-      bool inUse;
-
       std::vector<Gradient> adjoints;  ///< Vector of adjoint variables.
 
     public:
 
       /// Constructor
       LocalAdjoints(size_t initialSize)
-          : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize), inUse(false), adjoints(initialSize) {}
+          : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize), adjoints(initialSize) {}
 
       /// \copydoc InternalAdjointsInterface::operator[](Identifier const&)
       CODI_INLINE Gradient& operator[](Identifier const& identifier) {
@@ -92,10 +90,6 @@ namespace codi {
 
       /// \copydoc InternalAdjointsInterface::resize
       CODI_NO_INLINE void resize(Identifier const& newSize) {
-        if (inUse) {
-          CODI_EXCEPTION("Cannot resize adjoints while they are in use.");
-        }
-
         adjoints.resize((size_t)newSize);
       }
 
@@ -112,13 +106,9 @@ namespace codi {
       }
 
       /// \copydoc InternalAdjointsInterface::beginUse
-      CODI_INLINE void beginUse() {
-        inUse = true;
-      }
+      CODI_INLINE void beginUse() {}
 
       /// \copydoc InternalAdjointsInterface::endUse
-      CODI_INLINE void endUse() {
-        inUse = false;
-      }
+      CODI_INLINE void endUse() {}
   };
 }

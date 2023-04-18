@@ -65,8 +65,6 @@ namespace codi {
 
     private:
 
-      bool inUse;
-
       static std::vector<Gradient> adjoints;  ///< Vector of adjoint variables.
 
       /// @brief Protects adjoints.
@@ -77,7 +75,7 @@ namespace codi {
 
       /// Constructor
       ThreadSafeGlobalAdjoints(size_t initialSize)
-          : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize), inUse(false) {}
+          : InternalAdjointsInterface<Gradient, Identifier, Tape>(initialSize) {}
 
       /// \copydoc InternalAdjointsInterface::operator[](Identifier const&) <br><br>
       /// Implementation: No locking is performed, beginUse and endUse have to be used accordingly.
@@ -105,10 +103,6 @@ namespace codi {
 
       /// \copydoc InternalAdjointsInterface::resize
       CODI_NO_INLINE void resize(Identifier const& newSize) {
-        if (inUse) {
-          CODI_EXCEPTION("Cannot resize adjoints while they are in use.");
-        }
-
         LockForRealloc lock(adjointsMutex);
         adjoints.resize((size_t)newSize);
       }
@@ -130,13 +124,11 @@ namespace codi {
       /// Implementation: Sets an internal lock.
       CODI_INLINE void beginUse() {
         adjointsMutex.lockRead();
-        inUse = true;
       }
 
       /// \copydoc InternalAdjointsInterface::endUse <br><br>
       /// Implementation: Unsets an internal lock.
       CODI_INLINE void endUse() {
-        inUse = false;
         adjointsMutex.unlockRead();
       }
   };

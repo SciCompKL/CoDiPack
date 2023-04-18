@@ -50,9 +50,22 @@ namespace codi {
    * The adjoint variables can be read and written, resized, zeroed, and swapped. The number of adjoint variables can be
    * queried, and, if applicable, a raw pointer to an underlying array implementation can be obtained.
    *
-   * The adjoint variables can be "in use" or "not in use". For example, they should be considered in use during a tape
-   * evaluation, which means that no resizing should take place until the evaluation is finished. The tape is
-   * responsible for setting the state of the adjoint variables accordingly.
+   * The set of adjoint variables can be "in use" or "not in use". The adjoint variables are "in use" whenever there is
+   * read or write access to adjoint variables, or when any general property of the set of adjoint variables such as
+   * size is queried. The implementations of this interface ensure mutual exclusion between the "in use" state and
+   * reallocations of the set of adjoint variables due to resizing. Resizing is only allowed if the adjoint variables
+   * are "not in use". The implementations of data(), size(), zero(), and zeroAll() are expected to declare usage
+   * internally, if needed. For performance reasons, the operator[]() accessors don't declare usage internally. Instead,
+   * the tape is responsible for this. It should declare usage by calls to beginUse() and endUse(). This way, multiple
+   * operator[]() calls can be safeguarded by a single usage declaration.
+   *
+   * The tape must not call resize() as long as it has declared usage.
+   *
+   * To give an example, tape evaluation involves multiple operator[]() calls. Prior to the evaluation, the tape ensures
+   * that the set of adjoint variables is sufficiently large. It calls beginUse() before the evaluation and endUse()
+   * after it. During the evaluation, no further resizing  of the set of adjoint variables takes place.
+   *
+   * See codi::DataManagementTapeInterface for a multithreading perspective on the "in use" mechanism.
    *
    * A tape that maintains its adjoints internally against this interface can easily exchange the adjoint
    * implementation. The principle use case of this interface is, at the moment, replacing a classical, tape-local
@@ -87,19 +100,19 @@ namespace codi {
       /// Pointer to an underlying array implementation.
       CODI_INLINE Gradient* data();
 
-      /// Returns the number of adjoint variables.
+      /// Returns the number of adjoint variables. Internally, declares usage of the adjoints.
       CODI_INLINE size_t size() const;
 
       /// Ensure that identifiers up to newSize can be passed to operator[] without error.
       CODI_NO_INLINE void resize(Identifier const& newSize);
 
-      /// Set all variables with identifiers start...end-1 to zero.
+      /// Set all variables with identifiers start...end-1 to zero. Internally, declares usage of the adjoints.
       CODI_INLINE void zero(Identifier const& start, Identifier const& end);
 
-      /// Set all adjoint variables to Gradient().
+      /// Set all adjoint variables to Gradient(). Internally, declares usage of the adjoints.
       CODI_INLINE void zeroAll();
 
-      /// Swap two sets of adjoint variables.
+      /// Swap two sets of adjoint variables. Internally, declares usage of the adjoints.
       template<typename Impl>
       CODI_INLINE void swap(Impl& other);
 

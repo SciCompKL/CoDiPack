@@ -78,7 +78,7 @@ namespace codi {
    * Implementations may return different types that implement the same interface. Capturing these with auto may
    * improve the performance by eliminating virtual function calls.
    *
-   * \section Adjoint vector management
+   * \section adjointMgmt Adjoint vector management
    * Tapes manage their internal adjoint vector automatically. This covers all routines offered by the tape itself. This
    * interface exposes parts of this adjoint vector management for external algorithms that build on top of a tape.
    *
@@ -87,13 +87,16 @@ namespace codi {
    * deleteAdjointVector() frees the memory consumed by the adjoints.
    *
    * beginUseAdjointVector() and endUseAdjointVector() allow for guarding the adjoint vector against resizing, in a way
-   * that is consistent with the internal adjoint vector safeguarding. This is important in multithreaded applications
-   * where multiple tapes compete for using and resizing the same adjoint vector. Multiple threads can use the adjoint
-   * vector simultaneously. Attempts to use and resize the adjoint vector from different threads will be resolved by
-   * using this mechanism. An attempt to resize the adjoint vector vector from a thread while it has also declared usage
-   * results in a deadlock. The user of this interface is responsible for avoiding this, that is, after a thread calls
-   * beginUseAdjointVector(), this thread must not call tape methods that involve resizing and must not call
-   * resizeAdjointVector() until after a call to endUseAdjointVector().
+   * that is consistent with the internal adjoint vector safeguarding. See codi::InternalAdjointsInterface for a
+   * description of the "in use" mechanism. In particular, the adjoint vector is "in use" whenever there is read or
+   * write access to adjoint variables. As long as the adjoint vector is "in use", we cannot reallocate it. This is
+   * important in multithreaded applications where multiple tapes compete for using and resizing the same adjoint
+   * vector. Multiple threads can use the adjoint vector simultaneously. Attempts to use and resize the adjoint vector
+   * from different threads will be resolved by means of this safeguarding mechanism. An attempt to resize the adjoint
+   * vector from a thread while it has also declared usage results in a deadlock. The user of this interface is
+   * responsible for avoiding this, that is, after a thread calls beginUseAdjointVector(), this thread must not call
+   * tape methods that involve resizing and must not call resizeAdjointVector() until after a call to
+   * endUseAdjointVector().
    *
    * \section misc Misc. functions
    * Some other functions for tape data management. Please see the function documentation.
@@ -137,10 +140,10 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface: Adjoint vector management
 
-      void resizeAdjointVector();    ///< Explicitly trigger resizing of the adjoint vector.
-      void deleteAdjointVector();    ///< Delete the adjoint vector.
-      void beginUseAdjointVector();  ///< Declare that the adjoint vector is being used and cannot be resized.
-      void endUseAdjointVector();    ///< Declare that the adjoint vector is no longer used and can be resized.
+      void resizeAdjointVector();    ///< Explicitly trigger resizing of the adjoint vector. See \ref adjointMgmt.
+      void deleteAdjointVector();    ///< Delete the adjoint vector. See \ref adjointMgmt.
+      void beginUseAdjointVector();  ///< Declare that the adjoint vector is being used. See \ref adjointMgmt.
+      void endUseAdjointVector();    ///< Declare that the adjoint vector is no longer used. See \ref adjointMgmt.
 
       /*******************************************************************************/
       /// @name Interface: Misc

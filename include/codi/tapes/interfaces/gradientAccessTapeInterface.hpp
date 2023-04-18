@@ -85,7 +85,7 @@ namespace codi {
        *
        * Implicitly resizes the adjoint vector if there is no entry with the given identifier yet, unless specified
        * otherwise via resizingPolicy. In this case, the user has to guarantee that the adjoint vector is large
-       * enough.
+       * enough, see DataManagementTapeInterface::resizeAdjointVector.
        */
       void setGradient(Identifier const& identifier, Gradient const& gradient,
                        ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt);
@@ -102,7 +102,7 @@ namespace codi {
        *
        * Implicitly resizes the adjoint vector if there is no entry with the given identifier yet, unless specified
        * otherwise via resizingPolicy. In this case, the user has to guarantee that the adjoint vector is large
-       * enough.
+       * enough, see DataManagementTapeInterface::resizeAdjointVector.
        */
       Gradient& gradient(Identifier const& identifier, ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt);
 
