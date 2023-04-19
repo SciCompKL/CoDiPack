@@ -66,6 +66,7 @@ namespace codi {
    * - Entry management:
    *   - pushData(): Add one data item. One argument per entry.
    *   - dataPointer(): Get pointers to the data. One argument per entry.
+   *   - erase(): Erase a range of data items.
    *
    * - Data IO:
    *   - allocateData() / deleteData(): Allocate / delete the data arrays.
@@ -94,6 +95,8 @@ namespace codi {
       CODI_INLINE void dataPointer(size_t const& index,
                                    Pointers*&... pointers);  ///< Extract pointer to requested position. For each entry
                                                              ///< one argument has to be provided.
+
+      virtual void erase(size_t const& start, size_t const& end) = 0;  ///< Erase data items start, ..., end - 1.
 
       /// @}
       /*******************************************************************************/
@@ -227,6 +230,20 @@ namespace codi {
         }
       }
 
+      /// \copydoc ChunkBase::erase
+      void erase(size_t const& start, size_t const& end) {
+        codiAssert(start <= end);
+        codiAssert(start < usedSize);
+        codiAssert(end <= usedSize);
+
+        if (start != end) {
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data1[start + i] = data1[end + i];
+          }
+          usedSize -= end - start;
+        }
+      }
+
       /// \copydoc ChunkBase::pushData
       CODI_INLINE void pushData(Data1 const& value1) {
         codiAssert(getUnusedSize() != 0);
@@ -319,6 +336,23 @@ namespace codi {
         if (nullptr != data2) {
           delete[] data2;
           data2 = nullptr;
+        }
+      }
+
+      /// \copydoc ChunkBase::erase
+      void erase(size_t const& start, size_t const& end) {
+        codiAssert(start <= end);
+        codiAssert(start < usedSize);
+        codiAssert(end <= usedSize);
+
+        if (start != end) {
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data1[start + i] = data1[end + i];
+          }
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data2[start + i] = data2[end + i];
+          }
+          usedSize -= end - start;
         }
       }
 
@@ -431,6 +465,26 @@ namespace codi {
         if (nullptr != data3) {
           delete[] data3;
           data3 = nullptr;
+        }
+      }
+
+      /// \copydoc ChunkBase::erase
+      void erase(size_t const& start, size_t const& end) {
+        codiAssert(start <= end);
+        codiAssert(start < usedSize);
+        codiAssert(end <= usedSize);
+
+        if (start != end) {
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data1[start + i] = data1[end + i];
+          }
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data2[start + i] = data2[end + i];
+          }
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data3[start + i] = data3[end + i];
+          }
+          usedSize -= end - start;
         }
       }
 
@@ -560,6 +614,29 @@ namespace codi {
         if (nullptr != data4) {
           delete[] data4;
           data4 = nullptr;
+        }
+      }
+
+      /// \copydoc ChunkBase::erase
+      void erase(size_t const& start, size_t const& end) {
+        codiAssert(start <= end);
+        codiAssert(start < usedSize);
+        codiAssert(end <= usedSize);
+
+        if (start != end) {
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data1[start + i] = data1[end + i];
+          }
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data2[start + i] = data2[end + i];
+          }
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data3[start + i] = data3[end + i];
+          }
+          for (size_t i = 0; i < usedSize - end; ++i) {
+            data4[start + i] = data4[end + i];
+          }
+          usedSize -= end - start;
         }
       }
 

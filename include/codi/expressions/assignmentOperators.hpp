@@ -56,7 +56,7 @@ namespace codi {
 
       using Tape = CODI_DD(T_Tape, CODI_T(InternalStatementRecordingTapeInterface<int>));  ///< See AssignmentOperators.
       using Impl = CODI_DD(T_Impl,
-                           CODI_T(LhsExpressionInterface<double, int, Tape, T_Impl>));  ///< See AssignmentOperators.
+                           CODI_T(LhsExpressionInterface<double, double, Tape, T_Impl>));  ///< See AssignmentOperators.
 
       using Real = CODI_DD(typename Tape::Real, double);  ///< See InternalStatementRecordingTapeInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.

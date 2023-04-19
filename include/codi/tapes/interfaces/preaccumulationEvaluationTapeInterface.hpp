@@ -33,7 +33,6 @@
  *      - Tim Albring
  */
 #pragma once
-#pragma once
 
 #include "../../config.h"
 #include "../../misc/macros.hpp"

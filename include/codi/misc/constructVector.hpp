@@ -71,6 +71,7 @@ namespace codi {
 
       /// Only asserts the argument for the correct size.
       static std::array<T, n> construct(size_t const size) {
+        CODI_UNUSED(size);
         codiAssert(size == n);
 
         return std::array<T, n>();

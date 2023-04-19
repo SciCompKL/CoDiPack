@@ -297,6 +297,25 @@ namespace codi {
     bool constexpr EnableMPI = CODI_EnableMPI;
     // Do not undefine.
 
+#ifndef CODI_EnableOpenMP
+  /// See codi::Config::EnableOpenMP.
+  #define CODI_EnableOpenMP false
+#endif
+    /// Add OpenMP specific headers.
+    bool constexpr EnableOpenMP = CODI_EnableOpenMP;
+    // Do not undefine.
+
+#ifndef CODI_EnableOpDiLib
+  /// See codi::Config::EnableOpDiLib.
+  #define CODI_EnableOpDiLib false
+#endif
+#if CODI_EnableOpDiLib && !CODI_EnableOpenMP
+  #error CODI_EnableOpDiLib == true is incompatible with CODI_EnableOpenMP == false.
+#endif
+    /// Add OpDiLib specific headers. Requires codi::Config::EnableOpenMP == true.
+    bool constexpr EnableOpDiLib = CODI_EnableOpDiLib;
+    // Do not undefine.
+
     /// @}
     /*******************************************************************************/
     /// @name Macro definitions

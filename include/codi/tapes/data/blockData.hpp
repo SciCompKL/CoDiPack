@@ -33,7 +33,6 @@
  *      - Tim Albring
  */
 #pragma once
-#pragma once
 
 #include <vector>
 
@@ -102,6 +101,7 @@ namespace codi {
       /// \copydoc DataInterface::reserveItems <br><br>
       /// Implementation: Does not check if enough space is available.
       CODI_INLINE InternalPosHandle reserveItems(size_t const& items) {
+        CODI_UNUSED(items);
         codiAssert(chunk.getUsedSize() + items <= chunk.getSize());
 
         return chunk.getUsedSize();
@@ -134,6 +134,15 @@ namespace codi {
         chunk.setUsedSize(pos.data);
 
         nested->resetTo(pos.inner);
+      }
+
+      /// \copydoc DataInterface::erase
+      /// Implementation: No memory is freed.
+      void erase(Position const& start, Position const& end, bool recursive = true) {
+        chunk.erase(start.data, end.data);
+        if (recursive) {
+          nested->erase(start.inner, end.inner);
+        }
       }
 
       /*******************************************************************************/

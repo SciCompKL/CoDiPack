@@ -73,6 +73,14 @@ namespace codi {
           : Base(adjointVector), primalVector(primalVector) {}
 
       /*******************************************************************************/
+      /// @name Misc
+
+      /// \copydoc codi::VectorAccessInterface::clone
+      VectorAccessInterface<Real, Identifier>* clone() const {
+        return new PrimalAdjointVectorAccess(this->adjointVector, this->primalVector);
+      }
+
+      /*******************************************************************************/
       /// @name Primal access
 
       /// \copydoc VectorAccessInterface::setPrimal

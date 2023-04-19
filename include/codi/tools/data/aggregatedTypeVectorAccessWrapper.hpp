@@ -93,8 +93,8 @@ namespace codi {
   struct AggregatedTypeVectorAccessWrapperBase : public VectorAccessInterface<T_Real, T_Identifier> {
     public:
 
-      using Real = CODI_DD(T_Real, CODI_ANY);              ///< See RealTraits::DataExtraction::Real.
-      using Identifier = CODI_DD(T_Identifier, CODI_ANY);  ///< See RealTraits::DataExtraction::Identifier.
+      using Real = CODI_DD(T_Real, double);           ///< See RealTraits::DataExtraction::Real.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See RealTraits::DataExtraction::Identifier.
 
       using InnerInterface =
           CODI_DD(T_InnerInterface,
@@ -300,6 +300,11 @@ namespace codi {
       /// \copydoc VectorAccessInterface::getPrimal()
       Real getPrimal(Identifier const& index) {
         return Real(Base::innerInterface.getPrimal(std::real(index)), Base::innerInterface.getPrimal(std::imag(index)));
+      }
+
+      /// \copydoc VectorAccessInterface::clone()
+      VectorAccessInterface<Real, Identifier>* clone() const {
+        return new AggregatedTypeVectorAccessWrapper(Base::innerInterface.clone());
       }
   };
 

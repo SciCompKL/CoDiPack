@@ -67,6 +67,9 @@ namespace codi {
    * IsLinear indicates whether the indices are coupled to the statements of a program. The tape needs to be managed
    * accordingly.
    *
+   * NeedsStaticStorage indicates whether the index manager is specific to a tape type (as opposed to a specific tape
+   * instance). Depending on this setting, it is stored statically or non-statically in the tape.
+   *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
    * @tparam T_Index  Type for the identifier, usually an integer type.
@@ -92,14 +95,21 @@ namespace codi {
       static bool constexpr IsLinear =
           CODI_UNDEFINED_VALUE;  ///< True if identifiers are coupled to the statements. See IndexManagerInterface.
 
+      /// True if the index manager is specific to a tape type (and not a tape instance). See IndexManagerInterface.
+      static bool constexpr NeedsStaticStorage = CODI_UNDEFINED_VALUE;
+
+      /// @brief Call on assignment of a primal value, e.g. on `w` for `w = a + b`.
+      /// @return true if new indices have been generated internally.
       template<typename Tape>
-      bool assignIndex(Index& index);  ///< Call on assignment on a primal value e.g. on `w` for  `w = a + b`.
-                                       ///< @return true if new indices have been generated internally.
+      bool assignIndex(Index& index);
+
+      /// @brief Call on registering input values.
+      /// @return true if new indices have been generated internally.
       template<typename Tape>
-      bool assignUnusedIndex(Index& index);  ///< Call on registering input values.
-                                             ///< @return true if new indices have been generated internally.
+      bool assignUnusedIndex(Index& index);
+
       template<typename Tape>
-      void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy of a primal value e.g. `w = a`.
+      void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy of a primal value, e.g. `w = a`.
 
       template<typename Tape>
       void freeIndex(Index& index);  ///< Call on destruction of a primal value. Usually called from the destructor.

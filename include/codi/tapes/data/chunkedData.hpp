@@ -178,6 +178,30 @@ namespace codi {
         nested->resetTo(pos.inner);
       }
 
+      /// \copydoc DataInterface::erase
+      /// Implementation: If the given range start..end does not only overlap with parts of chunks but contains complete
+      /// chunks, those completely contained chunks are deleted in the course of the erase.
+      void erase(Position const& start, Position const& end, bool recursive = true) {
+        size_t chunkRange = end.chunk - start.chunk;
+
+        if (chunkRange == 0) {
+          chunks[start.chunk]->erase(start.data, end.data);
+        } else {
+          // Treat first chunk.
+          chunks[start.chunk]->erase(start.data, chunks[start.chunk]->getUsedSize());
+
+          // Treat last chunk.
+          chunks[end.chunk]->erase(0, end.data);
+
+          // Erase completely covered chunks and free their memory. Covers also the case that there is no such chunk.
+          chunks.erase(chunks.begin() + start.chunk + 1, chunks.begin() + end.chunk);
+        }
+
+        if (recursive) {
+          nested->erase(start.inner, end.inner, recursive);
+        }
+      }
+
       /*******************************************************************************/
       /// @name Position functions
 

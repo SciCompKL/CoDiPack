@@ -56,7 +56,7 @@ namespace codi {
 
       using Tape = CODI_DD(T_Tape, CODI_T(InternalStatementRecordingTapeInterface<int>));  ///< See IncrementOperators.
       using Impl = CODI_DD(T_Impl,
-                           CODI_T(LhsExpressionInterface<double, int, Tape, T_Impl>));  ///< See IncrementOperators.
+                           CODI_T(LhsExpressionInterface<double, double, Tape, T_Impl>));  ///< See IncrementOperators.
 
       using Real = CODI_DD(typename Tape::Real, double);  ///< See InternalStatementRecordingTapeInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
@@ -66,12 +66,12 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
-      /// Prefix operator ++
+      /// Prefix operator++
       CODI_INLINE Impl& operator++() {
         return cast() = cast() + PassiveReal(1.0);
       }
 
-      /// Postfix operator ++
+      /// Postfix operator++
       CODI_INLINE Impl operator++(int u) {
         CODI_UNUSED(u);
 
@@ -80,12 +80,12 @@ namespace codi {
         return r;
       }
 
-      /// Prefix operator --
+      /// Prefix operator--
       CODI_INLINE Impl& operator--() {
         return cast() = cast() - PassiveReal(1.0);
       }
 
-      /// Postfix operator --
+      /// Postfix operator--
       CODI_INLINE Impl operator--(int u) {
         CODI_UNUSED(u);
 

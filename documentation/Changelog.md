@@ -5,6 +5,8 @@ Changelog {#Changelog}
  - Features:
    * Helpers for linear system solvers. See Example 21 for details.
    * Event system. See Example 22 for details.
+   * Support for shared-memory parallel settings, specifically OpenMP.
+   * OpDiLib bindings.
 
  - Bugfix:
    * Initialization fixes.

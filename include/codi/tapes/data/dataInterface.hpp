@@ -128,6 +128,7 @@ namespace codi {
    *   - reset(): Clear data, but do not delete allocated memory.
    *   - resetHard(): Clear data and free allocated memory.
    *   - resetTo(): Clear all data up to the specified position.
+   *   - erase(): Erase a specific range of data. Whether memory is freed is implementation dependent.
    *
    * Iterating:
    *   - evaluateForward() / evaluateReverse(): Evaluate from start to end and call the function object for each valid
@@ -192,6 +193,10 @@ namespace codi {
                              Also called on nested interfaces. */
       void resetTo(Position const& pos); /**< Reset to the given position. Data is not deallocated. Also called on the
                                               nested interfaces. */
+
+      /// Erase the given range of data. Implementations may choose to free allocated memory. The parameter recursive
+      /// controls whether erase is also called on nested interfaces.
+      void erase(Position const& start, Position const& end, bool recursive = true);
 
       /*******************************************************************************/
       /// @name Position functions

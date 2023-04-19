@@ -160,7 +160,7 @@ namespace codi {
         return identifier;
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&)
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, ResizingPolicy)
       Gradient& gradient(Identifier& identifier) {
         return identifier;
       }

@@ -53,9 +53,12 @@ namespace codi {
    *
    * Mathematical and implementational details are explained in \ref SBG2021Index.
    *
-   * Since this index manager is tightly coupled to the statements, it also implements a simple data interface. It just
-   * provides the current maximum index as positional information and adds this positional information in the evaluate
-   * routines.
+   * Since this index manager is tightly coupled to the statements, it is specific to a tape instance and requires
+   * non-static storage.
+   *
+   * Since there is a one-to-one relation between tape and index manager for linear index managers, this index manager
+   * is thread-safe. Due to its linear nature, however, it can only be used to record tapes in parallel that do not
+   * depend on each other.
    *
    * @tparam T_Index   Type for the identifier, usually an integer type.
    */
@@ -72,6 +75,7 @@ namespace codi {
 
       static bool constexpr CopyNeedsStatement = false;  ///< Copy optimization is implemented.
       static bool constexpr IsLinear = true;             ///< Tightly coupled to statements.
+      static bool constexpr NeedsStaticStorage = false;  ///< Linear indices are not meaningful across tape instances.
 
       /// @}
       /*******************************************************************************/
@@ -222,6 +226,13 @@ namespace codi {
       /// \copydoc DataInterface::resetHard
       CODI_INLINE void resetHard() {
         count = reservedIndices;
+      }
+
+      /// \copydoc DataInterface::erase
+      /// Implementation: Empty. Linear index management depends on indices being handed out in a contiguous fashion,
+      /// and deleting a range of indices is not meaningful.
+      void erase(Position const& start, Position const& end, bool recursive = true) {
+        CODI_UNUSED(start, end, recursive);
       }
 
       /// \copydoc DataInterface::setNested

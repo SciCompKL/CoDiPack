@@ -59,7 +59,7 @@ namespace codi {
    * (documentation/examples/gradientAccessTapeInterface.cpp):
    * \snippet examples/gradientAccessTapeInterface.cpp Gradient Access
    *
-   * Implementation hint: Size of the gradient vector should be checked before access.
+   * Implementation hint: Unless instructed otherwise, the size of the gradient vector should be checked before access.
    *
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
@@ -71,13 +71,46 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, double);   ///< See GradientAccessTapeInterface.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See GradientAccessTapeInterface.
 
+      /// Policies for resizing the adjoint vector.
+      enum class ResizingPolicy {
+        CheckAndAdapt,    ///< Check the size of the adjoint vector, enlarge it if needed.
+        NoBoundsChecking  ///< Do not check the bounds, do not resize.
+      };
+
       /*******************************************************************************/
       /// @name Interface definition
 
-      void setGradient(Identifier const& identifier, Gradient const& gradient);  ///< Set the gradient.
-      Gradient const& getGradient(Identifier const& identifier) const;           ///< Get the gradient.
+      /**
+       * @brief Set the gradient.
+       *
+       * Implicitly resizes the adjoint vector if there is no entry with the given identifier yet, unless specified
+       * otherwise via resizingPolicy. In this case, the user has to guarantee that the adjoint vector is large
+       * enough, see DataManagementTapeInterface::resizeAdjointVector.
+       */
+      void setGradient(Identifier const& identifier, Gradient const& gradient,
+                       ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt);
 
-      Gradient& gradient(Identifier const& identifier);              ///< Reference access to gradient.
-      Gradient const& gradient(Identifier const& identifier) const;  ///< Constant reference access to gradient.
+      /**
+       * @brief Set the gradient.
+       *
+       * Returns a reference to adjoints[0] if no adjoint variable with the given identifier exists.
+       */
+      Gradient const& getGradient(Identifier const& identifier) const;
+
+      /**
+       * @brief Reference access to gradient.
+       *
+       * Implicitly resizes the adjoint vector if there is no entry with the given identifier yet, unless specified
+       * otherwise via resizingPolicy. In this case, the user has to guarantee that the adjoint vector is large
+       * enough, see DataManagementTapeInterface::resizeAdjointVector.
+       */
+      Gradient& gradient(Identifier const& identifier, ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt);
+
+      /**
+       * @brief Constant reference access to gradient.
+       *
+       * Returns a reference to adjoints[0] if no adjoint variable with the given identifier exists.
+       */
+      Gradient const& gradient(Identifier const& identifier) const;
   };
 }

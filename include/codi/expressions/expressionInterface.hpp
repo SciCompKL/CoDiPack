@@ -62,8 +62,8 @@ namespace codi {
       using Real = CODI_DD(T_Real, double);               ///< See ExpressionInterface.
       using Impl = CODI_DD(T_Impl, ExpressionInterface);  ///< See ExpressionInterface.
 
-      using ActiveResult = CODI_UNDEFINED;  ///< Type into which the expression can be converted. Usually also the type
-                                            ///< from which is constructed.
+      /// Type into which the expression can be converted. Usually also the type from which it is constructed.
+      using ActiveResult = CODI_UNDEFINED;
 
       /// Constructor
       ExpressionInterface() = default;
