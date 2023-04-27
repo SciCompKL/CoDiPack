@@ -38,6 +38,7 @@
 #include <type_traits>
 
 #include "../config.h"
+#include "../expressions/activeType.hpp"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
@@ -50,6 +51,12 @@
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  enum class ElemeniationMissingOutput {
+    Ignore = 0,
+    Add,
+    Throw
+  };
 
   /**
    * @brief Final implementation for a Jacobian tape with a linear index management.
@@ -177,6 +184,174 @@ namespace codi {
           }
 
           curAdjointPos -= 1;
+        }
+      }
+
+      CODI_INLINE static bool getIncomingDependencies(
+          std::map<Identifier, std::map<Identifier, Real>>& dependencies,
+          Identifier const& lhsIentifier,
+          std::map<Identifier, Real>& result,
+          ElemeniationMissingOutput missingOutputHandling) {
+
+        auto iter = dependencies.find(lhsIentifier);
+        if(iter != dependencies.end()) {
+          result = std::move(iter->second);
+          dependencies.erase(iter);
+
+          return true;
+        } else {
+          switch (missingOutputHandling) {
+          case ElemeniationMissingOutput::Ignore:
+            return false;
+            break;
+          case ElemeniationMissingOutput::Add:
+            result.clear();
+            result[lhsIentifier] = Real(1.0); // Add a self reference.
+            return true;
+            break;
+          case ElemeniationMissingOutput::Throw:
+            CODI_EXCEPTION("Node for '%d' not in depency map. It needs to be declared as an output.", (int)lhsIentifier);
+            return false;
+            break;
+          default:
+            CODI_EXCEPTION("Missing case '%d'.", (int)missingOutputHandling);
+            return false;
+            break;
+          }
+        }
+
+      }
+
+      CODI_INLINE static void internalEliminateTapeReverse(
+          /* data from call */
+          std::map<Identifier, std::map<Identifier, Real>>& dependencies, ElemeniationMissingOutput missingOutputHandling,
+          /* data from jacobianData */
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
+          /* data from statementData */
+          size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
+          /* data from index handler */
+          size_t const& startAdjointPos, size_t const& endAdjointPos) {
+        CODI_UNUSED(endJacobianPos, endStmtPos);
+
+        size_t curAdjointPos = startAdjointPos;
+
+        std::map<Identifier, Real> incomingDependencies;
+
+        while (curAdjointPos > endAdjointPos) {
+          curStmtPos -= 1;
+          Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
+          curJacobianPos -= argsSize;
+
+          if (Config::StatementInputTag != argsSize) {
+            // Skip input values, they would clear the map.
+
+            if(getIncomingDependencies(dependencies, curAdjointPos, incomingDependencies, missingOutputHandling)) {
+              for(auto& curEntry : incomingDependencies) {
+                for(Config::ArgumentSize curOut = 0; curOut < argsSize; curOut += 1) {
+                  Identifier const rhsIdentifier = rhsIdentifiers[curJacobianPos + curOut];
+                  Real const rhsJacobian = rhsJacobians[curJacobianPos + curOut];
+
+                  dependencies[rhsIdentifier][curEntry.first] += curEntry.second * rhsJacobian;
+                }
+              }
+            }
+          }
+
+          curAdjointPos -= 1;
+        }
+      }
+
+      CODI_NO_INLINE void internalEliminateTape(
+          Position const& start,
+          Position const& end,
+          std::map<Identifier, std::map<Identifier, Real>>& dependencies,
+          ElemeniationMissingOutput missingOutputHandling = ElemeniationMissingOutput::Ignore) {
+
+        Base::jacobianData.evaluateReverse(start.inner, end.inner, internalEliminateTapeReverse, dependencies,
+                                           missingOutputHandling);
+      }
+
+    public:
+
+      CODI_NO_INLINE std::map<Identifier, std::map<Identifier, Real>>  eliminateTape(Position const& start,
+                                                Position const& end,
+                                                std::vector<Identifier>& outputs,
+                                                ElemeniationMissingOutput missingOutputHandling = ElemeniationMissingOutput::Ignore) {
+
+        std::map<Identifier, std::map<Identifier, Real>> dependencies;
+
+        // Add a self reference to outputs. This are the starting points for the elimination. All other outputs are
+        // ignored or an exception is thrown.
+        for(Identifier curOutput : outputs) {
+          dependencies[curOutput][curOutput] = Real(1.0);
+        }
+
+        internalEliminateTape(start, end, dependencies, missingOutputHandling);
+
+        return dependencies;
+      }
+
+      CODI_NO_INLINE void eliminateTapeAndReplace(
+          Position const& start,
+          std::vector<ActiveType<JacobianLinearTape>*>& outputs,
+          ElemeniationMissingOutput missingOutputHandling = ElemeniationMissingOutput::Ignore) {
+
+        using LhsExpr = ActiveType<JacobianLinearTape>;
+
+        std::map<Identifier, std::map<Identifier, Real>> dependencies;
+
+        // Add a self reference to outputs. This are the starting points for the elimination. All other outputs are
+        // ignored or an exception is thrown.
+        for(LhsExpr* lhs : outputs) {
+          dependencies[lhs->getIdentifier()][lhs->getIdentifier()] = Real(1.0);
+        }
+        internalEliminateTape(this->getPosition(), start, dependencies, missingOutputHandling);
+
+        // Transpose dependencies.
+        std::map<Identifier, std::map<Identifier, Real>> dependenciesTransposed;
+        for(auto const& rhsEntry : dependencies) {
+          for(auto const& lhsEntry : rhsEntry.second) {
+            dependenciesTransposed[lhsEntry.first][rhsEntry.first] += lhsEntry.second;
+          }
+        }
+
+        this->resetTo(start, false);
+
+        // Add Jacobian to the tape.
+        for(LhsExpr* curOutput: outputs) {
+
+          Identifier curLhsIdentifier = curOutput->getIdentifier();
+          auto const& rhsEntries = dependenciesTransposed[curLhsIdentifier];
+          int entriesLeftToPUsh = (int)rhsEntries.size();
+          int curEntriesToPush = 0;
+          bool staggeringActive = false;
+
+          for(auto const& rhsEntry : rhsEntries) {
+            // Add a new statement if we added all from the last staggering iteration.
+            if(0 == curEntriesToPush) {
+              curEntriesToPush = entriesLeftToPUsh;
+              if (curEntriesToPush > (int)Config::MaxArgumentSize) {
+                curEntriesToPush = (int)Config::MaxArgumentSize - 1;
+                if (staggeringActive) {  // Except in the first round, one Jacobian is reserved for the staggering.
+                  curEntriesToPush -= 1;
+                }
+              }
+
+              Identifier storedIdentifier = curLhsIdentifier;
+              this->storeManual(curOutput->getValue(), curLhsIdentifier, curEntriesToPush + (int)staggeringActive);
+              if(staggeringActive) {
+                this->pushJacobianManual(Real(1.0), Real(), storedIdentifier);
+              }
+            }
+
+            this->pushJacobianManual(rhsEntry.second, Real(), rhsEntry.first);
+
+            entriesLeftToPUsh -= 1;
+            curEntriesToPush -= 1;
+          }
+
+          curOutput->getIdentifier() = curLhsIdentifier;
         }
       }
   };
