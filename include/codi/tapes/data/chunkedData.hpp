@@ -236,6 +236,11 @@ namespace codi {
         curChunk->dataPointer(startPos, data...);
       }
 
+      template<typename... Data>
+      CODI_INLINE void getDataPointersWithChunk(unsigned short chunkPos, unsigned short dataPos, Data*&... data) {
+        chunks[chunkPos]->dataPointer(dataPos, data...);
+      }
+
       /*******************************************************************************/
       /// @name Misc functions
       /// @{

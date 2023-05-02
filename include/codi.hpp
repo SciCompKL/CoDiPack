@@ -48,6 +48,7 @@
 #include "codi/tapes/indices/multiUseIndexManager.hpp"
 #include "codi/tapes/jacobianLinearTape.hpp"
 #include "codi/tapes/jacobianReuseTape.hpp"
+#include "codi/tapes/jacobianSparseTape.hpp"
 #include "codi/tapes/primalValueLinearTape.hpp"
 #include "codi/tapes/primalValueReuseTape.hpp"
 #include "codi/tapes/statementEvaluators/directStatementEvaluator.hpp"
@@ -113,6 +114,12 @@ namespace codi {
   /// \copydoc codi::RealReverseGen
   template<size_t dim>
   using RealReverseVec = RealReverseGen<double, Direction<double, dim>>;
+
+  template<typename Real, typename Gradient = Real>
+  using RealReverseSparseGen = ActiveType<JacobianSparseTape<JacobianSparseTapeTypes<Real, Gradient, DefaultChunkedData>>>;
+  using RealReverseSparse = RealReverseSparseGen<double>;
+  template<size_t dim>
+  using RealReverseSparseVec = RealReverseSparseGen<double, Direction<double, dim>>;
 
   /// General unchecked reverse AD type. See \ref sec_reverseAD for a reverse mode AD explanation or \ref ActiveTypeList
   /// for a list of all types.
