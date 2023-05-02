@@ -354,5 +354,62 @@ namespace codi {
           curOutput->getIdentifier() = curLhsIdentifier;
         }
       }
+
+    protected:
+
+      template<typename Adjoint>
+      CODI_INLINE static void internalEvaluateSparseReverse(
+          /* data from call */
+          std::map<Identifier, Adjoint>& seeding,
+          /* data from jacobianData */
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
+          /* data from statementData */
+          size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
+          /* data from index handler */
+          size_t const& startAdjointPos, size_t const& endAdjointPos) {
+        CODI_UNUSED(endJacobianPos, endStmtPos);
+
+        size_t curAdjointPos = startAdjointPos;
+
+        while (curAdjointPos > endAdjointPos) {
+          curStmtPos -= 1;
+          Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
+
+
+          if (Config::StatementInputTag != argsSize) {
+            curJacobianPos -= argsSize;
+
+            auto entry = seeding.rbegin();
+
+            if(entry != seeding.rend() && entry->first == (int)curAdjointPos) {
+              Adjoint curAdjoint = entry->second;
+              seeding.erase(std::next(entry).base()); // std::map::erase does not support reverse iterators.
+
+              for(Config::ArgumentSize curOut = 0; curOut < argsSize; curOut += 1) {
+                Identifier const rhsIdentifier = rhsIdentifiers[curJacobianPos + curOut];
+                Real const rhsJacobian = rhsJacobians[curJacobianPos + curOut];
+
+                seeding[rhsIdentifier] += curAdjoint * rhsJacobian;
+              }
+            }
+          }
+
+          curAdjointPos -= 1;
+        }
+      }
+
+
+
+    public:
+
+      template<typename Adjoint>
+      CODI_NO_INLINE void evaluateSparse(
+          Position const& start,
+          Position const& end,
+          std::map<Identifier, Adjoint>& seeding) {
+
+        Base::jacobianData.evaluateReverse(start.inner, end.inner, internalEvaluateSparseReverse<Adjoint>, seeding);
+      }
   };
 }
