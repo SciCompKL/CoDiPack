@@ -7,6 +7,7 @@ Changelog {#Changelog}
    * Event system. See Example 22 for details.
    * Support for shared-memory parallel settings, specifically OpenMP.
    * OpDiLib bindings.
+   * CMake support.
 
  - Bugfix:
    * Initialization fixes.

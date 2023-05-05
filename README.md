@@ -39,6 +39,25 @@ After that there should be no difficulties in replacing the codi::RealReverse ty
 
 For further details please visit our [CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) web page.
 
+### CMake
+
+CMake should be able to find CoDiPack either if `CMAKE_PREFIX_PATH` contains the CoDiPack directory or if the parameter `CoDiPack_DIR` is provided to CMake. If you install CoDiPack into a directory which is in the default search path for CMake then you do not need to specify any additional path.
+
+The path is different if you use the CoDiPack directory or a CMake installation of CoDiPack.
+
+ - CoDiPack directory (e.g. github checkout):
+   - `export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:<CoDiPack root>/cmake`
+   - `cmake . -DCoDiPack_DIR=<CoDiPack root>/cmake`
+ - CoDiPack CMake installation:
+   - `export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:<CoDiPack install>/share/CoDiPack/cmake`
+   - `cmake . -DCoDiPack_DIR=<CoDiPack install>/share/CoDiPack/cmake`
+
+You also have to add CoDiPack as a target link library in the `CMakeLists.txt` of your project:
+~~~~{.cmake}
+find_package(CoDiPack CONFIG REQUIRED)
+target_link_libraries(<target> CoDiPack)
+~~~~
+
 ## Miscellaneous information
 
 ### Debugging with gdb
