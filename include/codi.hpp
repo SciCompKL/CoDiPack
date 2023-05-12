@@ -54,6 +54,8 @@
 #include "codi/tapes/statementEvaluators/directStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/innerStatementEvaluator.hpp"
 #include "codi/tapes/statementEvaluators/reverseStatementEvaluator.hpp"
+#include "codi/tapes/tagging/tagTapeForward.hpp"
+#include "codi/tapes/tagging/tagTapeReverse.hpp"
 #include "codi/tools/data/aggregatedTypeVectorAccessWrapper.hpp"
 #include "codi/tools/data/direction.hpp"
 #include "codi/tools/data/externalFunctionUserData.hpp"
@@ -245,6 +247,14 @@ namespace codi {
    * This is the scalar version which does not use a vector mode.
    */
   using JacobianComputationScalarType = RealReverseIndex;
+
+  /// Type for checking errors of the application with respect to other CoDiPack types. Resembles a CoDiPack reverse
+  /// type.
+  using RealReverseTag = ActiveType<TagTapeReverse<double, int>>;
+
+  /// Type for checking errors of the application with respect to other CoDiPack types. Resembles a CoDiPack forward
+  /// type.
+  using RealForwardTag = ActiveType<TagTapeForward<double, int>>;
 }
 
 #include "codi/tools/cuda/codiCUDA.hpp"

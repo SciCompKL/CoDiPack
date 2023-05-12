@@ -82,7 +82,7 @@ namespace codi {
     public:
 
       /// Constructor all false.
-      CODI_INLINE EnumBitset() : bitset() {}
+      CODI_INLINE EnumBitset() = default;
 
       /// Constructor which sets one bit to true.
       CODI_INLINE EnumBitset(Enum pos) : bitset() {

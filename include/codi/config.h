@@ -204,6 +204,14 @@ namespace codi {
     bool constexpr ImplicitConversionWarning = CODI_ImplicitConversionWarning;
 #undef CODI_ImplicitConversionWarning
 
+#ifndef CODI_ImplicitTagConversion
+  /// See codi::Config::ImplicitTagConversion.
+  #define CODI_ImplicitTagConversion false
+#endif
+    /// Enables the implicit conversion of tag data to its tag.
+    bool constexpr ImplicitTagConversion = CODI_ImplicitTagConversion;
+    // Do not undefine.
+
 #ifndef CODI_IgnoreIntelNoInlineWarning
   /// See codi::Config::IgnoreIntelNoInlineWarning
   #define CODI_IgnoreIntelNoInlineWarning false

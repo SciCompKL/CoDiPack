@@ -1,0 +1,10 @@
+Default test:
+Input error test:
+Wrong tag detected '42' should be '1337'.
+Output error test:
+Wrong tag detected '1337' should be '42'.
+Do not use error:
+Wrong variable use detected.
+Do not change with same value:
+Do not change error test:
+Wrong tag use detected '12'' is set to '4'.
