@@ -278,9 +278,10 @@ namespace codi {
         return adjoints[identifier];
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&) const
-      CODI_INLINE Gradient const& gradient(Identifier const& identifier) const {
-        if (identifier > (Identifier)adjoints.size()) {
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, BoundsChecking) const
+      CODI_INLINE Gradient const& gradient(Identifier const& identifier,
+                                           BoundsChecking boundsChecking = BoundsChecking::True) const {
+        if (BoundsChecking::True == boundsChecking && identifier >= (Identifier)adjoints.size()) {
           return adjoints[0];
         } else {
           return adjoints[identifier];

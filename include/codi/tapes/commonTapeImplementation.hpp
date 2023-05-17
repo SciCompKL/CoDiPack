@@ -242,8 +242,9 @@ namespace codi {
       }
 
       /// \copydoc codi::GradientAccessTapeInterface::getGradient()
-      Gradient const& getGradient(Identifier const& identifier) const {
-        return cast().gradient(identifier);
+      Gradient const& getGradient(Identifier const& identifier,
+                                  BoundsChecking boundsChecking = BoundsChecking::True) const {
+        return cast().gradient(identifier, boundsChecking);
       }
 
       // Gradient functions are not implemented.

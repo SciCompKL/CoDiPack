@@ -59,7 +59,11 @@ namespace codi {
    * (documentation/examples/gradientAccessTapeInterface.cpp):
    * \snippet examples/gradientAccessTapeInterface.cpp Gradient Access
    *
-   * Implementation hint: Unless instructed otherwise, the size of the gradient vector should be checked before access.
+   * All methods in this class perform bounds checking by default. If the access is out of bounds, the adjoints are
+   * either resized or a reference to a dummy value is returned. With thread-safe adjoints, e.g.,
+   * ThreadSafeGlobalAdjoints, bounds checking involves setting locks even if the access is within bounds. This can be a
+   * bottleneck. Therefore, bounds checking can be disabled. The user has to guarantee that the adjoint vector is large
+   * enough, for example by calling DataManagementTapeInterface::resizeAdjointVector.
    *
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
@@ -83,9 +87,8 @@ namespace codi {
       /**
        * @brief Set the gradient.
        *
-       * Implicitly resizes the adjoint vector if there is no entry with the given identifier yet, unless specified
-       * otherwise via boundsChecking. In this case, the user has to guarantee that the adjoint vector is large
-       * enough, see DataManagementTapeInterface::resizeAdjointVector.
+       * Unless specified otherwise via boundsChecking, bounds checking is performed. If the internal adjoint vector is
+       * not large enough for the given identifier, is is implicitly resized.
        */
       void setGradient(Identifier const& identifier, Gradient const& gradient,
                        BoundsChecking boundsChecking = BoundsChecking::True);
@@ -93,24 +96,27 @@ namespace codi {
       /**
        * @brief Set the gradient.
        *
-       * Returns a reference to adjoints[0] if no adjoint variable with the given identifier exists.
+       * Unless specified otherwise via boundsChecking, bounds checking is performed. If no adjoint variable with the
+       * given identifier exists, returns a reference to adjoints[0].
        */
-      Gradient const& getGradient(Identifier const& identifier) const;
+      Gradient const& getGradient(Identifier const& identifier,
+                                  BoundsChecking boundsChecking = BoundsChecking::True) const;
 
       /**
        * @brief Reference access to gradient.
        *
-       * Implicitly resizes the adjoint vector if there is no entry with the given identifier yet, unless specified
-       * otherwise via boundsChecking. In this case, the user has to guarantee that the adjoint vector is large
-       * enough, see DataManagementTapeInterface::resizeAdjointVector.
+       * Unless specified otherwise via boundsChecking, bounds checking is performed. If the internal adjoint vector is
+       * not large enough for the given identifier, is is implicitly resized.
        */
       Gradient& gradient(Identifier const& identifier, BoundsChecking boundsChecking = BoundsChecking::True);
 
       /**
        * @brief Constant reference access to gradient.
        *
-       * Returns a reference to adjoints[0] if no adjoint variable with the given identifier exists.
+       * Unless specified otherwise via boundsChecking, bounds checking is performed. If no adjoint variable with the
+       * given identifier exists, returns a reference to adjoints[0].
        */
-      Gradient const& gradient(Identifier const& identifier) const;
+      Gradient const& gradient(Identifier const& identifier,
+                               BoundsChecking boundsChecking = BoundsChecking::True) const;
   };
 }

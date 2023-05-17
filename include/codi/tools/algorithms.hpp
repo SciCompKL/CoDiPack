@@ -163,7 +163,8 @@ namespace codi {
             tape.beginUseAdjointVector();
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
-                jac(outputSize - i - 1, j + curDim) = GT::at(tape.getGradient(output[outputSize - i - 1]), curDim);
+                jac(outputSize - i - 1, j + curDim) =
+                    GT::at(tape.getGradient(output[outputSize - i - 1], BoundsChecking::False), curDim);
                 if (Gradient() != output[i]) {
                   GT::at(tape.gradient(output[outputSize - i - 1], BoundsChecking::False), curDim) =
                       typename GT::Real();
@@ -194,7 +195,7 @@ namespace codi {
             tape.beginUseAdjointVector();
             for (size_t j = 0; j < inputSize; j += 1) {
               for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
-                jac(i + curDim, j) = GT::at(tape.getGradient(input[j]), curDim);
+                jac(i + curDim, j) = GT::at(tape.getGradient(input[j], BoundsChecking::False), curDim);
                 GT::at(tape.gradient(input[j], BoundsChecking::False), curDim) = typename GT::Real();
               }
             }

@@ -220,11 +220,12 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
       return adjointVec[identifier];
     }
 
-    Gradient const& gradient(Identifier const& identifier) const {
-      if (identifier < (int)adjointVec.size()) {
-        return adjointVec[identifier];
-      } else {
+    Gradient const& gradient(Identifier const& identifier,
+                             BoundsChecking boundsChecking = BoundsChecking::True) const {
+      if (BoundsChecking::True == boundsChecking && identifier >= (int)adjointVec.size()) {
         return adjointVec[0];
+      } else {
+        return adjointVec[identifier];
       }
     }
 //! [Adjoint - Access]
