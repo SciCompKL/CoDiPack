@@ -134,7 +134,7 @@ namespace codi {
       using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;  ///< See TapeTypesInterface.
 
       /// See GradientAccessTapeInterface.
-      using typename GradientAccessTapeInterface<Gradient, Identifier>::ResizingPolicy;
+      using typename GradientAccessTapeInterface<Gradient, Identifier>::BoundsChecking;
 
     protected:
 
@@ -237,8 +237,8 @@ namespace codi {
 
       /// \copydoc codi::GradientAccessTapeInterface::setGradient()
       void setGradient(Identifier const& identifier, Gradient const& gradient,
-                       ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt) {
-        cast().gradient(identifier, resizingPolicy) = gradient;
+                       BoundsChecking boundsChecking = BoundsChecking::True) {
+        cast().gradient(identifier, boundsChecking) = gradient;
       }
 
       /// \copydoc codi::GradientAccessTapeInterface::getGradient()

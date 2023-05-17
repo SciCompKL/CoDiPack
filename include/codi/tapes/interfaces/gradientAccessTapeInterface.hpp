@@ -71,10 +71,10 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, double);   ///< See GradientAccessTapeInterface.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See GradientAccessTapeInterface.
 
-      /// Policies for resizing the adjoint vector.
-      enum class ResizingPolicy {
-        CheckAndAdapt,    ///< Check the size of the adjoint vector, enlarge it if needed.
-        NoBoundsChecking  ///< Do not check the bounds, do not resize.
+      /// Policies for bounds checking.
+      enum class BoundsChecking {
+        False,  ///< Do not perform any bounds checking.
+        True    ///< Perform bounds checking. It may involve side effects.
       };
 
       /*******************************************************************************/
@@ -84,11 +84,11 @@ namespace codi {
        * @brief Set the gradient.
        *
        * Implicitly resizes the adjoint vector if there is no entry with the given identifier yet, unless specified
-       * otherwise via resizingPolicy. In this case, the user has to guarantee that the adjoint vector is large
+       * otherwise via boundsChecking. In this case, the user has to guarantee that the adjoint vector is large
        * enough, see DataManagementTapeInterface::resizeAdjointVector.
        */
       void setGradient(Identifier const& identifier, Gradient const& gradient,
-                       ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt);
+                       BoundsChecking boundsChecking = BoundsChecking::True);
 
       /**
        * @brief Set the gradient.
@@ -101,10 +101,10 @@ namespace codi {
        * @brief Reference access to gradient.
        *
        * Implicitly resizes the adjoint vector if there is no entry with the given identifier yet, unless specified
-       * otherwise via resizingPolicy. In this case, the user has to guarantee that the adjoint vector is large
+       * otherwise via boundsChecking. In this case, the user has to guarantee that the adjoint vector is large
        * enough, see DataManagementTapeInterface::resizeAdjointVector.
        */
-      Gradient& gradient(Identifier const& identifier, ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt);
+      Gradient& gradient(Identifier const& identifier, BoundsChecking boundsChecking = BoundsChecking::True);
 
       /**
        * @brief Constant reference access to gradient.
