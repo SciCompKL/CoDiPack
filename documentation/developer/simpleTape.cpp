@@ -204,27 +204,28 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
 //! [Adjoint - Access]
     void setGradient(Identifier const& identifier, Gradient const& grad,
-                     ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt) {
-      gradient(identifier, resizingPolicy) = grad;
+                     BoundsChecking boundsChecking = BoundsChecking::True) {
+      gradient(identifier, boundsChecking) = grad;
     }
     Gradient const& getGradient(Identifier const& identifier) const {
       return gradient(identifier);
     }
 
     Gradient& gradient(Identifier const& identifier,
-                       ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt) {
-      if (ResizingPolicy::CheckAndAdapt == resizingPolicy) {
+                       BoundsChecking boundsChecking = BoundsChecking::True) {
+      if (BoundsChecking::True == boundsChecking) {
         checkAndResizeAdjoints(identifier);
       }
 
       return adjointVec[identifier];
     }
 
-    Gradient const& gradient(Identifier const& identifier) const {
-      if (identifier < (int)adjointVec.size()) {
-        return adjointVec[identifier];
-      } else {
+    Gradient const& gradient(Identifier const& identifier,
+                             BoundsChecking boundsChecking = BoundsChecking::True) const {
+      if (BoundsChecking::True == boundsChecking && identifier >= (int)adjointVec.size()) {
         return adjointVec[0];
+      } else {
+        return adjointVec[identifier];
       }
     }
 //! [Adjoint - Access]
