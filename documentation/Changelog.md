@@ -1,12 +1,13 @@
 Changelog {#Changelog}
 ===========================
 
-### v 2.* - ????-??-??
+### v 2.1.0 - 2023-05-10
  - Features:
    * Helpers for linear system solvers. See Example 21 for details.
    * Event system. See Example 22 for details.
    * Support for shared-memory parallel settings, specifically OpenMP.
    * OpDiLib bindings.
+   * CMake support.
 
  - Bugfix:
    * Initialization fixes.

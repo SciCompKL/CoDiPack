@@ -1,11 +1,11 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2023 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
- * Lead developers: Max Sagebaum, Johannes Blühdorn (SciComp, TU Kaiserslautern)
+ * Lead developers: Max Sagebaum, Johannes Blühdorn (SciComp, University of Kaiserslautern-Landau)
  *
  * This file is part of CoDiPack (http://www.scicomp.uni-kl.de/software/codi).
  *
@@ -26,7 +26,7 @@
  * For other licensing options please contact us.
  *
  * Authors:
- *  - SciComp, TU Kaiserslautern:
+ *  - SciComp, University of Kaiserslautern-Landau:
  *    - Max Sagebaum
  *    - Johannes Blühdorn
  *    - Former members:
@@ -81,9 +81,9 @@
 namespace codi {
 
 #define CODI_MAJOR_VERSION 2
-#define CODI_MINOR_VERSION 0
-#define CODI_BUILD_VERSION 2
-#define CODI_VERSION "2.0.2"
+#define CODI_MINOR_VERSION 1
+#define CODI_BUILD_VERSION 0
+#define CODI_VERSION "2.1.0"
 
   /// General forward AD type. See \ref sec_forwardAD for a forward mode AD explanation or \ref ActiveTypeList for a
   /// list of all types.
