@@ -154,8 +154,8 @@ namespace codi {
           void evalForwFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            Real* x_d = new Real[inputIndices.size()];
-            Real* y_d = new Real[outputIndices.size()];
+            std::vector<Real> x_d(inputIndices.size());
+            std::vector<Real> y_d(outputIndices.size());
 
             if (TapeTraits::IsPrimalValueTape<Tape>::value) {
               for (size_t i = 0; i < inputIndices.size(); ++i) {
@@ -168,7 +168,7 @@ namespace codi {
                 x_d[i] = ra->getAdjoint(inputIndices[i], dim);
               }
 
-              forwardFunc(inputValues.data(), x_d, inputIndices.size(), outputValues.data(), y_d, outputIndices.size(),
+              forwardFunc(inputValues.data(), x_d.data(), inputIndices.size(), outputValues.data(), y_d.data(), outputIndices.size(),
                           &userData);
 
               for (size_t i = 0; i < outputIndices.size(); ++i) {
@@ -182,9 +182,6 @@ namespace codi {
                 ra->setPrimal(outputIndices[i], outputValues[i]);
               }
             }
-
-            delete[] x_d;
-            delete[] y_d;
           }
 
           static void evalPrimFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
@@ -230,8 +227,8 @@ namespace codi {
           void evalRevFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            Real* x_b = new Real[inputIndices.size()];
-            Real* y_b = new Real[outputIndices.size()];
+            std::vector<Real> x_b(inputIndices.size());
+            std::vector<Real> y_b(outputIndices.size());
 
             for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
               for (size_t i = 0; i < outputIndices.size(); ++i) {
@@ -239,7 +236,7 @@ namespace codi {
                 ra->resetAdjoint(outputIndices[i], dim);
               }
 
-              reverseFunc(inputValues.data(), x_b, inputIndices.size(), outputValues.data(), y_b, outputIndices.size(),
+              reverseFunc(inputValues.data(), x_b.data(), inputIndices.size(), outputValues.data(), y_b.data(), outputIndices.size(),
                           &userData);
 
               for (size_t i = 0; i < inputIndices.size(); ++i) {
@@ -252,9 +249,6 @@ namespace codi {
                 ra->setPrimal(outputIndices[i], oldPrimals[i]);
               }
             }
-
-            delete[] x_b;
-            delete[] y_b;
           }
       };
 
@@ -372,9 +366,9 @@ namespace codi {
           // the tape.
           data->primalFunc = func;
 
-          Real* y = new Real[outputValues.size()];
+          std::vector<Real> y(outputValues.size());
 
-          func(data->inputValues.data(), data->inputValues.size(), y, outputValues.size(), &data->userData);
+          func(data->inputValues.data(), data->inputValues.size(), y.data(), outputValues.size(), &data->userData);
 
           // Set the primal values on the output values and add them to the data for the reverse evaluation.
           for (size_t i = 0; i < outputValues.size(); ++i) {
@@ -384,9 +378,6 @@ namespace codi {
               addOutputToData(*outputValues[i]);
             }
           }
-
-          delete[] y;
-
         } else {
           CODI_EXCEPTION(
               "callPrimalFunc() not available if external function helper is initialized with passive function mode "
