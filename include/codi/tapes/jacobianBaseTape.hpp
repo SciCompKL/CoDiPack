@@ -433,12 +433,17 @@ namespace codi {
 
       /// Add a new input to the tape.
       template<typename Lhs>
-      CODI_INLINE void internalRegisterInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
+      CODI_INLINE void internalRegisterInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value,
+                                             bool unusedIndex) {
         if (TapeTypes::IsLinearIndexHandler) {
           statementData.reserveItems(1);
         }
 
-        indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
+        if (unusedIndex) {
+          indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
+        } else {
+          indexManager.get().template assignIndex<Impl>(value.cast().getIdentifier());
+        }
 
         if (TapeTypes::IsLinearIndexHandler) {
           cast().pushStmtData(value.cast().getIdentifier(), Config::StatementInputTag);
@@ -454,7 +459,7 @@ namespace codi {
       /// \copydoc codi::ReverseTapeInterface::registerInput()
       template<typename Lhs>
       CODI_INLINE void registerInput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        internalRegisterInput(value);
+        cast().internalRegisterInput(value, true);
         EventSystem<Impl>::notifyTapeRegisterInputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
       }
 
@@ -700,7 +705,7 @@ namespace codi {
       /// \copydoc codi::ExternalFunctionTapeInterface::registerExternalFunctionOutput()
       template<typename Lhs>
       Real registerExternalFunctionOutput(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        internalRegisterInput(value);
+        cast().internalRegisterInput(value, false);
 
         return Real();
       }

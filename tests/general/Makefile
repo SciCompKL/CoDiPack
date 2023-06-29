@@ -51,8 +51,15 @@ ifdef EIGEN_DIR
 else
   $(warning EIGEN_DIR not defined. Testing without Eigen.)
 endif
+ENZYME_DEFINE=
+ifdef ENZYME_DIR
+  CLANG_VERSION := 14
+  ENZYME_DEFINE = -DCODI_EnableEnzyme=true -flegacy-pass-manager -Xclang -load -Xclang $(ENZYME_DIR)/lib/ClangEnzyme-$(CLANG_VERSION).so -Xclang -plugin-arg-enzyme -Xclang -enzyme-globals-default-inactive=1
+else
+  $(warning ENZYME_DIR not defined. Testing without Enzyme.)
+endif
 
-FLAGS = -Wall -Werror=return-type -Wextra -pedantic -std=c++11 -DCODI_IgnoreInvalidJacobians=true -DCODI_EnableAssert=true -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -fopenmp -I$(INCLUDE_DIR) $(CODI_INCLUDE) $(EIGEN_DEFINE) -DCODI_ChunkSize=32 -DCODI_SmallChunkSize=32
+FLAGS = -Wall -Werror=return-type -Wextra -pedantic -std=c++11 -DCODI_IgnoreInvalidJacobians=true -DCODI_EnableAssert=true -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -fopenmp -I$(INCLUDE_DIR) $(CODI_INCLUDE) $(EIGEN_DEFINE) $(ENZYME_DEFINE) -DCODI_ChunkSize=32 -DCODI_SmallChunkSize=32
 
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
