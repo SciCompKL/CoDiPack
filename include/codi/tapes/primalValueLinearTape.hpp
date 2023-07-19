@@ -87,7 +87,10 @@ namespace codi {
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
-      void clearAdjoints(Position const& start, Position const& end) {
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        CODI_UNUSED(boundsChecking);
+
         using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);

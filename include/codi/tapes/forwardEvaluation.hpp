@@ -165,7 +165,7 @@ namespace codi {
         return identifier;
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&) const
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsBoundsChecking) const
       Gradient const& gradient(Identifier const& identifier) const {
         return identifier;
       }

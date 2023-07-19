@@ -88,7 +88,10 @@ namespace codi {
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
-      void clearAdjoints(Position const& start, Position const& end) {
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        CODI_UNUSED(boundsChecking);
+
         auto clearFunc = [this](Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal,
                                 EvalHandle* evalHandle) {
           CODI_UNUSED(passiveArgs, oldPrimal, evalHandle);

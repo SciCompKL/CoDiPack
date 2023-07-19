@@ -110,10 +110,14 @@ namespace codi {
       /*******************************************************************************/
       /// @name Reset
 
-      void clearAdjoints();                   ///< Clear all adjoint values, that is, set them to zero.
-      void reset(bool resetAdjoints = true);  ///< Reset the tape to the initial state for a fresh recording. See
-                                              ///< \ref Tutorial_05_Repeated_tape_recordings for remarks on repeated
-                                              ///< tape recording in CoDiPack.
+      void clearAdjoints();  ///< Clear all adjoint values, that is, set them to zero.
+
+      /**
+       * @brief Reset the tape to the initial state for a fresh recording.
+       *
+       * See \ref Tutorial_05_Repeated_tape_recordings for remarks on repeated tape recording in CoDiPack.
+       */
+      void reset(bool resetAdjoints = true);
 
       /*******************************************************************************/
       /// @name Tape information

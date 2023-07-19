@@ -96,7 +96,9 @@ namespace codi {
       /// \copydoc codi::PositionalEvaluationTapeInterface::evaluate()
       virtual void evaluate(Position const& start, Position const& end) = 0;
 
-      /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(Position const&, Position const&)
+      // clang-format off
+      /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(Position const&, Position const&, AdjointsBoundsChecking)
+      // clang-format on
       virtual void evaluateForward(Position const& start, Position const& end) = 0;
 
       /// Get a new general interface to the adjoint vector.

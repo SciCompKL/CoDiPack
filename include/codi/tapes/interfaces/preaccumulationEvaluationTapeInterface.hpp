@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../misc/tapeParameters.hpp"
 #include "forwardEvaluationTapeInterface.hpp"
 #include "manualStatementPushTapeInterface.hpp"
 #include "positionalEvaluationTapeInterface.hpp"
@@ -55,6 +56,10 @@ namespace codi {
    * copied vector. In the *KeepState() methods, they ensure the correctness of the primal value vector by performing
    * e.g. a primal evaluation after the reverse evaluation. This will yield better performance for small tape ranges in
    * the evaluation.
+   *
+   * All methods in this interface perform bounds checking and adjoints locking by default. If the access is out of
+   * bounds, the adjoints are resized. See codi::AdjointsBoundsChecking for reasons to disable bounds checking and
+   * resultant responsibilities of the caller.
    *
    * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
    * @tparam T_Gradient    The gradient type of a tape usually, chosen as ActiveType::Gradient.
@@ -78,10 +83,12 @@ namespace codi {
 
       /// Perform a tape evaluation but restore the state afterwards such that it is the same as when the evaluation
       /// started. It hast to hold start >= end.
-      void evaluateKeepState(Position const& start, Position const& end);
+      void evaluateKeepState(Position const& start, Position const& end,
+                             AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
 
       /// Perform a tape evaluation but restore the state afterwards such that it is the same as when the evaluation
       /// started. It hast to hold start <= end.
-      void evaluateForwardKeepState(Position const& start, Position const& end);
+      void evaluateForwardKeepState(Position const& start, Position const& end,
+                                    AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
   };
 }

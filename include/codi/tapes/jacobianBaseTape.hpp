@@ -234,7 +234,7 @@ namespace codi {
       /// @name Functions from GradientAccessTapeInterface
       /// @{
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, BoundsChecking)
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsBoundsChecking)
       CODI_INLINE Gradient& gradient(Identifier const& identifier,
                                      AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
         if (AdjointsBoundsChecking::True == boundsChecking) {
@@ -244,7 +244,7 @@ namespace codi {
         return adjoints[identifier];
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&) const
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsBoundsChecking) const
       CODI_INLINE Gradient const& gradient(Identifier const& identifier,
                                            AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) const {
         if (AdjointsBoundsChecking::True == boundsChecking && identifier >= (Identifier)adjoints.size()) {
@@ -715,12 +715,18 @@ namespace codi {
       using Base::evaluateForward;
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
-      void evaluateForward(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+      void evaluateForward(Position const& start, Position const& end,
+                           AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        if (AdjointsBoundsChecking::True == boundsChecking) {
+          checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+          adjoints.beginUse();
+        }
 
-        adjoints.beginUse();
         cast().evaluateForward(start, end, adjoints.data());
-        adjoints.endUse();
+
+        if (AdjointsBoundsChecking::True == boundsChecking) {
+          adjoints.endUse();
+        }
       }
 
       /// @}
@@ -773,12 +779,18 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::evaluate()
-      CODI_INLINE void evaluate(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+      CODI_INLINE void evaluate(Position const& start, Position const& end,
+                                AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        if (AdjointsBoundsChecking::True == boundsChecking) {
+          checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+          adjoints.beginUse();
+        }
 
-        adjoints.beginUse();
         evaluate(start, end, adjoints.data());
-        adjoints.endUse();
+
+        if (AdjointsBoundsChecking::True == boundsChecking) {
+          adjoints.endUse();
+        }
       }
 
       /// @}
@@ -787,13 +799,15 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
-      void evaluateKeepState(Position const& start, Position const& end) {
-        evaluate(start, end);
+      void evaluateKeepState(Position const& start, Position const& end,
+                             AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        evaluate(start, end, boundsChecking);
       }
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
-      void evaluateForwardKeepState(Position const& start, Position const& end) {
-        evaluateForward(start, end);
+      void evaluateForwardKeepState(Position const& start, Position const& end,
+                                    AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        evaluateForward(start, end, boundsChecking);
       }
 
       /// @}

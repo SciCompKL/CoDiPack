@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../misc/tapeParameters.hpp"
 #include "positionalEvaluationTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -50,6 +51,10 @@ namespace codi {
    * Here is an example for a forward tape evaluation (documentation/examples/forwardEvaluationTapeInterface.cpp):
    * \snippet examples/forwardEvaluationTapeInterface.cpp Forward tape evaluation
    *
+   * All methods in this interface perform bounds checking and adjoints locking by default. If the access is out of
+   * bounds, the adjoints are resized. This can be disabled for some methods. See codi::AdjointsBoundsChecking for
+   * reasons to disable bounds checking and resultant responsibilities of the caller.
+   *
    * @tparam T_Position  Global tape position type, usually chosen as Tape::Position.
    */
   template<typename T_Position>
@@ -62,7 +67,8 @@ namespace codi {
       /// @name Interface definition
 
       /// Perform a forward evaluation of a part of the tape. It has to hold start <= end.
-      void evaluateForward(Position const& start, Position const& end);
+      void evaluateForward(Position const& start, Position const& end,
+                           AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
 
       /// Perform a forward evaluation of the full tape.
       void evaluateForward();

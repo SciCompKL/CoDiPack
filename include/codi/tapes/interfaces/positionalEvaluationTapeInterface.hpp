@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../misc/tapeParameters.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -52,6 +53,10 @@ namespace codi {
    * Here is an example for a positional tape evaluation (\ref Example_03_Positional_tape_evaluations):
    * \snippet examples/Example_03_Positional_tape_evaluations.cpp Positional evaluation
    *
+   * Some methods in this interface perform bounds checking and/or adjoints locking by default. If the access is out of
+   * bounds, the adjoints are resized. See codi::AdjointsBoundsChecking for reasons to disable bounds checking and
+   * resultant responsibilities of the caller.
+   *
    * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
    */
   template<typename T_Position>
@@ -64,14 +69,16 @@ namespace codi {
       /// @name Interface definition
 
       /// Perform a reverse evaluation for a part of the tape. It hast to hold start >= end.
-      void evaluate(Position const& start, Position const& end);
+      void evaluate(Position const& start, Position const& end,
+                    AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
 
       /// Clear all adjoints that would be set in a tape evaluation from start to end. It has to hold start >= end.
-      void clearAdjoints(Position const& start, Position const& end);
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
 
       Position getPosition() const;      ///< Current position of the tape.
       Position getZeroPosition() const;  ///< Initial position of the tape.
 
-      void resetTo(Position const& pos, bool resetAdjoints = true);  ///< Rest the tape to the provided position.
+      void resetTo(Position const& pos, bool resetAdjoints = true);  ///< Reset the tape to the provided position.
   };
 }

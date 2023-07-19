@@ -854,8 +854,11 @@ namespace codi {
       using Base::evaluateForward;
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
-      void evaluateForward(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+      void evaluateForward(Position const& start, Position const& end,
+                           AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        if (AdjointsBoundsChecking::True == boundsChecking) {
+          checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+        }
 
         cast().evaluateForward(start, end, adjoints.data());
       }
@@ -1042,8 +1045,11 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::evaluate()
-      CODI_INLINE void evaluate(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+      CODI_INLINE void evaluate(Position const& start, Position const& end,
+                                AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        if (AdjointsBoundsChecking::True == boundsChecking) {
+          checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+        }
 
         evaluate(start, end, adjoints.data());
       }
@@ -1061,8 +1067,11 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
-      void evaluateKeepState(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+      void evaluateKeepState(Position const& start, Position const& end,
+                             AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        if (AdjointsBoundsChecking::True == boundsChecking) {
+          checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+        }
 
         internalEvaluateReverse<false>(start, end, adjoints.data());
 
@@ -1072,8 +1081,11 @@ namespace codi {
       }
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
-      void evaluateForwardKeepState(Position const& start, Position const& end) {
-        checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+      void evaluateForwardKeepState(Position const& start, Position const& end,
+                                    AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        if (AdjointsBoundsChecking::True == boundsChecking) {
+          checkAdjointSize(indexManager.get().getLargestCreatedIndex());
+        }
 
         if (!TapeTypes::IsLinearIndexHandler) {
           cast().internalResetPrimalValues(end);
