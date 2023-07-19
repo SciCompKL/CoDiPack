@@ -142,22 +142,20 @@ namespace codi {
         // Resize up front for subsequent gradient access without bounds checking and implicit resizing.
         tape.resizeAdjointVector();
 
+        // Declare adjoint vector usage. Throughout, avoid bounds checking and implicit resizing.
+        tape.beginUseAdjointVector();
+
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
           for (size_t j = 0; j < inputSize; j += gradDim) {
-            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
-            tape.beginUseAdjointVector();
             setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0), AdjointsBoundsChecking::False);
-            tape.endUseAdjointVector();
 
             if (keepState) {
-              tape.evaluateForwardKeepState(start, end);
+              tape.evaluateForwardKeepState(start, end, AdjointsBoundsChecking::False);
             } else {
-              tape.evaluateForward(start, end);
+              tape.evaluateForward(start, end, AdjointsBoundsChecking::False);
             }
 
-            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
-            tape.beginUseAdjointVector();
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
                 jac(outputSize - i - 1, j + curDim) =
@@ -170,26 +168,20 @@ namespace codi {
             }
 
             setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), AdjointsBoundsChecking::False);
-            tape.endUseAdjointVector();
           }
 
-          tape.clearAdjoints(end, start);
+          tape.clearAdjoints(end, start, AdjointsBoundsChecking::False);
 
         } else if (EvaluationType::Reverse == evalType) {
           for (size_t i = 0; i < outputSize; i += gradDim) {
-            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
-            tape.beginUseAdjointVector();
             setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0), AdjointsBoundsChecking::False);
-            tape.endUseAdjointVector();
 
             if (keepState) {
-              tape.evaluateKeepState(end, start);
+              tape.evaluateKeepState(end, start, AdjointsBoundsChecking::False);
             } else {
-              tape.evaluate(end, start);
+              tape.evaluate(end, start, AdjointsBoundsChecking::False);
             }
 
-            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
-            tape.beginUseAdjointVector();
             for (size_t j = 0; j < inputSize; j += 1) {
               for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
                 jac(i + curDim, j) = GT::at(tape.getGradient(input[j], AdjointsBoundsChecking::False), curDim);
@@ -198,15 +190,16 @@ namespace codi {
             }
 
             setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), AdjointsBoundsChecking::False);
-            tape.endUseAdjointVector();
 
             if (!Config::ReversalZeroesAdjoints) {
-              tape.clearAdjoints(end, start);
+              tape.clearAdjoints(end, start, AdjointsBoundsChecking::False);
             }
           }
         } else {
           CODI_EXCEPTION("Evaluation mode not implemented. Mode is: %d.", (int)evalType);
         }
+
+        tape.endUseAdjointVector();
       }
 
       // clang-format off
