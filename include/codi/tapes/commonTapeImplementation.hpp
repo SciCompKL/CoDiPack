@@ -133,9 +133,6 @@ namespace codi {
           typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData;   ///< See CommonTapeTypes.
       using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;  ///< See TapeTypesInterface.
 
-      /// See GradientAccessTapeInterface.
-      using typename GradientAccessTapeInterface<Gradient, Identifier>::BoundsChecking;
-
     protected:
 
       bool active;                       ///< Whether or not the tape is in recording mode.
@@ -237,13 +234,13 @@ namespace codi {
 
       /// \copydoc codi::GradientAccessTapeInterface::setGradient()
       void setGradient(Identifier const& identifier, Gradient const& gradient,
-                       BoundsChecking boundsChecking = BoundsChecking::True) {
+                       AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
         cast().gradient(identifier, boundsChecking) = gradient;
       }
 
       /// \copydoc codi::GradientAccessTapeInterface::getGradient()
       Gradient const& getGradient(Identifier const& identifier,
-                                  BoundsChecking boundsChecking = BoundsChecking::True) const {
+                                  AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) const {
         return cast().gradient(identifier, boundsChecking);
       }
 

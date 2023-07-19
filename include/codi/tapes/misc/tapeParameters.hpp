@@ -62,4 +62,20 @@ namespace codi {
                             ///<         value tapes.
     StatementSize           ///< [A: RW] Allocated number of entries in the statement vector in all tapes.
   };
+
+  /**
+   * @brief Policies for adjoint vector bounds checking, e.g, when accessing adjoint or evaluating tapes.
+   *
+   * For the convenience of the user, functions that use the adjoints perform automatic bounds checking and, if needed,
+   * resize the adjoints accordingly. This is a good solution for a serial setting. With thread-safe adjoints, e.g.,
+   * ThreadSafeGlobalAdjoints, bounds checking involves setting locks even if the access is within bounds. This can be a
+   * bottleneck. Therefore, some functions offer an AdjointsBoundsChecking argument to disable bounds checking. The
+   * caller has to ensure that the adjoints are large enough, for example by calling
+   * DataManagementTapeInterface::resizeAdjointVector. Also, the caller is responsible for corresponding adjoint locking
+   * via DataManagementTapeInterface::beginUseAdjoints and DataManagementTapeInterface::endUseAdjoints.
+   */
+  enum class AdjointsBoundsChecking {
+    False,  ///< Do not perform any bounds checking. In particular,
+    True    ///< Perform bounds checking. It may involve side effects, such as adjoints resizing.
+  };
 }

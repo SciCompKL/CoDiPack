@@ -204,7 +204,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
 //! [Adjoint - Access]
     void setGradient(Identifier const& identifier, Gradient const& grad,
-                     BoundsChecking boundsChecking = BoundsChecking::True) {
+                     AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
       gradient(identifier, boundsChecking) = grad;
     }
     Gradient const& getGradient(Identifier const& identifier) const {
@@ -212,8 +212,8 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
     }
 
     Gradient& gradient(Identifier const& identifier,
-                       BoundsChecking boundsChecking = BoundsChecking::True) {
-      if (BoundsChecking::True == boundsChecking) {
+                       AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+      if (AdjointsBoundsChecking::True == boundsChecking) {
         checkAndResizeAdjoints(identifier);
       }
 
@@ -221,8 +221,8 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
     }
 
     Gradient const& gradient(Identifier const& identifier,
-                             BoundsChecking boundsChecking = BoundsChecking::True) const {
-      if (BoundsChecking::True == boundsChecking && identifier >= (int)adjointVec.size()) {
+                             AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) const {
+      if (AdjointsBoundsChecking::True == boundsChecking && identifier >= (int)adjointVec.size()) {
         return adjointVec[0];
       } else {
         return adjointVec[identifier];

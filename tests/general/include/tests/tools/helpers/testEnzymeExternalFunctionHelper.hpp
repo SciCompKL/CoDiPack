@@ -67,11 +67,11 @@ struct TestEnzymeExternalFunctionHelper : public TestInterface {
         // TODO: Remove second order restriction when https://github.com/EnzymeAD/Enzyme/issues/1308 is fixed.
 #if CODI_EnableEnzyme & REVERSE_TAPE & !SECOND_ORDER
         eh.addInput(x[1]);
-        eh.addInput(w[i-1]);
+        eh.addInput(w[i - 1]);
         eh.addOutput(w[i]);
         eh.template callAndAddToTape<mult<typename Number::Real>>();
 #else
-        w[i] = x[1] * w[i-1];
+        w[i] = x[1] * w[i - 1];
 #endif
       }
 
