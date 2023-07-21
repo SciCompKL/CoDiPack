@@ -59,7 +59,7 @@ else
   $(warning ENZYME_DIR not defined. Testing without Enzyme.)
 endif
 
-FLAGS = -Wall -Werror=return-type -Wextra -pedantic -std=c++11 -DCODI_IgnoreInvalidJacobians=true -DCODI_EnableAssert=true -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -fopenmp -I$(INCLUDE_DIR) $(CODI_INCLUDE) $(EIGEN_DEFINE) $(ENZYME_DEFINE) -DCODI_ChunkSize=32 -DCODI_SmallChunkSize=32
+FLAGS = -Wall -Werror=return-type -Wextra -pedantic -std=c++11 -DCODI_IgnoreInvalidJacobians=true -DCODI_EnableAssert=true -DCODI_ADWorkflowEvents -DCODI_PreaccEvents -DCODI_StatementEvents -DCODI_IndexEvents -I$(INCLUDE_DIR) $(CODI_INCLUDE) $(EIGEN_DEFINE) $(ENZYME_DEFINE) -DCODI_ChunkSize=32 -DCODI_SmallChunkSize=32
 
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
