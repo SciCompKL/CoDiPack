@@ -125,10 +125,6 @@ $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) $(CXX_FLAGS) $< -c -o $@
 	@$(CXX) $(CXX_FLAGS) $< -MM -MP -MT $@ -MF $@.d
 
-$(BUILD_DIR)/%.exe :
-	@mkdir -p $(@D)
-	$(CXX) $(CXX_FLAGS) $^ -o $@
-
 # Update rule for dependency on TESTS parameter
 CREATE_CONFID := $(shell mkdir -p $(BUILD_DIR) && touch -a $(CONFID))
 
@@ -164,7 +160,10 @@ $(BUILD_DIR)/allTests.hpp: $(INCLUDE_DIR)/tests/allTests.hpp $(BUILD_DIR)/conf.d
 
 # output dependencies and rule
 $(BUILD_DIR)/listAllNames.o : $(BUILD_DIR)/allTests.hpp
+
 $(BUILD_DIR)/compare.exe : $(BUILD_DIR)/compare.o $(BUILD_DIR)/compareFiles.o $(BUILD_DIR)/listAllNames.o
+	@mkdir -p $(@D)
+	$(CXX) $(CXX_FLAGS) $^ -o $@
 
 
 .PHONY: output
