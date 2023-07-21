@@ -519,12 +519,12 @@ namespace codi {
                                                 Identifier const* const rhsIdentifiers) {
         size_t endJacobianPos = curJacobianPos - numberOfArguments;
 
-        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) {
-          while (endJacobianPos < curJacobianPos) {
+        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) CODI_Likely {
+          while (endJacobianPos < curJacobianPos) CODI_Likely {
             curJacobianPos -= 1;
             adjointVector[rhsIdentifiers[curJacobianPos]] += rhsJacobians[curJacobianPos] * lhsAdjoint;
           }
-        } else {
+        } else CODI_Unlikely {
           curJacobianPos = endJacobianPos;
         }
       }
@@ -551,7 +551,7 @@ namespace codi {
                                                 Identifier const* const rhsIdentifiers) {
         size_t endJacobianPos = curJacobianPos + numberOfArguments;
 
-        while (curJacobianPos < endJacobianPos) {
+        while (curJacobianPos < endJacobianPos) CODI_Likely {
           lhsAdjoint += rhsJacobians[curJacobianPos] * adjointVector[rhsIdentifiers[curJacobianPos]];
           curJacobianPos += 1;
         }

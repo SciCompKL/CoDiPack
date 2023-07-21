@@ -128,7 +128,7 @@ namespace codi {
           EvalHandle const* const stmtEvalhandle) {
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
-        while (curStatementPos < endStatementPos) {
+        while (curStatementPos < endStatementPos) CODI_Likely {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
           Gradient lhsTangent = Gradient();
@@ -171,7 +171,7 @@ namespace codi {
           EvalHandle const* const stmtEvalhandle) {
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
-        while (curStatementPos < endStatementPos) {
+        while (curStatementPos < endStatementPos) CODI_Likely {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
           oldPrimalValues[curStatementPos] = primalVector[lhsIdentifier];
@@ -202,7 +202,7 @@ namespace codi {
           EvalHandle const* const stmtEvalhandle) {
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
-        while (curStatementPos > endStatementPos) {
+        while (curStatementPos > endStatementPos) CODI_Likely {
           curStatementPos -= 1;
 
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];

@@ -612,7 +612,7 @@ namespace codi {
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsTangent);
 
-            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) CODI_Likely {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateTangentWithLhs(node.getIdentifier(), jacobian);
 #else
@@ -670,7 +670,7 @@ namespace codi {
                                                   ADJOINT_VECTOR_TYPE* adjointVector) {
             CODI_UNUSED(lhsAdjoint);
 
-            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
+            if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) CODI_Likely {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
               adjointVector->updateAdjointWithLhs(node.getIdentifier(), jacobian);
 #else
@@ -1286,9 +1286,9 @@ namespace codi {
         curRhsIdentifiersPos -= maxActiveArgs;
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
-        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !adjointVector->isLhsZero())) {
+        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !adjointVector->isLhsZero())) CODI_Likely {
 #else
-        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) {
+        if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) CODI_Likely {
 #endif
           for (Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
             primalVector[curPos] = passiveValues[curPassivePos + curPos];

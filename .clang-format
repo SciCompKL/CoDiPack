@@ -6,6 +6,7 @@ AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
+AttributeMacros: ['CODI_Likely', 'CODI_Unlikely']
 BreakBeforeBraces: Attach
 ColumnLimit: 120
 EmptyLineAfterAccessModifier: Leave
