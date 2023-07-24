@@ -266,6 +266,8 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement)
+      /// <br> Implementation: Automatic adjoints management only involves bounds checking and resizing. Primal value
+      /// tapes do not implement adjoints locking.
       CODI_INLINE Gradient& gradient(Identifier const& identifier,
                                      AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         if (AdjointsManagement::Automatic == adjointsManagement) {
@@ -276,6 +278,8 @@ namespace codi {
       }
 
       /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement) const
+      /// <br> Implementation: Automatic adjoints management only involves bounds checking. Primal value tapes do not
+      /// implement adjoints locking.
       CODI_INLINE Gradient const& gradient(
           Identifier const& identifier, AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
         if (AdjointsManagement::Automatic == adjointsManagement && identifier >= (Identifier)adjoints.size()) {
@@ -512,6 +516,8 @@ namespace codi {
       }
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints(AdjointsManagement)
+      /// <br> Implementation: Automatic adjoints management has no effect. Primal value tapes do not implement adjoints
+      /// locking.
       CODI_INLINE void clearAdjoints(AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         CODI_UNUSED(adjointsManagement);
 
@@ -521,6 +527,8 @@ namespace codi {
       }
 
       /// \copydoc codi::ReverseTapeInterface::reset()
+      /// <br> Implementation: Automatic adjoints management has no effect. Primal value tapes do not implement adjoints
+      /// locking.
       CODI_INLINE void reset(bool resetAdjoints = true,
                              AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         CODI_UNUSED(adjointsManagement);
@@ -761,9 +769,11 @@ namespace codi {
       }
 
       /// \copydoc codi::DataManagementTapeInterface::beginUseAdjointVector()
+      /// <br> Implementation: Empty since primal value tapes do not implement adjoints locking.
       void beginUseAdjointVector() {}
 
       /// \copydoc codi::DataManagementTapeInterface::endUseAdjointVector()
+      /// <br> Implementation: Empty since primal value tapes do not implement adjoints locking.
       void endUseAdjointVector() {}
 
       /// \copydoc codi::DataManagementTapeInterface::getParameter()
@@ -859,6 +869,8 @@ namespace codi {
       using Base::evaluateForward;
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
+      /// <br> Implementation: Automatic adjoints management only involves bounds checking and resizing. Primal value
+      /// tapes do not implement adjoints locking.
       void evaluateForward(Position const& start, Position const& end,
                            AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         if (AdjointsManagement::Automatic == adjointsManagement) {
@@ -1050,6 +1062,8 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::evaluate()
+      /// <br> Implementation: Automatic adjoints management only involves bounds checking and resizing. Primal value
+      /// tapes do not implement adjoints locking.
       CODI_INLINE void evaluate(Position const& start, Position const& end,
                                 AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         if (AdjointsManagement::Automatic == adjointsManagement) {
@@ -1059,11 +1073,14 @@ namespace codi {
         evaluate(start, end, adjoints.data());
       }
 
-      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
-      CODI_INLINE void resetTo(Position const& pos) {
+      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo(Position const&, bool, AdjointsManagement)
+      /// <br> Implementation: Automatic adjoints management has no effect. Primal value tapes do not implement adjoints
+      /// locking.
+      CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true,
+                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         cast().internalResetPrimalValues(pos);
 
-        Base::resetTo(pos);
+        Base::resetTo(pos, resetAdjoints, adjointsManagement);
       }
 
       /// @}
@@ -1072,6 +1089,8 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
+      /// <br> Implementation: Automatic adjoints management only involves bounds checking and resizing. Primal value
+      /// tapes do not implement adjoints locking.
       void evaluateKeepState(Position const& start, Position const& end,
                              AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         if (AdjointsManagement::Automatic == adjointsManagement) {
@@ -1086,6 +1105,8 @@ namespace codi {
       }
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
+      /// <br> Implementation: Automatic adjoints management only involves bounds checking and resizing. Primal value
+      /// tapes do not implement adjoints locking.
       void evaluateForwardKeepState(Position const& start, Position const& end,
                                     AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         if (AdjointsManagement::Automatic == adjointsManagement) {

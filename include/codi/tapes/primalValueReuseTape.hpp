@@ -88,6 +88,8 @@ namespace codi {
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
+      /// <br> Implementation: Automatic adjoints management has no effect. Primal value tapes do not implement adjoints
+      /// locking.
       void clearAdjoints(Position const& start, Position const& end,
                          AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         CODI_UNUSED(adjointsManagement);
