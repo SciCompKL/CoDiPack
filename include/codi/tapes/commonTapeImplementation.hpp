@@ -155,11 +155,12 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
-      CODI_INLINE void resetInternal(bool resetAdjoints, EventHints::Reset kind) {
+      CODI_INLINE void resetInternal(bool resetAdjoints, AdjointsBoundsChecking boundsChecking,
+                                     EventHints::Reset kind) {
         EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), kind, resetAdjoints);
 
         if (resetAdjoints) {
-          cast().clearAdjoints();
+          cast().clearAdjoints(boundsChecking);
         }
 
         deleteExternalFunctionUserData(cast().getZeroPosition());
@@ -251,11 +252,11 @@ namespace codi {
       /// @name Functions from ReverseTapeInterface
       /// @{
 
-      /// \copydoc codi::ReverseTapeInterface::evaluate()
-      void evaluate() {
+      /// \copydoc codi::ReverseTapeInterface::evaluate(AdjointsBoundsChecking)
+      void evaluate(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
         Impl& impl = cast();
 
-        impl.evaluate(impl.getPosition(), impl.getZeroPosition());
+        impl.evaluate(impl.getPosition(), impl.getZeroPosition(), boundsChecking);
       }
 
       /// \copydoc codi::ReverseTapeInterface::registerOutput()
@@ -311,9 +312,10 @@ namespace codi {
         return values;
       }
 
-      /// \copydoc codi::ReverseTapeInterface::reset()
-      CODI_INLINE void reset(bool resetAdjoints = true) {
-        resetInternal(resetAdjoints, EventHints::Reset::Full);
+      /// \copydoc codi::ReverseTapeInterface::reset(bool, AdjointsBoundsChecking)
+      CODI_INLINE void reset(bool resetAdjoints = true,
+                             AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        resetInternal(resetAdjoints, boundsChecking, EventHints::Reset::Full);
       }
 
       // clearAdjoints and reset(Position) are not implemented.
@@ -335,7 +337,7 @@ namespace codi {
         Impl& impl = cast();
 
         // First perform a regular reset.
-        resetInternal(false, EventHints::Reset::Hard);
+        resetInternal(false, AdjointsBoundsChecking::True, EventHints::Reset::Hard);
 
         // Then perform the hard resets.
         impl.deleteAdjointVector();
@@ -447,10 +449,10 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
-      void evaluateForward() {
+      void evaluateForward(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
         Impl& impl = cast();
 
-        impl.evaluateForward(impl.getZeroPosition(), impl.getPosition());
+        impl.evaluateForward(impl.getZeroPosition(), impl.getPosition(), boundsChecking);
       }
 
       /// @}
@@ -515,13 +517,14 @@ namespace codi {
 
       /// @{
 
-      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo(Position const&, bool)
-      CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true) {
+      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo(Position const&, bool, AdjointsBoundsChecking)
+      CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true,
+                               AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
         EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, EventHints::Reset::To, resetAdjoints);
 
         if (resetAdjoints) {
           Impl& impl = cast();
-          impl.clearAdjoints(impl.getPosition(), pos);
+          impl.clearAdjoints(impl.getPosition(), pos, boundsChecking);
         }
 
         deleteExternalFunctionUserData(pos);

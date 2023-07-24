@@ -71,6 +71,6 @@ namespace codi {
                            AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
 
       /// Perform a forward evaluation of the full tape.
-      void evaluateForward();
+      void evaluateForward(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
   };
 }

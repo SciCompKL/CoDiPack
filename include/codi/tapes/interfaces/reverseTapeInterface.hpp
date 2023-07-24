@@ -41,6 +41,7 @@
 #include "../../misc/macros.hpp"
 #include "../../traits/expressionTraits.hpp"
 #include "../../traits/realTraits.hpp"
+#include "../misc/tapeParameters.hpp"
 #include "../misc/tapeValues.hpp"
 #include "gradientAccessTapeInterface.hpp"
 #include "internalStatementRecordingTapeInterface.hpp"
@@ -64,6 +65,10 @@ namespace codi {
    * setActive() and setPassive(). A call to setActive() does not reset the tape in CoDiPack. A reset can only be
    * performed by a call to reset(). Hence, the user may skip unnecessarys parts of the recording by setting the tape
    * passive for these regions.
+   *
+   * Some methods in this interface perform bounds checking and/or adjoints locking by default. If the access is out of
+   * bounds, the adjoints are resized. See codi::AdjointsBoundsChecking for reasons to disable bounds checking and
+   * resultant responsibilities of the caller.
    *
    * Here is an example for using a tape (documentation/examples/reverseModeAD.cpp):
    * \snippet examples/reverseModeAD.cpp Reverse mode AD
@@ -105,19 +110,21 @@ namespace codi {
       /*******************************************************************************/
       /// @name Reversal
 
-      void evaluate();  ///< Perform a full reverse evaluation of the tape.
+      /// Perform a full reverse evaluation of the tape.
+      void evaluate(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
 
       /*******************************************************************************/
       /// @name Reset
 
-      void clearAdjoints();  ///< Clear all adjoint values, that is, set them to zero.
+      /// Clear all adjoint values, that is, set them to zero.
+      void clearAdjoints(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
 
       /**
        * @brief Reset the tape to the initial state for a fresh recording.
        *
        * See \ref Tutorial_05_Repeated_tape_recordings for remarks on repeated tape recording in CoDiPack.
        */
-      void reset(bool resetAdjoints = true);
+      void reset(bool resetAdjoints = true, AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
 
       /*******************************************************************************/
       /// @name Tape information

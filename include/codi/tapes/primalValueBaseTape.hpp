@@ -511,15 +511,20 @@ namespace codi {
         EventSystem<Impl>::notifyTapeRegisterInputListeners(cast(), value.cast().value(), value.cast().getIdentifier());
       }
 
-      /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
-      CODI_INLINE void clearAdjoints() {
+      /// \copydoc codi::ReverseTapeInterface::clearAdjoints(AdjointsBoundsChecking)
+      CODI_INLINE void clearAdjoints(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        CODI_UNUSED(boundsChecking);
+
         for (Gradient& gradient : adjoints) {
           gradient = Gradient();
         }
       }
 
       /// \copydoc codi::ReverseTapeInterface::reset()
-      CODI_INLINE void reset(bool resetAdjoints = true) {
+      CODI_INLINE void reset(bool resetAdjoints = true,
+                             AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        CODI_UNUSED(boundsChecking);
+
         for (Real& primal : primals) {
           primal = Real();
         }

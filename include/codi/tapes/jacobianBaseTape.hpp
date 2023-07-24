@@ -461,7 +461,9 @@ namespace codi {
       }
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
-      CODI_INLINE void clearAdjoints() {
+      CODI_INLINE void clearAdjoints(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+        CODI_UNUSED(boundsChecking);
+
         adjoints.zeroAll();
       }
 

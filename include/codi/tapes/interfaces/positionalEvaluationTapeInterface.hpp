@@ -79,6 +79,8 @@ namespace codi {
       Position getPosition() const;      ///< Current position of the tape.
       Position getZeroPosition() const;  ///< Initial position of the tape.
 
-      void resetTo(Position const& pos, bool resetAdjoints = true);  ///< Reset the tape to the provided position.
+      /// Reset the tape to the provided position.
+      void resetTo(Position const& pos, bool resetAdjoints = true,
+                   AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
   };
 }
