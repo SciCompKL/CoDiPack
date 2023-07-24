@@ -53,10 +53,6 @@ namespace codi {
    * Here is an example for a positional tape evaluation (\ref Example_03_Positional_tape_evaluations):
    * \snippet examples/Example_03_Positional_tape_evaluations.cpp Positional evaluation
    *
-   * Some methods in this interface perform bounds checking and/or adjoints locking by default. If the access is out of
-   * bounds, the adjoints are resized. See codi::AdjointsBoundsChecking for reasons to disable bounds checking and
-   * resultant responsibilities of the caller.
-   *
    * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
    */
   template<typename T_Position>
@@ -68,19 +64,33 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// Perform a reverse evaluation for a part of the tape. It hast to hold start >= end.
+      /**
+       * @brief Perform a reverse evaluation for a part of the tape. It hast to hold start >= end.
+       *
+       * Automatic adjoints management involves bounds checking, resizing, and locking, see AdjointsManagement for
+       * details.
+       */
       void evaluate(Position const& start, Position const& end,
-                    AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
+                    AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
-      /// Clear all adjoints that would be set in a tape evaluation from start to end. It has to hold start >= end.
+      /**
+       * @brief Clear all adjoints that would be set in a tape evaluation from start to end. It has to hold start >=
+       * end.
+       *
+       * Automatic adjoints management involves locking, see AdjointsManagement for details.
+       */
       void clearAdjoints(Position const& start, Position const& end,
-                         AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       Position getPosition() const;      ///< Current position of the tape.
       Position getZeroPosition() const;  ///< Initial position of the tape.
 
-      /// Reset the tape to the provided position.
+      /**
+       * @brief Reset the tape to the provided position.
+       *
+       * Automatic adjoints management involves locking, see AdjointsManagement for details.
+       */
       void resetTo(Position const& pos, bool resetAdjoints = true,
-                   AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
+                   AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
   };
 }

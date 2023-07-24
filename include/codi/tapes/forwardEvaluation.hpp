@@ -160,12 +160,12 @@ namespace codi {
         return identifier;
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsBoundsChecking)
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement)
       Gradient& gradient(Identifier& identifier) {
         return identifier;
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsBoundsChecking) const
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement) const
       Gradient const& gradient(Identifier const& identifier) const {
         return identifier;
       }

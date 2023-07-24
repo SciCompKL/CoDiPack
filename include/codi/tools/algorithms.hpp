@@ -148,51 +148,51 @@ namespace codi {
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
           for (size_t j = 0; j < inputSize; j += gradDim) {
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0), AdjointsBoundsChecking::False);
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
 
             if (keepState) {
-              tape.evaluateForwardKeepState(start, end, AdjointsBoundsChecking::False);
+              tape.evaluateForwardKeepState(start, end, AdjointsManagement::Manual);
             } else {
-              tape.evaluateForward(start, end, AdjointsBoundsChecking::False);
+              tape.evaluateForward(start, end, AdjointsManagement::Manual);
             }
 
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
                 jac(outputSize - i - 1, j + curDim) =
-                    GT::at(tape.getGradient(output[outputSize - i - 1], AdjointsBoundsChecking::False), curDim);
+                    GT::at(tape.getGradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim);
                 if (Gradient() != output[i]) {
-                  GT::at(tape.gradient(output[outputSize - i - 1], AdjointsBoundsChecking::False), curDim) =
+                  GT::at(tape.gradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim) =
                       typename GT::Real();
                 }
               }
             }
 
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), AdjointsBoundsChecking::False);
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), AdjointsManagement::Manual);
           }
 
-          tape.clearAdjoints(end, start, AdjointsBoundsChecking::False);
+          tape.clearAdjoints(end, start, AdjointsManagement::Manual);
 
         } else if (EvaluationType::Reverse == evalType) {
           for (size_t i = 0; i < outputSize; i += gradDim) {
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0), AdjointsBoundsChecking::False);
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
 
             if (keepState) {
-              tape.evaluateKeepState(end, start, AdjointsBoundsChecking::False);
+              tape.evaluateKeepState(end, start, AdjointsManagement::Manual);
             } else {
-              tape.evaluate(end, start, AdjointsBoundsChecking::False);
+              tape.evaluate(end, start, AdjointsManagement::Manual);
             }
 
             for (size_t j = 0; j < inputSize; j += 1) {
               for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
-                jac(i + curDim, j) = GT::at(tape.getGradient(input[j], AdjointsBoundsChecking::False), curDim);
-                GT::at(tape.gradient(input[j], AdjointsBoundsChecking::False), curDim) = typename GT::Real();
+                jac(i + curDim, j) = GT::at(tape.getGradient(input[j], AdjointsManagement::Manual), curDim);
+                GT::at(tape.gradient(input[j], AdjointsManagement::Manual), curDim) = typename GT::Real();
               }
             }
 
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), AdjointsBoundsChecking::False);
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), AdjointsManagement::Manual);
 
             if (!Config::ReversalZeroesAdjoints) {
-              tape.clearAdjoints(end, start, AdjointsBoundsChecking::False);
+              tape.clearAdjoints(end, start, AdjointsManagement::Manual);
             }
           }
         } else {
@@ -540,12 +540,12 @@ namespace codi {
       template<typename T>
       static CODI_INLINE void setGradientOnIdentifier(
           Tape& tape, size_t const pos, Identifier const* identifiers, size_t const size, T value,
-          AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
+          AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim])) {
-            GT::at(tape.gradient(identifiers[pos + curDim], boundsChecking), curDim) = value;
+            GT::at(tape.gradient(identifiers[pos + curDim], adjointsManagement), curDim) = value;
           }
         }
       }

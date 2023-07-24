@@ -92,8 +92,8 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end,
-                         AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True) {
-        if (AdjointsBoundsChecking::True == boundsChecking) {
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        if (AdjointsManagement::Automatic == adjointsManagement) {
           this->adjoints.beginUse();
         }
 
@@ -113,7 +113,7 @@ namespace codi {
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
 
-        if (AdjointsBoundsChecking::True == boundsChecking) {
+        if (AdjointsManagement::Automatic == adjointsManagement) {
           this->adjoints.endUse();
         }
       }

@@ -64,18 +64,33 @@ namespace codi {
   };
 
   /**
-   * @brief Policies for adjoint vector bounds checking, e.g, when accessing adjoint or evaluating tapes.
+   * @brief Policies for management of the tape's interal adjoints.
    *
-   * For the convenience of the user, functions that use the adjoints perform automatic bounds checking and, if needed,
-   * resize the adjoints accordingly. This is a good solution for a serial setting. With thread-safe adjoints, e.g.,
-   * ThreadSafeGlobalAdjoints, bounds checking involves setting locks even if the access is within bounds. This can be a
-   * bottleneck. Therefore, some functions offer an AdjointsBoundsChecking argument to disable bounds checking. The
-   * caller has to ensure that the adjoints are large enough, for example by calling
-   * DataManagementTapeInterface::resizeAdjointVector. Also, the caller is responsible for corresponding adjoint locking
-   * via DataManagementTapeInterface::beginUseAdjoints and DataManagementTapeInterface::endUseAdjoints.
+   * For the convenience of the user, tapes manage their internal adjoints automatically, which involves multiple
+   * tasks. AdjointsManagement::Manual indicates that non of these tasks is performed - they are the responsibility of
+   * the caller instead. Functions that take an AdjointsManagement parameter default to AdjointsManagement::Automatic
+   * and document the individual effects of AdjointsManagement::Manual. An overview over all possible effects is given
+   * below.
+   *
+   * <b>Bounds checking.</b> The function accesses the adjoints. In the automatic mode, it checks whether the
+   * adjoints are sufficiently large. If they are not, they might be <b>resized</b> or the
+   * function might work on or return <b>dummy values</b>. To optimize the memory usage and/or reduce the number of
+   * reallocations, AdjointsManagement::Manual can be used to skip bounds checking and resizing. It is the
+   * responsibility of the caller to ensure sufficient adjoints size, for example by calls to
+   * DataManagementTapeInterface::resizeAdjointVector.
+   *
+   * <b>Declaration of adjoints usage (locking).</b> If a tape implements it adjoints against
+   * InternalAdjointsInterface, it keeps track of whether the adjoint vector is in use, which is for example the case
+   * during tape evaluations. This is to ensure mutual exclusion with reallocations, this is particularly important in
+   * shared-memory parallel taping, see also ThreadSafeGlobalAdjoints. Declaration of usage involves setting a lock,
+   * which can become a bottleneck if it is done frequently. To optimize the performance, multiple operations can be
+   * grouped into a single usage declaration, by surrounding them by manual
+   * DataManagementTapeInterface::beginUseAdjoints and DataManagementTapeInterface::endUseAdjoints calls and invoking
+   * them with AdjointsManagement::Manual. Note that any method that results in adjoint vector resizing must be called
+   * outside usage declarations, otherwise there would be a deadlock.
    */
-  enum class AdjointsBoundsChecking {
-    False,  ///< Do not perform any bounds checking. In particular,
-    True    ///< Perform bounds checking. It may involve side effects, such as adjoints resizing.
+  enum class AdjointsManagement {
+    Manual,    ///< Do not perform any bounds checking, locking, or resizing.
+    Automatic  ///< Manage internal adjoints automatically, including locking, bounds checking, and resizing.
   };
 }

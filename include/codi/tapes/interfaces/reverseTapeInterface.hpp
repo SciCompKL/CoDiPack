@@ -66,10 +66,6 @@ namespace codi {
    * performed by a call to reset(). Hence, the user may skip unnecessarys parts of the recording by setting the tape
    * passive for these regions.
    *
-   * Some methods in this interface perform bounds checking and/or adjoints locking by default. If the access is out of
-   * bounds, the adjoints are resized. See codi::AdjointsBoundsChecking for reasons to disable bounds checking and
-   * resultant responsibilities of the caller.
-   *
    * Here is an example for using a tape (documentation/examples/reverseModeAD.cpp):
    * \snippet examples/reverseModeAD.cpp Reverse mode AD
    *
@@ -110,21 +106,32 @@ namespace codi {
       /*******************************************************************************/
       /// @name Reversal
 
-      /// Perform a full reverse evaluation of the tape.
-      void evaluate(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
+      /**
+       * @brief Perform a full reverse evaluation of the tape.
+       *
+       * Automatic adjoints management involves bounds checking, resizing, and locking, see AdjointsManagement for
+       * details.
+       */
+      void evaluate(AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       /*******************************************************************************/
       /// @name Reset
 
-      /// Clear all adjoint values, that is, set them to zero.
-      void clearAdjoints(AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
+      /**
+       * @brief Clear all adjoint values, that is, set them to zero.
+       *
+       * Automatic adjoints management involves locking, see AdjointsManagement for details.
+       */
+      void clearAdjoints(AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       /**
        * @brief Reset the tape to the initial state for a fresh recording.
        *
        * See \ref Tutorial_05_Repeated_tape_recordings for remarks on repeated tape recording in CoDiPack.
+       *
+       * Automatic adjoints management involves locking, see AdjointsManagement for details.
        */
-      void reset(bool resetAdjoints = true, AdjointsBoundsChecking boundsChecking = AdjointsBoundsChecking::True);
+      void reset(bool resetAdjoints = true, AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       /*******************************************************************************/
       /// @name Tape information
