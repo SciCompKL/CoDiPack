@@ -37,6 +37,7 @@
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../misc/exceptions.hpp"
+#include "../tapes/misc/tapeParameters.hpp"
 #include "../traits/gradientTraits.hpp"
 #include "data/dummy.hpp"
 #include "data/jacobian.hpp"
@@ -130,76 +131,71 @@ namespace codi {
        * The algorithm conforms with the mechanism for mutual exclusion of adjoint vector usage and adjoint vector
        * reallocation and can therefore be applied in multithreaded taping.
        *
+       * In the case of manual adjoints management, the caller is responsible for ensuring sufficient adjoint vector
+       * size and for declaring usage of the adjoints, see codi::AdjointsManagement for details.
+       *
        * #### Parameters
        * [in,out] __jac__  Has to implement JacobianInterface.
        */
       template<typename Jac, bool keepState = true>
       static CODI_INLINE void computeJacobian(Tape& tape, Position const& start, Position const& end,
                                               Identifier const* input, size_t const inputSize, Identifier const* output,
-                                              size_t const outputSize, Jac& jac) {
+                                              size_t const outputSize, Jac& jac,
+                                              AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         size_t constexpr gradDim = GT::dim;
-
-        // Resize up front for subsequent gradient access without bounds checking and implicit resizing.
-        tape.resizeAdjointVector();
-
-        // Declare adjoint vector usage. Throughout, avoid bounds checking and implicit resizing.
-        tape.beginUseAdjointVector();
 
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
           for (size_t j = 0; j < inputSize; j += gradDim) {
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0), adjointsManagement);
 
             if (keepState) {
-              tape.evaluateForwardKeepState(start, end, AdjointsManagement::Manual);
+              tape.evaluateForwardKeepState(start, end, adjointsManagement);
             } else {
-              tape.evaluateForward(start, end, AdjointsManagement::Manual);
+              tape.evaluateForward(start, end, adjointsManagement);
             }
 
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
                 jac(outputSize - i - 1, j + curDim) =
-                    GT::at(tape.getGradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim);
+                    GT::at(tape.getGradient(output[outputSize - i - 1], adjointsManagement), curDim);
                 if (Gradient() != output[i]) {
-                  GT::at(tape.gradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim) =
-                      typename GT::Real();
+                  GT::at(tape.gradient(output[outputSize - i - 1], adjointsManagement), curDim) = typename GT::Real();
                 }
               }
             }
 
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), AdjointsManagement::Manual);
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), adjointsManagement);
           }
 
-          tape.clearAdjoints(end, start, AdjointsManagement::Manual);
+          tape.clearAdjoints(end, start, adjointsManagement);
 
         } else if (EvaluationType::Reverse == evalType) {
           for (size_t i = 0; i < outputSize; i += gradDim) {
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0), adjointsManagement);
 
             if (keepState) {
-              tape.evaluateKeepState(end, start, AdjointsManagement::Manual);
+              tape.evaluateKeepState(end, start, adjointsManagement);
             } else {
-              tape.evaluate(end, start, AdjointsManagement::Manual);
+              tape.evaluate(end, start, adjointsManagement);
             }
 
             for (size_t j = 0; j < inputSize; j += 1) {
               for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
-                jac(i + curDim, j) = GT::at(tape.getGradient(input[j], AdjointsManagement::Manual), curDim);
-                GT::at(tape.gradient(input[j], AdjointsManagement::Manual), curDim) = typename GT::Real();
+                jac(i + curDim, j) = GT::at(tape.getGradient(input[j], adjointsManagement), curDim);
+                GT::at(tape.gradient(input[j], adjointsManagement), curDim) = typename GT::Real();
               }
             }
 
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), AdjointsManagement::Manual);
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), adjointsManagement);
 
             if (!Config::ReversalZeroesAdjoints) {
-              tape.clearAdjoints(end, start, AdjointsManagement::Manual);
+              tape.clearAdjoints(end, start, adjointsManagement);
             }
           }
         } else {
           CODI_EXCEPTION("Evaluation mode not implemented. Mode is: %d.", (int)evalType);
         }
-
-        tape.endUseAdjointVector();
       }
 
       // clang-format off
@@ -210,8 +206,9 @@ namespace codi {
       template<typename Jac>
       static CODI_INLINE void computeJacobian(Position const& start, Position const& end, Identifier const* input,
                                               size_t const inputSize, Identifier const* output, size_t const outputSize,
-                                              Jac& jac) {
-        computeJacobian(Type::getTape(), start, end, input, inputSize, output, outputSize, jac);
+                                              Jac& jac,
+                                              AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        computeJacobian(Type::getTape(), start, end, input, inputSize, output, outputSize, jac, adjointsManagement);
       }
 
       /**
