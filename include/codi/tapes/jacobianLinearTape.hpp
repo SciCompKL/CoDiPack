@@ -85,7 +85,9 @@ namespace codi {
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
       void clearAdjoints(Position const& start, Position const& end,
                          AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-        CODI_UNUSED(adjointsManagement);
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          this->adjoints.beginUse();
+        }
 
         using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
@@ -96,6 +98,10 @@ namespace codi {
 
         for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
           this->adjoints[curPos] = Gradient();
+        }
+
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          this->adjoints.endUse();
         }
       }
 

@@ -462,9 +462,15 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::clearAdjoints()
       CODI_INLINE void clearAdjoints(AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-        CODI_UNUSED(adjointsManagement);
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          adjoints.beginUse();
+        }
 
         adjoints.zeroAll();
+
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          adjoints.endUse();
+        }
       }
 
       /// @}

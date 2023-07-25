@@ -109,7 +109,6 @@ namespace codi {
 
       /// \copydoc InternalAdjointsInterface::zeroAll
       CODI_INLINE void zeroAll() {
-        LockForUse lock(adjointsMutex);
         for (Gradient& gradient : adjoints) {
           gradient = Gradient();
         }
