@@ -36,6 +36,7 @@
 
 #include "../../config.h"
 #include "../../misc/macros.hpp"
+#include "../misc/tapeParameters.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -59,12 +60,6 @@ namespace codi {
    * (documentation/examples/gradientAccessTapeInterface.cpp):
    * \snippet examples/gradientAccessTapeInterface.cpp Gradient Access
    *
-   * All methods in this class perform bounds checking by default. If the access is out of bounds, the adjoints are
-   * either resized or a reference to a dummy value is returned. With thread-safe adjoints, e.g.,
-   * ThreadSafeGlobalAdjoints, bounds checking involves setting locks even if the access is within bounds. This can be a
-   * bottleneck. Therefore, bounds checking can be disabled. The user has to guarantee that the adjoint vector is large
-   * enough, for example by calling DataManagementTapeInterface::resizeAdjointVector.
-   *
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
    */
@@ -75,48 +70,43 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, double);   ///< See GradientAccessTapeInterface.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See GradientAccessTapeInterface.
 
-      /// Policies for bounds checking.
-      enum class BoundsChecking {
-        False,  ///< Do not perform any bounds checking.
-        True    ///< Perform bounds checking. It may involve side effects.
-      };
-
       /*******************************************************************************/
       /// @name Interface definition
 
       /**
        * @brief Set the gradient.
        *
-       * Unless specified otherwise via boundsChecking, bounds checking is performed. If the internal adjoint vector is
-       * not large enough for the given identifier, is is implicitly resized.
+       * Automatic adjoints management involves bounds checking, resizing, and locking, see AdjointsManagement for
+       * details.
        */
       void setGradient(Identifier const& identifier, Gradient const& gradient,
-                       BoundsChecking boundsChecking = BoundsChecking::True);
+                       AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       /**
        * @brief Set the gradient.
        *
-       * Unless specified otherwise via boundsChecking, bounds checking is performed. If no adjoint variable with the
-       * given identifier exists, returns a reference to adjoints[0].
+       * Automatic adjoints management involves bounds checking and locking. If no adjoint variable with the given
+       * identifier exists, a reference to adjoints[0] is returned. See AdjointsManagement for details.
        */
       Gradient const& getGradient(Identifier const& identifier,
-                                  BoundsChecking boundsChecking = BoundsChecking::True) const;
+                                  AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const;
 
       /**
        * @brief Reference access to gradient.
        *
-       * Unless specified otherwise via boundsChecking, bounds checking is performed. If the internal adjoint vector is
-       * not large enough for the given identifier, is is implicitly resized.
+       * Automatic adjoints management involves bounds checking, resizing, and locking, see AdjointsManagement for
+       * details.
        */
-      Gradient& gradient(Identifier const& identifier, BoundsChecking boundsChecking = BoundsChecking::True);
+      Gradient& gradient(Identifier const& identifier,
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       /**
        * @brief Constant reference access to gradient.
        *
-       * Unless specified otherwise via boundsChecking, bounds checking is performed. If no adjoint variable with the
-       * given identifier exists, returns a reference to adjoints[0].
+       * Automatic adjoints management involves bounds checking and locking. If no adjoint variable with the given
+       * identifier exists, a reference to adjoints[0] is returned. See AdjointsManagement for details.
        */
       Gradient const& gradient(Identifier const& identifier,
-                               BoundsChecking boundsChecking = BoundsChecking::True) const;
+                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const;
   };
 }

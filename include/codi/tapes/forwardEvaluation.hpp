@@ -151,22 +151,38 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::GradientAccessTapeInterface::setGradient()
-      void setGradient(Identifier& identifier, Gradient const& gradient) {
+      /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
+      /// adjoints.
+      void setGradient(Identifier& identifier, Gradient const& gradient,
+                       AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        CODI_UNUSED(adjointsManagement);
         identifier = gradient;
       }
 
       /// \copydoc codi::GradientAccessTapeInterface::getGradient()
-      Gradient const& getGradient(Identifier const& identifier) const {
+      /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
+      /// adjoints.
+      Gradient const& getGradient(Identifier const& identifier,
+                                  AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
+        CODI_UNUSED(adjointsManagement);
         return identifier;
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, BoundsChecking)
-      Gradient& gradient(Identifier& identifier) {
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement)
+      /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
+      /// adjoints.
+      Gradient& gradient(Identifier& identifier,
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        CODI_UNUSED(adjointsManagement);
         return identifier;
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&) const
-      Gradient const& gradient(Identifier const& identifier) const {
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement) const
+      /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
+      /// adjoints.
+      Gradient const& gradient(Identifier const& identifier,
+                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
+        CODI_UNUSED(adjointsManagement);
         return identifier;
       }
 

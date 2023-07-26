@@ -62,4 +62,35 @@ namespace codi {
                             ///<         value tapes.
     StatementSize           ///< [A: RW] Allocated number of entries in the statement vector in all tapes.
   };
+
+  /**
+   * @brief Policies for management of the tape's interal adjoints.
+   *
+   * For the convenience of the user, tapes manage their internal adjoints automatically, which involves multiple
+   * tasks. AdjointsManagement::Manual indicates that non of these tasks is performed - they are the responsibility of
+   * the caller instead. Functions that take an AdjointsManagement parameter default to AdjointsManagement::Automatic
+   * and document the individual effects of AdjointsManagement::Manual. An overview over all possible effects is given
+   * below.
+   *
+   * <b>Bounds checking.</b> The function accesses the adjoints. In the automatic mode, it checks whether the
+   * adjoints are sufficiently large. If they are not, they might be <b>resized</b> or the
+   * function might work on or return <b>dummy values</b>. To optimize the memory usage and/or reduce the number of
+   * reallocations, AdjointsManagement::Manual can be used to skip bounds checking and resizing. It is the
+   * responsibility of the caller to ensure sufficient adjoints size, for example by calls to
+   * DataManagementTapeInterface::resizeAdjointVector.
+   *
+   * <b>Declaration of adjoints usage (locking).</b> If a tape implements it adjoints against
+   * InternalAdjointsInterface, it keeps track of whether the adjoint vector is in use, which is for example the case
+   * during tape evaluations. This is to ensure mutual exclusion with reallocations, this is particularly important in
+   * shared-memory parallel taping, see also ThreadSafeGlobalAdjoints. Declaration of usage involves setting a lock,
+   * which can become a bottleneck if it is done frequently. To optimize the performance, multiple operations can be
+   * grouped into a single usage declaration, by surrounding them by manual
+   * DataManagementTapeInterface::beginUseAdjoints and DataManagementTapeInterface::endUseAdjoints calls and invoking
+   * them with AdjointsManagement::Manual. Note that any method that results in adjoint vector resizing must be called
+   * outside usage declarations, otherwise there would be a deadlock.
+   */
+  enum class AdjointsManagement {
+    Manual,    ///< Do not perform any bounds checking, locking, or resizing.
+    Automatic  ///< Manage internal adjoints automatically, including locking, bounds checking, and resizing.
+  };
 }

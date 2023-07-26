@@ -241,11 +241,18 @@ namespace codi {
           jacobian.resize(outputData.size(), inputData.size());
         }
 
+        // Manage adjoints manually to reduce the impact of locking on the performance.
+        tape.resizeAdjointVector();
+        tape.beginUseAdjointVector();
+
         Algorithms<Type, false>::computeJacobian(startPos, endPos, inputData.data(), inputData.size(),
-                                                 outputData.data(), outputData.size(), jacobian);
+                                                 outputData.data(), outputData.size(), jacobian,
+                                                 AdjointsManagement::Manual);
 
         // Store the Jacobian matrix.
-        tape.resetTo(startPos);
+        tape.resetTo(startPos, true, AdjointsManagement::Manual);
+
+        tape.endUseAdjointVector();
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
           Type& value = *outputValues[curOut];

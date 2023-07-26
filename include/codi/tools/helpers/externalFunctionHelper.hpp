@@ -145,8 +145,7 @@ namespace codi {
                 provideInputValues(true),
                 provideOutputValues(true),
                 getPrimalsFromPrimalValueVector(getPrimalsFromPrimalValueVector),
-                reallocatePrimalVectors(reallocatePrimalVectors)
-          {}
+                reallocatePrimalVectors(reallocatePrimalVectors) {}
 
           static void delFunc(Tape* t, void* d) {
             CODI_UNUSED(t);
@@ -253,7 +252,7 @@ namespace codi {
 
           CODI_INLINE void initRun(VectorAccessInterface<Real, Identifier>* ra, bool isReverse = false) {
             if (getPrimalsFromPrimalValueVector && provideOutputValues) {
-              if(reallocatePrimalVectors) {
+              if (reallocatePrimalVectors) {
                 outputValues.resize(outputIndices.size());
               }
 
@@ -272,7 +271,7 @@ namespace codi {
             }
 
             if (getPrimalsFromPrimalValueVector && provideInputValues) {
-              if(reallocatePrimalVectors) {
+              if (reallocatePrimalVectors) {
                 inputValues.resize(inputIndices.size());
               }
 
@@ -292,7 +291,7 @@ namespace codi {
               }
             }
 
-            if(reallocatePrimalVectors) {
+            if (reallocatePrimalVectors) {
               if (getPrimalsFromPrimalValueVector && provideInputValues) {
                 inputValues.clear();
                 inputValues.shrink_to_fit();
@@ -309,13 +308,13 @@ namespace codi {
 
       std::vector<Type*> outputValues;  ///< References to output values.
 
-      bool storeInputPrimals;                    ///< If input primals are stored. Can be disabled by the user.
-      bool storeOutputPrimals;                   ///< If output primals are stored. Can be disabled by the user.
-      bool storeInputOutputForPrimalEval;        ///< If a primal call with a self-implemented function will be done.
-      bool reallocatePrimalVectors;              ///< If the primal vectors are reallocated every time the external
-                                                 ///< function is called
-      bool getPrimalValuesFromPrimalValueVector; ///< Extract primal values from the primal value vector each time the
-                                                 ///< external function is called.
+      bool storeInputPrimals;                     ///< If input primals are stored. Can be disabled by the user.
+      bool storeOutputPrimals;                    ///< If output primals are stored. Can be disabled by the user.
+      bool storeInputOutputForPrimalEval;         ///< If a primal call with a self-implemented function will be done.
+      bool reallocatePrimalVectors;               ///< If the primal vectors are reallocated every time the external
+                                                  ///< function is called
+      bool getPrimalValuesFromPrimalValueVector;  ///< Extract primal values from the primal value vector each time the
+                                                  ///< external function is called.
 
       EvalData* data;  ///< External function data.
 
@@ -351,7 +350,7 @@ namespace codi {
 
       /// Do not update the inputs and outputs from the primal values of the tape. Has no effect on Jacobian tapes.
       void disableRenewOfPrimalValues() {
-        if(IsPrimalValueTape) {
+        if (IsPrimalValueTape) {
           getPrimalValuesFromPrimalValueVector = false;
           data->getPrimalsFromPrimalValueVector = false;
         }

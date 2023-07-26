@@ -91,8 +91,12 @@ namespace codi {
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
-      void clearAdjoints(Position const& start, Position const& end) {
-        this->adjoints.beginUse();
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          this->adjoints.beginUse();
+        }
+
         Identifier adjointsSize = (Identifier)this->adjoints.size();
 
         auto clearFunc = [&adjointsSize, this](Identifier* index, Config::ArgumentSize* stmtSize) {
@@ -109,7 +113,9 @@ namespace codi {
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
 
-        this->adjoints.endUse();
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          this->adjoints.endUse();
+        }
       }
 
       /// @}

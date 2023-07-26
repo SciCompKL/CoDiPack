@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../misc/tapeParameters.hpp"
 #include "forwardEvaluationTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -77,11 +78,13 @@ namespace codi {
       template<typename Adjoint>
       void evaluate(Position const& start, Position const& end, Adjoint* data);
 
+      // clang-format off
       /**
-       * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(Position const&, Position const&)
+       * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(Position const&, Position const&, AdjointsManagement)
        *
        * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
+      // clang-format on
       template<typename Adjoint>
       void evaluateForward(Position const& start, Position const& end, Adjoint* data);
   };
