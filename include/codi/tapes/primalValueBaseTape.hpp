@@ -531,13 +531,11 @@ namespace codi {
       /// locking.
       CODI_INLINE void reset(bool resetAdjoints = true,
                              AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-        CODI_UNUSED(adjointsManagement);
-
         for (Real& primal : primals) {
           primal = Real();
         }
 
-        Base::reset(resetAdjoints);
+        Base::reset(resetAdjoints, adjointsManagement);
       }
 
       /// @}
