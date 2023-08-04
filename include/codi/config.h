@@ -62,6 +62,16 @@ namespace codi {
   namespace Config {
 
     /*******************************************************************************/
+    /// @name General compiler attributes.
+    /// @{
+
+/// See codi::Config::HasCpp20.
+#define CODI_HasCpp20 __cplusplus >= 202002L
+    /// If CoDiPack is compiled with C++20.
+    bool constexpr HasCpp20 = CODI_HasCpp20;
+
+    /// @}
+    /*******************************************************************************/
     /// @name Type and compile time value declarations
     /// @{
 
@@ -328,6 +338,25 @@ namespace codi {
     /*******************************************************************************/
     /// @name Macro definitions
     /// @{
+
+#ifndef CODI_AnnotateBranchLikelihood
+  /// See codi::Config::AnnotateBranchLikelihood.
+  #define CODI_AnnotateBranchLikelihood CODI_HasCpp20
+#endif
+#if CODI_AnnotateBranchLikelihood
+  /// Declare likely evaluation of an execution path.
+  #define CODI_Likely [[likely]]
+  /// Declare unlikely evaluation of an execution path.
+  #define CODI_Unlikely [[unlikely]]
+#else
+  /// Declare likely evaluation of an execution path.
+  #define CODI_Likely   /* empty */
+  /// Declare unlikely evaluation of an execution path.
+  #define CODI_Unlikely /* empty */
+#endif
+    /// Annotate branches with likely or unlikely, e.g., for if and else.
+    bool constexpr AnnotateBranchLikelihood = CODI_AnnotateBranchLikelihood;
+#undef CODI_AnnotateBranchLikelihood
 
 #ifndef CODI_AvoidedInlines
   /// See codi::Config::AvoidedInlines.

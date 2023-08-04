@@ -145,7 +145,7 @@ namespace codi {
           Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos);
 
-        while (curStmtPos < endStmtPos) {
+        while (curStmtPos < endStmtPos) CODI_Likely {
           Adjoint lhsAdjoint = Adjoint();
           Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
                                   rhsJacobians, rhsIdentifiers);
@@ -173,7 +173,7 @@ namespace codi {
           Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos);
 
-        while (curStmtPos > endStmtPos) {
+        while (curStmtPos > endStmtPos) CODI_Likely {
           curStmtPos -= 1;
 
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
