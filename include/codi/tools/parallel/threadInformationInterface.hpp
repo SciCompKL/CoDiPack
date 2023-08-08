@@ -56,4 +56,20 @@ namespace codi {
        */
       static CODI_INLINE int getThreadId();
   };
+
+  /**
+   * @brief Default implementation of ThreadInformationInterface for serial applications.
+   */
+  struct DefaultThreadInformation : public ThreadInformationInterface {
+    public:
+      /// \copydoc ThreadInformationInterface::getMaxThreads
+      static CODI_INLINE int getMaxThreads() {
+        return 1;
+      }
+
+      /// \copydoc ThreadInformationInterface::getThreadId
+      static CODI_INLINE int getThreadId() {
+        return 0;
+      }
+  };
 }
