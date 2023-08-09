@@ -43,6 +43,8 @@
 #include "../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../traits/tapeTraits.hpp"
 #include "../data/externalFunctionUserData.hpp"
+#include "../parallel/synchronizationInterface.hpp"
+#include "../parallel/threadInformationInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -83,14 +85,31 @@ namespace codi {
    * derivative computation or if the derivative does not depend on them. Inputs can be discarded if the derivative does
    * not depend on them.
    *
-   * @tparam T_Type  The CoDiPack type that is used outside of the external function.
+   * By means of the T_Synchronization and T_ThreadInformation template parameters, a thread-safe external function
+   * helper can be instantiated. The default instantiation yields an external function helper ready for serial
+   * applications, either in serial code or locally within threads. Non-default instantiations are required for external
+   * functions that multiple threads jointly work on. Shared data, such as external function inputs and outputs, are
+   * always prepared and finalized by one thread only, whereas the external function is worked on by all threads. All
+   * threads are synchronized between serial and parallel parts. An example is given in the in-code documentation of
+   * ExternalFunctionHelper::addToTape.
+   *
+   * @tparam T_Type               The CoDiPack type that is used outside of the external function.
+   * @tparam T_Synchronization    Synchronization facilities for thread-safety. See SynchronizationInterface.
+   * @tparam T_ThreadInformation  Thread information facilities. See ThreadInformationInterface.
    */
-  template<typename T_Type>
+  template<typename T_Type, typename T_Synchronization = DefaultSynchronization,
+           typename T_ThreadInformation = DefaultThreadInformation>
   struct ExternalFunctionHelper {
     public:
 
       /// See ExternalFunctionHelper.
       using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);
+
+      /// See ExternalFunctionHelper.
+      using Synchronization = CODI_DD(T_Synchronization, DefaultSynchronization);
+
+      /// See ExternalFunctionHelper.
+      using ThreadInformation = CODI_DD(T_ThreadInformation, DefaultThreadInformation);
 
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
@@ -121,6 +140,11 @@ namespace codi {
           std::vector<Real> inputValues;
           std::vector<Real> outputValues;
           std::vector<Real> oldPrimals;
+
+          std::vector<Real> x_d;  ///< Shared vector of input dot values.
+          std::vector<Real> y_d;  ///< Shared vector of output dot values.
+          std::vector<Real> x_b;  ///< Shared vector of input bar values.
+          std::vector<Real> y_b;  ///< Shared vector of output bar values.
 
           ReverseFunc reverseFunc;
           ForwardFunc forwardFunc;
@@ -169,26 +193,47 @@ namespace codi {
           CODI_INLINE void evalForwFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            std::vector<Real> x_d(inputIndices.size());
-            std::vector<Real> y_d(outputIndices.size());
+            Synchronization::serialize([&]() {
+              x_d.resize(inputIndices.size());
+              y_d.resize(outputIndices.size());
 
-            initRun(ra);
+              initRun(ra);
+            });
+
+            Synchronization::synchronize();
 
             for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
-              for (size_t i = 0; i < inputIndices.size(); ++i) {
-                x_d[i] = ra->getAdjoint(inputIndices[i], dim);
-              }
+              Synchronization::serialize([&]() {
+                for (size_t i = 0; i < inputIndices.size(); ++i) {
+                  x_d[i] = ra->getAdjoint(inputIndices[i], dim);
+                }
+              });
+
+              Synchronization::synchronize();
 
               forwardFunc(inputValues.data(), x_d.data(), inputIndices.size(), outputValues.data(), y_d.data(),
                           outputIndices.size(), &userData);
 
-              for (size_t i = 0; i < outputIndices.size(); ++i) {
-                ra->resetAdjoint(outputIndices[i], dim);
-                ra->updateAdjoint(outputIndices[i], dim, y_d[i]);
-              }
+              Synchronization::synchronize();
+
+              Synchronization::serialize([&]() {
+                for (size_t i = 0; i < outputIndices.size(); ++i) {
+                  ra->resetAdjoint(outputIndices[i], dim);
+                  ra->updateAdjoint(outputIndices[i], dim, y_d[i]);
+                }
+              });
+
+              Synchronization::synchronize();
             }
 
-            finalizeRun(ra);
+            Synchronization::serialize([&]() {
+              finalizeRun(ra);
+
+              x_d.clear();
+              y_d.clear();
+            });
+
+            Synchronization::synchronize();
           }
 
           static void evalPrimFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
@@ -205,11 +250,17 @@ namespace codi {
           CODI_INLINE void evalPrimFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            initRun(ra);
+            Synchronization::serialize([&]() { initRun(ra); });
+
+            Synchronization::synchronize();
 
             primalFunc(inputValues.data(), inputIndices.size(), outputValues.data(), outputIndices.size(), &userData);
 
-            finalizeRun(ra);
+            Synchronization::synchronize();
+
+            Synchronization::serialize([&]() { finalizeRun(ra); });
+
+            Synchronization::synchronize();
           }
 
           static void evalRevFuncStatic(Tape* t, void* d, VectorAccessInterface<Real, Identifier>* ra) {
@@ -226,26 +277,47 @@ namespace codi {
           CODI_INLINE void evalRevFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            std::vector<Real> x_b(inputIndices.size());
-            std::vector<Real> y_b(outputIndices.size());
+            Synchronization::serialize([&]() {
+              x_b.resize(inputIndices.size());
+              y_b.resize(outputIndices.size());
 
-            initRun(ra, true);
+              initRun(ra, true);
+            });
+
+            Synchronization::synchronize();
 
             for (size_t dim = 0; dim < ra->getVectorSize(); ++dim) {
-              for (size_t i = 0; i < outputIndices.size(); ++i) {
-                y_b[i] = ra->getAdjoint(outputIndices[i], dim);
-                ra->resetAdjoint(outputIndices[i], dim);
-              }
+              Synchronization::serialize([&]() {
+                for (size_t i = 0; i < outputIndices.size(); ++i) {
+                  y_b[i] = ra->getAdjoint(outputIndices[i], dim);
+                  ra->resetAdjoint(outputIndices[i], dim);
+                }
+              });
+
+              Synchronization::synchronize();
 
               reverseFunc(inputValues.data(), x_b.data(), inputIndices.size(), outputValues.data(), y_b.data(),
                           outputIndices.size(), &userData);
 
-              for (size_t i = 0; i < inputIndices.size(); ++i) {
-                ra->updateAdjoint(inputIndices[i], dim, x_b[i]);
-              }
+              Synchronization::synchronize();
+
+              Synchronization::serialize([&]() {
+                for (size_t i = 0; i < inputIndices.size(); ++i) {
+                  ra->updateAdjoint(inputIndices[i], dim, x_b[i]);
+                }
+              });
+
+              Synchronization::synchronize();
             }
 
-            finalizeRun(ra, true);
+            Synchronization::serialize([&]() {
+              finalizeRun(ra, true);
+
+              x_b.clear();
+              y_b.clear();
+            });
+
+            Synchronization::synchronize();
           }
 
         private:
@@ -317,6 +389,8 @@ namespace codi {
                                                   ///< external function is called.
 
       EvalData* data;  ///< External function data.
+
+      std::vector<Real> y;  ///< Shared vector of output variables.
 
     public:
 
@@ -440,35 +514,53 @@ namespace codi {
 
         func(std::forward<Args>(args)...);
 
+        Synchronization::synchronize();
+
         if (isTapeActive) {
           Type::getTape().setActive();
 
-          for (size_t i = 0; i < outputValues.size(); ++i) {
-            addOutputToData(*outputValues[i]);
-          }
+          Synchronization::serialize([&]() {
+            for (size_t i = 0; i < outputValues.size(); ++i) {
+              addOutputToData(*outputValues[i]);
+            }
+          });
         }
+
+        Synchronization::synchronize();
       }
 
       /// Call the primal function with the values extracted from the inputs. The output values are set on the specified
       /// outputs and registered as outputs of this external functions.
       CODI_INLINE void callPrimalFunc(PrimalFunc func) {
         if (storeInputOutputForPrimalEval) {
-          // Store the primal function in the external function data so that it can be used for primal evaluations of
-          // the tape.
-          data->primalFunc = func;
+          Synchronization::serialize([&]() {
+            // Store the primal function in the external function data so that it can be used for primal evaluations of
+            // the tape.
+            data->primalFunc = func;
 
-          std::vector<Real> y(outputValues.size());
+            y.resize(outputValues.size());
+          });
+
+          Synchronization::synchronize();
 
           func(data->inputValues.data(), data->inputValues.size(), y.data(), outputValues.size(), &data->userData);
 
-          // Set the primal values on the output values and add them to the data for the reverse evaluation.
-          for (size_t i = 0; i < outputValues.size(); ++i) {
-            outputValues[i]->setValue(y[i]);
+          Synchronization::synchronize();
 
-            if (Type::getTape().isActive()) {
-              addOutputToData(*outputValues[i]);
+          Synchronization::serialize([&]() {
+            // Set the primal values on the output values and add them to the data for the reverse evaluation.
+            for (size_t i = 0; i < outputValues.size(); ++i) {
+              outputValues[i]->setValue(y[i]);
+
+              if (Type::getTape().isActive()) {
+                addOutputToData(*outputValues[i]);
+              }
             }
-          }
+
+            y.clear();
+          });
+
+          Synchronization::synchronize();
         } else {
           CODI_EXCEPTION(
               "callPrimalFunc() not available if external function helper is initialized with passive function mode "
@@ -480,34 +572,56 @@ namespace codi {
       CODI_INLINE void addToTape(ReverseFunc reverseFunc, ForwardFunc forwardFunc = nullptr,
                                  PrimalFunc primalFunc = nullptr) {
         if (Type::getTape().isActive()) {
-          data->reverseFunc = reverseFunc;
-          data->forwardFunc = forwardFunc;
+          // Collect shared data in a serial manner.
+          Synchronization::serialize([&]() {
+            data->reverseFunc = reverseFunc;
+            data->forwardFunc = forwardFunc;
 
-          if (nullptr != primalFunc) {
-            // Only overwrite the primal function if the user provides one, otherwise it is set in the callPrimalFunc
-            // method.
-            data->primalFunc = primalFunc;
+            if (nullptr != primalFunc) {
+              // Only overwrite the primal function if the user provides one, otherwise it is set in the callPrimalFunc
+              // method.
+              data->primalFunc = primalFunc;
+            }
+
+            // Clear the primal values if they are not required.
+            if (!storeInputPrimals) {
+              data->inputValues.clear();
+              data->inputValues.shrink_to_fit();
+            }
+          });
+
+          // Only push once everything is prepared.
+          Synchronization::synchronize();
+
+          // Push the delete handle on at most one thread's tape.
+          if (ThreadInformation::getThreadId() == 0) {
+            Type::getTape().pushExternalFunction(
+                ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data, EvalData::delFunc,
+                                               EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
+          } else {
+            Type::getTape().pushExternalFunction(ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data,
+                                                                                nullptr, EvalData::evalForwFuncStatic,
+                                                                                EvalData::evalPrimFuncStatic));
           }
 
-          // Clear the primal values if they are not required.
-          if (!storeInputPrimals) {
-            data->inputValues.clear();
-            data->inputValues.shrink_to_fit();
-          }
+          // Only begin the cleanup once all pushes are finished.
+          Synchronization::synchronize();
 
-          Type::getTape().pushExternalFunction(
-              ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data, EvalData::delFunc,
-                                             EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
-
-          data = nullptr;
+          // Clear the assembled data in a serial manner.
+          Synchronization::serialize([&]() { data = nullptr; });
         } else {
-          // Clear the assembled data.
-          delete data;
+          // Clear the assembled data in a serial manner.
+          Synchronization::serialize([&]() { delete data; });
         }
 
-        // Create a new data object for the next call.
-        data = new EvalData(getPrimalValuesFromPrimalValueVector, reallocatePrimalVectors);
-        outputValues.clear();
+        // Create a new data object for the next call in a serial manner.
+        Synchronization::serialize([&]() {
+          data = new EvalData(getPrimalValuesFromPrimalValueVector, reallocatePrimalVectors);
+          outputValues.clear();
+        });
+
+        // Return only after the preparations for the next call are done.
+        Synchronization::synchronize();
       }
   };
 }
