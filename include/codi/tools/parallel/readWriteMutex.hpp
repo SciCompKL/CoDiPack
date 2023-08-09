@@ -205,7 +205,9 @@ namespace codi {
   template<typename T_ReadWriteMutex>
   struct LockForRead {
     public:
-      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex, ReadWriteMutex<CODI_DEFAULT_ATOMIC<int>>);  ///< See LockForRead.
+      using ReadWriteMutex =
+          CODI_DD(T_ReadWriteMutex,
+                  CODI_T(ReadWriteMutex<DefaultThreadInformation, CODI_DEFAULT_ATOMIC<int>>));  ///< See LockForRead.
 
     private:
       ReadWriteMutex& mutex;
@@ -230,8 +232,9 @@ namespace codi {
   template<typename T_ReadWriteMutex>
   struct LockForWrite {
     public:
-      using ReadWriteMutex = CODI_DD(T_ReadWriteMutex,
-                                     ReadWriteMutex<CODI_DEFAULT_ATOMIC<int>>);  ///< See LockForWrite.
+      using ReadWriteMutex =
+          CODI_DD(T_ReadWriteMutex,
+                  CODI_T(ReadWriteMutex<DefaultThreadInformation, CODI_DEFAULT_ATOMIC<int>>));  ///< See LockForWrite.
 
     private:
       ReadWriteMutex& mutex;
