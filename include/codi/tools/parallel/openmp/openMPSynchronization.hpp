@@ -47,7 +47,7 @@ namespace codi {
    */
   struct OpenMPSynchronization : public SynchronizationInterface {
     public:
-      /// \copydoc  SynchronizationInterface::serialize().
+      /// \copydoc  SynchronizationInterface::serialize
       /// <br> Implementation: calls the given function object inside a master directive.
       template<typename FunctionObject>
       static CODI_INLINE void serialize(FunctionObject& func) {
@@ -56,7 +56,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc  SynchronizationInterface::synchronize().
+      /// \copydoc  SynchronizationInterface::synchronize
       /// <br> Implementation: contains a barrier directive.
       static CODI_INLINE void synchronize() {
         CODI_OMP_BARRIER()
