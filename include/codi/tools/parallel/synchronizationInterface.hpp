@@ -48,7 +48,7 @@ namespace codi {
        * @brief Ensures that only one among the calling threads calls the given function object.
        */
       template<typename FunctionObject>
-      static CODI_INLINE void serialize(FunctionObject& func);
+      static CODI_INLINE void serialize(FunctionObject const& func);
 
       /**
        * @brief Does not return until called by all threads.
@@ -64,7 +64,7 @@ namespace codi {
       /// \copydoc SynchronizationInterface::serialize
       /// <br> Implementation: does not synchronize, just calls the function object.
       template<typename FunctionObject>
-      static CODI_INLINE void serialize(FunctionObject&& func) {
+      static CODI_INLINE void serialize(FunctionObject const& func) {
         func();
       }
 

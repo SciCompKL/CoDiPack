@@ -50,7 +50,7 @@ namespace codi {
       /// \copydoc  SynchronizationInterface::serialize
       /// <br> Implementation: calls the given function object inside a master directive.
       template<typename FunctionObject>
-      static CODI_INLINE void serialize(FunctionObject& func) {
+      static CODI_INLINE void serialize(FunctionObject const& func) {
         CODI_OMP_MASTER() {
           func();
         }
