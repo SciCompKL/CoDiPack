@@ -90,8 +90,8 @@ namespace codi {
    * applications, either in serial code or locally within threads. Non-default instantiations are required for external
    * functions that multiple threads jointly work on. Shared data, such as external function inputs and outputs, are
    * always prepared and finalized by one thread only, whereas the external function is worked on by all threads. All
-   * threads are synchronized between serial and parallel parts. An example is given in the in-code documentation of
-   * ExternalFunctionHelper::addToTape.
+   * threads are synchronized between serial and parallel parts. The synchronization pattern can be seen in the
+   * implementation of ExternalFunctionHelper::addToTape, where the workflow is annotated with comments.
    *
    * @tparam T_Type               The CoDiPack type that is used outside of the external function.
    * @tparam T_Synchronization    Synchronization facilities for thread-safety. See SynchronizationInterface.
