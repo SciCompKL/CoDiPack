@@ -163,6 +163,10 @@ namespace codi {
                 inputValues(0),
                 outputValues(0),
                 oldPrimals(0),
+                x_d(0),
+                y_d(0),
+                x_b(0),
+                y_b(0),
                 reverseFunc(nullptr),
                 forwardFunc(nullptr),
                 primalFunc(nullptr),
@@ -402,7 +406,8 @@ namespace codi {
             storeInputOutputForPrimalEval(!primalFuncUsesADType),
             reallocatePrimalVectors(false),
             getPrimalValuesFromPrimalValueVector(IsPrimalValueTape),
-            data(nullptr) {
+            data(nullptr),
+            y(0) {
         data = new EvalData(getPrimalValuesFromPrimalValueVector, reallocatePrimalVectors);
       }
 
