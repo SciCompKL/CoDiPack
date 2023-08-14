@@ -229,8 +229,8 @@ namespace codi {
             Synchronization::serialize([&]() {
               finalizeRun(ra);
 
-              x_d.clear();
-              y_d.clear();
+              x_d.resize(0);
+              y_d.resize(0);
             });
 
             Synchronization::synchronize();
@@ -313,8 +313,8 @@ namespace codi {
             Synchronization::serialize([&]() {
               finalizeRun(ra, true);
 
-              x_b.clear();
-              y_b.clear();
+              x_b.resize(0);
+              y_b.resize(0);
             });
 
             Synchronization::synchronize();
@@ -557,7 +557,7 @@ namespace codi {
               }
             }
 
-            y.clear();
+            y.resize(0);
           });
 
           Synchronization::synchronize();
@@ -594,15 +594,10 @@ namespace codi {
           Synchronization::synchronize();
 
           // Push the delete handle on at most one thread's tape.
-          if (ThreadInformation::getThreadId() == 0) {
-            Type::getTape().pushExternalFunction(
-                ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data, EvalData::delFunc,
-                                               EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
-          } else {
-            Type::getTape().pushExternalFunction(ExternalFunction<Tape>::create(EvalData::evalRevFuncStatic, data,
-                                                                                nullptr, EvalData::evalForwFuncStatic,
-                                                                                EvalData::evalPrimFuncStatic));
-          }
+          typename ExternalFunction<Tape>::DeleteFunction delFunc =
+              0 == ThreadInformation::getThreadId() ? EvalData::delFunc : nullptr;
+          Type::getTape().pushExternalFunction(ExternalFunction<Tape>::create(
+              EvalData::evalRevFuncStatic, data, delFunc, EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
 
           // Only begin the cleanup once all pushes are finished.
           Synchronization::synchronize();
