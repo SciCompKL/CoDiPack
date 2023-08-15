@@ -40,36 +40,36 @@
 namespace codi {
 
   /**
-   * @brief Provides information on threads.
+   * @brief Provides basic synchronization facilities.
    */
-  struct ThreadInformationInterface {
+  struct SynchronizationInterface {
     public:
       /**
-       * @brief Provides an upper bound on the number of threads.
+       * @brief Ensures that only one among the calling threads calls the given function object.
        */
-      static CODI_INLINE int getMaxThreads();
+      template<typename FunctionObject>
+      static CODI_INLINE void serialize(FunctionObject const& func);
 
       /**
-       * @brief Returns the id of the calling thread.
-       *
-       * Thread ids are integers 0, 1, ..., maximum number of threads - 1.
+       * @brief Does not return until called by all threads.
        */
-      static CODI_INLINE int getThreadId();
+      static CODI_INLINE void synchronize();
   };
 
   /**
-   * @brief Default implementation of ThreadInformationInterface for serial applications.
+   * @brief Default implementation of SynchronizationInterface for serial applications.
    */
-  struct DefaultThreadInformation : public ThreadInformationInterface {
+  struct DefaultSynchronization : public SynchronizationInterface {
     public:
-      /// \copydoc ThreadInformationInterface::getMaxThreads
-      static CODI_INLINE int getMaxThreads() {
-        return 1;
+      /// \copydoc SynchronizationInterface::serialize
+      /// <br> Implementation: does not synchronize, just calls the function object.
+      template<typename FunctionObject>
+      static CODI_INLINE void serialize(FunctionObject const& func) {
+        func();
       }
 
-      /// \copydoc ThreadInformationInterface::getThreadId
-      static CODI_INLINE int getThreadId() {
-        return 0;
-      }
+      /// \copydoc  SynchronizationInterface::synchronize
+      /// <br> Implementation: empty.
+      static CODI_INLINE void synchronize() {}
   };
 }

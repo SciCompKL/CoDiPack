@@ -34,42 +34,32 @@
  */
 #pragma once
 
-#include "../../misc/macros.hpp"
+#include "../synchronizationInterface.hpp"
+#include "macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   /**
-   * @brief Provides information on threads.
+   * @brief OpenMP synchronization facilities.
+   *
+   * See SynchronizationInterface.
    */
-  struct ThreadInformationInterface {
+  struct OpenMPSynchronization : public SynchronizationInterface {
     public:
-      /**
-       * @brief Provides an upper bound on the number of threads.
-       */
-      static CODI_INLINE int getMaxThreads();
-
-      /**
-       * @brief Returns the id of the calling thread.
-       *
-       * Thread ids are integers 0, 1, ..., maximum number of threads - 1.
-       */
-      static CODI_INLINE int getThreadId();
-  };
-
-  /**
-   * @brief Default implementation of ThreadInformationInterface for serial applications.
-   */
-  struct DefaultThreadInformation : public ThreadInformationInterface {
-    public:
-      /// \copydoc ThreadInformationInterface::getMaxThreads
-      static CODI_INLINE int getMaxThreads() {
-        return 1;
+      /// \copydoc  SynchronizationInterface::serialize
+      /// <br> Implementation: calls the given function object inside a master directive.
+      template<typename FunctionObject>
+      static CODI_INLINE void serialize(FunctionObject const& func) {
+        CODI_OMP_MASTER() {
+          func();
+        }
       }
 
-      /// \copydoc ThreadInformationInterface::getThreadId
-      static CODI_INLINE int getThreadId() {
-        return 0;
+      /// \copydoc  SynchronizationInterface::synchronize
+      /// <br> Implementation: contains a barrier directive.
+      static CODI_INLINE void synchronize() {
+        CODI_OMP_BARRIER()
       }
   };
 }

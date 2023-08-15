@@ -210,9 +210,9 @@ namespace codi {
       }
 
       // clang-format off
-      /// \copybrief computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac)
+      /// \copybrief computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac, AdjointsManagement)
       /// \n This method uses the global tape for the Jacobian evaluation.
-      /// \copydetails computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac)
+      /// \copydetails computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac, AdjointsManagement)
       // clang-format on
       template<typename Jac>
       static CODI_INLINE void computeJacobian(Position const& start, Position const& end, Identifier const* input,

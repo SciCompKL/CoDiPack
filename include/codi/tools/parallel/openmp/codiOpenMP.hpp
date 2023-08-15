@@ -39,18 +39,22 @@
 #include "../../../tapes/indices/parallelReuseIndexManager.hpp"
 #include "../../../tapes/misc/threadSafeGlobalAdjoints.hpp"
 #include "../../data/direction.hpp"
-#include "../../helpers/openMPExternalFunctionHelper.hpp"
 #include "openMPAtomic.hpp"
 #include "openMPMutex.hpp"
 #include "openMPStaticThreadLocalPointer.hpp"
+#include "openMPSynchronization.hpp"
 #include "openMPThreadInformation.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   /// Parallel toolbox for OpenMP.
-  using OpenMPToolbox =
-      ParallelToolbox<OpenMPThreadInformation, OpenMPAtomic, OpenMPMutex, OpenMPStaticThreadLocalPointer>;
+  using OpenMPToolbox = ParallelToolbox<OpenMPThreadInformation, OpenMPAtomic, OpenMPMutex,
+                                        OpenMPStaticThreadLocalPointer, OpenMPSynchronization>;
+
+  /// Thread-safe external function helper for external functions jointly worked on by multiple OpenMP threads.
+  template<typename Type>
+  using OpenMPExternalFunctionHelper = ExternalFunctionHelper<Type, OpenMPSynchronization, OpenMPThreadInformation>;
 
   /// Thread-safe global adjoints for OpenMP.
   template<typename Gradient, typename Identifier, typename Tape>
