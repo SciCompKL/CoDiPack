@@ -48,16 +48,11 @@
 #include "indices/linearIndexManager.hpp"
 #include "interfaces/reverseTapeInterface.hpp"
 #include "jacobianBaseTape.hpp"
+#include "sparseEvaluation.hpp"
+#include "sparseMpiVectorAccess.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
-
-  enum class ElemeniationMissingOutput {
-    Ignore = 0,
-    Add,
-    Throw
-  };
-
   /**
    * @brief Final implementation for a Jacobian tape with a linear index management.
    *
@@ -81,6 +76,11 @@ namespace codi {
       using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
       using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
       using Position = typename Base::Position;               ///< See TapeTypesInterface.
+      using NestedPosition = typename Base::NestedPosition;
+
+      using NodeDependencies = SparseEvaluation::NodeDependencies<Real, Identifier>;
+      using DependencyMap = SparseEvaluation::DependencyMap<Real, Identifier>;
+      using ElemeniationMissingOutput = SparseEvaluation::ElemeniationMissingOutput;
 
       CODI_STATIC_ASSERT(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");
 
@@ -187,44 +187,9 @@ namespace codi {
         }
       }
 
-      CODI_INLINE static bool getIncomingDependencies(
-          std::map<Identifier, std::map<Identifier, Real>>& dependencies,
-          Identifier const& lhsIentifier,
-          std::map<Identifier, Real>& result,
-          ElemeniationMissingOutput missingOutputHandling) {
-
-        auto iter = dependencies.find(lhsIentifier);
-        if(iter != dependencies.end()) {
-          result = std::move(iter->second);
-          dependencies.erase(iter);
-
-          return true;
-        } else {
-          switch (missingOutputHandling) {
-          case ElemeniationMissingOutput::Ignore:
-            return false;
-            break;
-          case ElemeniationMissingOutput::Add:
-            result.clear();
-            result[lhsIentifier] = Real(1.0); // Add a self reference.
-            return true;
-            break;
-          case ElemeniationMissingOutput::Throw:
-            CODI_EXCEPTION("Node for '%d' not in depency map. It needs to be declared as an output.", (int)lhsIentifier);
-            return false;
-            break;
-          default:
-            CODI_EXCEPTION("Missing case '%d'.", (int)missingOutputHandling);
-            return false;
-            break;
-          }
-        }
-
-      }
-
       CODI_INLINE static void internalEliminateTapeReverse(
           /* data from call */
-          std::map<Identifier, std::map<Identifier, Real>>& dependencies, ElemeniationMissingOutput missingOutputHandling,
+          DependencyMap& dependencies, ElemeniationMissingOutput missingOutputHandling,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -241,12 +206,12 @@ namespace codi {
         while (curAdjointPos > endAdjointPos) {
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
-          curJacobianPos -= argsSize;
 
           if (Config::StatementInputTag != argsSize) {
+            curJacobianPos -= argsSize;
             // Skip input values, they would clear the map.
 
-            if(getIncomingDependencies(dependencies, curAdjointPos, incomingDependencies, missingOutputHandling)) {
+            if(SparseEvaluation::getIncomingDependencies(dependencies, (Identifier)curAdjointPos, incomingDependencies, missingOutputHandling)) {
               for(auto& curEntry : incomingDependencies) {
                 for(Config::ArgumentSize curOut = 0; curOut < argsSize; curOut += 1) {
                   Identifier const rhsIdentifier = rhsIdentifiers[curJacobianPos + curOut];
@@ -262,24 +227,47 @@ namespace codi {
         }
       }
 
-      CODI_NO_INLINE void internalEliminateTape(
-          Position const& start,
-          Position const& end,
-          std::map<Identifier, std::map<Identifier, Real>>& dependencies,
-          ElemeniationMissingOutput missingOutputHandling = ElemeniationMissingOutput::Ignore) {
+      CODI_INLINE void internalEliminateTape(
+          const Position& start, const Position& end,
+          DependencyMap& dependencies,
+          ElemeniationMissingOutput missingOutputHandling,
+          SparseMPIVectorAccess<Real, Identifier>** mpiDepencencies,
+          MPI_Comm mpiComm) {
+        NestedPosition curInnerPos = start.inner;
 
-        Base::jacobianData.evaluateReverse(start.inner, end.inner, internalEliminateTapeReverse, dependencies,
+        if(nullptr != mpiDepencencies) {
+          *mpiDepencencies = new SparseMPIVectorAccess<Real, Identifier>(dependencies, missingOutputHandling, mpiComm);
+
+          auto evalFunc = [&](ExternalFunctionInternalData* extFunc, const NestedPosition* endInnerPos) {
+            Base::jacobianData.evaluateReverse(curInnerPos, *endInnerPos, internalEliminateTapeReverse, dependencies,
+                                               missingOutputHandling);
+
+            ((ExternalFunction<JacobianLinearTape>*)extFunc)->evaluateReverse(this, *mpiDepencencies);
+
+            curInnerPos = *endInnerPos;
+          };
+          Base::externalFunctionData.forEachReverse(start, end, evalFunc);
+
+          (*mpiDepencencies)->communicateDependencies();
+
+        }
+
+        // Iterate over the remainder. Covers also the case of no external functions.
+        Base::jacobianData.evaluateReverse(curInnerPos, end.inner, internalEliminateTapeReverse, dependencies,
                                            missingOutputHandling);
+
       }
 
     public:
 
-      CODI_NO_INLINE std::map<Identifier, std::map<Identifier, Real>>  eliminateTape(Position const& start,
-                                                Position const& end,
-                                                std::vector<Identifier>& outputs,
-                                                ElemeniationMissingOutput missingOutputHandling = ElemeniationMissingOutput::Ignore) {
+      CODI_NO_INLINE DependencyMap eliminateTape(Position const& start,
+                                                 Position const& end,
+                                                 std::vector<Identifier>& outputs,
+                                                 ElemeniationMissingOutput missingOutputHandling = ElemeniationMissingOutput::Ignore,
+                                                 SparseMPIVectorAccess<Real, Identifier>** mpiDependencies = nullptr,
+                                                 MPI_Comm mpiComm = MPI_COMM_WORLD) {
 
-        std::map<Identifier, std::map<Identifier, Real>> dependencies;
+        DependencyMap dependencies;
 
         // Add a self reference to outputs. This are the starting points for the elimination. All other outputs are
         // ignored or an exception is thrown.
@@ -287,7 +275,7 @@ namespace codi {
           dependencies[curOutput][curOutput] = Real(1.0);
         }
 
-        internalEliminateTape(start, end, dependencies, missingOutputHandling);
+        internalEliminateTape(start, end, dependencies, missingOutputHandling, mpiDependencies, mpiComm);
 
         return dependencies;
       }
@@ -299,17 +287,17 @@ namespace codi {
 
         using LhsExpr = ActiveType<JacobianLinearTape>;
 
-        std::map<Identifier, std::map<Identifier, Real>> dependencies;
+        DependencyMap dependencies;
 
         // Add a self reference to outputs. This are the starting points for the elimination. All other outputs are
         // ignored or an exception is thrown.
         for(LhsExpr* lhs : outputs) {
           dependencies[lhs->getIdentifier()][lhs->getIdentifier()] = Real(1.0);
         }
-        internalEliminateTape(this->getPosition(), start, dependencies, missingOutputHandling);
+        internalEliminateTape(this->getPosition(), start, dependencies, missingOutputHandling, nullptr, MPI_COMM_SELF);
 
         // Transpose dependencies.
-        std::map<Identifier, std::map<Identifier, Real>> dependenciesTransposed;
+        DependencyMap dependenciesTransposed;
         for(auto const& rhsEntry : dependencies) {
           for(auto const& lhsEntry : rhsEntry.second) {
             dependenciesTransposed[lhsEntry.first][rhsEntry.first] += lhsEntry.second;
