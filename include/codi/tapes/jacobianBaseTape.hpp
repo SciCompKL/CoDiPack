@@ -241,12 +241,16 @@ namespace codi {
           checkAdjointSize(identifier);
         }
 
+        codiAssert(identifier < (Identifier)adjoints.size());
+
         return adjoints[identifier];
       }
 
       /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement) const
       CODI_INLINE Gradient const& gradient(
           Identifier const& identifier, AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
+        codiAssert(identifier < (Identifier)adjoints.size());
+
         if (AdjointsManagement::Automatic == adjointsManagement && identifier >= (Identifier)adjoints.size()) {
           return adjoints[0];
         } else {
@@ -730,6 +734,8 @@ namespace codi {
           adjoints.beginUse();
         }
 
+        codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
+
         cast().evaluateForward(start, end, adjoints.data());
 
         if (AdjointsManagement::Automatic == adjointsManagement) {
@@ -793,6 +799,8 @@ namespace codi {
           checkAdjointSize(indexManager.get().getLargestCreatedIndex());
           adjoints.beginUse();
         }
+
+        codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
 
         evaluate(start, end, adjoints.data());
 

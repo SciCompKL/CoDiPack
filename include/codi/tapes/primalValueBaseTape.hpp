@@ -274,6 +274,8 @@ namespace codi {
           checkAdjointSize(identifier);
         }
 
+        codiAssert(identifier < (Identifier)adjoints.size());
+
         return adjoints[identifier];
       }
 
@@ -282,6 +284,8 @@ namespace codi {
       /// implement adjoints locking.
       CODI_INLINE Gradient const& gradient(
           Identifier const& identifier, AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
+        codiAssert(identifier < (Identifier)adjoints.size());
+
         if (AdjointsManagement::Automatic == adjointsManagement && identifier >= (Identifier)adjoints.size()) {
           return adjoints[0];
         } else {
@@ -875,6 +879,8 @@ namespace codi {
           checkAdjointSize(indexManager.get().getLargestCreatedIndex());
         }
 
+        codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
+
         cast().evaluateForward(start, end, adjoints.data());
       }
 
@@ -1068,6 +1074,8 @@ namespace codi {
           checkAdjointSize(indexManager.get().getLargestCreatedIndex());
         }
 
+        codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
+
         evaluate(start, end, adjoints.data());
       }
 
@@ -1095,6 +1103,8 @@ namespace codi {
           checkAdjointSize(indexManager.get().getLargestCreatedIndex());
         }
 
+        codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
+
         internalEvaluateReverse<false>(start, end, adjoints.data());
 
         if (!TapeTypes::IsLinearIndexHandler) {
@@ -1110,6 +1120,8 @@ namespace codi {
         if (AdjointsManagement::Automatic == adjointsManagement) {
           checkAdjointSize(indexManager.get().getLargestCreatedIndex());
         }
+
+        codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
 
         if (!TapeTypes::IsLinearIndexHandler) {
           cast().internalResetPrimalValues(end);
