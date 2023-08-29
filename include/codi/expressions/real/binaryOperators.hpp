@@ -576,7 +576,7 @@ namespace codi {
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
 
-        checkArguments(argA);
+        checkArguments(argA, argB);
         if (RealTraits::getPassiveValue(argA) <= 0.0 && 1 <= RealTraits::MaxDerivativeOrder<ArgB>()) {
           // Special case for higher order derivatives. Derivative will be wrong since the argB part is not evaluated.
           return RealTraits::getPassiveValue(argB) * pow(argA, argB - 1.0);
@@ -590,7 +590,7 @@ namespace codi {
       static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argB);
 
-        checkArguments(argA);
+        checkArguments(argA, argB);
         if (RealTraits::getPassiveValue(argA) > 0.0) {
           return log(argA) * result;
         } else {
@@ -599,11 +599,14 @@ namespace codi {
       }
 
     private:
-      template<typename ArgA>
-      static CODI_INLINE void checkArguments(ArgA& argA) {
+      template<typename ArgA, typename ArgB>
+      static CODI_INLINE void checkArguments(ArgA const& argA, ArgB const& argB) {
         if (Config::CheckExpressionArguments) {
-          if (RealTraits::getPassiveValue(argA) < 0.0) {
-            CODI_EXCEPTION("Negative base for active exponent in pow function. (Value: %0.15e)",
+          RealTraits::PassiveReal<ArgB> integralPart = 0.0;
+          std::modf(RealTraits::getPassiveValue(argB), &integralPart);
+
+          if (RealTraits::getPassiveValue(argA) < 0.0 && RealTraits::getPassiveValue(argB) != integralPart) {
+            CODI_EXCEPTION("Negative base for non-integral exponent in pow function. (Value: %0.15e)",
                            RealTraits::getPassiveValue(argA));
           }
         }
