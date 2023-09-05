@@ -257,13 +257,17 @@ namespace codi {
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
+        CODI_UNUSED(endJacobianPos);
+
         while (curStmtPos < endStmtPos) {
           // Manual statement push.
           dstTape->statementData.reserveItems(1);
-          dstTape->pushStmtData(lhsIdentifiers[curStmtPos], numberOfJacobians[curStmtPos]);
-
           dstTape->jacobianData.reserveItems(numberOfJacobians[curStmtPos]);
-          while (curJacobianPos < endJacobianPos) {
+
+          dstTape->pushStmtData(lhsIdentifiers[curStmtPos], numberOfJacobians[curStmtPos]);
+          size_t statementEndJacobianPos = curJacobianPos + numberOfJacobians[curStmtPos];
+
+          while (curJacobianPos < statementEndJacobianPos) {
             dstTape->jacobianData.pushData(rhsJacobians[curJacobianPos], rhsIdentifiers[curJacobianPos]);
             ++curJacobianPos;
           }
