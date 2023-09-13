@@ -68,7 +68,7 @@ namespace codi {
       using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);       ///< See LhsExpressionInterface.
       using Impl = CODI_DD(T_Impl, LhsExpressionInterface);  ///< See LhsExpressionInterface.
 
-      using Base = ExpressionInterface<T_Real, T_Impl>;
+      using Base = ExpressionInterface<T_Real, T_Impl>;   ///< Base class abbreviation.
 
       using Identifier = typename Tape::Identifier;       ///< See GradientAccessTapeInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.

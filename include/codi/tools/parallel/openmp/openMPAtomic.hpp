@@ -160,16 +160,15 @@ namespace codi {
   };
 
   // Specialization for forward CoDiPack types. Acts on value and gradient with individual atomic operations.
-  template<typename T_Tape>
-  struct OpenMPAtomicImpl<ActiveType<T_Tape>, TapeTraits::EnableIfForwardTape<T_Tape>>
-      : public AtomicInterface<ActiveType<T_Tape>,
-                               OpenMPAtomicImpl<ActiveType<T_Tape>, TapeTraits::EnableIfForwardTape<T_Tape>>>,
-        public ActiveType<T_Tape> {
+  template<typename T_Type>
+  struct OpenMPAtomicImpl<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>>
+      : public AtomicInterface<T_Type,
+                               OpenMPAtomicImpl<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>>>,
+        public T_Type {
     public:
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
-      using Base = AtomicInterface<ActiveType<T_Tape>,
-                                   OpenMPAtomicImpl<ActiveType<T_Tape>, TapeTraits::EnableIfForwardTape<T_Tape>>>;
-      using Type = ActiveType<Tape>;
+      using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);
+      using Base = AtomicInterface<T_Type, OpenMPAtomicImpl<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>>>;
+      using Tape = typename Type::Tape;
       using Real = typename Type::Real;
       using Gradient = typename Type::Gradient;
 

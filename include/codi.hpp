@@ -36,6 +36,7 @@
 
 #include "codi/config.h"
 #include "codi/expressions/activeType.hpp"
+#include "codi/expressions/activeTypeNoTape.hpp"
 #include "codi/expressions/activeTypeWrapper.hpp"
 #include "codi/expressions/immutableActiveType.hpp"
 #include "codi/expressions/real/allOperators.hpp"
@@ -243,6 +244,16 @@ namespace codi {
    */
   using JacobianComputationScalarType = RealReverseIndex;
 
+  /// Forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  template<typename Real, typename Gradient = Real>
+  using CUDARealForwardGen = ActiveTypeNoTape<ForwardEvaluation<Real, Gradient>>;
+
+  /// Forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  using CUDARealForward = CUDARealForwardGen<double, double>;
+
+  /// Vector forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  template<size_t dim>
+  using CUDARealForwardVec = CUDARealForwardGen<double, Direction<double, dim>>;
 }
 
 #include "codi/tools/helpers/evaluationHelper.hpp"

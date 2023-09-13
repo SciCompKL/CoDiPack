@@ -92,15 +92,16 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
+#if CODI_CUDA
+      /// Constructor
+      constexpr CODI_INLINE_NO_FA ActiveTypeBase() = default;
+
+      /// Constructor
+      constexpr CODI_INLINE ActiveTypeBase(PassiveReal const& value) : primalValue(value), identifier() {}
+#else
       /// Constructor
       CODI_INLINE ActiveTypeBase() : primalValue(), identifier() {
         Base::init(Real(), EventHints::Statement::Passive);
-      }
-
-      /// Constructor
-      CODI_INLINE ActiveTypeBase(ActiveTypeBase const& v) : primalValue(), identifier() {
-        Base::init(v.getValue(), EventHints::Statement::Copy);
-        cast().getTape().store(*this, v);
       }
 
       /// Constructor
@@ -112,6 +113,13 @@ namespace codi {
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
       CODI_INLINE ActiveTypeBase(PassiveReal const& value) : primalValue(value), identifier() {
         Base::init(value, EventHints::Statement::Passive);
+      }
+#endif
+
+      /// Constructor
+      CODI_INLINE ActiveTypeBase(ActiveTypeBase const& v) : primalValue(), identifier() {
+        Base::init(v.getValue(), EventHints::Statement::Copy);
+        cast().getTape().store(*this, v);
       }
 
       /// Constructor
@@ -128,10 +136,12 @@ namespace codi {
         Base::init(rhs.cast().getValue(), EventHints::Statement::Passive);
       }
 
+#if !CODI_CUDA
       /// Destructor
       CODI_INLINE ~ActiveTypeBase() {
         Base::destroy();
       }
+#endif
 
       /// See LhsExpressionInterface::operator=(LhsExpressionInterface const&).
       CODI_INLINE Impl& operator=(ActiveTypeBase const& v) {
