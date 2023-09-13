@@ -167,7 +167,8 @@ namespace codi {
         public T_Type {
     public:
       using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);
-      using Base = AtomicInterface<T_Type, OpenMPAtomicImpl<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>>>;
+      using Base =
+          AtomicInterface<T_Type, OpenMPAtomicImpl<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>>>;
       using Tape = typename Type::Tape;
       using Real = typename Type::Real;
       using Gradient = typename Type::Gradient;

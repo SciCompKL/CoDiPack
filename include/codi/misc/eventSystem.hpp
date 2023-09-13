@@ -278,7 +278,8 @@ namespace codi {
       /**
        * @brief Invoke callbacks for StatementPrimal events.
        *
-       * See notifyStatementPrimalListeners(Tape&, Real const&, Identifier const&, Real const&, EventHints::Statement) for details.
+       * See notifyStatementPrimalListeners(Tape&, Real const&, Identifier const&, Real const&, EventHints::Statement)
+       * for details.
        */
       static CODI_INLINE void notifyStatementPrimalListeners(Tape&& tape, Real const& lhsValue,
                                                              Identifier const& lhsIdentifier, Real const& newValue,

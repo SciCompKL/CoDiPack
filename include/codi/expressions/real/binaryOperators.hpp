@@ -346,7 +346,7 @@ namespace codi {
         if (RealTraits::getPassiveValue(argB) == 0.0) {
           return RealTraits::PassiveReal<Real>(0.0);
         } else {
-          return -trunc(RealTraits::getPassiveValue(argA/argB));
+          return -trunc(RealTraits::getPassiveValue(argA / argB));
         }
       }
   };

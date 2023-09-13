@@ -103,9 +103,9 @@ namespace codi {
       /// @name Interface: Data IO
       /// @{
 
-      CODI_INLINE virtual void allocateData() = 0;                   ///< Allocated the data if it was deallocated before.
-      CODI_INLINE virtual void deleteData() = 0;                     ///< Delete the allocated data.
-      CODI_INLINE virtual void readData(FileIo& handle) = 0;         ///< Read data from the FileIo handle.
+      CODI_INLINE virtual void allocateData() = 0;            ///< Allocated the data if it was deallocated before.
+      CODI_INLINE virtual void deleteData() = 0;              ///< Delete the allocated data.
+      CODI_INLINE virtual void readData(FileIo& handle) = 0;  ///< Read data from the FileIo handle.
       CODI_INLINE virtual void writeData(FileIo& handle) const = 0;  ///< Write data to the FileIo handle.
 
       /// @}
@@ -549,7 +549,8 @@ namespace codi {
     public:
 
       /// Constructor
-      CODI_INLINE Chunk4(size_t const& size) : ChunkBase(size), data1(nullptr), data2(nullptr), data3(nullptr), data4(nullptr) {
+      CODI_INLINE Chunk4(size_t const& size)
+          : ChunkBase(size), data1(nullptr), data2(nullptr), data3(nullptr), data4(nullptr) {
         allocateData();
       }
 
