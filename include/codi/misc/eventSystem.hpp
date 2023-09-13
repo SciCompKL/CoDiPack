@@ -154,7 +154,7 @@ namespace codi {
        * event listener map has empty entries for all events, so that its size does not change any more. This is
        * important in a shared memory setting when multiple threads access the listener map simultaneously.
        */
-      static EventListenerMap& getListeners() {
+      static CODI_INLINE EventListenerMap& getListeners() {
         static EventListenerMap* const listeners =
             new EventListenerMap{{Event::TapeStartRecording, {}}, {Event::TapeStopRecording, {}},
                                  {Event::TapeRegisterInput, {}},  {Event::TapeRegisterOutput, {}},

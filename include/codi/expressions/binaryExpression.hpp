@@ -101,7 +101,7 @@ namespace codi {
 
       /// Constructor
       template<typename RealA, typename RealB>
-      explicit BinaryExpression(ExpressionInterface<RealA, ArgA> const& argA,
+      CODI_INLINE explicit BinaryExpression(ExpressionInterface<RealA, ArgA> const& argA,
                                 ExpressionInterface<RealB, ArgB> const& argB)
           : argA(argA.cast()),
             argB(argB.cast()),
