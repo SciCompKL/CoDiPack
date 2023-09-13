@@ -146,6 +146,7 @@ namespace codi {
       /// Map that links events to registered callbacks and their associated custom data.
       using EventListenerMap = std::map<Event, std::list<std::pair<Handle, std::pair<Callback, void*>>>>;
 
+#if !CODI_CUDA
       /**
        * @brief Access the static EventListenerMap.
        *
@@ -170,6 +171,7 @@ namespace codi {
 
         return *listeners;
       }
+#endif
 
     private:
 
@@ -191,14 +193,16 @@ namespace codi {
        * @return Handle that can be used to deregister this listener. A handle of 0 means that nothing was registered.
        */
       template<typename TypedCallback>
-      static CODI_INLINE Handle internalRegisterListener(bool const& enabled, Event event, TypedCallback callback,
+      static CODI_INLINE Handle internalRegisterListener(bool const enabled, Event event, TypedCallback callback,
                                                          void* customData) {
+#if !CODI_CUDA
         if (enabled) {
           nextHandle = nextHandle + 1;
           Handle handle = nextHandle;
           getListeners()[event].push_back(std::make_pair(handle, std::make_pair((void*)callback, customData)));
           return handle;
         }
+#endif
 
         return 0;
       }
@@ -216,12 +220,14 @@ namespace codi {
        * @tparam Args           Types of the callback arguments.
        */
       template<typename TypedCallback, typename... Args>
-      static CODI_INLINE void internalNotifyListeners(bool const& enabled, Event event, Args&&... args) {
+      static CODI_INLINE void internalNotifyListeners(bool const enabled, Event event, Args&&... args) {
+#if !CODI_CUDA
         if (enabled) {
           for (auto const& listener : getListeners()[event]) {
             ((TypedCallback)listener.second.first)(std::forward<Args>(args)..., listener.second.second);
           }
         }
+#endif
       }
 
     public:
@@ -269,6 +275,13 @@ namespace codi {
                                                  lhsIdentifier, newValue, statement);
       }
 
+      static CODI_INLINE void notifyStatementPrimalListeners(Tape&& tape, Real const& lhsValue,
+                                                             Identifier const& lhsIdentifier, Real const& newValue,
+                                                             EventHints::Statement statement) {
+        Tape localTape = tape;
+        notifyStatementPrimalListeners(localTape, lhsValue, lhsIdentifier, newValue, statement);
+      }
+
       /// @}
       /*******************************************************************************/
       /// @name General methods
@@ -282,6 +295,7 @@ namespace codi {
        * @param handle  Handle of the listener that should be deregistered.
        */
       static CODI_INLINE void deregisterListener(Handle const& handle) {
+#if !CODI_CUDA
         for (auto& listenersForEvent : getListeners()) {
           auto iterator = listenersForEvent.second.begin();
           for (; listenersForEvent.second.end() != iterator; ++iterator) {
@@ -295,6 +309,7 @@ namespace codi {
             break;
           }
         }
+#endif
       }
 
       /// @}

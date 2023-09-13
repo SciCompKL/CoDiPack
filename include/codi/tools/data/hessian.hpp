@@ -133,12 +133,14 @@ namespace codi {
         return DummyValue();
       }
 
+#if !CODI_CUDA
       /// \copydoc HessianInterface::operator()(size_t const i, size_t const j, size_t const k)
       CODI_INLINE DummyValue& operator()(size_t const i, size_t const j, size_t const k) {
         CODI_UNUSED(i, j, k);
 
         return StaticDummy<DummyValue>::dummy;
       }
+#endif
 
       /// \copydoc HessianInterface::resize()
       void resize(size_t const m, size_t const n) {

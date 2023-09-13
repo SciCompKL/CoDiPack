@@ -236,12 +236,14 @@ namespace codi {
         return DummyValue();
       }
 
+#if !CODI_CUDA
       /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j)
       CODI_INLINE DummyValue& operator()(size_t const i, size_t const j) {
         CODI_UNUSED(i, j);
 
         return StaticDummy<DummyValue>::dummy;
       }
+#endif
 
       /// \copydoc JacobianInterface::resize()
       void resize(size_t const m, size_t const n) {

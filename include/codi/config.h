@@ -37,6 +37,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "misc/cudaDef.hpp"
 #include "misc/exceptions.hpp"
 
 /** @file */
@@ -398,16 +399,21 @@ namespace codi {
 #endif
 #if CODI_ForcedInlines
   #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
-    #define CODI_INLINE __forceinline
+    #define CODI_INLINE CODI_FunctionAttributes __forceinline
+    #define CODI_INLINE_NO_FA __forceinline
   #elif defined(__GNUC__)
-    #define CODI_INLINE inline __attribute__((always_inline))
+    #define CODI_INLINE CODI_FunctionAttributes inline __attribute__((always_inline))
+    #define CODI_INLINE_NO_FA inline __attribute__((always_inline))
   #else
     #warning Could not determine compiler for forced inline definitions. Using inline.
-    #define CODI_INLINE inline
+    #define CODI_INLINE CODI_FunctionAttributes inline
+    #define CODI_INLINE_NO_FA inline
   #endif
 #else
   /// See codi::Config::ForcedInlines.
-  #define CODI_INLINE inline
+  #define CODI_INLINE CODI_FunctionAttributes inline
+  /// See codi::Config::ForcedInlines.
+  #define CODI_INLINE_NO_FA inline
 #endif
     /// Force inlining instead of using the heuristics from the compiler.
     bool constexpr ForcedInlines = CODI_ForcedInlines;
