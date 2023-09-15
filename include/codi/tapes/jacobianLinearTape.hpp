@@ -247,14 +247,15 @@ namespace codi {
             curInnerPos = *endInnerPos;
           };
           Base::externalFunctionData.forEachReverse(start, end, evalFunc);
-
-          (*mpiDepencencies)->communicateDependencies();
-
         }
 
         // Iterate over the remainder. Covers also the case of no external functions.
         Base::jacobianData.evaluateReverse(curInnerPos, end.inner, internalEliminateTapeReverse, dependencies,
                                            missingOutputHandling);
+
+        if(nullptr != mpiDepencencies) {
+          (*mpiDepencencies)->communicateDependencies();
+        }
 
       }
 

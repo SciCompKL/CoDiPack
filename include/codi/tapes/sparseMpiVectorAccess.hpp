@@ -179,7 +179,7 @@ namespace codi {
 
         inputDependencies[incommingIndex] = NodeDependencies();
 
-        dependencies[index][incommingIndex] += 1.0; // Just note the dependency hiere.
+        dependencies[index][incommingIndex] += 1.0; // Just note the dependency here.
       }
 
       void updateAdjointVec(Identifier const& index, Real const* const vec) {
@@ -201,25 +201,25 @@ namespace codi {
         return false;
       }
 
-      void communicateDependencies() {
+      std::vector<Identifier> communicateDependenciesStage(std::vector<Identifier> const& requested) {
         // Step 1: Communicate number of input dependencies.
         std::vector<int> inputDependenciesOnRanksCount(mpiSize);
-        std::vector<int> inputDependenciesOnRanksDipl(mpiSize);
-        inputDependenciesOnRanksCount[mpiRank] = inputDependencies.size();
+        std::vector<int> inputDependenciesOnRanksDispl(mpiSize);
+        inputDependenciesOnRanksCount[mpiRank] = requested.size();
         MPI_Allgather(MPI_IN_PLACE, 0, MPI_INT, inputDependenciesOnRanksCount.data(), 1, MPI_INT, mpiComm);
 
-        size_t totalInputDependencies = computeTotalAndDisplacements(inputDependenciesOnRanksCount, inputDependenciesOnRanksDipl);
+        size_t totalInputDependencies = computeTotalAndDisplacements(inputDependenciesOnRanksCount, inputDependenciesOnRanksDispl);
 
         // Step 2: Communicate the input dependencies.
         std::vector<int> inputDependenciesOnRanks(totalInputDependencies);
 
         // Set our dependencies into the vector.
-        int pos = inputDependenciesOnRanksDipl[mpiRank];
-        for(auto const& cur : inputDependencies) {
-          inputDependenciesOnRanks[pos] = cur.first;
+        int pos = inputDependenciesOnRanksDispl[mpiRank];
+        for(auto const& cur : requested) {
+          inputDependenciesOnRanks[pos] = cur;
           pos += 1;
         }
-        MPI_Allgatherv(MPI_IN_PLACE, (int)inputDependencies.size(), MPI_INT, inputDependenciesOnRanks.data(), inputDependenciesOnRanksCount.data(), inputDependenciesOnRanksDipl.data(), MPI_INT, mpiComm);
+        MPI_Allgatherv(MPI_IN_PLACE, (int)inputDependencies.size(), MPI_INT, inputDependenciesOnRanks.data(), inputDependenciesOnRanksCount.data(), inputDependenciesOnRanksDispl.data(), MPI_INT, mpiComm);
 
         // Step 3: Compute for each rank what we have to send and receive what each rank will send us.
         std::vector<int> outputDependenciesOnRanksSendCount(mpiSize);
@@ -231,7 +231,7 @@ namespace codi {
             continue;  // Do not count for own rank.
           }
 
-          int curOffset = inputDependenciesOnRanksDipl[curRank];
+          int curOffset = inputDependenciesOnRanksDispl[curRank];
           for(int curPos = 0; curPos < inputDependenciesOnRanksCount[curRank]; curPos += 1) {
             int curIdentifier = inputDependenciesOnRanks[curOffset + curPos];
             int curInputRank = rankFromIdentifier(curIdentifier);
@@ -263,7 +263,7 @@ namespace codi {
 
           int sendPos = outputDependenciesOnRanksSendDispl[curRank];
 
-          int curOffset = inputDependenciesOnRanksDipl[curRank];
+          int curOffset = inputDependenciesOnRanksDispl[curRank];
           for(int curPos = 0; curPos < inputDependenciesOnRanksCount[curRank]; curPos += 1) {
             int curIdentifier = inputDependenciesOnRanks[curOffset + curPos];
             int curInputRank = rankFromIdentifier(curIdentifier);
@@ -291,7 +291,9 @@ namespace codi {
         MPI_Alltoallv(outputDependenciesOnRanksSendOutputJacobian.data(), outputDependenciesOnRanksSendCount.data(), outputDependenciesOnRanksSendDispl.data(), MPI_DOUBLE,
                       outputDependenciesOnRanksRecvOutputJacobian.data(), outputDependenciesOnRanksRecvCount.data(), outputDependenciesOnRanksRecvDispl.data(), MPI_DOUBLE,
                       mpiComm);
-        // Gather the dependencies
+
+        // Step 5: Resolve requested dependencies.
+        std::vector<Identifier> newlyUnresolved = {};
         Identifier lastIdentifier = 0;
         NodeDependencies* curNodeDependencies = nullptr;
         for(size_t curPos = 0; curPos < totalOutputDependenciesRecv; curPos += 1) {
@@ -302,8 +304,43 @@ namespace codi {
             curNodeDependencies = &inputDependencies[lastIdentifier];
           }
 
-          (*curNodeDependencies)[outputDependenciesOnRanksRecvOutputIdentifier[curPos]] += outputDependenciesOnRanksRecvOutputJacobian[curPos];
+          // Inserted all dependencies into the mpi  input dependencies.
+
+
+          Identifier curOutputIdentifier = outputDependenciesOnRanksRecvOutputIdentifier[curPos];
+          (*curNodeDependencies)[curOutputIdentifier] += outputDependenciesOnRanksRecvOutputJacobian[curPos];
+
+          if(curOutputIdentifier < 0) {
+            if(mpiRank == rankFromIdentifier(curOutputIdentifier)) {
+              // Depency from our rank. Just add it as a new mpi dependency.
+              inputDependencies[curOutputIdentifier] = outputDependencies[curOutputIdentifier];
+            } else {
+              // Dependency from another rank. Add it to the unresolved dependencies and update the dependency map.
+              newlyUnresolved.push_back(curOutputIdentifier);
+            }
+          }
         }
+
+        return newlyUnresolved;
+      }
+
+      void communicateDependencies() {
+        std::vector<Identifier> required = {};
+        required.reserve(inputDependencies.size());
+
+        for(auto const& cur : inputDependencies) {
+          required.push_back(cur.first);
+        }
+
+        int maxRemaining = 0;
+        do {
+          std::vector<Identifier> remainingDependencies = communicateDependenciesStage(required);
+
+          maxRemaining = remainingDependencies.size();
+          MPI_Allreduce(MPI_IN_PLACE, &maxRemaining, 1, MPI_INT, MPI_MAX, mpiComm);
+
+          required = std::move(remainingDependencies);
+        } while(maxRemaining != 0);
       }
 
 
@@ -336,14 +373,18 @@ namespace codi {
         return total;
       }
 
-      Identifier generateIdentifier() {
-        mpiIndex += 1;
-        Identifier index = mpiIndex;  // Basic index is the current counter.
+      Identifier generateIdentifier(Identifier identifier, int rank) {
+        Identifier index = identifier;  // Basic index is the current counter.
         index = index << identifierMPIRankOffset;   // Shift the bytes for the mpi rank.
-        index = index +  mpiRank;     // Set the mpi rank in the lower ranks.
+        index = index +  rank;     // Set the mpi rank in the lower ranks.
         index = -index;               // Identify mpi indices with negative values.
 
         return index;
+      }
+
+      Identifier generateIdentifier() {
+        mpiIndex += 1;
+        return generateIdentifier(mpiIndex, mpiRank);
       }
 
       Real maskIdentifier(Identifier index) {
