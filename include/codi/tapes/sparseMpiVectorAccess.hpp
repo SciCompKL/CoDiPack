@@ -59,6 +59,9 @@ namespace codi {
       using NodeDependencies = SparseEvaluation::NodeDependencies<Real, Identifier>;
       using DependencyMap = SparseEvaluation::DependencyMap<Real, Identifier>;
 
+      using MPILinks = std::map<std::pair<Identifier, int>, Real>;
+      using MPIDependencies = std::map<Identifier, MPILinks>;
+
       DependencyMap& dependencies;
       SparseEvaluation::ElemeniationMissingOutput missingOutputHandling;
 
@@ -341,6 +344,35 @@ namespace codi {
 
           required = std::move(remainingDependencies);
         } while(maxRemaining != 0);
+      }
+
+      void resolveDepencyRecursive(Identifier mpiIndex, Real jacobian, MPILinks& mpiLinks) {
+        for(auto const& curLink : inputDependencies[mpiIndex]) {
+          if(curLink.first < 0) {
+            // Mpi Dependency recursive call.
+            resolveDepencyRecursive(curLink.first, jacobian * curLink.second, mpiLinks);
+          } else {
+            // Finished add the link.
+            mpiLinks[std::make_pair(curLink.first, rankFromIdentifier(mpiIndex))] = jacobian * curLink.second;
+          }
+        }
+      }
+
+      MPIDependencies resolveMpiDependencies() {
+        MPIDependencies mpiDependencies = {};
+
+        for(auto& curDept : dependencies) {
+          for (auto it = curDept.second.begin(); it != curDept.second.end(); /* increment in loop */) {
+            if(it->first < 0) {
+              resolveDepencyRecursive(it->first, it->second, mpiDependencies[curDept.first]);
+              curDept.second.erase(it++);
+            } else {
+              ++it;
+            }
+          }
+        }
+
+        return mpiDependencies;
       }
 
 
