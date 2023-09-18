@@ -39,7 +39,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "cudaDef.hpp"
+#include "../tools/cuda/cudaFunctionAttributes.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -56,7 +56,7 @@ namespace codi {
    * @param[in]            file  The file were the function is defined.
    * @param[in]            line  The line in the file were the assert is defined.
    */
-  CODI_FunctionAttributes inline void checkAndOutputAssert(bool const condition, char const* conditionString,
+  CODI_CUDAFunctionAttributes inline void checkAndOutputAssert(bool const condition, char const* conditionString,
                                                            char const* function, char const* file, int line) {
 #if !CODI_CUDA
     if (!condition) {
@@ -86,7 +86,7 @@ namespace codi {
    * @param[in]     line  Line inside the file where the exception was generated.
    * @param[in]  message  The exception message and the arguments for the formatting in the message.
    */
-  CODI_FunctionAttributes inline void outputException(char const function[], char const file[], int const line,
+  CODI_CUDAFunctionAttributes inline void outputException(char const function[], char const file[], int const line,
                                                       char const* message, ...) {
     fprintf(stderr, "Error in function %s (%s:%d)\nThe message is: ", function, file, line);
 

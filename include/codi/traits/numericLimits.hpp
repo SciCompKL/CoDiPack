@@ -123,5 +123,5 @@ namespace std {
 
   /// Specialization of std::numeric_limits for no tape CoDiPack active types.
   template<typename Tape>
-  struct numeric_limits<codi::ActiveTypeNoTape<Tape>> : numeric_limits<codi::ActiveType<Tape>> {};
+  struct numeric_limits<codi::ActiveTypeStatelessTape<Tape>> : numeric_limits<codi::ActiveType<Tape>> {};
 }

@@ -37,7 +37,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "misc/cudaDef.hpp"
+#include "tools/cuda/cudaFunctionAttributes.hpp"
 #include "misc/exceptions.hpp"
 
 /** @file */
@@ -339,6 +339,9 @@ namespace codi {
     /*******************************************************************************/
     /// @name Macro definitions
     /// @{
+
+/// Attributes for all CoDiPack functions.
+#define CODI_FunctionAttributes CODI_CUDAFunctionAttributes
 
 #ifndef CODI_AnnotateBranchLikelihood
   /// See codi::Config::AnnotateBranchLikelihood.

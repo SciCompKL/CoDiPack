@@ -34,22 +34,21 @@
  */
 #pragma once
 
-/** @file */
+#include "codiCUDA.hpp"
+#include "../../expressions/activeTypeStatelessTape.hpp"
+#include "../../tapes/forwardEvaluation.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-/// Enalbe CUDA specific code patchs when compiling with the CUDA compiler.
-#if defined(__CUDA_ARCH__) || defined(__CUDA__)
-  #define CODI_CUDA true
-#else
-  #define CODI_CUDA false
-#endif
+          /// Forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  template<typename Real, typename Gradient = Real>
+  using RealForwardCUDAGen = ActiveTypeStatelessTape<ForwardEvaluation<Real, Gradient>>;
 
-/// Define all CoDiPack functions as host and device functions.
-#if CODI_CUDA
-  #define CODI_FunctionAttributes __device__ __host__
-#else
-  #define CODI_FunctionAttributes /*empty*/
-#endif
+          /// Forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  using RealForwardCUDA = RealForwardCUDAGen<double, double>;
+
+          /// Vector forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  template<size_t dim>
+  using RealForwardCUDAVec = RealForwardCUDAGen<double, Direction<double, dim>>;
 }

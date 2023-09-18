@@ -170,7 +170,6 @@ namespace codi {
 
         return *listeners;
       }
-      // #endif
 
     private:
 

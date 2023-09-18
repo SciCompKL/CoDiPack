@@ -34,7 +34,13 @@
  */
 #pragma once
 
-#include "activeTypeBase.hpp"
+#include "../config.h"
+#include "../misc/macros.hpp"
+#include "../tapes/interfaces/fullTapeInterface.hpp"
+#include "../traits/realTraits.hpp"
+#include "assignmentOperators.hpp"
+#include "incrementOperators.hpp"
+#include "lhsExpressionInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -49,13 +55,13 @@ namespace codi {
    * @tparam T_Tape  The tape that manages all expressions created with this type.
    */
   template<typename T_Tape>
-  struct ActiveTypeNoTape : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape,
-                                                          ActiveTypeNoTape<T_Tape>>,
-                            public AssignmentOperators<T_Tape, ActiveTypeNoTape<T_Tape>>,
-                            public IncrementOperators<T_Tape, ActiveTypeNoTape<T_Tape>> {
+  struct ActiveTypeStatelessTape : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape,
+                                                          ActiveTypeStatelessTape<T_Tape>>,
+                            public AssignmentOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>>,
+                            public IncrementOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>> {
     public:
 
-      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See ActiveTypeNoTape.
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See ActiveTypeStatelessTape.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
@@ -63,7 +69,7 @@ namespace codi {
       using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
       using Base =
-          LhsExpressionInterface<Real, Gradient, T_Tape, ActiveTypeNoTape<T_Tape>>;  ///< Base class abbreviation.
+          LhsExpressionInterface<Real, Gradient, T_Tape, ActiveTypeStatelessTape<T_Tape>>;  ///< Base class abbreviation.
 
     private:
 
@@ -73,20 +79,20 @@ namespace codi {
     public:
 
       /// Constructor
-      constexpr CODI_INLINE_NO_FA ActiveTypeNoTape() = default;
+      constexpr CODI_INLINE_NO_FA ActiveTypeStatelessTape() = default;
 
       /// Constructor
-      constexpr CODI_INLINE ActiveTypeNoTape(PassiveReal const& value) : primalValue(value), identifier() {}
+      constexpr CODI_INLINE ActiveTypeStatelessTape(PassiveReal const& value) : primalValue(value), identifier() {}
 
       /// Constructor
-      CODI_INLINE ActiveTypeNoTape(ActiveTypeNoTape const& v) : primalValue(), identifier() {
+      CODI_INLINE ActiveTypeStatelessTape(ActiveTypeStatelessTape const& v) : primalValue(), identifier() {
         Base::init(v.getValue(), EventHints::Statement::Copy);
         getTape().store(*this, v);
       }
 
       /// Constructor
       template<typename Rhs>
-      CODI_INLINE ActiveTypeNoTape(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
+      CODI_INLINE ActiveTypeStatelessTape(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
         Base::init(rhs.cast().getValue(), EventHints::Statement::Expression);
         getTape().store(*this, rhs.cast());
       }
@@ -95,8 +101,8 @@ namespace codi {
       /// @name Assignment operators (all forwarding to the base class)
       /// @{
 
-      /// See ActiveTypeNoTape::operator=(ActiveTypeNoTape const&).
-      CODI_INLINE ActiveTypeNoTape& operator=(ActiveTypeNoTape const& v) {
+      /// See ActiveTypeStatelessTape::operator=(ActiveTypeStatelessTape const&).
+      CODI_INLINE ActiveTypeStatelessTape& operator=(ActiveTypeStatelessTape const& v) {
         static_cast<Base&>(*this) = static_cast<Base const&>(v);
         return *this;
       }
@@ -107,8 +113,8 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = ActiveTypeNoTape const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = ActiveTypeNoTape;    ///< \copydoc codi::ExpressionInterface::ActiveResult
+      using StoreAs = ActiveTypeStatelessTape const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult = ActiveTypeStatelessTape;    ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// @}
       /*******************************************************************************/

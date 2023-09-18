@@ -98,11 +98,6 @@ namespace codi {
       }
 
       /// Constructor
-      CODI_INLINE ActiveTypeBase(Real const& value) : primalValue(value), identifier() {
-        Base::init(value, EventHints::Statement::Passive);
-      }
-
-      /// Constructor
       template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
       CODI_INLINE ActiveTypeBase(PassiveReal const& value) : primalValue(value), identifier() {
         Base::init(value, EventHints::Statement::Passive);
@@ -112,6 +107,11 @@ namespace codi {
       CODI_INLINE ActiveTypeBase(ActiveTypeBase const& v) : primalValue(), identifier() {
         Base::init(v.getValue(), EventHints::Statement::Copy);
         cast().getTape().store(*this, v);
+      }
+
+      /// Constructor
+      CODI_INLINE ActiveTypeBase(Real const& value) : primalValue(value), identifier() {
+        Base::init(value, EventHints::Statement::Passive);
       }
 
       /// Constructor
