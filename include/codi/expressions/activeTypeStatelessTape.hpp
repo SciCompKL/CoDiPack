@@ -50,7 +50,8 @@ namespace codi {
    *
    * See also LhsExpressionInterface.
    *
-   * This active type implements a tape with no state. getTape() constructs a new tape on every call.
+   * This active type does not work with a fixed tape. Instead, getTape() constructs a new temporary tape on every call.
+   * In particular, tapes for this active type can not have a persistent state.
    *
    * @tparam T_Tape  The tape that manages all expressions created with this type.
    */
@@ -78,7 +79,8 @@ namespace codi {
 
     public:
 
-      /// Constructor
+      /// @brief Constructor
+      /// @details CUDA compiler has problems when this function is annotated with \c __device__.
       constexpr CODI_INLINE_NO_FA ActiveTypeStatelessTape() = default;
 
       /// Constructor
