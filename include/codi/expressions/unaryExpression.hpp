@@ -94,7 +94,7 @@ namespace codi {
 
       /// Constructor
       template<typename RealArg>
-      explicit UnaryExpression(ExpressionInterface<RealArg, Arg> const& arg)
+      CODI_INLINE explicit UnaryExpression(ExpressionInterface<RealArg, Arg> const& arg)
           : arg(arg.cast()), result(Operation::primal(this->arg.getValue())) {}
 
       /*******************************************************************************/

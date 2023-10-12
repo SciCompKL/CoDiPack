@@ -237,7 +237,7 @@ namespace codi {
       }
 
       /// \copydoc JacobianInterface::operator()(size_t const  i, size_t const j)
-      CODI_INLINE DummyValue& operator()(size_t const i, size_t const j) {
+      CODI_INLINE_NO_FA DummyValue& operator()(size_t const i, size_t const j) {
         CODI_UNUSED(i, j);
 
         return StaticDummy<DummyValue>::dummy;

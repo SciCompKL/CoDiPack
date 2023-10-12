@@ -38,7 +38,7 @@ struct TestTwoArgumentExpr2 : public TestInterface {
   public:
     NAME("TwoArgumentExpr2")
     IN(2)
-    OUT(12)
+    OUT(18)
     POINTS(18) =  // clang-format off
     {
       {-10.0,   -10},
@@ -75,5 +75,11 @@ struct TestTwoArgumentExpr2 : public TestInterface {
       y[9] = hypot(x[0], x[1]);      // R x R \ {0, 0})
       y[10] = hypot(5.0, x[1]);      // R x R \ {0, 0})
       y[11] = hypot(x[0], 5.0);      // R x R \ {0, 0})
+      y[12] = fmod(x[0], x[1]);      // R x (R \ {0})
+      y[13] = fmod(5.00, x[1]);      // R x (R \ {0})
+      y[14] = fmod(x[0], 5.00);      // R x (R \ {0})
+      y[15] = fmodf(x[0], x[1]);     // R x (R \ {0})
+      y[16] = fmodf(5.00, x[1]);     // R x (R \ {0})
+      y[17] = fmodf(x[0], 5.00);     // R x (R \ {0})
     }
 };

@@ -81,31 +81,31 @@ namespace codi {
         opHelper.finalize();
       }
 
-      CODI_INLINE bool isActiveType() const {
+      CODI_INLINE_NO_FA bool isActiveType() const {
         return false;
       }
 
-      CODI_INLINE bool isHandleRequired() const {
+      CODI_INLINE_NO_FA bool isHandleRequired() const {
         return false;
       }
 
-      CODI_INLINE bool isModifiedBufferRequired() const {
+      CODI_INLINE_NO_FA bool isModifiedBufferRequired() const {
         return false;
       }
 
-      CODI_INLINE bool isOldPrimalsRequired() const {
+      CODI_INLINE_NO_FA bool isOldPrimalsRequired() const {
         return false;
       }
 
-      CODI_INLINE void startAssembly(medi::HandleBase* h) const {
+      CODI_INLINE_NO_FA void startAssembly(medi::HandleBase* h) const {
         CODI_UNUSED(h);
       }
 
-      CODI_INLINE void addToolAction(medi::HandleBase* h) const {
+      CODI_INLINE_NO_FA void addToolAction(medi::HandleBase* h) const {
         CODI_UNUSED(h);
       }
 
-      CODI_INLINE void stopAssembly(medi::HandleBase* h) const {
+      CODI_INLINE_NO_FA void stopAssembly(medi::HandleBase* h) const {
         CODI_UNUSED(h);
       }
 
@@ -113,55 +113,55 @@ namespace codi {
         return opHelper.convertOperator(op);
       }
 
-      CODI_INLINE void createPrimalTypeBuffer(PrimalType*& buf, size_t size) const {
+      CODI_INLINE_NO_FA void createPrimalTypeBuffer(PrimalType*& buf, size_t size) const {
         buf = new PrimalType[size];
       }
 
-      CODI_INLINE void createIndexTypeBuffer(IndexType*& buf, size_t size) const {
+      CODI_INLINE_NO_FA void createIndexTypeBuffer(IndexType*& buf, size_t size) const {
         buf = new IndexType[size];
       }
 
-      CODI_INLINE void deletePrimalTypeBuffer(PrimalType*& buf) const {
+      CODI_INLINE_NO_FA void deletePrimalTypeBuffer(PrimalType*& buf) const {
         if (nullptr != buf) {
           delete[] buf;
           buf = nullptr;
         }
       }
 
-      CODI_INLINE void deleteIndexTypeBuffer(IndexType*& buf) const {
+      CODI_INLINE_NO_FA void deleteIndexTypeBuffer(IndexType*& buf) const {
         if (nullptr != buf) {
           delete[] buf;
           buf = nullptr;
         }
       }
 
-      static CODI_INLINE int getIndex(Type const& value) {
+      static CODI_INLINE_NO_FA int getIndex(Type const& value) {
         return value.getIdentifier();
       }
 
-      static CODI_INLINE void clearIndex(Type& value) {
+      static CODI_INLINE_NO_FA void clearIndex(Type& value) {
         value.~Type();
         value.getIdentifier() = 0;
       }
 
-      static CODI_INLINE void createIndex(Type& value, int& index) {
+      static CODI_INLINE_NO_FA void createIndex(Type& value, int& index) {
         CODI_UNUSED(value);
         index = 0;
       }
 
-      static CODI_INLINE PrimalType getValue(Type const& value) {
+      static CODI_INLINE_NO_FA PrimalType getValue(Type const& value) {
         return value.getValue();
       }
 
-      static CODI_INLINE void setIntoModifyBuffer(ModifiedType& modValue, Type const& value) {
+      static CODI_INLINE_NO_FA void setIntoModifyBuffer(ModifiedType& modValue, Type const& value) {
         CODI_UNUSED(modValue, value);
       }
 
-      static CODI_INLINE void getFromModifyBuffer(ModifiedType const& modValue, Type& value) {
+      static CODI_INLINE_NO_FA void getFromModifyBuffer(ModifiedType const& modValue, Type& value) {
         CODI_UNUSED(modValue, value);
       }
 
-      static CODI_INLINE void registerValue(Type& value, PrimalType& oldValue, int& index) {
+      static CODI_INLINE_NO_FA void registerValue(Type& value, PrimalType& oldValue, int& index) {
         CODI_UNUSED(value, oldValue, index);
       }
 

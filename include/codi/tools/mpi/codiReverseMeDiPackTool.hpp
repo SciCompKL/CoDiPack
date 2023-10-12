@@ -70,15 +70,15 @@ namespace codi {
       CoDiMeDiAdjointInterfaceWrapper(VectorAccessInterface<Real, Identifier>* interface)
           : codiInterface(interface), vecSize((int)interface->getVectorSize()) {}
 
-      CODI_INLINE int computeElements(int elements) const {
+      CODI_INLINE_NO_FA int computeElements(int elements) const {
         return elements * vecSize;
       }
 
-      CODI_INLINE int getVectorSize() const {
+      CODI_INLINE_NO_FA int getVectorSize() const {
         return vecSize;
       }
 
-      CODI_INLINE void getAdjoints(void const* i, void* a, int elements) const {
+      CODI_INLINE_NO_FA void getAdjoints(void const* i, void* a, int elements) const {
         Real* adjoints = (Real*)a;
         Identifier* indices = (Identifier*)i;
 
@@ -88,7 +88,7 @@ namespace codi {
         }
       }
 
-      CODI_INLINE void updateAdjoints(void const* i, void const* a, int elements) const {
+      CODI_INLINE_NO_FA void updateAdjoints(void const* i, void const* a, int elements) const {
         Real* adjoints = (Real*)a;
         Identifier* indices = (Identifier*)i;
 
@@ -97,7 +97,7 @@ namespace codi {
         }
       }
 
-      CODI_INLINE void getPrimals(void const* i, void const* p, int elements) const {
+      CODI_INLINE_NO_FA void getPrimals(void const* i, void const* p, int elements) const {
         Real* primals = (Real*)p;
         Identifier* indices = (Identifier*)i;
 
@@ -106,7 +106,7 @@ namespace codi {
         }
       }
 
-      CODI_INLINE void setPrimals(void const* i, void const* p, int elements) const {
+      CODI_INLINE_NO_FA void setPrimals(void const* i, void const* p, int elements) const {
         Real* primals = (Real*)p;
         Identifier* indices = (Identifier*)i;
 
@@ -115,7 +115,7 @@ namespace codi {
         }
       }
 
-      CODI_INLINE void combineAdjoints(void* b, int const elements, int const ranks) const {
+      CODI_INLINE_NO_FA void combineAdjoints(void* b, int const elements, int const ranks) const {
         Real* buf = (Real*)b;
 
         for (int curRank = 1; curRank < ranks; ++curRank) {
@@ -127,11 +127,11 @@ namespace codi {
         }
       }
 
-      CODI_INLINE void createPrimalTypeBuffer(void*& buf, size_t size) const {
+      CODI_INLINE_NO_FA void createPrimalTypeBuffer(void*& buf, size_t size) const {
         buf = (void*)(new Real[size * vecSize]);
       }
 
-      CODI_INLINE void deletePrimalTypeBuffer(void*& b) const {
+      CODI_INLINE_NO_FA void deletePrimalTypeBuffer(void*& b) const {
         if (nullptr != b) {
           Real* buf = (Real*)b;
           delete[] buf;
@@ -139,11 +139,11 @@ namespace codi {
         }
       }
 
-      CODI_INLINE void createAdjointTypeBuffer(void*& buf, size_t size) const {
+      CODI_INLINE_NO_FA void createAdjointTypeBuffer(void*& buf, size_t size) const {
         buf = (void*)(new Real[size * vecSize]);
       }
 
-      CODI_INLINE void deleteAdjointTypeBuffer(void*& b) const {
+      CODI_INLINE_NO_FA void deleteAdjointTypeBuffer(void*& b) const {
         if (nullptr != b) {
           Real* buf = (Real*)b;
           delete[] buf;
@@ -192,19 +192,19 @@ namespace codi {
 
       // Implementation of the interface.
 
-      CODI_INLINE bool isHandleRequired() const {
+      CODI_INLINE_NO_FA bool isHandleRequired() const {
         // Handle creation is based on the CoDiPack tape activity. Only if the tape is recording the adjoint
         // communication needs to be evaluated.
         return getTape().isActive();
       }
 
-      CODI_INLINE void startAssembly(medi::HandleBase* h) const {
+      CODI_INLINE_NO_FA void startAssembly(medi::HandleBase* h) const {
         CODI_UNUSED(h);
 
         // No preparation required for CoDiPack.
       }
 
-      CODI_INLINE void addToolAction(medi::HandleBase* h) const {
+      CODI_INLINE_NO_FA void addToolAction(medi::HandleBase* h) const {
         if (nullptr != h) {
           getTape().pushExternalFunction(
               ExternalFunction<Tape>::create(callHandleReverse, h, deleteHandle, callHandleForward, callHandlePrimal));
@@ -215,17 +215,17 @@ namespace codi {
         return opHelper.convertOperator(op);
       }
 
-      CODI_INLINE void stopAssembly(medi::HandleBase* h) const {
+      CODI_INLINE_NO_FA void stopAssembly(medi::HandleBase* h) const {
         CODI_UNUSED(h);
 
         // No preparation required for CoDiPack.
       }
 
-      static CODI_INLINE IndexType getIndex(Type const& value) {
+      static CODI_INLINE_NO_FA IndexType getIndex(Type const& value) {
         return value.getIdentifier();
       }
 
-      static CODI_INLINE void registerValue(Type& value, PrimalType& oldPrimal, IndexType& index) {
+      static CODI_INLINE_NO_FA void registerValue(Type& value, PrimalType& oldPrimal, IndexType& index) {
         bool wasActive = getTape().isIdentifierActive(value.getIdentifier());
         value.getIdentifier() = IndexType();
 
@@ -259,14 +259,14 @@ namespace codi {
         }
       }
 
-      static CODI_INLINE void clearIndex(Type& value) {
+      static CODI_INLINE_NO_FA void clearIndex(Type& value) {
         IndexType oldIndex = value.getIdentifier();
         value.~Type();
         value.getIdentifier() = oldIndex;  // Restore the index here so that the other side can decide of the
                                            // communication was active or not.
       }
 
-      static CODI_INLINE void createIndex(Type& value, IndexType& index) {
+      static CODI_INLINE_NO_FA void createIndex(Type& value, IndexType& index) {
         if (Tape::LinearIndexHandling) {
           IndexType oldIndex = value.getIdentifier();
           getTape().registerInput(value);
@@ -276,17 +276,17 @@ namespace codi {
         }
       }
 
-      static CODI_INLINE PrimalType getValue(Type const& value) {
+      static CODI_INLINE_NO_FA PrimalType getValue(Type const& value) {
         return value.getValue();
       }
 
-      static CODI_INLINE void setIntoModifyBuffer(ModifiedType& modValue, Type const& value) {
+      static CODI_INLINE_NO_FA void setIntoModifyBuffer(ModifiedType& modValue, Type const& value) {
         CODI_UNUSED(modValue, value);
 
         // CoDiPack values are send in place. No modified buffer is crated.
       }
 
-      static CODI_INLINE void getFromModifyBuffer(ModifiedType const& modValue, Type& value) {
+      static CODI_INLINE_NO_FA void getFromModifyBuffer(ModifiedType const& modValue, Type& value) {
         CODI_UNUSED(modValue, value);
 
         // CoDiPack values are send in place. No modified buffer is crated.

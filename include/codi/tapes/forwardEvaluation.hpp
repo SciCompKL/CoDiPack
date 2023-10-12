@@ -86,14 +86,14 @@ namespace codi {
 
       /// \copydoc codi::InternalStatementRecordingTapeInterface::initIdentifier()
       template<typename Real>
-      void initIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
         identifier = Identifier();
       }
 
       /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyIdentifier()
       template<typename Real>
-      void destroyIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
         CODI_UNUSED(value, identifier);
       }
 
@@ -117,8 +117,8 @@ namespace codi {
 
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
       template<typename Lhs, typename Rhs>
-      void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
-                 ExpressionInterface<Real, Rhs> const& rhs) {
+      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
+                             ExpressionInterface<Real, Rhs> const& rhs) {
         LocalReverseLogic reversal;
 
         Gradient newGradient = Gradient();
@@ -131,8 +131,8 @@ namespace codi {
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Optimization for copy statements.
       template<typename Lhs, typename Rhs>
-      void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
-                 LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Rhs> const& rhs) {
+      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs,
+                             LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Rhs> const& rhs) {
         lhs.cast().value() = rhs.cast().getValue();
         lhs.cast().gradient() = rhs.cast().getGradient();
       }
@@ -140,7 +140,7 @@ namespace codi {
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
       /// Specialization for passive assignments.
       template<typename Lhs>
-      void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs, Real const& rhs) {
+      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, ForwardEvaluation, Lhs>& lhs, Real const& rhs) {
         lhs.cast().value() = rhs;
         lhs.cast().gradient() = Gradient();
       }
@@ -153,8 +153,8 @@ namespace codi {
       /// \copydoc codi::GradientAccessTapeInterface::setGradient()
       /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
       /// adjoints.
-      void setGradient(Identifier& identifier, Gradient const& gradient,
-                       AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+      CODI_INLINE void setGradient(Identifier& identifier, Gradient const& gradient,
+                                   AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         CODI_UNUSED(adjointsManagement);
         identifier = gradient;
       }
@@ -162,8 +162,8 @@ namespace codi {
       /// \copydoc codi::GradientAccessTapeInterface::getGradient()
       /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
       /// adjoints.
-      Gradient const& getGradient(Identifier const& identifier,
-                                  AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
+      CODI_INLINE Gradient const& getGradient(
+          Identifier const& identifier, AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
         CODI_UNUSED(adjointsManagement);
         return identifier;
       }
@@ -171,8 +171,8 @@ namespace codi {
       /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement)
       /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
       /// adjoints.
-      Gradient& gradient(Identifier& identifier,
-                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+      CODI_INLINE Gradient& gradient(Identifier& identifier,
+                                     AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         CODI_UNUSED(adjointsManagement);
         return identifier;
       }
@@ -180,8 +180,8 @@ namespace codi {
       /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement) const
       /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
       /// adjoints.
-      Gradient const& gradient(Identifier const& identifier,
-                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
+      CODI_INLINE Gradient const& gradient(
+          Identifier const& identifier, AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
         CODI_UNUSED(adjointsManagement);
         return identifier;
       }
@@ -190,11 +190,11 @@ namespace codi {
 
     private:
 
-      void setGradient(Identifier const& identifier, Gradient const& gradient) {
+      CODI_INLINE void setGradient(Identifier const& identifier, Gradient const& gradient) {
         CODI_UNUSED(identifier, gradient);
       }
 
-      Gradient& gradient(Identifier const& identifier) {
+      CODI_INLINE Gradient& gradient(Identifier const& identifier) {
         CODI_UNUSED(identifier);
         static Gradient temp = Gradient();
         return temp;

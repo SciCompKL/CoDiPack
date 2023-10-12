@@ -154,7 +154,7 @@ namespace codi {
        * event listener map has empty entries for all events, so that its size does not change any more. This is
        * important in a shared memory setting when multiple threads access the listener map simultaneously.
        */
-      static EventListenerMap& getListeners() {
+      static CODI_INLINE EventListenerMap& getListeners() {
         static EventListenerMap* const listeners =
             new EventListenerMap{{Event::TapeStartRecording, {}}, {Event::TapeStopRecording, {}},
                                  {Event::TapeRegisterInput, {}},  {Event::TapeRegisterOutput, {}},
@@ -191,7 +191,7 @@ namespace codi {
        * @return Handle that can be used to deregister this listener. A handle of 0 means that nothing was registered.
        */
       template<typename TypedCallback>
-      static CODI_INLINE Handle internalRegisterListener(bool const& enabled, Event event, TypedCallback callback,
+      static CODI_INLINE Handle internalRegisterListener(bool const enabled, Event event, TypedCallback callback,
                                                          void* customData) {
         if (enabled) {
           nextHandle = nextHandle + 1;
@@ -216,7 +216,7 @@ namespace codi {
        * @tparam Args           Types of the callback arguments.
        */
       template<typename TypedCallback, typename... Args>
-      static CODI_INLINE void internalNotifyListeners(bool const& enabled, Event event, Args&&... args) {
+      static CODI_INLINE void internalNotifyListeners(bool const enabled, Event event, Args&&... args) {
         if (enabled) {
           for (auto const& listener : getListeners()[event]) {
             ((TypedCallback)listener.second.first)(std::forward<Args>(args)..., listener.second.second);
@@ -267,6 +267,19 @@ namespace codi {
         internalNotifyListeners<void (*)(Tape&, Real const&, Identifier const&, Real const&, EventHints::Statement,
                                          void*)>(Config::StatementEvents, Event::StatementPrimal, tape, lhsValue,
                                                  lhsIdentifier, newValue, statement);
+      }
+
+      /**
+       * @brief Invoke callbacks for StatementPrimal events.
+       *
+       * See notifyStatementPrimalListeners(Tape&, Real const&, Identifier const&, Real const&, EventHints::Statement)
+       * for details.
+       */
+      static CODI_INLINE void notifyStatementPrimalListeners(Tape&& tape, Real const& lhsValue,
+                                                             Identifier const& lhsIdentifier, Real const& newValue,
+                                                             EventHints::Statement statement) {
+        Tape localTape = tape;
+        notifyStatementPrimalListeners(localTape, lhsValue, lhsIdentifier, newValue, statement);
       }
 
       /// @}
@@ -829,6 +842,7 @@ namespace codi {
   template<typename Real, typename Gradient>
   struct ForwardEvaluation;
 
+#if !CODI_CUDA
   /**
    * @brief Specialization for ForwardEvaluation.
    *
@@ -839,5 +853,47 @@ namespace codi {
    */
   template<typename Real, typename Gradient>
   struct EventSystem<ForwardEvaluation<Real, Gradient>> : public EventSystemBase<ForwardEvaluation<Real, Gradient>> {};
+#else
+  /**
+   * @brief Specialization for of ForwardEvaluation for CUDA.
+   *
+   * All events are ignored.
+   *
+   * @tparam T_Real      Floating point the forward tape is based on.
+   * @tparam T_Gradient  Gradient type used by the forward tape.
+   */
+  template<typename T_Real, typename T_Gradient>
+  struct EventSystem<ForwardEvaluation<T_Real, T_Gradient>> {
+    public:
+      using Tape = CODI_DD(CODI_T(ForwardEvaluation<T_Real, T_Gradient>), CODI_DEFAULT_TAPE);  ///< See EventSystemBase.
+      using Real = CODI_DD(T_Real, double);                                                    ///< See EventSystemBase.
+      using Identifier = CODI_DD(T_Gradient, double);                                          ///< See EventSystemBase.
 
+      using Handle = size_t;  ///< See EventSystemBase.
+
+      /// No operation. See EventSystemBase::registerStatementPrimalListener()
+      static CODI_INLINE Handle registerStatementPrimalListener(void (*callback)(Tape&, Real const&, Identifier const&,
+                                                                                 Real const&, EventHints::Statement,
+                                                                                 void*),
+                                                                void* customData = nullptr) {
+        CODI_UNUSED(callback, customData);
+
+        return 0;
+      }
+
+      /// No operation. See EventSystemBase::notifyStatementPrimalListeners()
+      static CODI_INLINE void notifyStatementPrimalListeners(Tape&& tape, Real const& lhsValue,
+                                                             Identifier const& lhsIdentifier, Real const& newValue,
+                                                             EventHints::Statement statement) {
+        CODI_UNUSED(tape, lhsValue, lhsIdentifier, newValue, statement);
+      }
+
+      /// No operation. See EventSystemBase::deregisterListener()
+      static CODI_INLINE void deregisterListener(Handle const& handle) {
+        CODI_UNUSED(handle);
+      }
+
+      /// @}
+  };
+#endif
 }

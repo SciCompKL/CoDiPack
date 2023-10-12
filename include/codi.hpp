@@ -36,6 +36,7 @@
 
 #include "codi/config.h"
 #include "codi/expressions/activeType.hpp"
+#include "codi/expressions/activeTypeStatelessTape.hpp"
 #include "codi/expressions/activeTypeWrapper.hpp"
 #include "codi/expressions/immutableActiveType.hpp"
 #include "codi/expressions/real/allOperators.hpp"
@@ -242,10 +243,11 @@ namespace codi {
    * This is the scalar version which does not use a vector mode.
    */
   using JacobianComputationScalarType = RealReverseIndex;
-
 }
 
 #include "codi/tools/helpers/evaluationHelper.hpp"
+
+#include "codi/tools/cuda/codiCUDA.hpp"
 
 #if CODI_EnableOpenMP
   #include "codi/tools/parallel/openmp/codiOpenMP.hpp"

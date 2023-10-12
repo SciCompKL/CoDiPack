@@ -43,7 +43,7 @@ namespace codi {
 
   /// Disable unused warnings for an arbitrary number of arguments.
   template<typename... Args>
-  void CODI_UNUSED(Args const&...) {}
+  CODI_INLINE void CODI_UNUSED(Args const&...) {}
 
 /// Used in a constexpr context, where using CODI_UNUSED spoils the constexpr.
 #define CODI_UNUSED_ARG(arg) /* arg */
