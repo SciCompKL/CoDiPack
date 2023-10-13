@@ -262,6 +262,14 @@ namespace codi {
 #define FUNCTION atan2
 #include "binaryOverloads.tpp"
 
+#define OPERATION_LOGIC OperationAtan2
+#define FUNCTION atan2f
+#include "binaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAtan2
+#define FUNCTION atan2l
+#include "binaryOverloads.tpp"
+
   /// BinaryOperation implementation for copysign
   template<typename T_Real>
   struct OperationCopysign : public BinaryOperation<T_Real> {
@@ -315,6 +323,10 @@ namespace codi {
 #define FUNCTION copysignf
 #include "binaryOverloads.tpp"
 
+#define OPERATION_LOGIC OperationCopysign
+#define FUNCTION copysignl
+#include "binaryOverloads.tpp"
+
   /// BinaryOperation implementation for fmod
   template<typename T_Real>
   struct OperationFmod : public BinaryOperation<T_Real> {
@@ -357,6 +369,10 @@ namespace codi {
 
 #define OPERATION_LOGIC OperationFmod
 #define FUNCTION fmodf
+#include "binaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationFmod
+#define FUNCTION fmodl
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for frexp
@@ -409,6 +425,18 @@ namespace codi {
 #endif
 #define OPERATION_LOGIC OperationFrexp
 #define FUNCTION frexp
+#define SECOND_ARG_TYPE int*
+#define SECOND_ARG_CONVERSION IntPointerConversion
+#include "binaryFirstArgumentOverloads.tpp"
+
+#define OPERATION_LOGIC OperationFrexp
+#define FUNCTION frexpf
+#define SECOND_ARG_TYPE int*
+#define SECOND_ARG_CONVERSION IntPointerConversion
+#include "binaryFirstArgumentOverloads.tpp"
+
+#define OPERATION_LOGIC OperationFrexp
+#define FUNCTION frexpl
 #define SECOND_ARG_TYPE int*
 #define SECOND_ARG_CONVERSION IntPointerConversion
 #include "binaryFirstArgumentOverloads.tpp"
@@ -467,12 +495,13 @@ namespace codi {
 #include "binaryOverloads.tpp"
 
 #define OPERATION_LOGIC OperationHypot
-#define FUNCTION hypotl
+#define FUNCTION hypotf
 #include "binaryOverloads.tpp"
 
 #define OPERATION_LOGIC OperationHypot
-#define FUNCTION hypotf
+#define FUNCTION hypotl
 #include "binaryOverloads.tpp"
+
 
   /// BinaryOperation implementation for ldexp
   template<typename T_Real>
@@ -505,6 +534,18 @@ namespace codi {
   };
 #define OPERATION_LOGIC OperationLdexp
 #define FUNCTION ldexp
+#define SECOND_ARG_TYPE int
+#define SECOND_ARG_CONVERSION ConstantDataConversion
+#include "binaryFirstArgumentOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLdexp
+#define FUNCTION ldexpl
+#define SECOND_ARG_TYPE int
+#define SECOND_ARG_CONVERSION ConstantDataConversion
+#include "binaryFirstArgumentOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLdexp
+#define FUNCTION ldexpf
 #define SECOND_ARG_TYPE int
 #define SECOND_ARG_CONVERSION ConstantDataConversion
 #include "binaryFirstArgumentOverloads.tpp"
@@ -557,6 +598,14 @@ namespace codi {
 #define FUNCTION fmax
 #include "binaryOverloads.tpp"
 
+#define OPERATION_LOGIC OperationMax
+#define FUNCTION fmaxf
+#include "binaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationMax
+#define FUNCTION fmaxl
+#include "binaryOverloads.tpp"
+
   /// BinaryOperation implementation for min
   template<typename T_Real>
   struct OperationMin : public BinaryOperation<T_Real> {
@@ -602,6 +651,14 @@ namespace codi {
 
 #define OPERATION_LOGIC OperationMin
 #define FUNCTION fmin
+#include "binaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationMin
+#define FUNCTION fminf
+#include "binaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationMin
+#define FUNCTION fminl
 #include "binaryOverloads.tpp"
 
   /// BinaryOperation implementation for pow
@@ -666,6 +723,10 @@ namespace codi {
 #define FUNCTION powf
 #include "binaryOverloads.tpp"
 
+#define OPERATION_LOGIC OperationPow
+#define FUNCTION powl
+#include "binaryOverloads.tpp"
+
   /// BinaryOperation implementation for remainder
   ///
   /// Derivative implementation based on IEC 60559: remainder = numer - rquot * denom
@@ -714,6 +775,14 @@ namespace codi {
 #define FUNCTION remainder
 #include "binaryOverloads.tpp"
 
+#define OPERATION_LOGIC OperationRemainder
+#define FUNCTION remainderf
+#include "binaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationRemainder
+#define FUNCTION remainderl
+#include "binaryOverloads.tpp"
+
   /// @}
   /// /*******************************************************************************/
   /// @name Additional standard library binary operators
@@ -734,21 +803,36 @@ namespace codi {
 
 namespace std {
   using codi::atan2;
+  using codi::atan2f;
+  using codi::atan2l;
   using codi::copysign;
   using codi::copysignf;
+  using codi::copysignl;
   using codi::fmax;
+  using codi::fmaxf;
+  using codi::fmaxl;
   using codi::fmin;
+  using codi::fminf;
+  using codi::fminl;
   using codi::fmod;
   using codi::fmodf;
+  using codi::fmodl;
   using codi::frexp;
+  using codi::frexpf;
+  using codi::frexpl;
   using codi::hypot;
   using codi::hypotf;
   using codi::hypotl;
   using codi::ldexp;
+  using codi::ldexpf;
+  using codi::ldexpl;
   using codi::max;
   using codi::min;
   using codi::pow;
   using codi::powf;
+  using codi::powl;
   using codi::remainder;
+  using codi::remainderf;
+  using codi::remainderl;
   using codi::swap;
 }
