@@ -53,11 +53,9 @@ namespace codi {
 namespace std {
 
   /// Specialization of std::numeric_limits for the default CoDiPack active types.
-  template<typename Tape>
-  struct numeric_limits<codi::ActiveType<Tape>> {
+  template<typename Type>
+  struct codi_numeric_limits {
     private:
-
-      using Type = codi::ActiveType<Tape>;
       using Passive = codi::RealTraits::PassiveReal<Type>;
 
     public:
@@ -77,7 +75,7 @@ namespace std {
       static bool constexpr is_signed = numeric_limits<Passive>::is_signed;    ///< See numeric_limits
       static bool constexpr is_integer = numeric_limits<Passive>::is_integer;  ///< See numeric_limits
       static bool constexpr is_exact = numeric_limits<Passive>::is_exact;      ///< See numeric_limits
-      static int constexpr radix = numeric_limits<Passive>::is_exact;          ///< See numeric_limits
+      static int constexpr radix = numeric_limits<Passive>::radix;             ///< See numeric_limits
       static Type constexpr epsilon() {
         return Type(numeric_limits<Passive>::epsilon());
       }  ///< See numeric_limits
@@ -117,11 +115,15 @@ namespace std {
       static float_round_style constexpr round_style = numeric_limits<Passive>::round_style;  ///< See numeric_limits
   };
 
+  /// Specialization of std::numeric_limits for CoDiPack active types.
+  template<typename Tape>
+  struct numeric_limits<codi::ActiveType<Tape>> : codi_numeric_limits<codi::ActiveType<Tape>> {};
+
   /// Specialization of std::numeric_limits for parallel CoDiPack active types.
   template<typename Tape, typename ParallelToolbox>
-  struct numeric_limits<codi::ParallelActiveType<Tape, ParallelToolbox>> : numeric_limits<codi::ActiveType<Tape>> {};
+  struct numeric_limits<codi::ParallelActiveType<Tape, ParallelToolbox>> : codi_numeric_limits<codi::ParallelActiveType<Tape, ParallelToolbox>> {};
 
   /// Specialization of std::numeric_limits for no tape CoDiPack active types.
   template<typename Tape>
-  struct numeric_limits<codi::ActiveTypeStatelessTape<Tape>> : numeric_limits<codi::ActiveType<Tape>> {};
+  struct numeric_limits<codi::ActiveTypeStatelessTape<Tape>> : codi_numeric_limits<codi::ActiveTypeStatelessTape<Tape>> {};
 }
