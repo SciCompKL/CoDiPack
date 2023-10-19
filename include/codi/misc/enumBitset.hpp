@@ -38,6 +38,7 @@
 #include <type_traits>
 
 #include "../config.h"
+#include "enumInterface.hpp"
 #include "macros.hpp"
 
 /** \copydoc codi::Namespace */
@@ -146,6 +147,31 @@ namespace codi {
         return *this &= EnumBitset(pos);
       }
 
+      /// Not equal operation for two bitsets.
+      CODI_INLINE bool operator!=(EnumBitset const& o) const {
+        return bitset != o.bitset;
+      }
+
+      /// Not equal operation for a bitset and an enum.
+      CODI_INLINE bool operator!=(Enum const& pos) const {
+        return bitset != EnumBitset(pos);
+      }
+
+      /// Equal operation for two bitsets.
+      CODI_INLINE bool operator==(EnumBitset const& o) const {
+        return bitset == o.bitset;
+      }
+
+      /// Equal operation for a bitset and an enum.
+      CODI_INLINE bool operator==(Enum const& pos) const {
+        return bitset == EnumBitset(pos);
+      }
+
+      /// Conversion to boolean.
+      CODI_INLINE operator bool() {
+        return this->bitset.any();
+      }
+
       /// Get the underlying bitset.
       CODI_INLINE Bitset getData() const {
         return bitset;
@@ -154,6 +180,11 @@ namespace codi {
       /// Constructor for a bitset with all values flagged as true.
       CODI_INLINE static constexpr EnumBitset ALL() {
         return EnumBitset(ALL_VALUE);
+      }
+
+      /// Constructor for a bitset with all values flagged as false.
+      CODI_INLINE static constexpr EnumBitset NONE() {
+        return EnumBitset();
       }
   };
 
@@ -199,10 +230,22 @@ namespace codi {
     return r;
   }
 
-  /// Or operation of the bitset and an enum.
+  /// And operation of the bitset and an enum.
   template<typename Enum>
   CODI_INLINE EnumBitset<Enum> operator&(Enum a, EnumBitset<Enum> const& b) {
     return b & a;
+  }
+
+  /// Not equal comparison for an enum and a bitset.
+  template<typename Enum>
+  CODI_INLINE bool operator!=(Enum a, EnumBitset<Enum> const& b) {
+    return b != a;
+  }
+
+  /// Equal comparison for an enum and a bitset.
+  template<typename Enum>
+  CODI_INLINE bool operator==(Enum a, EnumBitset<Enum> const& b) {
+    return b == a;
   }
 
   /// Stream output.
