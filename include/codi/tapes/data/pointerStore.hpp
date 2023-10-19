@@ -100,7 +100,7 @@ namespace codi {
    * See PointerStore for details.
    */
   template<typename T_Data1>
-  struct PointerStore<Chunk1<T_Data1> > {
+  struct PointerStore<Chunk1<T_Data1>> {
     public:
 
       using Data1 = CODI_DD(T_Data1, int);  ///< Data entry 1.
@@ -149,7 +149,7 @@ namespace codi {
    * See PointerStore for details.
    */
   template<typename T_Data1, typename T_Data2>
-  struct PointerStore<Chunk2<T_Data1, T_Data2> > {
+  struct PointerStore<Chunk2<T_Data1, T_Data2>> {
     public:
 
       using Data1 = CODI_DD(T_Data1, int);  ///< Data entry 1.
@@ -199,7 +199,7 @@ namespace codi {
    * See PointerStore for details.
    */
   template<typename T_Data1, typename T_Data2, typename T_Data3>
-  struct PointerStore<Chunk3<T_Data1, T_Data2, T_Data3> > {
+  struct PointerStore<Chunk3<T_Data1, T_Data2, T_Data3>> {
     public:
 
       using Data1 = CODI_DD(T_Data1, int);  ///< Data entry 1.
@@ -251,7 +251,7 @@ namespace codi {
    * See PointerStore for details.
    */
   template<typename T_Data1, typename T_Data2, typename T_Data3, typename T_Data4>
-  struct PointerStore<Chunk4<T_Data1, T_Data2, T_Data3, T_Data4> > {
+  struct PointerStore<Chunk4<T_Data1, T_Data2, T_Data3, T_Data4>> {
     public:
 
       using Data1 = CODI_DD(T_Data1, int);  ///< Data entry 1.

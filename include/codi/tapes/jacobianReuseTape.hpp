@@ -108,8 +108,8 @@ namespace codi {
         };
 
         using StmtPosition = typename StatementData::Position;
-        StmtPosition startStmt = this->externalFunctionData.template extractPosition<StmtPosition>(start);
-        StmtPosition endStmt = this->externalFunctionData.template extractPosition<StmtPosition>(end);
+        StmtPosition startStmt = this->otherDynamicData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->otherDynamicData.template extractPosition<StmtPosition>(end);
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
 
@@ -132,59 +132,85 @@ namespace codi {
         this->statementData.pushData(index, numberOfArguments);
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_Step3_EvalStatements
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
+      CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
           JacobianReuseTape& tape, Adjoint* adjointVector,
+          /* data from other dynamic data vector */
+          size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
+          /* data from other fixed data vector */
+          size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
           /* data from statement vector */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
-        CODI_UNUSED(endJacobianPos);
+        CODI_UNUSED(endJacobianPos, endOtherFixedDataPos, endOtherDynamicDataPos);
+
+        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
 
         while (curStmtPos < endStmtPos) CODI_Likely {
-          Adjoint lhsAdjoint = Adjoint();
-          Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
-                                  rhsJacobians, rhsIdentifiers);
+          Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
+          if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+            Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
+                tape, ByteDataStore::Direction::Forward, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
+                otherFixedPtr, &vectorAccess);
+          } else CODI_Likely {
+            Adjoint lhsAdjoint = Adjoint();
+            Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
 
-          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape, lhsIdentifiers[curStmtPos],
-                                                                           GradientTraits::dim<Adjoint>(),
-                                                                           GradientTraits::toArray(lhsAdjoint).data());
+            adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
+
+            EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(
+                tape, lhsIdentifiers[curStmtPos], GradientTraits::dim<Adjoint>(),
+                GradientTraits::toArray(lhsAdjoint).data());
+          }
 
           curStmtPos += 1;
         }
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_Step3_EvalStatements
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
+      CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
           JacobianReuseTape& tape, Adjoint* adjointVector,
+          /* data from other dynamic data vector */
+          size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
+          /* data from other fixed data vector */
+          size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
-        CODI_UNUSED(endJacobianPos);
+        CODI_UNUSED(endJacobianPos, endOtherFixedDataPos, endOtherDynamicDataPos);
+
+        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
 
         while (curStmtPos > endStmtPos) CODI_Likely {
           curStmtPos -= 1;
 
-          Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
+          Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(tape, lhsIdentifiers[curStmtPos],
-                                                                           GradientTraits::dim<Adjoint>(),
-                                                                           GradientTraits::toArray(lhsAdjoint).data());
+          if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+            Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
+                tape, ByteDataStore::Direction::Reverse, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
+                otherFixedPtr, &vectorAccess);
+          } else CODI_Likely {
+            Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
 
-          adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
-          Base::incrementAdjoints(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
-                                  rhsJacobians, rhsIdentifiers);
+            EventSystem<JacobianReuseTape>::notifyStatementEvaluateListeners(
+                tape, lhsIdentifiers[curStmtPos], GradientTraits::dim<Adjoint>(),
+                GradientTraits::toArray(lhsAdjoint).data());
+
+            adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
+            Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
+          }
         }
       }
 
@@ -219,29 +245,8 @@ namespace codi {
 
       /// \copydoc codi::EditingTapeInterface::append
       CODI_INLINE void append(JacobianReuseTape& srcTape, Position const& start, Position const& end) {
-        typename Base::NestedPosition curInnerPos = start.inner;
-        auto evalFunc = [&](ExternalFunctionInternalData* extFunc, const typename Base::NestedPosition* endInnerPos) {
-          // Append jacobian and statement data.
-          srcTape.jacobianData.evaluateForward(curInnerPos, *endInnerPos,
-                                               JacobianReuseTape::appendJacobiansAndStatements, this);
-
-          // Append the external function. Position correction: Disregard the position from the source tape and use the
-          // current position of the destination tape instead.
-          this->externalFunctionData.reserveItems(1);
-          typename Base::NestedPosition innerPosition =
-              this->externalFunctionData.template extractPosition<typename Base::NestedPosition>(
-                  this->externalFunctionData.getPosition());
-
-          this->externalFunctionData.pushData(*extFunc, innerPosition);
-
-          curInnerPos = *endInnerPos;
-        };
-
-        srcTape.externalFunctionData.forEachForward(start, end, evalFunc);
-
-        // Handle the tail.
-        srcTape.jacobianData.evaluateForward(curInnerPos, end.inner, JacobianReuseTape::appendJacobiansAndStatements,
-                                             this);
+        srcTape.otherDynamicData.evaluateForward(start, end, JacobianReuseTape::appendJacobiansAndStatements, srcTape,
+                                                 this);
       }
 
       /// @}
@@ -250,26 +255,57 @@ namespace codi {
 
       static CODI_INLINE void appendJacobiansAndStatements(
           /* data from call */
-          JacobianReuseTape* dstTape,
+          JacobianReuseTape* srcTape, JacobianReuseTape* dstTape,
+          /* data from other dynamic data vector */
+          size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
+          /* data from other fixed data vector */
+          size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
-        CODI_UNUSED(endJacobianPos);
-
         while (curStmtPos < endStmtPos) {
-          // Manual statement push.
-          dstTape->statementData.reserveItems(1);
-          dstTape->jacobianData.reserveItems(numberOfJacobians[curStmtPos]);
+          Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
+          if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+            // Get the size of the external function.
+            int fixedSize = 0;
+            int dynamicSize = 0;
+            int allocatedSize = 0;
+            // The positions are advanced so we use temporary ones.
+            size_t tempCurOtherDynamicDataPos = curOtherDynamicDataPos;
+            size_t tempCurOtherFixedDataPos = curOtherFixedDataPos;
+            Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Count>(
+                srcTape, ByteDataStore::Direction::Forward, tempCurOtherDynamicDataPos, otherDynamicPtr,
+                tempCurOtherFixedDataPos, otherFixedPtr, fixedSize, dynamicSize, allocatedSize);
 
-          dstTape->pushStmtData(lhsIdentifiers[curStmtPos], numberOfJacobians[curStmtPos]);
-          size_t statementEndJacobianPos = curJacobianPos + numberOfJacobians[curStmtPos];
+            // Create stores with the original data.
+            ByteDataStore fixedStore(const_cast<char*>(otherFixedPtr), curOtherFixedDataPos,
+                                     ByteDataStore::Direction::Forward);
+            ByteDataStore dynamicStore(const_cast<char*>(otherDynamicPtr), curOtherDynamicDataPos,
+                                       ByteDataStore::Direction::Forward);
 
-          while (curJacobianPos < statementEndJacobianPos) {
-            dstTape->jacobianData.pushData(rhsJacobians[curJacobianPos], rhsIdentifiers[curJacobianPos]);
-            ++curJacobianPos;
+            // Create the stores on the new tape.
+            ByteDataStore dstFixedStore = {};
+            ByteDataStore dstDynamicStore = {};
+            dstTape->pushLowLevelFunction(fixedSize, dynamicSize, dstFixedStore, dstDynamicStore);
+
+            // Copy the data.
+            dstFixedStore.write(fixedStore.template read<char>(fixedSize), fixedSize);
+            dstDynamicStore.write(dynamicStore.template read<char>(dynamicSize), dynamicSize);
+          } else CODI_Likely {
+            // Manual statement push.
+            dstTape->statementData.reserveItems(1);
+            dstTape->jacobianData.reserveItems(numberOfJacobians[curStmtPos]);
+
+            dstTape->pushStmtData(lhsIdentifiers[curStmtPos], numberOfJacobians[curStmtPos]);
+            size_t curJacobianEnd = curJacobianPos + numberOfJacobians[curStmtPos];
+
+            while (curJacobianPos < curJacobianEnd) {
+              dstTape->jacobianData.pushData(rhsJacobians[curJacobianPos], rhsIdentifiers[curJacobianPos]);
+              ++curJacobianPos;
+            }
           }
 
           ++curStmtPos;

@@ -43,6 +43,7 @@
 #include "gradientAccessTapeInterface.hpp"
 #include "identifierInformationTapeInterface.hpp"
 #include "internalStatementRecordingTapeInterface.hpp"
+#include "lowLevelFunctionTapeInterface.hpp"
 #include "manualStatementPushTapeInterface.hpp"
 #include "positionalEvaluationTapeInterface.hpp"
 #include "preaccumulationEvaluationTapeInterface.hpp"
@@ -73,6 +74,7 @@ namespace codi {
         public virtual GradientAccessTapeInterface<T_Gradient, T_Identifier>,
         public virtual IdentifierInformationTapeInterface<T_Real, T_Gradient, T_Identifier>,
         public virtual InternalStatementRecordingTapeInterface<T_Identifier>,
+        public virtual LowLevelFunctionTapeInterface<T_Real, T_Gradient, T_Identifier>,
         public virtual ManualStatementPushTapeInterface<T_Real, T_Gradient, T_Identifier>,
         public virtual PositionalEvaluationTapeInterface<T_Position>,
         public virtual PreaccumulationEvaluationTapeInterface<T_Real, T_Gradient, T_Identifier, T_Position>,

@@ -90,8 +90,8 @@ namespace codi {
         }
 
         using IndexPosition = CODI_DD(typename IndexManager::Position, int);
-        IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
-        IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
+        IndexPosition startIndex = this->otherDynamicData.template extractPosition<IndexPosition>(start);
+        IndexPosition endIndex = this->otherDynamicData.template extractPosition<IndexPosition>(end);
 
         startIndex = std::min(startIndex, (IndexPosition)this->adjoints.size() - 1);
         endIndex = std::min(endIndex, (IndexPosition)this->adjoints.size() - 1);
@@ -115,11 +115,15 @@ namespace codi {
         this->statementData.pushData(numberOfArguments);
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_Step3_EvalStatements
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateForward_Step3_EvalStatements(
+      CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
           JacobianLinearTape& tape, Adjoint* adjointVector,
+          /* data from other dynamic data vector */
+          size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
+          /* data from other fixed data vector */
+          size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -127,7 +131,9 @@ namespace codi {
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endJacobianPos, endStmtPos);
+        CODI_UNUSED(endJacobianPos, endStmtPos, endOtherFixedDataPos, endOtherDynamicDataPos);
+
+        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -136,7 +142,13 @@ namespace codi {
 
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          if (Config::StatementInputTag != argsSize) CODI_Likely {
+          if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+            Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
+                tape, ByteDataStore::Direction::Forward, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
+                otherFixedPtr, &vectorAccess);
+          } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
+            // Do nothing.
+          } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
@@ -149,11 +161,15 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_Step3_EvalStatements
+      /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_EvalStatements
       template<typename Adjoint>
-      CODI_INLINE static void internalEvaluateReverse_Step3_EvalStatements(
+      CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
           JacobianLinearTape& tape, Adjoint* adjointVector,
+          /* data from other dynamic data vector */
+          size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
+          /* data from other fixed data vector */
+          size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -161,7 +177,9 @@ namespace codi {
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endJacobianPos, endStmtPos);
+        CODI_UNUSED(endJacobianPos, endStmtPos, endOtherFixedDataPos, endOtherDynamicDataPos);
+
+        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -169,7 +187,13 @@ namespace codi {
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          if (Config::StatementInputTag != argsSize) CODI_Likely {
+          if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+            Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
+                tape, ByteDataStore::Direction::Reverse, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
+                otherFixedPtr, &vectorAccess);
+          } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
+            // Do nothing.
+          } else CODI_Likely {
             // No input value, perform regular statement evaluation.
 
             Adjoint const lhsAdjoint = adjointVector[curAdjointPos];  // We do not use the zero index, decrement of

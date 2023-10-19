@@ -116,9 +116,7 @@ namespace codi {
    * method:
    * - evaluate
    * - internalEvaluate*
-   * - internalEvaluate*_Step1_ExtFunc
-   * - internalEvaluate*_Step2_DataExtraction
-   * - internalEvaluate*_Step3_EvalStatements
+   * - internalEvaluate*_EvalStatements
    * The placeholder stands for Reverse, Forward, or Primal.
    *
    * @tparam T_TapeTypes has to implement JacobianTapeTypes.
@@ -193,11 +191,11 @@ namespace codi {
 
       /// Perform a forward evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluateForward_Step3_EvalStatements(Args&&... args);
+      static void internalEvaluateForward_EvalStatements(Args&&... args);
 
       /// Perform a reverse evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluateReverse_Step3_EvalStatements(Args&&... args);
+      static void internalEvaluateReverse_EvalStatements(Args&&... args);
 
       /// Add statement specific data to the data streams.
       void pushStmtData(Identifier const& index, Config::ArgumentSize const& numberOfArguments);
@@ -218,6 +216,7 @@ namespace codi {
                                                                                  // data for all arguments of one
                                                                                  // statement.
             adjoints(1)  // Ensure that adjoint[0] exists, see its use in gradient() const.
+
       {
         statementData.setNested(&indexManager.get());
         jacobianData.setNested(&statementData);
@@ -536,18 +535,8 @@ namespace codi {
       }
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverse_Step3_EvalStatements,
-                                  Impl::template internalEvaluateReverse_Step3_EvalStatements);
-
-      /// Start for reverse evaluation between external function.
-      template<typename Adjoint>
-      CODI_NO_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start,
-                                                                              NestedPosition const& end, Impl& tape,
-                                                                              Adjoint* data,
-                                                                              JacobianData& jacobianData) {
-        Wrap_internalEvaluateReverse_Step3_EvalStatements<Adjoint> evalFunc;
-        jacobianData.evaluateReverse(start, end, evalFunc, tape, data);
-      }
+      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateReverse_EvalStatements,
+                                  Impl::template internalEvaluateReverse_EvalStatements);
 
       /// Performs the AD \ref sec_forwardAD "forward" equation for a statement.
       template<typename Adjoint>
@@ -564,18 +553,8 @@ namespace codi {
       }
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateForward_Step3_EvalStatements,
-                                  Impl::template internalEvaluateForward_Step3_EvalStatements);
-
-      /// Start for forward evaluation between external function.
-      template<typename Adjoint>
-      CODI_NO_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start,
-                                                                              NestedPosition const& end, Impl& tape,
-                                                                              Adjoint* data,
-                                                                              JacobianData& jacobianData) {
-        Wrap_internalEvaluateForward_Step3_EvalStatements<Adjoint> evalFunc;
-        jacobianData.evaluateForward(start, end, evalFunc, tape, data);
-      }
+      CODI_WRAP_FUNCTION_TEMPLATE(Wrap_internalEvaluateForward_EvalStatements,
+                                  Impl::template internalEvaluateForward_EvalStatements);
 
     public:
 
@@ -592,9 +571,8 @@ namespace codi {
         EventSystem<Impl>::notifyTapeEvaluateListeners(
             cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
-        Base::internalEvaluateReverse_Step1_ExtFunc(
-            start, end, JacobianBaseTape::template internalEvaluateReverse_Step2_DataExtraction<Adjoint>,
-            &adjointWrapper, cast(), data, jacobianData);
+        Wrap_internalEvaluateReverse_EvalStatements<Adjoint> evalFunc;
+        Base::otherDynamicData.evaluateReverse(start, end, evalFunc, cast(), data);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
                                                        EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
@@ -608,9 +586,8 @@ namespace codi {
         EventSystem<Impl>::notifyTapeEvaluateListeners(
             cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
-        Base::internalEvaluateForward_Step1_ExtFunc(
-            start, end, JacobianBaseTape::template internalEvaluateForward_Step2_DataExtraction<Adjoint>,
-            &adjointWrapper, cast(), data, jacobianData);
+        Wrap_internalEvaluateForward_EvalStatements<Adjoint> evalFunc;
+        Base::otherDynamicData.evaluateForward(start, end, evalFunc, cast(), data);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
                                                        EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
@@ -787,6 +764,25 @@ namespace codi {
         cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);
 
         cast().initializeManualPushData(lhsValue, lhsIndex, size);
+      }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from LowLevelFunctionTapeInterface
+      /// @{
+
+      /// @copydoc LowLevelFunctionTapeInterface::pushLowLevelFunction
+      CODI_INLINE void pushLowLevelFunction(size_t fixedSize, size_t dynamicSize, ByteDataStore& fixedData,
+                                            ByteDataStore& dynamicData) {
+        statementData.reserveItems(1);
+
+        Base::internalStoreLowLevelFunction(fixedSize, dynamicSize, fixedData, dynamicData);
+
+        Identifier lhsIndex = Identifier();
+        if (LinearIndexHandling) {
+          indexManager.get().template assignIndex<Impl>(lhsIndex);
+        }
+        cast().pushStmtData(lhsIndex, Config::StatementLowLevelFunctionTag);
       }
 
       /// @}

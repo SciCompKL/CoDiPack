@@ -11,6 +11,12 @@ Changelog {#Changelog}
   * Uninitialized values in external function helper.
   * External function outputs in Jacobian tapes no longer use unused indices.
 
+ - Other:
+  * Added low level function support to the tapes.
+    Low level functions are between external functions or statements. They can occour quite often but want to reduce
+    the overhead for storing data as mutch as possible.
+  * External functions are now handled via the low level function interface.
+
 ### v 2.1.0 - 2023-05-10
  - Features:
    * Helpers for linear system solvers. See Example 21 for details.

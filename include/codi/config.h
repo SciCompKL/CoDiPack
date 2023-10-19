@@ -76,6 +76,14 @@ namespace codi {
     /// @name Type and compile time value declarations
     /// @{
 
+#ifndef CODI_ByteDataChunkSize
+  /// See codi::Config::ByteDataChunkSize.
+  #define CODI_ByteDataChunkSize 4194304
+#endif
+    /// Default size of byte chunks used in ChunkedData in reverse tape implementations.
+    size_t constexpr ByteDataChunkSize = CODI_ByteDataChunkSize;
+#undef CODI_ByteDataChunkSize
+
 #ifndef CODI_ChunkSize
   /// See codi::Config::ChunkSize.
   #define CODI_ChunkSize 2097152
@@ -84,14 +92,23 @@ namespace codi {
     size_t constexpr ChunkSize = CODI_ChunkSize;
 #undef CODI_ChunkSize
 
+    /// Token type for low level function in the tapes.
+    using LowLevelFunctionToken = uint16_t;
+
+    /// Maximum number of low level functions.
+    size_t constexpr LowLevelFunctionTokenMaxSize = UINT16_MAX;
+
     /// Type for the number of arguments in statements.
     using ArgumentSize = uint8_t;
 
     /// Maximum number of arguments in a statement.
-    size_t constexpr MaxArgumentSize = 254;
+    size_t constexpr MaxArgumentSize = 253;
 
     /// Tag for statements that are inputs. Used in linear index management context.
     size_t constexpr StatementInputTag = 255;
+
+    /// Statement tag for low level functions.
+    size_t constexpr StatementLowLevelFunctionTag = 254;
 
 #ifndef CODI_SmallChunkSize
   /// See codi::Config::SmallChunkSize.
