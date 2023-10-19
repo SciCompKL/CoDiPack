@@ -60,10 +60,10 @@ namespace codi {
    *   ps.setPointers(0, data);
    *   // One of:
    *   ps.call(func, user); // Will call func(p1 (double*), p2 (int*), user);
-   *   ps.callNestedForward(nested, 0, 10, func, user); // Will call nested->evaluateForward(0, 10, func, user,
-   *                                                    //                                   p1 (double*), p2 (int*));
-   *   ps.callNestedReverse(nested, 10, 0, func, user); // Will call nested->evaluateReverse(10, 0, func, user,
-   *                                                    //                                   p1 (double*), p2 (int*));
+   *   // Will call nested->evaluateForward<nestingDepth>(0, 10, func, user, p1 (double*), p2 (int*));
+   *   ps.template callNestedForward<nestingDepth>(nested, 0, 10, func, user);
+   *   // Will call nested->template evaluateReverse<nestingDepth>(10, 0, func, user, p1 (double*), p2 (int*));
+   *   ps.template callNestedReverse<nestingDepth(nested, 10, 0, func, user);
    * \endcode
    *
    * @tparam T_ChunkData  Implementation of ChunkBase.
@@ -78,12 +78,16 @@ namespace codi {
       template<typename FuncObj, typename... Args>
       void call(FuncObj& func, Args&&... args);
 
-      /// Calls nested->evaluateForward(args..., start, end, pointers);
-      template<typename Nested, typename... Args>
+      /// Calls func(args..., pointers);
+      template<typename FuncObj, typename... Args>
+      void callAndAppend(FuncObj& func, Args&&... args);
+
+      /// Calls nested->template evaluateForward<nestingDepth>((args..., start, end, pointers);
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedForward(Nested* nested, size_t& start, size_t const& end, Args&&... args);
 
-      /// Calls nested->evaluateReverse(args..., start, end, pointers);
-      template<typename Nested, typename... Args>
+      /// Calls nested->template evaluateReverse<nestingDepth>((args..., start, end, pointers);
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, Args&&... args);
 
       /// Sets the internal pointers to the data of the chunk. Afterwards on of the call functions can be called.
@@ -115,16 +119,22 @@ namespace codi {
         func(p1, std::forward<Args>(args)...);
       }
 
+      /// \copydoc PointerStore::callAndAppend
+      template<typename FuncObj, typename... Args>
+      void callAndAppend(FuncObj& func, Args&&... args) {
+        func(std::forward<Args>(args)..., p1);
+      }
+
       /// \copydoc PointerStore::callNestedForward
-      template<typename Nested, typename... Args>
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedForward(Nested* nested, size_t& start, size_t const& end, Args&&... args) {
-        nested->evaluateForward(std::forward<Args>(args)..., start, end, p1);
+        nested->template evaluateForward<nestingDepth>(std::forward<Args>(args)..., start, end, p1);
       }
 
       /// \copydoc PointerStore::callNestedReverse
-      template<typename Nested, typename... Args>
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, Args&&... args) {
-        nested->evaluateReverse(std::forward<Args>(args)..., start, end, p1);
+        nested->template evaluateReverse<nestingDepth>(std::forward<Args>(args)..., start, end, p1);
       }
 
       /// \copydoc PointerStore::setPointers
@@ -159,16 +169,22 @@ namespace codi {
         func(p1, p2, std::forward<Args>(args)...);
       }
 
+      /// \copydoc PointerStore::callAndAppend
+      template<typename FuncObj, typename... Args>
+      void callAndAppend(FuncObj& func, Args&&... args) {
+        func(std::forward<Args>(args)..., p1, p2);
+      }
+
       /// \copydoc PointerStore::callNestedForward
-      template<typename Nested, typename... Args>
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedForward(Nested* nested, size_t& start, size_t const& end, Args&&... args) {
-        nested->evaluateForward(std::forward<Args>(args)..., start, end, p1, p2);
+        nested->template evaluateForward<nestingDepth>(std::forward<Args>(args)..., start, end, p1, p2);
       }
 
       /// \copydoc PointerStore::callNestedReverse
-      template<typename Nested, typename... Args>
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, Args&&... args) {
-        nested->evaluateReverse(std::forward<Args>(args)..., start, end, p1, p2);
+        nested->template evaluateReverse<nestingDepth>(std::forward<Args>(args)..., start, end, p1, p2);
       }
 
       /// \copydoc PointerStore::setPointers
@@ -205,16 +221,22 @@ namespace codi {
         func(p1, p2, p3, std::forward<Args>(args)...);
       }
 
+      /// \copydoc PointerStore::callAndAppend
+      template<typename FuncObj, typename... Args>
+      void callAndAppend(FuncObj& func, Args&&... args) {
+        func(std::forward<Args>(args)..., p1, p2, p3);
+      }
+
       /// \copydoc PointerStore::callNestedForward
-      template<typename Nested, typename... Args>
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedForward(Nested* nested, size_t& start, size_t const& end, Args&&... args) {
-        nested->evaluateForward(std::forward<Args>(args)..., start, end, p1, p2, p3);
+        nested->template evaluateForward<nestingDepth>(std::forward<Args>(args)..., start, end, p1, p2, p3);
       }
 
       /// \copydoc PointerStore::callNestedReverse
-      template<typename Nested, typename... Args>
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, Args&&... args) {
-        nested->evaluateReverse(std::forward<Args>(args)..., start, end, p1, p2, p3);
+        nested->template evaluateReverse<nestingDepth>(std::forward<Args>(args)..., start, end, p1, p2, p3);
       }
 
       /// \copydoc PointerStore::setPointers
@@ -253,21 +275,58 @@ namespace codi {
         func(p1, p2, p3, p4, std::forward<Args>(args)...);
       }
 
+      /// \copydoc PointerStore::callAndAppend
+      template<typename FuncObj, typename... Args>
+      void callAndAppend(FuncObj& func, Args&&... args) {
+        func(std::forward<Args>(args)..., p1, p2, p3, p4);
+      }
+
       /// \copydoc PointerStore::callNestedForward
-      template<typename Nested, typename... Args>
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedForward(Nested* nested, size_t& start, size_t const& end, Args&&... args) {
-        nested->evaluateForward(std::forward<Args>(args)..., start, end, p1, p2, p3, p4);
+        nested->template evaluateForward<nestingDepth>(std::forward<Args>(args)..., start, end, p1, p2, p3, p4);
       }
 
       /// \copydoc PointerStore::callNestedReverse
-      template<typename Nested, typename... Args>
+      template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, Args&&... args) {
-        nested->evaluateReverse(std::forward<Args>(args)..., start, end, p1, p2, p3, p4);
+        nested->template evaluateReverse<nestingDepth>(std::forward<Args>(args)..., start, end, p1, p2, p3, p4);
       }
 
       /// \copydoc PointerStore::setPointers
       void setPointers(size_t const& dataPos, Chunk* chunk) {
         chunk->dataPointer(dataPos, p1, p2, p3, p4);
+      }
+  };
+
+  /**
+   * Overwrites the callNestedForward and callNestedReverse functions of the base pointer store. The overwritten
+   * functions do not call the nested data store they call the function handle instead.
+   *
+   * @tparam T_Base Needs to implement the PointerStore interface.
+   */
+  template<typename T_Base>
+  struct TerminatingPointerStore : public T_Base {
+    public:
+
+      using Base = CODI_DD(T_Base, CODI_T(PointerStore<ChunkBase>));  ///< See TerminatingPointerStore.
+
+      /// Calls Base::callAndAppend.
+      template<int nestingDepth, typename Nested, typename InnerPos, typename FunctionObject, typename... Args>
+      CODI_INLINE void callNestedForward(Nested* nested, size_t& start, size_t const& end, InnerPos const&,
+                                         InnerPos const&, FunctionObject function, Args&&... args) {
+        CODI_UNUSED(nested);
+
+        Base::callAndAppend(function, std::forward<Args>(args)..., start, end);
+      }
+
+      /// Calls Base::callAndAppend.
+      template<int nestingDepth, typename Nested, typename InnerPos, typename FunctionObject, typename... Args>
+      CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, InnerPos const&,
+                                         InnerPos const&, FunctionObject function, Args&&... args) {
+        CODI_UNUSED(nested);
+
+        Base::callAndAppend(function, std::forward<Args>(args)..., start, end);
       }
   };
 }

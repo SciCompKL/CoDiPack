@@ -113,13 +113,18 @@ namespace codi {
    *    stmtVector.reset();
    *  \endcode
    *
+   * For an example on how to use #getDataPointers please see the method documentation.
    *
    * The interface defines methods for adding data to the data stream, getting positional information, resetting the
    * data and iterating over the data.
    *
    * Adding data:
-   *  - reserveItems(): Needs to be called before a pushData call to ensure that enough space is left.
-   *  - pushData():     Add the actual data to the data stream.
+   *  - reserveItems():    Needs to be called before a pushData or getDataPointers() call to ensure that enough space is
+   *                       left.
+   *  - pushData():        Add the actual data to the data stream.
+   *  - getDataPointers(): Get pointers to the internally allocated data.
+   *  - addDataSize():     After using pointers obtained by getDataPointers and adding data via these pointers, inform
+   *                       about the number of data items added.
    *
    * Positional information:
    *   - getPosition(), getZeroPosition(): Global position of the all nested data interfaces.
@@ -160,6 +165,53 @@ namespace codi {
       /// @name Adding items
 
       /**
+       *  @brief Add this many items to the data stream, after the data pointers from getDataPointers() have been
+       *         manipulated.
+       *
+       *  See getDataPointers for details.
+       *
+       *  @param[in] size  Number of data items that have been written.
+       */
+      CODI_INLINE void addDataSize(size_t const& size);
+
+      /**
+       * @brief Get pointers to the data from the storage implementation. The method can only be called after a call to
+       *        reserveItems() and data can only be accessed from 0 to the number given by reserveItems (excluding).
+       *        Afterwards, addDataSize() needs to be called with the actual number of elements that have been written.
+       *
+       * The call to reserveItems only represents the maximum number of data items that can be accessed safely. It is
+       * fine if less data items are accessed.
+       *
+       * After all elements have been written to the arrays, addDataSize needs to be called with the final written
+       * number of entries.
+       *
+       *  Example usage:
+       *  \code{.cpp}
+       *    DataInterface<int, double> argVector = ...;
+       *
+       *    // 1. Request space.
+       *    argVector.reserveItems(10);
+       *
+       *    // 2. Add the data.
+       *    int* dataInt;
+       *    double* dataDouble;
+       *    argVector.getDataPointers(dataInt, dataDouble);
+       *    for(int i = 0; i < 5; i += 1) {
+       *      dataInt[i] = i + 1;
+       *      dataDouble[i] = i + 11;
+       *    }
+       *
+       *    // 3. Add the number of items.
+       *    argVector.addDataSize(5);
+       *  \endcode
+       *
+       * @param[in] pointers  The pointers that are populated with the data from the internal representation.
+       * @tparam Data Types of the pointers.
+       */
+      template<typename... Data>
+      CODI_INLINE void getDataPointers(Data*&... pointers);
+
+      /**
        * @brief Add data to the storage allocated by the implementation. The method can only be called after a call to
        *        reserveItems and only as often as the number of reserved items.
        *
@@ -168,6 +220,8 @@ namespace codi {
        *
        * After a new call to reserveItems(), only this many number of data items can be pushed, leftovers will not
        * accumulate.
+       *
+       * For an example of how to use pushData please see the DataInterface documentation.
        *
        * @param[in] data  The number of arguments has to match the number of data stores of the implementation.
        * @tparam Data Types of the pushed data.
@@ -209,16 +263,6 @@ namespace codi {
                                                                                      #reserveItems. */
       CODI_INLINE Position getZeroPosition() const; /**< @return The start position of the DataInterface and all nested
                                                                  interfaces. */
-
-      /**
-       * @brief Obtain pointers to internal data.
-       *
-       * @tparam     Data      Types of the stored data.
-       * @param[in]  startPos  Internal position handle, usually obtained by a call to reserveItems.
-       * @param[out] data      Returned pointers.
-       */
-      template<typename... Data>
-      CODI_INLINE void getDataPointers(InternalPosHandle const& startPos, Data*&... data);
 
       /*******************************************************************************/
       /// @name Misc functions
@@ -271,10 +315,12 @@ namespace codi {
        * @param[in]    function  Function object called.
        * @param[inout] args      Additional arguments for the function object.
        *
+       * @tparam nestingDepth    Depth for the nesting of the data interface. -1 For infinity, 0 for no nesting, 1 for
+       *                         one nested data interface, etc..
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<typename FunctionObject, typename... Args>
+      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args);
 
@@ -288,10 +334,12 @@ namespace codi {
        * @param[in]    function  Function object called.
        * @param[inout] args      Additional arguments for the function object.
        *
+       * @tparam nestingDepth    Depth for the nesting of the data interface. -1 For infinity, 0 for no nesting, 1 for
+       *                         one nested data interface, etc..
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<typename FunctionObject, typename... Args>
+      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args);
 

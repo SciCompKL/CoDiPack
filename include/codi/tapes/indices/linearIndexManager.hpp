@@ -247,14 +247,14 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::evaluateForward
-      template<typename FunctionObject, typename... Args>
+      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         function(std::forward<Args>(args)..., start, end);
       }
 
       /// \copydoc DataInterface::evaluateReverse
-      template<typename FunctionObject, typename... Args>
+      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         function(std::forward<Args>(args)..., start, end);

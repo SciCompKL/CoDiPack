@@ -71,6 +71,11 @@ namespace codi {
       using InternalPosHandle = size_t;                      ///< Position in the chunk
       using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 
+      /// For nestingDepth == 0 create a pointer inserter that calls the function object.
+      template<int nestingDepth>
+      using NestingDepthPointerInserter =
+          typename std::conditional<nestingDepth == 0, TerminatingPointerStore<PointerInserter>, PointerInserter>::type;
+
       using Position = ChunkPosition<NestedPosition>;  ///< \copydoc DataInterface::Position
 
     private:
@@ -111,6 +116,19 @@ namespace codi {
       CODI_INLINE void pushData(Data const&... data) {
         // This method should only be called if reserveItems has been called.
         curChunk->pushData(data...);
+      }
+
+      /// \copydoc DataInterface::getDataPointers
+      template<typename... Data>
+      CODI_INLINE void getDataPointers(Data*&... pointers) {
+        // This method should only be called if reserveItems has been called.
+        curChunk->dataPointer(curChunk->getUsedSize(), pointers...);
+      }
+
+      /// \copydoc DataInterface::addDataSize
+      CODI_INLINE void addDataSize(size_t size) {
+        // This method should only be called if reserveItems has been called.
+        curChunk->setUsedSize(curChunk->getUsedSize() + size);
       }
 
       /// \copydoc DataInterface::reserveItems <br><br>
@@ -230,12 +248,6 @@ namespace codi {
         return Position(0, 0, nested->getZeroPosition());
       }
 
-      /// \copydoc DataInterface::getDataPointers
-      template<typename... Data>
-      CODI_INLINE void getDataPointers(InternalPosHandle const& startPos, Data*&... data) {
-        curChunk->dataPointer(startPos, data...);
-      }
-
       /*******************************************************************************/
       /// @name Misc functions
       /// @{
@@ -298,10 +310,10 @@ namespace codi {
       /// @name Iterator functions
 
       /// \copydoc DataInterface::evaluateForward
-      template<typename FunctionObject, typename... Args>
+      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-        PointerInserter pHandle;
+        NestingDepthPointerInserter<nestingDepth> pHandle;
 
         size_t curDataPos = start.data;
         size_t endDataPos;
@@ -320,7 +332,7 @@ namespace codi {
           }
 
           pHandle.setPointers(0, chunks[curChunk]);
-          pHandle.callNestedForward(
+          pHandle.template callNestedForward<nestingDepth - 1>(
               /* arguments for callNestedForward */
               nested, curDataPos, endDataPos,
               /* arguments for nested->evaluateForward */
@@ -340,10 +352,10 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::evaluateReverse
-      template<typename FunctionObject, typename... Args>
+      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-        PointerInserter pHandle;
+        NestingDepthPointerInserter<nestingDepth> pHandle;
 
         size_t curDataPos = start.data;
         size_t endDataPos;
@@ -362,7 +374,8 @@ namespace codi {
           }
 
           pHandle.setPointers(0, chunks[curChunk]);
-          pHandle.callNestedReverse(
+
+          pHandle.template callNestedReverse<nestingDepth - 1>(
               /* arguments for callNestedReverse */
               nested, curDataPos, endDataPos,
               /* arguments for nested->evaluateReverse */
