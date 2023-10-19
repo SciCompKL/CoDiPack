@@ -57,7 +57,7 @@ namespace codi {
    * @param[in]            line  The line in the file were the assert is defined.
    */
   CODI_CUDAFunctionAttributes inline void checkAndOutputAssert(bool const condition, char const* conditionString,
-                                                           char const* function, char const* file, int line) {
+                                                               char const* function, char const* file, int line) {
 #if !CODI_CUDA
     if (!condition) {
       std::cerr << "codiAssertion failed: " << conditionString << " in function " << function << " at " << file << ":"
@@ -87,7 +87,7 @@ namespace codi {
    * @param[in]  message  The exception message and the arguments for the formatting in the message.
    */
   CODI_CUDAFunctionAttributes inline void outputException(char const function[], char const file[], int const line,
-                                                      char const* message, ...) {
+                                                          char const* message, ...) {
     fprintf(stderr, "Error in function %s (%s:%d)\nThe message is: ", function, file, line);
 
     va_list vl;

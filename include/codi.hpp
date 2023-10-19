@@ -245,9 +245,8 @@ namespace codi {
   using JacobianComputationScalarType = RealReverseIndex;
 }
 
-#include "codi/tools/helpers/evaluationHelper.hpp"
-
 #include "codi/tools/cuda/codiCUDA.hpp"
+#include "codi/tools/helpers/evaluationHelper.hpp"
 
 #if CODI_EnableOpenMP
   #include "codi/tools/parallel/openmp/codiOpenMP.hpp"

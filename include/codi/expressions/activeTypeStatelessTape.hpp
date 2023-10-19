@@ -56,10 +56,10 @@ namespace codi {
    * @tparam T_Tape  The tape that manages all expressions created with this type.
    */
   template<typename T_Tape>
-  struct ActiveTypeStatelessTape : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape,
-                                                          ActiveTypeStatelessTape<T_Tape>>,
-                            public AssignmentOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>>,
-                            public IncrementOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>> {
+  struct ActiveTypeStatelessTape : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient,
+                                                                 T_Tape, ActiveTypeStatelessTape<T_Tape>>,
+                                   public AssignmentOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>>,
+                                   public IncrementOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>> {
     public:
 
       using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See ActiveTypeStatelessTape.
@@ -69,8 +69,8 @@ namespace codi {
       using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
       using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
-      using Base =
-          LhsExpressionInterface<Real, Gradient, T_Tape, ActiveTypeStatelessTape<T_Tape>>;  ///< Base class abbreviation.
+      using Base = LhsExpressionInterface<Real, Gradient, T_Tape, ActiveTypeStatelessTape<T_Tape>>;  ///< Base class
+                                                                                                     ///< abbreviation.
 
     private:
 

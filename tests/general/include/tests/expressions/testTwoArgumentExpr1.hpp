@@ -96,9 +96,9 @@ struct TestTwoArgumentExpr1 : public TestInterface {
       y[21] = pow(x[0], x[1]);   // R x R
       y[22] = pow(5.00, x[1]);   // R x R
       y[23] = pow(x[0], 5.00);   // R x R
-      y[24] = copysign(x[0], x[1]);   // R x R
-      y[25] = copysign(5.00, x[1]);   // R x R
-      y[26] = copysign(x[0], 5.00);   // R x R
+      y[24] = copysign(x[0], x[1]);  // R x R
+      y[25] = copysign(5.00, x[1]);  // R x R
+      y[26] = copysign(x[0], 5.00);  // R x R
 
       y[27] = x[0];
       y[28] = x[1];

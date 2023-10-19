@@ -502,7 +502,6 @@ namespace codi {
 #define FUNCTION hypotl
 #include "binaryOverloads.tpp"
 
-
   /// BinaryOperation implementation for ldexp
   template<typename T_Real>
   struct OperationLdexp : public BinaryOperation<T_Real> {

@@ -37,8 +37,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "tools/cuda/cudaFunctionAttributes.hpp"
 #include "misc/exceptions.hpp"
+#include "tools/cuda/cudaFunctionAttributes.hpp"
 
 /** @file */
 
