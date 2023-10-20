@@ -10,7 +10,7 @@ However, applying for project grants and cooperations with industrial partners m
 Consequently, before we can merge your changes, we need you to sign the
 [CLA](https://gist.github.com/MaxSagebaum/b9e831cb01da96941acaa0cbae7b09ef) for CoDiPack. The purpose of this contributor agreement
 is to clarify and document the rights granted by contributors to us.  Please see below for a general review of the CLA and additional justifications.
-You can sign the CLA via the cla-assistant in your
+You can sign the CLA via the [cla-assistant](https://cla-assistant.io/) ([Privacy Policy](https://gist.github.com/CLAassistant/3a73e4cd729c9d0a6e30#file-privacy-md)) in your
 pull request or send a signed copy to [codi@scicomp.uni-kl.de](mailto:codi@scicomp.uni-kl.de).
 
 If you are an employee and have created the contribution as part of your employment, you need to have your employer
