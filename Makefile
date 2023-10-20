@@ -34,11 +34,12 @@
 #
 
 # names of the basic directories
-BUILD_DIR    = build
-DOC_DIR      = documentation
-EXAMPLE_DIR  = $(DOC_DIR)/examples
-TUTORIAL_DIR = $(DOC_DIR)/tutorials
-DEVELOPER_DIR = $(DOC_DIR)/developer
+BUILD_DIR      = build
+DEFINITION_DIR = definitions
+DOC_DIR        = documentation
+EXAMPLE_DIR    = $(DOC_DIR)/examples
+TUTORIAL_DIR   = $(DOC_DIR)/tutorials
+DEVELOPER_DIR  = $(DOC_DIR)/developer
 
 EIGEN_DEFINE=
 ifdef EIGEN_DIR
@@ -54,6 +55,7 @@ endif
 #list all source files in DOC_DIR
 TUTORIAL_FILES  = $(wildcard $(TUTORIAL_DIR)/*.cpp)
 EXAMPLE_FILES  = $(wildcard $(EXAMPLE_DIR)/*.cpp) $(wildcard $(DEVELOPER_DIR)/*.cpp)
+DEFINITION_FILES  = $(wildcard $(DEFINITION_DIR)/*/*/*.hpp)
 
 #list all dependency files in BUILD_DIR
 DEP_FILES   = $(wildcard $(BUILD_DIR)/*.d)
@@ -119,8 +121,10 @@ else
   CXX := $(CXX)
 endif
 
+
 TUTORIALS = $(patsubst %.cpp,$(BUILD_DIR)/%.exe,$(TUTORIAL_FILES))
 EXAMPLES = $(patsubst %.cpp,$(BUILD_DIR)/%.exe,$(EXAMPLE_FILES))
+GENERATED = $(patsubst $(DEFINITION_DIR)/%.hpp,include/codi/tools/%.hpp,$(DEFINITION_FILES))
 
 # set default rule
 all: tutorials examples
@@ -133,6 +137,14 @@ $(BUILD_DIR)/%.exe : %.cpp $(BUILD_DIR)/compiler_flags
 tutorials: $(TUTORIALS)
 
 examples: $(EXAMPLES)
+
+
+include/codi/tools/%.hpp: $(DEFINITION_DIR)/%.hpp
+	@mkdir -p $(@D)
+	python $(EXT_FUNC_GENERATOR_DIR)/externalfunctionparser/externalfunctionparser.py $< -o $@
+	$(CLANG_FORMAT) -i $@
+
+generate: $(GENERATED)
 
 doc:
 	@mkdir -p $(BUILD_DIR)

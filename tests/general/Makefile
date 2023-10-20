@@ -83,6 +83,7 @@ endif
 TEST_FILES   = $(wildcard $(TEST_DIR)/test**.hpp)
 TEST_FILES  += $(wildcard $(TEST_DIR)/**/test**.hpp)
 TEST_FILES  += $(wildcard $(TEST_DIR)/**/**/test**.hpp)
+TEST_FILES  += $(wildcard $(TEST_DIR)/**/**/**/test**.hpp)
 
 #list all dependency files in BUILD_DIR
 DEP_FILES   = $(wildcard $(BUILD_DIR)/**.d)

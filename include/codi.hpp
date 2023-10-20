@@ -66,6 +66,7 @@
 #include "codi/tools/helpers/preaccumulationHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
 #include "codi/tools/helpers/tapeHelper.hpp"
+#include "codi/tools/lowlevelFunctions/lowLevelFunctionCreationHelper.hpp"
 #include "codi/traits/computationTraits.hpp"
 #include "codi/traits/numericLimits.hpp"
 #include "codi/traits/tapeTraits.hpp"
@@ -76,6 +77,7 @@
 
 #if CODI_EnableEigen
   #include "codi/tools/helpers/linearSystem/eigenLinearSystem.hpp"
+  #include "codi/tools/lowlevelFunctions/linearAlgebra/matrixMatrixMultiplication.hpp"
 #endif
 
 #if CODI_EnableEnzyme

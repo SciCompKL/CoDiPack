@@ -98,6 +98,9 @@ namespace codi {
     /// Maximum number of low level functions.
     size_t constexpr LowLevelFunctionTokenMaxSize = UINT16_MAX;
 
+    /// Invalid low level function token.
+    size_t constexpr LowLevelFunctionTokenInvalid = UINT16_MAX;
+
     /// Type for the number of arguments in statements.
     using ArgumentSize = uint8_t;
 

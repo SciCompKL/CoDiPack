@@ -6,6 +6,7 @@ Changelog {#Changelog}
   * New helper for adding Enzyme-generated derivative functions to the tape. See \ref Example_24_Enzyme_external_function_helper.
   * Recover primal values from primal values tapes in ExternalFunctionHelper.
   * Forward AD type for CUDA kernels.
+  * Matrix matrix multiplications can now be handled in an optimal way with CoDiPack.
 
  - Bugfix:
   * Uninitialized values in external function helper.
@@ -13,8 +14,9 @@ Changelog {#Changelog}
 
  - Other:
   * Added low level function support to the tapes.
-    Low level functions are between external functions or statements. They can occour quite often but want to reduce
-    the overhead for storing data as mutch as possible.
+    Low level functions are between external functions or statements. They can occur quite often but want to reduce
+    the overhead for storing data as much as possible.
+  * Added helper structures for creating low level functions.
   * External functions are now handled via the low level function interface.
 
 ### v 2.1.0 - 2023-05-10

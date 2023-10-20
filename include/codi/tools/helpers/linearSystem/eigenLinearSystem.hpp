@@ -35,12 +35,13 @@
 
 #pragma once
 
+#include "../../../config.h"
+
 #if CODI_EnableEigen
 
   #include <Eigen/Eigen>
   #include <vector>
 
-  #include "../../../config.h"
   #include "../../../misc/macros.hpp"
   #include "linearSystemHandler.hpp"
 
