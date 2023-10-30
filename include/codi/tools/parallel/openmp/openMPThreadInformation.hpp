@@ -49,7 +49,7 @@ namespace codi {
 
       /// \copydoc ThreadInformationInterface::getMaxThreads()
       static CODI_INLINE int getMaxThreads() {
-        return omp_get_max_threads();
+        return 512;
       }
 
       /// \copydoc ThreadInformationInterface::getThreadId()
