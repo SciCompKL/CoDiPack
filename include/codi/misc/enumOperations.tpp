@@ -34,9 +34,13 @@
  */
 
 /*
- * In order to include this file the user has to define the preprocessor macro ENUM. *
+ * This file creates:
+ * - EnumBitset<ENUM> operator|(ENUM, ENUM)
+ * - EnumBitset<ENUM> operator&(ENUM, ENUM)
  *
- * The define ENUM will be undefined at the end of this template.
+ * In order to include this file the user has to define the preprocessor macro ENUM.
+ *
+ * The defined ENUM will be undefined at the end of this template.
  */
 
 #ifndef ENUM
@@ -62,8 +66,8 @@ namespace codi {
   }
 
   /// Return a boolean structure when two enums are combined with and.
-  CODI_INLINE bool operator&(ENUM a, ENUM b) {
-    return a == b;
+  CODI_INLINE EnumBitset<ENUM> operator&(ENUM a, ENUM b) {
+    return EnumBitset<ENUM>(a) & b;
   }
 
 // Create a correct include environment for viewing and programming in an IDE.

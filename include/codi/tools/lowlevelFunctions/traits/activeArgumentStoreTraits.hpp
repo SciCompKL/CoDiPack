@@ -375,10 +375,10 @@ namespace codi {
       CODI_INLINE static void countSize(size_t& fixedSize, size_t& dynamicSize, T const* value, size_t size,
                                         StoreActions const& actions) {
         CODI_UNUSED(fixedSize, value);
-        if (StoreAction::InputIdentifierCreateAndStore & actions) {
+        if (actions.test(StoreAction::InputIdentifierCreateAndStore)) {
           dynamicSize += size * sizeof(typename T::Identifier);  // var_i_in
         }
-        if (StoreAction::PrimalCreateOnTape & actions) {
+        if (actions.test(StoreAction::PrimalCreateOnTape)) {
           if (Tape::HasPrimalValues) {
             // Primal value tapes only store the passive primal values.
             int passiveIdentifiers = countPassive(value, size);
@@ -389,7 +389,7 @@ namespace codi {
             dynamicSize += size * sizeof(typename T::Real);  // var_v_in
           }
         }
-        if (StoreAction::OutputIdentifierCreate & actions) {
+        if (actions.test(StoreAction::OutputIdentifierCreate)) {
           dynamicSize += size * sizeof(typename T::Identifier);  // var_i_out
 
           if (Tape::HasPrimalValues && Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
@@ -403,7 +403,7 @@ namespace codi {
                                            RestoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED(store, allocator, size, actions, data);
 
-        if (Tape::HasPrimalValues && RestoreAction::PrimalRestore & actions) {
+        if (Tape::HasPrimalValues && actions.test(RestoreAction::PrimalRestore)) {
           data.passiveValuesCount = store->template read<int>();
         }
       }
@@ -414,26 +414,26 @@ namespace codi {
         Real* passiveValues = nullptr;
 
         if (store->getDirection() == ByteDataStore::Direction::Reverse) {
-          if (RestoreAction::OutputIdentifierRestore & actions) {
+          if (actions.test(RestoreAction::OutputIdentifierRestore)) {
             if (Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
               data.oldPrimals = store->template read<Real>(size);
             }
             data.value_i_out = store->template read<Identifier>(size);
           }
-          if (RestoreAction::InputIdentifierRestore & actions) {
+          if (actions.test(RestoreAction::InputIdentifierRestore)) {
             data.value_i_in = store->template read<Identifier>(size);
           }
-          if (RestoreAction::PrimalRestore & actions) {
+          if (actions.test(RestoreAction::PrimalRestore)) {
             restoreValue(store, allocator, size, data, passiveValues);
           }
         } else {
-          if (RestoreAction::PrimalRestore & actions) {
+          if (actions.test(RestoreAction::PrimalRestore)) {
             restoreValue(store, allocator, size, data, passiveValues);
           }
-          if (RestoreAction::InputIdentifierRestore & actions) {
+          if (actions.test(RestoreAction::InputIdentifierRestore)) {
             data.value_i_in = store->template read<Identifier>(size);
           }
-          if (RestoreAction::OutputIdentifierRestore & actions) {
+          if (actions.test(RestoreAction::OutputIdentifierRestore)) {
             data.value_i_out = store->template read<Identifier>(size);
             if (Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
               data.oldPrimals = store->template read<Real>(size);
@@ -441,18 +441,18 @@ namespace codi {
           }
         }
 
-        if (RestoreAction::PrimalRestore & actions) {
+        if (actions.test(RestoreAction::PrimalRestore)) {
           restorePassiveValues(size, data, passiveValues);
         }
 
-        if (RestoreAction::PrimalCreate & actions) {
+        if (actions.test(RestoreAction::PrimalCreate)) {
           data.value_v = allocator.template alloc<Real>(size);
         }
 
-        if (RestoreAction::InputGradientCreate & actions) {
+        if (actions.test(RestoreAction::InputGradientCreate)) {
           data.value_deriv_in = allocator.template alloc<Gradient>(size);
         }
-        if (RestoreAction::OutputGradientCreate & actions) {
+        if (actions.test(RestoreAction::OutputGradientCreate)) {
           data.value_deriv_out = allocator.template alloc<Gradient>(size);
         }
       }
@@ -500,7 +500,7 @@ namespace codi {
         CODI_UNUSED(fixedStore);
 
         Real* passiveValues = nullptr;
-        if (StoreAction::PrimalCreateOnTape & actions) {
+        if (actions.test(StoreAction::PrimalCreateOnTape)) {
           if (Tape::HasPrimalValues) {
             int passiveIdentifiers = countPassive(value, size);
             fixedStore->write(passiveIdentifiers);
@@ -515,14 +515,14 @@ namespace codi {
           data.value_v = allocator.template alloc<Real>(size);
         }
 
-        if (StoreAction::PrimalExtract & actions) {
+        if (actions.test(StoreAction::PrimalExtract)) {
           typename T::Tape& tape = T::getTape();
           int passiveValuesPos = 0;
 
           for (size_t i = 0; i < size; i += 1) {
             (data.value_v)[i] = value[i].getValue();
 
-            if (StoreAction::PrimalCreateOnTape & actions && Tape::HasPrimalValues &&
+            if (actions.test(StoreAction::PrimalCreateOnTape) && Tape::HasPrimalValues &&
                 !tape.isIdentifierActive(value[i].getIdentifier())) {
               passiveValues[passiveValuesPos] = value[i].getValue();
               passiveValuesPos += 1;
@@ -530,14 +530,14 @@ namespace codi {
           }
         }
 
-        if (StoreAction::InputIdentifierCreateAndStore & actions) {
+        if (actions.test(StoreAction::InputIdentifierCreateAndStore)) {
           data.value_i_in = dynamicStore->template reserve<Identifier>(size);
           for (size_t i = 0; i < size; i += 1) {
             (data.value_i_in)[i] = value[i].getIdentifier();
           }
         }
 
-        if (StoreAction::OutputIdentifierCreate & actions) {
+        if (actions.test(StoreAction::OutputIdentifierCreate)) {
           data.value_i_out = dynamicStore->template reserve<Identifier>(size);
           for (size_t i = 0; i < size; i += 1) {
             (data.value_i_out)[i] = -1;

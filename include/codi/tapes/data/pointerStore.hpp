@@ -311,7 +311,7 @@ namespace codi {
 
       using Base = CODI_DD(T_Base, CODI_T(PointerStore<ChunkBase>));  ///< See TerminatingPointerStore.
 
-      /// Calls Base::callAndAppend.
+      /// Calls Base::callAndAppend. See PointerStore::callAndAppend.
       template<int nestingDepth, typename Nested, typename InnerPos, typename FunctionObject, typename... Args>
       CODI_INLINE void callNestedForward(Nested* nested, size_t& start, size_t const& end, InnerPos const&,
                                          InnerPos const&, FunctionObject function, Args&&... args) {
@@ -320,7 +320,7 @@ namespace codi {
         Base::callAndAppend(function, std::forward<Args>(args)..., start, end);
       }
 
-      /// Calls Base::callAndAppend.
+      /// Calls Base::callAndAppend. See PointerStore::callAndAppend.
       template<int nestingDepth, typename Nested, typename InnerPos, typename FunctionObject, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, InnerPos const&,
                                          InnerPos const&, FunctionObject function, Args&&... args) {

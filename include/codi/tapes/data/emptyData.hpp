@@ -159,6 +159,7 @@ namespace codi {
 
       /// \copydoc DataInterface::evaluateForward <br><br>
       /// Implementation: Calls the function object with all arguments except start and end.
+      /// This is a terminating DataInterface therefore nestingDepth can be ignored.
       template<int nestingDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
@@ -168,6 +169,7 @@ namespace codi {
 
       /// \copydoc DataInterface::evaluateReverse <br><br>
       /// Implementation: Calls the function object with all arguments except start and end.
+      /// This is a terminating DataInterface therefore nestingDepth can be ignored.
       template<int nestingDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {

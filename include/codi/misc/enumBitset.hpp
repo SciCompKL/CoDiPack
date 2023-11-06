@@ -168,7 +168,7 @@ namespace codi {
       }
 
       /// Conversion to boolean.
-      CODI_INLINE operator bool() {
+      CODI_INLINE bool any() {
         return this->bitset.any();
       }
 
