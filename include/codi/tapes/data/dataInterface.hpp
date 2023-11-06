@@ -165,8 +165,8 @@ namespace codi {
       /// @name Adding items
 
       /**
-       *  @brief Add this many items to the data stream, after the data pointers from getDataPointers() have been
-       *         manipulated.
+       *  @brief Add this many items to the data stream, after the data has been manipulated via pointers
+       *         obtained from getDataPointers().
        *
        *  See getDataPointers for details.
        *
@@ -206,7 +206,7 @@ namespace codi {
        *  \endcode
        *
        * @param[in] pointers  The pointers that are populated with the data from the internal representation.
-       * @tparam Data Types of the pointers.
+       * @tparam Data  Types of the pointers.
        */
       template<typename... Data>
       CODI_INLINE void getDataPointers(Data*&... pointers);
@@ -221,7 +221,7 @@ namespace codi {
        * After a new call to reserveItems(), only this many number of data items can be pushed, leftovers will not
        * accumulate.
        *
-       * For an example of how to use pushData please see the DataInterface documentation.
+       * For an example of how to use pushData, please see the DataInterface documentation.
        *
        * @param[in] data  The number of arguments has to match the number of data stores of the implementation.
        * @tparam Data Types of the pushed data.

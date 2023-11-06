@@ -63,7 +63,7 @@ namespace codi {
    *   // Will call nested->evaluateForward<nestingDepth>(0, 10, func, user, p1 (double*), p2 (int*));
    *   ps.template callNestedForward<nestingDepth>(nested, 0, 10, func, user);
    *   // Will call nested->template evaluateReverse<nestingDepth>(10, 0, func, user, p1 (double*), p2 (int*));
-   *   ps.template callNestedReverse<nestingDepth(nested, 10, 0, func, user);
+   *   ps.template callNestedReverse<nestingDepth>(nested, 10, 0, func, user);
    * \endcode
    *
    * @tparam T_ChunkData  Implementation of ChunkBase.
@@ -82,11 +82,11 @@ namespace codi {
       template<typename FuncObj, typename... Args>
       void callAndAppend(FuncObj& func, Args&&... args);
 
-      /// Calls nested->template evaluateForward<nestingDepth>((args..., start, end, pointers);
+      /// Calls nested->template evaluateForward<nestingDepth>(args..., start, end, pointers);
       template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedForward(Nested* nested, size_t& start, size_t const& end, Args&&... args);
 
-      /// Calls nested->template evaluateReverse<nestingDepth>((args..., start, end, pointers);
+      /// Calls nested->template evaluateReverse<nestingDepth>(args..., start, end, pointers);
       template<int nestingDepth, typename Nested, typename... Args>
       CODI_INLINE void callNestedReverse(Nested* nested, size_t& start, size_t const& end, Args&&... args);
 
@@ -301,7 +301,7 @@ namespace codi {
 
   /**
    * Overwrites the callNestedForward and callNestedReverse functions of the base pointer store. The overwritten
-   * functions do not call the nested data store they call the function handle instead.
+   * functions do not call the nested data store, they call the function handle instead.
    *
    * @tparam T_Base Needs to implement the PointerStore interface.
    */
