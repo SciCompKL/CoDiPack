@@ -154,7 +154,7 @@ namespace codi {
 
       /// Not equal operation for a bitset and an enum.
       CODI_INLINE bool operator!=(Enum const& pos) const {
-        return bitset != EnumBitset(pos);
+        return bitset != EnumBitset(pos).bitset;
       }
 
       /// Equal operation for two bitsets.
@@ -164,7 +164,7 @@ namespace codi {
 
       /// Equal operation for a bitset and an enum.
       CODI_INLINE bool operator==(Enum const& pos) const {
-        return bitset == EnumBitset(pos);
+        return bitset == EnumBitset(pos).bitset;
       }
 
       /// Conversion to boolean.
