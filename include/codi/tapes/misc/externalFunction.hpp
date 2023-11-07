@@ -235,7 +235,7 @@ namespace codi {
       CODI_INLINE static void store(Tape& tape, Config::LowLevelFunctionToken const& token, ExtFunc const& extFunc) {
         ByteDataStore fixedStore = {};
         ByteDataStore dynamicStore = {};
-        tape.pushLowLevelFunction(sizeof(Config::LowLevelFunctionToken), sizeof(ExtFunc), fixedStore, dynamicStore);
+        tape.pushLowLevelFunction(token, 0, sizeof(ExtFunc), fixedStore, dynamicStore);
 
         fixedStore.write(token);
         dynamicStore.write(extFunc);

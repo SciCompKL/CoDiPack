@@ -61,6 +61,8 @@ namespace codi {
     RhsIdentifiersSize,     ///< [A: RW] Allocated number of entries in the right hand side identifiers vector in primal
                             ///<         value tapes.
     StatementSize,          ///< [A: RW] Allocated number of entries in the statement vector in all tapes.
+    LLFTokenDataSize,       ///< [A: RW] Allocated number of entries in the low level function token  vector in all
+                            ///<         tapes.
     OtherFixedDataSize,     ///< [A: RW] Allocated number of entries in the fixed other data vector.
     OtherDynamicDataSize    ///< [A: RW] Allocated number of entries in the variable other data vector.
   };

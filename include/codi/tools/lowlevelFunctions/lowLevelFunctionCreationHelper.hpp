@@ -75,12 +75,11 @@ namespace codi {
    *
    *  The total size is then:
    *  \code
-   *  fixedSize = 2 * TokenSize + countActivitySize() + <fixed size from arguments>
+   *  fixedSize = countActivitySize() + <fixed size from arguments>
    *  dynamicSize = <fixed size from arguments>
    *  \endcode
-   *  Usually, the token needs to be stored twice since the #codi::LowLevelFunctionTapeInterface requires that the token
-   * ID is the first item from left and right in the fixed data stream. It can also be the case that the activity also
-   *  needs to be stored in the front and end of the static data stream.
+   *  It can be the case that the activity also needs to be stored in the front and end of the static data stream.
+   *  Usually, this occurs when the fixed data already depends on the activity of the arguments.
    *
    *  Depending on the activity of the arguments and if the primal values of the arguments are required for the
    *  derivative computation the required size may vary.
@@ -93,12 +92,10 @@ namespace codi {
    *  \subsection write Write data
    *
    *  Usually the following needs to be done:
-   *   - Write the token to the fixed data stream.
    *   - Write the activity of the arguments with #storeActivity. (First #setActivity needs to be called for every input
    *     argument.)
    *   - Call \c ActiveStoreTrait::store and \c PassiveArgumentStoreTraits::store for all arguments.
    *   - (If necessary: Write the activity of the arguments with #storeActivity again.)
-   *   - Write the token to the fixed data stream.
    *
    *  \subsection evaluate Evaluation of the low level function
    *
@@ -119,14 +116,12 @@ namespace codi {
    *  The restoring process needs to read the data in the same order as it was written. For a forward mode evaluation of
    *  the tape this is the same as during the storing of the data. In a reverse mode evaluation of the tape, the order
    *  is reversed. Keeping this in mind, the following need to be done:
-   *    - Do __not__ read the token. This is done by the tape.
    *    - If necessary read the activity of the arguments with #restoreActivity.
    *    - Read the fixed data for all arguments with \c ActiveStoreTrait::restoreFixed() and
    *      \c PassiveStoreTrait::restoreFixed().
    *    - Read the dynamic data for all arguments with \c ActiveStoreTrait::restoreDynamic() and
    *      \c PassiveStoreTrait::restoreDynamic().
    *    - If necessary read the activity of the arguments with #restoreActivity.
-   *    - Do __read__ the token. The token on the other side is not read by the tape.
    *
    * @tparam T_ActiveArguments The number of active input arguments.
    */

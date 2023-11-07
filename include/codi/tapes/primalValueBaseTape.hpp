@@ -1044,11 +1044,11 @@ namespace codi {
       /// @{
 
       /// @copydoc LowLevelFunctionTapeInterface::pushLowLevelFunction
-      CODI_INLINE void pushLowLevelFunction(size_t fixedSize, size_t dynamicSize, ByteDataStore& fixedData,
-                                            ByteDataStore& dynamicData) {
+      CODI_INLINE void pushLowLevelFunction(Config::LowLevelFunctionToken token, size_t fixedSize, size_t dynamicSize,
+                                            ByteDataStore& fixedData, ByteDataStore& dynamicData) {
         statementData.reserveItems(1);
 
-        Base::internalStoreLowLevelFunction(fixedSize, dynamicSize, fixedData, dynamicData);
+        Base::internalStoreLowLevelFunction(token, fixedSize, dynamicSize, fixedData, dynamicData);
 
         Identifier lhsIndex = Identifier();
         if (LinearIndexHandling) {

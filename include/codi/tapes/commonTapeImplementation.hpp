@@ -92,8 +92,13 @@ namespace codi {
 
       using NestedData = typename TapeTypes::NestedData;  ///< See TapeTypesInterface.
 
-      using OtherFixedDataChunk = Chunk1<char>;                      ///< Byte data chunk.
-      using OtherFixedData = Data<OtherFixedDataChunk, NestedData>;  ///< Byte data for fixed data that is always read.
+      using LowLevelFunctionTokenDataChunk = Chunk1<Config::LowLevelFunctionToken>;        ///< Token data chunk.
+      using LowLevelFunctionTokenData = Data<LowLevelFunctionTokenDataChunk, NestedData>;  ///< Token data for low level
+                                                                                           ///< functions.
+
+      using OtherFixedDataChunk = Chunk1<char>;                                     ///< Byte data chunk.
+      using OtherFixedData = Data<OtherFixedDataChunk, LowLevelFunctionTokenData>;  ///< Byte data for fixed data that
+                                                                                    ///< is always read.
 
       using OtherDynamicDataChunk = Chunk1<char>;                            ///< Byte data chunk.
       using OtherDynamicData = Data<OtherDynamicDataChunk, OtherFixedData>;  ///< Byte data for data that is dynamic and
@@ -134,6 +139,8 @@ namespace codi {
       using Gradient = typename ImplTapeTypes::Gradient;      ///< See TapeTypesInterface.
       using Identifier = typename ImplTapeTypes::Identifier;  ///< See TapeTypesInterface.
 
+      /// See CommonTapeTypes.
+      using LowLevelFunctionTokenData = typename CommonTapeTypes<ImplTapeTypes>::LowLevelFunctionTokenData;
       using OtherFixedData = typename CommonTapeTypes<ImplTapeTypes>::OtherFixedData;      ///< See CommonTapeTypes.
       using OtherDynamicData = typename CommonTapeTypes<ImplTapeTypes>::OtherDynamicData;  ///< See CommonTapeTypes.
       using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;                  ///< See TapeTypesInterface.
@@ -146,8 +153,9 @@ namespace codi {
       bool active;                       ///< Whether or not the tape is in recording mode.
       std::set<TapeParameters> options;  ///< All options.
 
-      OtherFixedData otherFixedData;      ///< Byte data for fixed data that is always read.
-      OtherDynamicData otherDynamicData;  ///< Byte data for data that is dynamic and based on the fixed data.
+      LowLevelFunctionTokenData tokenData;  ///< Token data for low level functions.
+      OtherFixedData otherFixedData;        ///< Byte data for fixed data that is always read.
+      OtherDynamicData otherDynamicData;    ///< Byte data for data that is dynamic and based on the fixed data.
 
       Real manualPushLhsValue;             ///< For storeManual, remember the value assigned to the lhs.
       Identifier manualPushLhsIdentifier;  ///< For storeManual, remember the identifier assigned to the lhs.
@@ -223,6 +231,7 @@ namespace codi {
       CommonTapeImplementation()
           : active(false),
             options(),
+            tokenData(Config::SmallChunkSize),
             otherFixedData(Config::ByteDataChunkSize),
             otherDynamicData(Config::ByteDataChunkSize),
             manualPushLhsValue(),
@@ -232,6 +241,7 @@ namespace codi {
             allocator() {
         options.insert(TapeParameters::OtherFixedDataSize);
         options.insert(TapeParameters::OtherDynamicDataSize);
+        options.insert(TapeParameters::LLFTokenDataSize);
 
         if (nullptr == lowLevelFunctionLookup) {
           lowLevelFunctionLookup = new std::vector<LowLevelFunctionEntry<Impl, Real, Identifier>>();
@@ -330,6 +340,8 @@ namespace codi {
       TapeValues getTapeValues() const {
         TapeValues values = cast().internalGetTapeValues();
 
+        values.addSection("Low level function token data entries");
+        tokenData.addToTapeValues(values);
         values.addSection("Other fixed data entries");
         otherFixedData.addToTapeValues(values);
         values.addSection("Other variable data entries");
@@ -414,7 +426,7 @@ namespace codi {
       }
 
       /// \copydoc codi::DataManagementTapeInterface::getParameter()
-      /// <br><br> Implementation: Handles OtherFixedDataSize, OtherDynamicDataSize
+      /// <br><br> Implementation: Handles OtherFixedDataSize, OtherDynamicDataSize, LLFTokenDataSize
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {
           case TapeParameters::OtherFixedDataSize:
@@ -422,6 +434,9 @@ namespace codi {
             break;
           case TapeParameters::OtherDynamicDataSize:
             return otherDynamicData.getDataSize();
+            break;
+          case TapeParameters::LLFTokenDataSize:
+            return tokenData.getDataSize();
             break;
           default:
             CODI_EXCEPTION("Tried to get undefined parameter for tape.");
@@ -436,14 +451,17 @@ namespace codi {
       }
 
       /// \copydoc codi::DataManagementTapeInterface::setParameter()
-      /// <br><br> Implementation: Handles OtherFixedDataSize, OtherDynamicDataSize
+      /// <br><br> Implementation: Handles OtherFixedDataSize, OtherDynamicDataSize, LLFTokenDataSize
       void setParameter(TapeParameters parameter, size_t value) {
         switch (parameter) {
           case TapeParameters::OtherFixedDataSize:
-            return otherFixedData.resize(value);
+            otherFixedData.resize(value);
             break;
           case TapeParameters::OtherDynamicDataSize:
-            return otherDynamicData.resize(value);
+            otherDynamicData.resize(value);
+            break;
+          case TapeParameters::LLFTokenDataSize:
+            tokenData.resize(value);
             break;
           default:
             CODI_EXCEPTION("Tried to set undefined parameter for tape.");
@@ -467,11 +485,16 @@ namespace codi {
 
       /// @brief Called by the implementing tapes to store a low level function. The sizes are reserved and allocated.
       /// The data stores are populated with the pointers and can be used to write the data.
-      CODI_INLINE void internalStoreLowLevelFunction(size_t fixedSize, size_t dynamicSize, ByteDataStore& fixedData,
+      CODI_INLINE void internalStoreLowLevelFunction(Config::LowLevelFunctionToken token, size_t fixedSize,
+                                                     size_t dynamicSize, ByteDataStore& fixedData,
                                                      ByteDataStore& dynamicData) {
+        codiAssert((size_t)token < lowLevelFunctionLookup->size());
+
+        tokenData.reserveItems(1);
         otherFixedData.reserveItems(fixedSize);
         otherDynamicData.reserveItems(dynamicSize);
 
+        tokenData.pushData(token);
         char* fixedPointer = nullptr;
         char* dynamicPointer = nullptr;
         otherFixedData.getDataPointers(fixedPointer);
@@ -490,11 +513,17 @@ namespace codi {
                                                      size_t& curOtherDynamicDataPos, char const* const otherDynamicPtr,
                                                      /* data from other fixed data vector */
                                                      size_t& curOtherFixedDataPos, char const* const otherFixedPtr,
-                                                     Args&&... args) {
+                                                     /* data from low level token data vector */
+                                                     size_t& curLLFTokenDataPos,
+                                                     Config::LowLevelFunctionToken* const tokenPtr, Args&&... args) {
         ByteDataStore fixedStore(const_cast<char*>(otherFixedPtr), curOtherFixedDataPos, direction);
         ByteDataStore dynamicStore(const_cast<char*>(otherDynamicPtr), curOtherDynamicDataPos, direction);
 
-        Config::LowLevelFunctionToken magicNumber = *fixedStore.read<Config::LowLevelFunctionToken>(1);
+        if (ByteDataStore::Direction::Reverse == direction) {
+          curLLFTokenDataPos -= 1;
+        }
+
+        Config::LowLevelFunctionToken magicNumber = tokenPtr[curLLFTokenDataPos];
         LowLevelFunctionEntry<Impl, Real, Identifier> const& func = (*lowLevelFunctionLookup)[magicNumber];
         if (func.template has<callType>()) CODI_Likely {
           func.template call<callType>(&impl, fixedStore, dynamicStore, std::forward<Args>(args)...);
@@ -504,6 +533,10 @@ namespace codi {
 
         curOtherDynamicDataPos = dynamicStore.getPosition();
         curOtherFixedDataPos = fixedStore.getPosition();
+
+        if (ByteDataStore::Direction::Forward == direction) {
+          curLLFTokenDataPos += 1;
+        }
       }
 
     public:
@@ -606,17 +639,20 @@ namespace codi {
                 /* data from other dynamic data vector */
                 size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
                 /* data from other fixed data vector */
-                size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr) {
-              CODI_UNUSED(endOtherDynamicDataPos);
+                size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+                /* data from low level token data vector */
+                size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos,
+                Config::LowLevelFunctionToken* const tokenPtr) {
+              CODI_UNUSED(endOtherDynamicDataPos, endOtherFixedDataPos);
 
-              while (curOtherFixedDataPos > endOtherFixedDataPos) {
-                handleLowLevelFunction<LowLevelFunctionEntryCallType::Delete>(cast(), ByteDataStore::Direction::Reverse,
-                                                                              curOtherDynamicDataPos, otherDynamicPtr,
-                                                                              curOtherFixedDataPos, otherFixedPtr);
+              while (curLLFTokenDataPos > endLLFTokenDataPos) {
+                handleLowLevelFunction<LowLevelFunctionEntryCallType::Delete>(
+                    cast(), ByteDataStore::Direction::Reverse, curOtherDynamicDataPos, otherDynamicPtr,
+                    curOtherFixedDataPos, otherFixedPtr, curLLFTokenDataPos, tokenPtr);
               }
             };
 
-        otherDynamicData.template evaluateReverse<1>(cast().getPosition(), pos, deleteFunc);
+        otherDynamicData.template evaluateReverse<2>(cast().getPosition(), pos, deleteFunc);
       }
 
     public:
@@ -672,7 +708,8 @@ namespace codi {
 
       /// Initialize the base class
       void init(typename ImplTapeTypes::NestedData* nested) {
-        otherFixedData.setNested(nested);
+        tokenData.setNested(nested);
+        otherFixedData.setNested(&tokenData);
         otherDynamicData.setNested(&otherFixedData);
       }
 

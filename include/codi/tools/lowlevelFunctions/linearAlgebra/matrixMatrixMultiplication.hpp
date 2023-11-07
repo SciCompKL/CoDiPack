@@ -70,8 +70,6 @@ namespace codi {
         Trait_n::restoreDynamic(&dynamicData, allocator, 1, true, n);
         Trait_k::restoreDynamic(&dynamicData, allocator, 1, true, k);
         Trait_m::restoreDynamic(&dynamicData, allocator, 1, true, m);
-        // Read token for forward/reverse evaluation
-        fixedData.read<codi::Config::LowLevelFunctionToken>(1);
 
         if (Tape::HasPrimalValues) {
           // Get primal values for inputs.
@@ -179,8 +177,6 @@ namespace codi {
                                 LLFH::createRestoreActions(true, false, active_B, active_A), B_store);
         Trait_A::restoreDynamic(&dynamicData, allocator, n * k,
                                 LLFH::createRestoreActions(true, false, active_A, active_B), A_store);
-        // Read token for forward/reverse evaluation
-        fixedData.read<codi::Config::LowLevelFunctionToken>(1);
 
         if (Tape::HasPrimalValues) {
           if (!Tape::LinearIndexHandling) {
@@ -284,8 +280,6 @@ namespace codi {
                                 LLFH::createRestoreActions(true, false, active_B, active_A), B_store);
         Trait_A::restoreDynamic(&dynamicData, allocator, n * k,
                                 LLFH::createRestoreActions(true, false, active_A, active_B), A_store);
-        // Read token for forward/reverse evaluation
-        fixedData.read<codi::Config::LowLevelFunctionToken>(1);
 
         allocator.free();
       }
@@ -320,7 +314,7 @@ namespace codi {
           registerOnTape();
 
           // Count data size
-          size_t sizeFixed = 2 * (LLFH::TokenSize + LLFH::countActivitySize());
+          size_t sizeFixed = 2 * LLFH::countActivitySize();
           size_t sizeDynamic = 0;
           Trait_A::countSize(sizeFixed, sizeDynamic, A, n * k,
                              LLFH::createStoreActions(active, true, false, active_A, active_B));
@@ -335,10 +329,9 @@ namespace codi {
           // Reserve data
           codi::ByteDataStore storeFixed = {};
           codi::ByteDataStore storeDynamic = {};
-          tape.pushLowLevelFunction(sizeFixed, sizeDynamic, storeFixed, storeDynamic);
+          tape.pushLowLevelFunction(ID, sizeFixed, sizeDynamic, storeFixed, storeDynamic);
 
           // Store data
-          storeFixed.write<codi::Config::LowLevelFunctionToken>(ID);
           LLFH::setActivity(activityStore, 0, active_A);
           LLFH::setActivity(activityStore, 1, active_B);
           LLFH::storeActivity(&storeFixed, activityStore);
@@ -352,7 +345,6 @@ namespace codi {
           Trait_k::store(&storeFixed, &storeDynamic, allocator, k, 1, true);
           Trait_m::store(&storeFixed, &storeDynamic, allocator, m, 1, true);
           LLFH::storeActivity(&storeFixed, activityStore);
-          storeFixed.write<codi::Config::LowLevelFunctionToken>(ID);
         } else {
           // Prepare passive evaluation
           Trait_A::store(nullptr, nullptr, allocator, A, n * k,

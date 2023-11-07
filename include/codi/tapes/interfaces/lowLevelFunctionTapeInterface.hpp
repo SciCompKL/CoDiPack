@@ -56,8 +56,9 @@ namespace codi {
    * to be registered with #registerLowLevelFunction. This needs to be done only once. Afterwards a low level function
    * can be pushed as often as required with #pushLowLevelFunction.
    *
-   * The user can write arbitrary data into the fixed and dynamic data streams. The only requirement is that at the
-   * start and end of the fixed data stream the token created with #pushLowLevelFunction needs to be written.
+   * The user can write arbitrary data into the fixed and dynamic data streams. There is no requirement on the layout,
+   * but the data should be readable from the left and right. Therefore, the fixed data stream is used for data that is
+   * always read and dynamic data is used for data which depends on the data in the fixed data stream.
    *
    * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
@@ -86,24 +87,29 @@ namespace codi {
        *  @param otherDynamicPtr         Pointer for dynamic data.
        *  @param curOtherFixedDataPos    Position of fixed data.
        *  @param otherFixedPtr           Pointer for fixed data.
+       *  @param curLLFTokenDataPos      Position of token data.
+       *  @param tokenPtr                Pointer for token data.
        *  @param args                    Additional arguments for the function call.
        *  @tparam callType               The function type that is called.
        */
       template<LowLevelFunctionEntryCallType callType, typename... Args>
       static void handleLowLevelFunction(LowLevelFunctionTapeInterface& tape, ByteDataStore::Direction direction,
                                          size_t& curOtherDynamicDataPos, char const* const otherDynamicPtr,
-                                         size_t& curOtherFixedDataPos, char const* const otherFixedPtr, Args&&... args);
+                                         size_t& curOtherFixedDataPos, char const* const otherFixedPtr,
+                                         size_t& curLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+                                         Args&&... args);
 
       /**
-       *  Push a low level function to the tape.
+       *  @brief Push a low level function to the tape.
        *
        *  \c fixedSize and \c dynamicSize are allocated on the vectors. \c fixedData and \c dynamicData are initialized
        *  with the allocated data. After the call, the data for the function can be written into the data stores.
+       *  \c token is the token from #registerLowLevelFunction.
        *
        *  See LowLevelFunctionTapeInterface for the expected data layout.
        */
-      void pushLowLevelFunction(size_t fixedSize, size_t dynamicSize, ByteDataStore& fixedData,
-                                ByteDataStore& dynamicData);
+      void pushLowLevelFunction(Config::LowLevelFunctionToken token, size_t fixedSize, size_t dynamicSize,
+                                ByteDataStore& fixedData, ByteDataStore& dynamicData);
 
       /// Register a low level function on the tape.
       Config::LowLevelFunctionToken registerLowLevelFunction(

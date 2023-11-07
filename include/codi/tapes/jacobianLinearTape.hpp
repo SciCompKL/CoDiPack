@@ -124,6 +124,8 @@ namespace codi {
           size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
           /* data from other fixed data vector */
           size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+          /* data from low level token data vector */
+          size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           /* data from jacobian vector */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -131,7 +133,7 @@ namespace codi {
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endJacobianPos, endStmtPos, endOtherFixedDataPos, endOtherDynamicDataPos);
+        CODI_UNUSED(endJacobianPos, endStmtPos, endOtherFixedDataPos, endOtherDynamicDataPos, endLLFTokenDataPos);
 
         typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
 
@@ -145,7 +147,7 @@ namespace codi {
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
             Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
                 tape, ByteDataStore::Direction::Forward, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
-                otherFixedPtr, &vectorAccess);
+                otherFixedPtr, curLLFTokenDataPos, tokenPtr, &vectorAccess);
           } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
             // Do nothing.
           } else CODI_Likely {
@@ -170,6 +172,8 @@ namespace codi {
           size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
           /* data from other fixed data vector */
           size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+          /* data from low level token data vector */
+          size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           /* data from jacobianData */
           size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
           Identifier const* const rhsIdentifiers,
@@ -177,7 +181,7 @@ namespace codi {
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endJacobianPos, endStmtPos, endOtherFixedDataPos, endOtherDynamicDataPos);
+        CODI_UNUSED(endJacobianPos, endStmtPos, endOtherFixedDataPos, endOtherDynamicDataPos, endLLFTokenDataPos);
 
         typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
 
@@ -190,7 +194,7 @@ namespace codi {
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
             Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
                 tape, ByteDataStore::Direction::Reverse, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
-                otherFixedPtr, &vectorAccess);
+                otherFixedPtr, curLLFTokenDataPos, tokenPtr, &vectorAccess);
           } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
             // Do nothing.
           } else CODI_Likely {

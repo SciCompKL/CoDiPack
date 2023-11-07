@@ -120,6 +120,8 @@ namespace codi {
           size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
           /* data from other fixed data vector */
           size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+          /* data from low level token data vector */
+          size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -130,7 +132,8 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endOtherDynamicDataPos, endOtherFixedDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
+        CODI_UNUSED(endOtherDynamicDataPos, endOtherFixedDataPos, endLLFTokenDataPos, endConstantPos, endPassivePos,
+                    endRhsIdentifiersPos);
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
         typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
@@ -142,7 +145,7 @@ namespace codi {
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
                 tape, ByteDataStore::Direction::Forward, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
-                otherFixedPtr,
+                otherFixedPtr, curLLFTokenDataPos, tokenPtr,
 #if CODI_VariableAdjointInterfaceInPrimalTapes
                 adjointVector
 #else
@@ -184,6 +187,8 @@ namespace codi {
           size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
           /* data from other fixed data vector */
           size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+          /* data from low level token data vector */
+          size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -194,7 +199,8 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endOtherDynamicDataPos, endOtherFixedDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
+        CODI_UNUSED(endOtherDynamicDataPos, endOtherFixedDataPos, endLLFTokenDataPos, endConstantPos, endPassivePos,
+                    endRhsIdentifiersPos);
 
         typename Base::template VectorAccess<Gradient> vectorAccess(nullptr, primalVector);
 
@@ -204,7 +210,7 @@ namespace codi {
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Primal>(
                 tape, ByteDataStore::Direction::Forward, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
-                otherFixedPtr, &vectorAccess);
+                otherFixedPtr, curLLFTokenDataPos, tokenPtr, &vectorAccess);
           } else CODI_Likely {
             Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
@@ -229,6 +235,8 @@ namespace codi {
           size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
           /* data from other fixed data vector */
           size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+          /* data from low level token data vector */
+          size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -239,7 +247,8 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real const* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endOtherDynamicDataPos, endOtherFixedDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
+        CODI_UNUSED(endOtherDynamicDataPos, endOtherFixedDataPos, endLLFTokenDataPos, endConstantPos, endPassivePos,
+                    endRhsIdentifiersPos);
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
         typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
@@ -253,7 +262,7 @@ namespace codi {
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
                 tape, ByteDataStore::Direction::Reverse, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
-                otherFixedPtr,
+                otherFixedPtr, curLLFTokenDataPos, tokenPtr,
 #if CODI_VariableAdjointInterfaceInPrimalTapes
                 adjointVector
 #else
