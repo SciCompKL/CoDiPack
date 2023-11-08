@@ -71,10 +71,11 @@ namespace codi {
       using InternalPosHandle = size_t;                      ///< Position in the chunk
       using NestedPosition = typename NestedData::Position;  ///< Position of NestedData
 
-      /// For nestingDepth == 0 create a pointer inserter that calls the function object.
-      template<int nestingDepth>
+      /// For selectedDepth == 0 create a pointer inserter that calls the function object.
+      template<int selectedDepth>
       using NestingDepthPointerInserter =
-          typename std::conditional<nestingDepth == 0, TerminatingPointerStore<PointerInserter>, PointerInserter>::type;
+          typename std::conditional<selectedDepth == 0, TerminatingPointerStore<PointerInserter>,
+                                    PointerInserter>::type;
 
       using Position = ArrayPosition<NestedPosition>;  ///< \copydoc DataInterface::Position
 
@@ -236,14 +237,14 @@ namespace codi {
       /// @name Iterator functions
 
       /// \copydoc DataInterface::evaluateForward
-      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
+      template<int selectedDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-        NestingDepthPointerInserter<nestingDepth> pHandle;
+        NestingDepthPointerInserter<selectedDepth> pHandle;
         pHandle.setPointers(0, &chunk);
 
         size_t dataPos = start.data;
-        pHandle.template callNestedForward<nestingDepth - 1>(
+        pHandle.template callNestedForward<selectedDepth - 1>(
             /* arguments for callNestedForward */
             nested, dataPos, end.data,
             /* arguments for nested->evaluateForward */
@@ -253,15 +254,15 @@ namespace codi {
       }
 
       /// \copydoc DataInterface::evaluateReverse
-      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
+      template<int selectedDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
-        NestingDepthPointerInserter<nestingDepth> pHandle;
+        NestingDepthPointerInserter<selectedDepth> pHandle;
 
         size_t dataPos = start.data;
         pHandle.setPointers(0, &chunk);
 
-        pHandle.template callNestedReverse<nestingDepth - 1>(
+        pHandle.template callNestedReverse<selectedDepth - 1>(
             /* arguments for callNestedReverse */
             nested, dataPos, end.data,
             /* arguments for nested->evaluateReverse */

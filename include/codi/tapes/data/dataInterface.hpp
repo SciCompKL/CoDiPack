@@ -315,12 +315,13 @@ namespace codi {
        * @param[in]    function  Function object called.
        * @param[inout] args      Additional arguments for the function object.
        *
-       * @tparam nestingDepth    Depth for the nesting of the data interface. -1 For infinity, 0 for no nesting, 1 for
-       *                         one nested data interface, etc..
+       * @tparam selectedDepth   Selected depth for the recursion into nested data interface. 0 means only the data
+       *                         from this interface is used. A value of 1 means the data from the first nested
+       *                         interface is used, etc. -1 can be used for infinite nesting.
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
+      template<int selectedDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args);
 
@@ -334,12 +335,13 @@ namespace codi {
        * @param[in]    function  Function object called.
        * @param[inout] args      Additional arguments for the function object.
        *
-       * @tparam nestingDepth    Depth for the nesting of the data interface. -1 For infinity, 0 for no nesting, 1 for
-       *                         one nested data interface, etc..
+       * @tparam selectedDepth   Selected depth for the recursion into nested data interface. 0 means only the data
+       *                         from this interface is used. A value of 1 means the data from the first nested
+       *                         interface is used, etc. -1 can be used for infinite nesting.
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
-      template<int nestingDepth = -1, typename FunctionObject, typename... Args>
+      template<int selectedDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args);
 
