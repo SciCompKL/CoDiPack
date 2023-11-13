@@ -315,9 +315,10 @@ namespace codi {
        * @param[in]    function  Function object called.
        * @param[inout] args      Additional arguments for the function object.
        *
-       * @tparam selectedDepth   Selected depth for the recursion into nested data interface. 0 means only the data
-       *                         from this interface is used. A value of 1 means the data from the first nested
-       *                         interface is used, etc. -1 can be used for infinite nesting.
+       * @tparam selectedDepth   Selected depth for the recursion into nested data interfaces. 0 means that only the
+       *                         data from this interface is used. A value of 1 means that the data from the first
+       *                         nested interface is used, etc.. A value of -1 can be used to select the innermost
+       *                         interface, regardless of the number of nested interfaces.
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
@@ -335,9 +336,10 @@ namespace codi {
        * @param[in]    function  Function object called.
        * @param[inout] args      Additional arguments for the function object.
        *
-       * @tparam selectedDepth   Selected depth for the recursion into nested data interface. 0 means only the data
-       *                         from this interface is used. A value of 1 means the data from the first nested
-       *                         interface is used, etc. -1 can be used for infinite nesting.
+       * @tparam selectedDepth   Selected depth for the recursion into nested data interfaces. 0 means that only the
+       *                         data from this interface is used. A value of 1 means that the data from the first
+       *                         nested interface is used, etc.. A value of -1 can be used to select the innermost
+       *                         interface, regardless of the number of nested interfaces.
        * @tparam FunctionObject  Function object which is called.
        * @tparam Args            Arguments for the function object.
        */
