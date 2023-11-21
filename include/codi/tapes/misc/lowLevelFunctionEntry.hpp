@@ -40,7 +40,7 @@
 #include <vector>
 
 #include "../../config.h"
-#include "../../misc/byteDataStore.hpp"
+#include "../../misc/byteDataView.hpp"
 #include "../../misc/macros.hpp"
 #include "vectorAccessInterface.hpp"
 
@@ -71,17 +71,17 @@ namespace codi {
       using Identifier = CODI_DD(T_Identifier, int);  ///< See LowLevelFunctionEntry.
 
       /// Call syntax for Forward, Reverse, and Primal calls.
-      using FuncEval = void (*)(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData,
+      using FuncEval = void (*)(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData,
                                 VectorAccessInterface<Real, Identifier>* access);
 
       /// Call syntax for Delete calls.
-      using FuncDel = void (*)(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData);
+      using FuncDel = void (*)(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData);
 
       /// @brief Call syntax for Count calls.
       ///
       /// \c fixedSize returns the allocated fixed size on the tape, dynamicSize the allocated dynamic size on the tape
       /// and \c allocatedSize the memory allocated on the system (e.g. with new).
-      using FuncCount = void (*)(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData, int& fixedSize,
+      using FuncCount = void (*)(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData, int& fixedSize,
                                  int& dynamicSize, int& allocatedSize);
 
     private:

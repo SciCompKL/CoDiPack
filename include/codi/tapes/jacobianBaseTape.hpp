@@ -112,8 +112,7 @@ namespace codi {
    * left which have to be implemented by the final classes. These methods depend significantly on the index management
    * scheme and are performance critical.
    *
-   * Tape evaluations are performed in three steps with two wrapper steps beforehand. Each methods calls the next
-   * method:
+   * Tape evaluations are performed in several steps. Each methods calls the next method:
    * - evaluate
    * - internalEvaluate*
    * - internalEvaluate*_EvalStatements
@@ -572,7 +571,7 @@ namespace codi {
             cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluateReverse_EvalStatements<Adjoint> evalFunc;
-        Base::otherDynamicData.evaluateReverse(start, end, evalFunc, cast(), data);
+        Base::dynamicData.evaluateReverse(start, end, evalFunc, cast(), data);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
                                                        EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
@@ -587,7 +586,7 @@ namespace codi {
             cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluateForward_EvalStatements<Adjoint> evalFunc;
-        Base::otherDynamicData.evaluateForward(start, end, evalFunc, cast(), data);
+        Base::dynamicData.evaluateForward(start, end, evalFunc, cast(), data);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
                                                        EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
@@ -773,7 +772,7 @@ namespace codi {
 
       /// @copydoc LowLevelFunctionTapeInterface::pushLowLevelFunction
       CODI_INLINE void pushLowLevelFunction(Config::LowLevelFunctionToken token, size_t fixedSize, size_t dynamicSize,
-                                            ByteDataStore& fixedData, ByteDataStore& dynamicData) {
+                                            ByteDataView& fixedData, ByteDataView& dynamicData) {
         statementData.reserveItems(1);
 
         Base::internalStoreLowLevelFunction(token, fixedSize, dynamicSize, fixedData, dynamicData);

@@ -49,9 +49,12 @@ namespace codi {
    *  Can be used in places where memory is often allocated and deallocated. This reduces reduce the overhead of the
    *  system calls.
    *
-   *  Memory is initialized with zeros.
+   *  The initial memory is 4 MiB and can be extended with a call to ensureSize. All memory is initialized with zeros.
    */
-  struct TemporaryMemoryAllocator {
+  struct TemporaryMemory {
+
+      static size_t constexpr InitialDataSize = 4 * 1024 * 1024;  ///< 4 MiB of memory.
+
     private:
 
       std::vector<char> data;  ///< Allocated data.
@@ -60,13 +63,16 @@ namespace codi {
     public:
 
       /// Constructor.
-      CODI_INLINE TemporaryMemoryAllocator() : data(Config::ByteDataChunkSize), dataPos() {}
+      CODI_INLINE TemporaryMemory() : data(InitialDataSize), dataPos() {}
+
+      /// Constructor.
+      CODI_INLINE TemporaryMemory(size_t initialSize) : data(initialSize), dataPos() {}
 
       /// @brief Allocate an array of type \c T with length \c size. Data is zero initialized. No constructors of \c T
       /// are called.
       template<typename T>
       CODI_INLINE T* alloc(size_t size) {
-        codiAssert(dataPos + size * sizeof(T) <= Config::ByteDataChunkSize);
+        codiAssert(dataPos + size * sizeof(T) <= data.size());
 
         T* castPointer = reinterpret_cast<T*>(&data.data()[dataPos]);
         dataPos += size * sizeof(T);
@@ -83,9 +89,20 @@ namespace codi {
         return value;
       }
 
+      /// Ensures that enough space is available. Can only be called when no data has been allocated.
+      CODI_INLINE void ensureSize(size_t newSize) {
+        if(dataPos != 0) {
+          CODI_EXCEPTION("Temporary memory can only be extended when no data is allocated.");
+        }
+
+        if(data.size() < newSize) {
+          data.resize(newSize);
+        }
+      }
+
       /// @brief Free all allocated memory. No destructors are called. Stored pointers and resources need to be
       /// deallocated manually beforehand.
-      void free() {
+      CODI_INLINE void free() {
         // Clear used data.
         std::fill(data.begin(), data.begin() + dataPos, 0);
         dataPos = 0;

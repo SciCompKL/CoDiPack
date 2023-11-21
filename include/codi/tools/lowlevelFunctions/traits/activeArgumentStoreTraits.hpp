@@ -36,9 +36,9 @@
 
 #include "../../../config.h"
 #include "../../../expressions/lhsExpressionInterface.hpp"
-#include "../../../misc/byteDataStore.hpp"
+#include "../../../misc/byteDataView.hpp"
 #include "../../../misc/macros.hpp"
-#include "../../../misc/temporaryMemoryAllocator.hpp"
+#include "../../../misc/temporaryMemory.hpp"
 #include "../../../tapes/data/position.hpp"
 #include "../../../tapes/interfaces/fullTapeInterface.hpp"
 #include "../storeAndRestoreActions.hpp"
@@ -208,7 +208,7 @@ namespace codi {
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
        * pointers the vector size. \c data can be used to store data and pointers from the streams.
        */
-      CODI_INLINE static void restoreFixed(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                            RestoreActions const& actions, ArgumentStore& data);
 
       /**
@@ -218,7 +218,7 @@ namespace codi {
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
        * pointers the vector size. \c data can be used to store data and pointers from the streams.
        */
-      CODI_INLINE static void restoreDynamic(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                              RestoreActions const& actions, ArgumentStore& data);
 
       /**
@@ -227,8 +227,8 @@ namespace codi {
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
        * pointers the vector size. \c data can be used to store data and pointers from the streams.
        */
-      CODI_INLINE static void store(ByteDataStore* fixedStore, ByteDataStore* dynamicStore,
-                                    TemporaryMemoryAllocator& allocator, T const& value, size_t size,
+      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
+                                    TemporaryMemory& allocator, T const& value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data);
 
       /// Should return true when one element in the type is active.
@@ -285,7 +285,7 @@ namespace codi {
       }
 
       /// @copydoc ActiveArgumentValueStore::restoreFixed()
-      CODI_INLINE static void restoreFixed(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                            RestoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED_ARG(size);
 
@@ -293,7 +293,7 @@ namespace codi {
       }
 
       /// @copydoc ActiveArgumentValueStore::restoreDynamic()
-      CODI_INLINE static void restoreDynamic(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                              RestoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED_ARG(size);
 
@@ -301,8 +301,8 @@ namespace codi {
       }
 
       /// @copydoc ActiveArgumentValueStore::store()
-      CODI_INLINE static void store(ByteDataStore* fixedStore, ByteDataStore* dynamicStore,
-                                    TemporaryMemoryAllocator& allocator, T const& value, size_t size,
+      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
+                                    TemporaryMemory& allocator, T const& value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED_ARG(size);
 
@@ -399,7 +399,7 @@ namespace codi {
       }
 
       /// @copydoc ActiveArgumentValueStore::restoreFixed()
-      CODI_INLINE static void restoreFixed(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                            RestoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED(store, allocator, size, actions, data);
 
@@ -409,11 +409,11 @@ namespace codi {
       }
 
       /// @copydoc ActiveArgumentValueStore::restoreDynamic()
-      CODI_INLINE static void restoreDynamic(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                              RestoreActions const& actions, ArgumentStore& data) {
         Real* passiveValues = nullptr;
 
-        if (store->getDirection() == ByteDataStore::Direction::Reverse) {
+        if (store->getDirection() == ByteDataView::Direction::Reverse) {
           if (actions.test(RestoreAction::OutputIdentifierRestore)) {
             if (Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
               data.oldPrimals = store->template read<Real>(size);
@@ -458,7 +458,7 @@ namespace codi {
       }
 
       /// @copydoc ActiveArgumentValueStore::restoreValue()
-      CODI_INLINE static void restoreValue(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreValue(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                            ArgumentStore& data, Real*& passiveValues) {
         if (Tape::HasPrimalValues) {
           // Primal value tapes restore from the tape.
@@ -494,8 +494,8 @@ namespace codi {
       }
 
       /// @copydoc ActiveArgumentValueStore::store()
-      CODI_INLINE static void store(ByteDataStore* fixedStore, ByteDataStore* dynamicStore,
-                                    TemporaryMemoryAllocator& allocator, T const* value, size_t size,
+      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
+                                    TemporaryMemory& allocator, T const* value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED(fixedStore);
 

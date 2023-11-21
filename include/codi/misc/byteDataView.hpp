@@ -45,8 +45,10 @@ namespace codi {
 
   /// Helper for reading and writing to a byte array.
   ///
-  /// Returned pointers are always pointers into the byte array.
-  struct ByteDataStore {
+  /// Returned pointers are always pointers into the byte array. Every read, write and reserve function advances the
+  /// position into the byte array in the correct direction and by the size of the data. It is always assumed that
+  /// enough space is left in the byte array.
+  struct ByteDataView {
       /// Direction for reading and writing.
       enum class Direction {
         Forward,
@@ -63,10 +65,10 @@ namespace codi {
     public:
 
       /// Empty initialization. Innit needs to be called on this object.
-      CODI_INLINE ByteDataStore() = default;
+      CODI_INLINE ByteDataView() = default;
 
       /// Constructor.
-      CODI_INLINE ByteDataStore(char* pointer, size_t pos, Direction d) : pointer(pointer), pos(pos), direction(d) {}
+      CODI_INLINE ByteDataView(char* pointer, size_t pos, Direction d) : pointer(pointer), pos(pos), direction(d) {}
 
       /// Get the current data position.
       CODI_INLINE size_t getPosition() {
@@ -87,7 +89,7 @@ namespace codi {
 
       /// Read an array of length \c size of types \c T.
       template<typename T>
-      T* read(size_t size) {
+      CODI_INLINE T* read(size_t size) {
         if (Direction::Reverse == direction) {
           pos -= sizeof(T) * size;
         }
@@ -101,14 +103,14 @@ namespace codi {
 
       /// Read a single object of type \c T.
       template<typename T>
-      T read() {
+      CODI_INLINE T read() {
         return read<T>(1)[0];
       }
 
       /// @brief Reserve memory for an array of type \c T with length \c size. The returned pointer can be written with
       /// the actual data.
       template<typename T>
-      T* reserve(size_t size) {
+      CODI_INLINE T* reserve(size_t size) {
         T* convPointer = cast<T>();
         pos += sizeof(T) * size;
 
@@ -117,13 +119,13 @@ namespace codi {
 
       /// Write a single entry of type \c T.
       template<typename T>
-      T* write(T const& data) {
+      CODI_INLINE T* write(T const& data) {
         return write(&data, 1);
       }
 
       /// Write an array of type \c T with length \c size.
       template<typename T>
-      T* write(T const* data, size_t size) {
+      CODI_INLINE T* write(T const* data, size_t size) {
         T* convPointer = cast<T>();
         for (size_t i = 0; i < size; i += 1) {
           convPointer[i] = data[i];
@@ -136,7 +138,7 @@ namespace codi {
     private:
 
       template<typename T>
-      T* cast() {
+      CODI_INLINE T* cast() {
         return reinterpret_cast<T*>(&pointer[pos]);
       }
   };

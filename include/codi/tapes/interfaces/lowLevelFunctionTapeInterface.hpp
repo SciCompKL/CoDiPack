@@ -35,9 +35,9 @@
 #pragma once
 
 #include "../../config.h"
-#include "../../misc/byteDataStore.hpp"
+#include "../../misc/byteDataView.hpp"
 #include "../../misc/macros.hpp"
-#include "../../misc/temporaryMemoryAllocator.hpp"
+#include "../../misc/temporaryMemory.hpp"
 #include "../misc/lowLevelFunctionEntry.hpp"
 
 /** \copydoc codi::Namespace */
@@ -77,26 +77,29 @@ namespace codi {
       /// @name Interface definition
 
       /// Temporary memory that can be used for dynamic data both during the evaluation and the recording.
-      TemporaryMemoryAllocator& getTemporaryMemoryAllocator();
+      TemporaryMemory& getTemporaryMemory();
 
       /**
        *  @brief Internal function for evaluating a low level function entry.
        *
+       *  The positions \c curDynamicDataPos,curFixedDataPos and \c curLLFTokenDataPos are advanced according to
+       *  \c direction.
+       *
        *  @param tape                    The tape that is evaluated.
        *  @param direction               The read direction for the data pointers.
-       *  @param curOtherDynamicDataPos  Position of dynamic data.
-       *  @param otherDynamicPtr         Pointer for dynamic data.
-       *  @param curOtherFixedDataPos    Position of fixed data.
-       *  @param otherFixedPtr           Pointer for fixed data.
+       *  @param curDynamicDataPos       Position of dynamic data.
+       *  @param dynamicDataPtr          Pointer for dynamic data.
+       *  @param curFixedDataPos         Position of fixed data.
+       *  @param fixedDataPtr            Pointer for fixed data.
        *  @param curLLFTokenDataPos      Position of token data.
        *  @param tokenPtr                Pointer for token data.
        *  @param args                    Additional arguments for the function call.
        *  @tparam callType               The function type that is called.
        */
       template<LowLevelFunctionEntryCallType callType, typename... Args>
-      static void handleLowLevelFunction(LowLevelFunctionTapeInterface& tape, ByteDataStore::Direction direction,
-                                         size_t& curOtherDynamicDataPos, char const* const otherDynamicPtr,
-                                         size_t& curOtherFixedDataPos, char const* const otherFixedPtr,
+      static void callLowLevelFunction(LowLevelFunctionTapeInterface& tape, ByteDataView::Direction direction,
+                                         size_t& curDynamicDataPos, char* dynamicDataPtr,
+                                         size_t& curFixedDataPos, char* fixedDataPtr,
                                          size_t& curLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
                                          Args&&... args);
 
@@ -111,7 +114,7 @@ namespace codi {
        *  See LowLevelFunctionTapeInterface for the expected data layout.
        */
       void pushLowLevelFunction(Config::LowLevelFunctionToken token, size_t fixedSize, size_t dynamicSize,
-                                ByteDataStore& fixedData, ByteDataStore& dynamicData);
+                                ByteDataView& fixedData, ByteDataView& dynamicData);
 
       /// Register a low level function on the tape.
       Config::LowLevelFunctionToken registerLowLevelFunction(

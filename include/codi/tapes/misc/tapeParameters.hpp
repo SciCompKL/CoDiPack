@@ -63,8 +63,8 @@ namespace codi {
     StatementSize,          ///< [A: RW] Allocated number of entries in the statement vector in all tapes.
     LLFTokenDataSize,       ///< [A: RW] Allocated number of entries in the low level function token  vector in all
                             ///<         tapes.
-    OtherFixedDataSize,     ///< [A: RW] Allocated number of entries in the fixed other data vector.
-    OtherDynamicDataSize    ///< [A: RW] Allocated number of entries in the variable other data vector.
+    FixedDataSize,     ///< [A: RW] Allocated number of entries in the fixed other data vector.
+    DynamicDataSize    ///< [A: RW] Allocated number of entries in the variable other data vector.
   };
 
   /**

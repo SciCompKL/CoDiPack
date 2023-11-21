@@ -21,9 +21,9 @@ namespace codi {
       static codi::Config::LowLevelFunctionToken ID;
 
       /// Function for forward interpretation.
-      CODI_INLINE static void forward(Tape* tape, codi::ByteDataStore& fixedData, codi::ByteDataStore& dynamicData,
+      CODI_INLINE static void forward(Tape* tape, codi::ByteDataView& fixedData, codi::ByteDataView& dynamicData,
                                       AdjointVectorAccess adjoints) {
-        codi::TemporaryMemoryAllocator& allocator = tape->getTemporaryMemoryAllocator();
+        codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
         using LLFH = codi::LowLevelFunctionCreationHelper<2>;
 
         // Traits for arguments
@@ -128,9 +128,9 @@ namespace codi {
       }
 
       /// Function for reverse interpretation.
-      CODI_INLINE static void reverse(Tape* tape, codi::ByteDataStore& fixedData, codi::ByteDataStore& dynamicData,
+      CODI_INLINE static void reverse(Tape* tape, codi::ByteDataView& fixedData, codi::ByteDataView& dynamicData,
                                       AdjointVectorAccess adjoints) {
-        codi::TemporaryMemoryAllocator& allocator = tape->getTemporaryMemoryAllocator();
+        codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
         using LLFH = codi::LowLevelFunctionCreationHelper<2>;
 
         // Traits for arguments
@@ -232,8 +232,8 @@ namespace codi {
       }
 
       /// Function for deletion of contents.
-      CODI_INLINE static void del(Tape* tape, codi::ByteDataStore& fixedData, codi::ByteDataStore& dynamicData) {
-        codi::TemporaryMemoryAllocator& allocator = tape->getTemporaryMemoryAllocator();
+      CODI_INLINE static void del(Tape* tape, codi::ByteDataView& fixedData, codi::ByteDataView& dynamicData) {
+        codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
         using LLFH = codi::LowLevelFunctionCreationHelper<2>;
 
         // Traits for arguments
@@ -287,7 +287,7 @@ namespace codi {
       /// Store on tape.
       CODI_INLINE static void store(Type const* A, Type const* B, Type* R, int n, int k, int m) {
         Tape& tape = Type::getTape();
-        codi::TemporaryMemoryAllocator& allocator = tape.getTemporaryMemoryAllocator();
+        codi::TemporaryMemory& allocator = tape.getTemporaryMemory();
         using LLFH = codi::LowLevelFunctionCreationHelper<2>;
 
         // Traits for arguments
@@ -327,8 +327,8 @@ namespace codi {
           Trait_m::countSize(sizeFixed, sizeDynamic, m, 1, true);
 
           // Reserve data
-          codi::ByteDataStore storeFixed = {};
-          codi::ByteDataStore storeDynamic = {};
+          codi::ByteDataView storeFixed = {};
+          codi::ByteDataView storeDynamic = {};
           tape.pushLowLevelFunction(ID, sizeFixed, sizeDynamic, storeFixed, storeDynamic);
 
           // Store data

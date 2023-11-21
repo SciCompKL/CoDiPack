@@ -167,7 +167,7 @@ namespace codi {
   /**
    *  @brief Low level function entry implementation for external functions.
    *
-   *  Stores the ExternalFunction object in the dynamic data store.
+   *  Stores the ExternalFunction object in the static data store.
    *
    * @tparam T_Tape        The associated tape type.
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
@@ -184,61 +184,60 @@ namespace codi {
       /// Shortcut for VectorAccessInterface.
       using VectorAccess = VectorAccessInterface<typename Tape::Real, typename Tape::Identifier>;
 
-      /// Reads data from dynamicData and calls evaluateForward.
-      CODI_INLINE static void forward(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData,
+      /// Recovers the external function fixedData and calls evaluateForward on it.
+      CODI_INLINE static void forward(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData,
                                       VectorAccess* access) {
-        CODI_UNUSED(fixedData);
+        CODI_UNUSED(dynamicData);
 
-        ExtFunc* extFunc = dynamicData.read<ExtFunc>(1);
+        ExtFunc* extFunc = fixedData.read<ExtFunc>(1);
         extFunc->evaluateForward(tape, access);
       }
 
-      /// Reads data from dynamicData and calls evaluatePrimal.
-      CODI_INLINE static void primal(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData,
+      /// Recovers the external function fixedData and calls evaluatePrimal on it.
+      CODI_INLINE static void primal(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData,
                                      VectorAccess* access) {
-        CODI_UNUSED(fixedData);
+        CODI_UNUSED(dynamicData);
 
-        ExtFunc* extFunc = dynamicData.read<ExtFunc>(1);
+        ExtFunc* extFunc = fixedData.read<ExtFunc>(1);
         extFunc->evaluatePrimal(tape, access);
       }
 
-      /// Reads data from dynamicData and calls evaluateReverse.
-      CODI_INLINE static void reverse(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData,
+      /// Recovers the external function fixedData and calls evaluateReverse on it.
+      CODI_INLINE static void reverse(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData,
                                       VectorAccess* access) {
-        CODI_UNUSED(fixedData);
+        CODI_UNUSED(dynamicData);
 
-        ExtFunc* extFunc = dynamicData.read<ExtFunc>(1);
+        ExtFunc* extFunc = fixedData.read<ExtFunc>(1);
         extFunc->evaluateReverse(tape, access);
       }
 
-      /// Reads data from dynamicData and calls deleteData.
-      CODI_INLINE static void del(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData) {
-        CODI_UNUSED(fixedData);
+      /// Recovers the external function fixedData and calls deleteData on it.
+      CODI_INLINE static void del(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData) {
+        CODI_UNUSED(dynamicData);
 
-        ExtFunc* extFunc = dynamicData.read<ExtFunc>(1);
+        ExtFunc* extFunc = fixedData.read<ExtFunc>(1);
         extFunc->deleteData(tape);
       }
 
       /// Retrieve the sizes of fixed and dynamic data allocated for the external function. Data allocated by the external function itself is not counted.
-      CODI_INLINE static void count(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData, int& fixedSize,
+      CODI_INLINE static void count(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData, int& fixedSize,
                                     int& dynamicSize, int& allocatedSize) {
-        CODI_UNUSED(tape, fixedData);
+        CODI_UNUSED(tape, dynamicData);
 
-        fixedSize = (int)sizeof(Config::LowLevelFunctionToken);
-        dynamicSize = (int)sizeof(ExtFunc);
+        fixedSize = (int)sizeof(ExtFunc);
+        dynamicSize = 0;
         allocatedSize = 0;  // TODO: Implement data counting for external functions.
 
-        dynamicData.template read<ExtFunc>();
+        fixedData.template read<ExtFunc>();
       }
 
       /// Store an external function on the tape.
-      CODI_INLINE static void store(Tape& tape, Config::LowLevelFunctionToken const& token, ExtFunc const& extFunc) {
-        ByteDataStore fixedStore = {};
-        ByteDataStore dynamicStore = {};
-        tape.pushLowLevelFunction(token, 0, sizeof(ExtFunc), fixedStore, dynamicStore);
+      CODI_INLINE static void store(Tape& tape, Config::LowLevelFunctionToken token, ExtFunc const& extFunc) {
+        ByteDataView fixedStore = {};
+        ByteDataView dynamicStore = {};
+        tape.pushLowLevelFunction(token, sizeof(ExtFunc), 0, fixedStore, dynamicStore);
 
-        fixedStore.write(token);
-        dynamicStore.write(extFunc);
+        fixedStore.write(extFunc);
       }
 
       /// Create the function entry for the tape registration.

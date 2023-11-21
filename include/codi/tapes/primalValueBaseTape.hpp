@@ -121,8 +121,7 @@ namespace codi {
    * left which need to be implemented by the final classes. These methods depend significantly on the index management
    * scheme and are performance critical.
    *
-   * Tape evaluations are performed in three steps with two wrapper steps beforehand. Each methods calls the next
-   * method:
+   * Tape evaluations are performed in several steps. Each methods calls the next method:
    * - evaluate
    * - internalEvaluate*
    * - internalEvaluate*_EvalStatements
@@ -646,7 +645,7 @@ namespace codi {
             cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluateForward_EvalStatements evalFunc{};
-        Base::otherDynamicData.evaluateForward(start, end, evalFunc, cast(), primalData, dataVector);
+        Base::dynamicData.evaluateForward(start, end, evalFunc, cast(), primalData, dataVector);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess,
                                                        EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
@@ -693,7 +692,7 @@ namespace codi {
             cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluateReverse_EvalStatements evalFunc;
-        Base::otherDynamicData.evaluateReverse(start, end, evalFunc, cast(), primalData, dataVector);
+        Base::dynamicData.evaluateReverse(start, end, evalFunc, cast(), primalData, dataVector);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess,
                                                        EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
@@ -1045,7 +1044,7 @@ namespace codi {
 
       /// @copydoc LowLevelFunctionTapeInterface::pushLowLevelFunction
       CODI_INLINE void pushLowLevelFunction(Config::LowLevelFunctionToken token, size_t fixedSize, size_t dynamicSize,
-                                            ByteDataStore& fixedData, ByteDataStore& dynamicData) {
+                                            ByteDataView& fixedData, ByteDataView& dynamicData) {
         statementData.reserveItems(1);
 
         Base::internalStoreLowLevelFunction(token, fixedSize, dynamicSize, fixedData, dynamicData);
@@ -1154,7 +1153,7 @@ namespace codi {
                                                        EventHints::EvaluationKind::Primal, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluatePrimal_EvalStatements evalFunc{};
-        Base::otherDynamicData.evaluateForward(start, end, evalFunc, cast(), primals.data());
+        Base::dynamicData.evaluateForward(start, end, evalFunc, cast(), primals.data());
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess,
                                                        EventHints::EvaluationKind::Primal, EventHints::Endpoint::End);

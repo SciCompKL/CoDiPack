@@ -37,7 +37,7 @@
 #include <tuple>
 
 #include "../../config.h"
-#include "../../misc/byteDataStore.hpp"
+#include "../../misc/byteDataView.hpp"
 #include "../../misc/macros.hpp"
 #include "storeAndRestoreActions.hpp"
 #include "traits/activeArgumentStoreTraits.hpp"
@@ -87,7 +87,7 @@ namespace codi {
    *  \subsection allocate Allocate data on the tape
    *
    *  A call to #LowLevelFunctionTapeInterface::pushLowLevelFunction() will add the low level function to the tape and
-   *  populate the #codi::ByteDataStore for the fixed and dynamic data.
+   *  populate the #codi::ByteDataView for the fixed and dynamic data.
    *
    *  \subsection write Write data
    *
@@ -218,7 +218,7 @@ namespace codi {
       }
 
       /// Restore the activity structure from the data stream.
-      CODI_INLINE static void restoreActivity(ByteDataStore* fixedStore, ActivityStoreType& activity) {
+      CODI_INLINE static void restoreActivity(ByteDataView* fixedStore, ActivityStoreType& activity) {
         activity = fixedStore->read<ActivityStoreType>();
       }
 
@@ -228,7 +228,7 @@ namespace codi {
       }
 
       /// Store the activity structure in the data stream.
-      CODI_INLINE static void storeActivity(ByteDataStore* fixedStore, ActivityStoreType const& activity) {
+      CODI_INLINE static void storeActivity(ByteDataView* fixedStore, ActivityStoreType const& activity) {
         fixedStore->write(activity);
       }
 

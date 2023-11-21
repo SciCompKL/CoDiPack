@@ -35,9 +35,9 @@
 #pragma once
 
 #include "../../../config.h"
-#include "../../../misc/byteDataStore.hpp"
+#include "../../../misc/byteDataView.hpp"
 #include "../../../misc/macros.hpp"
-#include "../../../misc/temporaryMemoryAllocator.hpp"
+#include "../../../misc/temporaryMemory.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -65,16 +65,16 @@ namespace codi {
                                         bool storeRequired);
 
       /// Restore the fixed data parts for this type.
-      CODI_INLINE static void restoreFixed(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                            bool storeRequired, Store& value);
 
       /// Restore the dynamic data parts for this type.
-      CODI_INLINE static void restoreDynamic(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                              bool storeRequired, Store& value);
 
       /// Store the data for the type in the fixed and dynamic data.
-      CODI_INLINE static void store(ByteDataStore* fixedStore, ByteDataStore* dynamicStore,
-                                    TemporaryMemoryAllocator& allocator, T const& value, size_t size,
+      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
+                                    TemporaryMemory& allocator, T const& value, size_t size,
                                     bool storeRequired);
   };
 
@@ -96,7 +96,7 @@ namespace codi {
       }
 
       /// @copydoc PassiveArgumentStoreTraits::restoreFixed()
-      CODI_INLINE static void restoreFixed(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                            bool storeRequired, Store& value) {
         CODI_UNUSED(allocator, size);
         if (storeRequired) {
@@ -105,14 +105,14 @@ namespace codi {
       }
 
       /// @copydoc PassiveArgumentStoreTraits::restoreDynamic()
-      CODI_INLINE static void restoreDynamic(ByteDataStore* store, TemporaryMemoryAllocator& allocator, size_t size,
+      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                              bool storeRequired, Store& value) {
         CODI_UNUSED(store, allocator, size, storeRequired, value);
       }
 
       /// @copydoc PassiveArgumentStoreTraits::store()
-      CODI_INLINE static void store(ByteDataStore* fixedStore, ByteDataStore* dynamicStore,
-                                    TemporaryMemoryAllocator& allocator, T const& value, size_t size,
+      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
+                                    TemporaryMemory& allocator, T const& value, size_t size,
                                     bool storeRequired) {
         CODI_UNUSED(dynamicStore, allocator, size);
 

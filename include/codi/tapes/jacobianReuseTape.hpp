@@ -108,8 +108,8 @@ namespace codi {
         };
 
         using StmtPosition = typename StatementData::Position;
-        StmtPosition startStmt = this->otherDynamicData.template extractPosition<StmtPosition>(start);
-        StmtPosition endStmt = this->otherDynamicData.template extractPosition<StmtPosition>(end);
+        StmtPosition startStmt = this->dynamicData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->dynamicData.template extractPosition<StmtPosition>(end);
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
 
@@ -138,9 +138,9 @@ namespace codi {
           /* data from call */
           JacobianReuseTape& tape, Adjoint* adjointVector,
           /* data from other dynamic data vector */
-          size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
+          size_t& curDynamicDataPos, size_t const& endDynamicDataPos, char* dynamicDataPtr,
           /* data from other fixed data vector */
-          size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+          size_t& curFixedDataPos, size_t const& endFixedDataPos, char* fixedDataPtr,
           /* data from low level token data vector */
           size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           /* data from jacobian vector */
@@ -149,7 +149,7 @@ namespace codi {
           /* data from statement vector */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
-        CODI_UNUSED(endJacobianPos, endOtherFixedDataPos, endLLFTokenDataPos, endOtherDynamicDataPos);
+        CODI_UNUSED(endJacobianPos, endFixedDataPos, endLLFTokenDataPos, endDynamicDataPos);
 
         typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
 
@@ -157,9 +157,9 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
-            Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
-                tape, ByteDataStore::Direction::Forward, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
-                otherFixedPtr, curLLFTokenDataPos, tokenPtr, &vectorAccess);
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
+                tape, ByteDataView::Direction::Forward, curDynamicDataPos, dynamicDataPtr, curFixedDataPos,
+                fixedDataPtr, curLLFTokenDataPos, tokenPtr, &vectorAccess);
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
@@ -181,9 +181,9 @@ namespace codi {
           /* data from call */
           JacobianReuseTape& tape, Adjoint* adjointVector,
           /* data from other dynamic data vector */
-          size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
+          size_t& curDynamicDataPos, size_t const& endDynamicDataPos, char* dynamicDataPtr,
           /* data from other fixed data vector */
-          size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+          size_t& curFixedDataPos, size_t const& endFixedDataPos, char* fixedDataPtr,
           /* data from low level token data vector */
           size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           /* data from jacobianData */
@@ -192,7 +192,7 @@ namespace codi {
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
-        CODI_UNUSED(endJacobianPos, endOtherFixedDataPos, endLLFTokenDataPos, endOtherDynamicDataPos);
+        CODI_UNUSED(endJacobianPos, endFixedDataPos, endLLFTokenDataPos, endDynamicDataPos);
 
         typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
 
@@ -202,9 +202,9 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
-            Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
-                tape, ByteDataStore::Direction::Reverse, curOtherDynamicDataPos, otherDynamicPtr, curOtherFixedDataPos,
-                otherFixedPtr, curLLFTokenDataPos, tokenPtr, &vectorAccess);
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
+                tape, ByteDataView::Direction::Reverse, curDynamicDataPos, dynamicDataPtr, curFixedDataPos,
+                fixedDataPtr, curLLFTokenDataPos, tokenPtr, &vectorAccess);
           } else CODI_Likely {
             Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
 
@@ -249,7 +249,7 @@ namespace codi {
 
       /// \copydoc codi::EditingTapeInterface::append
       CODI_INLINE void append(JacobianReuseTape& srcTape, Position const& start, Position const& end) {
-        srcTape.otherDynamicData.evaluateForward(start, end, JacobianReuseTape::appendJacobiansAndStatements, srcTape,
+        srcTape.dynamicData.evaluateForward(start, end, JacobianReuseTape::internalAppend, srcTape,
                                                  this);
       }
 
@@ -257,13 +257,13 @@ namespace codi {
 
     private:
 
-      static CODI_INLINE void appendJacobiansAndStatements(
+      static CODI_INLINE void internalAppend(
           /* data from call */
           JacobianReuseTape* srcTape, JacobianReuseTape* dstTape,
           /* data from other dynamic data vector */
-          size_t& curOtherDynamicDataPos, size_t const& endOtherDynamicDataPos, char const* const otherDynamicPtr,
+          size_t& curDynamicDataPos, size_t const& endDynamicDataPos, char* dynamicDataPtr,
           /* data from other fixed data vector */
-          size_t& curOtherFixedDataPos, size_t const& endOtherFixedDataPos, char const* const otherFixedPtr,
+          size_t& curFixedDataPos, size_t const& endFixedDataPos, char* fixedDataPtr,
           /* data from low level token data vector */
           size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           /* data from jacobianData */
@@ -284,27 +284,30 @@ namespace codi {
             Config::LowLevelFunctionToken token = tokenPtr[curLLFTokenDataPos];
 
             // The positions are advanced, so we use temporary ones.
-            size_t tempCurOtherDynamicDataPos = curOtherDynamicDataPos;
-            size_t tempCurOtherFixedDataPos = curOtherFixedDataPos;
-            Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Count>(
-                srcTape, ByteDataStore::Direction::Forward, tempCurOtherDynamicDataPos, otherDynamicPtr,
-                tempCurOtherFixedDataPos, otherFixedPtr, curLLFTokenDataPos, tokenPtr, fixedSize, dynamicSize,
+            size_t tempCurDynamicDataPos = curDynamicDataPos;
+            size_t tempCurFixedDataPos = curFixedDataPos;
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Count>(
+                srcTape, ByteDataView::Direction::Forward, tempCurDynamicDataPos, dynamicDataPtr,
+                tempCurFixedDataPos, fixedDataPtr, curLLFTokenDataPos, tokenPtr, fixedSize, dynamicSize,
                 allocatedSize);
 
             // Create stores with the original data.
-            ByteDataStore fixedStore(const_cast<char*>(otherFixedPtr), curOtherFixedDataPos,
-                                     ByteDataStore::Direction::Forward);
-            ByteDataStore dynamicStore(const_cast<char*>(otherDynamicPtr), curOtherDynamicDataPos,
-                                       ByteDataStore::Direction::Forward);
+            ByteDataView fixedStore(const_cast<char*>(fixedDataPtr), curFixedDataPos,
+                                     ByteDataView::Direction::Forward);
+            ByteDataView dynamicStore(const_cast<char*>(dynamicDataPtr), curDynamicDataPos,
+                                       ByteDataView::Direction::Forward);
 
             // Create the stores on the new tape.
-            ByteDataStore dstFixedStore = {};
-            ByteDataStore dstDynamicStore = {};
+            ByteDataView dstFixedStore = {};
+            ByteDataView dstDynamicStore = {};
             dstTape->pushLowLevelFunction(token, fixedSize, dynamicSize, dstFixedStore, dstDynamicStore);
 
             // Copy the data.
             dstFixedStore.write(fixedStore.template read<char>(fixedSize), fixedSize);
             dstDynamicStore.write(dynamicStore.template read<char>(dynamicSize), dynamicSize);
+
+            curFixedDataPos = tempCurFixedDataPos;
+            curDynamicDataPos = tempCurDynamicDataPos;
           } else CODI_Likely {
             // Manual statement push.
             dstTape->statementData.reserveItems(1);
