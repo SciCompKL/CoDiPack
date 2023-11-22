@@ -58,7 +58,7 @@ namespace codi {
   };
 
   /**
-   * @brief Low level function entry on the tape. See LowLevelTapeInterface for details.
+   * @brief Low level function entry on the tape. See LowLevelFunctionTapeInterface for details.
    *
    * @tparam T_Tape        The tape on which the entry is registered.
    * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
@@ -70,7 +70,7 @@ namespace codi {
       using Real = CODI_DD(T_Real, double);           ///< See LowLevelFunctionEntry.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See LowLevelFunctionEntry.
 
-      /// Call syntax for Forward, Reverse and Primal calls.
+      /// Call syntax for Forward, Reverse, and Primal calls.
       using FuncEval = void (*)(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData,
                                 VectorAccessInterface<Real, Identifier>* access);
 

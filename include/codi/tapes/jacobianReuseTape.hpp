@@ -283,7 +283,7 @@ namespace codi {
             // Store the token
             Config::LowLevelFunctionToken token = tokenPtr[curLLFTokenDataPos];
 
-            // The positions are advanced so we use temporary ones.
+            // The positions are advanced, so we use temporary ones.
             size_t tempCurOtherDynamicDataPos = curOtherDynamicDataPos;
             size_t tempCurOtherFixedDataPos = curOtherFixedDataPos;
             Base::template handleLowLevelFunction<LowLevelFunctionEntryCallType::Count>(

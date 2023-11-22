@@ -219,7 +219,7 @@ namespace codi {
         extFunc->deleteData(tape);
       }
 
-      /// Counts the data on the data stores. Allocated data is not counted.
+      /// Retrieve the sizes of fixed and dynamic data allocated for the external function. Data allocated by the external function itself is not counted.
       CODI_INLINE static void count(Tape* tape, ByteDataStore& fixedData, ByteDataStore& dynamicData, int& fixedSize,
                                     int& dynamicSize, int& allocatedSize) {
         CODI_UNUSED(tape, fixedData);

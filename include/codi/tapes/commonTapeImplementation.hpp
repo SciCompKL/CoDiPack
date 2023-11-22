@@ -528,7 +528,7 @@ namespace codi {
         if (func.template has<callType>()) CODI_Likely {
           func.template call<callType>(&impl, fixedStore, dynamicStore, std::forward<Args>(args)...);
         } else if (LowLevelFunctionEntryCallType::Delete != callType) {
-          CODI_EXCEPTION("Low level function is not set for token '%d'.", (int)magicNumber);
+          CODI_EXCEPTION("Requested call is not supported for low level function with token '%d'.", (int)magicNumber);
         }
 
         curOtherDynamicDataPos = dynamicStore.getPosition();

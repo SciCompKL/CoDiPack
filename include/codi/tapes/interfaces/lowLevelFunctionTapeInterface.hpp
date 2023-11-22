@@ -50,11 +50,12 @@ namespace codi {
   struct LhsExpressionInterface;
 
   /**
-   * @brief Add small recurring function to the tape evaluation.
+   * @brief Add functions with custom derivatives to the tape. Can, e.g, be used to optimize small recurring functions like matrix matrix multiplication.
    *
-   * A low level function like the matrix matrix multiplication can be add with this interface. First the function needs
-   * to be registered with #registerLowLevelFunction. This needs to be done only once. Afterwards a low level function
-   * can be pushed as often as required with #pushLowLevelFunction.
+   * A low level function like the matrix matrix multiplication can be added with this interface. First, the function needs
+   * to be registered with #registerLowLevelFunction. This needs to be done only once, after this, the function is generally
+   * available. It can then be pushed as often as required with #pushLowLevelFunction. Each push can be accompanied by different
+   * data, e.g., the specific matrices used by individual matrix matrix multiplications.
    *
    * The user can write arbitrary data into the fixed and dynamic data streams. There is no requirement on the layout,
    * but the data should be readable from the left and right. Therefore, the fixed data stream is used for data that is
@@ -75,7 +76,7 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// An allocator for dynamic data during the evaluation on the tape or during the recording.
+      /// Temporary memory that can be used for dynamic data both during the evaluation and the recording.
       TemporaryMemoryAllocator& getTemporaryMemoryAllocator();
 
       /**
@@ -102,8 +103,9 @@ namespace codi {
       /**
        *  @brief Push a low level function to the tape.
        *
-       *  \c fixedSize and \c dynamicSize are allocated on the vectors. \c fixedData and \c dynamicData are initialized
-       *  with the allocated data. After the call, the data for the function can be written into the data stores.
+       *  Allocates memory with the requested sizes \c fixedSize and \c dynamicSize on the respective data streams.
+       *  \c fixedData and \c dynamicData are initialized for accessing this allocated memory.
+       *  After the call, they can be used to write data to the data streams.
        *  \c token is the token from #registerLowLevelFunction.
        *
        *  See LowLevelFunctionTapeInterface for the expected data layout.

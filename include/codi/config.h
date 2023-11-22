@@ -92,11 +92,11 @@ namespace codi {
     size_t constexpr ChunkSize = CODI_ChunkSize;
 #undef CODI_ChunkSize
 
-    /// Token type for low level function in the tapes.
+    /// Token type for low level functions in the tapes.
     using LowLevelFunctionToken = uint16_t;
 
     /// Maximum number of low level functions.
-    size_t constexpr LowLevelFunctionTokenMaxSize = UINT16_MAX;
+    size_t constexpr LowLevelFunctionTokenMaxSize = std::numeric_limits<LowLevelFunctionToken>::max();
 
     /// Invalid low level function token.
     size_t constexpr LowLevelFunctionTokenInvalid = UINT16_MAX;
