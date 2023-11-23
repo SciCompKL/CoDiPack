@@ -21,8 +21,7 @@ namespace codi {
       static codi::Config::LowLevelFunctionToken ID;
 
       /// Function for forward interpretation.
-      CODI_INLINE static void forward(Tape* tape, codi::ByteDataView& fixedData, codi::ByteDataView& dynamicData,
-                                      AdjointVectorAccess adjoints) {
+      CODI_INLINE static void forward(Tape* tape, codi::ByteDataView& dataStore, AdjointVectorAccess adjoints) {
         codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
         using LLFH = codi::LowLevelFunctionCreationHelper<2>;
 
@@ -46,30 +45,18 @@ namespace codi {
         bool active_A = false;
         bool active_B = false;
 
-        // Restore fixed data
-        LLFH::restoreActivity(&fixedData, activityStore);
+        // Restore data
+        LLFH::restoreActivity(&dataStore, activityStore);
         active_A = LLFH::getActivity(activityStore, 0);
         active_B = LLFH::getActivity(activityStore, 1);
-        Trait_A::restoreFixed(&fixedData, allocator, n * k, LLFH::createRestoreActions(true, false, active_A, active_B),
-                              A_store);
-        Trait_B::restoreFixed(&fixedData, allocator, k * m, LLFH::createRestoreActions(true, false, active_B, active_A),
-                              B_store);
-        Trait_R::restoreFixed(&fixedData, allocator, n * m, LLFH::createRestoreActions(false, true, false, true),
-                              R_store);
-        Trait_n::restoreFixed(&fixedData, allocator, 1, true, n);
-        Trait_k::restoreFixed(&fixedData, allocator, 1, true, k);
-        Trait_m::restoreFixed(&fixedData, allocator, 1, true, m);
-        LLFH::restoreActivity(&fixedData, activityStore);
-        // Restore dynamic data
-        Trait_A::restoreDynamic(&dynamicData, allocator, n * k,
-                                LLFH::createRestoreActions(true, false, active_A, active_B), A_store);
-        Trait_B::restoreDynamic(&dynamicData, allocator, k * m,
-                                LLFH::createRestoreActions(true, false, active_B, active_A), B_store);
-        Trait_R::restoreDynamic(&dynamicData, allocator, n * m, LLFH::createRestoreActions(false, true, false, true),
-                                R_store);
-        Trait_n::restoreDynamic(&dynamicData, allocator, 1, true, n);
-        Trait_k::restoreDynamic(&dynamicData, allocator, 1, true, k);
-        Trait_m::restoreDynamic(&dynamicData, allocator, 1, true, m);
+        Trait_n::restore(&dataStore, allocator, 1, true, n);
+        Trait_k::restore(&dataStore, allocator, 1, true, k);
+        Trait_m::restore(&dataStore, allocator, 1, true, m);
+        Trait_A::restore(&dataStore, allocator, n * k, LLFH::createRestoreActions(true, false, active_A, active_B),
+                         A_store);
+        Trait_B::restore(&dataStore, allocator, k * m, LLFH::createRestoreActions(true, false, active_B, active_A),
+                         B_store);
+        Trait_R::restore(&dataStore, allocator, n * m, LLFH::createRestoreActions(false, true, false, true), R_store);
 
         if (Tape::HasPrimalValues) {
           // Get primal values for inputs.
@@ -81,28 +68,30 @@ namespace codi {
           }
         }
 
-        // Get input gradients
-        if (active_A) {
-          Trait_A::getGradients(adjoints, n * k, false, A_store.identifierIn(), A_store.gradientIn());
-        }
-        if (active_B) {
-          Trait_B::getGradients(adjoints, k * m, false, B_store.identifierIn(), B_store.gradientIn());
-        }
-        if (Tape::HasPrimalValues) {
-          if (!Tape::LinearIndexHandling) {
-            // Update old primal values.
-            Trait_R::getPrimalsFromVector(adjoints, n * m, R_store.identifierOut(), R_store.oldPrimal());
+        for (size_t curDim = 0; curDim < adjoints->getVectorSize(); curDim += 1) {
+          // Get input gradients
+          if (active_A) {
+            Trait_A::getGradients(adjoints, n * k, false, A_store.identifierIn(), A_store.gradientIn(), curDim);
+          }
+          if (active_B) {
+            Trait_B::getGradients(adjoints, k * m, false, B_store.identifierIn(), B_store.gradientIn(), curDim);
+          }
+          if (Tape::HasPrimalValues && 0 == curDim) {
+            if (!Tape::LinearIndexHandling) {
+              // Update old primal values.
+              Trait_R::getPrimalsFromVector(adjoints, n * m, R_store.identifierOut(), R_store.oldPrimal());
+            }
+
+            // Set new primal values.
+            Trait_R::setPrimalsIntoVector(adjoints, n * m, R_store.identifierOut(), R_store.value());
           }
 
-          // Set new primal values.
-          Trait_R::setPrimalsIntoVector(adjoints, n * m, R_store.identifierOut(), R_store.value());
+          // Evaluate forward mode
+          callForward(A_store.value(), active_A, A_store.gradientIn(), B_store.value(), active_B, B_store.gradientIn(),
+                      R_store.value(), R_store.gradientOut(), n, k, m);
+
+          Trait_R::setGradients(adjoints, n * m, false, R_store.identifierOut(), R_store.gradientOut(), curDim);
         }
-
-        // Evaluate forward mode
-        callForward(A_store.value(), active_A, A_store.gradientIn(), B_store.value(), active_B, B_store.gradientIn(),
-                    R_store.value(), R_store.gradientOut(), n, k, m);
-
-        Trait_R::setGradients(adjoints, n * m, false, R_store.identifierOut(), R_store.gradientOut());
 
         allocator.free();
       }
@@ -128,8 +117,7 @@ namespace codi {
       }
 
       /// Function for reverse interpretation.
-      CODI_INLINE static void reverse(Tape* tape, codi::ByteDataView& fixedData, codi::ByteDataView& dynamicData,
-                                      AdjointVectorAccess adjoints) {
+      CODI_INLINE static void reverse(Tape* tape, codi::ByteDataView& dataStore, AdjointVectorAccess adjoints) {
         codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
         using LLFH = codi::LowLevelFunctionCreationHelper<2>;
 
@@ -153,30 +141,18 @@ namespace codi {
         bool active_A = false;
         bool active_B = false;
 
-        // Restore fixed data
-        LLFH::restoreActivity(&fixedData, activityStore);
+        // Restore data
+        LLFH::restoreActivity(&dataStore, activityStore);
         active_A = LLFH::getActivity(activityStore, 0);
         active_B = LLFH::getActivity(activityStore, 1);
-        Trait_m::restoreFixed(&fixedData, allocator, 1, true, m);
-        Trait_k::restoreFixed(&fixedData, allocator, 1, true, k);
-        Trait_n::restoreFixed(&fixedData, allocator, 1, true, n);
-        Trait_R::restoreFixed(&fixedData, allocator, n * m, LLFH::createRestoreActions(false, true, false, true),
-                              R_store);
-        Trait_B::restoreFixed(&fixedData, allocator, k * m, LLFH::createRestoreActions(true, false, active_B, active_A),
-                              B_store);
-        Trait_A::restoreFixed(&fixedData, allocator, n * k, LLFH::createRestoreActions(true, false, active_A, active_B),
-                              A_store);
-        LLFH::restoreActivity(&fixedData, activityStore);
-        // Restore dynamic data
-        Trait_m::restoreDynamic(&dynamicData, allocator, 1, true, m);
-        Trait_k::restoreDynamic(&dynamicData, allocator, 1, true, k);
-        Trait_n::restoreDynamic(&dynamicData, allocator, 1, true, n);
-        Trait_R::restoreDynamic(&dynamicData, allocator, n * m, LLFH::createRestoreActions(false, true, false, true),
-                                R_store);
-        Trait_B::restoreDynamic(&dynamicData, allocator, k * m,
-                                LLFH::createRestoreActions(true, false, active_B, active_A), B_store);
-        Trait_A::restoreDynamic(&dynamicData, allocator, n * k,
-                                LLFH::createRestoreActions(true, false, active_A, active_B), A_store);
+        Trait_n::restore(&dataStore, allocator, 1, true, n);
+        Trait_k::restore(&dataStore, allocator, 1, true, k);
+        Trait_m::restore(&dataStore, allocator, 1, true, m);
+        Trait_A::restore(&dataStore, allocator, n * k, LLFH::createRestoreActions(true, false, active_A, active_B),
+                         A_store);
+        Trait_B::restore(&dataStore, allocator, k * m, LLFH::createRestoreActions(true, false, active_B, active_A),
+                         B_store);
+        Trait_R::restore(&dataStore, allocator, n * m, LLFH::createRestoreActions(false, true, false, true), R_store);
 
         if (Tape::HasPrimalValues) {
           if (!Tape::LinearIndexHandling) {
@@ -193,18 +169,20 @@ namespace codi {
           }
         }
 
-        // Get output gradients
-        Trait_R::getGradients(adjoints, n * m, true, R_store.identifierOut(), R_store.gradientOut());
+        for (size_t curDim = 0; curDim < adjoints->getVectorSize(); curDim += 1) {
+          // Get output gradients
+          Trait_R::getGradients(adjoints, n * m, true, R_store.identifierOut(), R_store.gradientOut(), curDim);
 
-        // Evaluate reverse mode
-        callReverse(A_store.value(), active_A, A_store.gradientIn(), B_store.value(), active_B, B_store.gradientIn(),
-                    R_store.value(), R_store.gradientOut(), n, k, m);
+          // Evaluate reverse mode
+          callReverse(A_store.value(), active_A, A_store.gradientIn(), B_store.value(), active_B, B_store.gradientIn(),
+                      R_store.value(), R_store.gradientOut(), n, k, m);
 
-        if (active_A) {
-          Trait_A::setGradients(adjoints, n * k, true, A_store.identifierIn(), A_store.gradientIn());
-        }
-        if (active_B) {
-          Trait_B::setGradients(adjoints, k * m, true, B_store.identifierIn(), B_store.gradientIn());
+          if (active_A) {
+            Trait_A::setGradients(adjoints, n * k, true, A_store.identifierIn(), A_store.gradientIn(), curDim);
+          }
+          if (active_B) {
+            Trait_B::setGradients(adjoints, k * m, true, B_store.identifierIn(), B_store.gradientIn(), curDim);
+          }
         }
 
         allocator.free();
@@ -222,17 +200,17 @@ namespace codi {
                                           typename codi::PassiveArgumentStoreTraits<int, uint8_t>::Store m) {
         codi::CODI_UNUSED(A, active_A, A_b_in, B, active_B, B_b_in, R, R_b_out, n, k, m);
         if (active_A) {
-          mapEigen<eigenStore>(A_b_in, n, k) +=
+          mapEigen<eigenStore>(A_b_in, n, k) =
               mapEigen<eigenStore>(R_b_out, n, m) * mapEigen<eigenStore>(B, k, m).transpose();
         }
         if (active_B) {
-          mapEigen<eigenStore>(B_b_in, k, m) +=
+          mapEigen<eigenStore>(B_b_in, k, m) =
               mapEigen<eigenStore>(A, n, k).transpose() * mapEigen<eigenStore>(R_b_out, n, m);
         }
       }
 
       /// Function for deletion of contents.
-      CODI_INLINE static void del(Tape* tape, codi::ByteDataView& fixedData, codi::ByteDataView& dynamicData) {
+      CODI_INLINE static void del(Tape* tape, codi::ByteDataView& dataStore) {
         codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
         using LLFH = codi::LowLevelFunctionCreationHelper<2>;
 
@@ -256,30 +234,18 @@ namespace codi {
         bool active_A = false;
         bool active_B = false;
 
-        // Restore fixed data
-        LLFH::restoreActivity(&fixedData, activityStore);
+        // Restore data
+        LLFH::restoreActivity(&dataStore, activityStore);
         active_A = LLFH::getActivity(activityStore, 0);
         active_B = LLFH::getActivity(activityStore, 1);
-        Trait_m::restoreFixed(&fixedData, allocator, 1, true, m);
-        Trait_k::restoreFixed(&fixedData, allocator, 1, true, k);
-        Trait_n::restoreFixed(&fixedData, allocator, 1, true, n);
-        Trait_R::restoreFixed(&fixedData, allocator, n * m, LLFH::createRestoreActions(false, true, false, true),
-                              R_store);
-        Trait_B::restoreFixed(&fixedData, allocator, k * m, LLFH::createRestoreActions(true, false, active_B, active_A),
-                              B_store);
-        Trait_A::restoreFixed(&fixedData, allocator, n * k, LLFH::createRestoreActions(true, false, active_A, active_B),
-                              A_store);
-        LLFH::restoreActivity(&fixedData, activityStore);
-        // Restore dynamic data
-        Trait_m::restoreDynamic(&dynamicData, allocator, 1, true, m);
-        Trait_k::restoreDynamic(&dynamicData, allocator, 1, true, k);
-        Trait_n::restoreDynamic(&dynamicData, allocator, 1, true, n);
-        Trait_R::restoreDynamic(&dynamicData, allocator, n * m, LLFH::createRestoreActions(false, true, false, true),
-                                R_store);
-        Trait_B::restoreDynamic(&dynamicData, allocator, k * m,
-                                LLFH::createRestoreActions(true, false, active_B, active_A), B_store);
-        Trait_A::restoreDynamic(&dynamicData, allocator, n * k,
-                                LLFH::createRestoreActions(true, false, active_A, active_B), A_store);
+        Trait_n::restore(&dataStore, allocator, 1, true, n);
+        Trait_k::restore(&dataStore, allocator, 1, true, k);
+        Trait_m::restore(&dataStore, allocator, 1, true, m);
+        Trait_A::restore(&dataStore, allocator, n * k, LLFH::createRestoreActions(true, false, active_A, active_B),
+                         A_store);
+        Trait_B::restore(&dataStore, allocator, k * m, LLFH::createRestoreActions(true, false, active_B, active_A),
+                         B_store);
+        Trait_R::restore(&dataStore, allocator, n * m, LLFH::createRestoreActions(false, true, false, true), R_store);
 
         allocator.free();
       }
@@ -314,45 +280,39 @@ namespace codi {
           registerOnTape();
 
           // Count data size
-          size_t sizeFixed = 2 * LLFH::countActivitySize();
-          size_t sizeDynamic = 0;
-          Trait_A::countSize(sizeFixed, sizeDynamic, A, n * k,
-                             LLFH::createStoreActions(active, true, false, active_A, active_B));
-          Trait_B::countSize(sizeFixed, sizeDynamic, B, k * m,
-                             LLFH::createStoreActions(active, true, false, active_B, active_A));
-          Trait_R::countSize(sizeFixed, sizeDynamic, R, n * m,
-                             LLFH::createStoreActions(active, false, true, false, true));
-          Trait_n::countSize(sizeFixed, sizeDynamic, n, 1, true);
-          Trait_k::countSize(sizeFixed, sizeDynamic, k, 1, true);
-          Trait_m::countSize(sizeFixed, sizeDynamic, m, 1, true);
+          size_t dataSize = LLFH::countActivitySize();
+          Trait_n::countSize(dataSize, n, 1, true);
+          Trait_k::countSize(dataSize, k, 1, true);
+          Trait_m::countSize(dataSize, m, 1, true);
+          Trait_A::countSize(dataSize, A, n * k, LLFH::createStoreActions(active, true, false, active_A, active_B));
+          Trait_B::countSize(dataSize, B, k * m, LLFH::createStoreActions(active, true, false, active_B, active_A));
+          Trait_R::countSize(dataSize, R, n * m, LLFH::createStoreActions(active, false, true, false, true));
 
           // Reserve data
-          codi::ByteDataView storeFixed = {};
-          codi::ByteDataView storeDynamic = {};
-          tape.pushLowLevelFunction(ID, sizeFixed, sizeDynamic, storeFixed, storeDynamic);
+          codi::ByteDataView dataStore = {};
+          tape.pushLowLevelFunction(ID, dataSize, dataStore);
 
           // Store data
           LLFH::setActivity(activityStore, 0, active_A);
           LLFH::setActivity(activityStore, 1, active_B);
-          LLFH::storeActivity(&storeFixed, activityStore);
-          Trait_A::store(&storeFixed, &storeDynamic, allocator, A, n * k,
+          LLFH::storeActivity(&dataStore, activityStore);
+          Trait_n::store(&dataStore, allocator, n, 1, true);
+          Trait_k::store(&dataStore, allocator, k, 1, true);
+          Trait_m::store(&dataStore, allocator, m, 1, true);
+          Trait_A::store(&dataStore, allocator, A, n * k,
                          LLFH::createStoreActions(active, true, false, active_A, active_B), A_store);
-          Trait_B::store(&storeFixed, &storeDynamic, allocator, B, k * m,
+          Trait_B::store(&dataStore, allocator, B, k * m,
                          LLFH::createStoreActions(active, true, false, active_B, active_A), B_store);
-          Trait_R::store(&storeFixed, &storeDynamic, allocator, R, n * m,
-                         LLFH::createStoreActions(active, false, true, false, true), R_store);
-          Trait_n::store(&storeFixed, &storeDynamic, allocator, n, 1, true);
-          Trait_k::store(&storeFixed, &storeDynamic, allocator, k, 1, true);
-          Trait_m::store(&storeFixed, &storeDynamic, allocator, m, 1, true);
-          LLFH::storeActivity(&storeFixed, activityStore);
+          Trait_R::store(&dataStore, allocator, R, n * m, LLFH::createStoreActions(active, false, true, false, true),
+                         R_store);
         } else {
           // Prepare passive evaluation
-          Trait_A::store(nullptr, nullptr, allocator, A, n * k,
+          Trait_A::store(nullptr, allocator, A, n * k,
                          LLFH::createStoreActions(active, true, false, active_A, active_B), A_store);
-          Trait_B::store(nullptr, nullptr, allocator, B, k * m,
+          Trait_B::store(nullptr, allocator, B, k * m,
                          LLFH::createStoreActions(active, true, false, active_B, active_A), B_store);
-          Trait_R::store(nullptr, nullptr, allocator, R, n * m,
-                         LLFH::createStoreActions(active, false, true, false, true), R_store);
+          Trait_R::store(nullptr, allocator, R, n * m, LLFH::createStoreActions(active, false, true, false, true),
+                         R_store);
         }
 
         callPrimal(active, A_store.value(), active_A, A_store.identifierIn(), B_store.value(), active_B,

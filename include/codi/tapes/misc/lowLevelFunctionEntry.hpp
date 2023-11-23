@@ -53,7 +53,6 @@ namespace codi {
     Reverse,
     Primal,
     Delete,
-    Count,
     MaxElement
   };
 
@@ -71,31 +70,22 @@ namespace codi {
       using Identifier = CODI_DD(T_Identifier, int);  ///< See LowLevelFunctionEntry.
 
       /// Call syntax for Forward, Reverse, and Primal calls.
-      using FuncEval = void (*)(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData,
-                                VectorAccessInterface<Real, Identifier>* access);
+      using FuncEval = void (*)(Tape* tape, ByteDataView& data, VectorAccessInterface<Real, Identifier>* access);
 
       /// Call syntax for Delete calls.
-      using FuncDel = void (*)(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData);
-
-      /// @brief Call syntax for Count calls.
-      ///
-      /// \c fixedSize returns the allocated fixed size on the tape, dynamicSize the allocated dynamic size on the tape
-      /// and \c allocatedSize the memory allocated on the system (e.g. with new).
-      using FuncCount = void (*)(Tape* tape, ByteDataView& fixedData, ByteDataView& dynamicData, int& fixedSize,
-                                 int& dynamicSize, int& allocatedSize);
+      using FuncDel = void (*)(Tape* tape, ByteDataView& data);
 
     private:
 
       void* functions[(size_t)LowLevelFunctionEntryCallType::MaxElement];  ///< Array for function pointers.
-      using FunctionTypes =
-          std::tuple<FuncEval, FuncEval, FuncEval, FuncDel, FuncCount>;  ///< Types for function entries.
+      using FunctionTypes = std::tuple<FuncEval, FuncEval, FuncEval, FuncDel>;  ///< Types for function entries.
 
     public:
 
       /// Constructors.
       LowLevelFunctionEntry(FuncEval reverse = nullptr, FuncEval forward = nullptr, FuncEval primal = nullptr,
-                            FuncDel del = nullptr, FuncCount count = nullptr)
-          : functions{(void*)forward, (void*)reverse, (void*)primal, (void*)del, (void*)count} {}
+                            FuncDel del = nullptr)
+          : functions{(void*)forward, (void*)reverse, (void*)primal, (void*)del} {}
 
       /// Call the function corresponding to callType with the given arguments.
       template<LowLevelFunctionEntryCallType callType, typename... Args>

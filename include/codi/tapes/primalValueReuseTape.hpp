@@ -104,8 +104,8 @@ namespace codi {
         };
 
         using StmtPosition = typename StatementData::Position;
-        StmtPosition startStmt = this->dynamicData.template extractPosition<StmtPosition>(start);
-        StmtPosition endStmt = this->dynamicData.template extractPosition<StmtPosition>(end);
+        StmtPosition startStmt = this->llfByteData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->llfByteData.template extractPosition<StmtPosition>(end);
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }
@@ -116,12 +116,11 @@ namespace codi {
       CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
           PrimalValueReuseTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
-          /* data from other dynamic data vector */
-          size_t& curDynamicDataPos, size_t const& endDynamicDataPos, char* dynamicDataPtr,
-          /* data from other fixed data vector */
-          size_t& curFixedDataPos, size_t const& endFixedDataPos, char* fixedDataPtr,
-          /* data from low level token data vector */
-          size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          /* data from low level function byte data vector */
+          size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+          /* data from low level info data vector */
+          size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -132,7 +131,7 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endDynamicDataPos, endFixedDataPos, endLLFTokenDataPos, endConstantPos, endPassivePos,
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
                     endRhsIdentifiersPos);
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
@@ -144,8 +143,7 @@ namespace codi {
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
-                tape, ByteDataView::Direction::Forward, curDynamicDataPos, dynamicDataPtr, curFixedDataPos,
-                fixedDataPtr, curLLFTokenDataPos, tokenPtr,
+                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
 #if CODI_VariableAdjointInterfaceInPrimalTapes
                 adjointVector
 #else
@@ -183,12 +181,11 @@ namespace codi {
       CODI_INLINE static void internalEvaluatePrimal_EvalStatements(
           /* data from call */
           PrimalValueReuseTape& tape, Real* primalVector,
-          /* data from other dynamic data vector */
-          size_t& curDynamicDataPos, size_t const& endDynamicDataPos, char* dynamicDataPtr,
-          /* data from other fixed data vector */
-          size_t& curFixedDataPos, size_t const& endFixedDataPos, char* fixedDataPtr,
-          /* data from low level token data vector */
-          size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          /* data from low level function byte data vector */
+          size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+          /* data from low level info data vector */
+          size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -199,7 +196,7 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endDynamicDataPos, endFixedDataPos, endLLFTokenDataPos, endConstantPos, endPassivePos,
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
                     endRhsIdentifiersPos);
 
         typename Base::template VectorAccess<Gradient> vectorAccess(nullptr, primalVector);
@@ -209,8 +206,8 @@ namespace codi {
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Primal>(
-                tape, ByteDataView::Direction::Forward, curDynamicDataPos, dynamicDataPtr, curFixedDataPos,
-                fixedDataPtr, curLLFTokenDataPos, tokenPtr, &vectorAccess);
+                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
+                &vectorAccess);
           } else CODI_Likely {
             Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
@@ -231,12 +228,11 @@ namespace codi {
       CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
           PrimalValueReuseTape& tape, Real* primalVector, ADJOINT_VECTOR_TYPE* adjointVector,
-          /* data from other dynamic data vector */
-          size_t& curDynamicDataPos, size_t const& endDynamicDataPos, char* dynamicDataPtr,
-          /* data from other fixed data vector */
-          size_t& curFixedDataPos, size_t const& endFixedDataPos, char* fixedDataPtr,
-          /* data from low level token data vector */
-          size_t& curLLFTokenDataPos, size_t const& endLLFTokenDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          /* data from low level function byte data vector */
+          size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+          /* data from low level info data vector */
+          size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from constantValueData */
           size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
           /* data from passiveValueData */
@@ -247,7 +243,7 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real const* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endDynamicDataPos, endFixedDataPos, endLLFTokenDataPos, endConstantPos, endPassivePos,
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
                     endRhsIdentifiersPos);
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
@@ -261,8 +257,7 @@ namespace codi {
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
-                tape, ByteDataView::Direction::Reverse, curDynamicDataPos, dynamicDataPtr, curFixedDataPos,
-                fixedDataPtr, curLLFTokenDataPos, tokenPtr,
+                tape, false, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
 #if CODI_VariableAdjointInterfaceInPrimalTapes
                 adjointVector
 #else
@@ -307,8 +302,8 @@ namespace codi {
         };
 
         using StmtPosition = typename StatementData::Position;
-        StmtPosition startStmt = this->dynamicData.template extractPosition<StmtPosition>(this->getPosition());
-        StmtPosition endStmt = this->dynamicData.template extractPosition<StmtPosition>(pos);
+        StmtPosition startStmt = this->llfByteData.template extractPosition<StmtPosition>(this->getPosition());
+        StmtPosition endStmt = this->llfByteData.template extractPosition<StmtPosition>(pos);
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }

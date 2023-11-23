@@ -49,18 +49,12 @@ namespace codi {
   /// position into the byte array in the correct direction and by the size of the data. It is always assumed that
   /// enough space is left in the byte array.
   struct ByteDataView {
-      /// Direction for reading and writing.
-      enum class Direction {
-        Forward,
-        Reverse
-      };
-
     private:
 
       char* pointer;  ///< Data pointer.
       size_t pos;     ///< Current data position.
 
-      Direction direction;  ///< Direction for reading.
+      size_t end; ///< Size of the available data.
 
     public:
 
@@ -68,35 +62,27 @@ namespace codi {
       CODI_INLINE ByteDataView() = default;
 
       /// Constructor.
-      CODI_INLINE ByteDataView(char* pointer, size_t pos, Direction d) : pointer(pointer), pos(pos), direction(d) {}
+      CODI_INLINE ByteDataView(char* pointer, size_t pos, size_t end) : pointer(pointer), pos(pos), end(end) {}
 
       /// Get the current data position.
       CODI_INLINE size_t getPosition() {
         return pos;
       }
 
-      /// Get the reading direction.
-      CODI_INLINE Direction getDirection() {
-        return direction;
-      }
-
       /// Initialize the object.
-      CODI_INLINE void init(char* pointer, size_t pos, Direction d) {
+      CODI_INLINE void init(char* pointer, size_t pos, size_t end) {
         this->pointer = pointer;
         this->pos = pos;
-        this->direction = d;
+        this->end = end;
       }
 
       /// Read an array of length \c size of types \c T.
       template<typename T>
       CODI_INLINE T* read(size_t size) {
-        if (Direction::Reverse == direction) {
-          pos -= sizeof(T) * size;
-        }
         T* convPointer = cast<T>();
-        if (Direction::Forward == direction) {
-          pos += sizeof(T) * size;
-        }
+        pos += sizeof(T) * size;
+
+        codiAssert(pos <= end);
 
         return convPointer;
       }
@@ -113,6 +99,8 @@ namespace codi {
       CODI_INLINE T* reserve(size_t size) {
         T* convPointer = cast<T>();
         pos += sizeof(T) * size;
+
+        codiAssert(pos <= end);
 
         return convPointer;
       }
@@ -131,6 +119,8 @@ namespace codi {
           convPointer[i] = data[i];
         }
         pos += sizeof(T) * size;
+
+        codiAssert(pos <= end);
 
         return convPointer;
       }

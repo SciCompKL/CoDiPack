@@ -48,7 +48,7 @@ namespace codi {
    *  See ActiveArgumentStoreTraits for a detailed documentation of the process.
    *
    *  When \c storeRequired is false nothing needs to be stored for this type and only a default initialization should
-   * be performed for the restore operation.
+   *  be performed for the restore operation.
    *
    *  @tparam T_T  Type of the argument that is stored.
    *  @tparam T_S  Store type of the argument that is stored.
@@ -61,20 +61,14 @@ namespace codi {
       using Store = T;  ///< Type for the variable declaration for restoring the data.
 
       /// Count the required size for storing the data.
-      CODI_INLINE static void countSize(size_t& fixedSize, size_t& dynamicSize, T&& value, size_t size,
-                                        bool storeRequired);
+      CODI_INLINE static void countSize(size_t& storeSize, T&& value, size_t size, bool storeRequired);
 
-      /// Restore the fixed data parts for this type.
-      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                           bool storeRequired, Store& value);
+      /// Restore the data for this type.
+      CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size, bool storeRequired,
+                                      Store& value);
 
-      /// Restore the dynamic data parts for this type.
-      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                             bool storeRequired, Store& value);
-
-      /// Store the data for the type in the fixed and dynamic data.
-      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
-                                    TemporaryMemory& allocator, T const& value, size_t size,
+      /// Store the data for the type in the data store.
+      CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const& value, size_t size,
                                     bool storeRequired);
   };
 
@@ -86,38 +80,30 @@ namespace codi {
       using Store = T;
 
       /// @copydoc PassiveArgumentStoreTraits::countSize()
-      CODI_INLINE static void countSize(size_t& fixedSize, size_t& dynamicSize, T const& value, size_t size,
-                                        bool storeRequired) {
-        CODI_UNUSED(dynamicSize, value, size);
+      CODI_INLINE static void countSize(size_t& storeSize, T const& value, size_t size, bool storeRequired) {
+        CODI_UNUSED(value, size);
 
         if (storeRequired) {
-          fixedSize += sizeof(S);
+          storeSize += sizeof(S);
         }
       }
 
-      /// @copydoc PassiveArgumentStoreTraits::restoreFixed()
-      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                           bool storeRequired, Store& value) {
+      /// @copydoc PassiveArgumentStoreTraits::restore()
+      CODI_INLINE static void restore(ByteDataView* dataStore, TemporaryMemory& allocator, size_t size, bool storeRequired,
+                                      Store& value) {
         CODI_UNUSED(allocator, size);
         if (storeRequired) {
-          value = *store->template read<S>(1);
+          value = *dataStore->template read<S>(1);
         }
-      }
-
-      /// @copydoc PassiveArgumentStoreTraits::restoreDynamic()
-      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                             bool storeRequired, Store& value) {
-        CODI_UNUSED(store, allocator, size, storeRequired, value);
       }
 
       /// @copydoc PassiveArgumentStoreTraits::store()
-      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
-                                    TemporaryMemory& allocator, T const& value, size_t size,
+      CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const& value, size_t size,
                                     bool storeRequired) {
-        CODI_UNUSED(dynamicStore, allocator, size);
+        CODI_UNUSED(allocator, size);
 
         if (storeRequired) {
-          fixedStore->write<S>(value);
+          dataStore->write<S>(value);
         }
       }
   };

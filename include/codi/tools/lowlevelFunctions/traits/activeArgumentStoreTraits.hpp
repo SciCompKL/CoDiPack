@@ -192,43 +192,30 @@ namespace codi {
       using ArgumentStore = ActiveArgumentPointerStore<Real, Identifier, Gradient>;
 
       /**
-       * Counts the binary size for the fixed and dynamic data streams. These values need to be exact and need to be
-       * allocated during the call to #store.
+       * @brief Counts the binary size for the  data stream. This value need to be exact and need to be allocated during
+       * the call to #store.
        *
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
        * pointers the vector size.
        */
-      CODI_INLINE static void countSize(size_t& fixedSize, size_t& dynamicSize, T const& value, size_t size,
-                                        StoreActions const& actions);
+      CODI_INLINE static void countSize(size_t& dataSize, T const& value, size_t size, StoreActions const& actions);
 
       /**
-       * Restore the fixed data for this type. All fixed data needs to be read since \c restoreFixed is first called
-       * for other arguments.
+       * @brief Restore the data for this type.
        *
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
        * pointers the vector size. \c data can be used to store data and pointers from the streams.
        */
-      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                           RestoreActions const& actions, ArgumentStore& data);
+      CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size,
+                                      RestoreActions const& actions, ArgumentStore& data);
 
       /**
-       * Restore the dynamic data for this type. All dynamic data needs to be read since \c restoreDynamic is called
-       * for other arguments.
+       * @brief Store all data for this type. The same amount of data needs to be requested as in #countSize.
        *
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
        * pointers the vector size. \c data can be used to store data and pointers from the streams.
        */
-      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                             RestoreActions const& actions, ArgumentStore& data);
-
-      /**
-       * Store all data for this type. The same amount of data needs to be requested as in #countSize.
-       *
-       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
-       * pointers the vector size. \c data can be used to store data and pointers from the streams.
-       */
-      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
-                                    TemporaryMemory& allocator, T const& value, size_t size,
+      CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const& value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data);
 
       /// Should return true when one element in the type is active.
@@ -253,11 +240,11 @@ namespace codi {
 
       /// Get the gradients from \c data and store them in \c gradient.
       CODI_INLINE static void getGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool reset,
-                                           Identifier& identifier, Gradient& gradient);
+                                           Identifier& identifier, Gradient& gradient, size_t dim);
 
       /// Set the gradients from \c gradient into \c data.
       CODI_INLINE static void setGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool update,
-                                           Identifier& identifier, Gradient& gradient);
+                                           Identifier& identifier, Gradient& gradient, size_t dim);
   };
 
 #ifndef DOXYGEN_DISABLE
@@ -277,36 +264,27 @@ namespace codi {
           ActiveArgumentValueStore<typename PointerTraits::ArgumentStore>;  ///< See ActiveArgumentStoreTraits.
 
       /// @copydoc ActiveArgumentValueStore::countSize()
-      CODI_INLINE static void countSize(size_t& fixedSize, size_t& dynamicSize, T const& value, size_t size,
+      CODI_INLINE static void countSize(size_t& dataSize, T const& value, size_t size,
                                         StoreActions const& actions) {
         CODI_UNUSED(size);
 
-        PointerTraits::countSize(fixedSize, dynamicSize, &value, 1, actions);
+        PointerTraits::countSize(dataSize, &value, 1, actions);
       }
 
-      /// @copydoc ActiveArgumentValueStore::restoreFixed()
-      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
+      /// @copydoc ActiveArgumentValueStore::restore()
+      CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                            RestoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED_ARG(size);
 
-        PointerTraits::restoreFixed(store, allocator, 1, actions, data.base);
-      }
-
-      /// @copydoc ActiveArgumentValueStore::restoreDynamic()
-      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                             RestoreActions const& actions, ArgumentStore& data) {
-        CODI_UNUSED_ARG(size);
-
-        PointerTraits::restoreDynamic(store, allocator, 1, actions, data.base);
+        PointerTraits::restore(store, allocator, 1, actions, data.base);
       }
 
       /// @copydoc ActiveArgumentValueStore::store()
-      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
-                                    TemporaryMemory& allocator, T const& value, size_t size,
+      CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const& value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED_ARG(size);
 
-        PointerTraits::restoreDynamic(fixedStore, dynamicStore, allocator, 1, actions, data.base);
+        PointerTraits::store(dataStore, allocator, value, 1, actions, data.base);
       }
 
       /// @copydoc ActiveArgumentValueStore::isActive()
@@ -342,18 +320,18 @@ namespace codi {
 
       /// @copydoc ActiveArgumentValueStore::getGradients()
       CODI_INLINE static void getGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool reset,
-                                           Identifier& identifier, Gradient& gradient) {
+                                           Identifier& identifier, Gradient& gradient, size_t dim) {
         CODI_UNUSED_ARG(size);
 
-        PointerTraits::getGradients(data, 1, reset & identifier, &gradient);
+        PointerTraits::getGradients(data, 1, reset & identifier, &gradient, dim);
       }
 
       /// @copydoc ActiveArgumentValueStore::setGradients()
       CODI_INLINE static void setGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool update,
-                                           Identifier& identifier, Gradient& gradient) {
+                                           Identifier& identifier, Gradient& gradient, size_t dim) {
         CODI_UNUSED_ARG(size);
 
-        PointerTraits::setGradients(data, 1, update, &identifier, &gradient);
+        PointerTraits::setGradients(data, 1, update, &identifier, &gradient, dim);
       }
   };
 
@@ -372,72 +350,50 @@ namespace codi {
       using ArgumentStore = ActiveArgumentPointerStore<Real, Identifier, Gradient>;  ///< See ActiveArgumentStoreTraits.
 
       /// @copydoc ActiveArgumentValueStore::countSize()
-      CODI_INLINE static void countSize(size_t& fixedSize, size_t& dynamicSize, T const* value, size_t size,
-                                        StoreActions const& actions) {
-        CODI_UNUSED(fixedSize, value);
+      CODI_INLINE static void countSize(size_t& dataSize, T const* value, size_t size, StoreActions const& actions) {
+        CODI_UNUSED(dataSize, value);
         if (actions.test(StoreAction::InputIdentifierCreateAndStore)) {
-          dynamicSize += size * sizeof(typename T::Identifier);  // var_i_in
+          dataSize += size * sizeof(typename T::Identifier);  // var_i_in
         }
         if (actions.test(StoreAction::PrimalCreateOnTape)) {
           if (Tape::HasPrimalValues) {
             // Primal value tapes only store the passive primal values.
             int passiveIdentifiers = countPassive(value, size);
-            fixedSize += sizeof(int);  // Number of passive identifiers
-            dynamicSize += passiveIdentifiers * sizeof(typename T::Real);
+            dataSize += sizeof(int);  // Number of passive identifiers
+            dataSize += passiveIdentifiers * sizeof(typename T::Real);
           } else {
             // Jacobian tape stores full primal values.
-            dynamicSize += size * sizeof(typename T::Real);  // var_v_in
+            dataSize += size * sizeof(typename T::Real);  // var_v_in
           }
         }
         if (actions.test(StoreAction::OutputIdentifierCreate)) {
-          dynamicSize += size * sizeof(typename T::Identifier);  // var_i_out
+          dataSize += size * sizeof(typename T::Identifier);  // var_i_out
 
           if (Tape::HasPrimalValues && Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
-            dynamicSize += size * sizeof(Real);  // Primal value tapes need to store the old values.
+            dataSize += size * sizeof(Real);  // Primal value tapes need to store the old values.
           }
         }
       }
 
-      /// @copydoc ActiveArgumentValueStore::restoreFixed()
-      CODI_INLINE static void restoreFixed(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                           RestoreActions const& actions, ArgumentStore& data) {
-        CODI_UNUSED(store, allocator, size, actions, data);
+      /// @copydoc ActiveArgumentValueStore::restore()
+      CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size,
+                                             RestoreActions const& actions, ArgumentStore& data) {
+        Real* passiveValues = nullptr;
 
         if (Tape::HasPrimalValues && actions.test(RestoreAction::PrimalRestore)) {
           data.passiveValuesCount = store->template read<int>();
         }
-      }
 
-      /// @copydoc ActiveArgumentValueStore::restoreDynamic()
-      CODI_INLINE static void restoreDynamic(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                             RestoreActions const& actions, ArgumentStore& data) {
-        Real* passiveValues = nullptr;
-
-        if (store->getDirection() == ByteDataView::Direction::Reverse) {
-          if (actions.test(RestoreAction::OutputIdentifierRestore)) {
-            if (Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
-              data.oldPrimals = store->template read<Real>(size);
-            }
-            data.value_i_out = store->template read<Identifier>(size);
-          }
-          if (actions.test(RestoreAction::InputIdentifierRestore)) {
-            data.value_i_in = store->template read<Identifier>(size);
-          }
-          if (actions.test(RestoreAction::PrimalRestore)) {
-            restoreValue(store, allocator, size, data, passiveValues);
-          }
-        } else {
-          if (actions.test(RestoreAction::PrimalRestore)) {
-            restoreValue(store, allocator, size, data, passiveValues);
-          }
-          if (actions.test(RestoreAction::InputIdentifierRestore)) {
-            data.value_i_in = store->template read<Identifier>(size);
-          }
-          if (actions.test(RestoreAction::OutputIdentifierRestore)) {
-            data.value_i_out = store->template read<Identifier>(size);
-            if (Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
-              data.oldPrimals = store->template read<Real>(size);
-            }
+        if (actions.test(RestoreAction::PrimalRestore)) {
+          restoreValue(store, allocator, size, data, passiveValues);
+        }
+        if (actions.test(RestoreAction::InputIdentifierRestore)) {
+          data.value_i_in = store->template read<Identifier>(size);
+        }
+        if (actions.test(RestoreAction::OutputIdentifierRestore)) {
+          data.value_i_out = store->template read<Identifier>(size);
+          if (Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
+            data.oldPrimals = store->template read<Real>(size);
           }
         }
 
@@ -457,7 +413,7 @@ namespace codi {
         }
       }
 
-      /// @copydoc ActiveArgumentValueStore::restoreValue()
+      /// Restores the primal values from the data.
       CODI_INLINE static void restoreValue(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                            ArgumentStore& data, Real*& passiveValues) {
         if (Tape::HasPrimalValues) {
@@ -477,7 +433,7 @@ namespace codi {
         }
       }
 
-      /// @copydoc ActiveArgumentValueStore::restorePassiveValues()
+      /// Copies the passive values into the primal value vector.
       CODI_INLINE static void restorePassiveValues(size_t size, ArgumentStore& data, Real* passiveValues) {
         typename T::Tape& tape = T::getTape();
 
@@ -494,21 +450,18 @@ namespace codi {
       }
 
       /// @copydoc ActiveArgumentValueStore::store()
-      CODI_INLINE static void store(ByteDataView* fixedStore, ByteDataView* dynamicStore,
-                                    TemporaryMemory& allocator, T const* value, size_t size,
+      CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const* value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data) {
-        CODI_UNUSED(fixedStore);
-
         Real* passiveValues = nullptr;
         if (actions.test(StoreAction::PrimalCreateOnTape)) {
           if (Tape::HasPrimalValues) {
             int passiveIdentifiers = countPassive(value, size);
-            fixedStore->write(passiveIdentifiers);
-            passiveValues = dynamicStore->template reserve<Real>(passiveIdentifiers);
+            dataStore->write(passiveIdentifiers);
+            passiveValues = dataStore->template reserve<Real>(passiveIdentifiers);
             data.value_v = allocator.template alloc<Real>(size);
           } else {
             // Jacobian tape stores full primal values.
-            data.value_v = dynamicStore->template reserve<Real>(size);
+            data.value_v = dataStore->template reserve<Real>(size);
           }
 
         } else {
@@ -531,20 +484,20 @@ namespace codi {
         }
 
         if (actions.test(StoreAction::InputIdentifierCreateAndStore)) {
-          data.value_i_in = dynamicStore->template reserve<Identifier>(size);
+          data.value_i_in = dataStore->template reserve<Identifier>(size);
           for (size_t i = 0; i < size; i += 1) {
             (data.value_i_in)[i] = value[i].getIdentifier();
           }
         }
 
         if (actions.test(StoreAction::OutputIdentifierCreate)) {
-          data.value_i_out = dynamicStore->template reserve<Identifier>(size);
+          data.value_i_out = dataStore->template reserve<Identifier>(size);
           for (size_t i = 0; i < size; i += 1) {
             (data.value_i_out)[i] = -1;
           }
 
           if (Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
-            data.oldPrimals = dynamicStore->template reserve<Real>(size);
+            data.oldPrimals = dataStore->template reserve<Real>(size);
           }
         }
       }
@@ -605,23 +558,23 @@ namespace codi {
 
       /// @copydoc ActiveArgumentValueStore::getGradients()
       CODI_INLINE static void getGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool reset,
-                                           Identifier* identifier, Gradient* gradient) {
+                                           Identifier* identifier, Gradient* gradient, size_t dim) {
         for (size_t i = 0; i < size; i += 1) {
-          gradient[i] = data->getAdjoint(identifier[i], 0);
+          gradient[i] = data->getAdjoint(identifier[i], dim);
           if (reset) {
-            data->resetAdjoint(identifier[i], 0);
+            data->resetAdjoint(identifier[i], dim);
           }
         }
       }
 
       /// @copydoc ActiveArgumentValueStore::setGradients()
       CODI_INLINE static void setGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool update,
-                                           Identifier* identifier, Real* primal) {
+                                           Identifier* identifier, Real* gradient, size_t dim) {
         for (size_t i = 0; i < size; i += 1) {
           if (!update) {
-            data->resetAdjoint(identifier[i], 0);
+            data->resetAdjoint(identifier[i], dim);
           }
-          data->updateAdjoint(identifier[i], 0, primal[i]);
+          data->updateAdjoint(identifier[i], dim, gradient[i]);
         }
       }
 

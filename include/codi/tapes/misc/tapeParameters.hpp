@@ -50,9 +50,10 @@ namespace codi {
    *  - RW read and write access (getParameter and setParameters)
    */
   enum class TapeParameters {
-    AdjointSize,         ///< [A: RW] Current number of adjoint vector entries, not the maximum possible size.
-                         ///<         See LargestIdentifier.
-    ConstantValuesSize,  ///< [A: RW] Allocated number of entries in  the constant value vector in primal value tapes.
+    AdjointSize,            ///< [A: RW] Current number of adjoint vector entries, not the maximum possible size.
+                            ///<         See LargestIdentifier.
+    ConstantValuesSize,     ///< [A: RW] Allocated number of entries in  the constant value vector in primal value
+                            ///<         tapes.
     ExternalFunctionsSize,  ///< [A: RW] (Deprecated) Allocated number of entries in the external function vector.
     JacobianSize,           ///< [A: RW] Allocated number of entries in the argument Jacobian vector in Jacobian tapes.
     LargestIdentifier,      ///< [A: R] Largest identifier distributed by the index manger.
@@ -61,10 +62,10 @@ namespace codi {
     RhsIdentifiersSize,     ///< [A: RW] Allocated number of entries in the right hand side identifiers vector in primal
                             ///<         value tapes.
     StatementSize,          ///< [A: RW] Allocated number of entries in the statement vector in all tapes.
-    LLFTokenDataSize,       ///< [A: RW] Allocated number of entries in the low level function token  vector in all
+    LLFInfoDataSize,        ///< [A: RW] Allocated number of entries in the low level function info  vector in all
                             ///<         tapes.
-    FixedDataSize,     ///< [A: RW] Allocated number of entries in the fixed other data vector.
-    DynamicDataSize    ///< [A: RW] Allocated number of entries in the variable other data vector.
+    LLFByteDataSize         ///< [A: RW] Allocated number of entries in the the byte data vecotor of low level functions
+                            ///<         in all tapes.
   };
 
   /**

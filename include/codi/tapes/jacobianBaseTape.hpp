@@ -571,7 +571,7 @@ namespace codi {
             cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluateReverse_EvalStatements<Adjoint> evalFunc;
-        Base::dynamicData.evaluateReverse(start, end, evalFunc, cast(), data);
+        Base::llfByteData.evaluateReverse(start, end, evalFunc, cast(), data);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
                                                        EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
@@ -586,7 +586,7 @@ namespace codi {
             cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluateForward_EvalStatements<Adjoint> evalFunc;
-        Base::dynamicData.evaluateForward(start, end, evalFunc, cast(), data);
+        Base::llfByteData.evaluateForward(start, end, evalFunc, cast(), data);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
                                                        EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
@@ -771,11 +771,10 @@ namespace codi {
       /// @{
 
       /// @copydoc LowLevelFunctionTapeInterface::pushLowLevelFunction
-      CODI_INLINE void pushLowLevelFunction(Config::LowLevelFunctionToken token, size_t fixedSize, size_t dynamicSize,
-                                            ByteDataView& fixedData, ByteDataView& dynamicData) {
+      CODI_INLINE void pushLowLevelFunction(Config::LowLevelFunctionToken token, size_t size, ByteDataView& data) {
         statementData.reserveItems(1);
 
-        Base::internalStoreLowLevelFunction(token, fixedSize, dynamicSize, fixedData, dynamicData);
+        Base::internalStoreLowLevelFunction(token, size, data);
 
         Identifier lhsIndex = Identifier();
         if (LinearIndexHandling) {

@@ -36,6 +36,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <limits>
 
 #include "misc/exceptions.hpp"
 #include "tools/cuda/cudaFunctionAttributes.hpp"
@@ -92,6 +93,12 @@ namespace codi {
     size_t constexpr ChunkSize = CODI_ChunkSize;
 #undef CODI_ChunkSize
 
+    /// Size store type for a low level function.
+    using LowLevelFunctionDataSize = uint16_t;
+
+    /// Maximum data size of a low level function.
+    size_t constexpr LowLevelFunctionDataSizeMax = std::numeric_limits<LowLevelFunctionDataSize>::max();
+
     /// Token type for low level functions in the tapes.
     using LowLevelFunctionToken = uint16_t;
 
@@ -99,7 +106,7 @@ namespace codi {
     size_t constexpr LowLevelFunctionTokenMaxSize = std::numeric_limits<LowLevelFunctionToken>::max();
 
     /// Invalid low level function token.
-    size_t constexpr LowLevelFunctionTokenInvalid = UINT16_MAX;
+    size_t constexpr LowLevelFunctionTokenInvalid = std::numeric_limits<LowLevelFunctionToken>::max();
 
     /// Type for the number of arguments in statements.
     using ArgumentSize = uint8_t;
