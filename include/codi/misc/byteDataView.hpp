@@ -45,9 +45,9 @@ namespace codi {
 
   /// Helper for reading and writing to a byte array.
   ///
-  /// Returned pointers are always pointers into the byte array. Every read, write and reserve function advances the
-  /// position into the byte array in the correct direction and by the size of the data. It is always assumed that
-  /// enough space is left in the byte array.
+  /// Returned pointers are always pointers into the byte array. Every read, write, and reserve function advances the
+  /// internal position in the byte array by the size of the data. It is always assumed that enough space is left in
+  /// the byte array.
   struct ByteDataView {
     private:
 

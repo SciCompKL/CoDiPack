@@ -166,7 +166,7 @@ namespace codi {
 
     private:
 
-      /// External function token is always added first
+      /// External function token is always added first.
       static Config::LowLevelFunctionToken constexpr EXTERNAL_FUNCTION_TOKEN = 0;
 
       CODI_INLINE Impl const& cast() const {
@@ -343,7 +343,7 @@ namespace codi {
 
         values.addSection("Low level function info data entries");
         llfInfoData.addToTapeValues(values);
-        values.addSection("Low level functio nbyte data entries");
+        values.addSection("Low level function byte data entries");
         llfByteData.addToTapeValues(values);
 
         return values;
@@ -481,7 +481,7 @@ namespace codi {
       CODI_INLINE void internalStoreLowLevelFunction(Config::LowLevelFunctionToken token, size_t size,
                                                      ByteDataView& dataView) {
         codiAssert((size_t)token < lowLevelFunctionLookup->size());
-        if(size >= Config::LowLevelFunctionDataSizeMax) {
+        if (size >= Config::LowLevelFunctionDataSizeMax) {
           CODI_EXCEPTION("Requested size for low level function is to big. Increase "
               "codi::Config::LowLevelFunctionDataSize or perform a dynamic memory allocation.");
         }

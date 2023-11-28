@@ -58,7 +58,7 @@ namespace codi {
    * generally available. It can then be pushed as often as required with #pushLowLevelFunction. Each push can be
    * accompanied by different data, e.g., the specific matrices used by individual matrix matrix multiplications.
    *
-   * The user can write arbitrary data into the byte data streams. There is no requirement on the layout.
+   * The user can write arbitrary data into the byte data stream. There is no requirement on the layout.
    *
    * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.

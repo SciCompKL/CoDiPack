@@ -139,7 +139,7 @@ namespace codi {
           JacobianReuseTape& tape, Adjoint* adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
-          /* data from low level info data vector */
+          /* data from low level function info data vector */
           size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from jacobian vector */
@@ -181,7 +181,7 @@ namespace codi {
           JacobianReuseTape& tape, Adjoint* adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
-          /* data from low level info data vector */
+          /* data from low level function info data vector */
           size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from jacobianData */
@@ -259,7 +259,7 @@ namespace codi {
           JacobianReuseTape* srcTape, JacobianReuseTape* dstTape,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
-          /* data from low level info data vector */
+          /* data from low level function info data vector */
           size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from jacobianData */
@@ -279,7 +279,7 @@ namespace codi {
             dstTape->pushLowLevelFunction(token, dataSize, dstDataStore);
 
             // Copy the data.
-            dstDataStore.write(const_cast<char*>(&dataPtr[curLLFByteDataPos]), dataSize);
+            dstDataStore.write(&dataPtr[curLLFByteDataPos], dataSize);
 
             curLLFInfoDataPos += 1;
             curLLFByteDataPos += dataSize;

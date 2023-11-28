@@ -14,7 +14,7 @@ Changelog {#Changelog}
 
  - Other:
   * Added low level function support to the tapes.
-    Low level functions are between external functions and statements. As they can occour quite often, they reduce
+    Low level functions are between external functions and statements. As they can occur quite often, they reduce
     the overhead for storing data as mutch as possible.
   * Added helper structures for creating low level functions.
   * External functions are now handled via the low level function interface.

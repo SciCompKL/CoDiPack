@@ -89,9 +89,9 @@ namespace codi {
         return value;
       }
 
-      /// Ensures that enough space is available. Can only be called when no data has been allocated.
+      /// Ensures that enough space is available. Can only be called when no data has been allocated because reallocations invalidate pointers.
       CODI_INLINE void ensureSize(size_t newSize) {
-        if(dataPos != 0) {
+        if (dataPos != 0) {
           CODI_EXCEPTION("Temporary memory can only be extended when no data is allocated.");
         }
 

@@ -167,7 +167,7 @@ namespace codi {
   /**
    *  @brief Low level function entry implementation for external functions.
    *
-   *  Stores the ExternalFunction object in the static data store.
+   *  Stores the ExternalFunction object in the byte data stream.
    *
    * @tparam T_Tape        The associated tape type.
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
@@ -210,10 +210,10 @@ namespace codi {
 
       /// Store an external function on the tape.
       CODI_INLINE static void store(Tape& tape, Config::LowLevelFunctionToken token, ExtFunc const& extFunc) {
-        ByteDataView store = {};
-        tape.pushLowLevelFunction(token, sizeof(ExtFunc), store);
+        ByteDataView data = {};
+        tape.pushLowLevelFunction(token, sizeof(ExtFunc), data);
 
-        store.write(extFunc);
+        data.write(extFunc);
       }
 
       /// Create the function entry for the tape registration.
