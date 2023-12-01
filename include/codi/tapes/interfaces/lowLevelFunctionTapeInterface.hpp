@@ -95,11 +95,10 @@ namespace codi {
        *  @tparam callType               The function type that is called.
        */
       template<LowLevelFunctionEntryCallType callType, typename... Args>
-      static void callLowLevelFunction(LowLevelFunctionTapeInterface& tape, bool forward,
-                                         size_t& curLLFByteDataPos, char* dataPtr,
-                                         size_t& curLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
-                                         Config::LowLevelFunctionDataSize* const dataSizePtr,
-                                         Args&&... args);
+      static void callLowLevelFunction(LowLevelFunctionTapeInterface& tape, bool forward, size_t& curLLFByteDataPos,
+                                       char* dataPtr, size_t& curLLFInfoDataPos,
+                                       Config::LowLevelFunctionToken* const tokenPtr,
+                                       Config::LowLevelFunctionDataSize* const dataSizePtr, Args&&... args);
 
       /**
        *  @brief Push a low level function to the tape.

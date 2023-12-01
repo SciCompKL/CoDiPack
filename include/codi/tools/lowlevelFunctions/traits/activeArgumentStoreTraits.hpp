@@ -110,31 +110,20 @@ namespace codi {
   /**
    * @brief Traits for storing active arguments in byte streams.
    *
-   * There are two streams available for storing the data of a type. The fixed data stream should contain all data that
-   * needs to be always read. For matrices this would be the dimensions of the matrix. The dynamic data stream
-   * should be used for all data that may or may not be present or for data that can have a dynamic size, e.g. for
-   * matrices the values of the entries.
+   * There is one data stream available for storing the data of a type. The size and layout of the data can be
+   * arbitrary. The only limitation is the maximum size of the data which is defined by
+   * #config::LowLevelFunctionDataSizeMax. This limit holds for the whole external function. If larger data is required
+   * it should be allocated with new.
    *
-   * \section layout Data layout and streams
+   * \section layout Example data layout for matrix matrix multiplications.
    *
-   * Everything could also be stored in one data stream but in AD we want to be able to parse/read the streams in a
-   * forward and reverse manner. If the data of the matrix would be stored like
+   * The required data for a matrix is the size, the values of the entries, and the identifiers from CoDiPack. The data
+   * could then be stored like:
    * \code
-   * stream data: | n | m | n * m values |
+   * stream data: | n | m | n * m values | n * m identifiers |
    * \endcode
-   * it could be read from left to right in a forward manner. But it could not be read from right to left in a reverse
-   * manner since the sizes n and m are not available. The store layout could be changed to
-   * \code
-   * stream data: | n | m | n * m values | n | m |
-   * \endcode
-   * which would allow a reverse read but increases the memory footprint.
-   *
-   * With the two available data streams the data layout can be defined as
-   * \code
-   * fixed data:   | n | m |
-   * dynamic data: | n * m values |
-   * \endcode
-   * which allows a forward and reverse read without any data duplication.
+   * The sizes \c n and \c m are the necessary information for the dynamic data. Therefore, they are stored first.
+   * Afterwards the dynamic sized data is stored.
    *
    * \section calls Call process
    *
@@ -142,17 +131,15 @@ namespace codi {
    *
    * The first function, that is usually called, is the #isActive function. It should return true if one CoDiPack
    * entry in the type is active. Afterwards, the #countSize function is called to determine the required byte
-   * size for the data streams. These counts need to be exact since the data is preallocated and can not be shortened
-   * afterwards. The call to #store initiates the storing of the type in the streams and therefore on the tape. The
-   * stored data needs to have the same size as returned in #countSize. Finally, the #setExternalFunctionOutput
-   * method is called on output arguments. Here, the vectors created in #store need to be updated if necessary. Usually,
-   * this are vectors for the identifiers of the output value and old primal values.
+   * size for the data stream. This count needs to be exact since the data is preallocated and can not be shortened
+   * afterwards. The call to #store initiates the storing of the type in the stream and therefore on the tape. The
+   * stored data needs to be smaller or equal to the size returned in #countSize. Finally, the
+   * #setExternalFunctionOutput method is called on output arguments. Here, the vectors created in #store need to be
+   * updated if necessary. Usually, this are vectors for the identifiers of the output value and old primal values.
    *
    * \subsection calls_eval Tape evaluation
-   * During a reverse, forward, primal, etc. evaluation of a tape, the #restoreFixed method is called first. All fixed
-   * data needs to be read immediately since the #restoreFixed function for other arguments is called before a call to
-   * #restoreDynamic. The call to #restoreDynamic should then read all other and dynamic data. For both calls the
-   * direction can be queried from the \c store parameter.
+   * During a reverse, forward, primal, etc. evaluation of a tape, the #restore method is called first. It should read
+   * all data written in #store.
    *
    * Afterwards the functions #getPrimalsFromVector, #setPrimalsIntoVector, #getGradients and #setGradients are called
    * to populate the vectors created in the restore functions.
@@ -192,8 +179,10 @@ namespace codi {
       using ArgumentStore = ActiveArgumentPointerStore<Real, Identifier, Gradient>;
 
       /**
-       * @brief Counts the binary size for the  data stream. This value need to be exact and need to be allocated during
-       * the call to #store.
+       * @brief Counts the binary size for the  data stream.
+       *
+       * This value needs to define the maximum size required to store all data for the type. It should be
+       * exact since the allocated memory can not be reduced afterwards.
        *
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
        * pointers the vector size.
@@ -210,7 +199,9 @@ namespace codi {
                                       RestoreActions const& actions, ArgumentStore& data);
 
       /**
-       * @brief Store all data for this type. The same amount of data needs to be requested as in #countSize.
+       * @brief Store all data for this type.
+       *
+       * The amount of data can not be greater than the amount reported by #countSize().
        *
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
        * pointers the vector size. \c data can be used to store data and pointers from the streams.
@@ -264,8 +255,7 @@ namespace codi {
           ActiveArgumentValueStore<typename PointerTraits::ArgumentStore>;  ///< See ActiveArgumentStoreTraits.
 
       /// @copydoc ActiveArgumentValueStore::countSize()
-      CODI_INLINE static void countSize(size_t& dataSize, T const& value, size_t size,
-                                        StoreActions const& actions) {
+      CODI_INLINE static void countSize(size_t& dataSize, T const& value, size_t size, StoreActions const& actions) {
         CODI_UNUSED(size);
 
         PointerTraits::countSize(dataSize, &value, 1, actions);
@@ -273,7 +263,7 @@ namespace codi {
 
       /// @copydoc ActiveArgumentValueStore::restore()
       CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                           RestoreActions const& actions, ArgumentStore& data) {
+                                      RestoreActions const& actions, ArgumentStore& data) {
         CODI_UNUSED_ARG(size);
 
         PointerTraits::restore(store, allocator, 1, actions, data.base);
@@ -377,7 +367,7 @@ namespace codi {
 
       /// @copydoc ActiveArgumentValueStore::restore()
       CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size,
-                                             RestoreActions const& actions, ArgumentStore& data) {
+                                      RestoreActions const& actions, ArgumentStore& data) {
         Real* passiveValues = nullptr;
 
         if (Tape::HasPrimalValues && actions.test(RestoreAction::PrimalRestore)) {

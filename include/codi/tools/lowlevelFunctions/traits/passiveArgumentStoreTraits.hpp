@@ -89,8 +89,8 @@ namespace codi {
       }
 
       /// @copydoc PassiveArgumentStoreTraits::restore()
-      CODI_INLINE static void restore(ByteDataView* dataStore, TemporaryMemory& allocator, size_t size, bool storeRequired,
-                                      Store& value) {
+      CODI_INLINE static void restore(ByteDataView* dataStore, TemporaryMemory& allocator, size_t size,
+                                      bool storeRequired, Store& value) {
         CODI_UNUSED(allocator, size);
         if (storeRequired) {
           value = *dataStore->template read<S>(1);

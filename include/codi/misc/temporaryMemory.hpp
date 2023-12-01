@@ -52,7 +52,6 @@ namespace codi {
    *  The initial memory is 4 MiB and can be extended with a call to ensureSize. All memory is initialized with zeros.
    */
   struct TemporaryMemory {
-
       static size_t constexpr InitialDataSize = 4 * 1024 * 1024;  ///< 4 MiB of memory.
 
     private:
@@ -89,13 +88,14 @@ namespace codi {
         return value;
       }
 
-      /// Ensures that enough space is available. Can only be called when no data has been allocated because reallocations invalidate pointers.
+      /// Ensures that enough space is available. Can only be called when no data has been allocated because
+      /// reallocations invalidate pointers.
       CODI_INLINE void ensureSize(size_t newSize) {
         if (dataPos != 0) {
           CODI_EXCEPTION("Temporary memory can only be extended when no data is allocated.");
         }
 
-        if(data.size() < newSize) {
+        if (data.size() < newSize) {
           data.resize(newSize);
         }
       }

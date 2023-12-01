@@ -145,8 +145,7 @@ namespace codi {
 
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
             Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
-                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
-                &vectorAccess);
+                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
             // Do nothing.
           } else CODI_Likely {
@@ -169,7 +168,7 @@ namespace codi {
           JacobianLinearTape& tape, Adjoint* adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
-          /* data from low level info data vector */
+          /* data from low level function info data vector */
           size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from jacobianData */

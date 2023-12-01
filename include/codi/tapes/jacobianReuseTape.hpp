@@ -157,8 +157,7 @@ namespace codi {
 
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
             Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
-                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
-                &vectorAccess);
+                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
@@ -246,8 +245,7 @@ namespace codi {
 
       /// \copydoc codi::EditingTapeInterface::append
       CODI_INLINE void append(JacobianReuseTape& srcTape, Position const& start, Position const& end) {
-        srcTape.llfByteData.evaluateForward(start, end, JacobianReuseTape::internalAppend, srcTape,
-                                                 this);
+        srcTape.llfByteData.evaluateForward(start, end, JacobianReuseTape::internalAppend, srcTape, this);
       }
 
       /// @}

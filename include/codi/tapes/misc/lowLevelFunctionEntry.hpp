@@ -77,7 +77,7 @@ namespace codi {
 
     private:
 
-      void* functions[(size_t)LowLevelFunctionEntryCallType::MaxElement];  ///< Array for function pointers.
+      void* functions[(size_t)LowLevelFunctionEntryCallType::MaxElement];       ///< Array for function pointers.
       using FunctionTypes = std::tuple<FuncEval, FuncEval, FuncEval, FuncDel>;  ///< Types for function entries.
 
     public:

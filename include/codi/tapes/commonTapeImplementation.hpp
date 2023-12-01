@@ -141,7 +141,7 @@ namespace codi {
       using LowLevelFunctionInfoData = typename CommonTapeTypes<ImplTapeTypes>::LowLevelFunctionInfoData;
       /// See CommonTapeTypes.
       using LowLevelFunctionByteData = typename CommonTapeTypes<ImplTapeTypes>::LowLevelFunctionByteData;
-      using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;                  ///< See TapeTypesInterface.
+      using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;  ///< See TapeTypesInterface.
 
       using NestedData = LowLevelFunctionByteData;                         ///< Shorthand.
       using NestedPosition = typename LowLevelFunctionByteData::Position;  ///< Shorthand.
@@ -245,8 +245,9 @@ namespace codi {
           lowLevelFunctionLookup = new std::vector<LowLevelFunctionEntry<Impl, Real, Identifier>>();
 
           // Add external function token. So EXTERNAL_FUNCTION_TOKEN is always zero.
-          Config::LowLevelFunctionToken token = registerLowLevelFunction(ExternalFunctionLowLevelEntryMapper<Impl, Real, Identifier>::create());
-          if(token != EXTERNAL_FUNCTION_TOKEN) {
+          Config::LowLevelFunctionToken token =
+              registerLowLevelFunction(ExternalFunctionLowLevelEntryMapper<Impl, Real, Identifier>::create());
+          if (token != EXTERNAL_FUNCTION_TOKEN) {
             CODI_EXCEPTION("External function token is not zero.");
           }
         }
@@ -482,7 +483,8 @@ namespace codi {
                                                      ByteDataView& dataView) {
         codiAssert((size_t)token < lowLevelFunctionLookup->size());
         if (size >= Config::LowLevelFunctionDataSizeMax) {
-          CODI_EXCEPTION("Requested size for low level function is to big. Increase "
+          CODI_EXCEPTION(
+              "Requested size for low level function is to big. Increase "
               "codi::Config::LowLevelFunctionDataSize or perform a dynamic memory allocation.");
         }
 
@@ -501,12 +503,13 @@ namespace codi {
       /// reached.
       template<LowLevelFunctionEntryCallType callType, typename... Args>
       CODI_INLINE static void callLowLevelFunction(Impl& impl, bool forward,
-                                                     /* data from low level function byte data vector */
-                                                     size_t& curLLFByteDataPos, char* dataPtr,
-                                                     /* data from low level info data vector */
-                                                     size_t& curLLFTInfoDataPos,
-                                                     Config::LowLevelFunctionToken* const tokenPtr,
-                                                     Config::LowLevelFunctionDataSize* const dataSizePtr, Args&&... args) {
+                                                   /* data from low level function byte data vector */
+                                                   size_t& curLLFByteDataPos, char* dataPtr,
+                                                   /* data from low level function info data vector */
+                                                   size_t& curLLFTInfoDataPos,
+                                                   Config::LowLevelFunctionToken* const tokenPtr,
+                                                   Config::LowLevelFunctionDataSize* const dataSizePtr,
+                                                   Args&&... args) {
         if (!forward) {
           curLLFTInfoDataPos -= 1;
           curLLFByteDataPos -= dataSizePtr[curLLFTInfoDataPos];
@@ -628,21 +631,20 @@ namespace codi {
       /// Delete all external function data up to `pos`.
       void deleteLowLevelFunctionData(Position const& pos) {
         // Clear external function data.
-        auto deleteFunc =
-            [this](
-                /* data from low level function byte data vector */
-                size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
-                /* data from low level info data vector */
-                size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
-                Config::LowLevelFunctionToken* const tokenPtr, Config::LowLevelFunctionDataSize* const dataSizePtr) {
-              CODI_UNUSED(endLLFByteDataPos);
+        auto deleteFunc = [this](
+                              /* data from low level function byte data vector */
+                              size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+                              /* data from low level function info data vector */
+                              size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
+                              Config::LowLevelFunctionToken* const tokenPtr,
+                              Config::LowLevelFunctionDataSize* const dataSizePtr) {
+          CODI_UNUSED(endLLFByteDataPos);
 
-              while (curLLFInfoDataPos > endLLFInfoDataPos) {
-                callLowLevelFunction<LowLevelFunctionEntryCallType::Delete>(
-                    cast(), false, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr,
-                    dataSizePtr);
-              }
-            };
+          while (curLLFInfoDataPos > endLLFInfoDataPos) {
+            callLowLevelFunction<LowLevelFunctionEntryCallType::Delete>(cast(), false, curLLFByteDataPos, dataPtr,
+                                                                        curLLFInfoDataPos, tokenPtr, dataSizePtr);
+          }
+        };
 
         llfByteData.template evaluateReverse<1>(cast().getPosition(), pos, deleteFunc);
       }

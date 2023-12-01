@@ -54,7 +54,7 @@ namespace codi {
       char* pointer;  ///< Data pointer.
       size_t pos;     ///< Current data position.
 
-      size_t end; ///< Size of the available data.
+      size_t end;  ///< Size of the available data.
 
     public:
 
@@ -62,7 +62,9 @@ namespace codi {
       CODI_INLINE ByteDataView() = default;
 
       /// Constructor.
-      CODI_INLINE ByteDataView(char* pointer, size_t pos, size_t end) : pointer(pointer), pos(pos), end(end) {}
+      CODI_INLINE ByteDataView(char* pointer, size_t pos, size_t end) : pointer(pointer), pos(pos), end(end) {
+        codiAssert(pos <= end);
+      }
 
       /// Get the current data position.
       CODI_INLINE size_t getPosition() {
@@ -74,6 +76,8 @@ namespace codi {
         this->pointer = pointer;
         this->pos = pos;
         this->end = end;
+
+        codiAssert(pos <= end);
       }
 
       /// Read an array of length \c size of types \c T.

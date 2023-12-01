@@ -131,8 +131,7 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
-                    endRhsIdentifiersPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
         typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
@@ -196,8 +195,7 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
-                    endRhsIdentifiersPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
         typename Base::template VectorAccess<Gradient> vectorAccess(nullptr, primalVector);
 
@@ -206,8 +204,7 @@ namespace codi {
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Primal>(
-                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
-                &vectorAccess);
+                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else CODI_Likely {
             Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
@@ -243,8 +240,7 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real const* const oldPrimalValues,
           EvalHandle const* const stmtEvalhandle) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
-                    endRhsIdentifiersPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
         typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);

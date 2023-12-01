@@ -75,11 +75,8 @@ namespace codi {
    *
    *  The total size is then:
    *  \code
-   *  fixedSize = countActivitySize() + <fixed size from arguments>
-   *  dynamicSize = <fixed size from arguments>
+   *  size = countActivitySize() + <size from all arguments>
    *  \endcode
-   *  It can be the case that the activity also needs to be stored in the front and end of the static data stream.
-   *  Usually, this occurs when the fixed data already depends on the activity of the arguments.
    *
    *  Depending on the activity of the arguments and if the primal values of the arguments are required for the
    *  derivative computation the required size may vary.
@@ -95,33 +92,24 @@ namespace codi {
    *   - Write the activity of the arguments with #storeActivity. (First #setActivity needs to be called for every input
    *     argument.)
    *   - Call \c ActiveStoreTrait::store and \c PassiveArgumentStoreTraits::store for all arguments.
-   *   - (If necessary: Write the activity of the arguments with #storeActivity again.)
    *
    *  \subsection evaluate Evaluation of the low level function
    *
    *  Two options are possible.
-   *   - The tape can be set to passive and the arguments with the CoDiPack types can be
-   *  used for the evaluation.
-   *   - The store traits can be configured such that always the primal values
-   *  of the types are extracted. These are available via \c ActiveStoreTrait::ArgumentStore::value() and can be used to
-   *  call a passive version of the low level function.
+   *   - The tape can be set to passive and the arguments with the CoDiPack types can be used for the evaluation.
+   *   - The store traits can be configured such that the primal values are always extracted. These are available via
+   *   \c ActiveStoreTrait::ArgumentStore::value() and can be used to call a passive version of the low level function.
    *
    *  \subsection register Register output arguments
    *
-   *  After the evaluation of the low level function each active output argument needs to be registered on the tape with
+   *  After the low level function is evaluated, each active output argument needs to be registered on the tape with
    *  a call to \c ActiveStoreTrait::setExternalFunctionOutput().
    *
    *  \section restore Restoring for reverse and forward evaluation
    *
-   *  The restoring process needs to read the data in the same order as it was written. For a forward mode evaluation of
-   *  the tape this is the same as during the storing of the data. In a reverse mode evaluation of the tape, the order
-   *  is reversed. Keeping this in mind, the following need to be done:
-   *    - If necessary read the activity of the arguments with #restoreActivity.
-   *    - Read the fixed data for all arguments with \c ActiveStoreTrait::restoreFixed() and
-   *      \c PassiveStoreTrait::restoreFixed().
-   *    - Read the dynamic data for all arguments with \c ActiveStoreTrait::restoreDynamic() and
-   *      \c PassiveStoreTrait::restoreDynamic().
-   *    - If necessary read the activity of the arguments with #restoreActivity.
+   *  The restoring process needs to read the data in the same order as it was written. The following needs to be done:
+   *    - Read the activity of the arguments with #restoreActivity.
+   *    - Read the data for all arguments with \c ActiveStoreTrait::restore() or \c PassiveStoreTrait::restore().
    *
    * @tparam T_ActiveArguments The number of active input arguments.
    */

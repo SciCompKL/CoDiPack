@@ -127,8 +127,8 @@ namespace codi {
           Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalhandle,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
-                    endRhsIdentifiersPos, endStatementPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos,
+                    endStatementPos);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -197,8 +197,8 @@ namespace codi {
           Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalhandle,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
-                    endRhsIdentifiersPos, endStatementPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos,
+                    endStatementPos);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -211,8 +211,7 @@ namespace codi {
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Primal>(
-                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
-                &vectorAccess);
+                tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else if (Config::StatementInputTag == nPassiveValues) CODI_Unlikely {
             // Do nothing.
           } else CODI_Likely {
@@ -248,8 +247,8 @@ namespace codi {
           Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalhandle,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos,
-                    endRhsIdentifiersPos, endStatementPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos,
+                    endStatementPos);
 
         size_t curAdjointPos = startAdjointPos;
 
