@@ -142,7 +142,7 @@ namespace codi {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
-            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallKind::Forward>(
                 tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
 #if CODI_VariableAdjointInterfaceInPrimalTapes
                 adjointVector
@@ -210,7 +210,7 @@ namespace codi {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
-            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Primal>(
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallKind::Primal>(
                 tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else if (Config::StatementInputTag == nPassiveValues) CODI_Unlikely {
             // Do nothing.
@@ -262,7 +262,7 @@ namespace codi {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
-            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallKind::Reverse>(
                 tape, false, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
 #if CODI_VariableAdjointInterfaceInPrimalTapes
                 adjointVector

@@ -144,7 +144,7 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
-            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallKind::Forward>(
                 tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
             // Do nothing.
@@ -189,7 +189,7 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
-            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallKind::Reverse>(
                 tape, false, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
             // Do nothing.

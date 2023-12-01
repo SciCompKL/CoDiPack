@@ -156,7 +156,7 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
-            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Forward>(
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallKind::Forward>(
                 tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
@@ -199,7 +199,7 @@ namespace codi {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
-            Base::template callLowLevelFunction<LowLevelFunctionEntryCallType::Reverse>(
+            Base::template callLowLevelFunction<LowLevelFunctionEntryCallKind::Reverse>(
                 tape, false, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else CODI_Likely {
             Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];

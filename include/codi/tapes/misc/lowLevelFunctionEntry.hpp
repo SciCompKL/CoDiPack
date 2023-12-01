@@ -48,7 +48,7 @@
 namespace codi {
 
   /// All possible call types for a low level function entry.
-  enum class LowLevelFunctionEntryCallType {
+  enum class LowLevelFunctionEntryCallKind {
     Forward,
     Reverse,
     Primal,
@@ -77,7 +77,7 @@ namespace codi {
 
     private:
 
-      void* functions[(size_t)LowLevelFunctionEntryCallType::MaxElement];       ///< Array for function pointers.
+      void* functions[(size_t)LowLevelFunctionEntryCallKind::MaxElement];       ///< Array for function pointers.
       using FunctionTypes = std::tuple<FuncEval, FuncEval, FuncEval, FuncDel>;  ///< Types for function entries.
 
     public:
@@ -88,14 +88,14 @@ namespace codi {
           : functions{(void*)forward, (void*)reverse, (void*)primal, (void*)del} {}
 
       /// Call the function corresponding to callType with the given arguments.
-      template<LowLevelFunctionEntryCallType callType, typename... Args>
+      template<LowLevelFunctionEntryCallKind callType, typename... Args>
       void call(Args&&... args) const {
         using FuncType = typename std::tuple_element<(size_t)callType, FunctionTypes>::type;
         ((FuncType)functions[(size_t)callType])(std::forward<Args>(args)...);
       }
 
       /// Check if a function is provided for the callType.
-      template<LowLevelFunctionEntryCallType callType, typename... Args>
+      template<LowLevelFunctionEntryCallKind callType, typename... Args>
       bool has(Args&&... args) const {
         return nullptr != functions[(size_t)callType];
       }

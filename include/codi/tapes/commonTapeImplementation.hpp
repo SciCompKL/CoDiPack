@@ -501,7 +501,7 @@ namespace codi {
 
       /// @brief Called by the implementing tapes during a tape evaluation when a low level function statement has been
       /// reached.
-      template<LowLevelFunctionEntryCallType callType, typename... Args>
+      template<LowLevelFunctionEntryCallKind callType, typename... Args>
       CODI_INLINE static void callLowLevelFunction(Impl& impl, bool forward,
                                                    /* data from low level function byte data vector */
                                                    size_t& curLLFByteDataPos, char* dataPtr,
@@ -524,7 +524,7 @@ namespace codi {
           func.template call<callType>(&impl, dataView, std::forward<Args>(args)...);
 
           codiAssert(endPos == dataView.getPosition());
-        } else if (LowLevelFunctionEntryCallType::Delete == callType) CODI_Unlikely {
+        } else if (LowLevelFunctionEntryCallKind::Delete == callType) CODI_Unlikely {
           // No delete registered. Data is skiped by the curLLFByteDataPos update.
         } else CODI_Unlikely {
           CODI_EXCEPTION("Requested call is not supported for low level function with token '%d'.", (int)id);
@@ -641,7 +641,7 @@ namespace codi {
           CODI_UNUSED(endLLFByteDataPos);
 
           while (curLLFInfoDataPos > endLLFInfoDataPos) {
-            callLowLevelFunction<LowLevelFunctionEntryCallType::Delete>(cast(), false, curLLFByteDataPos, dataPtr,
+            callLowLevelFunction<LowLevelFunctionEntryCallKind::Delete>(cast(), false, curLLFByteDataPos, dataPtr,
                                                                         curLLFInfoDataPos, tokenPtr, dataSizePtr);
           }
         };
