@@ -54,7 +54,7 @@ namespace codi {
                             ///<         See LargestIdentifier.
     ConstantValuesSize,     ///< [A: RW] Allocated number of entries in  the constant value vector in primal value
                             ///<         tapes.
-    ExternalFunctionsSize,  ///< [A: RW] (Deprecated will be removed on 31.12.2024) Allocated number of entries in the
+    ExternalFunctionsSize,  ///< [A: RW] (Deprecated, will be removed on 31.12.2024) Allocated number of entries in the
                             ///<         external function vector.
     JacobianSize,           ///< [A: RW] Allocated number of entries in the argument Jacobian vector in Jacobian tapes.
     LargestIdentifier,      ///< [A: R] Largest identifier distributed by the index manger.
