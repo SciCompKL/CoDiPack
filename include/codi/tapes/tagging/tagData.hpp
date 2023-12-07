@@ -42,13 +42,11 @@
 namespace codi {
 
   /// Properties for values.
-  ///
-  /// DoNotChange: Value can be assigned, but it should not change.
-  /// DoNotUse: Value should not be used. (Is removed after the value has been overwritten.)
   enum class TagFlags {
-    DoNotChange,
-    DoNotUse,
-    MaxElement
+    DoNotChange,  ///< DoNotChange: Value can be assigned, but it should not change.
+    DoNotUse,     ///< DoNotUse: Value should not be used. That is, it should not be used on the right hand side of an
+                  ///< assignment. (Is removed after the value has been overwritten.)
+    MaxElement    ///< Maximum number of elements.
   };
 
   /// Data for a tag.
@@ -68,7 +66,7 @@ namespace codi {
       TagData(Tag tag) : tag(tag), properties() {}
 
       /// Operator for satisfying other software.
-      TagData operator+=(TagData const& o) {
+      TagData& operator+=(TagData const& o) {
         if (*this != o) {
           CODI_EXCEPTION("Operation on different tag objects.");
         }

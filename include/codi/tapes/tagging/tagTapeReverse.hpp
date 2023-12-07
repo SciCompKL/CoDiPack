@@ -80,7 +80,7 @@ namespace codi {
       Real tempPrimal;        ///< Temporary for primal values.
       Gradient tempGradient;  ///< Temporary for gradient values.
 
-      std::set<TapeParameters> parameters;  /// Temporary for tape parameters.
+      std::set<TapeParameters> parameters;  ///< Temporary for tape parameters.
 
     public:
 
@@ -241,7 +241,7 @@ namespace codi {
 
       /// Zero tag.
       Identifier getPassiveIndex() const {
-        return Identifier(0);
+        return Identifier(Base::PassiveTag);
       }
 
       /// -1 tag.
@@ -253,7 +253,7 @@ namespace codi {
       bool isIdentifierActive(Identifier const& index) const {
         Base::verifyTag(index.tag);
 
-        return index.tag != 0;
+        return index.tag != Base::PassiveTag;
       }
 
       /// Set tag to passive.
@@ -462,7 +462,7 @@ namespace codi {
 
       /// Default check.
       bool isActive(Identifier const& identifier) const {
-        return identifier.tag != 0;
+        return identifier.tag != Base::PassiveTag;
       }
 
       void evaluate() {}  ///< Do nothing.

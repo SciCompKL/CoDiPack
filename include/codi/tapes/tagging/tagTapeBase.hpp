@@ -83,6 +83,8 @@ namespace codi {
       using TagErrorCallback = void (*)(Tag const& correctTag, Tag const& wrongTag, bool tagError, bool useError,
                                         void* userData);
 
+      static Tag constexpr PassiveTag = Tag(0);  ///< Tag indicating an inactive value.
+
     protected:
 
       Tag curTag;  ///< Current tag for new values.
@@ -219,7 +221,7 @@ namespace codi {
 
       /// Checks if the tag is correct. Errors are set on the ValidationIndicator object.
       CODI_INLINE void verifyTag(ValidationIndicator<Tag>& vi, Tag const& tag) const {
-        if (0 != tag) {
+        if (PassiveTag != tag) {
           vi.isActive = true;
           if (tag != curTag) {
             vi.hasError = true;
@@ -249,7 +251,7 @@ namespace codi {
       static void defaultTagLhsChangeErrorCallback(Real const& currentValue, Real const& newValue, void* userData) {
         CODI_UNUSED(userData);
 
-        std::cerr << "Wrong tag use detected '" << currentValue << "'' is set to '" << newValue << "'." << std::endl;
+        std::cerr << "Wrong tag use detected '" << currentValue << "' is set to '" << newValue << "'." << std::endl;
       }
 
       /// Default callback for TagErrorCallback.

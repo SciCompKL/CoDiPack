@@ -14,7 +14,7 @@ Real func(const Real& x, const Real& y) {
 static void tagLhsChangeErrorCallback(double const& currentValue, double const& newValue, void* userData) {
   std::ofstream* out = (std::ofstream*)userData;
 
-  *out << "Wrong tag use detected '" << currentValue << "'' is set to '" << newValue << "'." << std::endl;
+  *out << "Wrong tag use detected '" << currentValue << "' is set to '" << newValue << "'." << std::endl;
 }
 
 static void tagErrorCallback(int const& correctTag, int const& wrongTag, bool tagError, bool useError,
