@@ -1,11 +1,11 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2022 Chair for Scientific Computing (SciComp), TU Kaiserslautern
+ * Copyright (C) 2015-2023 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
- * Lead developers: Max Sagebaum, Johannes Blühdorn (SciComp, TU Kaiserslautern)
+ * Lead developers: Max Sagebaum, Johannes Blühdorn (SciComp, University of Kaiserslautern-Landau)
  *
  * This file is part of CoDiPack (http://www.scicomp.uni-kl.de/software/codi).
  *
@@ -26,7 +26,7 @@
  * For other licensing options please contact us.
  *
  * Authors:
- *  - SciComp, TU Kaiserslautern:
+ *  - SciComp, University of Kaiserslautern-Landau:
  *    - Max Sagebaum
  *    - Johannes Blühdorn
  *    - Former members:
@@ -106,7 +106,7 @@ namespace codi {
             tagLhsChangeErrorCallback(defaultTagLhsChangeErrorCallback),
             tagChangeErrorUserData(nullptr),
             tagErrorCallback(defaultTagErrorCallback),
-            tagErrorUserData(nullptr),
+            tagErrorUserData(this),
             preaccumulationHandling(true),
             preaccumulationTag(1337) {}
 
@@ -247,6 +247,15 @@ namespace codi {
         }
       }
 
+      /// Checks if the tag and the properties are correct.
+      CODI_INLINE void verifyTagAndProperties(Tag const& tag, const EnumBitset<TagFlags>& properties) const {
+        ValidationIndicator<Tag> vi;
+
+        verifyTag(vi, tag);
+        verifyProperties(vi, properties);
+        handleError(vi);
+      }
+
       /// Default callback for TagLhsChangeErrorCallback.
       static void defaultTagLhsChangeErrorCallback(Real const& currentValue, Real const& newValue, void* userData) {
         CODI_UNUSED(userData);
@@ -257,14 +266,21 @@ namespace codi {
       /// Default callback for TagErrorCallback.
       static void defaultTagErrorCallback(Tag const& correctTag, Tag const& wrongTag, bool tagError, bool useError,
                                           void* userData) {
-        CODI_UNUSED(userData);
+
+        TagTapeBase& impl = *static_cast<TagTapeBase*>(userData);
 
         // output default warning if no handle is defined.
         if (useError) {
           std::cerr << "Wrong variable use detected." << std::endl;
         }
         if (tagError) {
-          std::cerr << "Wrong tag detected '" << wrongTag << "' should be '" << correctTag << "'." << std::endl;
+          std::cerr << "Wrong tag detected '" << wrongTag << "' should be '" << correctTag << "'.";
+          if(wrongTag == impl.preaccumulationTag) {
+            std::cerr << "The value seems to be a preaccumulation output.";
+          } else if(correctTag == impl.preaccumulationTag) {
+            std::cerr << "The value seems to be used during a preaccumulation but is not declared as an input.";
+          }
+          std::cerr << std::endl;
         }
       }
 

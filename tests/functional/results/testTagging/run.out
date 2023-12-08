@@ -7,4 +7,4 @@ Do not use error:
 Wrong variable use detected.
 Do not change with same value:
 Do not change error test:
-Wrong tag use detected '12'' is set to '4'.
+Wrong tag use detected '12' is set to '4'.

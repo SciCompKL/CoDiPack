@@ -159,26 +159,26 @@ namespace codi {
       void setGradient(Identifier& identifier, Gradient const& gradient) {
         CODI_UNUSED(gradient);
 
-        Base::verifyTag(identifier.tag);
+        Base::verifyTagAndProperties(identifier.tag, identifier.properties);
       }
 
       /// Verify tag.
       Gradient const& getGradient(Identifier const& identifier) const {
-        Base::verifyTag(identifier.tag);
+        Base::verifyTagAndProperties(identifier.tag, identifier.properties);
 
         return tempGradient;
       }
 
       /// Verify tag.
       Gradient& gradient(Identifier& identifier) {
-        Base::verifyTag(identifier.tag);
+        Base::verifyTagAndProperties(identifier.tag, identifier.properties);
 
         return tempGradient;
       }
 
       /// Verify tag.
       Gradient const& gradient(Identifier const& identifier) const {
-        Base::verifyTag(identifier.tag);
+        Base::verifyTagAndProperties(identifier.tag, identifier.properties);
 
         return tempGradient;
       }
