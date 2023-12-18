@@ -67,6 +67,11 @@ namespace codi {
       /// Constructor.
       CODI_INLINE TemporaryMemory(size_t initialSize) : data(initialSize), dataPos() {}
 
+      /// Returns true if no data is currently allocated.
+      CODI_INLINE bool isEmpty() {
+        return 0 == dataPos;
+      }
+
       /// @brief Allocate an array of type \c T with length \c size. Data is zero initialized. No constructors of \c T
       /// are called.
       template<typename T>

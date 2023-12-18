@@ -114,8 +114,8 @@ namespace codi {
    * @tparam T_ActiveArguments The number of active input arguments.
    */
   template<size_t T_ActiveArguments>
-  struct LowLevelFunctionCreationHelper {
-      static size_t constexpr ActiveArguments = CODI_DD(T_ActiveArguments, 1);  ///< See LowLevelFunctionCreationHelper.
+  struct LowLevelFunctionCreationUtilities {
+      static size_t constexpr ActiveArguments = CODI_DD(T_ActiveArguments, 1);  ///< See LowLevelFunctionCreationUtilities.
 
       static_assert(ActiveArguments <= 64, "More than 64 active arguments are currently not supported.");
 
@@ -129,11 +129,11 @@ namespace codi {
             void>::type>::type>::type>::type;
       // clang-format on
 
-      /// Functionality traits for handling an active argument.
+      /// Functionality for handling an active argument.
       template<typename T>
       using ActiveStoreTrait = ActiveArgumentStoreTraits<T>;
 
-      /// Functionality traits for handling a passive argument.
+      /// Functionality for handling a passive argument.
       template<typename T, typename S = T>
       using PassiveStoreTrait = PassiveArgumentStoreTraits<T, S>;
 

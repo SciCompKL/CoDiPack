@@ -47,6 +47,32 @@
 namespace codi {
 
   /**
+   * @brief Interface for restored data for an argument. The functions should return a compatible type that can be
+   *        forwarded to the primal evaluation and the gradient computation.
+   *
+   * For example, a CoDiPack value argument like `codi::RealReverse a` should use `codi::RealReverse::Real` as the
+   * return type for `primal()`. An argument like `codi::RealReverse* p` should use `codi::RealReverse::Real*` instead.
+   *
+   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.
+   */
+  template<typename T_Real, typename T_Identifier, typename T_Gradient>
+  struct ActiveArgumentStoreInterface {
+      using Real = CODI_DD(T_Real, double);           ///< See ActiveArgumentStoreInterface.
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See ActiveArgumentStoreInterface.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See ActiveArgumentStoreInterface.
+
+      virtual Real primal() = 0;               ///< Get the primal values.
+      virtual Identifier identifierIn() = 0;   ///< Get the input identifiers.
+      virtual Identifier identifierOut() = 0;  ///< Get the output identifiers.
+      virtual Gradient gradientIn() = 0;       ///< Get the input gradients.
+      virtual Gradient gradientOut() = 0;      ///< Get the output gradients.
+
+      virtual Real oldPrimal() = 0;  ///< Get old primal values.
+  };
+
+  /**
    * @brief Declares all variables that may be needed to store/restore an active argument which has a pointer type.
    *
    * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
@@ -54,29 +80,30 @@ namespace codi {
    * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    */
   template<typename T_Real, typename T_Identifier, typename T_Gradient>
-  struct ActiveArgumentPointerStore {
+  struct ActiveArgumentPointerStore {  // Extends ActiveArgumentStoreInterface.
+
       using Real = CODI_DD(T_Real, double);           ///< See ActiveArgumentPointerStore.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See ActiveArgumentPointerStore.
       using Gradient = CODI_DD(T_Gradient, double);   ///< See ActiveArgumentPointerStore.
 
       Real* value_v;              ///< Primal value vector.
-      Identifier* value_i_in;     ///< Identifier vector of an input value.
-      Identifier* value_i_out;    ///< Identifier vector of an output value.
-      Gradient* value_deriv_in;   ///< Gradient vector of an input value.
-      Gradient* value_deriv_out;  ///< Gradient vector of an output value.
+      Identifier* value_i_in;     ///< Identifier vector of an input argument.
+      Identifier* value_i_out;    ///< Identifier vector of an output argument.
+      Gradient* value_deriv_in;   ///< Gradient vector of an input argument.
+      Gradient* value_deriv_out;  ///< Gradient vector of an output argument.
 
       Real* oldPrimals;  ///< Old primal values in primal value tape setting.
 
       int passiveValuesCount;  ///< Number of passive values.
 
       // clang-format off
-      Real* value() { return value_v; }                    ///< Get the primal values.
-      Identifier* identifierIn() { return  value_i_in; }   ///< Get the input identifiers.
-      Identifier* identifierOut() { return value_i_out; }  ///< Get the output identifiers.
-      Gradient* gradientIn() { return value_deriv_in; }    ///< Get the input gradients.
-      Gradient* gradientOut() { return value_deriv_out; }  ///< Get the output gradients.
+      Real* primal() { return value_v; }                   ///< \copydoc ActiveArgumentStoreInterface::primal()
+      Identifier* identifierIn() { return  value_i_in; }   ///< \copydoc ActiveArgumentStoreInterface::identifierIn()
+      Identifier* identifierOut() { return value_i_out; }  ///< \copydoc ActiveArgumentStoreInterface::identifierOut()
+      Gradient* gradientIn() { return value_deriv_in; }    ///< \copydoc ActiveArgumentStoreInterface::gradientIn()
+      Gradient* gradientOut() { return value_deriv_out; }  ///< \copydoc ActiveArgumentStoreInterface::gradientOut()
 
-      Real* oldPrimal() { return oldPrimals; }  ///< Get old primal values.
+      Real* oldPrimal() { return oldPrimals; }  ///< \copydoc ActiveArgumentStoreInterface::oldPrimal()
       // clang-format on
   };
 
@@ -86,7 +113,7 @@ namespace codi {
    * @tparam T_PointerStore  The pointer store implementation.
    */
   template<typename T_PointerStore>
-  struct ActiveArgumentValueStore {
+  struct ActiveArgumentValueStore {  // Extends ActiveArgumentStoreInterface.
       /// See ActiveArgumentValueStore.
       using PointerStore = CODI_DD(T_PointerStore, CODI_T(ActiveArgumentPointerStore<double, int, double>));
 
@@ -97,13 +124,13 @@ namespace codi {
       PointerStore base;  ///< Declaration of base.
 
       // clang-format off
-      Real& value() { return *base.value(); }                        ///< Get the primal values.
-      Identifier& identifierIn() { return  *base.identifierIn(); }   ///< Get the output identifiers.
-      Identifier& identifierOut() { return *base.identifierOut(); }  ///< Get the input gradients.
-      Gradient& gradientIn() { return *base.gradientIn(); }          ///< Get the output gradients.
-      Gradient& gradientOut() { return *base.gradientOut(); }        ///< Get old primal values.
+      Real& primal() { return *base.primal(); }                      ///< \copydoc ActiveArgumentStoreInterface::primal()
+      Identifier& identifierIn() { return  *base.identifierIn(); }   ///< \copydoc ActiveArgumentStoreInterface::identifierIn()
+      Identifier& identifierOut() { return *base.identifierOut(); }  ///< \copydoc ActiveArgumentStoreInterface::identifierOut()
+      Gradient& gradientIn() { return *base.gradientIn(); }          ///< \copydoc ActiveArgumentStoreInterface::gradientIn()
+      Gradient& gradientOut() { return *base.gradientOut(); }        ///< \copydoc ActiveArgumentStoreInterface::gradientOut()
 
-      Real& oldPrimal() { return *base.oldPrimal(); }  ///< See ActiveArgumentPointerStore.
+      Real& oldPrimal() { return *base.oldPrimal(); }  ///< \copydoc ActiveArgumentStoreInterface::oldPrimal()
       // clang-format on
   };
 
@@ -136,6 +163,11 @@ namespace codi {
    * stored data needs to be smaller or equal to the size returned in #countSize. Finally, the
    * #setExternalFunctionOutput method is called on output arguments. Here, the vectors created in #store need to be
    * updated if necessary. Usually, these are vectors for the identifiers of the output value and old primal values.
+   *
+   * The default implementation for CoDiPack values can be used to perform an activity analysis. The identifiers of the
+   * output values are initialized with -1. Inside of the \c setExternalFunctionOutput method, each value is registered
+   * only if the identifier is none zero. The user can modify the identifiers of the output values during the primal
+   * evaluation, indicating active and inactive outputs. Otherwise, all outputs are assumed to be active.
    *
    * \subsection calls_eval Tape evaluation
    * During a reverse, forward, primal, etc. evaluation of a tape, the #restore method is called first. It should read
@@ -176,7 +208,7 @@ namespace codi {
       using Gradient = Real;   ///< The type that can represent the gradient values.
 
       /// Data for holding all necessary values.
-      using ArgumentStore = ActiveArgumentPointerStore<Real, Identifier, Gradient>;
+      using ArgumentStore = ActiveArgumentStoreInterface<Real, Identifier, Gradient>;
 
       /**
        * @brief Counts the binary size for the data stream.
@@ -187,7 +219,7 @@ namespace codi {
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g., the
        * size of arrays addressed by pointers.
        */
-      CODI_INLINE static void countSize(size_t& dataSize, T const& value, size_t size, StoreActions const& actions);
+      CODI_INLINE static size_t countSize(T const& value, size_t size, StoreActions const& actions);
 
       /**
        * @brief Restore the data for this type.
@@ -214,8 +246,7 @@ namespace codi {
 
       /**
        *  Called after the primal evaluation. All active values in \c value need to be registered as outputs of an
-       *  external function. \c value needs to be populated with the primal values from \c primal. If \c primal is
-       *  \c null then the function can assume that \c value already contains the current values. The identifiers need
+       *  external function. \c value needs to be populated with the primal values from \c primal. The identifiers need
        *  to be stored in \c identifiers.
        */
       CODI_INLINE static void setExternalFunctionOutput(bool tapeActive, T& value, size_t size, Identifier& identifier,
@@ -255,10 +286,10 @@ namespace codi {
           ActiveArgumentValueStore<typename PointerTraits::ArgumentStore>;  ///< See ActiveArgumentStoreTraits.
 
       /// @copydoc ActiveArgumentValueStore::countSize()
-      CODI_INLINE static void countSize(size_t& dataSize, T const& value, size_t size, StoreActions const& actions) {
+      CODI_INLINE static size_t countSize(T const& value, size_t size, StoreActions const& actions) {
         CODI_UNUSED(size);
 
-        PointerTraits::countSize(dataSize, &value, 1, actions);
+        return PointerTraits::countSize(&value, 1, actions);
       }
 
       /// @copydoc ActiveArgumentValueStore::restore()
@@ -340,8 +371,10 @@ namespace codi {
       using ArgumentStore = ActiveArgumentPointerStore<Real, Identifier, Gradient>;  ///< See ActiveArgumentStoreTraits.
 
       /// @copydoc ActiveArgumentValueStore::countSize()
-      CODI_INLINE static void countSize(size_t& dataSize, T const* value, size_t size, StoreActions const& actions) {
-        CODI_UNUSED(dataSize, value);
+      CODI_INLINE static size_t countSize(T const* value, size_t size, StoreActions const& actions) {
+        CODI_UNUSED(value);
+
+        size_t dataSize = 0;
         if (actions.test(StoreAction::InputIdentifierCreateAndStore)) {
           dataSize += size * sizeof(typename T::Identifier);  // var_i_in
         }
@@ -363,6 +396,8 @@ namespace codi {
             dataSize += size * sizeof(Real);  // Primal value tapes need to store the old values.
           }
         }
+
+        return dataSize;
       }
 
       /// @copydoc ActiveArgumentValueStore::restore()
@@ -476,14 +511,14 @@ namespace codi {
         if (actions.test(StoreAction::InputIdentifierCreateAndStore)) {
           data.value_i_in = dataStore->template reserve<Identifier>(size);
           for (size_t i = 0; i < size; i += 1) {
-            (data.value_i_in)[i] = value[i].getIdentifier();
+            data.value_i_in[i] = value[i].getIdentifier();
           }
         }
 
         if (actions.test(StoreAction::OutputIdentifierCreate)) {
           data.value_i_out = dataStore->template reserve<Identifier>(size);
           for (size_t i = 0; i < size; i += 1) {
-            (data.value_i_out)[i] = -1;
+            data.value_i_out[i] = -1;
           }
 
           if (Tape::HasPrimalValues && !Tape::LinearIndexHandling) {
@@ -495,9 +530,9 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::isActive()
       CODI_INLINE static bool isActive(T const* value, size_t size) {
         typename T::Tape& tape = T::getTape();
-        bool active = true;
-        for (size_t i = 0; i < size && active; i += 1) {
-          active &= tape.isIdentifierActive(value[i].getIdentifier());
+        bool active = false;
+        for (size_t i = 0; i < size && !active; i += 1) {
+          active |= tape.isIdentifierActive(value[i].getIdentifier());
         }
         return active;
       }
@@ -507,9 +542,7 @@ namespace codi {
                                                         Real* primal, Real* oldPrimals) {
         typename T::Tape& tape = T::getTape();
         for (size_t i = 0; i < size; i += 1) {
-          if (nullptr != primal) {
-            value[i].setValue(primal[i]);
-          }
+          value[i].setValue(primal[i]);
 
           if (tapeActive && 0 != identifier[i]) {
             Real oldValue = tape.registerExternalFunctionOutput(value[i]);

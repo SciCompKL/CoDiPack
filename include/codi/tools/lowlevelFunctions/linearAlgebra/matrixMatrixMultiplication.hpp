@@ -5,7 +5,7 @@
 #include <codi/misc/macros.hpp>
 #include <codi/tools/lowlevelFunctions/eigenWrappers.hpp>
 #include <codi/tools/lowlevelFunctions/generationHelperCoDiPack.hpp>
-#include <codi/tools/lowlevelFunctions/lowLevelFunctionCreationHelper.hpp>
+#include <codi/tools/lowlevelFunctions/lowLevelFunctionCreationUtilities.hpp>
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -23,9 +23,10 @@ namespace codi {
       /// Function for forward interpretation.
       CODI_INLINE static void forward(Tape* tape, codi::ByteDataView& dataStore, AdjointVectorAccess adjoints) {
         codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
-        using LLFH = codi::LowLevelFunctionCreationHelper<2>;
+        codiAssert(allocator.isEmpty());  // No memory should be allocated. We would free it at the end.
+        using LLFH = codi::LowLevelFunctionCreationUtilities<2>;
 
-        // Traits for arguments
+        // Traits for arguments.
         using Trait_A = typename LLFH::ActiveStoreTrait<Type*>;
         using Trait_B = typename LLFH::ActiveStoreTrait<Type*>;
         using Trait_R = typename LLFH::ActiveStoreTrait<Type*>;
@@ -33,7 +34,7 @@ namespace codi {
         using Trait_k = typename LLFH::PassiveStoreTrait<int, uint8_t>;
         using Trait_m = typename LLFH::PassiveStoreTrait<int, uint8_t>;
 
-        // Declare variables
+        // Declare variables.
         typename LLFH::ActivityStoreType activityStore = {};
         typename Trait_A::ArgumentStore A_store = {};
         typename Trait_B::ArgumentStore B_store = {};
@@ -45,7 +46,7 @@ namespace codi {
         bool active_A = false;
         bool active_B = false;
 
-        // Restore data
+        // Restore data.
         LLFH::restoreActivity(&dataStore, activityStore);
         active_A = LLFH::getActivity(activityStore, 0);
         active_B = LLFH::getActivity(activityStore, 1);
@@ -61,15 +62,15 @@ namespace codi {
         if (Tape::HasPrimalValues) {
           // Get primal values for inputs.
           if (active_A && active_B) {
-            Trait_A::getPrimalsFromVector(adjoints, n * k, A_store.identifierIn(), A_store.value());
+            Trait_A::getPrimalsFromVector(adjoints, n * k, A_store.identifierIn(), A_store.primal());
           }
           if (active_B && active_A) {
-            Trait_B::getPrimalsFromVector(adjoints, k * m, B_store.identifierIn(), B_store.value());
+            Trait_B::getPrimalsFromVector(adjoints, k * m, B_store.identifierIn(), B_store.primal());
           }
         }
 
         for (size_t curDim = 0; curDim < adjoints->getVectorSize(); curDim += 1) {
-          // Get input gradients
+          // Get input gradients.
           if (active_A) {
             Trait_A::getGradients(adjoints, n * k, false, A_store.identifierIn(), A_store.gradientIn(), curDim);
           }
@@ -83,12 +84,12 @@ namespace codi {
             }
 
             // Set new primal values.
-            Trait_R::setPrimalsIntoVector(adjoints, n * m, R_store.identifierOut(), R_store.value());
+            Trait_R::setPrimalsIntoVector(adjoints, n * m, R_store.identifierOut(), R_store.primal());
           }
 
-          // Evaluate forward mode
-          callForward(A_store.value(), active_A, A_store.gradientIn(), B_store.value(), active_B, B_store.gradientIn(),
-                      R_store.value(), R_store.gradientOut(), n, k, m);
+          // Evaluate forward mode.
+          callForward(A_store.primal(), active_A, A_store.gradientIn(), B_store.primal(), active_B,
+                      B_store.gradientIn(), R_store.primal(), R_store.gradientOut(), n, k, m);
 
           Trait_R::setGradients(adjoints, n * m, false, R_store.identifierOut(), R_store.gradientOut(), curDim);
         }
@@ -119,9 +120,10 @@ namespace codi {
       /// Function for reverse interpretation.
       CODI_INLINE static void reverse(Tape* tape, codi::ByteDataView& dataStore, AdjointVectorAccess adjoints) {
         codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
-        using LLFH = codi::LowLevelFunctionCreationHelper<2>;
+        codiAssert(allocator.isEmpty());  // No memory should be allocated. We would free it at the end.
+        using LLFH = codi::LowLevelFunctionCreationUtilities<2>;
 
-        // Traits for arguments
+        // Traits for arguments.
         using Trait_A = typename LLFH::ActiveStoreTrait<Type*>;
         using Trait_B = typename LLFH::ActiveStoreTrait<Type*>;
         using Trait_R = typename LLFH::ActiveStoreTrait<Type*>;
@@ -129,7 +131,7 @@ namespace codi {
         using Trait_k = typename LLFH::PassiveStoreTrait<int, uint8_t>;
         using Trait_m = typename LLFH::PassiveStoreTrait<int, uint8_t>;
 
-        // Declare variables
+        // Declare variables.
         typename LLFH::ActivityStoreType activityStore = {};
         typename Trait_A::ArgumentStore A_store = {};
         typename Trait_B::ArgumentStore B_store = {};
@@ -141,7 +143,7 @@ namespace codi {
         bool active_A = false;
         bool active_B = false;
 
-        // Restore data
+        // Restore data.
         LLFH::restoreActivity(&dataStore, activityStore);
         active_A = LLFH::getActivity(activityStore, 0);
         active_B = LLFH::getActivity(activityStore, 1);
@@ -162,20 +164,20 @@ namespace codi {
 
           // Get primal values for inputs.
           if (active_A && active_B) {
-            Trait_A::getPrimalsFromVector(adjoints, n * k, A_store.identifierIn(), A_store.value());
+            Trait_A::getPrimalsFromVector(adjoints, n * k, A_store.identifierIn(), A_store.primal());
           }
           if (active_B && active_A) {
-            Trait_B::getPrimalsFromVector(adjoints, k * m, B_store.identifierIn(), B_store.value());
+            Trait_B::getPrimalsFromVector(adjoints, k * m, B_store.identifierIn(), B_store.primal());
           }
         }
 
         for (size_t curDim = 0; curDim < adjoints->getVectorSize(); curDim += 1) {
-          // Get output gradients
+          // Get output gradients.
           Trait_R::getGradients(adjoints, n * m, true, R_store.identifierOut(), R_store.gradientOut(), curDim);
 
-          // Evaluate reverse mode
-          callReverse(A_store.value(), active_A, A_store.gradientIn(), B_store.value(), active_B, B_store.gradientIn(),
-                      R_store.value(), R_store.gradientOut(), n, k, m);
+          // Evaluate reverse mode.
+          callReverse(A_store.primal(), active_A, A_store.gradientIn(), B_store.primal(), active_B,
+                      B_store.gradientIn(), R_store.primal(), R_store.gradientOut(), n, k, m);
 
           if (active_A) {
             Trait_A::setGradients(adjoints, n * k, true, A_store.identifierIn(), A_store.gradientIn(), curDim);
@@ -212,9 +214,10 @@ namespace codi {
       /// Function for deletion of contents.
       CODI_INLINE static void del(Tape* tape, codi::ByteDataView& dataStore) {
         codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
-        using LLFH = codi::LowLevelFunctionCreationHelper<2>;
+        codiAssert(allocator.isEmpty());  // No memory should be allocated. We would free it at the end.
+        using LLFH = codi::LowLevelFunctionCreationUtilities<2>;
 
-        // Traits for arguments
+        // Traits for arguments.
         using Trait_A = typename LLFH::ActiveStoreTrait<Type*>;
         using Trait_B = typename LLFH::ActiveStoreTrait<Type*>;
         using Trait_R = typename LLFH::ActiveStoreTrait<Type*>;
@@ -222,7 +225,7 @@ namespace codi {
         using Trait_k = typename LLFH::PassiveStoreTrait<int, uint8_t>;
         using Trait_m = typename LLFH::PassiveStoreTrait<int, uint8_t>;
 
-        // Declare variables
+        // Declare variables.
         typename LLFH::ActivityStoreType activityStore = {};
         typename Trait_A::ArgumentStore A_store = {};
         typename Trait_B::ArgumentStore B_store = {};
@@ -234,7 +237,7 @@ namespace codi {
         bool active_A = false;
         bool active_B = false;
 
-        // Restore data
+        // Restore data.
         LLFH::restoreActivity(&dataStore, activityStore);
         active_A = LLFH::getActivity(activityStore, 0);
         active_B = LLFH::getActivity(activityStore, 1);
@@ -251,12 +254,12 @@ namespace codi {
       }
 
       /// Store on tape.
-      CODI_INLINE static void store(Type const* A, Type const* B, Type* R, int n, int k, int m) {
+      CODI_INLINE static void evalAndStore(Type const* A, Type const* B, Type* R, int n, int k, int m) {
         Tape& tape = Type::getTape();
         codi::TemporaryMemory& allocator = tape.getTemporaryMemory();
-        using LLFH = codi::LowLevelFunctionCreationHelper<2>;
+        using LLFH = codi::LowLevelFunctionCreationUtilities<2>;
 
-        // Traits for arguments
+        // Traits for arguments.
         using Trait_A = typename LLFH::ActiveStoreTrait<Type*>;
         using Trait_B = typename LLFH::ActiveStoreTrait<Type*>;
         using Trait_R = typename LLFH::ActiveStoreTrait<Type*>;
@@ -264,35 +267,35 @@ namespace codi {
         using Trait_k = typename LLFH::PassiveStoreTrait<int, uint8_t>;
         using Trait_m = typename LLFH::PassiveStoreTrait<int, uint8_t>;
 
-        // Declare variables
+        // Declare variables.
         typename LLFH::ActivityStoreType activityStore = {};
         typename Trait_A::ArgumentStore A_store = {};
         typename Trait_B::ArgumentStore B_store = {};
         typename Trait_R::ArgumentStore R_store = {};
 
-        // Detect activity
+        // Detect activity.
         bool active_A = Trait_A::isActive(A, n * k);
         bool active_B = Trait_B::isActive(B, k * m);
         bool active = active_A | active_B;
 
         if (active) {
-          // Store function
+          // Store function.
           registerOnTape();
 
-          // Count data size
+          // Count data size.
           size_t dataSize = LLFH::countActivitySize();
-          Trait_n::countSize(dataSize, n, 1, true);
-          Trait_k::countSize(dataSize, k, 1, true);
-          Trait_m::countSize(dataSize, m, 1, true);
-          Trait_A::countSize(dataSize, A, n * k, LLFH::createStoreActions(active, true, false, active_A, active_B));
-          Trait_B::countSize(dataSize, B, k * m, LLFH::createStoreActions(active, true, false, active_B, active_A));
-          Trait_R::countSize(dataSize, R, n * m, LLFH::createStoreActions(active, false, true, false, true));
+          dataSize += Trait_n::countSize(n, 1, true);
+          dataSize += Trait_k::countSize(k, 1, true);
+          dataSize += Trait_m::countSize(m, 1, true);
+          dataSize += Trait_A::countSize(A, n * k, LLFH::createStoreActions(active, true, false, active_A, active_B));
+          dataSize += Trait_B::countSize(B, k * m, LLFH::createStoreActions(active, true, false, active_B, active_A));
+          dataSize += Trait_R::countSize(R, n * m, LLFH::createStoreActions(active, false, true, false, true));
 
-          // Reserve data
+          // Reserve data.
           codi::ByteDataView dataStore = {};
           tape.pushLowLevelFunction(ID, dataSize, dataStore);
 
-          // Store data
+          // Store data.
           LLFH::setActivity(activityStore, 0, active_A);
           LLFH::setActivity(activityStore, 1, active_B);
           LLFH::storeActivity(&dataStore, activityStore);
@@ -306,7 +309,7 @@ namespace codi {
           Trait_R::store(&dataStore, allocator, R, n * m, LLFH::createStoreActions(active, false, true, false, true),
                          R_store);
         } else {
-          // Prepare passive evaluation
+          // Prepare passive evaluation.
           Trait_A::store(nullptr, allocator, A, n * k,
                          LLFH::createStoreActions(active, true, false, active_A, active_B), A_store);
           Trait_B::store(nullptr, allocator, B, k * m,
@@ -315,10 +318,10 @@ namespace codi {
                          R_store);
         }
 
-        callPrimal(active, A_store.value(), active_A, A_store.identifierIn(), B_store.value(), active_B,
-                   B_store.identifierIn(), R_store.value(), R_store.identifierOut(), n, k, m);
+        callPrimal(active, A_store.primal(), active_A, A_store.identifierIn(), B_store.primal(), active_B,
+                   B_store.identifierIn(), R_store.primal(), R_store.identifierOut(), n, k, m);
 
-        Trait_R::setExternalFunctionOutput(active, R, n * m, R_store.identifierOut(), R_store.value(),
+        Trait_R::setExternalFunctionOutput(active, R, n * m, R_store.identifierOut(), R_store.primal(),
                                            R_store.oldPrimal());
 
         allocator.free();
@@ -335,6 +338,8 @@ namespace codi {
                                          int k, int m) {
         codi::CODI_UNUSED(active, A, active_A, A_i_in, B, active_B, B_i_in, R, R_i_out, n, k, m);
         mapEigen<eigenStore>(R, n, m) = mapEigen<eigenStore>(A, n, k) * mapEigen<eigenStore>(B, k, m);
+
+        // User defined activity update.
         if (active) {
           mapEigen<eigenStore>(R_i_out, n, m).setZero();
           if (active_A) {
@@ -369,7 +374,7 @@ namespace codi {
    */
   template<Eigen::StorageOptions eigenStore, typename Type>
   void matrixMatrixMultiplication(Type const* A, Type const* B, Type* R, int n, int k, int m) {
-    ExtFunc_matrixMatrixMultiplication<eigenStore, Type>::store(A, B, R, n, k, m);
+    ExtFunc_matrixMatrixMultiplication<eigenStore, Type>::evalAndStore(A, B, R, n, k, m);
   }
 
   /**

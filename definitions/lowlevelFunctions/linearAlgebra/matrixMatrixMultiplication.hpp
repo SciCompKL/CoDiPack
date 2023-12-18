@@ -38,7 +38,7 @@
 #include <codi/misc/macros.hpp>
 #include <codi/tools/lowlevelFunctions/generationHelperCoDiPack.hpp>
 #include <codi/tools/lowlevelFunctions/eigenWrappers.hpp>
-#include <codi/tools/lowlevelFunctions/lowLevelFunctionCreationHelper.hpp>
+#include <codi/tools/lowlevelFunctions/lowLevelFunctionCreationUtilities.hpp>
 
 /** \copydoc codi::Namespace */
 namespace codi {

@@ -61,7 +61,7 @@ namespace codi {
       using Store = T;  ///< Type for the variable declaration for restoring the data.
 
       /// Count the required size for storing the data.
-      CODI_INLINE static void countSize(size_t& storeSize, T&& value, size_t size, bool storeRequired);
+      CODI_INLINE static size_t countSize(T&& value, size_t size, bool storeRequired);
 
       /// Restore the data for this type.
       CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size, bool storeRequired,
@@ -75,17 +75,24 @@ namespace codi {
 #ifndef DOXYGEN_DISABLE
 
   /// Specialization of PassiveArgumentStoreTraits for integral values.
-  template<typename T, typename S>
-  struct PassiveArgumentStoreTraits<T, S, typename std::enable_if<std::is_integral<T>::value>::type> {
+  template<typename T_T, typename T_S>
+  struct PassiveArgumentStoreTraits<T_T, T_S, typename std::enable_if<std::is_integral<T_T>::value>::type> {
+      using T = CODI_DD(T_T, int);    ///< See PassiveArgumentStoreTraits.
+      using S = CODI_DD(T_S, short);  ///< See PassiveArgumentStoreTraits.
+
       using Store = T;
 
       /// @copydoc PassiveArgumentStoreTraits::countSize()
-      CODI_INLINE static void countSize(size_t& storeSize, T const& value, size_t size, bool storeRequired) {
+      CODI_INLINE static size_t countSize(T const& value, size_t size, bool storeRequired) {
         CODI_UNUSED(value, size);
+
+        size_t storeSize = 0;
 
         if (storeRequired) {
           storeSize += sizeof(S);
         }
+
+        return storeSize;
       }
 
       /// @copydoc PassiveArgumentStoreTraits::restore()
