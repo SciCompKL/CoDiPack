@@ -388,7 +388,7 @@ namespace codi {
 
     private:
 
-      std::vector<Type*> inputLocations;
+      std::vector<Type const*> inputLocations;
       std::vector<Type*> outputLocations;
       Tag oldTag;
 
@@ -441,7 +441,7 @@ namespace codi {
           addOutputRecursive(outputs...);
 
           tape.setCurTag(oldTag);
-          for (Type* curInput : inputLocations) {
+          for (Type const* curInput : inputLocations) {
             tape.setTagOnVariable(*curInput);
           }
           for (Type* curOutput : outputLocations) {
@@ -464,9 +464,8 @@ namespace codi {
       }
 
       void handleInput(Type const& input) {
-        Type& inputNonConst = const_cast<Type&>(input);
-        inputLocations.push_back(&inputNonConst);
-        getTape().setTagOnVariable(inputNonConst);
+        inputLocations.push_back(&input);
+        getTape().setTagOnVariable(input);
       }
 
       /// Terminator for the recursive implementation.

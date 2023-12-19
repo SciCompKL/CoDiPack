@@ -121,7 +121,7 @@ namespace codi {
       /// Do nothing.
       void deleteData() {}
 
-      /// Do nothing.
+      /// Empty set.
       std::set<TapeParameters> const& getAvailableParameters() const {
         return parameters;
       }

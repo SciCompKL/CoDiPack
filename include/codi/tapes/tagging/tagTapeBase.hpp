@@ -156,7 +156,7 @@ namespace codi {
 
       /// Set tag on a CoDiPack active type.
       template<typename Lhs>
-      void setTagOnVariable(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
+      void setTagOnVariable(LhsExpressionInterface<Real, Gradient, Impl, Lhs> const& value) {
         value.cast().getIdentifier().tag = this->curTag;
       }
 

@@ -56,7 +56,7 @@ namespace codi {
 
       using Tag = CODI_DD(T_Tag, int);  ///< See TagData.
 
-      Tag tag;                          ///< Current tag of the value.
+      mutable Tag tag;                  ///< Current tag of the value.
       EnumBitset<TagFlags> properties;  ///< Current properties of the value.
 
       /// Constructor.
