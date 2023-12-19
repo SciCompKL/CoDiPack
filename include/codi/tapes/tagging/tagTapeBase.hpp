@@ -274,11 +274,11 @@ namespace codi {
           std::cerr << "DoNotUse variable is used." << std::endl;
         }
         if (tagError) {
-          std::cerr << "Wrong tag detected '" << wrongTag << "' should be '" << correctTag << "'.";
+          std::cerr << "Use of variable with bad tag '" << wrongTag << "', should be '" << correctTag << "'.";
           if(wrongTag == impl.preaccumulationTag) {
-            std::cerr << "The value seems to be a preaccumulation output.";
+            std::cerr << " The value seems to be a preaccumulation output.";
           } else if(correctTag == impl.preaccumulationTag) {
-            std::cerr << "The value seems to be used during a preaccumulation but is not declared as an input.";
+            std::cerr << " The value seems to be used during a preaccumulation but is not declared as an input.";
           }
           std::cerr << std::endl;
         }

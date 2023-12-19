@@ -14,7 +14,7 @@ Real func(const Real& x, const Real& y) {
 static void tagLhsChangeErrorCallback(double const& currentValue, double const& newValue, void* userData) {
   std::ofstream* out = (std::ofstream*)userData;
 
-  *out << "Wrong tag use detected '" << currentValue << "' is set to '" << newValue << "'." << std::endl;
+  *out << "DoNotChange variable changes value from '" << currentValue << "' to '" << newValue << "'." << std::endl;
 }
 
 static void tagErrorCallback(int const& correctTag, int const& wrongTag, bool tagError, bool useError,
@@ -23,10 +23,10 @@ static void tagErrorCallback(int const& correctTag, int const& wrongTag, bool ta
 
   // output default warning if no handle is defined.
   if (useError) {
-    *out << "Wrong variable use detected." << std::endl;
+    *out << "DoNotUse variable is used." << std::endl;
   }
   if (tagError) {
-    *out << "Wrong tag detected '" << wrongTag << "' should be '" << correctTag << "'." << std::endl;
+    *out << "Use of variable with bad tag '" << wrongTag << "', should be '" << correctTag << "'." << std::endl;
   }
 }
 

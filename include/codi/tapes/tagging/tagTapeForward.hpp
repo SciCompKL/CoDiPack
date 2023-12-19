@@ -183,20 +183,12 @@ namespace codi {
         return tempGradient;
       }
 
+      /// Do not allow.
+      void setGradient(Identifier const& identifier, Gradient const& gradient) = delete;
+
+      /// Do not allow.
+      Gradient& gradient(Identifier const& identifier) = delete;
+
       /// @}
-
-    private:
-
-      /// Do not allow.
-      void setGradient(Identifier const& identifier, Gradient const& gradient) {
-        CODI_UNUSED(identifier, gradient);
-      }
-
-      /// Do not allow.
-      Gradient& gradient(Identifier const& identifier) {
-        CODI_UNUSED(identifier);
-        static Gradient temp = Gradient();
-        return temp;
-      }
   };
 }
