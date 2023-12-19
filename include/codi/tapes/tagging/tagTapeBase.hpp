@@ -260,7 +260,7 @@ namespace codi {
       static void defaultTagLhsChangeErrorCallback(Real const& currentValue, Real const& newValue, void* userData) {
         CODI_UNUSED(userData);
 
-        std::cerr << "Wrong tag use detected '" << currentValue << "' is set to '" << newValue << "'." << std::endl;
+        std::cerr << "DoNotChange variable changes value from '" << currentValue << "' to '" << newValue << "'." << std::endl;
       }
 
       /// Default callback for TagErrorCallback.
@@ -271,7 +271,7 @@ namespace codi {
 
         // output default warning if no handle is defined.
         if (useError) {
-          std::cerr << "Wrong variable use detected." << std::endl;
+          std::cerr << "DoNotUse variable is used." << std::endl;
         }
         if (tagError) {
           std::cerr << "Wrong tag detected '" << wrongTag << "' should be '" << correctTag << "'.";

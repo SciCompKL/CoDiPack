@@ -91,6 +91,6 @@ namespace codi {
   /// Not equal comparison of two tag data objects.
   template<typename Tag>
   bool operator!=(TagData<Tag> const& a, TagData<Tag> const& b) {
-    return a.tag != b.tag || a.properties != b.properties;
+    return !(a == b);
   }
 }
