@@ -58,7 +58,7 @@ namespace codi {
   template<typename T>
   using MapEigenVector = Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1>>;
 
-  /// Abbreviation for a constant mapped Eigen matrix.
+  /// Abbreviation for a constant mapped Eigen vector.
   template<typename T>
   using MapEigenVectorConst = Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1> const>;
 
@@ -80,7 +80,7 @@ namespace codi {
     return mapEigen<Eigen::StorageOptions::RowMajor>(p, rows, cols);
   }
 
-  /// Create a mapped Eigen matrix with a row major data layout.
+  /// Create a constant mapped Eigen matrix with a row major data layout.
   template<typename T>
   MapEigenMatrixConst<T, Eigen::StorageOptions::RowMajor> mapEigenRowMajor(T const* p, int rows, int cols) {
     return mapEigen<Eigen::StorageOptions::RowMajor>(p, rows, cols);
@@ -92,7 +92,7 @@ namespace codi {
     return mapEigen<Eigen::StorageOptions::ColMajor>(p, rows, cols);
   }
 
-  /// Create a mapped Eigen matrix with a column major data layout.
+  /// Create a constant mapped Eigen matrix with a column major data layout.
   template<typename T>
   MapEigenMatrixConst<T, Eigen::StorageOptions::ColMajor> mapEigenColMajor(T const* p, int rows, int cols) {
     return mapEigen<Eigen::StorageOptions::ColMajor>(p, rows, cols);
@@ -104,7 +104,7 @@ namespace codi {
     return MapEigenVector<T>(p, size);
   }
 
-  /// Create a mapped Eigen vector.
+  /// Create a constant mapped Eigen vector.
   template<typename T>
   MapEigenVectorConst<T> mapEigen(T const* p, int size) {
     return MapEigenVectorConst<T>(p, size);

@@ -51,7 +51,7 @@ namespace codi {
    *
    * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
    * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
-   * @tparam T_Gradient    The gradient type of a tape usually defined by ActiveType::Gradient.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
    */
   template<typename T_Real, typename T_Identifier, typename T_Gradient>
   struct ActiveArgumentPointerStore {
@@ -111,9 +111,9 @@ namespace codi {
    * @brief Traits for storing active arguments in byte streams.
    *
    * There is one data stream available for storing the data of a type. The size and layout of the data can be
-   * arbitrary. The only limitation is the maximum size of the data which is defined by
-   * #config::LowLevelFunctionDataSizeMax. This limit holds for the whole external function. If larger data is required
-   * it should be allocated with new.
+   * arbitrary. The only limitation is the maximum size of the data, which is defined by
+   * #config::LowLevelFunctionDataSizeMax. This limit holds for the whole external function. If more data is required,
+   * it should be allocated dynamically.
    *
    * \section layout Example data layout for matrix matrix multiplications.
    *
@@ -123,42 +123,42 @@ namespace codi {
    * stream data: | n | m | n * m values | n * m identifiers |
    * \endcode
    * The sizes \c n and \c m are the necessary information for the dynamic data. Therefore, they are stored first.
-   * Afterwards the dynamic sized data is stored.
+   * Afterwards, the dynamic sized data is stored.
    *
    * \section calls Call process
    *
    * \subsection calls_record Recording
    *
-   * The first function, that is usually called, is the #isActive function. It should return true if one CoDiPack
+   * The first function that is usually called is the #isActive function. It should return true if one CoDiPack
    * entry in the type is active. Afterwards, the #countSize function is called to determine the required byte
-   * size for the data stream. This count needs to be exact since the data is preallocated and can not be shortened
+   * size for the data stream. This count needs to be exact since the data is preallocated and cannot be shortened
    * afterwards. The call to #store initiates the storing of the type in the stream and therefore on the tape. The
    * stored data needs to be smaller or equal to the size returned in #countSize. Finally, the
    * #setExternalFunctionOutput method is called on output arguments. Here, the vectors created in #store need to be
-   * updated if necessary. Usually, this are vectors for the identifiers of the output value and old primal values.
+   * updated if necessary. Usually, these are vectors for the identifiers of the output value and old primal values.
    *
    * \subsection calls_eval Tape evaluation
    * During a reverse, forward, primal, etc. evaluation of a tape, the #restore method is called first. It should read
    * all data written in #store.
    *
-   * Afterwards the functions #getPrimalsFromVector, #setPrimalsIntoVector, #getGradients and #setGradients are called
+   * Afterwards, the functions #getPrimalsFromVector, #setPrimalsIntoVector, #getGradients, and #setGradients are called
    * to populate the vectors created in the restore functions.
    *
    * \subsection store_actions Store actions
    *  - StoreAction::PrimalCreateOnTape : Create a primal vector in the data streams.
-   *  - StoreAction::PrimalExtract : Extract the primal form the value. If PrimalCreateOnTape is not requested create
+   *  - StoreAction::PrimalExtract : Extract the primal from the value. If PrimalCreateOnTape is not requested, create
    *                                 a temporary vector for it.
    *  - StoreAction::InputIdentifierCreateAndStore : Create a vector for the input identifiers and store the current
    *                                                 ones from the value.
    *  - StoreAction::OutputIdentifierCreate : Create a vector for the output identifiers. They are populated
    *                                          during the call to #setExternalFunctionOutput after the low level function
-   *                                          hast been evaluated.
+   *                                          has been evaluated.
    *
    * \subsection restore_actions Restore actions
    *  - RestoreAction::PrimalCreate : Create a vector for the primal output values of this argument.
    *  - RestoreAction::PrimalRestore : Restore the primal input values from the data stream.
-   *  - RestoreAction::InputIdentifierRestore : Read a vector for the input identifiers from the streams.
-   *  - RestoreAction::OutputIdentifierRestore : Read a vector for the output identifiers from the streams.
+   *  - RestoreAction::InputIdentifierRestore : Read a vector for the input identifiers from the data stream.
+   *  - RestoreAction::OutputIdentifierRestore : Read a vector for the output identifiers from the data stream.
    *  - RestoreAction::InputGradientCreate : Create a vector for the input gradients. They are then populated/used
    *                                         during a call to #getGradients/#setGradients.
    *  - RestoreAction::OutputGradientCreate : Create a vector for the output gradients. They are then populated/used
@@ -179,21 +179,21 @@ namespace codi {
       using ArgumentStore = ActiveArgumentPointerStore<Real, Identifier, Gradient>;
 
       /**
-       * @brief Counts the binary size for the  data stream.
+       * @brief Counts the binary size for the data stream.
        *
        * This value needs to define the maximum size required to store all data for the type. It should be
-       * exact since the allocated memory can not be reduced afterwards.
+       * exact since the allocated memory cannot be reduced afterwards.
        *
-       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
-       * pointers the vector size.
+       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g., the
+       * size of arrays addressed by pointers.
        */
       CODI_INLINE static void countSize(size_t& dataSize, T const& value, size_t size, StoreActions const& actions);
 
       /**
        * @brief Restore the data for this type.
        *
-       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
-       * pointers the vector size. \c data can be used to store data and pointers from the streams.
+       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g., the
+       * size of arrays addressed by pointers. \c data can be used to store data and pointers from the streams.
        */
       CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                       RestoreActions const& actions, ArgumentStore& data);
@@ -201,10 +201,10 @@ namespace codi {
       /**
        * @brief Store all data for this type.
        *
-       * The amount of data can not be greater than the amount reported by #countSize().
+       * The amount of data cannot be greater than the amount reported by #countSize().
        *
-       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g. for
-       * pointers the vector size. \c data can be used to store data and pointers from the streams.
+       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g., the
+       * size of arrays addressed by pointers. \c data can be used to store data and pointers from the streams.
        */
       CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const& value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data);
@@ -225,7 +225,7 @@ namespace codi {
       CODI_INLINE static void getPrimalsFromVector(VectorAccessInterface<Real, Identifier>* data, size_t size,
                                                    Identifier& identifier, Real& primal);
 
-      /// Set the primal values from \c primal into \c data.
+      /// Extract the primal values from \c primal and store them in \c data.
       CODI_INLINE static void setPrimalsIntoVector(VectorAccessInterface<Real, Identifier>* data, size_t size,
                                                    Identifier& identifier, Real& primal);
 
@@ -233,7 +233,7 @@ namespace codi {
       CODI_INLINE static void getGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool reset,
                                            Identifier& identifier, Gradient& gradient, size_t dim);
 
-      /// Set the gradients from \c gradient into \c data.
+      /// Extract the gradients from \c gradient and store them in \c data.
       CODI_INLINE static void setGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool update,
                                            Identifier& identifier, Gradient& gradient, size_t dim);
   };
@@ -325,16 +325,16 @@ namespace codi {
       }
   };
 
-  /// Specialization of ActiveArgumentStoreTraits for pointers to CoDiPack values.
+  /// Specialization of ActiveArgumentStoreTraits for pointers to CoDiPack types.
   template<typename T_T>
   struct ActiveArgumentStoreTraits<T_T*, ExpressionTraits::EnableIfLhsExpression<T_T>> {
       using T = CODI_DD(T_T, CODI_DEFAULT_LHS_EXPRESSION);  ///< See ActiveArgumentStoreTraits.
 
-      using Tape = typename T::Tape;  ///< Tape of active type.
+      using Tape = typename T::Tape;  ///< Underlying tape of the CoDiPack type.
 
       using Real = typename T::Real;              ///< See ActiveArgumentStoreTraits.
       using Identifier = typename T::Identifier;  ///< See ActiveArgumentStoreTraits.
-      using Gradient = Real;  ///< We use the vector access interface so gradients are stored in the same form as the
+      using Gradient = Real;  ///< We use the vector access interface, so gradients are stored in the same form as the
                               ///< primal.
 
       using ArgumentStore = ActiveArgumentPointerStore<Real, Identifier, Gradient>;  ///< See ActiveArgumentStoreTraits.

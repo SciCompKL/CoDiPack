@@ -59,13 +59,13 @@ namespace codi {
    *  - Evaluate the function either in a passive taping context or with different types than the CoDiPack ones.
    *  - Register the active outputs of the function.
    *
-   *  In the following sections the steps are explained. For an example implementation see
+   *  In the following sections, the steps are explained. For an example implementation, see
    *  #codi::ExtFunc_matrixMatrixMultiplication.
    *
    *  \subsection activity Determine activity
    *
-   *  If the tape is not active then no low level function should be created. Otherwise each active argument can be
-   *  checked with \c ActiveStoreTrait::isActive(). If all active arguments are passive, that is all underlying
+   *  If the tape is not active, then no low level function should be created. Otherwise, each active argument can be
+   *  checked with \c ActiveStoreTrait::isActive(). If all active arguments are passive, that is, all underlying
    *  CoDiPack types are passive, then the low level function should also not be created.
    *
    *  \subsection count Count size
@@ -79,23 +79,23 @@ namespace codi {
    *  \endcode
    *
    *  Depending on the activity of the arguments and if the primal values of the arguments are required for the
-   *  derivative computation the required size may vary.
+   *  derivative computation, the required size may vary.
    *
    *  \subsection allocate Allocate data on the tape
    *
-   *  A call to #LowLevelFunctionTapeInterface::pushLowLevelFunction() will add the low level function to the tape and
-   *  populate the #codi::ByteDataView for the fixed and dynamic data.
+   *  A call to #LowLevelFunctionTapeInterface::pushLowLevelFunction() adds the low level function to the tape and
+   *  populates the #codi::ByteDataView for the fixed and dynamic data.
    *
    *  \subsection write Write data
    *
-   *  Usually the following needs to be done:
-   *   - Write the activity of the arguments with #storeActivity. (First #setActivity needs to be called for every input
-   *     argument.)
+   *  Usually, the following needs to be done:
+   *   - Call #setActivity for every input argument.
+   *   - Write the activity of the arguments with #storeActivity.
    *   - Call \c ActiveStoreTrait::store and \c PassiveArgumentStoreTraits::store for all arguments.
    *
    *  \subsection evaluate Evaluation of the low level function
    *
-   *  Two options are possible.
+   *  There are two options.
    *   - The tape can be set to passive and the arguments with the CoDiPack types can be used for the evaluation.
    *   - The store traits can be configured such that the primal values are always extracted. These are available via
    *   \c ActiveStoreTrait::ArgumentStore::value() and can be used to call a passive version of the low level function.
@@ -120,12 +120,12 @@ namespace codi {
       static_assert(ActiveArguments <= 64, "More than 64 active arguments are currently not supported.");
 
       // clang-format off
-      /// Type for the activity store. Currently limited at 64 variables.
+      /// Type for the activity store. Currently limited to 64 variables.
       using ActivityStoreType =
           typename std::conditional<ActiveArguments <= 8, uint8_t,
           typename std::conditional<ActiveArguments <= 16, uint16_t,
           typename std::conditional<ActiveArguments <= 32, uint32_t,
-          typename std::conditional<ActiveArguments <= 64, uint32_t,
+          typename std::conditional<ActiveArguments <= 64, uint64_t,
             void>::type>::type>::type>::type;
       // clang-format on
 
@@ -200,7 +200,7 @@ namespace codi {
         return sizeof(ActivityStoreType);
       }
 
-      /// Check if an argument is active from the activity structure.
+      /// Check the activity structure for activity of a specific argument.
       CODI_INLINE static bool getActivity(ActivityStoreType const& activity, size_t arg) {
         return 0 != (activity & ((ActivityStoreType)1) << arg);
       }
@@ -210,7 +210,7 @@ namespace codi {
         activity = fixedStore->read<ActivityStoreType>();
       }
 
-      /// Set the activity of an argument into the activity structure.
+      /// Store the activity of an argument in the activity structure.
       CODI_INLINE static void setActivity(ActivityStoreType& activity, size_t arg, bool active) {
         activity |= ((ActivityStoreType)active) << arg;
       }

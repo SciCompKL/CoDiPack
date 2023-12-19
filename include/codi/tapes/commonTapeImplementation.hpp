@@ -463,7 +463,7 @@ namespace codi {
             llfInfoData.resize(value);
             break;
           case TapeParameters::ExternalFunctionsSize:
-            CODI_WARNING("Tape parameter 'ExternalFunctionsSize' no longer supported. Use 'LLFInfoDataSize' and "
+            CODI_WARNING("Tape parameter 'ExternalFunctionsSize' is no longer supported. Use 'LLFInfoDataSize' and "
                 "'LLFByteDataSize' instead.");
             break;
           default:

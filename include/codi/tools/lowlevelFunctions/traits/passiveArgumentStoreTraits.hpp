@@ -47,7 +47,7 @@ namespace codi {
    *
    *  See ActiveArgumentStoreTraits for a detailed documentation of the process.
    *
-   *  When \c storeRequired is false nothing needs to be stored for this type and only a default initialization should
+   *  If \c storeRequired is false, nothing needs to be stored for this type and only a default initialization should
    *  be performed for the restore operation.
    *
    *  @tparam T_T  Type of the argument that is stored.
