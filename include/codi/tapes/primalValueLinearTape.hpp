@@ -87,7 +87,12 @@ namespace codi {
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
-      void clearAdjoints(Position const& start, Position const& end) {
+      /// <br> Implementation: Automatic adjoints management has no effect. Primal value tapes do not implement adjoints
+      /// locking.
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        CODI_UNUSED(adjointsManagement);
+
         using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
@@ -121,12 +126,12 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while (curAdjointPos < endAdjointPos) {
+        while (curAdjointPos < endAdjointPos) CODI_Likely {
           curAdjointPos += 1;
 
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
-          if (Config::StatementInputTag != nPassiveValues) {
+          if (Config::StatementInputTag != nPassiveValues) CODI_Likely {
             Gradient lhsTangent = Gradient();
 
             primalVector[curAdjointPos] = StatementEvaluator::template callForward<PrimalValueLinearTape>(
@@ -170,12 +175,12 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while (curAdjointPos < endAdjointPos) {
+        while (curAdjointPos < endAdjointPos) CODI_Likely {
           curAdjointPos += 1;
 
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
-          if (Config::StatementInputTag != nPassiveValues) {
+          if (Config::StatementInputTag != nPassiveValues) CODI_Likely {
             primalVector[curAdjointPos] = StatementEvaluator::template callPrimal<PrimalValueLinearTape>(
                 stmtEvalhandle[curStatementPos], primalVector, nPassiveValues, curConstantPos, constantValues,
                 curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
@@ -207,12 +212,12 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while (curAdjointPos > endAdjointPos) {
+        while (curAdjointPos > endAdjointPos) CODI_Likely {
           curStatementPos -= 1;
 
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
-          if (Config::StatementInputTag != nPassiveValues) {
+          if (Config::StatementInputTag != nPassiveValues) CODI_Likely {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
 
             EventSystem<PrimalValueLinearTape>::notifyStatementEvaluateListeners(

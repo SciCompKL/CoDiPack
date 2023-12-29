@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../misc/tapeParameters.hpp"
 #include "positionalEvaluationTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -61,10 +62,21 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// Perform a forward evaluation of a part of the tape. It has to hold start <= end.
-      void evaluateForward(Position const& start, Position const& end);
+      /**
+       * @brief Perform a forward evaluation of a part of the tape. It has to hold start <= end.
+       *
+       * Automatic adjoints management involves bounds checking, resizing, and locking, see AdjointsManagement for
+       * details.
+       */
+      void evaluateForward(Position const& start, Position const& end,
+                           AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
-      /// Perform a forward evaluation of the full tape.
-      void evaluateForward();
+      /**
+       * @brief Perform a forward evaluation of the full tape.
+       *
+       * Automatic adjoints management involves bounds checking, resizing, and locking, see AdjointsManagement for
+       * details.
+       */
+      void evaluateForward(AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
   };
 }

@@ -134,7 +134,7 @@ namespace codi {
       }
 
       /// \copydoc HessianInterface::operator()(size_t const i, size_t const j, size_t const k)
-      CODI_INLINE DummyValue& operator()(size_t const i, size_t const j, size_t const k) {
+      CODI_INLINE_NO_FA DummyValue& operator()(size_t const i, size_t const j, size_t const k) {
         CODI_UNUSED(i, j, k);
 
         return StaticDummy<DummyValue>::dummy;

@@ -91,8 +91,12 @@ namespace codi {
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
-      void clearAdjoints(Position const& start, Position const& end) {
-        this->adjoints.beginUse();
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          this->adjoints.beginUse();
+        }
+
         Identifier adjointsSize = (Identifier)this->adjoints.size();
 
         auto clearFunc = [&adjointsSize, this](Identifier* index, Config::ArgumentSize* stmtSize) {
@@ -109,7 +113,9 @@ namespace codi {
 
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
 
-        this->adjoints.endUse();
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          this->adjoints.endUse();
+        }
       }
 
       /// @}
@@ -139,7 +145,7 @@ namespace codi {
           Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos);
 
-        while (curStmtPos < endStmtPos) {
+        while (curStmtPos < endStmtPos) CODI_Likely {
           Adjoint lhsAdjoint = Adjoint();
           Base::incrementTangents(adjointVector, lhsAdjoint, numberOfJacobians[curStmtPos], curJacobianPos,
                                   rhsJacobians, rhsIdentifiers);
@@ -167,7 +173,7 @@ namespace codi {
           Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos);
 
-        while (curStmtPos > endStmtPos) {
+        while (curStmtPos > endStmtPos) CODI_Likely {
           curStmtPos -= 1;
 
           Adjoint const lhsAdjoint = adjointVector[lhsIdentifiers[curStmtPos]];
@@ -251,13 +257,17 @@ namespace codi {
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
+        CODI_UNUSED(endJacobianPos);
+
         while (curStmtPos < endStmtPos) {
           // Manual statement push.
           dstTape->statementData.reserveItems(1);
-          dstTape->pushStmtData(lhsIdentifiers[curStmtPos], numberOfJacobians[curStmtPos]);
-
           dstTape->jacobianData.reserveItems(numberOfJacobians[curStmtPos]);
-          while (curJacobianPos < endJacobianPos) {
+
+          dstTape->pushStmtData(lhsIdentifiers[curStmtPos], numberOfJacobians[curStmtPos]);
+          size_t statementEndJacobianPos = curJacobianPos + numberOfJacobians[curStmtPos];
+
+          while (curJacobianPos < statementEndJacobianPos) {
             dstTape->jacobianData.pushData(rhsJacobians[curJacobianPos], rhsIdentifiers[curJacobianPos]);
             ++curJacobianPos;
           }

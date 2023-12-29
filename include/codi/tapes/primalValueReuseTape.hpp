@@ -88,7 +88,12 @@ namespace codi {
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
-      void clearAdjoints(Position const& start, Position const& end) {
+      /// <br> Implementation: Automatic adjoints management has no effect. Primal value tapes do not implement adjoints
+      /// locking.
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        CODI_UNUSED(adjointsManagement);
+
         auto clearFunc = [this](Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal,
                                 EvalHandle* evalHandle) {
           CODI_UNUSED(passiveArgs, oldPrimal, evalHandle);
@@ -123,7 +128,7 @@ namespace codi {
           EvalHandle const* const stmtEvalhandle) {
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
-        while (curStatementPos < endStatementPos) {
+        while (curStatementPos < endStatementPos) CODI_Likely {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
           Gradient lhsTangent = Gradient();
@@ -166,7 +171,7 @@ namespace codi {
           EvalHandle const* const stmtEvalhandle) {
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
-        while (curStatementPos < endStatementPos) {
+        while (curStatementPos < endStatementPos) CODI_Likely {
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];
 
           oldPrimalValues[curStatementPos] = primalVector[lhsIdentifier];
@@ -197,7 +202,7 @@ namespace codi {
           EvalHandle const* const stmtEvalhandle) {
         CODI_UNUSED(endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
-        while (curStatementPos > endStatementPos) {
+        while (curStatementPos > endStatementPos) CODI_Likely {
           curStatementPos -= 1;
 
           Identifier const lhsIdentifier = lhsIdentifiers[curStatementPos];

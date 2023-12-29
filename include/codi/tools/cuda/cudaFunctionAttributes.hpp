@@ -34,27 +34,20 @@
  */
 #pragma once
 
-#include <omp.h>
-
-#include "../threadInformationInterface.hpp"
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /**
-   * @brief Thread information for OpenMP.
-   */
-  struct OpenMPThreadInformation : public ThreadInformationInterface {
-    public:
+/// Enalbe CUDA specific code patchs when compiling with the CUDA compiler.
+#if defined(__CUDA_ARCH__) || defined(__CUDA__)
+  #define CODI_CUDA true
+#else
+  #define CODI_CUDA false
+#endif
 
-      /// \copydoc ThreadInformationInterface::getMaxThreads()
-      static CODI_INLINE int getMaxThreads() {
-        return 512;
-      }
-
-      /// \copydoc ThreadInformationInterface::getThreadId()
-      static CODI_INLINE int getThreadId() {
-        return omp_get_thread_num();
-      }
-  };
+/// Define all CoDiPack functions as host and device functions.
+#if CODI_CUDA
+  #define CODI_CUDAFunctionAttributes __device__ __host__
+#else
+  #define CODI_CUDAFunctionAttributes /*empty*/
+#endif
 }

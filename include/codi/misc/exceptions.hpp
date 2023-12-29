@@ -39,7 +39,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "../config.h"
+#include "../tools/cuda/cudaFunctionAttributes.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -56,13 +56,15 @@ namespace codi {
    * @param[in]            file  The file were the function is defined.
    * @param[in]            line  The line in the file were the assert is defined.
    */
-  inline void checkAndOutputAssert(bool const condition, char const* conditionString, char const* function,
-                                   char const* file, int line) {
+  CODI_CUDAFunctionAttributes inline void checkAndOutputAssert(bool const condition, char const* conditionString,
+                                                           char const* function, char const* file, int line) {
+#if !CODI_CUDA
     if (!condition) {
       std::cerr << "codiAssertion failed: " << conditionString << " in function " << function << " at " << file << ":"
                 << line << std::endl;
       abort();
     }
+#endif
   }
 
 /**
@@ -70,7 +72,8 @@ namespace codi {
  *
  * @param ...  Arguments for a printf like output and format.
  */
-#define CODI_EXCEPTION(...) outputException(__func__, __FILE__, __LINE__, __VA_ARGS__)
+#if !CODI_CUDA
+  #define CODI_EXCEPTION(...) outputException(__func__, __FILE__, __LINE__, __VA_ARGS__)
 
   /**
    * @brief Prints the positions and the message of the exception.
@@ -83,7 +86,8 @@ namespace codi {
    * @param[in]     line  Line inside the file where the exception was generated.
    * @param[in]  message  The exception message and the arguments for the formatting in the message.
    */
-  inline void outputException(char const function[], char const file[], int const line, char const* message, ...) {
+  CODI_CUDAFunctionAttributes inline void outputException(char const function[], char const file[], int const line,
+                                                      char const* message, ...) {
     fprintf(stderr, "Error in function %s (%s:%d)\nThe message is: ", function, file, line);
 
     va_list vl;
@@ -94,6 +98,9 @@ namespace codi {
     fprintf(stderr, "\n");
     exit(-1);
   }
+#else
+  #define CODI_EXCEPTION(...) /* do nothing */
+#endif
 
 #if defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
   #define DEPRECATE(foo, msg) foo __attribute__((deprecated(msg)))

@@ -133,9 +133,6 @@ namespace codi {
           typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData;   ///< See CommonTapeTypes.
       using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;  ///< See TapeTypesInterface.
 
-      /// See GradientAccessTapeInterface.
-      using typename GradientAccessTapeInterface<Gradient, Identifier>::ResizingPolicy;
-
     protected:
 
       bool active;                       ///< Whether or not the tape is in recording mode.
@@ -158,11 +155,12 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
-      CODI_INLINE void resetInternal(bool resetAdjoints, EventHints::Reset kind) {
+      CODI_INLINE void resetInternal(bool resetAdjoints, AdjointsManagement adjointsManagement,
+                                     EventHints::Reset kind) {
         EventSystem<Impl>::notifyTapeResetListeners(cast(), this->getZeroPosition(), kind, resetAdjoints);
 
         if (resetAdjoints) {
-          cast().clearAdjoints();
+          cast().clearAdjoints(adjointsManagement);
         }
 
         deleteExternalFunctionUserData(cast().getZeroPosition());
@@ -237,13 +235,14 @@ namespace codi {
 
       /// \copydoc codi::GradientAccessTapeInterface::setGradient()
       void setGradient(Identifier const& identifier, Gradient const& gradient,
-                       ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt) {
-        cast().gradient(identifier, resizingPolicy) = gradient;
+                       AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        cast().gradient(identifier, adjointsManagement) = gradient;
       }
 
       /// \copydoc codi::GradientAccessTapeInterface::getGradient()
-      Gradient const& getGradient(Identifier const& identifier) const {
-        return cast().gradient(identifier);
+      Gradient const& getGradient(Identifier const& identifier,
+                                  AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
+        return cast().gradient(identifier, adjointsManagement);
       }
 
       // Gradient functions are not implemented.
@@ -253,11 +252,11 @@ namespace codi {
       /// @name Functions from ReverseTapeInterface
       /// @{
 
-      /// \copydoc codi::ReverseTapeInterface::evaluate()
-      void evaluate() {
+      /// \copydoc codi::ReverseTapeInterface::evaluate(AdjointsManagement)
+      void evaluate(AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         Impl& impl = cast();
 
-        impl.evaluate(impl.getPosition(), impl.getZeroPosition());
+        impl.evaluate(impl.getPosition(), impl.getZeroPosition(), adjointsManagement);
       }
 
       /// \copydoc codi::ReverseTapeInterface::registerOutput()
@@ -313,9 +312,10 @@ namespace codi {
         return values;
       }
 
-      /// \copydoc codi::ReverseTapeInterface::reset()
-      CODI_INLINE void reset(bool resetAdjoints = true) {
-        resetInternal(resetAdjoints, EventHints::Reset::Full);
+      /// \copydoc codi::ReverseTapeInterface::reset(bool, AdjointsManagement)
+      CODI_INLINE void reset(bool resetAdjoints = true,
+                             AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        resetInternal(resetAdjoints, adjointsManagement, EventHints::Reset::Full);
       }
 
       // clearAdjoints and reset(Position) are not implemented.
@@ -337,7 +337,7 @@ namespace codi {
         Impl& impl = cast();
 
         // First perform a regular reset.
-        resetInternal(false, EventHints::Reset::Hard);
+        resetInternal(false, AdjointsManagement::Automatic, EventHints::Reset::Hard);
 
         // Then perform the hard resets.
         impl.deleteAdjointVector();
@@ -449,10 +449,10 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
-      void evaluateForward() {
+      void evaluateForward(AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         Impl& impl = cast();
 
-        impl.evaluateForward(impl.getZeroPosition(), impl.getPosition());
+        impl.evaluateForward(impl.getZeroPosition(), impl.getPosition(), adjointsManagement);
       }
 
       /// @}
@@ -517,13 +517,14 @@ namespace codi {
 
       /// @{
 
-      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo()
-      CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true) {
+      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo(Position const&, bool, AdjointsManagement)
+      CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true,
+                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, EventHints::Reset::To, resetAdjoints);
 
         if (resetAdjoints) {
           Impl& impl = cast();
-          impl.clearAdjoints(impl.getPosition(), pos);
+          impl.clearAdjoints(impl.getPosition(), pos, adjointsManagement);
         }
 
         deleteExternalFunctionUserData(pos);

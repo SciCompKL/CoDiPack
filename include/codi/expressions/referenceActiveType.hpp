@@ -117,7 +117,7 @@ namespace codi {
       }
 
       /// \copydoc codi::LhsExpressionInterface::getTape()
-      static CODI_INLINE Tape& getTape() {
+      static CODI_INLINE decltype(Type::getTape()) getTape() {
         return Type::getTape();
       }
   };

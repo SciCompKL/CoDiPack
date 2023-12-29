@@ -34,27 +34,42 @@
  */
 #pragma once
 
-#include <omp.h>
-
-#include "../threadInformationInterface.hpp"
+#include "../../misc/macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   /**
-   * @brief Thread information for OpenMP.
+   * @brief Provides basic synchronization facilities.
    */
-  struct OpenMPThreadInformation : public ThreadInformationInterface {
+  struct SynchronizationInterface {
     public:
+      /**
+       * @brief Ensures that only one among the calling threads calls the given function object.
+       */
+      template<typename FunctionObject>
+      static CODI_INLINE void serialize(FunctionObject const& func);
 
-      /// \copydoc ThreadInformationInterface::getMaxThreads()
-      static CODI_INLINE int getMaxThreads() {
-        return 512;
+      /**
+       * @brief Does not return until called by all threads.
+       */
+      static CODI_INLINE void synchronize();
+  };
+
+  /**
+   * @brief Default implementation of SynchronizationInterface for serial applications.
+   */
+  struct DefaultSynchronization : public SynchronizationInterface {
+    public:
+      /// \copydoc SynchronizationInterface::serialize
+      /// <br> Implementation: does not synchronize, just calls the function object.
+      template<typename FunctionObject>
+      static CODI_INLINE void serialize(FunctionObject const& func) {
+        func();
       }
 
-      /// \copydoc ThreadInformationInterface::getThreadId()
-      static CODI_INLINE int getThreadId() {
-        return omp_get_thread_num();
-      }
+      /// \copydoc  SynchronizationInterface::synchronize
+      /// <br> Implementation: empty.
+      static CODI_INLINE void synchronize() {}
   };
 }

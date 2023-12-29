@@ -34,27 +34,32 @@
  */
 #pragma once
 
-#include <omp.h>
-
-#include "../threadInformationInterface.hpp"
+#include "../synchronizationInterface.hpp"
+#include "macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
   /**
-   * @brief Thread information for OpenMP.
+   * @brief OpenMP synchronization facilities.
+   *
+   * See SynchronizationInterface.
    */
-  struct OpenMPThreadInformation : public ThreadInformationInterface {
+  struct OpenMPSynchronization : public SynchronizationInterface {
     public:
-
-      /// \copydoc ThreadInformationInterface::getMaxThreads()
-      static CODI_INLINE int getMaxThreads() {
-        return 512;
+      /// \copydoc  SynchronizationInterface::serialize
+      /// <br> Implementation: calls the given function object inside a master directive.
+      template<typename FunctionObject>
+      static CODI_INLINE void serialize(FunctionObject const& func) {
+        CODI_OMP_MASTER() {
+          func();
+        }
       }
 
-      /// \copydoc ThreadInformationInterface::getThreadId()
-      static CODI_INLINE int getThreadId() {
-        return omp_get_thread_num();
+      /// \copydoc  SynchronizationInterface::synchronize
+      /// <br> Implementation: contains a barrier directive.
+      static CODI_INLINE void synchronize() {
+        CODI_OMP_BARRIER()
       }
   };
 }

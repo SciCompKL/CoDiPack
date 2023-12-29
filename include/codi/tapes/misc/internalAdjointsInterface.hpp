@@ -54,10 +54,10 @@ namespace codi {
    * read or write access to adjoint variables, or when any general property of the set of adjoint variables such as
    * size is queried. The implementations of this interface ensure mutual exclusion between the "in use" state and
    * reallocations of the set of adjoint variables due to resizing. Resizing is only allowed if the adjoint variables
-   * are "not in use". The implementations of data(), size(), zero(), and zeroAll() are expected to declare usage
-   * internally, if needed. For performance reasons, the operator[]() accessors don't declare usage internally. Instead,
-   * the tape is responsible for this. It should declare usage by calls to beginUse() and endUse(). This way, multiple
-   * operator[]() calls can be safeguarded by a single usage declaration.
+   * are "not in use". The implementations of data() and size() are expected to declare usage
+   * internally, if needed. For performance reasons, the operator[]() accessors and zeroAll() don't declare usage
+   * internally. Instead, the tape is responsible for this. It should declare usage by calls to beginUse() and endUse().
+   * This way, multiple such calls can be safeguarded by a single usage declaration.
    *
    * The tape must not call resize() as long as it has declared usage.
    *
@@ -106,10 +106,7 @@ namespace codi {
       /// Ensure that identifiers up to newSize can be passed to operator[] without error.
       CODI_NO_INLINE void resize(Identifier const& newSize);
 
-      /// Set all variables with identifiers start...end-1 to zero. Internally, declares usage of the adjoints.
-      CODI_INLINE void zero(Identifier const& start, Identifier const& end);
-
-      /// Set all adjoint variables to Gradient(). Internally, declares usage of the adjoints.
+      /// Set all adjoint variables to Gradient().
       CODI_INLINE void zeroAll();
 
       /// Swap two sets of adjoint variables. Internally, declares usage of the adjoints.

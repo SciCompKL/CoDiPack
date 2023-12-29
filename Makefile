@@ -45,6 +45,12 @@ ifdef EIGEN_DIR
   EIGEN_DEFINE=-I$(EIGEN_DIR) -DCODI_EnableEigen=true
 endif
 
+ENZYME_DEFINE=
+ifdef ENZYME_DIR
+  CLANG_VERSION := 14
+  ENZYME_DEFINE = -DCODI_EnableEnzyme=true -flegacy-pass-manager -Xclang -load -Xclang $(ENZYME_DIR)/lib/ClangEnzyme-$(CLANG_VERSION).so -Xclang -plugin-arg-enzyme -Xclang -enzyme-globals-default-inactive=1
+endif
+
 #list all source files in DOC_DIR
 TUTORIAL_FILES  = $(wildcard $(TUTORIAL_DIR)/*.cpp)
 EXAMPLE_FILES  = $(wildcard $(EXAMPLE_DIR)/*.cpp) $(wildcard $(DEVELOPER_DIR)/*.cpp)
@@ -61,7 +67,7 @@ CODI_VERSION = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
 
 CODI_DIR := .
 
-FLAGS = -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE) -DCODI_StatementEvents
+FLAGS = -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE) $(ENZYME_DEFINE) -DCODI_StatementEvents
 
 ifndef CLANG_FORMAT
   CLANG_FORMAT := clang-format

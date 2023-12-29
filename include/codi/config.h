@@ -37,6 +37,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "tools/cuda/cudaFunctionAttributes.hpp"
 #include "misc/exceptions.hpp"
 
 /** @file */
@@ -61,6 +62,16 @@ namespace codi {
   /// Configuration options for CoDiPack.
   namespace Config {
 
+    /*******************************************************************************/
+    /// @name General compiler attributes.
+    /// @{
+
+/// See codi::Config::HasCpp20.
+#define CODI_HasCpp20 __cplusplus >= 202002L
+    /// If CoDiPack is compiled with C++20.
+    bool constexpr HasCpp20 = CODI_HasCpp20;
+
+    /// @}
     /*******************************************************************************/
     /// @name Type and compile time value declarations
     /// @{
@@ -289,6 +300,14 @@ namespace codi {
     bool constexpr EnableEigen = CODI_EnableEigen;
     // Do not undefine
 
+#ifndef CODI_EnableEnzyme
+  /// See codi::Config::EnableEnzyme.
+  #define CODI_EnableEnzyme false
+#endif
+    /// Add Enzyme specific functionality.
+    bool constexpr EnableEnzyme = CODI_EnableEnzyme;
+    // Do not undefine.
+
 #ifndef CODI_EnableMPI
   /// See codi::Config::EnableMPI.
   #define CODI_EnableMPI false
@@ -320,6 +339,28 @@ namespace codi {
     /*******************************************************************************/
     /// @name Macro definitions
     /// @{
+
+/// Attributes for all CoDiPack functions.
+#define CODI_FunctionAttributes CODI_CUDAFunctionAttributes
+
+#ifndef CODI_AnnotateBranchLikelihood
+  /// See codi::Config::AnnotateBranchLikelihood.
+  #define CODI_AnnotateBranchLikelihood CODI_HasCpp20
+#endif
+#if CODI_AnnotateBranchLikelihood
+  /// Declare likely evaluation of an execution path.
+  #define CODI_Likely [[likely]]
+  /// Declare unlikely evaluation of an execution path.
+  #define CODI_Unlikely [[unlikely]]
+#else
+  /// Declare likely evaluation of an execution path.
+  #define CODI_Likely   /* empty */
+  /// Declare unlikely evaluation of an execution path.
+  #define CODI_Unlikely /* empty */
+#endif
+    /// Annotate branches with likely or unlikely, e.g., for if and else.
+    bool constexpr AnnotateBranchLikelihood = CODI_AnnotateBranchLikelihood;
+#undef CODI_AnnotateBranchLikelihood
 
 #ifndef CODI_AvoidedInlines
   /// See codi::Config::AvoidedInlines.
@@ -361,16 +402,21 @@ namespace codi {
 #endif
 #if CODI_ForcedInlines
   #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
-    #define CODI_INLINE __forceinline
+    #define CODI_INLINE CODI_FunctionAttributes __forceinline
+    #define CODI_INLINE_NO_FA __forceinline
   #elif defined(__GNUC__)
-    #define CODI_INLINE inline __attribute__((always_inline))
+    #define CODI_INLINE CODI_FunctionAttributes inline __attribute__((always_inline))
+    #define CODI_INLINE_NO_FA inline __attribute__((always_inline))
   #else
     #warning Could not determine compiler for forced inline definitions. Using inline.
-    #define CODI_INLINE inline
+    #define CODI_INLINE CODI_FunctionAttributes inline
+    #define CODI_INLINE_NO_FA inline
   #endif
 #else
   /// See codi::Config::ForcedInlines.
-  #define CODI_INLINE inline
+  #define CODI_INLINE CODI_FunctionAttributes inline
+  /// See codi::Config::ForcedInlines.
+  #define CODI_INLINE_NO_FA inline
 #endif
     /// Force inlining instead of using the heuristics from the compiler.
     bool constexpr ForcedInlines = CODI_ForcedInlines;

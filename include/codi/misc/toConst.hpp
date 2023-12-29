@@ -34,27 +34,23 @@
  */
 #pragma once
 
-#include <omp.h>
+#include <type_traits>
 
-#include "../threadInformationInterface.hpp"
+#include "../config.h"
+#include "macros.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /**
-   * @brief Thread information for OpenMP.
-   */
-  struct OpenMPThreadInformation : public ThreadInformationInterface {
-    public:
+  /// Constant cast function that works with CUDA.
+  template<typename T>
+  CODI_INLINE T const toConst(T&& v) {
+    return v;
+  }
 
-      /// \copydoc ThreadInformationInterface::getMaxThreads()
-      static CODI_INLINE int getMaxThreads() {
-        return 512;
-      }
-
-      /// \copydoc ThreadInformationInterface::getThreadId()
-      static CODI_INLINE int getThreadId() {
-        return omp_get_thread_num();
-      }
-  };
+  /// Constant cast function that works with CUDA.
+  template<typename T>
+  CODI_INLINE T const& toConst(T& v) {
+    return v;
+  }
 }

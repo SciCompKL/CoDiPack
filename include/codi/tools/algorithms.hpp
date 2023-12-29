@@ -37,6 +37,7 @@
 #include "../config.h"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../misc/exceptions.hpp"
+#include "../tapes/misc/tapeParameters.hpp"
 #include "../traits/gradientTraits.hpp"
 #include "data/dummy.hpp"
 #include "data/jacobian.hpp"
@@ -79,9 +80,6 @@ namespace codi {
       using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface.
 
       using GT = GradientTraits::TraitsImplementation<Gradient>;  ///< Shortcut for traits of gradient.
-
-      /// See GradientAccessTapeInterface::ResizingPolicy.
-      using ResizingPolicy = typename GradientAccessTapeInterface<Gradient, Identifier>::ResizingPolicy;
 
       /// Evaluation modes for the derivative computation.
       enum class EvaluationType {
@@ -133,96 +131,95 @@ namespace codi {
        * The algorithm conforms with the mechanism for mutual exclusion of adjoint vector usage and adjoint vector
        * reallocation and can therefore be applied in multithreaded taping.
        *
+       * In the case of manual adjoints management, the caller is responsible for ensuring sufficient adjoint vector
+       * size and for declaring usage of the adjoints, see codi::AdjointsManagement for details.
+       *
        * #### Parameters
        * [in,out] __jac__  Has to implement JacobianInterface.
        */
       template<typename Jac, bool keepState = true>
       static CODI_INLINE void computeJacobian(Tape& tape, Position const& start, Position const& end,
                                               Identifier const* input, size_t const inputSize, Identifier const* output,
-                                              size_t const outputSize, Jac& jac) {
+                                              size_t const outputSize, Jac& jac,
+                                              AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         size_t constexpr gradDim = GT::dim;
 
-        // Resize up front for subsequent gradient access without bounds checking and implicit resizing.
-        tape.resizeAdjointVector();
+        // internally, automatic management is implemented in an optimized way that uses manual management
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          tape.resizeAdjointVector();
+          tape.beginUseAdjointVector();
+        }
 
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
           for (size_t j = 0; j < inputSize; j += gradDim) {
-            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
-            tape.beginUseAdjointVector();
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0),
-                                    ResizingPolicy::NoBoundsChecking);
-            tape.endUseAdjointVector();
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
 
             if (keepState) {
-              tape.evaluateForwardKeepState(start, end);
+              tape.evaluateForwardKeepState(start, end, AdjointsManagement::Manual);
             } else {
-              tape.evaluateForward(start, end);
+              tape.evaluateForward(start, end, AdjointsManagement::Manual);
             }
 
-            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
-            tape.beginUseAdjointVector();
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
-                jac(outputSize - i - 1, j + curDim) = GT::at(tape.getGradient(output[outputSize - i - 1]), curDim);
+                jac(outputSize - i - 1, j + curDim) =
+                    GT::at(tape.getGradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim);
                 if (Gradient() != output[i]) {
-                  GT::at(tape.gradient(output[outputSize - i - 1], ResizingPolicy::NoBoundsChecking), curDim) =
+                  GT::at(tape.gradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim) =
                       typename GT::Real();
                 }
               }
             }
 
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), ResizingPolicy::NoBoundsChecking);
-            tape.endUseAdjointVector();
+            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), AdjointsManagement::Manual);
           }
 
-          tape.clearAdjoints(end, start);
+          tape.clearAdjoints(end, start, AdjointsManagement::Manual);
 
         } else if (EvaluationType::Reverse == evalType) {
           for (size_t i = 0; i < outputSize; i += gradDim) {
-            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
-            tape.beginUseAdjointVector();
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0),
-                                    ResizingPolicy::NoBoundsChecking);
-            tape.endUseAdjointVector();
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
 
             if (keepState) {
-              tape.evaluateKeepState(end, start);
+              tape.evaluateKeepState(end, start, AdjointsManagement::Manual);
             } else {
-              tape.evaluate(end, start);
+              tape.evaluate(end, start, AdjointsManagement::Manual);
             }
 
-            // Declare adjoint vector usage, at the same time avoid bounds checking and implicit resizing.
-            tape.beginUseAdjointVector();
             for (size_t j = 0; j < inputSize; j += 1) {
               for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
-                jac(i + curDim, j) = GT::at(tape.getGradient(input[j]), curDim);
-                GT::at(tape.gradient(input[j], ResizingPolicy::NoBoundsChecking), curDim) = typename GT::Real();
+                jac(i + curDim, j) = GT::at(tape.getGradient(input[j], AdjointsManagement::Manual), curDim);
+                GT::at(tape.gradient(input[j], AdjointsManagement::Manual), curDim) = typename GT::Real();
               }
             }
 
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), ResizingPolicy::NoBoundsChecking);
-            tape.endUseAdjointVector();
+            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), AdjointsManagement::Manual);
 
             if (!Config::ReversalZeroesAdjoints) {
-              tape.clearAdjoints(end, start);
+              tape.clearAdjoints(end, start, AdjointsManagement::Manual);
             }
           }
         } else {
           CODI_EXCEPTION("Evaluation mode not implemented. Mode is: %d.", (int)evalType);
         }
+
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          tape.endUseAdjointVector();
+        }
       }
 
       // clang-format off
-      /// \copybrief computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac)
+      /// \copybrief computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac, AdjointsManagement)
       /// \n This method uses the global tape for the Jacobian evaluation.
-      /// \copydetails computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac)
+      /// \copydetails computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac, AdjointsManagement)
       // clang-format on
       template<typename Jac>
       static CODI_INLINE void computeJacobian(Position const& start, Position const& end, Identifier const* input,
                                               size_t const inputSize, Identifier const* output, size_t const outputSize,
-                                              Jac& jac) {
-        computeJacobian(Type::getTape(), start, end, input, inputSize, output, outputSize, jac);
+                                              Jac& jac,
+                                              AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        computeJacobian(Type::getTape(), start, end, input, inputSize, output, outputSize, jac, adjointsManagement);
       }
 
       /**
@@ -549,14 +546,14 @@ namespace codi {
        * Declares usage of the adjoint vector, see DataManagementTapeInterface.
        */
       template<typename T>
-      static CODI_INLINE void setGradientOnIdentifier(Tape& tape, size_t const pos, Identifier const* identifiers,
-                                                      size_t const size, T value,
-                                                      ResizingPolicy resizingPolicy = ResizingPolicy::CheckAndAdapt) {
+      static CODI_INLINE void setGradientOnIdentifier(
+          Tape& tape, size_t const pos, Identifier const* identifiers, size_t const size, T value,
+          AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
           if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim])) {
-            GT::at(tape.gradient(identifiers[pos + curDim], resizingPolicy), curDim) = value;
+            GT::at(tape.gradient(identifiers[pos + curDim], adjointsManagement), curDim) = value;
           }
         }
       }

@@ -46,39 +46,31 @@
 namespace codi {
 
   /**
-   * @brief Represents the base implementation concrete lvalue in the CoDiPack expression tree.
+   * @brief Represents a concrete lvalue in the CoDiPack expression tree.
    *
-   * The class uses members for storing the value and the identifier.
+   * See also LhsExpressionInterface.
    *
-   * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
-   *
-   * The storage of the underlying tape and the access to it is left to the implementing class.
+   * This active type does not work with a fixed tape. Instead, getTape() constructs a new temporary tape on every call.
+   * In particular, tapes for this active type can not have a persistent state.
    *
    * @tparam T_Tape  The tape that manages all expressions created with this type.
-   * @tparam T_Impl  Implementing class.
    */
-  template<typename T_Tape, typename T_Impl>
-  struct ActiveTypeBase
-      : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape, T_Impl>,
-        public AssignmentOperators<T_Tape, T_Impl>,
-        public IncrementOperators<T_Tape, T_Impl> {
+  template<typename T_Tape>
+  struct ActiveTypeStatelessTape : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape,
+                                                          ActiveTypeStatelessTape<T_Tape>>,
+                            public AssignmentOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>>,
+                            public IncrementOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>> {
     public:
 
-      /// See ActiveTypeBase.
-      /// For reverse AD, the tape must implement ReverseTapeInterface.
-      /// For forward AD, the 'tape' (that is not a tape, technically) must implement
-      /// InternalStatementRecordingTapeInterface and GradientAccessTapeInterface.
-      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);
-
-      /// Abbreviation for the implementing class.
-      using Impl = CODI_DD(T_Impl, CODI_DEFAULT_LHS_EXPRESSION);
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See ActiveTypeStatelessTape.
 
       using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
       using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
       using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
 
-      using Base = LhsExpressionInterface<Real, Gradient, T_Tape, T_Impl>;  ///< Base class abbreviation.
+      using Base =
+          LhsExpressionInterface<Real, Gradient, T_Tape, ActiveTypeStatelessTape<T_Tape>>;  ///< Base class abbreviation.
 
     private:
 
@@ -87,65 +79,44 @@ namespace codi {
 
     public:
 
-      /// Cast to the implementation.
-      CODI_INLINE Impl& cast() {
-        return static_cast<Impl&>(*this);
-      }
+      /// @brief Constructor
+      /// @details CUDA compiler has problems when this function is annotated with \c __device__.
+      constexpr CODI_INLINE_NO_FA ActiveTypeStatelessTape() = default;
 
       /// Constructor
-      CODI_INLINE ActiveTypeBase() : primalValue(), identifier() {
-        Base::init(Real(), EventHints::Statement::Passive);
-      }
+      constexpr CODI_INLINE ActiveTypeStatelessTape(PassiveReal const& value) : primalValue(value), identifier() {}
 
       /// Constructor
-      template<typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveTypeBase(PassiveReal const& value) : primalValue(value), identifier() {
-        Base::init(value, EventHints::Statement::Passive);
-      }
-
-      /// Constructor
-      CODI_INLINE ActiveTypeBase(ActiveTypeBase const& v) : primalValue(), identifier() {
+      CODI_INLINE ActiveTypeStatelessTape(ActiveTypeStatelessTape const& v) : primalValue(), identifier() {
         Base::init(v.getValue(), EventHints::Statement::Copy);
-        cast().getTape().store(*this, v);
-      }
-
-      /// Constructor
-      CODI_INLINE ActiveTypeBase(Real const& value) : primalValue(value), identifier() {
-        Base::init(value, EventHints::Statement::Passive);
+        getTape().store(*this, v);
       }
 
       /// Constructor
       template<typename Rhs>
-      CODI_INLINE ActiveTypeBase(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
+      CODI_INLINE ActiveTypeStatelessTape(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
         Base::init(rhs.cast().getValue(), EventHints::Statement::Expression);
-        cast().getTape().store(*this, rhs.cast());
+        getTape().store(*this, rhs.cast());
       }
 
-      /// Constructor
-      template<typename Rhs, typename U = Real, typename = RealTraits::EnableIfNotPassiveReal<U>>
-      CODI_INLINE ActiveTypeBase(ExpressionInterface<typename U::Real, Rhs> const& rhs)
-          : primalValue(rhs.cast()), identifier() {
-        Base::init(rhs.cast().getValue(), EventHints::Statement::Passive);
+      /*******************************************************************************/
+      /// @name Assignment operators (all forwarding to the base class)
+      /// @{
+
+      /// See ActiveTypeStatelessTape::operator=(ActiveTypeStatelessTape const&).
+      CODI_INLINE ActiveTypeStatelessTape& operator=(ActiveTypeStatelessTape const& v) {
+        static_cast<Base&>(*this) = static_cast<Base const&>(v);
+        return *this;
       }
 
-      /// Destructor
-      CODI_INLINE ~ActiveTypeBase() {
-        Base::destroy();
-      }
-
-      /// See LhsExpressionInterface::operator=(LhsExpressionInterface const&).
-      CODI_INLINE Impl& operator=(ActiveTypeBase const& v) {
-        static_cast<LhsExpressionInterface<Real, Gradient, Tape, Impl>&>(*this) = v;
-        return cast();
-      }
       using Base::operator=;
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = Impl const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = Impl;    ///< \copydoc codi::ExpressionInterface::ActiveResult
+      using StoreAs = ActiveTypeStatelessTape const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ActiveResult = ActiveTypeStatelessTape;    ///< \copydoc codi::ExpressionInterface::ActiveResult
 
       /// @}
       /*******************************************************************************/
@@ -172,7 +143,10 @@ namespace codi {
         return primalValue;
       }
 
-      // getTape must be implemented in the derived type
+      /// \copydoc codi::LhsExpressionInterface::getTape()
+      static CODI_INLINE Tape getTape() {
+        return Tape();
+      }
 
       /// @}
   };

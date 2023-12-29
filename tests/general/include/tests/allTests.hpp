@@ -57,6 +57,7 @@
 #include "io/testSwap.hpp"
 #include "tools/helpers/testEigenLinearSystemSolverHandler.hpp"
 #include "tools/helpers/testEigenSparseLinearSystemSolverHandler.hpp"
+#include "tools/helpers/testEnzymeExternalFunctionHelper.hpp"
 #include "tools/helpers/testExternalFunctionHelper.hpp"
 #include "tools/helpers/testExternalFunctionHelperPassive.hpp"
 #include "tools/helpers/testPreaccumulation.hpp"

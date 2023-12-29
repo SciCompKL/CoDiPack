@@ -83,7 +83,12 @@ namespace codi {
       using Base::clearAdjoints;
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::clearAdjoints
-      void clearAdjoints(Position const& start, Position const& end) {
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          this->adjoints.beginUse();
+        }
+
         using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->externalFunctionData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->externalFunctionData.template extractPosition<IndexPosition>(end);
@@ -93,6 +98,10 @@ namespace codi {
 
         for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
           this->adjoints[curPos] = Gradient();
+        }
+
+        if (AdjointsManagement::Automatic == adjointsManagement) {
+          this->adjoints.endUse();
         }
       }
 
@@ -122,12 +131,12 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while (curAdjointPos < endAdjointPos) {
+        while (curAdjointPos < endAdjointPos) CODI_Likely {
           curAdjointPos += 1;
 
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          if (Config::StatementInputTag != argsSize) {
+          if (Config::StatementInputTag != argsSize) CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
             Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
@@ -156,11 +165,11 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        while (curAdjointPos > endAdjointPos) {
+        while (curAdjointPos > endAdjointPos) CODI_Likely {
           curStmtPos -= 1;
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
 
-          if (Config::StatementInputTag != argsSize) {
+          if (Config::StatementInputTag != argsSize) CODI_Likely {
             // No input value, perform regular statement evaluation.
 
             Adjoint const lhsAdjoint = adjointVector[curAdjointPos];  // We do not use the zero index, decrement of

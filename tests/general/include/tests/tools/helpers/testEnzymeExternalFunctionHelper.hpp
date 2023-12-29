@@ -34,27 +34,47 @@
  */
 #pragma once
 
-#include <omp.h>
+#include "../../../testInterface.hpp"
 
-#include "../threadInformationInterface.hpp"
+template<typename Real>
+void mult(Real const* x, size_t m, Real* y, size_t n, codi::ExternalFunctionUserData* d) {
+  (void)m;
+  (void)n;
+  (void)d;
 
-/** \copydoc codi::Namespace */
-namespace codi {
-
-  /**
-   * @brief Thread information for OpenMP.
-   */
-  struct OpenMPThreadInformation : public ThreadInformationInterface {
-    public:
-
-      /// \copydoc ThreadInformationInterface::getMaxThreads()
-      static CODI_INLINE int getMaxThreads() {
-        return 512;
-      }
-
-      /// \copydoc ThreadInformationInterface::getThreadId()
-      static CODI_INLINE int getThreadId() {
-        return omp_get_thread_num();
-      }
-  };
+  y[0] = x[0] * x[1];
 }
+
+struct TestEnzymeExternalFunctionHelper : public TestInterface {
+  public:
+    NAME("EnzymeExternalFunctionHelper")
+    IN(2)
+    OUT(1)
+    POINTS(1) = {{2.0, 3.0}};
+
+    static int constexpr ITER = 5;
+
+    template<typename Number>
+    static void func(Number* x, Number* y) {
+      // TODO: Remove second order restriction when https://github.com/EnzymeAD/Enzyme/issues/1308 is fixed.
+#if CODI_EnableEnzyme & REVERSE_TAPE & !SECOND_ORDER
+      codi::EnzymeExternalFunctionHelper<Number> eh;
+#endif
+      Number w[ITER];
+
+      w[0] = x[0];
+      for (int i = 1; i < ITER; ++i) {
+        // TODO: Remove second order restriction when https://github.com/EnzymeAD/Enzyme/issues/1308 is fixed.
+#if CODI_EnableEnzyme & REVERSE_TAPE & !SECOND_ORDER
+        eh.addInput(x[1]);
+        eh.addInput(w[i - 1]);
+        eh.addOutput(w[i]);
+        eh.template callAndAddToTape<mult<typename Number::Real>>();
+#else
+        w[i] = x[1] * w[i - 1];
+#endif
+      }
+
+      y[0] = w[ITER - 1] * w[ITER - 1];
+    }
+};

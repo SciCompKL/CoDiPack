@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../misc/tapeParameters.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -63,15 +64,33 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// Perform a reverse evaluation for a part of the tape. It hast to hold start >= end.
-      void evaluate(Position const& start, Position const& end);
+      /**
+       * @brief Perform a reverse evaluation for a part of the tape. It hast to hold start >= end.
+       *
+       * Automatic adjoints management involves bounds checking, resizing, and locking, see AdjointsManagement for
+       * details.
+       */
+      void evaluate(Position const& start, Position const& end,
+                    AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
-      /// Clear all adjoints that would be set in a tape evaluation from start to end. It has to hold start >= end.
-      void clearAdjoints(Position const& start, Position const& end);
+      /**
+       * @brief Clear all adjoints that would be set in a tape evaluation from start to end. It has to hold start >=
+       * end.
+       *
+       * Automatic adjoints management involves locking, see AdjointsManagement for details.
+       */
+      void clearAdjoints(Position const& start, Position const& end,
+                         AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       Position getPosition() const;      ///< Current position of the tape.
       Position getZeroPosition() const;  ///< Initial position of the tape.
 
-      void resetTo(Position const& pos, bool resetAdjoints = true);  ///< Rest the tape to the provided position.
+      /**
+       * @brief Reset the tape to the provided position.
+       *
+       * Automatic adjoints management involves locking, see AdjointsManagement for details.
+       */
+      void resetTo(Position const& pos, bool resetAdjoints = true,
+                   AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
   };
 }

@@ -34,27 +34,21 @@
  */
 #pragma once
 
-#include <omp.h>
-
-#include "../threadInformationInterface.hpp"
+#include "codiCUDA.hpp"
+#include "../../expressions/activeTypeStatelessTape.hpp"
+#include "../../tapes/forwardEvaluation.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
-  /**
-   * @brief Thread information for OpenMP.
-   */
-  struct OpenMPThreadInformation : public ThreadInformationInterface {
-    public:
+          /// Forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  template<typename Real, typename Gradient = Real>
+  using RealForwardCUDAGen = ActiveTypeStatelessTape<ForwardEvaluation<Real, Gradient>>;
 
-      /// \copydoc ThreadInformationInterface::getMaxThreads()
-      static CODI_INLINE int getMaxThreads() {
-        return 512;
-      }
+          /// Forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  using RealForwardCUDA = RealForwardCUDAGen<double, double>;
 
-      /// \copydoc ThreadInformationInterface::getThreadId()
-      static CODI_INLINE int getThreadId() {
-        return omp_get_thread_num();
-      }
-  };
+          /// Vector forward AD type for CUDA kernels. See \ref sec_forwardAD for a forward mode AD explanation.
+  template<size_t dim>
+  using RealForwardCUDAVec = RealForwardCUDAGen<double, Direction<double, dim>>;
 }
