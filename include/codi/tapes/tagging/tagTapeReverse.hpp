@@ -207,26 +207,26 @@ namespace codi {
       void setGradient(Identifier const& identifier, Gradient const& gradient) {
         CODI_UNUSED(gradient);
 
-        Base::verifyTagAndProperties(identifier.tag, identifier.properties);
+        Base::verifyTagAndProperties(identifier.tag, 0.0, identifier.properties);
       }
 
       /// Verify tag.
       Gradient const& getGradient(Identifier const& identifier) const {
-        Base::verifyTagAndProperties(identifier.tag, identifier.properties);
+        Base::verifyTagAndProperties(identifier.tag, 0.0, identifier.properties);
 
         return tempGradient;
       }
 
       /// Verify tag.
       Gradient& gradient(Identifier const& identifier) {
-        Base::verifyTagAndProperties(identifier.tag, identifier.properties);
+        Base::verifyTagAndProperties(identifier.tag, 0.0, identifier.properties);
 
         return tempGradient;
       }
 
       /// Verify tag.
       Gradient const& gradient(Identifier const& identifier) const {
-        Base::verifyTagAndProperties(identifier.tag, identifier.properties);
+        Base::verifyTagAndProperties(identifier.tag, 0.0, identifier.properties);
 
         return tempGradient;
       }
@@ -288,7 +288,7 @@ namespace codi {
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& lhs,
                              ExpressionInterface<Real, Rhs> const& rhs) {
         typename Base::ValidateTags validate;
-        ValidationIndicator<Tag> vi;
+        ValidationIndicator<Real, Tag> vi;
 
         validate.eval(rhs, vi, *this);
 

@@ -45,16 +45,17 @@
 namespace codi {
 
   /// Helper class for statement validation.
-  template<typename Tag>
+  template<typename Real, typename Tag>
   struct ValidationIndicator {
       bool isActive;     ///< true if an active rhs is detected. tag != 0
       bool hasError;     ///< true if an error is detected.
       bool hasTagError;  ///< true if a tag not the current required tag.
       bool hasUseError;  ///< true if a value is used in the wrong way.
       Tag errorTag;      ///< Value of the wrong tag.
+      Real value;        ///< Primal value of the value with the tag error.
 
       /// Constructor.
-      ValidationIndicator() : isActive(false), hasError(false), hasTagError(false), hasUseError(false), errorTag() {}
+      ValidationIndicator() : isActive(false), hasError(false), hasTagError(false), hasUseError(false), errorTag(), value() {}
   };
 
   /**
@@ -77,11 +78,10 @@ namespace codi {
       using Identifier = TagData<Tag>;  ///< See TapeTypesInterface.
 
       /// Callback for a change in a lhs value.
-      using TagLhsChangeErrorCallback = void (*)(Real const& currentValue, Real const& newValue, void* userData);
+      using TagPropertyErrorCallback = void (*)(Real const& currentValue, Real const& newValue, TagFlags flag, void* userData);
 
       /// Callback for a tag error.
-      using TagErrorCallback = void (*)(Tag const& correctTag, Tag const& wrongTag, bool tagError, bool useError,
-                                        void* userData);
+      using TagErrorCallback = void (*)(Tag const& correctTag, Tag const& wrongTag, void* userData);
 
       static Tag constexpr PassiveTag = Tag(0);  ///< Tag indicating an inactive value.
 
@@ -89,8 +89,8 @@ namespace codi {
 
       Tag curTag;  ///< Current tag for new values.
 
-      TagLhsChangeErrorCallback tagLhsChangeErrorCallback;  ///< User defined callback for lhs value errors.
-      void* tagChangeErrorUserData;                         ///< User data in call to callback for lhs value errors.
+      TagPropertyErrorCallback tagPropertyErrorCallback;  ///< User defined callback for lhs value errors.
+      void* tagPropertyErrorUserData;                     ///< User data in call to callback for lhs value errors.
 
       TagErrorCallback tagErrorCallback;  ///< User defined callback for tag errors.
       void* tagErrorUserData;             ///< User data in call to callback for tag errors.
@@ -103,8 +103,8 @@ namespace codi {
       /// Constructor.
       TagTapeBase()
           : curTag(),
-            tagLhsChangeErrorCallback(defaultTagLhsChangeErrorCallback),
-            tagChangeErrorUserData(nullptr),
+            tagPropertyErrorCallback(defaultPropertyErrorCallback),
+            tagPropertyErrorUserData(nullptr),
             tagErrorCallback(defaultTagErrorCallback),
             tagErrorUserData(this),
             preaccumulationHandling(true),
@@ -116,18 +116,18 @@ namespace codi {
 
           /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
-          CODI_INLINE void handleActive(Node const& node, ValidationIndicator<Tag>& vi, Impl& tape) {
+          CODI_INLINE void handleActive(Node const& node, ValidationIndicator<Real, Tag>& vi, Impl& tape) {
             Identifier tagData = node.getIdentifier();
             tape.verifyTag(vi, tagData.tag);
-            tape.verifyProperties(vi, tagData.properties);
+            tape.verifyProperties(vi, node.getValue(), tagData.properties);
           }
       };
 
       /// Swap members.
       void swap(Impl& other) {
         std::swap(curTag, other.curTag);
-        std::swap(tagLhsChangeErrorCallback, other.tagLhsChangeErrorCallback);
-        std::swap(tagChangeErrorUserData, other.tagChangeErrorUserData);
+        std::swap(tagPropertyErrorCallback, other.tagPropertyErrorCallback);
+        std::swap(tagPropertyErrorUserData, other.tagPropertyErrorUserData);
         std::swap(tagErrorCallback, other.tagErrorCallback);
         std::swap(tagErrorUserData, other.tagErrorUserData);
         std::swap(preaccumulationHandling, other.preaccumulationHandling);
@@ -184,10 +184,10 @@ namespace codi {
         return value.cast().getIdentifier().properties.test(flag);
       }
 
-      /// Set the callback and user data for a lhs error.
-      void setTagLhsChangeErrorCallback(TagLhsChangeErrorCallback const& callback, void* userData) {
-        tagLhsChangeErrorCallback = callback;
-        tagChangeErrorUserData = userData;
+      /// Set the callback and user data for a property error error.
+      void setTagPropertyErrorCallback(TagPropertyErrorCallback const& callback, void* userData) {
+        tagPropertyErrorCallback = callback;
+        tagPropertyErrorUserData = userData;
       }
 
       /// Set the callback and user data for a tag error.
@@ -220,7 +220,7 @@ namespace codi {
     protected:
 
       /// Checks if the tag is correct. Errors are set on the ValidationIndicator object.
-      CODI_INLINE void verifyTag(ValidationIndicator<Tag>& vi, Tag const& tag) const {
+      CODI_INLINE void verifyTag(ValidationIndicator<Real, Tag>& vi, Tag const& tag) const {
         if (PassiveTag != tag) {
           vi.isActive = true;
           if (tag != curTag) {
@@ -233,63 +233,60 @@ namespace codi {
 
       /// Checks if the tag is correct and creates an error.
       CODI_INLINE void verifyTag(Tag const& tag) const {
-        ValidationIndicator<Tag> vi;
+        ValidationIndicator<Real, Tag> vi;
 
         verifyTag(vi, tag);
         handleError(vi);
       }
 
       /// Checks if the tag properties are correct.
-      CODI_INLINE void verifyProperties(ValidationIndicator<Tag>& vi, const EnumBitset<TagFlags>& properties) const {
+      CODI_INLINE void verifyProperties(ValidationIndicator<Real, Tag>& vi, Real const& value, const EnumBitset<TagFlags>& properties) const {
         if (properties.test(TagFlags::DoNotUse)) {
           vi.hasError = true;
           vi.hasUseError = true;
+          vi.value = value;
         }
       }
 
       /// Checks if the tag and the properties are correct.
-      CODI_INLINE void verifyTagAndProperties(Tag const& tag, const EnumBitset<TagFlags>& properties) const {
-        ValidationIndicator<Tag> vi;
+      CODI_INLINE void verifyTagAndProperties(Tag const& tag, Real const& value, const EnumBitset<TagFlags>& properties) const {
+        ValidationIndicator<Real, Tag> vi;
 
         verifyTag(vi, tag);
-        verifyProperties(vi, properties);
+        verifyProperties(vi, value, properties);
         handleError(vi);
       }
 
-      /// Default callback for TagLhsChangeErrorCallback.
-      static void defaultTagLhsChangeErrorCallback(Real const& currentValue, Real const& newValue, void* userData) {
+      /// Default callback for TagPropertyErrorCallback.
+      static void defaultPropertyErrorCallback(Real const& currentValue, Real const& newValue, TagFlags flag, void* userData) {
         CODI_UNUSED(userData);
 
-        std::cerr << "DoNotChange variable changes value from '" << currentValue << "' to '" << newValue << "'." << std::endl;
+        std::cerr << "Property error '" << std::to_string(flag) << "' on value. current value: " << currentValue << " new value: " << newValue << "" << std::endl;
       }
 
       /// Default callback for TagErrorCallback.
-      static void defaultTagErrorCallback(Tag const& correctTag, Tag const& wrongTag, bool tagError, bool useError,
-                                          void* userData) {
+      static void defaultTagErrorCallback(Tag const& correctTag, Tag const& wrongTag, void* userData) {
 
         TagTapeBase& impl = *static_cast<TagTapeBase*>(userData);
 
         // output default warning if no handle is defined.
-        if (useError) {
-          std::cerr << "DoNotUse variable is used." << std::endl;
+        std::cerr << "Use of variable with bad tag '" << wrongTag << "', should be '" << correctTag << "'.";
+        if(wrongTag == impl.preaccumulationTag) {
+          std::cerr << " The value seems to be a preaccumulation output.";
+        } else if(correctTag == impl.preaccumulationTag) {
+          std::cerr << " The value seems to be used during a preaccumulation but is not declared as an input.";
         }
-        if (tagError) {
-          std::cerr << "Use of variable with bad tag '" << wrongTag << "', should be '" << correctTag << "'.";
-          if(wrongTag == impl.preaccumulationTag) {
-            std::cerr << " The value seems to be a preaccumulation output.";
-          } else if(correctTag == impl.preaccumulationTag) {
-            std::cerr << " The value seems to be used during a preaccumulation but is not declared as an input.";
-          }
-          std::cerr << std::endl;
-        }
+        std::cerr << std::endl;
       }
 
-      /// Check if the lhs value is changed.
+      /// Check if a property for the lhs value is triggered.
       CODI_INLINE void checkLhsError(Real& lhsValue, Identifier& lhsIdentifier, const Real& rhs) const {
         if (lhsIdentifier.properties.test(TagFlags::DoNotChange)) {
           if (lhsValue != rhs) {
-            tagLhsChangeErrorCallback(lhsValue, rhs, tagChangeErrorUserData);
+            tagPropertyErrorCallback(lhsValue, rhs, TagFlags::DoNotChange, tagPropertyErrorUserData);
           }
+        } else if (lhsIdentifier.properties.test(TagFlags::DoNotWrite)) {
+          tagPropertyErrorCallback(lhsValue, rhs, TagFlags::DoNotWrite, tagPropertyErrorUserData);
         }
       }
 
@@ -300,9 +297,14 @@ namespace codi {
       }
 
       /// Call tag error callback.
-      CODI_INLINE void handleError(ValidationIndicator<Tag>& vi) const {
+      CODI_INLINE void handleError(ValidationIndicator<Real, Tag>& vi) const {
         if (vi.hasError) {
-          tagErrorCallback(curTag, vi.errorTag, vi.hasTagError, vi.hasUseError, tagErrorUserData);
+          if(vi.hasTagError) {
+            tagErrorCallback(curTag, vi.errorTag, tagErrorUserData);
+          }
+          if(vi.hasUseError) {
+            tagPropertyErrorCallback(vi.value, vi.value, TagFlags::DoNotUse, tagPropertyErrorUserData);
+          }
         }
       }
 
@@ -310,10 +312,10 @@ namespace codi {
       template<typename Lhs>
       CODI_INLINE void verifyRegisterValue(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value,
                                            const Identifier& tag) {
-        ValidationIndicator<Tag> vi;
+        ValidationIndicator<Real, Tag> vi;
 
         verifyTag(vi, tag.tag);
-        verifyProperties(vi, tag.properties);
+        verifyProperties(vi, value.cast().getValue(), tag.properties);
         handleError(vi);
 
         checkLhsError(value, value.cast().getValue());

@@ -44,6 +44,7 @@ namespace codi {
   /// Properties for values.
   enum class TagFlags {
     DoNotChange,  ///< DoNotChange: Value can be assigned, but it should not change.
+    DoNotWrite,   ///< DoNotWrite: Value can not be assigned.
     DoNotUse,     ///< DoNotUse: Value should not be used. That is, it should not be used on the right hand side of an
                   ///< assignment. (Is removed after the value has been overwritten.)
     MaxElement    ///< Maximum number of elements.
@@ -92,5 +93,22 @@ namespace codi {
   template<typename Tag>
   bool operator!=(TagData<Tag> const& a, TagData<Tag> const& b) {
     return !(a == b);
+  }
+}
+
+namespace std {
+
+  /// Convert a TagFlags object to string.
+  CODI_INLINE std::string to_string(codi::TagFlags const& flag) {
+    using codi::outputException;
+
+    switch (flag) {
+      case codi::TagFlags::DoNotChange: return "DoNotChange";
+      case codi::TagFlags::DoNotWrite:  return "DoNotWrite";
+      case codi::TagFlags::DoNotUse:    return "DoNotUse";
+      default:
+          CODI_EXCEPTION("Unkown flag for codi::TagFlags %d.", (int)flag);
+          return "unknown";
+    }
   }
 }

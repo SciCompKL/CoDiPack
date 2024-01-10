@@ -11,24 +11,18 @@ Real func(const Real& x, const Real& y) {
   return x * y;
 }
 
-static void tagLhsChangeErrorCallback(double const& currentValue, double const& newValue, void* userData) {
+static void tagPropertyErrorCallback(double const& currentValue, double const& newValue, codi::TagFlags flag, void* userData) {
   std::ofstream* out = (std::ofstream*)userData;
 
-  *out << "DoNotChange variable changes value from '" << currentValue << "' to '" << newValue << "'." << std::endl;
+  *out << "Property error '" << std::to_string(flag) << "' on value. current value: " << currentValue << " new value: " << newValue << "" << std::endl;
 }
 
-static void tagErrorCallback(int const& correctTag, int const& wrongTag, bool tagError, bool useError,
-                                    void* userData) {
+static void tagErrorCallback(int const& correctTag, int const& wrongTag, void* userData) {
   std::ofstream* out = (std::ofstream*)userData;
 
-  // output default warning if no handle is defined.
-  if (useError) {
-    *out << "DoNotUse variable is used." << std::endl;
-  }
-  if (tagError) {
-    *out << "Use of variable with bad tag '" << wrongTag << "', should be '" << correctTag << "'." << std::endl;
-  }
+  *out << "Use of variable with bad tag '" << wrongTag << "', should be '" << correctTag << "'." << std::endl;
 }
+
 
 int main(int nargs, char** args) {
 
@@ -41,7 +35,7 @@ int main(int nargs, char** args) {
   codi::PreaccumulationHelper<Real> ph;
   Tape& tape = Real::getTape();
   tape.setTagErrorCallback(tagErrorCallback, &out);
-  tape.setTagLhsChangeErrorCallback(tagLhsChangeErrorCallback, &out);
+  tape.setTagPropertyErrorCallback(tagPropertyErrorCallback, &out);
   tape.setCurTag(42);
   tape.setActive();
 
@@ -77,6 +71,11 @@ int main(int nargs, char** args) {
 
   out << "Do not change error test:" << std::endl;
   tape.setTagPropertyOnVariable(w, codi::TagFlags::DoNotChange);
+  w = func(x, z);
+  tape.clearTagPropertiesOnVariable(w);
+
+  out << "Do not write error test:" << std::endl;
+  tape.setTagPropertyOnVariable(w, codi::TagFlags::DoNotWrite);
   w = func(x, z);
 
   tape.registerOutput(y);
