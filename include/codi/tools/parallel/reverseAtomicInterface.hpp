@@ -40,14 +40,10 @@
 namespace codi {
 
   /**
-   * @brief Provides a data type on which all operations are performed atomically.
-   *
-   * Provides also increment and decrement operators for the use case of an underlying integer type. The increment and
-   * decrement operators don't have to be implemented for underlying non-integer types.
+   * @brief Provides a data type on which update operations are performed atomically.
    *
    * If used with an underlying floating point type or an active CoDiPack type, this data type is suitable as an adjoint
-   * variable type. Note, however, that it is not optimal because it performs all operations atomically. Data types
-   * derived from ReverseAtomicInterface are preferred as adjoint variable types.
+   * variable type, as adjoint variable types only need atomic updates in a multithreaded environment.
    *
    * Implementations likely require template specializations with respect to the underlying type, especially if it is an
    * active CoDiPack type.
@@ -56,33 +52,29 @@ namespace codi {
    * @tparam T_Impl  Implementing class.
    */
   template<typename T_Type, typename T_Impl>
-  struct AtomicInterface {
+  struct ReverseAtomicInterface {
     public:
-      using Type = T_Type;  ///< See AtomicInterface.
-      using Impl = T_Impl;  ///< See AtomicInterface.
+      using Type = T_Type;  ///< See ReverseAtomicInterface.
+      using Impl = T_Impl;  ///< See ReverseAtomicInterface.
 
-      CODI_INLINE AtomicInterface() {}                        ///< Constructor
-      CODI_INLINE AtomicInterface(AtomicInterface const&) {}  ///< Constructor
-      CODI_INLINE AtomicInterface(Type const&) {}             ///< Constructor
-      ~AtomicInterface() {}                                   ///< Destructor
+      CODI_INLINE ReverseAtomicInterface() {}                               ///< Constructor
+      CODI_INLINE ReverseAtomicInterface(ReverseAtomicInterface const&) {}  ///< Constructor
+      CODI_INLINE ReverseAtomicInterface(Type const&) {}                    ///< Constructor
+      ~ReverseAtomicInterface() {}                                          ///< Destructor
 
-      CODI_INLINE Impl& operator=(Impl const& other);  ///< Assignment operator with implementing type as rhs.
-      CODI_INLINE Impl& operator=(Type const& other);  ///< Assignment operator with underlying type as rhs.
+      /// Assignment operator with implementing type as rhs. Not atomic.
+      CODI_INLINE Impl& operator=(Impl const& other);
+      CODI_INLINE Impl& operator=(Type const& other);  ///< Assignment operator with underlying type as rhs. Not atomic.
 
-      CODI_INLINE Type operator+=(Impl const& other);  ///< Incremental update with implementing type as rhs.
-      CODI_INLINE Type operator+=(Type const& other);  ///< Incremental update with underlying type as rhs.
+      CODI_INLINE Type operator+=(Impl const& other);  ///< Atomic incremental update with implementing type as rhs.
+      CODI_INLINE Type operator+=(Type const& other);  ///< Atomic incremental update with underlying type as rhs.
 
-      CODI_INLINE Type operator++();     ///< Pre-increment operator.
-      CODI_INLINE Type operator++(int);  ///< Post-increment operator.
-      CODI_INLINE Type operator--();     ///< Pre-decrement operator.
-      CODI_INLINE Type operator--(int);  ///< Post-decrement operator.
-
-      CODI_INLINE operator Type() const;  ///< Implicit cast to underlying type for rhs access.
+      CODI_INLINE operator Type() const;  ///< Implicit cast to underlying type for rhs access. Not atomic.
   };
 
 #if CODI_IDE
   /// Helper for IDE code completion.
   template<typename Type>
-  using CODI_DEFAULT_ATOMIC = AtomicInterface<Type, CODI_IMPLEMENTATION>;
+  using CODI_DEFAULT_REVERSE_ATOMIC = ReverseAtomicInterface<Type, CODI_IMPLEMENTATION>;
 #endif
 }
