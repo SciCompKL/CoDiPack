@@ -63,7 +63,7 @@ namespace codi {
 
   /// \copydoc codi::RealReverseIndexGen <br><br>
   /// This a thread-safe implementation for use with OpenMP. See \ref Example_23_OpenMP_Parallel_Codes for an example.
-  template<typename Real, typename Gradient = OpenMPAtomic<Real>,
+  template<typename Real, typename Gradient = OpenMPReverseAtomic<Real>,
            typename IndexManager = ParallelReuseIndexManager<int, OpenMPToolbox>>
   using RealReverseIndexOpenMPGen = ParallelActiveType<
       JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager, DefaultChunkedData, OpenMPGlobalAdjoints>>,
@@ -74,5 +74,5 @@ namespace codi {
 
   /// \copydoc codi::RealReverseIndexOpenMPGen
   template<size_t dim>
-  using RealReverseIndexVecOpenMP = RealReverseIndexOpenMPGen<double, Direction<OpenMPAtomic<double>, dim>>;
+  using RealReverseIndexVecOpenMP = RealReverseIndexOpenMPGen<double, Direction<OpenMPReverseAtomic<double>, dim>>;
 }
