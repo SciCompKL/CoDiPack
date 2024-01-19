@@ -66,8 +66,8 @@ namespace codi {
       CODI_INLINE Impl& operator=(Impl const& other);
       CODI_INLINE Impl& operator=(Type const& other);  ///< Assignment operator with underlying type as rhs. Not atomic.
 
-      CODI_INLINE Type operator+=(Impl const& other);  ///< Atomic incremental update with implementing type as rhs.
-      CODI_INLINE Type operator+=(Type const& other);  ///< Atomic incremental update with underlying type as rhs.
+      CODI_INLINE void operator+=(Impl const& other);  ///< Atomic incremental update with implementing type as rhs.
+      CODI_INLINE void operator+=(Type const& other);  ///< Atomic incremental update with underlying type as rhs.
 
       CODI_INLINE operator Type() const;  ///< Implicit cast to underlying type for rhs access. Not atomic.
   };

@@ -97,17 +97,13 @@ namespace codi {
         return *this;
       }
 
-      CODI_INLINE Type operator+=(OpenMPReverseAtomicImpl const& other) {
-        return operator+=(other.value);
+      CODI_INLINE void operator+=(OpenMPReverseAtomicImpl const& other) {
+        operator+=(other.value);
       }
 
-      CODI_INLINE Type operator+=(Type const& other) {
-        Type result;
-        CODI_OMP_ATOMIC(capture) {
-          this->value += other;
-          result = this->value;
-        }
-        return result;
+      CODI_INLINE void operator+=(Type const& other) {
+        CODI_OMP_ATOMIC(update)
+        this->value += other;
       }
 
       CODI_INLINE operator Type() const {
@@ -144,18 +140,17 @@ namespace codi {
         return *this;
       }
 
-      CODI_INLINE OpenMPReverseAtomicImpl& operator+=(OpenMPReverseAtomicImpl const& other) {
-        return operator+=(static_cast<Type const&>(other));
+      CODI_INLINE void operator+=(OpenMPReverseAtomicImpl const& other) {
+        operator+=(static_cast<Type const&>(other));
       }
 
-      CODI_INLINE OpenMPReverseAtomicImpl& operator+=(Type const& other) {
+      CODI_INLINE void operator+=(Type const& other) {
         OpenMPReverseAtomicImpl<Real>* atomicValue = reinterpret_cast<OpenMPReverseAtomicImpl<Real>*>(&this->value());
         OpenMPReverseAtomicImpl<Gradient>* atomicGradient =
             reinterpret_cast<OpenMPReverseAtomicImpl<Gradient>*>(&this->gradient());
 
         *atomicValue += other.value();
         *atomicGradient += other.gradient();
-        return *this;
       }
 
       CODI_INLINE operator Type() const {
