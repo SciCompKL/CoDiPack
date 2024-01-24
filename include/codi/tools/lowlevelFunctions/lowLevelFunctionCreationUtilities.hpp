@@ -111,6 +111,12 @@ namespace codi {
    *    - Read the activity of the arguments with #restoreActivity.
    *    - Read the data for all arguments with \c ActiveStoreTrait::restore() or \c PassiveStoreTrait::restore().
    *
+   *  \section deletion Data deletion
+   *
+   *  Currently it is assumed that all data is stored in the binary data stream of the tape. This data stream is
+   *  automatically reset during a tape reset, which releases the data. There is currently no mechanism to automatically
+   *  delete heap allocated data in the store methods.
+   *
    * @tparam T_ActiveArguments The number of active input arguments.
    */
   template<size_t T_ActiveArguments>
@@ -129,7 +135,7 @@ namespace codi {
             void>::type>::type>::type>::type;
       // clang-format on
 
-      /// Functionality for handling an active argument.
+      /// Utilities for handling an active argument.
       template<typename T>
       using ActiveStoreTrait = ActiveArgumentStoreTraits<T>;
 
