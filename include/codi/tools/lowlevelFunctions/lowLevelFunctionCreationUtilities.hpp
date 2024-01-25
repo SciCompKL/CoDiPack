@@ -68,6 +68,11 @@ namespace codi {
    *  checked with \c ActiveStoreTrait::isActive(). If all active arguments are passive, that is, all underlying
    *  CoDiPack types are passive, then the low level function should also not be created.
    *
+   *  Currently the number of low-level function arguments is limited to 64. Note that the limit applies to the number
+   *  of arguments passed to the low-level function, which is in general much smaller than the number of active
+   *  CoDiPack values passed to the function. Matrix-matrix multiplication, for example, has two arguments (two
+   *  matrices), but each matrix consists of multiple CoDiPack values.
+   *
    *  \subsection count Count size
    *
    *  The required size for storing all arguments can be determined with \c ActiveStoreTrait::countSize() and
@@ -113,7 +118,7 @@ namespace codi {
    *
    *  \section deletion Data deletion
    *
-   *  Currently it is assumed that all data is stored in the binary data stream of the tape. This data stream is
+   *  Currently, it is assumed that all data is stored in the binary data stream of the tape. This data stream is
    *  automatically reset during a tape reset, which releases the data. There is currently no mechanism to automatically
    *  delete heap allocated data in the store methods.
    *
@@ -150,7 +155,7 @@ namespace codi {
       /// @name Action creation
       /// @{
 
-      /// Decide which actions need to be performed for the argument during the restoring process.
+      /// Collect the restore actions for an argument in a \c RestoreActions instance.
       CODI_INLINE static RestoreActions createRestoreActions(bool isInput, bool isOutput, bool isInputActive,
                                                              bool primalRequired) {
         RestoreActions actions = {};
@@ -171,7 +176,7 @@ namespace codi {
         return actions;
       }
 
-      /// Decide which actions need to be performed for the argument during the storing process.
+      /// Collect the store actions for an argument in a \c StoreActions instance.
       CODI_INLINE static StoreActions createStoreActions(bool tapeActive, bool isInput, bool isOutput,
                                                          bool isInputActive, bool primalRequired) {
         StoreActions actions = {};

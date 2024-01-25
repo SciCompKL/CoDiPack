@@ -164,10 +164,11 @@ namespace codi {
    * #setExternalFunctionOutput method is called on output arguments. Here, the vectors created in #store need to be
    * updated if necessary. Usually, these are vectors for the identifiers of the output value and old primal values.
    *
-   * The default implementation for CoDiPack values can be used to perform an activity analysis. The identifiers of the
-   * output values are initialized with -1. Inside of the \c setExternalFunctionOutput method, each value is registered
-   * only if the identifier is none zero. The user can modify the identifiers of the output values during the primal
-   * evaluation, indicating active and inactive outputs. Otherwise, all outputs are assumed to be active.
+   * CoDiPack performs an online activity analysis. The default behavior for the low level function helper sets all
+   * CoDiPack values of the output arguments to active. The user can control this behavior by modifying the identifiers
+   * of the output arguments. All values different than zero are treated as an active output and a valid identifier will
+   * be generated. The specialization for the CoDiPack values implements this by initializing the output identifiers
+   * with -1. If they are not modified then they are treated as active.
    *
    * \subsection calls_eval Tape evaluation
    * During a reverse, forward, primal, etc. evaluation of a tape, the #restore method is called first. It should read
@@ -237,6 +238,8 @@ namespace codi {
        *
        * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g., the
        * size of arrays addressed by pointers. \c data can be used to store data and pointers from the streams.
+       *
+       * If \c dataStore is a null pointer then only the \c StoreAction::PrimalExtract action is allowed.
        */
       CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const& value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data);
@@ -477,6 +480,13 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::store()
       CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const* value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data) {
+
+        if (dataStore == nullptr) {
+          codiAssert(!actions.test(StoreAction::PrimalCreateOnTape)
+                     && !actions.test(StoreAction::InputIdentifierCreateAndStore)
+                     && !actions.test(StoreAction::OutputIdentifierCreate));
+        }
+
         Real* passiveValues = nullptr;
         if (actions.test(StoreAction::PrimalCreateOnTape)) {
           if (Tape::HasPrimalValues) {
