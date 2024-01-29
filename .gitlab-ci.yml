@@ -3,15 +3,26 @@ default:
   timeout: 2h
   tags:
     - docker
-    
+
 codi-general:
   script:
     - apt update && apt install -y build-essential binutils
     - cd tests/general
     - make all
-  
+
 codi-events:
   script:
     - apt update && apt install -y build-essential binutils
     - cd tests/events
+    - make all
+
+opdi:
+  script:
+    - apt update && apt install -y build-essential binutils git
+    - git clone --depth 1 --branch develop https://github.com/SciCompKL/OpDiLib.git
+    - export CODI_DIR=$(pwd)/include
+    - cd OpDiLib
+    - export OPDI_DIR=$(pwd)/include
+    - cd tests
+    - export CXX=g++
     - make all
