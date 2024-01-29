@@ -294,7 +294,7 @@ namespace codi {
         CODI_INLINE static Identifier getIdentifier(Type const& v) {
           InnerType const* vArray = reinterpret_cast<InnerType const*>(&v);
 
-          return Real(InnerExtraction::getIdentifier(vArray[0]), InnerExtraction::getIdentifier(vArray[1]));
+          return Identifier(InnerExtraction::getIdentifier(vArray[0]), InnerExtraction::getIdentifier(vArray[1]));
         }
 
         /// \copydoc DataExtraction::setValue()

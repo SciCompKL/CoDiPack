@@ -7,6 +7,7 @@ Changelog {#Changelog}
   * Recover primal values from primal values tapes in ExternalFunctionHelper.
   * Forward AD type for CUDA kernels.
   * Matrix matrix multiplications can now be handled in an optimal way with CoDiPack.
+  * Tagging tape for detecting errors in the AD workflow.
 
  - Bugfix:
   * Uninitialized values in external function helper.
