@@ -55,8 +55,9 @@ The path is different if you use the CoDiPack directory or a CMake installation 
 You also have to add CoDiPack as a target link library in the `CMakeLists.txt` of your project:
 ~~~~{.cmake}
 find_package(CoDiPack CONFIG REQUIRED)
-target_link_libraries(<target> CoDiPack)
+target_link_libraries(<target> PUBLIC CoDiPack)
 ~~~~
+If the `target_link_libraries` command raises an error, try it without the keyword `PUBLIC`.
 
 ## Miscellaneous information
 
