@@ -1,0 +1,17 @@
+default:
+  image: ubuntu:22.04
+  timeout: 2h
+  tags:
+    - docker
+    
+codi-general:
+  script:
+    - apt update && apt install -y build-essential binutils
+    - cd tests/general
+    - make all
+  
+codi-events:
+  script:
+    - apt update && apt install -y build-essential binutils
+    - cd tests/events
+    - make all
