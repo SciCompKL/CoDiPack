@@ -81,7 +81,7 @@ namespace codi {
   CODI_CUDAFunctionAttributes inline void outputExceptionOrWarning(char const function[], char const file[],
                                                                    int const line, bool warning, char const* message,
                                                                    ...) {
- #if !CODI_CUDA
+#if !CODI_CUDA
     char const* kind = (warning) ? "Warning" : "Error";
     fprintf(stderr, "%s in function %s (%s:%d)\nThe message is: ", kind, function, file, line);
 
@@ -91,10 +91,10 @@ namespace codi {
     va_end(vl);
 
     fprintf(stderr, "\n");
-    if(!warning) {
+    if (!warning) {
       exit(-1);
     }
-  #endif
+#endif
   }
 
 /**

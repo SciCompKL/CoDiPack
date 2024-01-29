@@ -100,7 +100,8 @@ namespace codi {
     /// Maximum data size of a low level function.
     size_t constexpr LowLevelFunctionDataSizeMax = std::numeric_limits<LowLevelFunctionDataSize>::max();
 
-    static_assert(LowLevelFunctionDataSizeMax <= ByteDataChunkSize, "Low level function data size is larger than the "
+    static_assert(LowLevelFunctionDataSizeMax <= ByteDataChunkSize,
+                  "Low level function data size is larger than the "
                   "maximum size of a byte data chunk. Fix: Increase 'ByteDataChunkSize'.");
 
     /// Token type for low level functions in the tapes.

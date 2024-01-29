@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2023 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
+ * Copyright (C) 2015-2024 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -217,16 +217,16 @@ namespace codi {
        * This value needs to define the maximum size required to store all data for the type. It should be
        * exact since the allocated memory cannot be reduced afterwards.
        *
-       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g., the
-       * size of arrays addressed by pointers.
+       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g.,
+       * the size of arrays addressed by pointers.
        */
       CODI_INLINE static size_t countSize(T const& value, size_t size, StoreActions const& actions);
 
       /**
        * @brief Restore the data for this type.
        *
-       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g., the
-       * size of arrays addressed by pointers. \c data can be used to store data and pointers from the streams.
+       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g.,
+       * the size of arrays addressed by pointers. \c data can be used to store data and pointers from the streams.
        */
       CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                       RestoreActions const& actions, ArgumentStore& data);
@@ -236,8 +236,8 @@ namespace codi {
        *
        * The amount of data cannot be greater than the amount reported by #countSize().
        *
-       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g., the
-       * size of arrays addressed by pointers. \c data can be used to store data and pointers from the streams.
+       * \c actions describe what needs to be done for this argument. \c size is a hint for the implementation, e.g.,
+       * the size of arrays addressed by pointers. \c data can be used to store data and pointers from the streams.
        *
        * If \c dataStore is a null pointer then only the \c StoreAction::PrimalExtract action is allowed.
        */
@@ -480,11 +480,10 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::store()
       CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const* value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data) {
-
         if (dataStore == nullptr) {
-          codiAssert(!actions.test(StoreAction::PrimalCreateOnTape)
-                     && !actions.test(StoreAction::InputIdentifierCreateAndStore)
-                     && !actions.test(StoreAction::OutputIdentifierCreate));
+          codiAssert(!actions.test(StoreAction::PrimalCreateOnTape) &&
+                     !actions.test(StoreAction::InputIdentifierCreateAndStore) &&
+                     !actions.test(StoreAction::OutputIdentifierCreate));
         }
 
         Real* passiveValues = nullptr;
