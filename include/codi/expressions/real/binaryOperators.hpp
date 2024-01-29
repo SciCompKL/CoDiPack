@@ -398,10 +398,10 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
 
-        return Real();
+        return 0.0;
       }
   };
 
@@ -525,10 +525,10 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
 
-        return Real();
+        return 0.0;
       }
   };
 #define OPERATION_LOGIC OperationLdexp
@@ -743,10 +743,10 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
 
-        return (Real)1.0;
+        return 1.0;
       }
 
       /// \copydoc codi::BinaryOperation::gradientB()

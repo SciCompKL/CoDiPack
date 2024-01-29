@@ -128,14 +128,14 @@ namespace codi {
 
       /// \copydoc UnaryOperation::gradient
       template<typename Arg>
-      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if (arg < 0.0) {
-          return (Real)-1.0;
+          return -1.0;
         } else if (arg > 0.0) {
-          return (Real)1.0;
+          return 1.0;
         } else {
-          return (Real)0.0;
+          return 0.0;
         }
       }
   };
