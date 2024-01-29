@@ -245,7 +245,7 @@ namespace codi {
 
       /// \copydoc codi::EditingTapeInterface::append
       CODI_INLINE void append(JacobianReuseTape& srcTape, Position const& start, Position const& end) {
-        srcTape.llfByteData.evaluateForward(start, end, JacobianReuseTape::internalAppend, srcTape, this);
+        srcTape.llfByteData.evaluateForward(start, end, JacobianReuseTape::internalAppend, this);
       }
 
       /// @}
@@ -254,7 +254,7 @@ namespace codi {
 
       static CODI_INLINE void internalAppend(
           /* data from call */
-          JacobianReuseTape* srcTape, JacobianReuseTape* dstTape,
+          JacobianReuseTape* dstTape,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -266,6 +266,8 @@ namespace codi {
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endJacobianPos);
+
         while (curStmtPos < endStmtPos) {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
