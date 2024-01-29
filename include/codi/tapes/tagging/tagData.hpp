@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2023 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
+ * Copyright (C) 2015-2024 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -102,13 +102,15 @@ namespace std {
   CODI_INLINE std::string to_string(codi::TagFlags const& flag) {
     using codi::outputException;
 
+    // clang-format off
     switch (flag) {
       case codi::TagFlags::DoNotChange: return "DoNotChange";
       case codi::TagFlags::DoNotWrite:  return "DoNotWrite";
       case codi::TagFlags::DoNotUse:    return "DoNotUse";
       default:
-          CODI_EXCEPTION("Unkown flag for codi::TagFlags %d.", (int)flag);
-          return "unknown";
+        CODI_EXCEPTION("Unkown flag for codi::TagFlags %d.", (int)flag);
+        return "unknown";
     }
+    // clang-format on
   }
 }

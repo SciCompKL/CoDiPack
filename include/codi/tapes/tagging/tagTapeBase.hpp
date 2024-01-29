@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2023 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
+ * Copyright (C) 2015-2024 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -55,7 +55,8 @@ namespace codi {
       Real value;        ///< Primal value of the value with the tag error.
 
       /// Constructor.
-      ValidationIndicator() : isActive(false), hasError(false), hasTagError(false), hasUseError(false), errorTag(), value() {}
+      ValidationIndicator()
+          : isActive(false), hasError(false), hasTagError(false), hasUseError(false), errorTag(), value() {}
   };
 
   /**
@@ -78,7 +79,8 @@ namespace codi {
       using Identifier = TagData<Tag>;  ///< See TapeTypesInterface.
 
       /// Callback for a change in a lhs value.
-      using TagPropertyErrorCallback = void (*)(Real const& currentValue, Real const& newValue, TagFlags flag, void* userData);
+      using TagPropertyErrorCallback = void (*)(Real const& currentValue, Real const& newValue, TagFlags flag,
+                                                void* userData);
 
       /// Callback for a tag error.
       using TagErrorCallback = void (*)(Tag const& correctTag, Tag const& wrongTag, void* userData);
@@ -240,7 +242,8 @@ namespace codi {
       }
 
       /// Checks if the tag properties are correct.
-      CODI_INLINE void verifyProperties(ValidationIndicator<Real, Tag>& vi, Real const& value, const EnumBitset<TagFlags>& properties) const {
+      CODI_INLINE void verifyProperties(ValidationIndicator<Real, Tag>& vi, Real const& value,
+                                        const EnumBitset<TagFlags>& properties) const {
         if (properties.test(TagFlags::DoNotUse)) {
           vi.hasError = true;
           vi.hasUseError = true;
@@ -249,7 +252,8 @@ namespace codi {
       }
 
       /// Checks if the tag and the properties are correct.
-      CODI_INLINE void verifyTagAndProperties(Tag const& tag, Real const& value, const EnumBitset<TagFlags>& properties) const {
+      CODI_INLINE void verifyTagAndProperties(Tag const& tag, Real const& value,
+                                              const EnumBitset<TagFlags>& properties) const {
         ValidationIndicator<Real, Tag> vi;
 
         verifyTag(vi, tag);
@@ -258,22 +262,23 @@ namespace codi {
       }
 
       /// Default callback for TagPropertyErrorCallback.
-      static void defaultPropertyErrorCallback(Real const& currentValue, Real const& newValue, TagFlags flag, void* userData) {
+      static void defaultPropertyErrorCallback(Real const& currentValue, Real const& newValue, TagFlags flag,
+                                               void* userData) {
         CODI_UNUSED(userData);
 
-        std::cerr << "Property error '" << std::to_string(flag) << "' on value. current value: " << currentValue << " new value: " << newValue << "" << std::endl;
+        std::cerr << "Property error '" << std::to_string(flag) << "' on value. current value: " << currentValue
+                  << " new value: " << newValue << "" << std::endl;
       }
 
       /// Default callback for TagErrorCallback.
       static void defaultTagErrorCallback(Tag const& correctTag, Tag const& wrongTag, void* userData) {
-
         TagTapeBase& impl = *static_cast<TagTapeBase*>(userData);
 
         // output default warning if no handle is defined.
         std::cerr << "Use of variable with bad tag '" << wrongTag << "', should be '" << correctTag << "'.";
-        if(wrongTag == impl.preaccumulationTag) {
+        if (wrongTag == impl.preaccumulationTag) {
           std::cerr << " The value seems to be a preaccumulation output.";
-        } else if(correctTag == impl.preaccumulationTag) {
+        } else if (correctTag == impl.preaccumulationTag) {
           std::cerr << " The value seems to be used during a preaccumulation but is not declared as an input.";
         }
         std::cerr << std::endl;
@@ -299,10 +304,10 @@ namespace codi {
       /// Call tag error callback.
       CODI_INLINE void handleError(ValidationIndicator<Real, Tag>& vi) const {
         if (vi.hasError) {
-          if(vi.hasTagError) {
+          if (vi.hasTagError) {
             tagErrorCallback(curTag, vi.errorTag, tagErrorUserData);
           }
-          if(vi.hasUseError) {
+          if (vi.hasUseError) {
             tagPropertyErrorCallback(vi.value, vi.value, TagFlags::DoNotUse, tagPropertyErrorUserData);
           }
         }
