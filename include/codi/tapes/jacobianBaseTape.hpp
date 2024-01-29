@@ -232,7 +232,7 @@ namespace codi {
       /// @name Functions from GradientAccessTapeInterface
       /// @{
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement)
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(T_Identifier const&, AdjointsManagement)
       CODI_INLINE Gradient& gradient(Identifier const& identifier,
                                      AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         if (AdjointsManagement::Automatic == adjointsManagement) {
@@ -244,7 +244,7 @@ namespace codi {
         return adjoints[identifier];
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement) const
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(T_Identifier const&, AdjointsManagement) const
       CODI_INLINE Gradient const& gradient(
           Identifier const& identifier, AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
         codiAssert(identifier < (Identifier)adjoints.size());

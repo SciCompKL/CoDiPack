@@ -119,6 +119,7 @@ namespace codi {
 #if CODI_IDE
   #define CODI_STATIC_ASSERT(cond, message) /* Do not check in IDE mode */
 #else
+  /// Static assert in CoDiPack.
   #define CODI_STATIC_ASSERT(cond, message) static_assert(cond, message)
 #endif
 

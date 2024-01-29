@@ -222,7 +222,7 @@ namespace codi {
       /// @name Functions from EditingTapeInterface
       /// @{
 
-      /// \copydoc codi::EditingTapeInterface::erase(Position const& start, Position const& end) <br>
+      /// \copydoc codi::EditingTapeInterface::erase(T_Position const& start, T_Position const& end) <br>
       /// Implementation: Instantiates a temporary tape. If called often, this can become a bottleneck. The variant of
       /// erase that takes a reference to a helper tape should be used in this case.
       CODI_INLINE void erase(Position const& start, Position const& end) {
@@ -231,7 +231,7 @@ namespace codi {
       }
 
       // clang-format off
-      /// \copydoc codi::EditingTapeInterface::erase(Position const& start, Position const& end, EditingTapeInterface& emptyTape)
+      /// \copydoc codi::EditingTapeInterface::erase(T_Position const& start, T_Position const& end, EditingTapeInterface& emptyTape)
       // clang-format on
       CODI_INLINE void erase(Position const& start, Position const& end, JacobianReuseTape& emptyTape) {
         // Store the tail after the part to be erased in the helper tape.

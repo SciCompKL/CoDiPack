@@ -13,3 +13,6 @@ p.formulaDsp {
 .alignright {
     float: right;
 }
+
+h1 { font-size: 120%; }
+h2 { font-size: 110%; }

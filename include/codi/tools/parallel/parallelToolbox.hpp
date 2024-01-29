@@ -78,7 +78,7 @@ namespace codi {
       using StaticThreadLocalPointer = CODI_DD(CODI_T(T_StaticThreadLocalPointer<Type, Owner>),
                                                CODI_T(StaticThreadLocalPointerInterface<Type, Owner, CODI_ANY>));
 
-      using Synchronization = CODI_DD(T_Synchronization, DefaultSynchronization);
+      using Synchronization = CODI_DD(T_Synchronization, DefaultSynchronization);   ///< See codi::ParallelToolbox.
 
       using Lock = codi::Lock<Mutex>;                                               ///< See codi::Lock.
       using ReadWriteMutex = codi::ReadWriteMutex<ThreadInformation, Atomic<int>>;  ///< See codi::ReadWriteMutex.

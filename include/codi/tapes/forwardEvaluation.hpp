@@ -168,7 +168,7 @@ namespace codi {
         return identifier;
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement)
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(T_Identifier const&, AdjointsManagement)
       /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
       /// adjoints.
       CODI_INLINE Gradient& gradient(Identifier& identifier,
@@ -177,7 +177,7 @@ namespace codi {
         return identifier;
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement) const
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(T_Identifier const&, AdjointsManagement) const
       /// <br> Implementation: Automatic adjoints management has no effect. The forward mode does not maintain internal
       /// adjoints.
       CODI_INLINE Gradient const& gradient(
@@ -230,7 +230,7 @@ namespace codi {
       using Real = typename Type::Real;                     ///< See
                                                             ///< codi::LhsExpressionInterface::Real.
 
-      /// \copydoc codi::RealTraits::IsTotalFinite::isTotalZero()
+      /// \copydoc codi::RealTraits::IsTotalZero::isTotalZero
       static CODI_INLINE bool isTotalZero(Type const& v) {
         return Real() == v.getValue() && typename Type::Gradient() == v.getGradient();
       }

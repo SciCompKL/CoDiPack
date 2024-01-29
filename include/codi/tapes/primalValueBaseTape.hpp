@@ -262,7 +262,7 @@ namespace codi {
       /// @name Functions from GradientAccessTapeInterface
       /// @{
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement)
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(T_Identifier const&, AdjointsManagement)
       /// <br> Implementation: Automatic adjoints management only involves bounds checking and resizing. Primal value
       /// tapes do not implement adjoints locking.
       CODI_INLINE Gradient& gradient(Identifier const& identifier,
@@ -276,7 +276,7 @@ namespace codi {
         return adjoints[identifier];
       }
 
-      /// \copydoc codi::GradientAccessTapeInterface::gradient(Identifier const&, AdjointsManagement) const
+      /// \copydoc codi::GradientAccessTapeInterface::gradient(T_Identifier const&, AdjointsManagement) const
       /// <br> Implementation: Automatic adjoints management only involves bounds checking. Primal value tapes do not
       /// implement adjoints locking.
       CODI_INLINE Gradient const& gradient(
@@ -1074,7 +1074,7 @@ namespace codi {
         evaluate(start, end, adjoints.data());
       }
 
-      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo(Position const&, bool, AdjointsManagement)
+      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo(T_Position const&, bool, AdjointsManagement)
       /// <br> Implementation: Automatic adjoints management has no effect. Primal value tapes do not implement adjoints
       /// locking.
       CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true,
@@ -1158,12 +1158,12 @@ namespace codi {
                                                        EventHints::EvaluationKind::Primal, EventHints::Endpoint::End);
       }
 
-      /// \copydoc codi::PrimalEvaluationTapeInterface::primal(Identifier const&)
+      /// \copydoc codi::PrimalEvaluationTapeInterface::primal(T_Identifier const&)
       Real& primal(Identifier const& identifier) {
         return primals[identifier];
       }
 
-      /// \copydoc codi::PrimalEvaluationTapeInterface::primal(Identifier const&) const
+      /// \copydoc codi::PrimalEvaluationTapeInterface::primal(T_Identifier const&) const
       Real const& primal(Identifier const& identifier) const {
         return primals[identifier];
       }

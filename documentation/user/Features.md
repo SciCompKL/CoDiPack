@@ -1,7 +1,7 @@
 Features {#Features}
 =======
 
-#### Direct data access (Identifier management) {#IdentifierManagement}
+# Direct data access (Identifier management) {#IdentifierManagement}
 
 CoDiPack allows the user to have direct access to the tape and therefore also to the adjoint values. This design
 decision makes it at some places a little bit more complicated to work with CoDiPack but it allows the user to use
@@ -23,11 +23,11 @@ An example is:
 
 In this case x is used both as an input and output variable.
 
-#### Statement level recording (Expression templates) {#StatementLevelRecording}
+# Statement level recording (Expression templates) {#StatementLevelRecording}
 
 See \subpage Expressions.
 
-#### Online activity analysis {#ActivityAnalysis}
+# Online activity analysis {#ActivityAnalysis}
 
 The taping process in CoDiPack is organized such that it can automatically detect the dependency relation with respect to
 the input variable. Computations that do not depend on the input variables are not recorded. This is done by giving a

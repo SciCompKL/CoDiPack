@@ -87,14 +87,14 @@ namespace codi {
    *
    *  See \ref Example_21_Special_handling_of_linear_system_solvers for an example with the Eigen implementation.
    *
-   *  \subsection sec_mandatory Mandatory methods
+   *  \section sec_mandatory Mandatory methods
    *   - #createMatrixReal, #createMatrixIdentifier, #deleteMatrixReal, #deleteMatrixIdentifier
    *   - #createVectorReal, #createVectorIdentifier, #deleteVectorReal, #deleteVectorIdentifier
    *   - #iterateMatrix with two and three arguments
    *   - #iterateVector with two to four arguments
    *   - #solveSystem
    *
-   *   \subsection sec_optional  Optional methods
+   *   \section sec_optional  Optional methods
    *    - Reverse mode AD support:
    *      - #iterateDyadic
    *      - #transposeMatrix

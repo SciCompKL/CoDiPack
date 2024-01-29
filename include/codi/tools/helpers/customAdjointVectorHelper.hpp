@@ -97,7 +97,7 @@ namespace codi {
       virtual void evaluate(Position const& start, Position const& end) = 0;
 
       // clang-format off
-      /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(Position const&, Position const&, AdjointsManagement)
+      /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(T_Position const&, T_Position const&, AdjointsManagement)
       // clang-format on
       virtual void evaluateForward(Position const& start, Position const& end) = 0;
 

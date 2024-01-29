@@ -664,7 +664,7 @@ namespace codi {
 
       /// @{
 
-      /// \copydoc codi::PositionalEvaluationTapeInterface::resetTo(Position const&, bool, AdjointsManagement)
+      /// \copydoc ::codi::PositionalEvaluationTapeInterface::resetTo
       CODI_INLINE void resetTo(Position const& pos, bool resetAdjoints = true,
                                AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         EventSystem<Impl>::notifyTapeResetListeners(cast(), pos, EventHints::Reset::To, resetAdjoints);

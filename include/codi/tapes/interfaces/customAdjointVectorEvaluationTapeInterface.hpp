@@ -80,7 +80,7 @@ namespace codi {
 
       // clang-format off
       /**
-       * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(Position const&, Position const&, AdjointsManagement)
+       * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(T_Position const&, T_Position const&, AdjointsManagement)
        *
        * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */

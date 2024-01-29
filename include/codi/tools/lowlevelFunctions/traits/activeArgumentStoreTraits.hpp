@@ -139,7 +139,7 @@ namespace codi {
    *
    * There is one data stream available for storing the data of a type. The size and layout of the data can be
    * arbitrary. The only limitation is the maximum size of the data, which is defined by
-   * #config::LowLevelFunctionDataSizeMax. This limit holds for the whole external function. If more data is required,
+   * #Config::LowLevelFunctionDataSizeMax. This limit holds for the whole external function. If more data is required,
    * it should be allocated dynamically.
    *
    * \section layout Example data layout for matrix matrix multiplications.

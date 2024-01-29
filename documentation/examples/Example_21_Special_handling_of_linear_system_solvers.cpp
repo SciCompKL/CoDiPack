@@ -27,10 +27,11 @@ template<typename Number>
 struct EigenSolver : public codi::EigenLinearSystem<Number, Matrix, Vector> {
   public:
 
-    using Base = codi::EigenLinearSystem<Number, Matrix, Vector>;
-    using MatrixReal = typename Base::MatrixReal;
-    using VectorReal = typename Base::VectorReal;
+    using Base = codi::EigenLinearSystem<Number, Matrix, Vector>;  ///< Base solver
+    using MatrixReal = typename Base::MatrixReal;                  ///< Matrix type.
+    using VectorReal = typename Base::VectorReal;                  ///< Vector type.
 
+    /// System solve implementation.
     void solveSystem(MatrixReal const* A, VectorReal const* b, VectorReal* x) {
       std::cout << "Solve system says hello!!!" << std::endl;
       func(*A, *b, *x);

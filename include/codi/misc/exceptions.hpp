@@ -76,6 +76,7 @@ namespace codi {
    * @param[in] function  Name of the function from which the exception is generated.
    * @param[in]     file  File where the exception was generated.
    * @param[in]     line  Line inside the file where the exception was generated.
+   * @param[in]  warning  If this is a warning or an exception.
    * @param[in]  message  The exception message and the arguments for the formatting in the message.
    */
   CODI_CUDAFunctionAttributes inline void outputExceptionOrWarning(char const function[], char const file[],
