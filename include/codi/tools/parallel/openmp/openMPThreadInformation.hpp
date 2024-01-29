@@ -1,7 +1,7 @@
 /*
  * CoDiPack, a Code Differentiation Package
  *
- * Copyright (C) 2015-2023 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
+ * Copyright (C) 2015-2024 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
  * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
@@ -49,7 +49,7 @@ namespace codi {
 
       /// \copydoc ThreadInformationInterface::getMaxThreads()
       static CODI_INLINE int getMaxThreads() {
-        return omp_get_max_threads();
+        return 512;
       }
 
       /// \copydoc ThreadInformationInterface::getThreadId()
