@@ -37,8 +37,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "tools/cuda/cudaFunctionAttributes.hpp"
+#include <limits>
+
 #include "misc/exceptions.hpp"
+#include "tools/cuda/cudaFunctionAttributes.hpp"
 
 /** @file */
 
@@ -76,6 +78,14 @@ namespace codi {
     /// @name Type and compile time value declarations
     /// @{
 
+#ifndef CODI_ByteDataChunkSize
+  /// See codi::Config::ByteDataChunkSize.
+  #define CODI_ByteDataChunkSize 4194304
+#endif
+    /// Default size of byte chunks used in ChunkedData in reverse tape implementations.
+    size_t constexpr ByteDataChunkSize = CODI_ByteDataChunkSize;
+#undef CODI_ByteDataChunkSize
+
 #ifndef CODI_ChunkSize
   /// See codi::Config::ChunkSize.
   #define CODI_ChunkSize 2097152
@@ -84,14 +94,36 @@ namespace codi {
     size_t constexpr ChunkSize = CODI_ChunkSize;
 #undef CODI_ChunkSize
 
+    /// Size store type for a low level function.
+    using LowLevelFunctionDataSize = uint16_t;
+
+    /// Maximum data size of a low level function.
+    size_t constexpr LowLevelFunctionDataSizeMax = std::numeric_limits<LowLevelFunctionDataSize>::max();
+
+    static_assert(LowLevelFunctionDataSizeMax <= ByteDataChunkSize,
+                  "Low level function data size is larger than the "
+                  "maximum size of a byte data chunk. Fix: Increase 'ByteDataChunkSize'.");
+
+    /// Token type for low level functions in the tapes.
+    using LowLevelFunctionToken = uint16_t;
+
+    /// Maximum number of low level functions.
+    size_t constexpr LowLevelFunctionTokenMaxSize = std::numeric_limits<LowLevelFunctionToken>::max();
+
+    /// Invalid low level function token.
+    size_t constexpr LowLevelFunctionTokenInvalid = std::numeric_limits<LowLevelFunctionToken>::max();
+
     /// Type for the number of arguments in statements.
     using ArgumentSize = uint8_t;
 
     /// Maximum number of arguments in a statement.
-    size_t constexpr MaxArgumentSize = 254;
+    size_t constexpr MaxArgumentSize = 253;
 
     /// Tag for statements that are inputs. Used in linear index management context.
     size_t constexpr StatementInputTag = 255;
+
+    /// Statement tag for low level functions.
+    size_t constexpr StatementLowLevelFunctionTag = 254;
 
 #ifndef CODI_SmallChunkSize
   /// See codi::Config::SmallChunkSize.

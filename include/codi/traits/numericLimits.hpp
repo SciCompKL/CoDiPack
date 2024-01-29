@@ -121,9 +121,11 @@ namespace std {
 
   /// Specialization of std::numeric_limits for parallel CoDiPack active types.
   template<typename Tape, typename ParallelToolbox>
-  struct numeric_limits<codi::ParallelActiveType<Tape, ParallelToolbox>> : codi_numeric_limits<codi::ParallelActiveType<Tape, ParallelToolbox>> {};
+  struct numeric_limits<codi::ParallelActiveType<Tape, ParallelToolbox>>
+      : codi_numeric_limits<codi::ParallelActiveType<Tape, ParallelToolbox>> {};
 
   /// Specialization of std::numeric_limits for no tape CoDiPack active types.
   template<typename Tape>
-  struct numeric_limits<codi::ActiveTypeStatelessTape<Tape>> : codi_numeric_limits<codi::ActiveTypeStatelessTape<Tape>> {};
+  struct numeric_limits<codi::ActiveTypeStatelessTape<Tape>>
+      : codi_numeric_limits<codi::ActiveTypeStatelessTape<Tape>> {};
 }

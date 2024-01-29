@@ -68,5 +68,6 @@
 #include "tools/helpers/testPreaccumulationZeroJacobi.hpp"
 #include "tools/helpers/testReset.hpp"
 #include "tools/helpers/testStatementPushHelper.hpp"
+#include "tools/lowlevelFunctions/linearAlgebra/testMatrixMatrixMultiplication.hpp"
 #include "tools/testReferenceActiveType.hpp"
 #include "traits/testNumericLimits.hpp"

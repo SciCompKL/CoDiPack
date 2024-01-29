@@ -246,15 +246,17 @@ namespace codi {
         std::swap(count, other.count);
       }
 
-      /// \copydoc DataInterface::evaluateForward
-      template<typename FunctionObject, typename... Args>
+      /// \copydoc DataInterface::evaluateForward <br><br>
+      /// This is a terminating DataInterface. The function object is always called and selectedDepth can be ignored.
+      template<int selectedDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateForward(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         function(std::forward<Args>(args)..., start, end);
       }
 
-      /// \copydoc DataInterface::evaluateReverse
-      template<typename FunctionObject, typename... Args>
+      /// \copydoc DataInterface::evaluateReverse <br><br>
+      /// This is a terminating DataInterface. The function object is always called and selectedDepth can be ignored.
+      template<int selectedDepth = -1, typename FunctionObject, typename... Args>
       CODI_INLINE void evaluateReverse(Position const& start, Position const& end, FunctionObject function,
                                        Args&&... args) {
         function(std::forward<Args>(args)..., start, end);

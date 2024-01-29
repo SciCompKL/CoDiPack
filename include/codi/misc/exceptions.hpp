@@ -57,7 +57,7 @@ namespace codi {
    * @param[in]            line  The line in the file were the assert is defined.
    */
   CODI_CUDAFunctionAttributes inline void checkAndOutputAssert(bool const condition, char const* conditionString,
-                                                           char const* function, char const* file, int line) {
+                                                               char const* function, char const* file, int line) {
 #if !CODI_CUDA
     if (!condition) {
       std::cerr << "codiAssertion failed: " << conditionString << " in function " << function << " at " << file << ":"
@@ -66,14 +66,6 @@ namespace codi {
     }
 #endif
   }
-
-/**
- * @brief Generates an exception.
- *
- * @param ...  Arguments for a printf like output and format.
- */
-#if !CODI_CUDA
-  #define CODI_EXCEPTION(...) outputException(__func__, __FILE__, __LINE__, __VA_ARGS__)
 
   /**
    * @brief Prints the positions and the message of the exception.
@@ -86,9 +78,12 @@ namespace codi {
    * @param[in]     line  Line inside the file where the exception was generated.
    * @param[in]  message  The exception message and the arguments for the formatting in the message.
    */
-  CODI_CUDAFunctionAttributes inline void outputException(char const function[], char const file[], int const line,
-                                                      char const* message, ...) {
-    fprintf(stderr, "Error in function %s (%s:%d)\nThe message is: ", function, file, line);
+  CODI_CUDAFunctionAttributes inline void outputExceptionOrWarning(char const function[], char const file[],
+                                                                   int const line, bool warning, char const* message,
+                                                                   ...) {
+#if !CODI_CUDA
+    char const* kind = (warning) ? "Warning" : "Error";
+    fprintf(stderr, "%s in function %s (%s:%d)\nThe message is: ", kind, function, file, line);
 
     va_list vl;
     va_start(vl, message);
@@ -96,11 +91,25 @@ namespace codi {
     va_end(vl);
 
     fprintf(stderr, "\n");
-    exit(-1);
-  }
-#else
-  #define CODI_EXCEPTION(...) /* do nothing */
+    if (!warning) {
+      exit(-1);
+    }
 #endif
+  }
+
+/**
+ * @brief Generates an exception.
+ *
+ * @param ...  Arguments for a printf like output and format.
+ */
+#define CODI_EXCEPTION(...) outputExceptionOrWarning(__func__, __FILE__, __LINE__, false, __VA_ARGS__)
+
+/**
+ * @brief Generates a warning.
+ *
+ * @param ...  Arguments for a printf like output and format.
+ */
+#define CODI_WARNING(...) outputExceptionOrWarning(__func__, __FILE__, __LINE__, true, __VA_ARGS__)
 
 #if defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
   #define DEPRECATE(foo, msg) foo __attribute__((deprecated(msg)))

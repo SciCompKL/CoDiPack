@@ -41,6 +41,7 @@
 #include "../data/position.hpp"
 #include "../interfaces/externalFunctionTapeInterface.hpp"
 #include "../misc/vectorAccessInterface.hpp"
+#include "lowLevelFunctionEntry.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -94,6 +95,8 @@ namespace codi {
    * can also be used for the gradient data access.
    *
    * The delete function is called when the entry of the tape for the external function is deleted.
+   *
+   * @tparam T_Tape        The associated tape type.
    */
   template<typename T_Tape>
   struct ExternalFunction : public ExternalFunctionInternalData {
@@ -132,7 +135,7 @@ namespace codi {
       }
 
       /// Calls the reverse function if not nullptr, otherwise throws a CODI_EXCEPTION.
-      void evaluateReverse(Tape* tape, VectorAccess* adjointInterface) {
+      void evaluateReverse(Tape* tape, VectorAccess* adjointInterface) const {
         if (nullptr != funcReverse) {
           funcReverse(tape, data, adjointInterface);
         } else {
@@ -142,7 +145,7 @@ namespace codi {
       }
 
       /// Calls the forward function if not nullptr, otherwise throws a CODI_EXCEPTION.
-      void evaluateForward(Tape* tape, VectorAccess* adjointInterface) {
+      void evaluateForward(Tape* tape, VectorAccess* adjointInterface) const {
         if (nullptr != funcForward) {
           funcForward(tape, data, adjointInterface);
         } else {
@@ -152,12 +155,70 @@ namespace codi {
       }
 
       /// Calls the primal function if not nullptr, otherwise throws a CODI_EXCEPTION.
-      void evaluatePrimal(Tape* tape, VectorAccess* adjointInterface) {
+      void evaluatePrimal(Tape* tape, VectorAccess* adjointInterface) const {
         if (nullptr != funcPrimal) {
           funcPrimal(tape, data, adjointInterface);
         } else {
           CODI_EXCEPTION("Calling an external function in primal mode without providing a primal evaluation function.");
         }
+      }
+  };
+
+  /**
+   *  @brief Low level function entry implementation for external functions.
+   *
+   *  Stores the ExternalFunction object in the byte data stream.
+   *
+   * @tparam T_Tape        The associated tape type.
+   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   *
+   */
+  template<typename T_Tape, typename T_Real, typename T_Identifier>
+  struct ExternalFunctionLowLevelEntryMapper {
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See ExternalFunctionLowLevelEntryMapper.
+      using Real = CODI_DD(T_Real, double);             ///< See ExternalFunctionLowLevelEntryMapper.
+      using Identifier = CODI_DD(T_Identifier, int);    ///< See ExternalFunctionLowLevelEntryMapper.
+
+      using ExtFunc = ExternalFunction<Tape>;  ///< Abbreviation for ExternalFunction.
+      /// Shortcut for VectorAccessInterface.
+      using VectorAccess = VectorAccessInterface<typename Tape::Real, typename Tape::Identifier>;
+
+      /// Recovers the external function data and calls evaluateForward on it.
+      CODI_INLINE static void forward(Tape* tape, ByteDataView& data, VectorAccess* access) {
+        ExtFunc* extFunc = data.read<ExtFunc>(1);
+        extFunc->evaluateForward(tape, access);
+      }
+
+      /// Recovers the external function data and calls evaluatePrimal on it.
+      CODI_INLINE static void primal(Tape* tape, ByteDataView& data, VectorAccess* access) {
+        ExtFunc* extFunc = data.read<ExtFunc>(1);
+        extFunc->evaluatePrimal(tape, access);
+      }
+
+      /// Recovers the external function data and calls evaluateReverse on it.
+      CODI_INLINE static void reverse(Tape* tape, ByteDataView& data, VectorAccess* access) {
+        ExtFunc* extFunc = data.read<ExtFunc>(1);
+        extFunc->evaluateReverse(tape, access);
+      }
+
+      /// Recovers the external function data and calls deleteData on it.
+      CODI_INLINE static void del(Tape* tape, ByteDataView& data) {
+        ExtFunc* extFunc = data.read<ExtFunc>(1);
+        extFunc->deleteData(tape);
+      }
+
+      /// Store an external function on the tape.
+      CODI_INLINE static void store(Tape& tape, Config::LowLevelFunctionToken token, ExtFunc const& extFunc) {
+        ByteDataView data = {};
+        tape.pushLowLevelFunction(token, sizeof(ExtFunc), data);
+
+        data.write(extFunc);
+      }
+
+      /// Create the function entry for the tape registration.
+      CODI_INLINE static LowLevelFunctionEntry<Tape, Real, Identifier> create() {
+        return LowLevelFunctionEntry<Tape, Real, Identifier>(reverse, forward, primal, del);
       }
   };
 }

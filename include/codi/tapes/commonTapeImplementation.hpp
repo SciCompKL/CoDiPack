@@ -38,14 +38,17 @@
 #include <type_traits>
 
 #include "../config.h"
+#include "../misc/byteDataView.hpp"
 #include "../misc/eventSystem.hpp"
 #include "../misc/fileIo.hpp"
 #include "../misc/macros.hpp"
+#include "../misc/temporaryMemory.hpp"
 #include "data/dataInterface.hpp"
 #include "data/position.hpp"
 #include "indices/indexManagerInterface.hpp"
 #include "interfaces/fullTapeInterface.hpp"
 #include "misc/externalFunction.hpp"
+#include "misc/lowLevelFunctionEntry.hpp"
 #include "misc/vectorAccessInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -84,15 +87,22 @@ namespace codi {
 
       using TapeTypes = CODI_DD(T_TapeTypes, TapeTypesInterface);  ///< See CommonTapeTypes.
 
-      using NestedData = typename TapeTypes::NestedData;  ///< See TapeTypesInterface.
       template<typename Chunk, typename Nested>
       using Data = typename TapeTypes::template Data<Chunk, Nested>;  ///< See TapeTypesInterface.
 
-      using NestedPosition = typename NestedData::Position;  ///< See TapeTypesInterface.
-      using ExternalFunctionChunk =
-          Chunk2<ExternalFunctionInternalData, NestedPosition>;  ///< See Data entries for external functions.
-      using ExternalFunctionData = Data<ExternalFunctionChunk, NestedData>;  ///< Data vector for external functions.
-      using Position = typename ExternalFunctionData::Position;              ///< Global position of the tape.
+      using NestedData = typename TapeTypes::NestedData;  ///< See TapeTypesInterface.
+
+      /// Token and size data chunk.
+      using LowLevelFunctionInfoChunk = Chunk2<Config::LowLevelFunctionToken, Config::LowLevelFunctionDataSize>;
+      /// Token and size data for low level functions.
+      using LowLevelFunctionInfoData = Data<LowLevelFunctionInfoChunk, NestedData>;
+
+      /// Byte data chunk.
+      using LowLevelFunctionByteChunk = Chunk1<char>;
+      /// Byte data for low level functions.
+      using LowLevelFunctionByteData = Data<LowLevelFunctionByteChunk, LowLevelFunctionInfoData>;
+
+      using Position = typename LowLevelFunctionByteData::Position;  ///< Global position of the tape.
   };
 
   /**
@@ -126,26 +136,38 @@ namespace codi {
       using Real = typename ImplTapeTypes::Real;              ///< See TapeTypesInterface.
       using Gradient = typename ImplTapeTypes::Gradient;      ///< See TapeTypesInterface.
       using Identifier = typename ImplTapeTypes::Identifier;  ///< See TapeTypesInterface.
-      using NestedData = typename ImplTapeTypes::NestedData;  ///< See TapeTypesInterface.
-      using NestedPosition = typename NestedData::Position;   ///< See DataInterface.
 
-      using ExternalFunctionData =
-          typename CommonTapeTypes<ImplTapeTypes>::ExternalFunctionData;   ///< See CommonTapeTypes.
+      /// See CommonTapeTypes.
+      using LowLevelFunctionInfoData = typename CommonTapeTypes<ImplTapeTypes>::LowLevelFunctionInfoData;
+      /// See CommonTapeTypes.
+      using LowLevelFunctionByteData = typename CommonTapeTypes<ImplTapeTypes>::LowLevelFunctionByteData;
       using Position = typename CommonTapeTypes<ImplTapeTypes>::Position;  ///< See TapeTypesInterface.
+
+      using NestedData = LowLevelFunctionByteData;                         ///< Shorthand.
+      using NestedPosition = typename LowLevelFunctionByteData::Position;  ///< Shorthand.
 
     protected:
 
       bool active;                       ///< Whether or not the tape is in recording mode.
       std::set<TapeParameters> options;  ///< All options.
 
-      ExternalFunctionData externalFunctionData;  ///< Data vector for external function data.
+      LowLevelFunctionInfoData llfInfoData;  ///< Token and size data for low level functions.
+      LowLevelFunctionByteData llfByteData;  ///< Byte data for low level functions.
 
       Real manualPushLhsValue;             ///< For storeManual, remember the value assigned to the lhs.
       Identifier manualPushLhsIdentifier;  ///< For storeManual, remember the identifier assigned to the lhs.
       size_t manualPushGoal;               ///< Store the number of expected pushes after a storeManual call.
       size_t manualPushCounter;            ///< Count the pushes after storeManual, to identify the last push.
 
+      TemporaryMemory allocator;  ///< Allocator for temporary memory.
+
+      /// Lookup table for low level function.
+      static std::vector<LowLevelFunctionEntry<Impl, Real, Identifier>>* lowLevelFunctionLookup;
+
     private:
+
+      /// External function token is always added first.
+      static Config::LowLevelFunctionToken constexpr EXTERNAL_FUNCTION_TOKEN = 0;
 
       CODI_INLINE Impl const& cast() const {
         return static_cast<Impl const&>(*this);
@@ -163,9 +185,9 @@ namespace codi {
           cast().clearAdjoints(adjointsManagement);
         }
 
-        deleteExternalFunctionUserData(cast().getZeroPosition());
+        deleteLowLevelFunctionData(cast().getZeroPosition());
 
-        externalFunctionData.reset();
+        llfByteData.reset();
 
         // Requires extra reset since the default vector implementation forwards to resetTo
         cast().indexManager.get().reset();
@@ -209,12 +231,26 @@ namespace codi {
       CommonTapeImplementation()
           : active(false),
             options(),
-            externalFunctionData(Config::SmallChunkSize),
+            llfInfoData(Config::SmallChunkSize),
+            llfByteData(Config::ByteDataChunkSize),
             manualPushLhsValue(),
             manualPushLhsIdentifier(),
             manualPushGoal(),
-            manualPushCounter() {
-        options.insert(TapeParameters::ExternalFunctionsSize);
+            manualPushCounter(),
+            allocator() {
+        options.insert(TapeParameters::LLFByteDataSize);
+        options.insert(TapeParameters::LLFInfoDataSize);
+
+        if (nullptr == lowLevelFunctionLookup) {
+          lowLevelFunctionLookup = new std::vector<LowLevelFunctionEntry<Impl, Real, Identifier>>();
+
+          // Add external function token. So EXTERNAL_FUNCTION_TOKEN is always zero.
+          Config::LowLevelFunctionToken token =
+              registerLowLevelFunction(ExternalFunctionLowLevelEntryMapper<Impl, Real, Identifier>::create());
+          if (token != EXTERNAL_FUNCTION_TOKEN) {
+            CODI_EXCEPTION("External function token is not zero.");
+          }
+        }
       }
 
       /// Do not allow copy construction.
@@ -306,8 +342,10 @@ namespace codi {
       TapeValues getTapeValues() const {
         TapeValues values = cast().internalGetTapeValues();
 
-        values.addSection("External function entries");
-        externalFunctionData.addToTapeValues(values);
+        values.addSection("Low level function info data entries");
+        llfInfoData.addToTapeValues(values);
+        values.addSection("Low level function byte data entries");
+        llfByteData.addToTapeValues(values);
 
         return values;
       }
@@ -329,7 +367,7 @@ namespace codi {
       void swap(Impl& other) {
         std::swap(active, other.active);
 
-        externalFunctionData.swap(other.externalFunctionData);
+        llfByteData.swap(other.llfByteData);
       }
 
       /// \copydoc codi::DataManagementTapeInterface::resetHard()
@@ -342,7 +380,7 @@ namespace codi {
         // Then perform the hard resets.
         impl.deleteAdjointVector();
 
-        externalFunctionData.resetHard();
+        llfByteData.resetHard();
       }
 
       /// @}
@@ -367,19 +405,19 @@ namespace codi {
       void writeToFile(const std::string& filename) {
         FileIo io(filename, true);
 
-        externalFunctionData.forEachChunk(writeFunction, true, io);
+        llfByteData.forEachChunk(writeFunction, true, io);
       }
 
       /// \copydoc codi::DataManagementTapeInterface::readFromFile()
       void readFromFile(const std::string& filename) {
         FileIo io(filename, false);
 
-        externalFunctionData.forEachChunk(readFunction, true, io);
+        llfByteData.forEachChunk(readFunction, true, io);
       }
 
       /// \copydoc codi::DataManagementTapeInterface::deleteData()
       void deleteData() {
-        externalFunctionData.forEachChunk(deleteFunction, true);
+        llfByteData.forEachChunk(deleteFunction, true);
       }
 
       /// \copydoc codi::DataManagementTapeInterface::getAvailableParameters()
@@ -388,11 +426,20 @@ namespace codi {
       }
 
       /// \copydoc codi::DataManagementTapeInterface::getParameter()
-      /// <br><br> Implementation: Handles ExternalFunctionsSize
+      /// <br><br> Implementation: Handles LLFByteDataSize, LLFInfoDataSize
       size_t getParameter(TapeParameters parameter) const {
         switch (parameter) {
+          case TapeParameters::LLFByteDataSize:
+            return llfByteData.getDataSize();
+            break;
+          case TapeParameters::LLFInfoDataSize:
+            return llfInfoData.getDataSize();
+            break;
           case TapeParameters::ExternalFunctionsSize:
-            return externalFunctionData.getDataSize();
+            CODI_WARNING(
+                "Tape parameter 'ExternalFunctionsSize' no longer supported. Use 'LLFInfoDataSize' and "
+                "'LLFByteDataSize' instead.");
+            return 0;
             break;
           default:
             CODI_EXCEPTION("Tried to get undefined parameter for tape.");
@@ -407,11 +454,19 @@ namespace codi {
       }
 
       /// \copydoc codi::DataManagementTapeInterface::setParameter()
-      /// <br><br> Implementation: Handles ExternalFunctionsSize
+      /// <br><br> Implementation: Handles LLFByteDataSize, LLFInfoDataSize
       void setParameter(TapeParameters parameter, size_t value) {
         switch (parameter) {
+          case TapeParameters::LLFByteDataSize:
+            llfByteData.resize(value);
+            break;
+          case TapeParameters::LLFInfoDataSize:
+            llfInfoData.resize(value);
+            break;
           case TapeParameters::ExternalFunctionsSize:
-            externalFunctionData.resize(value);
+            CODI_WARNING(
+                "Tape parameter 'ExternalFunctionsSize' is no longer supported. Use 'LLFInfoDataSize' and "
+                "'LLFByteDataSize' instead.");
             break;
           default:
             CODI_EXCEPTION("Tried to set undefined parameter for tape.");
@@ -428,16 +483,100 @@ namespace codi {
 
       /// @}
       /*******************************************************************************/
+      /// @name Functions from LowLevelFunctionTapeInterface
+      /// @{
+
+    protected:
+
+      /// @brief Called by the implementing tapes to store a low level function. The size is reserved and allocated.
+      /// The data view is populated with the pointer and can be used to write the data.
+      CODI_INLINE void internalStoreLowLevelFunction(Config::LowLevelFunctionToken token, size_t size,
+                                                     ByteDataView& dataView) {
+        codiAssert((size_t)token < lowLevelFunctionLookup->size());
+        if (size >= Config::LowLevelFunctionDataSizeMax) {
+          CODI_EXCEPTION(
+              "Requested size for low level function is to big. Increase "
+              "codi::Config::LowLevelFunctionDataSize or perform a dynamic memory allocation.");
+        }
+
+        llfInfoData.reserveItems(1);
+        llfByteData.reserveItems(size);
+
+        llfInfoData.pushData(token, size);
+
+        char* dataPointer = nullptr;
+        llfByteData.getDataPointers(dataPointer);
+        dataView.init(dataPointer, 0, size);
+        llfByteData.addDataSize(size);
+      }
+
+      /// @brief Called by the implementing tapes during a tape evaluation when a low level function statement has been
+      /// reached.
+      template<LowLevelFunctionEntryCallKind callType, typename... Args>
+      CODI_INLINE static void callLowLevelFunction(Impl& impl, bool forward,
+                                                   /* data from low level function byte data vector */
+                                                   size_t& curLLFByteDataPos, char* dataPtr,
+                                                   /* data from low level function info data vector */
+                                                   size_t& curLLFTInfoDataPos,
+                                                   Config::LowLevelFunctionToken* const tokenPtr,
+                                                   Config::LowLevelFunctionDataSize* const dataSizePtr,
+                                                   Args&&... args) {
+        if (!forward) {
+          curLLFTInfoDataPos -= 1;
+          curLLFByteDataPos -= dataSizePtr[curLLFTInfoDataPos];
+        }
+
+        size_t endPos = curLLFByteDataPos + dataSizePtr[curLLFTInfoDataPos];
+        ByteDataView dataView(dataPtr, curLLFByteDataPos, endPos);
+
+        Config::LowLevelFunctionToken id = tokenPtr[curLLFTInfoDataPos];
+        LowLevelFunctionEntry<Impl, Real, Identifier> const& func = (*lowLevelFunctionLookup)[id];
+        if (func.template has<callType>()) CODI_Likely {
+          func.template call<callType>(&impl, dataView, std::forward<Args>(args)...);
+
+          codiAssert(endPos == dataView.getPosition());
+        } else if (LowLevelFunctionEntryCallKind::Delete == callType) CODI_Unlikely {
+          // No delete registered. Data is skiped by the curLLFByteDataPos update.
+        } else CODI_Unlikely {
+          CODI_EXCEPTION("Requested call is not supported for low level function with token '%d'.", (int)id);
+        }
+
+        if (forward) {
+          curLLFByteDataPos += dataSizePtr[curLLFTInfoDataPos];
+          curLLFTInfoDataPos += 1;
+        }
+      }
+
+    public:
+
+      /// @copydoc LowLevelFunctionTapeInterface::getTemporaryMemory()
+      CODI_INLINE TemporaryMemory& getTemporaryMemory() {
+        return allocator;
+      }
+
+      /// @copydoc LowLevelFunctionTapeInterface::registerLowLevelFunction()
+      CODI_INLINE Config::LowLevelFunctionToken registerLowLevelFunction(
+          LowLevelFunctionEntry<Impl, Real, Identifier> const& entry) {
+        codiAssert(lowLevelFunctionLookup->size() < Config::LowLevelFunctionTokenMaxSize);
+
+        Config::LowLevelFunctionToken token =
+            static_cast<Config::LowLevelFunctionToken>(lowLevelFunctionLookup->size());
+        lowLevelFunctionLookup->push_back(entry);
+
+        return token;
+      }
+
+      // pushLowLevelFunction is not implemented.
+
+      /// @}
+      /*******************************************************************************/
       /// @name Functions from ExternalFunctionTapeInterface
       /// @{
 
       /// \copydoc codi::ExternalFunctionTapeInterface::pushExternalFunction()
       void pushExternalFunction(ExternalFunction<Impl> const& extFunc) {
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
-          externalFunctionData.reserveItems(1);
-          NestedPosition innerPosition =
-              externalFunctionData.template extractPosition<NestedPosition>(externalFunctionData.getPosition());
-          externalFunctionData.pushData(extFunc, innerPosition);
+          ExternalFunctionLowLevelEntryMapper<Impl, Real, Identifier>::store(cast(), EXTERNAL_FUNCTION_TOKEN, extFunc);
         }
       }
 
@@ -488,12 +627,12 @@ namespace codi {
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::getPosition()
       Position getPosition() const {
-        return externalFunctionData.getPosition();
+        return llfByteData.getPosition();
       }
 
       /// \copydoc codi::PositionalEvaluationTapeInterface::getZeroPosition()
       Position getZeroPosition() const {
-        return externalFunctionData.getZeroPosition();
+        return llfByteData.getZeroPosition();
       }
 
       /// @}
@@ -501,16 +640,24 @@ namespace codi {
     protected:
 
       /// Delete all external function data up to `pos`.
-      void deleteExternalFunctionUserData(Position const& pos) {
+      void deleteLowLevelFunctionData(Position const& pos) {
         // Clear external function data.
-        auto deleteFunc = [this](ExternalFunctionInternalData* extFunc, NestedPosition const* endInnerPos) {
-          CODI_UNUSED(endInnerPos);
+        auto deleteFunc = [this](
+                              /* data from low level function byte data vector */
+                              size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+                              /* data from low level function info data vector */
+                              size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
+                              Config::LowLevelFunctionToken* const tokenPtr,
+                              Config::LowLevelFunctionDataSize* const dataSizePtr) {
+          CODI_UNUSED(endLLFByteDataPos);
 
-          /* we just need to call the delete function */
-          ((ExternalFunction<Impl>*)extFunc)->deleteData(&cast());
+          while (curLLFInfoDataPos > endLLFInfoDataPos) {
+            callLowLevelFunction<LowLevelFunctionEntryCallKind::Delete>(cast(), false, curLLFByteDataPos, dataPtr,
+                                                                        curLLFInfoDataPos, tokenPtr, dataSizePtr);
+          }
         };
 
-        externalFunctionData.forEachReverse(cast().getPosition(), pos, deleteFunc);
+        llfByteData.template evaluateReverse<1>(cast().getPosition(), pos, deleteFunc);
       }
 
     public:
@@ -527,9 +674,9 @@ namespace codi {
           impl.clearAdjoints(impl.getPosition(), pos, adjointsManagement);
         }
 
-        deleteExternalFunctionUserData(pos);
+        deleteLowLevelFunctionData(pos);
 
-        externalFunctionData.resetTo(pos);
+        llfByteData.resetTo(pos);
       }
 
       // clearAdjoints and evaluate are not implemented.
@@ -565,67 +712,15 @@ namespace codi {
       /// @{
 
       /// Initialize the base class
-      void init(NestedData* nested) {
-        externalFunctionData.setNested(nested);
-      }
-
-      /// Evaluate all external functions from start to end and call `func` for the regions in between.
-      template<typename Function, typename... Args>
-      CODI_INLINE void internalEvaluatePrimal_Step1_ExtFunc(const Position& start, const Position& end, Function func,
-                                                            VectorAccessInterface<Real, Identifier>* vectorAccess,
-                                                            Args&&... args) {
-        NestedPosition curInnerPos = start.inner;
-        auto evalFunc = [&](ExternalFunctionInternalData* extFunc, const NestedPosition* endInnerPos) {
-          func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
-
-          ((ExternalFunction<Impl>*)extFunc)->evaluatePrimal(&cast(), vectorAccess);
-
-          curInnerPos = *endInnerPos;
-        };
-        externalFunctionData.forEachForward(start, end, evalFunc);
-
-        // Iterate over the remainder. Covers also the case of no external functions.
-        func(curInnerPos, end.inner, std::forward<Args>(args)...);
-      }
-
-      /// Evaluate all external functions from start to end and call `func` for the regions in between.
-      template<typename Function, typename... Args>
-      CODI_INLINE void internalEvaluateReverse_Step1_ExtFunc(const Position& start, const Position& end, Function func,
-                                                             VectorAccessInterface<Real, Identifier>* vectorAccess,
-                                                             Args&&... args) {
-        NestedPosition curInnerPos = start.inner;
-        auto evalFunc = [&](ExternalFunctionInternalData* extFunc, const NestedPosition* endInnerPos) {
-          func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
-
-          ((ExternalFunction<Impl>*)extFunc)->evaluateReverse(&cast(), vectorAccess);
-
-          curInnerPos = *endInnerPos;
-        };
-        externalFunctionData.forEachReverse(start, end, evalFunc);
-
-        // Iterate over the remainder. Covers also the case of no external functions.
-        func(curInnerPos, end.inner, std::forward<Args>(args)...);
-      }
-
-      /// Evaluate all external functions from start to end and call `func` for the regions in between.
-      template<typename Function, typename... Args>
-      CODI_INLINE void internalEvaluateForward_Step1_ExtFunc(const Position& start, const Position& end, Function func,
-                                                             VectorAccessInterface<Real, Identifier>* vectorAccess,
-                                                             Args&&... args) {
-        NestedPosition curInnerPos = start.inner;
-        auto evalFunc = [&](ExternalFunctionInternalData* extFunc, const NestedPosition* endInnerPos) {
-          func(curInnerPos, *endInnerPos, std::forward<Args>(args)...);
-
-          ((ExternalFunction<Impl>*)extFunc)->evaluateForward(&cast(), vectorAccess);
-
-          curInnerPos = *endInnerPos;
-        };
-        externalFunctionData.forEachForward(start, end, evalFunc);
-
-        // Iterate over the remainder. Covers also the case of no external functions.
-        func(curInnerPos, end.inner, std::forward<Args>(args)...);
+      void init(typename ImplTapeTypes::NestedData* nested) {
+        llfInfoData.setNested(nested);
+        llfByteData.setNested(&llfInfoData);
       }
 
       /// @}
   };
+
+  template<typename ImplTapeTypes, typename Impl>
+  std::vector<LowLevelFunctionEntry<Impl, typename ImplTapeTypes::Real, typename ImplTapeTypes::Identifier>>*
+      CommonTapeImplementation<ImplTapeTypes, Impl>::lowLevelFunctionLookup = nullptr;
 }

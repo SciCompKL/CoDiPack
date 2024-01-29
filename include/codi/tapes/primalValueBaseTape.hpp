@@ -121,13 +121,10 @@ namespace codi {
    * left which need to be implemented by the final classes. These methods depend significantly on the index management
    * scheme and are performance critical.
    *
-   * Tape evaluations are performed in three steps with two wrapper steps beforehand. Each methods calls the next
-   * method:
+   * Tape evaluations are performed in several steps. Each methods calls the next method:
    * - evaluate
    * - internalEvaluate*
-   * - internalEvaluate*_Step1_ExtFunc
-   * - internalEvaluate*_Step2_DataExtraction
-   * - internalEvaluate*_Step3_EvalStatements
+   * - internalEvaluate*_EvalStatements
    * The placeholder stands for Reverse, Forward, or Primal.
    *
    * @tparam T_TapeTypes needs to implement PrimalValueTapeTypes.
@@ -210,15 +207,15 @@ namespace codi {
 
       /// Perform a forward evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluateForward_Step3_EvalStatements(Args&&... args);
+      static void internalEvaluateForward_EvalStatements(Args&&... args);
 
       /// Perform a primal evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluatePrimal_Step3_EvalStatements(Args&&... args);
+      static void internalEvaluatePrimal_EvalStatements(Args&&... args);
 
       /// Perform a reverse evaluation of the tape. Arguments are from the recursive eval methods of the DataInterface.
       template<typename... Args>
-      static void internalEvaluateReverse_Step3_EvalStatements(Args&&... args);
+      static void internalEvaluateReverse_EvalStatements(Args&&... args);
 
       /// Reset the primal values to the given position.
       void internalResetPrimalValues(Position const& pos);
@@ -627,17 +624,7 @@ namespace codi {
       };
 
       /// Additional wrapper that triggers compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluateForward_Step3_EvalStatements,
-                         Impl::internalEvaluateForward_Step3_EvalStatements);
-
-      /// Forward evaluation of an inner tape part between two external functions.
-      CODI_INLINE static void internalEvaluateForward_Step2_DataExtraction(NestedPosition const& start,
-                                                                           NestedPosition const& end, Impl& tape,
-                                                                           Real* primalData, ADJOINT_VECTOR_TYPE* data,
-                                                                           ConstantValueData& constantValueData) {
-        Wrap_internalEvaluateForward_Step3_EvalStatements evalFunc{};
-        constantValueData.evaluateForward(start, end, evalFunc, tape, primalData, data);
-      }
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluateForward_EvalStatements, Impl::internalEvaluateForward_EvalStatements);
 
       /// Internal method for the forward evaluation of the whole tape.
       template<bool copyPrimal, typename Adjoint>
@@ -657,8 +644,8 @@ namespace codi {
         EventSystem<Impl>::notifyTapeEvaluateListeners(
             cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
-        Base::internalEvaluateForward_Step1_ExtFunc(start, end, internalEvaluateForward_Step2_DataExtraction,
-                                                    &vectorAccess, cast(), primalData, dataVector, constantValueData);
+        Wrap_internalEvaluateForward_EvalStatements evalFunc{};
+        Base::llfByteData.evaluateForward(start, end, evalFunc, cast(), primalData, dataVector);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess,
                                                        EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
@@ -685,17 +672,7 @@ namespace codi {
       };
 
       /// Additional wrapper that triggers compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluateReverse_Step3_EvalStatements,
-                         Impl::internalEvaluateReverse_Step3_EvalStatements);
-
-      /// Reverse evaluation of an inner tape part between two external functions.
-      CODI_INLINE static void internalEvaluateReverse_Step2_DataExtraction(NestedPosition const& start,
-                                                                           NestedPosition const& end, Impl& tape,
-                                                                           Real* primalData, ADJOINT_VECTOR_TYPE* data,
-                                                                           ConstantValueData& constantValueData) {
-        Wrap_internalEvaluateReverse_Step3_EvalStatements evalFunc;
-        constantValueData.evaluateReverse(start, end, evalFunc, tape, primalData, data);
-      }
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluateReverse_EvalStatements, Impl::internalEvaluateReverse_EvalStatements);
 
       /// Internal method for the reverse evaluation of the whole tape.
       template<bool copyPrimal, typename Adjoint>
@@ -714,8 +691,8 @@ namespace codi {
         EventSystem<Impl>::notifyTapeEvaluateListeners(
             cast(), start, end, &vectorAccess, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
-        Base::internalEvaluateReverse_Step1_ExtFunc(start, end, internalEvaluateReverse_Step2_DataExtraction,
-                                                    &vectorAccess, cast(), primalData, dataVector, constantValueData);
+        Wrap_internalEvaluateReverse_EvalStatements evalFunc;
+        Base::llfByteData.evaluateReverse(start, end, evalFunc, cast(), primalData, dataVector);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &vectorAccess,
                                                        EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
@@ -1029,8 +1006,8 @@ namespace codi {
             // emit statement event
             Real* jacobians;
             Identifier* rhsIdentifiers;
-            passiveValueData.getDataPointers(passiveValueData.reserveItems(0), jacobians);
-            rhsIdentiferData.getDataPointers(rhsIdentiferData.reserveItems(0), rhsIdentifiers);
+            passiveValueData.getDataPointers(jacobians);
+            rhsIdentiferData.getDataPointers(rhsIdentifiers);
             jacobians -= this->manualPushGoal;
             rhsIdentifiers -= this->manualPushGoal;
 
@@ -1058,6 +1035,24 @@ namespace codi {
         primalEntry = lhsValue;
 
         cast().initializeManualPushData(lhsValue, lhsIndex, size);
+      }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from LowLevelFunctionTapeInterface
+      /// @{
+
+      /// @copydoc LowLevelFunctionTapeInterface::pushLowLevelFunction
+      CODI_INLINE void pushLowLevelFunction(Config::LowLevelFunctionToken token, size_t size, ByteDataView& data) {
+        statementData.reserveItems(1);
+
+        Base::internalStoreLowLevelFunction(token, size, data);
+
+        Identifier lhsIndex = Identifier();
+        if (LinearIndexHandling) {
+          indexManager.get().template assignIndex<Impl>(lhsIndex);
+        }
+        cast().pushStmtData(lhsIndex, Config::StatementLowLevelFunctionTag, Real(), EvalHandle());
       }
 
       /// @}
@@ -1137,17 +1132,7 @@ namespace codi {
        */
 
       /// Wrapper helper for improved compiler optimizations.
-      CODI_WRAP_FUNCTION(Wrap_internalEvaluatePrimal_Step3_EvalStatements,
-                         Impl::internalEvaluatePrimal_Step3_EvalStatements);
-
-      /// Start for primal evaluation between external function.
-      CODI_INLINE static void internalEvaluatePrimal_Step2_DataExtraction(NestedPosition const& start,
-                                                                          NestedPosition const& end, Impl& tape,
-                                                                          Real* primalData,
-                                                                          ConstantValueData& constantValueData) {
-        Wrap_internalEvaluatePrimal_Step3_EvalStatements evalFunc{};
-        constantValueData.evaluateForward(start, end, evalFunc, tape, primalData);
-      }
+      CODI_WRAP_FUNCTION(Wrap_internalEvaluatePrimal_EvalStatements, Impl::internalEvaluatePrimal_EvalStatements);
 
     public:
 
@@ -1166,9 +1151,8 @@ namespace codi {
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess,
                                                        EventHints::EvaluationKind::Primal, EventHints::Endpoint::Begin);
 
-        Base::internalEvaluatePrimal_Step1_ExtFunc(start, end,
-                                                   PrimalValueBaseTape::internalEvaluatePrimal_Step2_DataExtraction,
-                                                   &primalAdjointAccess, cast(), primals.data(), constantValueData);
+        Wrap_internalEvaluatePrimal_EvalStatements evalFunc{};
+        Base::llfByteData.evaluateForward(start, end, evalFunc, cast(), primals.data());
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &primalAdjointAccess,
                                                        EventHints::EvaluationKind::Primal, EventHints::Endpoint::End);
@@ -1475,7 +1459,7 @@ namespace codi {
       CREATE_EXPRESSION(240), CREATE_EXPRESSION(241), CREATE_EXPRESSION(242), CREATE_EXPRESSION(243),
       CREATE_EXPRESSION(244), CREATE_EXPRESSION(245), CREATE_EXPRESSION(246), CREATE_EXPRESSION(247),
       CREATE_EXPRESSION(248), CREATE_EXPRESSION(249), CREATE_EXPRESSION(250), CREATE_EXPRESSION(251),
-      CREATE_EXPRESSION(252), CREATE_EXPRESSION(253)};
+      CREATE_EXPRESSION(252)};
 
 #undef CREATE_EXPRESSION
 }
