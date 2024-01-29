@@ -102,14 +102,14 @@ namespace codi {
  *
  * @param ...  Arguments for a printf like output and format.
  */
-#define CODI_EXCEPTION(...) outputExceptionOrWarning(__func__, __FILE__, __LINE__, false, __VA_ARGS__)
+#define CODI_EXCEPTION(...) ::codi::outputExceptionOrWarning(__func__, __FILE__, __LINE__, false, __VA_ARGS__)
 
 /**
  * @brief Generates a warning.
  *
  * @param ...  Arguments for a printf like output and format.
  */
-#define CODI_WARNING(...) outputExceptionOrWarning(__func__, __FILE__, __LINE__, true, __VA_ARGS__)
+#define CODI_WARNING(...) ::codi::outputExceptionOrWarning(__func__, __FILE__, __LINE__, true, __VA_ARGS__)
 
 #if defined(__GNUC__) || defined(__clang__) || defined(__INTEL_COMPILER)
   #define DEPRECATE(foo, msg) foo __attribute__((deprecated(msg)))

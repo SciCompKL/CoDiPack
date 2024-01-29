@@ -36,6 +36,7 @@
 
 #include "../../config.h"
 #include "../../misc/enumBitset.hpp"
+#include "../../misc/exceptions.hpp"
 #include "../../misc/macros.hpp"
 
 /** \copydoc codi::Namespace */
@@ -100,8 +101,6 @@ namespace std {
 
   /// Convert a TagFlags object to string.
   CODI_INLINE std::string to_string(codi::TagFlags const& flag) {
-    using codi::outputException;
-
     // clang-format off
     switch (flag) {
       case codi::TagFlags::DoNotChange: return "DoNotChange";
