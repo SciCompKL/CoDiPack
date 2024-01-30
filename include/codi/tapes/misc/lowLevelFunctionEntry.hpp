@@ -97,6 +97,7 @@ namespace codi {
       /// Check if a function is provided for the callType.
       template<LowLevelFunctionEntryCallKind callType, typename... Args>
       bool has(Args&&... args) const {
+        CODI_UNUSED(args...);
         return nullptr != functions[(size_t)callType];
       }
   };

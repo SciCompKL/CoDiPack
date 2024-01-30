@@ -128,11 +128,15 @@ namespace codi {
 
       /// Do nothing.
       size_t getParameter(TapeParameters parameter) const {
+        CODI_UNUSED(parameter);
+
         return 0;
       }
 
       /// Do nothing.
       bool hasParameter(TapeParameters parameter) const {
+        CODI_UNUSED(parameter);
+
         return false;
       }
 

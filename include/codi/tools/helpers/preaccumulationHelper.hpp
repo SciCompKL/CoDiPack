@@ -435,6 +435,8 @@ namespace codi {
       /// Reverts the tags on all input and output values.
       template<typename... Outputs>
       void finish(bool const storeAdjoints, Outputs&... outputs) {
+        CODI_UNUSED(storeAdjoints);
+
         Tape& tape = getTape();
 
         if (tape.isActive() && tape.isPreaccumulationHandlingEnabled()) {

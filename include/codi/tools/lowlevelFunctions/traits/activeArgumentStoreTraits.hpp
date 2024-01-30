@@ -298,7 +298,7 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::restore()
       CODI_INLINE static void restore(ByteDataView* store, TemporaryMemory& allocator, size_t size,
                                       RestoreActions const& actions, ArgumentStore& data) {
-        CODI_UNUSED_ARG(size);
+        CODI_UNUSED(size);
 
         PointerTraits::restore(store, allocator, 1, actions, data.base);
       }
@@ -306,7 +306,7 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::store()
       CODI_INLINE static void store(ByteDataView* dataStore, TemporaryMemory& allocator, T const& value, size_t size,
                                     StoreActions const& actions, ArgumentStore& data) {
-        CODI_UNUSED_ARG(size);
+        CODI_UNUSED(size);
 
         PointerTraits::store(dataStore, allocator, value, 1, actions, data.base);
       }
@@ -321,7 +321,7 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::setExternalFunctionOutput()
       CODI_INLINE static void setExternalFunctionOutput(bool tapeActive, T& value, size_t size, Identifier& identifier,
                                                         Real& primal, Real& oldPrimals) {
-        CODI_UNUSED_ARG(size);
+        CODI_UNUSED(size);
 
         PointerTraits::setExternalFunctionOutput(tapeActive, &value, 1, &identifier, &primal, &oldPrimals);
       }
@@ -329,7 +329,7 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::getPrimalsFromVector()
       CODI_INLINE static void getPrimalsFromVector(VectorAccessInterface<Real, Identifier>* data, size_t size,
                                                    Identifier& identifier, Real& primal) {
-        CODI_UNUSED_ARG(size);
+        CODI_UNUSED(size);
 
         PointerTraits::getPrimalsFromVector(data, 1, &identifier, &primal);
       }
@@ -337,7 +337,7 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::setPrimalsIntoVector()
       CODI_INLINE static void setPrimalsIntoVector(VectorAccessInterface<Real, Identifier>* data, size_t size,
                                                    Identifier& identifier, Real& primal) {
-        CODI_UNUSED_ARG(size);
+        CODI_UNUSED(size);
 
         PointerTraits::setPrimalsIntoVector(data, 1, &identifier, &primal);
       }
@@ -345,7 +345,7 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::getGradients()
       CODI_INLINE static void getGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool reset,
                                            Identifier& identifier, Gradient& gradient, size_t dim) {
-        CODI_UNUSED_ARG(size);
+        CODI_UNUSED(size);
 
         PointerTraits::getGradients(data, 1, reset & identifier, &gradient, dim);
       }
@@ -353,7 +353,7 @@ namespace codi {
       /// @copydoc ActiveArgumentValueStore::setGradients()
       CODI_INLINE static void setGradients(VectorAccessInterface<Real, Identifier>* data, size_t size, bool update,
                                            Identifier& identifier, Gradient& gradient, size_t dim) {
-        CODI_UNUSED_ARG(size);
+        CODI_UNUSED(size);
 
         PointerTraits::setGradients(data, 1, update, &identifier, &gradient, dim);
       }
