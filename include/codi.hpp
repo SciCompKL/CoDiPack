@@ -90,9 +90,9 @@
 namespace codi {
 
 #define CODI_MAJOR_VERSION 2
-#define CODI_MINOR_VERSION 1
+#define CODI_MINOR_VERSION 2
 #define CODI_BUILD_VERSION 0
-#define CODI_VERSION "2.1.0"
+#define CODI_VERSION "2.2.0"
 
   /// General forward AD type. See \ref sec_forwardAD for a forward mode AD explanation or \ref ActiveTypeList for a
   /// list of all types.
