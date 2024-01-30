@@ -204,7 +204,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
 //! [Adjoint - Access]
     void setGradient(Identifier const& identifier, Gradient const& grad,
-                     AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
+                     codi::AdjointsManagement adjointsManagement = codi::AdjointsManagement::Automatic) {
       gradient(identifier, adjointsManagement) = grad;
     }
     Gradient const& getGradient(Identifier const& identifier) const {
@@ -212,8 +212,8 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
     }
 
     Gradient& gradient(Identifier const& identifier,
-                       AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-      if (AdjointsManagement::Automatic == adjointsManagement) {
+                       codi::AdjointsManagement adjointsManagement = codi::AdjointsManagement::Automatic) {
+      if (codi::AdjointsManagement::Automatic == adjointsManagement) {
         checkAndResizeAdjoints(identifier);
       }
 
@@ -221,8 +221,8 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
     }
 
     Gradient const& gradient(Identifier const& identifier,
-                             AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
-      if (AdjointsManagement::Automatic == adjointsManagement && identifier >= (int)adjointVec.size()) {
+                             codi::AdjointsManagement adjointsManagement = codi::AdjointsManagement::Automatic) const {
+      if (codi::AdjointsManagement::Automatic == adjointsManagement && identifier >= (int)adjointVec.size()) {
         return adjointVec[0];
       } else {
         return adjointVec[identifier];
