@@ -22,6 +22,11 @@ codi-functional:
     - cd tests/functional
     - make all
 
+codi-examples:
+  script:
+    - apt update && apt install -y build-essential binutils
+    - make examples
+
 opdi:
   script:
     - apt update && apt install -y build-essential binutils git
