@@ -16,6 +16,12 @@ codi-events:
     - cd tests/events
     - make all
 
+codi-functional:
+  script:
+    - apt update && apt install -y build-essential binutils
+    - cd tests/functional
+    - make all
+
 opdi:
   script:
     - apt update && apt install -y build-essential binutils git
