@@ -87,7 +87,9 @@ namespace codi {
 
   using std::abs;
   using std::acos;
+  using std::acosh;
   using std::asin;
+  using std::asinh;
   using std::atan;
   using std::atanh;
   using std::cbrt;
@@ -105,6 +107,8 @@ namespace codi {
   using std::isnormal;
   using std::log;
   using std::log10;
+  using std::log1p;
+  using std::log2;
   using std::round;
   using std::sin;
   using std::sinh;
@@ -192,6 +196,43 @@ namespace codi {
 #define FUNCTION acosl
 #include "unaryOverloads.tpp"
 
+  /// UnaryOperation implementation for acosh
+  template<typename T_Real>
+  struct OperationAcosh : public UnaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc UnaryOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return acosh(arg);
+      }
+
+      /// \copydoc UnaryOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(result);
+        if (Config::CheckExpressionArguments) {
+          if (RealTraits::getPassiveValue(arg) <= 1.0) {
+            CODI_EXCEPTION("acosh outside of (1, inf).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
+          }
+        }
+        return 1.0 / sqrt(arg * arg - 1.0);
+      }
+  };
+#define OPERATION_LOGIC OperationAcosh
+#define FUNCTION acosh
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAcosh
+#define FUNCTION acoshf
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAcosh
+#define FUNCTION acoshl
+#include "unaryOverloads.tpp"
+
   /// UnaryOperation implementation for asin
   template<typename T_Real>
   struct OperationAsin : public UnaryOperation<T_Real> {
@@ -227,6 +268,38 @@ namespace codi {
 
 #define OPERATION_LOGIC OperationAsin
 #define FUNCTION asinl
+#include "unaryOverloads.tpp"
+
+  /// UnaryOperation implementation for asinh
+  template<typename T_Real>
+  struct OperationAsinh : public UnaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc UnaryOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return asinh(arg);
+      }
+
+      /// \copydoc UnaryOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(result);
+        return 1.0 / sqrt(arg * arg + 1.0);
+      }
+  };
+#define OPERATION_LOGIC OperationAsinh
+#define FUNCTION asinh
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAsinh
+#define FUNCTION asinhf
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAsinh
+#define FUNCTION asinhl
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for atan
@@ -632,6 +705,80 @@ namespace codi {
 #define FUNCTION log10l
 #include "unaryOverloads.tpp"
 
+  /// UnaryOperation implementation for log1p
+  template<typename T_Real>
+  struct OperationLog1p : public UnaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc UnaryOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return log1p(arg);
+      }
+
+      /// \copydoc UnaryOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(result);
+        if (Config::CheckExpressionArguments) {
+          if (0.0 > RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
+          }
+        }
+        return 1.0 / (arg + 1.0);
+      }
+  };
+#define OPERATION_LOGIC OperationLog1p
+#define FUNCTION log1p
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLog1p
+#define FUNCTION log1pf
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLog1p
+#define FUNCTION log1pl
+#include "unaryOverloads.tpp"
+
+  /// UnaryOperation implementation for log2
+  template<typename T_Real>
+  struct OperationLog2 : public UnaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc UnaryOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return log2(arg);
+      }
+
+      /// \copydoc UnaryOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(result);
+        if (Config::CheckExpressionArguments) {
+          if (0.0 > RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
+          }
+        }
+        return 1.442695040888963 / arg;
+      }
+  };
+#define OPERATION_LOGIC OperationLog2
+#define FUNCTION log2
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLog2
+#define FUNCTION log2f
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLog2
+#define FUNCTION log2l
+#include "unaryOverloads.tpp"
+
   /// Function overload for round
   template<typename Real, typename Arg>
   CODI_INLINE RealTraits::PassiveReal<Real> round(ExpressionInterface<Real, Arg> const& arg) {
@@ -912,9 +1059,15 @@ namespace std {
   using codi::abs;
   using codi::acos;
   using codi::acosf;
+  using codi::acosh;
+  using codi::acoshf;
+  using codi::acoshl;
   using codi::acosl;
   using codi::asin;
   using codi::asinf;
+  using codi::asinh;
+  using codi::asinhf;
+  using codi::asinhl;
   using codi::asinl;
   using codi::atan;
   using codi::atanf;
@@ -957,6 +1110,12 @@ namespace std {
   using codi::log10;
   using codi::log10f;
   using codi::log10l;
+  using codi::log1p;
+  using codi::log1pf;
+  using codi::log1pl;
+  using codi::log2;
+  using codi::log2f;
+  using codi::log2l;
   using codi::logf;
   using codi::logl;
   using codi::round;

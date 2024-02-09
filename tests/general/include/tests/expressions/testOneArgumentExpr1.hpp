@@ -38,7 +38,7 @@ struct TestOneArgumentExpr1 : public TestInterface {
   public:
     NAME("OneArgumentExpr1")
     IN(1)
-    OUT(20)
+    OUT(21)
     POINTS(41) =  // clang-format off
     {
       {-10.0000},
@@ -107,5 +107,6 @@ struct TestOneArgumentExpr1 : public TestInterface {
       y[18] = ldexp(x[0], 7);  // R
       int temp = 0;
       y[19] = frexp(x[0], &temp);  // R
+      y[20] = asinh(x[0]);     // R
     }
 };
