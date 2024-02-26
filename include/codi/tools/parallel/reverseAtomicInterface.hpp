@@ -40,13 +40,18 @@
 namespace codi {
 
   /**
-   * @brief Provides a data type on which update operations are performed atomically.
+   * @brief Provides a data type on which += update operations are performed atomically.
    *
-   * If used with an underlying floating point type or an active CoDiPack type, this data type is suitable as an adjoint
-   * variable type, as adjoint variable types only need atomic updates in a multithreaded environment.
+   * In a multithreaded environment, data races on adjoint variables are fixed by performing updates atomically, whereas
+   * other read and write operations do not need to be atomic. This template takes an ordinary adjoint variable type,
+   * like a floating point type or a CoDiPack forward type, and ensures that the corresponding += update operation is
+   * performed atomically.
    *
    * Implementations likely require template specializations with respect to the underlying type, especially if it is an
    * active CoDiPack type.
+   *
+   * An implementation should preserve the memory footprint of the underlying type, e.g., by inheriting from the under-
+   * lying type or by having a variable of the underlying type as the only member variable.
    *
    * @tparam T_Type  The underlying data type.
    * @tparam T_Impl  Implementing class.

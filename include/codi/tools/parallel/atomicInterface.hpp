@@ -52,6 +52,9 @@ namespace codi {
    * Implementations likely require template specializations with respect to the underlying type, especially if it is an
    * active CoDiPack type.
    *
+   * An implementation should preserve the memory footprint of the underlying type, e.g., by inheriting from the under-
+   * lying type or by having a variable of the underlying type as the only member variable.
+   *
    * @tparam T_Type  The underlying data type.
    * @tparam T_Impl  Implementing class.
    */
