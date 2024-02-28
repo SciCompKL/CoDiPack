@@ -66,8 +66,9 @@ namespace codi {
    *   - formatRow(): Output the data in this object in one row. One column per entry.
    *
    * - Misc:
-   *   - combineData(): Perform element-wise addition with other tape values.
-   *   - combineDataMPI(): Perform an MPI_Allreduce on MPI_COMM_WORLD.
+   *   - combineData(TapeVales const& other): Perform element-wise addition with other tape values.
+   *   - combineData(): Deprecated. Kept for backwards compatibility. Perform an MPI_Allreduce on MPI_COMM_WORLD.
+   *   - combineDataMPI(): Perform an MPI_Allreduce on a given communicator.
    *   - getAllocatedMemorySize(): Get the allocated memory size.
    *   - getUsedMemorySize(): Get the used memory size.
    */
@@ -248,14 +249,22 @@ namespace codi {
       }
 
       /// Perform an MPI_Allreduce with MPI_COMM_WORLD.
-      void combineDataMPI() {
+      /// This method is deprecated and only kept for backwards compatibility. combineDataMPI should be used instead.
+      void combineData() {
 #ifdef MPI_VERSION
-        MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-        MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
-        MPI_Allreduce(MPI_IN_PLACE, unsignedLongData.data(), unsignedLongData.size(), MPI_UNSIGNED_LONG, MPI_SUM,
-                      MPI_COMM_WORLD);
+        combineDataMPI(MPI_COMM_WORLD);
 #endif
       }
+
+#ifdef MPI_VERSION
+      /// Perform an MPI_Allreduce with the given communicator.
+      void combineDataMPI(MPI_Comm communicator) {
+        MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, communicator);
+        MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, communicator);
+        MPI_Allreduce(MPI_IN_PLACE, unsignedLongData.data(), unsignedLongData.size(), MPI_UNSIGNED_LONG, MPI_SUM,
+                      communicator);
+      }
+#endif
 
       /// Get the allocated memory in bytes.
       double getAllocatedMemorySize() {
