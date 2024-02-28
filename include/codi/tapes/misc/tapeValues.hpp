@@ -248,21 +248,28 @@ namespace codi {
         }
       }
 
-      /// Perform an MPI_Allreduce with MPI_COMM_WORLD.
-      /// This method is deprecated and only kept for backwards compatibility. combineDataMPI should be used instead.
+      /** @brief Perform an MPI_Allreduce with MPI_COMM_WORLD.
+       *
+       * This method is deprecated and only kept for backwards compatibility. combineDataMPI should be used instead.
+       */
       void combineData() {
 #ifdef MPI_VERSION
         combineDataMPI(MPI_COMM_WORLD);
 #endif
       }
 
-#ifdef MPI_VERSION
       /// Perform an MPI_Allreduce with the given communicator.
+#ifdef MPI_VERSION
       void combineDataMPI(MPI_Comm communicator) {
         MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, communicator);
         MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, communicator);
         MPI_Allreduce(MPI_IN_PLACE, unsignedLongData.data(), unsignedLongData.size(), MPI_UNSIGNED_LONG, MPI_SUM,
                       communicator);
+      }
+#else
+      template<typename Comm>
+      void combineDataMPI(Comm communicator) {
+        CODI_UNUSED(communicator);
       }
 #endif
 
