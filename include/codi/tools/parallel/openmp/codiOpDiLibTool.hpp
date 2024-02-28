@@ -43,7 +43,7 @@
 #include "../../../tapes/interfaces/editingTapeInterface.hpp"
 #include "../../../tapes/misc/vectorAccessInterface.hpp"
 #include "../../../traits/atomicTraits.hpp"
-#include "openMPAtomic.hpp"
+#include "openMPReverseAtomic.hpp"
 
 #ifndef DOXYGEN_DISABLE
 
@@ -167,7 +167,7 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
 
       typename Tape::Gradient* adjoints = &tape->gradient(0);
       using NonAtomicGradient = codi::AtomicTraits::RemoveAtomic<typename Tape::Gradient>;
-      using AtomicGradient = codi::OpenMPAtomic<NonAtomicGradient>;
+      using AtomicGradient = codi::OpenMPReverseAtomic<NonAtomicGradient>;
 
       if (useAtomics) {
         AtomicGradient* safeAdjoints = (AtomicGradient*)adjoints;
