@@ -66,8 +66,9 @@ namespace codi {
    *   - formatRow(): Output the data in this object in one row. One column per entry.
    *
    * - Misc:
-   *   - combineData(): Perform a MPI_Allreduce on MPI_COMM_WORLD.
-   *   - getAllocatedMemorySize: Get the allocated memory size.
+   *   - combineData(): Perform element-wise addition with other tape values.
+   *   - combineDataMPI(): Perform an MPI_Allreduce on MPI_COMM_WORLD.
+   *   - getAllocatedMemorySize(): Get the allocated memory size.
    *   - getUsedMemorySize(): Get the used memory size.
    */
   struct TapeValues {
@@ -223,8 +224,31 @@ namespace codi {
       /// @name Misc.
       /// @{
 
+      /// Perform entry-wise additions.
+      void combineData(TapeValues const& other) {
+
+        // Basic checks to ensure that we add tape values of the same tape type.
+        codiAssert(this->sections.size() == other.sections.size());
+        codiAssert(this->sections.size() == 0 || this->sections[0].name == other.sections[0].name);
+
+        // Size checks for the subsequent loops.
+        codiAssert(this->doubleData.size() == other.doubleData.size());
+        codiAssert(this->longData.size() == other.longData.size());
+        codiAssert(this->unsignedLongData.size() == other.unsignedLongData.size());
+
+        for (size_t i = 0; i < this->doubleData.size(); ++i) {
+          this->doubleData[i] += other.doubleData[i];
+        }
+        for (size_t i = 0; i < this->longData.size(); ++i) {
+          this->longData[i] += other.longData[i];
+        }
+        for (size_t i = 0; i < this->unsignedLongData.size(); ++i) {
+          this->unsignedLongData[i] += other.unsignedLongData[i];
+        }
+      }
+
       /// Perform an MPI_Allreduce with MPI_COMM_WORLD.
-      void combineData() {
+      void combineDataMPI() {
 #ifdef MPI_VERSION
         MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
         MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
