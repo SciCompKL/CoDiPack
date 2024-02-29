@@ -66,8 +66,10 @@ namespace codi {
    *   - formatRow(): Output the data in this object in one row. One column per entry.
    *
    * - Misc:
-   *   - combineData(): Perform a MPI_Allreduce on MPI_COMM_WORLD.
-   *   - getAllocatedMemorySize: Get the allocated memory size.
+   *   - combineData(TapeVales const& other): Perform element-wise addition with other tape values.
+   *   - combineData(): Deprecated. Kept for backwards compatibility. Perform an MPI_Allreduce on MPI_COMM_WORLD.
+   *   - combineDataMPI(): Perform an MPI_Allreduce on a given communicator.
+   *   - getAllocatedMemorySize(): Get the allocated memory size.
    *   - getUsedMemorySize(): Get the used memory size.
    */
   struct TapeValues {
@@ -223,15 +225,53 @@ namespace codi {
       /// @name Misc.
       /// @{
 
-      /// Perform an MPI_Allreduce with MPI_COMM_WORLD.
+      /// Perform entry-wise additions.
+      void combineData(TapeValues const& other) {
+
+        // Basic checks to ensure that we add tape values of the same tape type.
+        codiAssert(this->sections.size() == other.sections.size());
+        codiAssert(this->sections.size() == 0 || this->sections[0].name == other.sections[0].name);
+
+        // Size checks for the subsequent loops.
+        codiAssert(this->doubleData.size() == other.doubleData.size());
+        codiAssert(this->longData.size() == other.longData.size());
+        codiAssert(this->unsignedLongData.size() == other.unsignedLongData.size());
+
+        for (size_t i = 0; i < this->doubleData.size(); ++i) {
+          this->doubleData[i] += other.doubleData[i];
+        }
+        for (size_t i = 0; i < this->longData.size(); ++i) {
+          this->longData[i] += other.longData[i];
+        }
+        for (size_t i = 0; i < this->unsignedLongData.size(); ++i) {
+          this->unsignedLongData[i] += other.unsignedLongData[i];
+        }
+      }
+
+      /** @brief Perform an MPI_Allreduce with MPI_COMM_WORLD.
+       *
+       * This method is deprecated and only kept for backwards compatibility. combineDataMPI should be used instead.
+       */
       void combineData() {
 #ifdef MPI_VERSION
-        MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-        MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
-        MPI_Allreduce(MPI_IN_PLACE, unsignedLongData.data(), unsignedLongData.size(), MPI_UNSIGNED_LONG, MPI_SUM,
-                      MPI_COMM_WORLD);
+        combineDataMPI(MPI_COMM_WORLD);
 #endif
       }
+
+      /// Perform an MPI_Allreduce with the given communicator.
+#ifdef MPI_VERSION
+      void combineDataMPI(MPI_Comm communicator) {
+        MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, communicator);
+        MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, communicator);
+        MPI_Allreduce(MPI_IN_PLACE, unsignedLongData.data(), unsignedLongData.size(), MPI_UNSIGNED_LONG, MPI_SUM,
+                      communicator);
+      }
+#else
+      template<typename Comm>
+      void combineDataMPI(Comm communicator) {
+        CODI_UNUSED(communicator);
+      }
+#endif
 
       /// Get the allocated memory in bytes.
       double getAllocatedMemorySize() {
