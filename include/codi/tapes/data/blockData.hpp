@@ -201,8 +201,8 @@ namespace codi {
         double memoryAlloc = (double)allocedSize * (double)entrySize;
 
         values.addUnsignedLongEntry("Total number", dataEntries);
-        values.addDoubleEntry("Memory used", memoryUsed, true, false);
-        values.addDoubleEntry("Memory allocated", memoryAlloc, false, true);
+        values.addDoubleEntry("Memory used", memoryUsed, TapeValues::LocalReductionOperation::Sum, true, false);
+        values.addDoubleEntry("Memory allocated", memoryAlloc, TapeValues::LocalReductionOperation::Sum, false, true);
       }
 
       /// \copydoc DataInterface::extractPosition

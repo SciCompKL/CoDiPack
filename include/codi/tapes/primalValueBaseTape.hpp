@@ -562,11 +562,11 @@ namespace codi {
 
         values.addSection("Adjoint vector");
         values.addUnsignedLongEntry("Number of adjoints", nAdjoints);
-        values.addDoubleEntry("Memory allocated", memoryAdjoints, true, true);
+        values.addDoubleEntry("Memory allocated", memoryAdjoints, TapeValues::LocalReductionOperation::Sum, true, true);
 
         values.addSection("Primal vector");
         values.addUnsignedLongEntry("Number of primals", nPrimals);
-        values.addDoubleEntry("Memory allocated", memoryPrimals, true, true);
+        values.addDoubleEntry("Memory allocated", memoryPrimals, TapeValues::LocalReductionOperation::Sum, true, true);
 
         values.addSection("Index manager");
         indexManager.get().addToTapeValues(values);
