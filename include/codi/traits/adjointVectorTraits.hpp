@@ -36,8 +36,6 @@
 
 #include <type_traits>
 
-
-
 /** \copydoc codi::Namespace */
 namespace codi {
 

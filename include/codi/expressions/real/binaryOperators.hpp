@@ -398,7 +398,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(argA, argB, result);
 
         return 0.0;
@@ -525,7 +526,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientB()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(argA, argB, result);
 
         return 0.0;
@@ -743,7 +745,8 @@ namespace codi {
 
       /// \copydoc codi::BinaryOperation::gradientA()
       template<typename ArgA, typename ArgB>
-      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
+      static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
+                                                                 Real const& result) {
         CODI_UNUSED(argA, argB, result);
 
         return 1.0;

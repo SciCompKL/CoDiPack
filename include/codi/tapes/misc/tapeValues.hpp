@@ -96,7 +96,8 @@ namespace codi {
           Entry() : name(), type(), operation(), pos() {}
 
           Entry(std::string const& name, EntryType const& type, LocalReductionOperation const& operation,
-                size_t const& pos) : name(name), type(type), operation(operation), pos(pos) {}
+                size_t const& pos)
+              : name(name), type(type), operation(operation), pos(pos) {}
       };
 
       struct Section {
@@ -125,8 +126,7 @@ namespace codi {
           : sections(), doubleData(), longData(), unsignedLongData(), usedMemoryIndex(0), allocatedMemoryIndex(1) {
         addSection(tapeName);
         addEntryInternal("Total memory used", EntryType::Double, LocalReductionOperation::Sum, doubleData, 0.0);
-        addEntryInternal("Total memory allocated", EntryType::Double, LocalReductionOperation::Sum, doubleData,
-                         0.0);
+        addEntryInternal("Total memory allocated", EntryType::Double, LocalReductionOperation::Sum, doubleData, 0.0);
       }
 
       /*******************************************************************************/
@@ -239,12 +239,10 @@ namespace codi {
 
       /// Perform entry-wise additions.
       void combineData(TapeValues const& other) {
-
         // Size check for the number of sections.
         codiAssert(this->sections.size() == other.sections.size());
 
         for (size_t section = 0; section < this->sections.size(); ++section) {
-
           auto& thisSection = this->sections[section];
           auto const& otherSection = other.sections[section];
 
@@ -255,7 +253,6 @@ namespace codi {
           codiAssert(thisSection.data.size() == otherSection.data.size());
 
           for (size_t entry = 0; entry < thisSection.data.size(); ++entry) {
-
             auto& thisEntry = thisSection.data[entry];
             auto const& otherEntry = otherSection.data[entry];
 
