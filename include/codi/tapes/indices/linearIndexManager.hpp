@@ -105,7 +105,11 @@ namespace codi {
       /// \copydoc IndexManagerInterface::addToTapeValues <br><br>
       /// Implementation: Adds maximum live indices.
       void addToTapeValues(TapeValues& values) const {
-        values.addLongEntry("Max. live indices", getLargestCreatedIndex(), TapeValues::LocalReductionOperation::Sum);
+        TapeValues::LocalReductionOperation constexpr operation = NeedsStaticStorage
+                                                                    ? TapeValues::LocalReductionOperation::Max
+                                                                    : TapeValues::LocalReductionOperation::Sum;
+
+        values.addLongEntry("Max. live indices", getLargestCreatedIndex(), operation);
       }
 
       /// \copydoc IndexManagerInterface::freeIndex <br><br>

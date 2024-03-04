@@ -136,7 +136,10 @@ namespace codi {
       void addToTapeValues(TapeValues& values) const {
         unsigned long maximumGlobalIndex = globalMaximumIndex();
 
-        values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex, TapeValues::LocalReductionOperation::Max);
+        // As maximumGlobalIndex is static, it uses a local maximum reduction.
+        TapeValues::LocalReductionOperation constexpr operation = TapeValues::LocalReductionOperation::Max;
+
+        values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex, operation);
         // The number of current live indices cannot be computed from one instance alone.
         // It equals the number of maximum live indices minus the number of indices stored across all instances.
 
