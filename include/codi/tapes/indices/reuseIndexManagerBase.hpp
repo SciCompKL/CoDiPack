@@ -242,9 +242,9 @@ namespace codi {
         double memoryStoredIndices = (double)storedIndices * (double)(sizeof(Index));
         double memoryAllocatedIndices = (double)allocatedIndices * (double)(sizeof(Index));
 
-        TapeValues::LocalReductionOperation constexpr operation = cast().NeedsStaticStorage
-                                                                      ? TapeValues::LocalReductionOperation::Max
-                                                                      : TapeValues::LocalReductionOperation::Sum;
+        TapeValues::LocalReductionOperation constexpr operation = Impl::NeedsStaticStorage
+                                                                  ? TapeValues::LocalReductionOperation::Max
+                                                                  : TapeValues::LocalReductionOperation::Sum;
 
         values.addUnsignedLongEntry("Indices stored", storedIndices, operation);
         values.addDoubleEntry("Memory used", memoryStoredIndices, operation, true, false);
