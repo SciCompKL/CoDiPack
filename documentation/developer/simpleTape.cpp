@@ -154,7 +154,8 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
       values.addSection("Adjoint vector");
       values.addLongEntry("Number of adjoints", (1 + maxIdentifier));
-      values.addDoubleEntry("Memory allocated", sizeof(double) * (1 + maxIdentifier), true, true);
+      values.addDoubleEntry("Memory allocated", sizeof(double) * (1 + maxIdentifier),
+                            codi::TapeValues::LocalReductionOperation::Sum, true, true);
 
       values.addSection("Index manager");
       values.addLongEntry("Max. live indices", (1 + maxIdentifier));

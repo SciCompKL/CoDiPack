@@ -107,6 +107,6 @@ struct TestOneArgumentExpr1 : public TestInterface {
       y[18] = ldexp(x[0], 7);  // R
       int temp = 0;
       y[19] = frexp(x[0], &temp);  // R
-      y[20] = asinh(x[0]);     // R
+      y[20] = asinh(x[0]);         // R
     }
 };

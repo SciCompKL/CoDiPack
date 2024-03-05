@@ -104,6 +104,11 @@ namespace codi {
         return static_cast<Impl&>(*this);
       }
 
+      /// Const cast to the implementation.
+      CODI_INLINE Impl const& cast() const {
+        return static_cast<Impl const&>(*this);
+      }
+
       /// Method to generate new indices. Only called when unusedIndices is empty.
       CODI_NO_INLINE void generateNewIndices() {
         cast().generateNewIndices();
@@ -237,9 +242,13 @@ namespace codi {
         double memoryStoredIndices = (double)storedIndices * (double)(sizeof(Index));
         double memoryAllocatedIndices = (double)allocatedIndices * (double)(sizeof(Index));
 
-        values.addUnsignedLongEntry("Indices stored", storedIndices);
-        values.addDoubleEntry("Memory used", memoryStoredIndices, true, false);
-        values.addDoubleEntry("Memory allocated", memoryAllocatedIndices, false, true);
+        TapeValues::LocalReductionOperation constexpr operation = cast().NeedsStaticStorage
+                                                                      ? TapeValues::LocalReductionOperation::Max
+                                                                      : TapeValues::LocalReductionOperation::Sum;
+
+        values.addUnsignedLongEntry("Indices stored", storedIndices, operation);
+        values.addDoubleEntry("Memory used", memoryStoredIndices, operation, true, false);
+        values.addDoubleEntry("Memory allocated", memoryAllocatedIndices, operation, false, true);
       }
 
       /// @}

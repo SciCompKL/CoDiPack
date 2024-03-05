@@ -48,6 +48,7 @@
 #include "../misc/macros.hpp"
 #include "../misc/mathUtility.hpp"
 #include "../misc/memberStore.hpp"
+#include "../traits/adjointVectorTraits.hpp"
 #include "../traits/computationTraits.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "commonTapeImplementation.hpp"
@@ -494,9 +495,13 @@ namespace codi {
         size_t nAdjoints = indexManager.get().getLargestCreatedIndex();
         double memoryAdjoints = static_cast<double>(nAdjoints) * static_cast<double>(sizeof(Gradient));
 
+        bool constexpr globalAdjoints = AdjointVectorTraits::IsGlobal<Adjoints>::value;
+        TapeValues::LocalReductionOperation constexpr operation =
+            globalAdjoints ? TapeValues::LocalReductionOperation::Max : TapeValues::LocalReductionOperation::Sum;
+
         values.addSection("Adjoint vector");
-        values.addUnsignedLongEntry("Number of adjoints", nAdjoints);
-        values.addDoubleEntry("Memory allocated", memoryAdjoints, true, true);
+        values.addUnsignedLongEntry("Number of adjoints", nAdjoints, operation);
+        values.addDoubleEntry("Memory allocated", memoryAdjoints, operation, true, true);
 
         values.addSection("Index manager");
         indexManager.get().addToTapeValues(values);
