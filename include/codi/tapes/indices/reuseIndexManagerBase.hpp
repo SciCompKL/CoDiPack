@@ -197,6 +197,7 @@ namespace codi {
       template<typename Tape>
       CODI_INLINE void freeIndex(Index& index) {
         if (valid && Base::InactiveIndex != index) {  // Do not free the zero index.
+          codiAssert(index <= cast().getLargestCreatedIndex());
 
           EventSystem<Tape>::notifyIndexFreeListeners(index);
 
