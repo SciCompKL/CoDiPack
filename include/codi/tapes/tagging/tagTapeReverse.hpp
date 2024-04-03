@@ -250,7 +250,7 @@ namespace codi {
 
       /// -1 tag.
       Identifier getInvalidIndex() const {
-        return Identifier(-1);
+        return Identifier(Base::InvalidTag);
       }
 
       /// Verify tag.
