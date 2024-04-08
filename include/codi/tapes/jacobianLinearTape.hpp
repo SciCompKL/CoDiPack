@@ -116,10 +116,10 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_EvalStatements
-      template<typename Adjoint>
+      template<typename Adjoint, typename AdjointVector>
       CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
-          JacobianLinearTape& tape, Adjoint* adjointVector,
+          JacobianLinearTape& tape, AdjointVector adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -134,7 +134,7 @@ namespace codi {
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endJacobianPos, endStmtPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
+        typename Base::template VectorAccess<Adjoint, AdjointVector> vectorAccess(adjointVector);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -150,7 +150,8 @@ namespace codi {
             // Do nothing.
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
-            Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementTangents<Adjoint, AdjointVector>(adjointVector, lhsAdjoint, argsSize,
+                                                                     curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
 
             EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
@@ -162,10 +163,10 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_EvalStatements
-      template<typename Adjoint>
+      template<typename Adjoint, typename AdjointVector>
       CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
-          JacobianLinearTape& tape, Adjoint* adjointVector,
+          JacobianLinearTape& tape, AdjointVector adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -180,7 +181,7 @@ namespace codi {
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endJacobianPos, endStmtPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
+        typename Base::template VectorAccess<Adjoint, AdjointVector> vectorAccess(adjointVector);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -206,7 +207,8 @@ namespace codi {
               adjointVector[curAdjointPos] = Adjoint();
             }
 
-            Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementAdjoints<Adjoint, AdjointVector>(adjointVector, lhsAdjoint, argsSize,
+                                                                     curJacobianPos, rhsJacobians, rhsIdentifiers);
           }
 
           curAdjointPos -= 1;

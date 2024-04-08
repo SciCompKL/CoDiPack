@@ -133,10 +133,10 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_EvalStatements
-      template<typename Adjoint>
+      template<typename Adjoint, typename AdjointVector>
       CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
-          JacobianReuseTape& tape, Adjoint* adjointVector,
+          JacobianReuseTape& tape, AdjointVector adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -150,7 +150,7 @@ namespace codi {
           Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
+        typename Base::template VectorAccess<Adjoint, AdjointVector> vectorAccess(adjointVector);
 
         while (curStmtPos < endStmtPos) CODI_Likely {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
@@ -160,7 +160,8 @@ namespace codi {
                 tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
-            Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementTangents<Adjoint, AdjointVector>(adjointVector, lhsAdjoint, argsSize,
+                                                                     curJacobianPos, rhsJacobians, rhsIdentifiers);
 
             adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
 
@@ -174,10 +175,10 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_EvalStatements
-      template<typename Adjoint>
+      template<typename Adjoint, typename AdjointVector>
       CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
-          JacobianReuseTape& tape, Adjoint* adjointVector,
+          JacobianReuseTape& tape, AdjointVector adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -191,7 +192,7 @@ namespace codi {
           Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
+        typename Base::template VectorAccess<Adjoint, AdjointVector> vectorAccess(adjointVector);
 
         while (curStmtPos > endStmtPos) CODI_Likely {
           curStmtPos -= 1;
@@ -209,7 +210,8 @@ namespace codi {
                 GradientTraits::toArray(lhsAdjoint).data());
 
             adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
-            Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementAdjoints<Adjoint, AdjointVector>(adjointVector, lhsAdjoint, argsSize,
+                                                                     curJacobianPos, rhsJacobians, rhsIdentifiers);
           }
         }
       }

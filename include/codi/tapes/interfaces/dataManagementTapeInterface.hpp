@@ -133,8 +133,10 @@ namespace codi {
       VectorAccessInterface<Real, Identifier>* createVectorAccess();  ///< See \ref vectorAccess.
 
       /// See \ref vectorAccess.
-      template<typename Adjoint>
-      VectorAccessInterface<Real, Identifier>* createVectorAccessCustomAdjoints(Adjoint* data);
+      /// @tparam AdjointVector Type that supports access with operator[]. Unless it is a pointer, e.g., Adjoint*, it
+      ///                       should be a reference, e.g., std::vector<Adjoint>&.
+      template<typename Adjoint, typename AdjointVector>
+      VectorAccessInterface<Real, Identifier>* createVectorAccessCustomAdjoints(AdjointVector data);
 
       void deleteVectorAccess(VectorAccessInterface<Real, Identifier>* access);  ///< See \ref vectorAccess.
 

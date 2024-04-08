@@ -133,7 +133,7 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient, Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curAdjointPos < endAdjointPos) CODI_Likely {
@@ -202,7 +202,7 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        typename Base::template VectorAccess<Gradient> vectorAccess(nullptr, primalVector);
+        typename Base::template VectorAccess<Gradient, Gradient*> vectorAccess(nullptr, primalVector);
 
         while (curAdjointPos < endAdjointPos) CODI_Likely {
           curAdjointPos += 1;
@@ -253,7 +253,7 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient, Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curAdjointPos > endAdjointPos) CODI_Likely {

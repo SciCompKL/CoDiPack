@@ -73,19 +73,23 @@ namespace codi {
       /**
        * \copydoc codi::PositionalEvaluationTapeInterface::evaluate
        *
-       * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation.
+       * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
+       * @tparam AdjointVector  Pointer type, like Adjoint*, or reference to a type with operator[], like
+       *                        std::vector<Adjoint>&.
        */
-      template<typename Adjoint>
-      void evaluate(Position const& start, Position const& end, Adjoint* data);
+      template<typename Adjoint, typename AdjointVector>
+      void evaluate(Position const& start, Position const& end, AdjointVector data);
 
       // clang-format off
       /**
        * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(T_Position const&, T_Position const&, AdjointsManagement)
        *
-       * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation.
+       * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
+       * @tparam AdjointVector  Pointer type, like Adjoint*, or reference to a type with operator[], like
+       *                        std::vector<Adjoint>&.
        */
       // clang-format on
-      template<typename Adjoint>
-      void evaluateForward(Position const& start, Position const& end, Adjoint* data);
+      template<typename Adjoint, typename AdjointVector>
+      void evaluateForward(Position const& start, Position const& end, AdjointVector data);
   };
 }
