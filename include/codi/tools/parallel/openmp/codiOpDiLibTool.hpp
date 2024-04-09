@@ -171,10 +171,10 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
 
       if (useAtomics) {
         AtomicGradient* safeAdjoints = (AtomicGradient*)adjoints;
-        tape->evaluate(*start, *end, safeAdjoints);
+        tape->template evaluate<AtomicGradient, AtomicGradient*>(*start, *end, safeAdjoints);
       } else {
         NonAtomicGradient* unsafeAdjoints = (NonAtomicGradient*)adjoints;
-        tape->evaluate(*start, *end, unsafeAdjoints);
+        tape->template evaluate<NonAtomicGradient, NonAtomicGradient*>(*start, *end, unsafeAdjoints);
       }
     }
 
