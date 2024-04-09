@@ -44,12 +44,19 @@
 namespace codi {
 
   /**
-   * @brief Allows user defined vectors for the forward and adjoint evaluation.
+   * @brief Allows user defined vectors for the forward and adjoint evaluation, and for clearing adjoints.
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
-   * The two additional evaluate methods allow for the evaluation of the tape with a custom adjoint vector. The type of
-   * the vector must support the following operators:
+   * The two additional evaluate methods allow for the evaluation of the tape with a custom adjoint vector, and the
+   * additional clearing method allows clearing the custom adjoint vector according to the recorded tape.
+   *
+   * The adjoint vector type (template parameter AdjointVector in the member functions) must be a accessible with
+   * operator[]. Suitable choices are pointers, e.g., Adjoint*, or references to classes with overloaded operator[],
+   * like std::vector<Adjoint>&.
+   *
+   * The type of the vector entries (template parameter Adjoint in the member functions) must support the following
+   * operators:
    *  - operator =
    *  - operator *(Tape::Real, Adjoint) (Scalar multiplication from the left)
    *  - operator +=
@@ -74,8 +81,7 @@ namespace codi {
        * \copydoc codi::PositionalEvaluationTapeInterface::evaluate
        *
        * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
-       * @tparam AdjointVector  Pointer type, like Adjoint*, or reference to a type with operator[], like
-       *                        std::vector<Adjoint>&.
+       * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
       template<typename Adjoint, typename AdjointVector>
       void evaluate(Position const& start, Position const& end, AdjointVector data);
@@ -85,11 +91,19 @@ namespace codi {
        * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(T_Position const&, T_Position const&, AdjointsManagement)
        *
        * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
-       * @tparam AdjointVector  Pointer type, like Adjoint*, or reference to a type with operator[], like
-       *                        std::vector<Adjoint>&.
+       * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
       // clang-format on
       template<typename Adjoint, typename AdjointVector>
       void evaluateForward(Position const& start, Position const& end, AdjointVector data);
+
+      /**
+       * \copydoc codi::ForwardEvaluationTapeInterface::clearAdjoints
+       *
+       * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
+       * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
+       */
+      template<typename Adjoint, typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data);
   };
 }

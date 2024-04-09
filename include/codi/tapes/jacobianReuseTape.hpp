@@ -118,6 +118,21 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
+      template<typename Adjoint, typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
+        auto clearFunc = [&data](Identifier* index, Config::ArgumentSize* stmtSize) {
+          CODI_UNUSED(stmtSize);
+          data[*index] = Gradient();
+        };
+
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->llfByteData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->llfByteData.template extractPosition<StmtPosition>(end);
+
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
+      }
+
       /// @}
 
     protected:

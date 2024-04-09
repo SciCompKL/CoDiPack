@@ -110,6 +110,23 @@ namespace codi {
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
+      template<typename Adjoint, typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
+        auto clearFunc = [&data](Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal,
+                                 EvalHandle* evalHandle) {
+          CODI_UNUSED(passiveArgs, oldPrimal, evalHandle);
+
+          data[*lhsIndex] = Gradient();
+        };
+
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->llfByteData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->llfByteData.template extractPosition<StmtPosition>(end);
+
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
+      }
+
     protected:
 
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_EvalStatements

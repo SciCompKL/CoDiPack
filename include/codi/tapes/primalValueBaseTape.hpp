@@ -1110,7 +1110,13 @@ namespace codi {
 
         codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
 
-        internalEvaluateReverse<false, Gradient, Gradient*>(start, end, adjoints.data());
+        evaluateKeepState<Gradient, Gradient*>(start, end, adjoints.data());
+      }
+
+      /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
+      template<typename Adjoint, typename AdjointVector>
+      void evaluateKeepState(Position const& start, Position const& end, AdjointVector data) {
+        internalEvaluateReverse<false, Adjoint, AdjointVector>(start, end, data);
 
         if (!TapeTypes::IsLinearIndexHandler) {
           evaluatePrimal(end, start);
@@ -1128,11 +1134,17 @@ namespace codi {
 
         codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
 
+        evaluateForwardKeepState<Gradient, Gradient*>(start, end, adjoints.data());
+      }
+
+      /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
+      template<typename Adjoint, typename AdjointVector>
+      void evaluateForwardKeepState(Position const& start, Position const& end, AdjointVector data) {
         if (!TapeTypes::IsLinearIndexHandler) {
           cast().internalResetPrimalValues(end);
         }
 
-        internalEvaluateForward<false, Gradient, Gradient*>(start, end, adjoints.data());
+        internalEvaluateForward<false, Adjoint, AdjointVector>(start, end, data);
       }
 
     protected:

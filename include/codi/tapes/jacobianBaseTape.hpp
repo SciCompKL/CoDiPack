@@ -822,10 +822,22 @@ namespace codi {
         evaluate(start, end, adjointsManagement);
       }
 
+      /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
+      template<typename Adjoint, typename AdjointVector>
+      void evaluateKeepState(Position const& start, Position const& end, AdjointVector data) {
+        evaluate<Adjoint, AdjointVector>(start, end, data);
+      }
+
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
       void evaluateForwardKeepState(Position const& start, Position const& end,
                                     AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         evaluateForward(start, end, adjointsManagement);
+      }
+
+      /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
+      template<typename Adjoint, typename AdjointVector>
+      void evaluateForwardKeepState(Position const& start, Position const& end, AdjointVector data) {
+        evaluateForward<Adjoint, AdjointVector>(start, end, data);
       }
 
       /// @}

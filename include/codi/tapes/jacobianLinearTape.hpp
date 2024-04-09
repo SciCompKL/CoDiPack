@@ -105,6 +105,18 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
+      template<typename Adjoint, typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
+        using IndexPosition = CODI_DD(typename IndexManager::Position, int);
+        IndexPosition startIndex = this->llfByteData.template extractPosition<IndexPosition>(start);
+        IndexPosition endIndex = this->llfByteData.template extractPosition<IndexPosition>(end);
+
+        for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
+          data[curPos] = Gradient();
+        }
+      }
+
     protected:
 
       /// \copydoc codi::JacobianBaseTape::pushStmtData <br><br>
