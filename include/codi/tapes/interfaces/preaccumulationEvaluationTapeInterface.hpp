@@ -88,8 +88,9 @@ namespace codi {
                              AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       /**
-       * @brief Perform a tape evaluation on custom adjoints but restore the state afterwards such that it is the same
-       * as when the evaluation started. It hast to hold start >= end.
+       * \copybrief evaluateKeepState(Position const&, Position const&, AdjointsManagement)
+       *
+       * Performs the evaluation on custom adjoints.
        *
        * @tparam Adjoint        See codi::CustomAdjointVectorEvaluationTapeInterface.
        * @tparam AdjointVector  See codi::CustomAdjointVectorEvaluationTapeInterface.
@@ -108,8 +109,9 @@ namespace codi {
                                     AdjointsManagement adjointsManagement = AdjointsManagement::Automatic);
 
       /**
-       * @brief Perform a tape evaluation on custom adjoints but restore the state afterwards such that it is the same
-       * as when the evaluation started. It hast to hold start <= end.
+       * \copybrief evaluateForwardKeepState(Position const&, Position const&, AdjointsManagement)
+       *
+       * Performs the evaluation on custom adjoints.
        *
        * @tparam Adjoint        See codi::CustomAdjointVectorEvaluationTapeInterface.
        * @tparam AdjointVector  See codi::CustomAdjointVectorEvaluationTapeInterface.

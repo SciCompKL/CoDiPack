@@ -78,7 +78,9 @@ namespace codi {
       /// @name Interface definition
 
       /**
-       * \copydoc codi::PositionalEvaluationTapeInterface::evaluate
+       * \copybrief codi::PositionalEvaluationTapeInterface::evaluate
+       *
+       * Tape evaluation with a custom adjoint vector.
        *
        * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
@@ -88,7 +90,9 @@ namespace codi {
 
       // clang-format off
       /**
-       * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(T_Position const&, T_Position const&, AdjointsManagement)
+       * \copybrief codi::ForwardEvaluationTapeInterface::evaluateForward(T_Position const&, T_Position const&, AdjointsManagement)
+       *
+       * Tape evaluation with a custom adjoint vector.
        *
        * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
@@ -98,7 +102,9 @@ namespace codi {
       void evaluateForward(Position const& start, Position const& end, AdjointVector data);
 
       /**
-       * \copydoc codi::ForwardEvaluationTapeInterface::clearAdjoints
+       * \copybrief codi::ReverseTapeInterface::clearAdjoints
+       *
+       * Clear custom adjoint vector according to a tape recording.
        *
        * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.

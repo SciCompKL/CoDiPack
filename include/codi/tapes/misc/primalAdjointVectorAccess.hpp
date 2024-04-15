@@ -61,7 +61,7 @@ namespace codi {
       using Real = CODI_DD(T_Real, double);                     ///< See PrimalAdjointVectorAccess.
       using Identifier = CODI_DD(T_Identifier, int);            ///< See PrimalAdjointVectorAccess.
       using Gradient = CODI_DD(T_Gradient, double);             ///< See PrimalAdjointVectorAccess.
-      using AdjointVector = CODI_DD(T_AdjointVector, double*);  ///< See AdjointVectorAccess.
+      using AdjointVector = CODI_DD(T_AdjointVector, double*);  ///< See PrimalAdjointVectorAccess.
 
       using Base = AdjointVectorAccess<Real, Identifier, Gradient, AdjointVector>;  ///< Base class abbreviation.
 
