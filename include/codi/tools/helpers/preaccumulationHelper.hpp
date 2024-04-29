@@ -270,7 +270,6 @@ namespace codi {
                                                  outputData.data(), outputData.size(), jacobian,
                                                  AdjointsManagement::Manual);
 
-        // Store the Jacobian matrix.
         tape.resetTo(startPos, true, AdjointsManagement::Manual);
 
         tape.endUseAdjointVector();
@@ -293,6 +292,8 @@ namespace codi {
                                                                         LocalMappedAdjoints&>(
             startPos, endPos, inputData.data(), inputData.size(), outputData.data(), outputData.size(), jacobian,
             mappedAdjoints);
+
+        tape.resetTo(startPos, false);
       }
 
       void storeJacobian() {
