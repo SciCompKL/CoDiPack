@@ -32,36 +32,14 @@
  *    - Former members:
  *      - Tim Albring
  */
-#include "../../../testInterface.hpp"
+#include "basePreaccumulationZeroJacobi.hpp"
 
-struct TestPreaccumulationLocalAdjointsZeroJacobi : public TestInterface {
+struct TestPreaccumulationLocalAdjointsZeroJacobi : public BasePreaccumulationZeroJacobi<TestPreaccumulationLocalAdjointsZeroJacobi> {
   public:
     NAME("PreaccumulationLocalAdjointsZeroJacobi")
-    IN(2)
-    OUT(2)
-    POINTS(1) = {{1.0, 0.5}};
 
     template<typename Number>
-    static void evalFunc(Number* x, Number* y) {
-      y[0] = codi::RealTraits::getPassiveValue(x[0]);  // kill x dependency
-      y[1] = x[1];
-      for (int i = 0; i < 5; ++i) {
-        Number xTemp = y[0];
-        Number yTemp = y[1];
-
-        y[0] = xTemp * xTemp - yTemp * yTemp - 0.65;
-        y[1] = 2.0 * yTemp * xTemp;
-      }
-    }
-
-    template<typename Number>
-    static void func(Number* x, Number* y) {
-      codi::PreaccumulationHelper<Number> ph;
-
-      ph.start(x[0], x[1]);
-
-      evalFunc(x, y);
-
+    static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
       ph.finishLocalAdjoints(y[0], y[1]);
     }
 };
