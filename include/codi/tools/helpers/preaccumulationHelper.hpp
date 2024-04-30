@@ -253,14 +253,18 @@ namespace codi {
         }
       }
 
-      void computeJacobian() {
-        // Perform the accumulation of the tape part.
-        Tape& tape = Type::getTape();
-
-        Position endPos = tape.getPosition();
+      void resizeJacobian() {
         if (jacobian.getM() != outputData.size() || jacobian.getN() != inputData.size()) {
           jacobian.resize(outputData.size(), inputData.size());
         }
+      }
+
+      void computeJacobian() {
+        // Perform the accumulation of the tape part.
+        Tape& tape = Type::getTape();
+        Position endPos = tape.getPosition();
+
+        resizeJacobian();
 
         // Manage adjoints manually to reduce the impact of locking on the performance.
         tape.resizeAdjointVector();
@@ -278,11 +282,9 @@ namespace codi {
       void computeJacobianLocalAdjoints() {
         // Perform the accumulation of the tape part.
         Tape& tape = Type::getTape();
-
         Position endPos = tape.getPosition();
-        if (jacobian.getM() != outputData.size() || jacobian.getN() != inputData.size()) {
-          jacobian.resize(outputData.size(), inputData.size());
-        }
+
+        resizeJacobian();
 
         // Create a local map with adjoints.
         using LocalMappedAdjoints = MappedAdjoints<typename Tape::Identifier, typename Tape::Gradient>;
