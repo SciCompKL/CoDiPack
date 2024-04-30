@@ -172,7 +172,7 @@ namespace codi {
       Gradient const constZeroValue;  ///< Temporary constant zero value.
 
       /// Last created adjoint interface.
-      AdjointVectorAccess<Real, Identifier, Gradient, Gradient*>* adjointInterface;
+      AdjointVectorAccess<Real, Identifier, Gradient*>* adjointInterface;
 
     public:
 
@@ -208,7 +208,7 @@ namespace codi {
       void evaluate(Position const& start, Position const& end) {
         checkAdjointVectorSize();
 
-        Base::tape.template evaluate<Gradient, Gradient*>(start, end, adjointVector.data());
+        Base::tape.evaluate(start, end, adjointVector.data());
       }
       using Base::evaluate;
 
@@ -216,7 +216,7 @@ namespace codi {
       void evaluateForward(Position const& start, Position const& end) {
         checkAdjointVectorSize();
 
-        Base::tape.template evaluateForward<Gradient, Gradient*>(start, end, adjointVector.data());
+        Base::tape.evaluateForward(start, end, adjointVector.data());
       }
       using Base::evaluateForward;
 
@@ -227,7 +227,7 @@ namespace codi {
         }
 
         checkAdjointVectorSize();
-        adjointInterface = new AdjointVectorAccess<Real, Identifier, Gradient, Gradient*>(adjointVector.data());
+        adjointInterface = new AdjointVectorAccess<Real, Identifier, Gradient*>(adjointVector.data());
         return adjointInterface;
       }
 

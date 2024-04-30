@@ -82,10 +82,9 @@ namespace codi {
        *
        * Tape evaluation with a custom adjoint vector.
        *
-       * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       void evaluate(Position const& start, Position const& end, AdjointVector data);
 
       // clang-format off
@@ -94,11 +93,10 @@ namespace codi {
        *
        * Tape evaluation with a custom adjoint vector.
        *
-       * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
       // clang-format on
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       void evaluateForward(Position const& start, Position const& end, AdjointVector data);
 
       /**
@@ -106,10 +104,9 @@ namespace codi {
        *
        * Clear custom adjoint vector according to a tape recording.
        *
-       * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface documentation.
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data);
   };
 }

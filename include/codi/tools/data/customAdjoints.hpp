@@ -38,6 +38,7 @@
 #include <map>
 
 #include "../../misc/macros.hpp"
+#include "../../traits/adjointVectorTraits.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -75,4 +76,15 @@ namespace codi {
         return adjoints[i];
       }
   };
+
+#ifndef DOXYGEN_DISABLE
+  // Specialize adjoint vector traits.
+  namespace AdjointVectorTraits {
+    template<typename T_Identifier, typename T_Gradient>
+    struct GradientImplementation<MappedAdjoints<T_Identifier, T_Gradient>> {
+      public:
+        using Gradient = T_Gradient;
+    };
+  }
+#endif
 }

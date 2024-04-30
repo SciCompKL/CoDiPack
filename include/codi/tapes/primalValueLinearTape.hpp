@@ -106,14 +106,14 @@ namespace codi {
       }
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
         using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->llfByteData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->llfByteData.template extractPosition<IndexPosition>(end);
 
         for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
-          data[curPos] = Gradient();
+          data[curPos] = AdjointVectorTraits::Gradient<AdjointVector>();
         }
       }
 
@@ -145,7 +145,7 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient, Gradient*> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curAdjointPos < endAdjointPos) CODI_Likely {
@@ -214,7 +214,7 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        typename Base::template VectorAccess<Gradient, Gradient*> vectorAccess(nullptr, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(nullptr, primalVector);
 
         while (curAdjointPos < endAdjointPos) CODI_Likely {
           curAdjointPos += 1;
@@ -265,7 +265,7 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient, Gradient*> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curAdjointPos > endAdjointPos) CODI_Likely {

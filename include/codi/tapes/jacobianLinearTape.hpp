@@ -42,6 +42,7 @@
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../misc/macros.hpp"
+#include "../traits/adjointVectorTraits.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
 #include "indices/linearIndexManager.hpp"
@@ -106,14 +107,14 @@ namespace codi {
       }
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
         using IndexPosition = CODI_DD(typename IndexManager::Position, int);
         IndexPosition startIndex = this->llfByteData.template extractPosition<IndexPosition>(start);
         IndexPosition endIndex = this->llfByteData.template extractPosition<IndexPosition>(end);
 
         for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
-          data[curPos] = Gradient();
+          data[curPos] = AdjointVectorTraits::Gradient<AdjointVector>();
         }
       }
 
@@ -128,7 +129,7 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_EvalStatements
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
           JacobianLinearTape& tape, AdjointVector adjointVector,
@@ -146,7 +147,9 @@ namespace codi {
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endJacobianPos, endStmtPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint, AdjointVector> vectorAccess(adjointVector);
+        using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
+
+        typename Base::template VectorAccess<AdjointVector> vectorAccess(adjointVector);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -162,8 +165,8 @@ namespace codi {
             // Do nothing.
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
-            Base::template incrementTangents<Adjoint, AdjointVector>(adjointVector, lhsAdjoint, argsSize,
-                                                                     curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementTangents<AdjointVector>(adjointVector, lhsAdjoint, argsSize,
+                                                            curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
 
             EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
@@ -175,7 +178,7 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_EvalStatements
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
           JacobianLinearTape& tape, AdjointVector adjointVector,
@@ -193,7 +196,9 @@ namespace codi {
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endJacobianPos, endStmtPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint, AdjointVector> vectorAccess(adjointVector);
+        using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
+
+        typename Base::template VectorAccess<AdjointVector> vectorAccess(adjointVector);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -219,8 +224,8 @@ namespace codi {
               adjointVector[curAdjointPos] = Adjoint();
             }
 
-            Base::template incrementAdjoints<Adjoint, AdjointVector>(adjointVector, lhsAdjoint, argsSize,
-                                                                     curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementAdjoints<AdjointVector>(adjointVector, lhsAdjoint, argsSize,
+                                                            curJacobianPos, rhsJacobians, rhsIdentifiers);
           }
 
           curAdjointPos -= 1;

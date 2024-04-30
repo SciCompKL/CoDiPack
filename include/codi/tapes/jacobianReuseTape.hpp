@@ -119,7 +119,7 @@ namespace codi {
       }
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
         auto clearFunc = [&data](Identifier* index, Config::ArgumentSize* stmtSize) {
           CODI_UNUSED(stmtSize);
@@ -148,7 +148,7 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_EvalStatements
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
           JacobianReuseTape& tape, AdjointVector adjointVector,
@@ -165,7 +165,9 @@ namespace codi {
           Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint, AdjointVector> vectorAccess(adjointVector);
+        using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
+
+        typename Base::template VectorAccess<AdjointVector> vectorAccess(adjointVector);
 
         while (curStmtPos < endStmtPos) CODI_Likely {
           Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
@@ -175,8 +177,8 @@ namespace codi {
                 tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
-            Base::template incrementTangents<Adjoint, AdjointVector>(adjointVector, lhsAdjoint, argsSize,
-                                                                     curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementTangents<AdjointVector>(adjointVector, lhsAdjoint, argsSize,
+                                                            curJacobianPos, rhsJacobians, rhsIdentifiers);
 
             adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
 
@@ -190,7 +192,7 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_EvalStatements
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
           JacobianReuseTape& tape, AdjointVector adjointVector,
@@ -207,7 +209,9 @@ namespace codi {
           Config::ArgumentSize const* const numberOfJacobians) {
         CODI_UNUSED(endJacobianPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint, AdjointVector> vectorAccess(adjointVector);
+        using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
+
+        typename Base::template VectorAccess<AdjointVector> vectorAccess(adjointVector);
 
         while (curStmtPos > endStmtPos) CODI_Likely {
           curStmtPos -= 1;
@@ -225,8 +229,8 @@ namespace codi {
                 GradientTraits::toArray(lhsAdjoint).data());
 
             adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
-            Base::template incrementAdjoints<Adjoint, AdjointVector>(adjointVector, lhsAdjoint, argsSize,
-                                                                     curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementAdjoints<AdjointVector>(adjointVector, lhsAdjoint, argsSize,
+                                                            curJacobianPos, rhsJacobians, rhsIdentifiers);
           }
         }
       }

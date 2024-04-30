@@ -38,6 +38,7 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../misc/exceptions.hpp"
 #include "../tapes/misc/tapeParameters.hpp"
+#include "../traits/adjointVectorTraits.hpp"
 #include "../traits/gradientTraits.hpp"
 #include "data/dummy.hpp"
 #include "data/jacobian.hpp"
@@ -220,11 +221,13 @@ namespace codi {
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface.
        */
       // clang-format on
-      template<typename Jac, typename Adjoint, typename AdjointVector, bool keepState = true>
+      template<typename Jac, typename AdjointVector, bool keepState = true>
       static CODI_INLINE void computeJacobianCustomAdjoints(Tape& tape, Position const& start, Position const& end,
                                                             Identifier const* input, size_t const inputSize,
                                                             Identifier const* output, size_t const outputSize, Jac& jac,
                                                             AdjointVector adjoints) {
+        using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
+
         using CustomGT = GradientTraits::TraitsImplementation<Adjoint>;
 
         size_t constexpr gradDim = CustomGT::dim;
@@ -235,9 +238,9 @@ namespace codi {
             setGradientOnIdentifierCustomAdjoints(j, input, inputSize, typename CustomGT::Real(1.0), adjoints);
 
             if (keepState) {
-              tape.template evaluateForwardKeepState<Adjoint, AdjointVector>(start, end, adjoints);
+              tape.template evaluateForwardKeepState<AdjointVector>(start, end, adjoints);
             } else {
-              tape.template evaluateForward<Adjoint, AdjointVector>(start, end, adjoints);
+              tape.template evaluateForward<AdjointVector>(start, end, adjoints);
             }
 
             for (size_t i = 0; i < outputSize; i += 1) {
@@ -252,16 +255,16 @@ namespace codi {
             setGradientOnIdentifierCustomAdjoints(j, input, inputSize, typename CustomGT::Real(), adjoints);
           }
 
-          tape.template clearCustomAdjoints<Adjoint, AdjointVector>(end, start, adjoints);
+          tape.template clearCustomAdjoints<AdjointVector>(end, start, adjoints);
 
         } else if (EvaluationType::Reverse == evalType) {
           for (size_t i = 0; i < outputSize; i += gradDim) {
             setGradientOnIdentifierCustomAdjoints(i, output, outputSize, typename CustomGT::Real(1.0), adjoints);
 
             if (keepState) {
-              tape.template evaluateKeepState<Adjoint, AdjointVector>(end, start, adjoints);
+              tape.template evaluateKeepState<AdjointVector>(end, start, adjoints);
             } else {
-              tape.template evaluate<Adjoint, AdjointVector>(end, start, adjoints);
+              tape.template evaluate<AdjointVector>(end, start, adjoints);
             }
 
             for (size_t j = 0; j < inputSize; j += 1) {
@@ -274,7 +277,7 @@ namespace codi {
             setGradientOnIdentifierCustomAdjoints(i, output, outputSize, typename CustomGT::Real(), adjoints);
 
             if (!Config::ReversalZeroesAdjoints) {
-              tape.template clearCustomAdjoints<Adjoint, AdjointVector>(end, start, adjoints);
+              tape.template clearCustomAdjoints<AdjointVector>(end, start, adjoints);
             }
           }
         } else {
@@ -300,13 +303,13 @@ namespace codi {
       /// \n This method uses the global tape for the Jacobian evaluation.
       /// \copydetails computeJacobianCustomAdjoints(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointVector)
       // clang-format on
-      template<typename Jac, typename Adjoint, typename AdjointVector>
+      template<typename Jac, typename AdjointVector>
       static CODI_INLINE void computeJacobianCustomAdjoints(Position const& start, Position const& end,
                                                             Identifier const* input, size_t const inputSize,
                                                             Identifier const* output, size_t const outputSize, Jac& jac,
                                                             AdjointVector adjoints) {
-        computeJacobianCustomAdjoints<Jac, Adjoint, AdjointVector>(Type::getTape(), start, end, input, inputSize,
-                                                                   output, outputSize, jac, adjoints);
+        computeJacobianCustomAdjoints<Jac, AdjointVector>(Type::getTape(), start, end, input, inputSize,
+                                                          output, outputSize, jac, adjoints);
       }
 
       /**

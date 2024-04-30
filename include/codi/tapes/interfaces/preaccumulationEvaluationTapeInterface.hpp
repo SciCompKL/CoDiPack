@@ -92,10 +92,9 @@ namespace codi {
        *
        * Performs the evaluation on custom adjoints.
        *
-       * @tparam Adjoint        See codi::CustomAdjointVectorEvaluationTapeInterface.
        * @tparam AdjointVector  See codi::CustomAdjointVectorEvaluationTapeInterface.
        */
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       void evaluateKeepState(Position const& start, Position const& end, AdjointVector data);
 
       /**
@@ -113,10 +112,9 @@ namespace codi {
        *
        * Performs the evaluation on custom adjoints.
        *
-       * @tparam Adjoint        See codi::CustomAdjointVectorEvaluationTapeInterface.
        * @tparam AdjointVector  See codi::CustomAdjointVectorEvaluationTapeInterface.
        */
-      template<typename Adjoint, typename AdjointVector>
+      template<typename AdjointVector>
       void evaluateForwardKeepState(Position const& start, Position const& end, AdjointVector data);
   };
 }

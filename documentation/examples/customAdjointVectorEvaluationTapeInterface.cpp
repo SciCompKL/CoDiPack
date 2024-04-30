@@ -31,7 +31,7 @@ int main(int nargs, char** args) {
   adjoints[y1.getIdentifier()] = {1.0, 0.0};
   adjoints[y2.getIdentifier()] = {0.0, 1.0};
 
-  tape.template evaluate<Gradient, Gradient*>(tape.getPosition(), tape.getZeroPosition(), adjoints); // Full tape evaluation
+  tape.evaluate(tape.getPosition(), tape.getZeroPosition(), adjoints); // Full tape evaluation
 
   std::cout << "Gradient of dy1/dx: " << adjoints[x.getIdentifier()][0] << std::endl;
   std::cout << "Gradient of dy2/dx: " << adjoints[x.getIdentifier()][1] << std::endl;
