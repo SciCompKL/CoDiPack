@@ -51,7 +51,6 @@
 #include "../traits/adjointVectorTraits.hpp"
 #include "../traits/computationTraits.hpp"
 #include "../traits/expressionTraits.hpp"
-#include "../traits/misc/addToConst.hpp"
 #include "commonTapeImplementation.hpp"
 #include "data/chunk.hpp"
 #include "data/chunkedData.hpp"
@@ -546,7 +545,7 @@ namespace codi {
 
       /// Performs the AD \ref sec_forwardAD "forward" equation for a statement.
       template<typename AdjointVector>
-      CODI_INLINE static void incrementTangents(AddToConst<AdjointVector> const adjointVector,
+      CODI_INLINE static void incrementTangents(AdjointVector const& adjointVector,
                                                 AdjointVectorTraits::Gradient<AdjointVector>& lhsAdjoint,
                                                 Config::ArgumentSize const& numberOfArguments, size_t& curJacobianPos,
                                                 Real const* const rhsJacobians,
