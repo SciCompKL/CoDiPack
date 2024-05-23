@@ -85,7 +85,7 @@ namespace codi {
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
       template<typename AdjointVector>
-      void evaluate(Position const& start, Position const& end, AdjointVector data);
+      void evaluate(Position const& start, Position const& end, AdjointVector&& data);
 
       // clang-format off
       /**
@@ -97,7 +97,7 @@ namespace codi {
        */
       // clang-format on
       template<typename AdjointVector>
-      void evaluateForward(Position const& start, Position const& end, AdjointVector data);
+      void evaluateForward(Position const& start, Position const& end, AdjointVector&& data);
 
       /**
        * \copybrief codi::ReverseTapeInterface::clearAdjoints
@@ -107,6 +107,6 @@ namespace codi {
        * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
       template<typename AdjointVector>
-      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data);
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector&& data);
   };
 }

@@ -120,7 +120,7 @@ namespace codi {
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
       template<typename AdjointVector>
-      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector&& data) {
         auto clearFunc = [&data](Identifier* index, Config::ArgumentSize* stmtSize) {
           CODI_UNUSED(stmtSize);
           data[*index] = Gradient();
@@ -151,7 +151,7 @@ namespace codi {
       template<typename AdjointVector>
       CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
-          JacobianReuseTape& tape, AdjointVector adjointVector,
+          JacobianReuseTape& tape, AdjointVector&& adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -195,7 +195,7 @@ namespace codi {
       template<typename AdjointVector>
       CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
-          JacobianReuseTape& tape, AdjointVector adjointVector,
+          JacobianReuseTape& tape, AdjointVector&& adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -229,8 +229,8 @@ namespace codi {
                 GradientTraits::toArray(lhsAdjoint).data());
 
             adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
-            Base::template incrementAdjoints<AdjointVector>(adjointVector, lhsAdjoint, argsSize,
-                                                            curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize,
+                                    curJacobianPos, rhsJacobians, rhsIdentifiers);
           }
         }
       }

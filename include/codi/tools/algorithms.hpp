@@ -225,7 +225,7 @@ namespace codi {
       static CODI_INLINE void computeJacobianCustomAdjoints(Tape& tape, Position const& start, Position const& end,
                                                             Identifier const* input, size_t const inputSize,
                                                             Identifier const* output, size_t const outputSize, Jac& jac,
-                                                            AdjointVector adjoints) {
+                                                            AdjointVector&& adjoints) {
         using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
 
         using CustomGT = GradientTraits::TraitsImplementation<Adjoint>;
@@ -238,9 +238,9 @@ namespace codi {
             setGradientOnIdentifierCustomAdjoints(j, input, inputSize, typename CustomGT::Real(1.0), adjoints);
 
             if (keepState) {
-              tape.template evaluateForwardKeepState<AdjointVector>(start, end, adjoints);
+              tape.evaluateForwardKeepState(start, end, std::forward<AdjointVector>(adjoints));
             } else {
-              tape.template evaluateForward<AdjointVector>(start, end, adjoints);
+              tape.evaluateForward(start, end, std::forward<AdjointVector>(adjoints));
             }
 
             for (size_t i = 0; i < outputSize; i += 1) {
@@ -255,16 +255,16 @@ namespace codi {
             setGradientOnIdentifierCustomAdjoints(j, input, inputSize, typename CustomGT::Real(), adjoints);
           }
 
-          tape.template clearCustomAdjoints<AdjointVector>(end, start, adjoints);
+          tape.clearCustomAdjoints(end, start, std::forward<AdjointVector>(adjoints));
 
         } else if (EvaluationType::Reverse == evalType) {
           for (size_t i = 0; i < outputSize; i += gradDim) {
             setGradientOnIdentifierCustomAdjoints(i, output, outputSize, typename CustomGT::Real(1.0), adjoints);
 
             if (keepState) {
-              tape.template evaluateKeepState<AdjointVector>(end, start, adjoints);
+              tape.evaluateKeepState(end, start, std::forward<AdjointVector>(adjoints));
             } else {
-              tape.template evaluate<AdjointVector>(end, start, adjoints);
+              tape.evaluate(end, start, std::forward<AdjointVector>(adjoints));
             }
 
             for (size_t j = 0; j < inputSize; j += 1) {
@@ -277,7 +277,7 @@ namespace codi {
             setGradientOnIdentifierCustomAdjoints(i, output, outputSize, typename CustomGT::Real(), adjoints);
 
             if (!Config::ReversalZeroesAdjoints) {
-              tape.template clearCustomAdjoints<AdjointVector>(end, start, adjoints);
+              tape.clearCustomAdjoints(end, start, std::forward<AdjointVector>(adjoints));
             }
           }
         } else {
@@ -307,9 +307,9 @@ namespace codi {
       static CODI_INLINE void computeJacobianCustomAdjoints(Position const& start, Position const& end,
                                                             Identifier const* input, size_t const inputSize,
                                                             Identifier const* output, size_t const outputSize, Jac& jac,
-                                                            AdjointVector adjoints) {
+                                                            AdjointVector&& adjoints) {
         computeJacobianCustomAdjoints<Jac, AdjointVector>(Type::getTape(), start, end, input, inputSize,
-                                                          output, outputSize, jac, adjoints);
+                                                          output, outputSize, jac, std::forward<AdjointVector>(adjoints));
       }
 
       /**

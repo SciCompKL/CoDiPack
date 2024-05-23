@@ -522,7 +522,7 @@ namespace codi {
 
       /// Performs the AD \ref sec_reverseAD "reverse" equation for a statement.
       template<typename AdjointVector>
-      CODI_INLINE static void incrementAdjoints(AdjointVector adjointVector,
+      CODI_INLINE static void incrementAdjoints(AdjointVector& adjointVector,
                                                 AdjointVectorTraits::Gradient<AdjointVector> const& lhsAdjoint,
                                                 Config::ArgumentSize const& numberOfArguments, size_t& curJacobianPos,
                                                 Real const* const rhsJacobians,
@@ -571,14 +571,14 @@ namespace codi {
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::evaluate()
       template<typename AdjointVector>
-      CODI_NO_INLINE void evaluate(Position const& start, Position const& end, AdjointVector data) {
+      CODI_NO_INLINE void evaluate(Position const& start, Position const& end, AdjointVector&& data) {
         VectorAccess<AdjointVector> adjointWrapper(data);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(
             cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Reverse, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluateReverse_EvalStatements<AdjointVector> evalFunc;
-        Base::llfByteData.evaluateReverse(start, end, evalFunc, cast(), data);
+        Base::llfByteData.evaluateReverse(start, end, evalFunc, cast(), std::forward<AdjointVector>(data));
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
                                                        EventHints::EvaluationKind::Reverse, EventHints::Endpoint::End);
@@ -586,14 +586,14 @@ namespace codi {
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::evaluate()
       template<typename AdjointVector>
-      CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, AdjointVector data) {
+      CODI_NO_INLINE void evaluateForward(Position const& start, Position const& end, AdjointVector&& data) {
         VectorAccess<AdjointVector> adjointWrapper(data);
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(
             cast(), start, end, &adjointWrapper, EventHints::EvaluationKind::Forward, EventHints::Endpoint::Begin);
 
         Wrap_internalEvaluateForward_EvalStatements<AdjointVector> evalFunc;
-        Base::llfByteData.evaluateForward(start, end, evalFunc, cast(), data);
+        Base::llfByteData.evaluateForward(start, end, evalFunc, cast(), std::forward<AdjointVector>(data));
 
         EventSystem<Impl>::notifyTapeEvaluateListeners(cast(), start, end, &adjointWrapper,
                                                        EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
@@ -677,12 +677,12 @@ namespace codi {
 
       /// \copydoc codi::DataManagementTapeInterface::createVectorAccess()
       VectorAccess<decltype(adjoints.data())>* createVectorAccess() {
-        return createVectorAccessCustomAdjoints<decltype(adjoints.data())>(adjoints.data());
+        return createVectorAccessCustomAdjoints(adjoints.data());
       }
 
       /// \copydoc codi::DataManagementTapeInterface::createVectorAccessCustomAdjoints()
       template<typename AdjointVector>
-      VectorAccess<AdjointVector>* createVectorAccessCustomAdjoints(AdjointVector data) {
+      VectorAccess<AdjointVector>* createVectorAccessCustomAdjoints(AdjointVector&& data) {
         return new VectorAccess<AdjointVector>(data);
       }
 
@@ -721,7 +721,7 @@ namespace codi {
 
         codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
 
-        cast().template evaluateForward<decltype(adjoints.data())>(start, end, adjoints.data());
+        cast().evaluateForward(start, end, adjoints.data());
 
         if (AdjointsManagement::Automatic == adjointsManagement) {
           adjoints.endUse();
@@ -805,7 +805,7 @@ namespace codi {
 
         codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
 
-        evaluate<decltype(adjoints.data())>(start, end, adjoints.data());
+        evaluate(start, end, adjoints.data());
 
         if (AdjointsManagement::Automatic == adjointsManagement) {
           adjoints.endUse();
@@ -825,8 +825,8 @@ namespace codi {
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
       template<typename AdjointVector>
-      void evaluateKeepState(Position const& start, Position const& end, AdjointVector data) {
-        evaluate<AdjointVector>(start, end, data);
+      void evaluateKeepState(Position const& start, Position const& end, AdjointVector&& data) {
+        evaluate(start, end, std::forward<AdjointVector>(data));
       }
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
@@ -837,8 +837,8 @@ namespace codi {
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
       template<typename AdjointVector>
-      void evaluateForwardKeepState(Position const& start, Position const& end, AdjointVector data) {
-        evaluateForward<AdjointVector>(start, end, data);
+      void evaluateForwardKeepState(Position const& start, Position const& end, AdjointVector&& data) {
+        evaluateForward(start, end, std::forward<AdjointVector>(data));
       }
 
       /// @}

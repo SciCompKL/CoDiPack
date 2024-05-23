@@ -595,7 +595,7 @@ namespace codi {
 #if CODI_VariableAdjointInterfaceInPrimalTapes
         return vectorAccess;
 #else
-        CODI_STATIC_ASSERT(CODI_T(std::is_same<AdjointVector, Gradient*>::value),
+        CODI_STATIC_ASSERT(CODI_T(std::is_same<typename std::remove_reference<AdjointVector>::type, Gradient*>::value),
                            "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
                            " to use custom adjoint vectors in the primal value tapes.");
 
@@ -628,9 +628,9 @@ namespace codi {
 
       /// Internal method for the forward evaluation of the whole tape.
       template<bool copyPrimal, typename AdjointVector>
-      CODI_NO_INLINE void internalEvaluateForward(Position const& start, Position const& end, AdjointVector data) {
+      CODI_NO_INLINE void internalEvaluateForward(Position const& start, Position const& end, AdjointVector&& data) {
         CODI_STATIC_ASSERT(
-            Config::VariableAdjointInterfaceInPrimalTapes || CODI_T(std::is_same<AdjointVector, Gradient*>::value),
+            Config::VariableAdjointInterfaceInPrimalTapes || CODI_T(std::is_same<typename std::remove_reference<AdjointVector>::type, Gradient*>::value),
             "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
             " to use custom adjoint vectors in the primal value tapes.");
 
@@ -681,9 +681,9 @@ namespace codi {
 
       /// Internal method for the reverse evaluation of the whole tape.
       template<bool copyPrimal, typename AdjointVector>
-      CODI_INLINE void internalEvaluateReverse(Position const& start, Position const& end, AdjointVector data) {
+      CODI_INLINE void internalEvaluateReverse(Position const& start, Position const& end, AdjointVector&& data) {
         CODI_STATIC_ASSERT(
-            Config::VariableAdjointInterfaceInPrimalTapes || CODI_T(std::is_same<AdjointVector, Gradient*>::value),
+            Config::VariableAdjointInterfaceInPrimalTapes || CODI_T(std::is_same<typename std::remove_reference<AdjointVector>::type, Gradient*>::value),
             "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
             " to use custom adjoint vectors in the primal value tapes.");
 
@@ -717,14 +717,14 @@ namespace codi {
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::evaluate()
       template<typename AdjointVector>
-      CODI_INLINE void evaluate(Position const& start, Position const& end, AdjointVector data) {
-        internalEvaluateReverse<!TapeTypes::IsLinearIndexHandler, AdjointVector>(start, end, data);
+      CODI_INLINE void evaluate(Position const& start, Position const& end, AdjointVector&& data) {
+        internalEvaluateReverse<!TapeTypes::IsLinearIndexHandler>(start, end, std::forward<AdjointVector>(data));
       }
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::evaluateForward()
       template<typename AdjointVector>
-      CODI_INLINE void evaluateForward(Position const& start, Position const& end, AdjointVector data) {
-        internalEvaluateForward<!TapeTypes::IsLinearIndexHandler, AdjointVector>(start, end, data);
+      CODI_INLINE void evaluateForward(Position const& start, Position const& end, AdjointVector&& data) {
+        internalEvaluateForward<!TapeTypes::IsLinearIndexHandler>(start, end, std::forward<AdjointVector>(data));
       }
 
       /// @}
@@ -825,12 +825,12 @@ namespace codi {
 
       /// \copydoc codi::DataManagementTapeInterface::createVectorAccess()
       VectorAccess<Gradient*>* createVectorAccess() {
-        return createVectorAccessCustomAdjoints<Gradient*>(adjoints.data());
+        return createVectorAccessCustomAdjoints(adjoints.data());
       }
 
       /// \copydoc codi::DataManagementTapeInterface::createVectorAccessCustomAdjoints()
       template<typename AdjointVector>
-      VectorAccess<AdjointVector>* createVectorAccessCustomAdjoints(AdjointVector data) {
+      VectorAccess<AdjointVector>* createVectorAccessCustomAdjoints(AdjointVector&& data) {
         return new VectorAccess<AdjointVector>(data, primals.data());
       }
 
@@ -1115,8 +1115,8 @@ namespace codi {
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateKeepState()
       template<typename AdjointVector>
-      void evaluateKeepState(Position const& start, Position const& end, AdjointVector data) {
-        internalEvaluateReverse<false, AdjointVector>(start, end, data);
+      void evaluateKeepState(Position const& start, Position const& end, AdjointVector&& data) {
+        internalEvaluateReverse<false>(start, end, std::forward<AdjointVector>(data));
 
         if (!TapeTypes::IsLinearIndexHandler) {
           evaluatePrimal(end, start);
@@ -1139,12 +1139,12 @@ namespace codi {
 
       /// \copydoc codi::PreaccumulationEvaluationTapeInterface::evaluateForwardKeepState()
       template<typename AdjointVector>
-      void evaluateForwardKeepState(Position const& start, Position const& end, AdjointVector data) {
+      void evaluateForwardKeepState(Position const& start, Position const& end, AdjointVector&& data) {
         if (!TapeTypes::IsLinearIndexHandler) {
           cast().internalResetPrimalValues(end);
         }
 
-        internalEvaluateForward<false, AdjointVector>(start, end, data);
+        internalEvaluateForward<false>(start, end, std::forward<AdjointVector>(data));
       }
 
     protected:

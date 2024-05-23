@@ -136,7 +136,7 @@ namespace codi {
       /// @tparam AdjointVector Type that supports access with operator[]. Unless it is a pointer, e.g., Adjoint*, it
       ///                       should be a reference, e.g., std::vector<Adjoint>&.
       template<typename AdjointVector>
-      VectorAccessInterface<Real, Identifier>* createVectorAccessCustomAdjoints(AdjointVector data);
+      VectorAccessInterface<Real, Identifier>* createVectorAccessCustomAdjoints(AdjointVector&& data);
 
       void deleteVectorAccess(VectorAccessInterface<Real, Identifier>* access);  ///< See \ref vectorAccess.
 
