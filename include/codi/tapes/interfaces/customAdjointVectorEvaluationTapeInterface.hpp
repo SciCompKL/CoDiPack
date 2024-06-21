@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../misc/internalAdjointsInterface.hpp"
 #include "../misc/tapeParameters.hpp"
 #include "forwardEvaluationTapeInterface.hpp"
 
@@ -108,5 +109,20 @@ namespace codi {
        */
       template<typename AdjointVector>
       void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector&& data);
+
+      /**
+       * @brief Obtain a representation of the tape's internal adjoint vector that can be as custom adjoints.
+       *
+       * To avoid that functionality has to be implemented both for custom, external and internal adjoints, this method
+       * provides access to the internal adjoints so that they can be used as if they were custom adjoints.
+       *
+       * Warning: If you use this method, proceed with care. If internal adjoints are modified due to side effect of
+       * other methods, the object returned here might become invalid, or, conversely, modifications of the returned
+       * object other than reading/writing adjoints might interfere with the tape's management of internal adjoints.
+       *
+       * @tparam InternalAdjoints  Placeholder for the implementation-dependent return type.
+       */
+      CODI_DD(CODI_T(template<typename InternalAdjoints>), )
+      CODI_DD(InternalAdjoints, CODI_T(InternalAdjointsInterface<double, int, CODI_DEFAULT_TAPE>)) getInternalAdjoints();
   };
 }

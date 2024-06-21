@@ -599,6 +599,11 @@ namespace codi {
                                                        EventHints::EvaluationKind::Forward, EventHints::Endpoint::End);
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::getInternalAdjoints()
+      CODI_INLINE Adjoints& getInternalAdjoints() {
+        return adjoints;
+      }
+
       /// @}
       /*******************************************************************************/
       /// @name Functions from DataManagementTapeInterface

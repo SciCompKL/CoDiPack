@@ -727,6 +727,11 @@ namespace codi {
         internalEvaluateForward<!TapeTypes::IsLinearIndexHandler>(start, end, std::forward<AdjointVector>(data));
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::getInternalAdjoints()
+      CODI_INLINE Gradient* getInternalAdjoints() {
+        return adjoints.data();
+      }
+
       /// @}
       /*******************************************************************************/
       /// @name Functions from DataManagementTapeInterface
