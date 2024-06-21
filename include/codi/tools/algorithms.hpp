@@ -143,7 +143,6 @@ namespace codi {
                                               Identifier const* input, size_t const inputSize, Identifier const* output,
                                               size_t const outputSize, Jac& jac,
                                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-        size_t constexpr gradDim = GT::dim;
 
         // internally, automatic management is implemented in an optimized way that uses manual management
         if (AdjointsManagement::Automatic == adjointsManagement) {
@@ -151,59 +150,9 @@ namespace codi {
           tape.beginUseAdjointVector();
         }
 
-        EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
-        if (EvaluationType::Forward == evalType) {
-          for (size_t j = 0; j < inputSize; j += gradDim) {
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
+        auto internalAdjoints = tape.getInternalAdjoints();
 
-            if (keepState) {
-              tape.evaluateForwardKeepState(start, end, AdjointsManagement::Manual);
-            } else {
-              tape.evaluateForward(start, end, AdjointsManagement::Manual);
-            }
-
-            for (size_t i = 0; i < outputSize; i += 1) {
-              for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
-                jac(outputSize - i - 1, j + curDim) =
-                    GT::at(tape.getGradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim);
-                if (Gradient() != output[i]) {
-                  GT::at(tape.gradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim) =
-                      typename GT::Real();
-                }
-              }
-            }
-
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), AdjointsManagement::Manual);
-          }
-
-          tape.clearAdjoints(end, start, AdjointsManagement::Manual);
-
-        } else if (EvaluationType::Reverse == evalType) {
-          for (size_t i = 0; i < outputSize; i += gradDim) {
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
-
-            if (keepState) {
-              tape.evaluateKeepState(end, start, AdjointsManagement::Manual);
-            } else {
-              tape.evaluate(end, start, AdjointsManagement::Manual);
-            }
-
-            for (size_t j = 0; j < inputSize; j += 1) {
-              for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
-                jac(i + curDim, j) = GT::at(tape.getGradient(input[j], AdjointsManagement::Manual), curDim);
-                GT::at(tape.gradient(input[j], AdjointsManagement::Manual), curDim) = typename GT::Real();
-              }
-            }
-
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), AdjointsManagement::Manual);
-
-            if (!Config::ReversalZeroesAdjoints) {
-              tape.clearAdjoints(end, start, AdjointsManagement::Manual);
-            }
-          }
-        } else {
-          CODI_EXCEPTION("Evaluation mode not implemented. Mode is: %d.", (int)evalType);
-        }
+        computeJacobianCustomAdjoints(tape, start, end, input, inputSize, output, outputSize, jac, internalAdjoints);
 
         if (AdjointsManagement::Automatic == adjointsManagement) {
           tape.endUseAdjointVector();
