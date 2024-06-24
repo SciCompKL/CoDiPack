@@ -177,8 +177,8 @@ namespace codi {
                 tape, true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr, &vectorAccess);
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
-            Base::template incrementTangents<AdjointVector>(adjointVector, lhsAdjoint, argsSize,
-                                                            curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::template incrementTangents<AdjointVector>(adjointVector, lhsAdjoint, argsSize, curJacobianPos,
+                                                            rhsJacobians, rhsIdentifiers);
 
             adjointVector[lhsIdentifiers[curStmtPos]] = lhsAdjoint;
 
@@ -229,8 +229,7 @@ namespace codi {
                 GradientTraits::toArray(lhsAdjoint).data());
 
             adjointVector[lhsIdentifiers[curStmtPos]] = Adjoint();
-            Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize,
-                                    curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::incrementAdjoints(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
           }
         }
       }

@@ -141,6 +141,9 @@ namespace codi {
   typename CODI_DD(ParallelToolbox, CODI_DEFAULT_PARALLEL_TOOLBOX)::ReadWriteMutex
       ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjointsMutex;
 
+#ifndef DOXYGEN_DISABLE
+
+  /// Specialization of AdjointVectorTraits.
   namespace AdjointVectorTraits {
     template<typename T_Gradient, typename T_Identifier, typename T_Tape, typename T_ParallelToolbox>
     struct GradientImplementation<ThreadSafeGlobalAdjoints<T_Gradient, T_Identifier, T_Tape, T_ParallelToolbox>> {
@@ -148,4 +151,5 @@ namespace codi {
         using Gradient = T_Gradient;
     };
   }
+#endif
 }

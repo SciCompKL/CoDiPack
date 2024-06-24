@@ -93,9 +93,8 @@ namespace codi {
         unsigned long storedIndices = this->usedIndicesPos + this->unusedIndicesPos;
         long currentLiveIndices = maximumGlobalIndex - storedIndices;
 
-        TapeValues::LocalReductionOperation constexpr operation = NeedsStaticStorage
-                                                                      ? TapeValues::LocalReductionOperation::Max
-                                                                      : TapeValues::LocalReductionOperation::Sum;
+        TapeValues::LocalReductionOperation constexpr operation =
+            NeedsStaticStorage ? TapeValues::LocalReductionOperation::Max : TapeValues::LocalReductionOperation::Sum;
 
         values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex, operation);
         values.addLongEntry("Cur. live indices", currentLiveIndices, operation);

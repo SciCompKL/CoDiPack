@@ -34,7 +34,8 @@
  */
 #include "basePreaccumulationLargeStatement.hpp"
 
-struct TestPreaccumulationLocalAdjointsLargeStatement : public BasePreaccumulationLargeStatement<TestPreaccumulationLocalAdjointsLargeStatement> {
+struct TestPreaccumulationLocalAdjointsLargeStatement
+    : public BasePreaccumulationLargeStatement<TestPreaccumulationLocalAdjointsLargeStatement> {
   public:
     NAME("PreaccumulationLocalAdjointsLargeStatement")
 

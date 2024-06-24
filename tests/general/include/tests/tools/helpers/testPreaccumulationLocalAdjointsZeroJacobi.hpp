@@ -34,7 +34,8 @@
  */
 #include "basePreaccumulationZeroJacobi.hpp"
 
-struct TestPreaccumulationLocalAdjointsZeroJacobi : public BasePreaccumulationZeroJacobi<TestPreaccumulationLocalAdjointsZeroJacobi> {
+struct TestPreaccumulationLocalAdjointsZeroJacobi
+    : public BasePreaccumulationZeroJacobi<TestPreaccumulationLocalAdjointsZeroJacobi> {
   public:
     NAME("PreaccumulationLocalAdjointsZeroJacobi")
 

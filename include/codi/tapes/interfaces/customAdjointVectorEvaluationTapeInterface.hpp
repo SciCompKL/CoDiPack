@@ -53,15 +53,15 @@ namespace codi {
    * additional clearing method allows clearing the custom adjoint vector according to the recorded tape.
    *
    * The adjoint vector type (template parameter AdjointVector in the member functions) must be a accessible with
-   * operator[]. Suitable choices are pointers, e.g., Adjoint*, or references to classes with overloaded operator[],
-   * like std::vector<Adjoint>&.
+   * operator[]. Suitable choices are pointers, e.g., Adjoint*, or classes with overloaded operator[] like
+   * std::vector<Adjoint>.
    *
-   * The type of the vector entries (template parameter Adjoint in the member functions) must support the following
-   * operators:
+   * codi::AdjointVectorTraits::GradientImplementation must be specialized for AdjointVector.
+   * The type of the vector entries deduced from these traits (gradient type) must support the following operators:
    *  - operator =
    *  - operator *(Tape::Real, Adjoint) (Scalar multiplication from the left)
    *  - operator +=
-   * It must also specialize #codi::GradientTraits::TraitsImplementation.
+   * The gradient type must also specialize #codi::GradientTraits::TraitsImplementation.
    *
    * Here is an example for an evaluation with a custom adjoint vector
    * (documentation/examples/customAdjointVectorEvaluationTapeInterface.cpp):
@@ -111,7 +111,7 @@ namespace codi {
       void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector&& data);
 
       /**
-       * @brief Obtain a representation of the tape's internal adjoint vector that can be as custom adjoints.
+       * @brief Obtain a representation of the tape's internal adjoint vector that can be used as custom adjoints.
        *
        * To avoid that functionality has to be implemented both for custom, external and internal adjoints, this method
        * provides access to the internal adjoints so that they can be used as if they were custom adjoints.
@@ -123,6 +123,7 @@ namespace codi {
        * @tparam InternalAdjoints  Placeholder for the implementation-dependent return type.
        */
       CODI_DD(CODI_T(template<typename InternalAdjoints>), )
-      CODI_DD(InternalAdjoints, CODI_T(InternalAdjointsInterface<double, int, CODI_DEFAULT_TAPE>)) getInternalAdjoints();
+      CODI_DD(InternalAdjoints, CODI_T(InternalAdjointsInterface<double, int, CODI_DEFAULT_TAPE>))
+      getInternalAdjoints();
   };
 }

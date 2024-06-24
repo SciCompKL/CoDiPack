@@ -93,9 +93,8 @@ namespace codi {
 
         double memoryindexUseVector = (double)indexUse.size() * (double)(sizeof(Index));
 
-        TapeValues::LocalReductionOperation constexpr operation = NeedsStaticStorage
-                                                                      ? TapeValues::LocalReductionOperation::Max
-                                                                      : TapeValues::LocalReductionOperation::Sum;
+        TapeValues::LocalReductionOperation constexpr operation =
+            NeedsStaticStorage ? TapeValues::LocalReductionOperation::Max : TapeValues::LocalReductionOperation::Sum;
 
         values.addDoubleEntry("Memory: index use vector", memoryindexUseVector, operation, true, true);
       }

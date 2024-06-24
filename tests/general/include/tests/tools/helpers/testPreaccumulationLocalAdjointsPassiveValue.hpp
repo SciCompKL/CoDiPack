@@ -34,7 +34,8 @@
  */
 #include "basePreaccumulationPassiveValue.hpp"
 
-struct TestPreaccumulationLocalAdjointsPassiveValue : public BasePreaccumulationPassiveValue<TestPreaccumulationLocalAdjointsPassiveValue> {
+struct TestPreaccumulationLocalAdjointsPassiveValue
+    : public BasePreaccumulationPassiveValue<TestPreaccumulationLocalAdjointsPassiveValue> {
   public:
     NAME("PreaccumulationLocalAdjointsPassiveValue")
 

@@ -290,9 +290,9 @@ namespace codi {
         using LocalMappedAdjoints = MappedAdjoints<typename Tape::Identifier, typename Tape::Gradient>;
         LocalMappedAdjoints mappedAdjoints;
 
-        Algorithms<Type, false>::computeJacobianCustomAdjoints(
-            startPos, endPos, inputData.data(), inputData.size(), outputData.data(), outputData.size(), jacobian,
-            mappedAdjoints);
+        Algorithms<Type, false>::computeJacobianCustomAdjoints(startPos, endPos, inputData.data(), inputData.size(),
+                                                               outputData.data(), outputData.size(), jacobian,
+                                                               mappedAdjoints);
 
         tape.resetTo(startPos, false);
       }

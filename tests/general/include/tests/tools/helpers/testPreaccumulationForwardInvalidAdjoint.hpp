@@ -34,7 +34,8 @@
  */
 #include "basePreaccumulationForwardInvalidAdjoint.hpp"
 
-struct TestPreaccumulationForwardInvalidAdjoint : public BasePreaccumulationForwardInvalidAdjoint<TestPreaccumulationForwardInvalidAdjoint> {
+struct TestPreaccumulationForwardInvalidAdjoint
+    : public BasePreaccumulationForwardInvalidAdjoint<TestPreaccumulationForwardInvalidAdjoint> {
   public:
     NAME("PreaccumulationForwardInvalidAdjoint")
 

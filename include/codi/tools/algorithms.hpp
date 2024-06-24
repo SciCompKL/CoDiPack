@@ -143,7 +143,6 @@ namespace codi {
                                               Identifier const* input, size_t const inputSize, Identifier const* output,
                                               size_t const outputSize, Jac& jac,
                                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-
         // internally, automatic management is implemented in an optimized way that uses manual management
         if (AdjointsManagement::Automatic == adjointsManagement) {
           tape.resizeAdjointVector();
@@ -248,17 +247,17 @@ namespace codi {
       }
 
       // clang-format off
-      /// \copybrief computeJacobianCustomAdjoints(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointVector)
+      /// \copybrief computeJacobianCustomAdjoints(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointVector&&)
       /// \n This method uses the global tape for the Jacobian evaluation.
-      /// \copydetails computeJacobianCustomAdjoints(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointVector)
+      /// \copydetails computeJacobianCustomAdjoints(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointVector&&)
       // clang-format on
       template<typename Jac, typename AdjointVector>
       static CODI_INLINE void computeJacobianCustomAdjoints(Position const& start, Position const& end,
                                                             Identifier const* input, size_t const inputSize,
                                                             Identifier const* output, size_t const outputSize, Jac& jac,
                                                             AdjointVector&& adjoints) {
-        computeJacobianCustomAdjoints<Jac, AdjointVector>(Type::getTape(), start, end, input, inputSize,
-                                                          output, outputSize, jac, std::forward<AdjointVector>(adjoints));
+        computeJacobianCustomAdjoints<Jac, AdjointVector>(Type::getTape(), start, end, input, inputSize, output,
+                                                          outputSize, jac, std::forward<AdjointVector>(adjoints));
       }
 
       /**

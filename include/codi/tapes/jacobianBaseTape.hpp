@@ -694,7 +694,7 @@ namespace codi {
       /// \copydoc codi::DataManagementTapeInterface::createVectorAccessCustomAdjoints()
       /// <br> Specialization for pointers passed as lvalues. Ensures that the pointer is copied, not referenced.
       template<typename Adjoint>
-      VectorAccess<Adjoint*> createVectorAccessCustomAdjoints(Adjoint* data) {
+      VectorAccess<Adjoint*>* createVectorAccessCustomAdjoints(Adjoint* data) {
         return new VectorAccess<Adjoint*>(data);
       }
 

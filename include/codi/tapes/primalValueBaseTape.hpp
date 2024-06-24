@@ -630,7 +630,8 @@ namespace codi {
       template<bool copyPrimal, typename AdjointVector>
       CODI_NO_INLINE void internalEvaluateForward(Position const& start, Position const& end, AdjointVector&& data) {
         CODI_STATIC_ASSERT(
-            Config::VariableAdjointInterfaceInPrimalTapes || CODI_T(std::is_same<typename std::remove_reference<AdjointVector>::type, Gradient*>::value),
+            Config::VariableAdjointInterfaceInPrimalTapes ||
+                CODI_T(std::is_same<typename std::remove_reference<AdjointVector>::type, Gradient*>::value),
             "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
             " to use custom adjoint vectors in the primal value tapes.");
 
@@ -683,7 +684,8 @@ namespace codi {
       template<bool copyPrimal, typename AdjointVector>
       CODI_INLINE void internalEvaluateReverse(Position const& start, Position const& end, AdjointVector&& data) {
         CODI_STATIC_ASSERT(
-            Config::VariableAdjointInterfaceInPrimalTapes || CODI_T(std::is_same<typename std::remove_reference<AdjointVector>::type, Gradient*>::value),
+            Config::VariableAdjointInterfaceInPrimalTapes ||
+                CODI_T(std::is_same<typename std::remove_reference<AdjointVector>::type, Gradient*>::value),
             "Please enable 'CODI_VariableAdjointInterfaceInPrimalTapes' in order"
             " to use custom adjoint vectors in the primal value tapes.");
 
@@ -842,7 +844,7 @@ namespace codi {
       /// \copydoc codi::DataManagementTapeInterface::createVectorAccessCustomAdjoints()
       /// <br> Overload for pointers passed as lvalues. Ensures that the pointer is copied, not referenced.
       template<typename Adjoint>
-      VectorAccess<Adjoint*> createVectorAccessCustomAdjoints(Adjoint* data) {
+      VectorAccess<Adjoint*>* createVectorAccessCustomAdjoints(Adjoint* data) {
         return new VectorAccess<Adjoint*>(data, primals.data());
       }
 
@@ -880,7 +882,7 @@ namespace codi {
 
         codiAssert(indexManager.get().getLargestCreatedIndex() < (Identifier)adjoints.size());
 
-        cast().template evaluateForward<Gradient*>(start, end, adjoints.data());
+        cast().evaluateForward(start, end, adjoints.data());
       }
 
       /// @}

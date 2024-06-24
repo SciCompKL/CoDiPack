@@ -165,7 +165,7 @@ namespace codi {
             // Do nothing.
           } else CODI_Likely {
             Adjoint lhsAdjoint = Adjoint();
-            Base::incrementTangents(adjointVector, lhsAdjoint, argsSize,  curJacobianPos, rhsJacobians, rhsIdentifiers);
+            Base::incrementTangents(adjointVector, lhsAdjoint, argsSize, curJacobianPos, rhsJacobians, rhsIdentifiers);
             adjointVector[curAdjointPos] = lhsAdjoint;
 
             EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
