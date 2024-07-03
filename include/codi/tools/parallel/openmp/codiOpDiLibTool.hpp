@@ -165,16 +165,13 @@ struct CoDiOpDiLibTool : public opdi::ToolInterface {
         std::cerr << "Warning: OpDiLib evaluation of an active tape." << std::endl;
       }
 
-      typename Tape::Gradient* adjoints = &tape->gradient(0);
       using NonAtomicGradient = codi::AtomicTraits::RemoveAtomic<typename Tape::Gradient>;
       using AtomicGradient = codi::OpenMPReverseAtomic<NonAtomicGradient>;
 
       if (useAtomics) {
-        AtomicGradient* safeAdjoints = (AtomicGradient*)adjoints;
-        tape->evaluate(*start, *end, safeAdjoints);
+        tape->evaluate(*start, *end, reinterpret_cast<AtomicGradient*>(&tape->gradient(0)));
       } else {
-        NonAtomicGradient* unsafeAdjoints = (NonAtomicGradient*)adjoints;
-        tape->evaluate(*start, *end, unsafeAdjoints);
+        tape->evaluate(*start, *end, reinterpret_cast<NonAtomicGradient*>(&tape->gradient(0)));
       }
     }
 

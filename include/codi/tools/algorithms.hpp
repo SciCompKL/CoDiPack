@@ -149,9 +149,8 @@ namespace codi {
           tape.beginUseAdjointVector();
         }
 
-        auto internalAdjoints = tape.getInternalAdjoints();
-
-        computeJacobianCustomAdjoints(tape, start, end, input, inputSize, output, outputSize, jac, internalAdjoints);
+        computeJacobianCustomAdjoints(tape, start, end, input, inputSize, output, outputSize, jac,
+                                      tape.getInternalAdjoints());
 
         if (AdjointsManagement::Automatic == adjointsManagement) {
           tape.endUseAdjointVector();

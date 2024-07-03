@@ -600,8 +600,8 @@ namespace codi {
       }
 
       /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::getInternalAdjoints()
-      CODI_INLINE Adjoints& getInternalAdjoints() {
-        return adjoints;
+      CODI_INLINE decltype(adjoints.data()) getInternalAdjoints() {
+        return adjoints.data();
       }
 
       /// @}
