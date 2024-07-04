@@ -34,12 +34,13 @@
  */
 #include "basePreaccumulationPassiveValue.hpp"
 
-struct TestPreaccumulationPassiveValue : public BasePreaccumulationPassiveValue<TestPreaccumulationPassiveValue> {
+struct TestPreaccumulationLocalAdjointsPassiveValue
+    : public BasePreaccumulationPassiveValue<TestPreaccumulationLocalAdjointsPassiveValue> {
   public:
-    NAME("PreaccumulationPassiveValue")
+    NAME("PreaccumulationLocalAdjointsPassiveValue")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finish(false, y[0], y[1]);
+      ph.finishLocalAdjoints(y[0], y[1]);
     }
 };

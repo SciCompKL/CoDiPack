@@ -42,6 +42,7 @@
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
 #include "../misc/macros.hpp"
+#include "../traits/adjointVectorTraits.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "data/chunk.hpp"
 #include "indices/linearIndexManager.hpp"
@@ -105,6 +106,18 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
+      template<typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector&& data) {
+        using IndexPosition = CODI_DD(typename IndexManager::Position, int);
+        IndexPosition startIndex = this->llfByteData.template extractPosition<IndexPosition>(start);
+        IndexPosition endIndex = this->llfByteData.template extractPosition<IndexPosition>(end);
+
+        for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
+          data[curPos] = AdjointVectorTraits::Gradient<AdjointVector>();
+        }
+      }
+
     protected:
 
       /// \copydoc codi::JacobianBaseTape::pushStmtData <br><br>
@@ -116,10 +129,10 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateForward_EvalStatements
-      template<typename Adjoint>
+      template<typename AdjointVector>
       CODI_INLINE static void internalEvaluateForward_EvalStatements(
           /* data from call */
-          JacobianLinearTape& tape, Adjoint* adjointVector,
+          JacobianLinearTape& tape, AdjointVector&& adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -134,7 +147,9 @@ namespace codi {
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endJacobianPos, endStmtPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
+        using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
+
+        typename Base::template VectorAccess<AdjointVector> vectorAccess(adjointVector);
 
         size_t curAdjointPos = startAdjointPos;
 
@@ -162,10 +177,10 @@ namespace codi {
       }
 
       /// \copydoc codi::JacobianBaseTape::internalEvaluateReverse_EvalStatements
-      template<typename Adjoint>
+      template<typename AdjointVector>
       CODI_INLINE static void internalEvaluateReverse_EvalStatements(
           /* data from call */
-          JacobianLinearTape& tape, Adjoint* adjointVector,
+          JacobianLinearTape& tape, AdjointVector&& adjointVector,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -180,7 +195,9 @@ namespace codi {
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endJacobianPos, endStmtPos, endLLFByteDataPos, endLLFInfoDataPos);
 
-        typename Base::template VectorAccess<Adjoint> vectorAccess(adjointVector);
+        using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
+
+        typename Base::template VectorAccess<AdjointVector> vectorAccess(adjointVector);
 
         size_t curAdjointPos = startAdjointPos;
 

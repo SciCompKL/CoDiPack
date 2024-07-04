@@ -133,8 +133,10 @@ namespace codi {
       VectorAccessInterface<Real, Identifier>* createVectorAccess();  ///< See \ref vectorAccess.
 
       /// See \ref vectorAccess.
-      template<typename Adjoint>
-      VectorAccessInterface<Real, Identifier>* createVectorAccessCustomAdjoints(Adjoint* data);
+      /// @tparam AdjointVector Type that supports access with operator[].
+      ///                       See codi::CustomAdjointVectorEvaluationTapeInterface.
+      template<typename AdjointVector>
+      VectorAccessInterface<Real, Identifier>* createVectorAccessCustomAdjoints(AdjointVector&& data);
 
       void deleteVectorAccess(VectorAccessInterface<Real, Identifier>* access);  ///< See \ref vectorAccess.
 

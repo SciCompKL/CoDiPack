@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "../../traits/adjointVectorTraits.hpp"
 #include "internalAdjointsInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -111,4 +112,16 @@ namespace codi {
       /// \copydoc InternalAdjointsInterface::endUse
       CODI_INLINE void endUse() {}
   };
+
+#ifndef DOXYGEN_DISABLE
+
+  /// Specialization of AdjointVectorTraits.
+  namespace AdjointVectorTraits {
+    template<typename T_Gradient, typename T_Identifier, typename T_Tape>
+    struct GradientImplementation<LocalAdjoints<T_Gradient, T_Identifier, T_Tape>> {
+      public:
+        using Gradient = T_Gradient;
+    };
+  }
+#endif
 }

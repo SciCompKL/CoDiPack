@@ -110,6 +110,23 @@ namespace codi {
         this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
+      template<typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
+        auto clearFunc = [&data](Identifier* lhsIndex, Config::ArgumentSize* passiveArgs, Real* oldPrimal,
+                                 EvalHandle* evalHandle) {
+          CODI_UNUSED(passiveArgs, oldPrimal, evalHandle);
+
+          data[*lhsIndex] = AdjointVectorTraits::Gradient<AdjointVector>();
+        };
+
+        using StmtPosition = typename StatementData::Position;
+        StmtPosition startStmt = this->llfByteData.template extractPosition<StmtPosition>(start);
+        StmtPosition endStmt = this->llfByteData.template extractPosition<StmtPosition>(end);
+
+        this->statementData.forEachReverse(startStmt, endStmt, clearFunc);
+      }
+
     protected:
 
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_EvalStatements
@@ -134,7 +151,7 @@ namespace codi {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curStatementPos < endStatementPos) CODI_Likely {
@@ -197,7 +214,7 @@ namespace codi {
           EvalHandle const* const stmtEvalhandle) {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
-        typename Base::template VectorAccess<Gradient> vectorAccess(nullptr, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(nullptr, primalVector);
 
         while (curStatementPos < endStatementPos) CODI_Likely {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
@@ -243,7 +260,7 @@ namespace codi {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos);
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curStatementPos > endStatementPos) CODI_Likely {

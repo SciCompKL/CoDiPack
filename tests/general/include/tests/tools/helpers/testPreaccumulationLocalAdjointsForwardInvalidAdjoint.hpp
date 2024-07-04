@@ -32,14 +32,15 @@
  *    - Former members:
  *      - Tim Albring
  */
-#include "basePreaccumulationPassiveValue.hpp"
+#include "basePreaccumulationForwardInvalidAdjoint.hpp"
 
-struct TestPreaccumulationPassiveValue : public BasePreaccumulationPassiveValue<TestPreaccumulationPassiveValue> {
+struct TestPreaccumulationLocalAdjointsForwardInvalidAdjoint
+    : public BasePreaccumulationForwardInvalidAdjoint<TestPreaccumulationLocalAdjointsForwardInvalidAdjoint> {
   public:
-    NAME("PreaccumulationPassiveValue")
+    NAME("PreaccumulationLocalAdjointsForwardInvalidAdjoint")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finish(false, y[0], y[1]);
+      ph.finishLocalAdjoints(y[0], y[1], y[2], y[3]);
     }
 };

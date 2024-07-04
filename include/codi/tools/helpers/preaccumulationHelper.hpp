@@ -45,6 +45,7 @@
 #include "../../traits/gradientTraits.hpp"
 #include "../../traits/tapeTraits.hpp"
 #include "../algorithms.hpp"
+#include "../data/customAdjoints.hpp"
 #include "../data/jacobian.hpp"
 
 /** \copydoc codi::Namespace */
@@ -157,12 +158,31 @@ namespace codi {
           }
 
           tape.setPassive();
-          doPreaccumulation();
+          computeJacobian();
+          storeJacobian();
           tape.setActive();
 
           if (storeAdjoints) {
             restoreInputAdjoints();
           }
+        }
+
+        EventSystem<Tape>::notifyPreaccFinishListeners(tape);
+      }
+
+      /// Finish the preaccumulation region and perform the preaccumulation. Creates adjoints locally instead of using
+      /// adjoints from the tape. See `addOutput()` for outputs.
+      template<typename... Outputs>
+      void finishLocalAdjoints(Outputs&... outputs) {
+        Tape& tape = Type::getTape();
+
+        if (tape.isActive()) {
+          addOutputRecursive(outputs...);
+
+          tape.setPassive();
+          computeJacobianLocalAdjoints();
+          storeJacobian();
+          tape.setActive();
         }
 
         EventSystem<Tape>::notifyPreaccFinishListeners(tape);
@@ -233,14 +253,18 @@ namespace codi {
         }
       }
 
-      void doPreaccumulation() {
-        // Perform the accumulation of the tape part.
-        Tape& tape = Type::getTape();
-
-        Position endPos = tape.getPosition();
+      void resizeJacobian() {
         if (jacobian.getM() != outputData.size() || jacobian.getN() != inputData.size()) {
           jacobian.resize(outputData.size(), inputData.size());
         }
+      }
+
+      void computeJacobian() {
+        // Perform the accumulation of the tape part.
+        Tape& tape = Type::getTape();
+        Position endPos = tape.getPosition();
+
+        resizeJacobian();
 
         // Manage adjoints manually to reduce the impact of locking on the performance.
         tape.resizeAdjointVector();
@@ -250,10 +274,31 @@ namespace codi {
                                                  outputData.data(), outputData.size(), jacobian,
                                                  AdjointsManagement::Manual);
 
-        // Store the Jacobian matrix.
         tape.resetTo(startPos, true, AdjointsManagement::Manual);
 
         tape.endUseAdjointVector();
+      }
+
+      void computeJacobianLocalAdjoints() {
+        // Perform the accumulation of the tape part.
+        Tape& tape = Type::getTape();
+        Position endPos = tape.getPosition();
+
+        resizeJacobian();
+
+        // Create a local map with adjoints.
+        using LocalMappedAdjoints = MappedAdjoints<typename Tape::Identifier, typename Tape::Gradient>;
+        LocalMappedAdjoints mappedAdjoints;
+
+        Algorithms<Type, false>::computeJacobianCustomAdjoints(startPos, endPos, inputData.data(), inputData.size(),
+                                                               outputData.data(), outputData.size(), jacobian,
+                                                               mappedAdjoints);
+
+        tape.resetTo(startPos, false);
+      }
+
+      void storeJacobian() {
+        Tape& tape = Type::getTape();
 
         for (size_t curOut = 0; curOut < outputData.size(); ++curOut) {
           Type& value = *outputValues[curOut];
@@ -357,6 +402,13 @@ namespace codi {
         CODI_UNUSED(storeAdjoints, outputs...);
         // Do nothing.
       }
+
+      /// Does nothing.
+      template<typename... Outputs>
+      void finishLocalAdjoints(Outputs&... outputs) {
+        CODI_UNUSED(outputs...);
+        // Do nothing.
+      }
   };
 
   /// Specialize PreaccumulationHelper for forward tapes.
@@ -450,6 +502,12 @@ namespace codi {
             tape.setTagOnVariable(*curOutput);
           }
         }
+      }
+
+      /// Reverts the tags on all input and output values.
+      template<typename... Outputs>
+      void finishLocalAdjoints(Outputs&... outputs) {
+        finish(false, outputs...);
       }
 
     private:

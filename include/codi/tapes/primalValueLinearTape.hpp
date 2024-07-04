@@ -105,6 +105,18 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
+      template<typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
+        using IndexPosition = CODI_DD(typename IndexManager::Position, int);
+        IndexPosition startIndex = this->llfByteData.template extractPosition<IndexPosition>(start);
+        IndexPosition endIndex = this->llfByteData.template extractPosition<IndexPosition>(end);
+
+        for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
+          data[curPos] = AdjointVectorTraits::Gradient<AdjointVector>();
+        }
+      }
+
     protected:
 
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_EvalStatements
@@ -133,7 +145,7 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curAdjointPos < endAdjointPos) CODI_Likely {
@@ -202,7 +214,7 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        typename Base::template VectorAccess<Gradient> vectorAccess(nullptr, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(nullptr, primalVector);
 
         while (curAdjointPos < endAdjointPos) CODI_Likely {
           curAdjointPos += 1;
@@ -253,7 +265,7 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curAdjointPos > endAdjointPos) CODI_Likely {

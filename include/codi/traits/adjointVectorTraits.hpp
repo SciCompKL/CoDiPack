@@ -42,8 +42,8 @@ namespace codi {
   template<typename Gradient, typename Identifier, typename Tape, typename ParallelToolbox>
   struct ThreadSafeGlobalAdjoints;
 
-  /// Traits for atomic types.
-  namespace AdjointVectorTraits {
+  /// Traits for the internal adjoint variables maintained by the tape.
+  namespace InternalAdjointVectorTraits {
 
     /// Whether the adjoint vector is global, that is, shared among different tapes.
     template<typename InternalAdjointType>
@@ -53,5 +53,42 @@ namespace codi {
     template<typename Gradient, typename Identifier, typename Tape, typename ParallelToolbox>
     struct IsGlobal<ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>> : std::true_type {};
 #endif
+
+  }
+
+  /// General traits of adjoint vectors.
+  namespace AdjointVectorTraits {
+
+    /**
+     * @brief Trait implementation to deduce the entry type from an adjoint vector type.
+     *
+     * Default implementation for STL containers.
+     */
+    template<typename AdjointVector>
+    struct GradientImplementation {
+      public:
+        using Gradient = typename AdjointVector::value_type; ///< Type of adjoint vector entries.
+    };
+
+#ifndef DOXYGEN_DISABLE
+    /// Specialization for references.
+    template<typename AdjointVector>
+    struct GradientImplementation<AdjointVector&> : public GradientImplementation<AdjointVector> {};
+
+    /// Specialization for pointers.
+    template<typename T_Gradient>
+    struct GradientImplementation<T_Gradient*> {
+      public:
+        using Gradient = T_Gradient;
+    };
+#endif
+
+    /**
+     * @brief Deduce the entry type from an adjoint vector type, usually identical to the gradient type of a tape.
+     *
+     * @tparam AdjointVector Type of the adjoint vector.
+     */
+    template<typename AdjointVector>
+    using Gradient = typename GradientImplementation<AdjointVector>::Gradient;
   }
 }
