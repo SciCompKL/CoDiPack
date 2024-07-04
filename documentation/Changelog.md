@@ -1,6 +1,11 @@
 Changelog {#Changelog}
 ===========================
 
+### v ???
+ - Features:
+  * Tape evaluations with generalized custom adjoints.
+  * Preaccumulation with local mapped adjoints.
+
 ### v 2.2.0 - 2024-01-30
  - Features:
   * New helper for adding Enzyme-generated derivative functions to the tape. See \ref Example_24_Enzyme_external_function_helper.
