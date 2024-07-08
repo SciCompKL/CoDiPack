@@ -200,7 +200,7 @@ namespace codi {
                                                                       // curAdjointPos at the end of the loop.
 
             EventSystem<JacobianLinearTape>::notifyStatementEvaluateListeners(
-                tape, curAdjointPos, GradientTraits::dim<Adjoint>(), GradientTraits::toArray(lhsAdjoint).data());
+                tape, (Identifier)curAdjointPos, GradientTraits::dim<Adjoint>(), GradientTraits::toArray(lhsAdjoint).data());
 
             if (Config::ReversalZeroesAdjoints) {
               adjointVector[curAdjointPos] = Adjoint();
