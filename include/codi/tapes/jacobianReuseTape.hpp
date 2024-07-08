@@ -268,6 +268,41 @@ namespace codi {
         srcTape.llfByteData.evaluateForward(start, end, JacobianReuseTape::internalAppend, this);
       }
 
+      /// \copydoc codi::EditingTapeInterface::editIdentifiers
+      template<typename Func>
+      void editIdentifiers(Func&& modifyIdentifier, Position const& start, Position const& end) {
+
+        auto evalFunc = [&modifyIdentifier](
+                          /* data from low level function byte data vector */
+                          size_t&, size_t const&, char*,
+                          /* data from low level function info data vector */
+                          size_t&, size_t const&, Config::LowLevelFunctionToken* const,
+                          Config::LowLevelFunctionDataSize* const,
+                          /* data from jacobianData */
+                          size_t& curJacobianPos, size_t const&, Real const* const, Identifier* const rhsIdentifiers,
+                          /* data from statementData */
+                          size_t& curStmtPos, size_t const& endStmtPos, Identifier* const lhsIdentifiers,
+                          Config::ArgumentSize const* const numberOfJacobians) {
+          while (curStmtPos < endStmtPos) CODI_Likely {
+            Config::ArgumentSize const argsSize = numberOfJacobians[curStmtPos];
+
+            if (Config::StatementLowLevelFunctionTag != argsSize) CODI_Likely {  // skip low-level functions
+              modifyIdentifier(lhsIdentifiers[curStmtPos]);
+
+              size_t endJacobianPos = curJacobianPos + argsSize;
+              while (curJacobianPos < endJacobianPos) CODI_Likely {
+                modifyIdentifier(rhsIdentifiers[curJacobianPos]);
+                curJacobianPos += 1;
+              }
+            }
+
+            curStmtPos += 1;
+          }
+        };
+
+        Base::llfByteData.evaluateForward(start, end, evalFunc);
+      }
+
       /// @}
 
     private:
