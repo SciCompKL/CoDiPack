@@ -535,7 +535,7 @@ namespace codi {
           func.template call<callType>(&impl, dataView, std::forward<Args>(args)...);
 
           codiAssert(endPos == dataView.getPosition());
-        } else if (LowLevelFunctionEntryCallKind::Delete == callType) {
+        } else CODI_Unlikely if (LowLevelFunctionEntryCallKind::Delete == callType) {
           // No delete registered. Data is skiped by the curLLFByteDataPos update.
         } else {
           CODI_EXCEPTION("Requested call is not supported for low level function with token '%d'.", (int)id);
