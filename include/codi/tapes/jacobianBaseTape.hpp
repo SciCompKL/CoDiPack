@@ -898,7 +898,8 @@ namespace codi {
 
       CODI_NO_INLINE void internalResizeAdjointsVector() {
         // overallocate as next multiple of Config::ChunkSize
-        adjoints.resize(getNextMultiple(indexManager.get().getLargestCreatedIndex() + 1, (Identifier)Config::ChunkSize));
+        adjoints.resize(
+            getNextMultiple(indexManager.get().getLargestCreatedIndex() + 1, (Identifier)Config::ChunkSize));
       }
   };
 }

@@ -67,7 +67,7 @@ namespace codi {
     template<typename AdjointVector>
     struct GradientImplementation {
       public:
-        using Gradient = typename AdjointVector::value_type; ///< Type of adjoint vector entries.
+        using Gradient = typename AdjointVector::value_type;  ///< Type of adjoint vector entries.
     };
 
 #ifndef DOXYGEN_DISABLE

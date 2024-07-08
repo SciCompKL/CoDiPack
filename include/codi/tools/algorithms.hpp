@@ -182,7 +182,7 @@ namespace codi {
         EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
         if (EvaluationType::Forward == evalType) {
           for (size_t j = 0; j < inputSize; j += gradDim) {
-            setGradientOnIdentifierCustomAdjoints(j, input, inputSize, typename CustomGT::Real(1.0), adjoints);
+            setGradientOnIdentifierCustomAdjoints(tape, j, input, inputSize, typename CustomGT::Real(1.0), adjoints);
 
             if (keepState) {
               tape.evaluateForwardKeepState(start, end, std::forward<AdjointVector>(adjoints));
@@ -193,20 +193,20 @@ namespace codi {
             for (size_t i = 0; i < outputSize; i += 1) {
               for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
                 jac(outputSize - i - 1, j + curDim) = CustomGT::at(adjoints[output[outputSize - i - 1]], curDim);
-                if (Gradient() != output[i]) {
+                if (tape.isIdentifierActive(output[i])) {
                   CustomGT::at(adjoints[output[outputSize - i - 1]], curDim) = typename GT::Real();
                 }
               }
             }
 
-            setGradientOnIdentifierCustomAdjoints(j, input, inputSize, typename CustomGT::Real(), adjoints);
+            setGradientOnIdentifierCustomAdjoints(tape, j, input, inputSize, typename CustomGT::Real(), adjoints);
           }
 
           tape.clearCustomAdjoints(end, start, std::forward<AdjointVector>(adjoints));
 
         } else if (EvaluationType::Reverse == evalType) {
           for (size_t i = 0; i < outputSize; i += gradDim) {
-            setGradientOnIdentifierCustomAdjoints(i, output, outputSize, typename CustomGT::Real(1.0), adjoints);
+            setGradientOnIdentifierCustomAdjoints(tape, i, output, outputSize, typename CustomGT::Real(1.0), adjoints);
 
             if (keepState) {
               tape.evaluateKeepState(end, start, std::forward<AdjointVector>(adjoints));
@@ -221,7 +221,7 @@ namespace codi {
               }
             }
 
-            setGradientOnIdentifierCustomAdjoints(i, output, outputSize, typename CustomGT::Real(), adjoints);
+            setGradientOnIdentifierCustomAdjoints(tape, i, output, outputSize, typename CustomGT::Real(), adjoints);
 
             if (!Config::ReversalZeroesAdjoints) {
               tape.clearCustomAdjoints(end, start, std::forward<AdjointVector>(adjoints));
@@ -589,19 +589,20 @@ namespace codi {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
-          if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim])) {
+          if (CODI_ENABLE_CHECK(ActiveChecks, tape.isIdentifierActive(identifiers[pos + curDim]))) {
             GT::at(tape.gradient(identifiers[pos + curDim], adjointsManagement), curDim) = value;
           }
         }
       }
 
       template<typename T, typename Adjoints>
-      static CODI_INLINE void setGradientOnIdentifierCustomAdjoints(size_t const pos, Identifier const* identifiers,
-                                                                    size_t const size, T value, Adjoints& adjoints) {
+      static CODI_INLINE void setGradientOnIdentifierCustomAdjoints(Tape& tape, size_t const pos,
+                                                                    Identifier const* identifiers, size_t const size,
+                                                                    T value, Adjoints& adjoints) {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
-          if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim])) {
+          if (CODI_ENABLE_CHECK(ActiveChecks, tape.isIdentifierActive(identifiers[pos + curDim]))) {
             GT::at(adjoints[identifiers[pos + curDim]], curDim) = value;
           }
         }
@@ -632,7 +633,7 @@ namespace codi {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
-          if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim].getIdentifier())) {
+          if (CODI_ENABLE_CHECK(ActiveChecks, tape.isIdentifierActive(identifiers[pos + curDim].getIdentifier()))) {
             GT::at(tape.gradient(identifiers[pos + curDim].getIdentifier()), curDim) = value;
           }
         }
