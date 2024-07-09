@@ -32,14 +32,15 @@
  *    - Former members:
  *      - Tim Albring
  */
-#include "basePreaccumulation.hpp"
+#include "basePreaccumulationPassiveValue.hpp"
 
-struct TestPreaccumulation : public BasePreaccumulation<TestPreaccumulation> {
+struct TestPreaccumulationLocalMappedAdjointsPassiveValue
+    : public BasePreaccumulationPassiveValue<TestPreaccumulationLocalMappedAdjointsPassiveValue> {
   public:
-    NAME("Preaccumulation")
+    NAME("PreaccumulationLocalMappedAdjointsPassiveValue")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finish(false, y[0], y[1]);
+      ph.finishLocalMappedAdjoints(y[0], y[1]);
     }
 };
