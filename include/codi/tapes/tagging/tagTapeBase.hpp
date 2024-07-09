@@ -85,7 +85,8 @@ namespace codi {
       /// Callback for a tag error.
       using TagErrorCallback = void (*)(Tag const& correctTag, Tag const& wrongTag, void* userData);
 
-      static Tag constexpr PassiveTag = Tag(0);  ///< Tag indicating an inactive value.
+      static Tag constexpr PassiveTag = Tag(0);   ///< Tag indicating an inactive value.
+      static Tag constexpr InvalidTag = Tag(-1);  ///< Tag indicating an invalid value.
 
     protected:
 
@@ -223,7 +224,7 @@ namespace codi {
 
       /// Checks if the tag is correct. Errors are set on the ValidationIndicator object.
       CODI_INLINE void verifyTag(ValidationIndicator<Real, Tag>& vi, Tag const& tag) const {
-        if (PassiveTag != tag) {
+        if (PassiveTag != tag && InvalidTag != tag) {
           vi.isActive = true;
           if (tag != curTag) {
             vi.hasError = true;
