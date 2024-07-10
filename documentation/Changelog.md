@@ -5,6 +5,8 @@ Changelog {#Changelog}
  - Features:
   * Tape evaluations with generalized custom adjoints.
   * Preaccumulation with local mapped adjoints.
+  * Edit identifiers in recorded tapes.
+  * Preaccumulation with a local adjoint vector after tape editing.
 
 ### v 2.2.0 - 2024-01-30
  - Features:

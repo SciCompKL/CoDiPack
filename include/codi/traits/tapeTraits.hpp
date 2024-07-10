@@ -161,8 +161,7 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
     template<typename Tape>
-    struct SupportsEditing<Tape,
-                          typename enable_if_base_of<EditingTapeInterface<typename Tape::Position>, Tape>::type>
+    struct SupportsEditing<Tape, typename enable_if_base_of<EditingTapeInterface<typename Tape::Position>, Tape>::type>
         : std::true_type {};
 #endif
 

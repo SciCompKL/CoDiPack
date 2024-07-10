@@ -34,7 +34,8 @@
  */
 #include "basePreaccumulation.hpp"
 
-struct TestPreaccumulationLocalAdjointsPreprocessTape : public BasePreaccumulation<TestPreaccumulationLocalAdjointsPreprocessTape> {
+struct TestPreaccumulationLocalAdjointsPreprocessTape
+    : public BasePreaccumulation<TestPreaccumulationLocalAdjointsPreprocessTape> {
   public:
     NAME("PreaccumulationLocalAdjointsPreprocessTape")
 

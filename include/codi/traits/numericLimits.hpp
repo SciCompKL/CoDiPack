@@ -69,7 +69,7 @@ namespace std {
       }  ///< See numeric_limits
       static Type constexpr lowest() {
         return Type(numeric_limits<Passive>::lowest());
-      }  ///< See numeric_limits
+      }                                                                        ///< See numeric_limits
       static int constexpr digits = numeric_limits<Passive>::digits;           ///< See numeric_limits
       static int constexpr digits10 = numeric_limits<Passive>::digits10;       ///< See numeric_limits
       static bool constexpr is_signed = numeric_limits<Passive>::is_signed;    ///< See numeric_limits

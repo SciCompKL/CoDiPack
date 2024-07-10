@@ -202,7 +202,8 @@ namespace codi {
           addOutputRecursive(outputs...);
 
           tape.setPassive();
-          computeJacobianLocalAdjointsPreprocessTapeIfAvailable<Tape>();  // otherwise computeJacobianLocalMappedAdjoints
+          computeJacobianLocalAdjointsPreprocessTapeIfAvailable<Tape>();  // otherwise
+                                                                          // computeJacobianLocalMappedAdjoints
           storeJacobian();
           tape.setActive();
         }
@@ -222,7 +223,8 @@ namespace codi {
 
           tape.setPassive();
           if (std::min(inputData.size(), outputData.size()) > 1) {
-            computeJacobianLocalAdjointsPreprocessTapeIfAvailable<Tape>();  // otherwise computeJacobianLocalMappedAdjoints
+            computeJacobianLocalAdjointsPreprocessTapeIfAvailable<Tape>();  // otherwise
+                                                                            // computeJacobianLocalMappedAdjoints
           } else {
             computeJacobianLocalMappedAdjoints();
           }
@@ -406,9 +408,9 @@ namespace codi {
         std::vector<typename Tape::Gradient> localAdjoints(nextIdentifier);
 
         // Preaccumulation with remapped identifiers on local adjoints.
-        Algorithms<Type, false>::computeJacobianCustomAdjoints(startPos, endPos, newInputData.data(), newInputData.size(),
-                                                               newOutputData.data(), newOutputData.size(), jacobian,
-                                                               localAdjoints.data());
+        Algorithms<Type, false>::computeJacobianCustomAdjoints(startPos, endPos, newInputData.data(),
+                                                               newInputData.size(), newOutputData.data(),
+                                                               newOutputData.size(), jacobian, localAdjoints.data());
 
         tape.resetTo(startPos, false);
       }
