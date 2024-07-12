@@ -8,7 +8,7 @@ Example 23 - OpenMP Parallel Codes {#Example_23_OpenMP_Parallel_Codes}
 **Full code:**
 \snippet examples/Example_23_OpenMP_Parallel_Codes.cpp Example 23 - OpenMP Parallel Codes
 
-OpenMP parallel codes are differentiated with the help of the OpDiLib AD tool add-on (https://www.scicomp.uni-kl.de/software/opdi).
+OpenMP parallel codes are differentiated with the help of the OpDiLib AD tool add-on (https://scicomp.rptu.de/software/opdi).
 Please refer to the OpDiLib documentation for further examples and modes of operation.
 
 The usual AD workflow is the same as for a serial code, except for the initialization and finalization of OpDiLib. In the example

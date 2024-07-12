@@ -2,12 +2,12 @@
 # CoDiPack, a Code Differentiation Package
 #
 # Copyright (C) 2015-2024 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
-# Homepage: http://www.scicomp.uni-kl.de
+# Homepage: http://scicomp.rptu.de
 # Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
 #
 # Lead developers: Max Sagebaum, Johannes Blühdorn (SciComp, University of Kaiserslautern-Landau)
 #
-# This file is part of CoDiPack (http://www.scicomp.uni-kl.de/software/codi).
+# This file is part of CoDiPack (http://scicomp.rptu.de/software/codi).
 #
 # CoDiPack is free software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -92,7 +92,7 @@ ifeq ($(MPI), yes)
   ifdef MEDI_DIR
     FLAGS += -I$(MEDI_DIR)/include -I$(MEDI_DIR)/src
   else
-    $(error Error: 'MEDI_DIR' is not defined for the MPI build. You can get it at 'https://www.scicomp.uni-kl.de/software/medi/' or with 'git clone https://github.com/SciCompKL/MeDiPack.git')
+    $(error Error: 'MEDI_DIR' is not defined for the MPI build. You can get it at 'https://scicomp.rptu.de/software/medi/' or with 'git clone https://github.com/SciCompKL/MeDiPack.git')
   endif
 endif
 ifeq ($(OPENMP), yes)
@@ -102,7 +102,7 @@ ifeq ($(OPENMP), yes)
     ifdef OPDI_DIR
       FLAGS += -I$(OPDI_DIR)/include
     else
-      $(error Error: 'OPDI_DIR' is not defined for the OpDiLib build. You can get it at 'https://www.scicomp.uni-kl.de/software/opdi/' or with 'git clone https://github.com/SciCompKL/OpDiLib.git')
+      $(error Error: 'OPDI_DIR' is not defined for the OpDiLib build. You can get it at 'https://scicomp.rptu.de/software/opdi/' or with 'git clone https://github.com/SciCompKL/OpDiLib.git')
     endif
   endif
 else

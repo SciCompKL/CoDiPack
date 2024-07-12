@@ -86,7 +86,7 @@ for the gcc compiler or with
 ~~~~
 for the Intel compiler.
 
-You can get CoDiPack from https://www.scicomp.uni-kl.de/software/codi.
+You can get CoDiPack from https://scicomp.rptu.de/software/codi.
 
 ## Citation
 

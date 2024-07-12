@@ -1,6 +1,6 @@
 # CoDiPack
 
-[CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) (Code Differentiation Package) is a tool for gradient evaluation in computer programs. It supports the features:
+[CoDiPack](http://scicomp.rptu.de/software/codi/) (Code Differentiation Package) is a tool for gradient evaluation in computer programs. It supports the features:
   - Forward mode of Algorithmic Differentiation (AD)
   - Reverse mode of Algorithmic Differentiation (AD)
   - Different tape implementations
@@ -11,7 +11,7 @@
 The design principle for CoDiPack is that it is easy to use.
 However, it also gives experienced AD developers full access to all the data structures.
 
-The [Scientific Computing Group](http://www.scicomp.uni-kl.de) at the TU Kaiserslautern develops CoDiPack and will enhance and extend CoDiPack in the future.
+The [Scientific Computing Group](http://scicomp.rptu.de) at the TU Kaiserslautern develops CoDiPack and will enhance and extend CoDiPack in the future.
 There is a newsletter available at [codi-info@uni-kl.de](https://lists.uni-kl.de/uni-kl/subscribe/codi-info) and if you want to contact us please write a mail to [codi@scicomp.uni-kl.de](mailto:codi@scicomp.uni-kl.de).
 
 [![Build Status](https://travis-ci.org/SciCompKL/CoDiPack.svg?branch=develop)](https://travis-ci.org/SciCompKL/CoDiPack)
@@ -37,7 +37,7 @@ The file `codi.hpp` defines several datatypes. The most important ones are:
 We recommend to use the codi::RealReverse type when AD is first introduced to an application.
 After that there should be no difficulties in replacing the codi::RealReverse type with other types.
 
-For further details please visit our [CoDiPack](http://www.scicomp.uni-kl.de/software/codi/) web page.
+For further details please visit our [CoDiPack](http://scicomp.rptu.de/software/codi/) web page.
 
 ### CMake
 
@@ -110,7 +110,7 @@ for the gcc compiler or with
 ~~~~
 for the Intel compiler.
 
-Please visit the [tutorial page](http://www.scicomp.uni-kl.de/codi/db/d3c/tutorialPage.html) for further information.
+Please visit the [tutorial page](https://scicomp.rptu.de/codi/db/d84/TutorialsAndExamples.html) for further information.
 
 ## Citation
 
