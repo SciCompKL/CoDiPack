@@ -51,7 +51,7 @@ endef
 VECTOR_DIM = 5
 
 # filter out tests that require variable adjoint interfaces in primal tapes
-PRIMAL_TAPE_TESTS_NO_VAI = $(filter-out TestPreaccumulationLocalAdjoints%, $(ALL_TESTS))
+PRIMAL_TAPE_TESTS_NO_VAI = $(filter-out TestPreaccumulationLocalAdjoints% TestPreaccumulationLocalMappedAdjoints%, $(ALL_TESTS))
 
 EH_JACOBI_TAPE_TESTS = $(filter-out TestReset, $(ALL_TESTS))
 EH_PRIMAL_TAPE_TESTS = $(filter-out TestPreaccumulation% TestReset TestStatementPushHelper, $(ALL_TESTS))

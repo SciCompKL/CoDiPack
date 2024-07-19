@@ -34,12 +34,12 @@
  */
 #include "basePreaccumulation.hpp"
 
-struct TestPreaccumulation : public BasePreaccumulation<TestPreaccumulation> {
+struct TestPreaccumulationLocalMappedAdjoints : public BasePreaccumulation<TestPreaccumulationLocalMappedAdjoints> {
   public:
-    NAME("Preaccumulation")
+    NAME("PreaccumulationLocalMappedAdjoints")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finish(false, y[0], y[1]);
+      ph.finishLocalMappedAdjoints(y[0], y[1]);
     }
 };

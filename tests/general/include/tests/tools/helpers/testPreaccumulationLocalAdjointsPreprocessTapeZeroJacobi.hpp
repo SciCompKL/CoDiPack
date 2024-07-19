@@ -32,14 +32,15 @@
  *    - Former members:
  *      - Tim Albring
  */
-#include "basePreaccumulation.hpp"
+#include "basePreaccumulationZeroJacobi.hpp"
 
-struct TestPreaccumulation : public BasePreaccumulation<TestPreaccumulation> {
+struct TestPreaccumulationLocalAdjointsPreprocessTapeZeroJacobi
+    : public BasePreaccumulationZeroJacobi<TestPreaccumulationLocalAdjointsPreprocessTapeZeroJacobi> {
   public:
-    NAME("Preaccumulation")
+    NAME("PreaccumulationLocalAdjointsPreprocessTapeZeroJacobi")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finish(false, y[0], y[1]);
+      ph.finishLocalAdjointsPreprocessTape(y[0], y[1]);
     }
 };

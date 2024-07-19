@@ -82,5 +82,10 @@ namespace codi {
       /// Copy the specified range of the source tape and append it to the end of this tape. It has to hold
       /// start <= end.
       void append(EditingTapeInterface& source, Position const& start, Position const& end);
+
+      /// @brief Modify the identifiers in an already recorded tape.
+      /// @tparam Func Callable void(Identifier&) for editing one identifier at a time.
+      template<typename Func>
+      void editIdentifiers(Func&& modifyIdentifier, Position const& start, Position const& end);
   };
 }
