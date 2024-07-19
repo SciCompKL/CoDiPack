@@ -212,8 +212,8 @@ namespace codi {
       }
 
       /// Finish the preaccumulation region and perform the preaccumulation. Uses local adjoints instead of adjoints
-      /// from the tape. Forwards to finishLocalMappedAdjoints or finishLocalAdjointsPreprocessTape, depending on which
-      /// is more efficient given the numbers of inputs and outputs. See `addOutput()` for outputs.
+      /// from the tape. Behaves either like finishLocalMappedAdjoints or like finishLocalAdjointsPreprocessTape,
+      /// depending on which is more efficient given the numbers of inputs and outputs. See `addOutput()` for outputs.
       template<typename... Outputs>
       void finishLocalAdjoints(Outputs&... outputs) {
         Tape& tape = Type::getTape();
