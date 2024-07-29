@@ -37,6 +37,7 @@
 #include <omp.h>
 
 #include "../threadInformationInterface.hpp"
+#include "openMPAtomic.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -48,13 +49,26 @@ namespace codi {
     public:
 
       /// \copydoc ThreadInformationInterface::getMaxThreads()
+      /// <br><br> Implementation: Limit applies to all threads, also those due to nesting.
       static CODI_INLINE int getMaxThreads() {
         return 512;
       }
 
       /// \copydoc ThreadInformationInterface::getThreadId()
+      /// <br><br> Implementation: Returns custom IDs to account for nesting, in particular not omp_get_thread_num().
       static CODI_INLINE int getThreadId() {
-        return omp_get_thread_num();
+        static OpenMPAtomic<int> nextThreadId = 0;
+
+        static int myThreadId = -1;
+        CODI_OMP_THREADPRIVATE(myThreadId)
+
+        if (myThreadId == -1) {
+          myThreadId = nextThreadId++;
+        }
+
+        codiAssert(myThreadId < getMaxThreads());
+
+        return myThreadId;
       }
   };
 }

@@ -599,8 +599,11 @@ namespace codi {
           Synchronization::synchronize();
 
           // Push the delete handle on at most one thread's tape.
-          typename ExternalFunction<Tape>::DeleteFunction delFunc =
-              0 == ThreadInformation::getThreadId() ? EvalData::delFunc : nullptr;
+          typename ExternalFunction<Tape>::DeleteFunction delFunc = nullptr;
+          Synchronization::serialize([&]() {
+            delFunc = EvalData::delFunc;
+          });
+
           Type::getTape().pushExternalFunction(ExternalFunction<Tape>::create(
               EvalData::evalRevFuncStatic, data, delFunc, EvalData::evalForwFuncStatic, EvalData::evalPrimFuncStatic));
 
