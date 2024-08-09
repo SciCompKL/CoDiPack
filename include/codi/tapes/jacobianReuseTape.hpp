@@ -256,11 +256,21 @@ namespace codi {
       CODI_INLINE void erase(Position const& start, Position const& end, JacobianReuseTape& emptyTape) {
         // Store the tail after the part to be erased in the helper tape.
         emptyTape.append(*this, end, this->getPosition());
+
         // Reset the tape to before the erased part and re-append the tail. This accounts for external function position
         // correction.
+
+        // Do not delete external function data for the part to be reappended.
+        this->llfByteData.resetTo(end);
+        clearAdjoints(end, this->getPosition());
+
+        // Delete external function data in the part to be erased.
         this->resetTo(start);
+
         this->append(emptyTape, emptyTape.getZeroPosition(), emptyTape.getPosition());
-        emptyTape.reset();
+
+        // Do not delete external function data in the helper tape.
+        emptyTape.llfByteData.reset();
       }
 
       /// \copydoc codi::EditingTapeInterface::append
