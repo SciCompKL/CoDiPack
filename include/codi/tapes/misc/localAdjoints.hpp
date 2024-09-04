@@ -95,9 +95,10 @@ namespace codi {
       }
 
       /// \copydoc InternalAdjointsInterface::zeroAll
-      CODI_INLINE void zeroAll() {
-        for (Gradient& gradient : adjoints) {
-          gradient = Gradient();
+      CODI_INLINE void zeroAll(Identifier const& maxIndex) {
+        Identifier maxSize = std::min(maxIndex + 1, (Identifier)adjoints.size());
+        for (Identifier i = 0; i < maxSize; i += 1) {
+          adjoints[i] = Gradient();
         }
       }
 

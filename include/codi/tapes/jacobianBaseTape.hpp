@@ -471,7 +471,7 @@ namespace codi {
           adjoints.beginUse();
         }
 
-        adjoints.zeroAll();
+        adjoints.zeroAll(indexManager.get().getLargestCreatedIndex());
 
         if (AdjointsManagement::Automatic == adjointsManagement) {
           adjoints.endUse();

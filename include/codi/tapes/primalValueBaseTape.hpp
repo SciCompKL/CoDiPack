@@ -522,8 +522,9 @@ namespace codi {
       CODI_INLINE void clearAdjoints(AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         CODI_UNUSED(adjointsManagement);
 
-        for (Gradient& gradient : adjoints) {
-          gradient = Gradient();
+        size_t maxSize = std::min((size_t)indexManager.get().getLargestCreatedIndex() + 1, adjoints.size());
+        for (size_t i = 0; i < maxSize; i += 1) {
+          adjoints[i] = Gradient();
         }
       }
 
