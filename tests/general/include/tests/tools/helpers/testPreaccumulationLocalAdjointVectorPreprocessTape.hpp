@@ -34,13 +34,13 @@
  */
 #include "basePreaccumulation.hpp"
 
-struct TestPreaccumulationLocalAdjointsPreprocessTape
-    : public BasePreaccumulation<TestPreaccumulationLocalAdjointsPreprocessTape> {
+struct TestPreaccumulationLocalAdjointVectorPreprocessTape
+    : public BasePreaccumulation<TestPreaccumulationLocalAdjointVectorPreprocessTape> {
   public:
-    NAME("PreaccumulationLocalAdjointsPreprocessTape")
+    NAME("PreaccumulationLocalAdjointVectorPreprocessTape")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finishLocalAdjointsPreprocessTape(y[0], y[1]);
+      ph.finishLocalAdjointVectorPreprocessTape(y[0], y[1]);
     }
 };

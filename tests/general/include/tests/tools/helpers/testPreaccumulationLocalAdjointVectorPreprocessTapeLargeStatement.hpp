@@ -34,13 +34,13 @@
  */
 #include "basePreaccumulationLargeStatement.hpp"
 
-struct TestPreaccumulationLocalAdjointsPreprocessTapeLargeStatement
-    : public BasePreaccumulationLargeStatement<TestPreaccumulationLocalAdjointsPreprocessTapeLargeStatement> {
+struct TestPreaccumulationLocalAdjointVectorPreprocessTapeLargeStatement
+    : public BasePreaccumulationLargeStatement<TestPreaccumulationLocalAdjointVectorPreprocessTapeLargeStatement> {
   public:
-    NAME("PreaccumulationLocalAdjointsPreprocessTapeLargeStatement")
+    NAME("PreaccumulationLocalAdjointVectorPreprocessTapeLargeStatement")
 
     template<typename PreaccHelper>
     static void finish(PreaccHelper& ph) {
-      ph.finishLocalAdjointsPreprocessTape();
+      ph.finishLocalAdjointVectorPreprocessTape();
     }
 };

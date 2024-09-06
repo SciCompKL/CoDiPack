@@ -34,14 +34,14 @@
  */
 #include "basePreaccumulationForwardInvalidAdjoint.hpp"
 
-struct TestPreaccumulationLocalAdjointsPreprocessTapeForwardInvalidAdjoint
+struct TestPreaccumulationLocalAdjointVectorPreprocessTapeForwardInvalidAdjoint
     : public BasePreaccumulationForwardInvalidAdjoint<
-          TestPreaccumulationLocalAdjointsPreprocessTapeForwardInvalidAdjoint> {
+          TestPreaccumulationLocalAdjointVectorPreprocessTapeForwardInvalidAdjoint> {
   public:
-    NAME("PreaccumulationLocalAdjointsPreprocessTapeForwardInvalidAdjoint")
+    NAME("PreaccumulationLocalAdjointVectorPreprocessTapeForwardInvalidAdjoint")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finishLocalAdjointsPreprocessTape(y[0], y[1], y[2], y[3]);
+      ph.finishLocalAdjointVectorPreprocessTape(y[0], y[1], y[2], y[3]);
     }
 };

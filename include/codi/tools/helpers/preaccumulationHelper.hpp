@@ -147,7 +147,7 @@ namespace codi {
 
       /// Finish the preaccumulation region and perform the preaccumulation. See `addOutput()` for outputs.
       /// Not compatible with simultaneous thread-local preaccumulations with shared inputs. In this case, see
-      /// finishLocalMappedAdjoints, finishLocalAdjointsPreprocessTape, and finishLocalAdjoints.
+      /// finishLocalMappedAdjoints, finishLocalAdjointVectorPreprocessTape, and finishLocalAdjoints.
       template<typename... Outputs>
       void finish(bool const storeAdjoints, Outputs&... outputs) {
         Tape& tape = Type::getTape();
@@ -195,15 +195,15 @@ namespace codi {
       /// More efficient than finishLocalMappedAdjoints if both the numbers of inputs and outputs are > 1. Behaves like
       /// finishLocalMappedAdjoints if the underlying tape does not support editing.
       template<typename... Outputs>
-      void finishLocalAdjointsPreprocessTape(Outputs&... outputs) {
+      void finishLocalAdjointVectorPreprocessTape(Outputs&... outputs) {
         Tape& tape = Type::getTape();
 
         if (tape.isActive()) {
           addOutputRecursive(outputs...);
 
           tape.setPassive();
-          computeJacobianLocalAdjointsPreprocessTapeIfAvailable<Tape>();  // otherwise
-                                                                          // computeJacobianLocalMappedAdjoints
+          computeJacobianLocalAdjointVectorPreprocessTapeIfAvailable<Tape>();  // otherwise
+                                                                               // computeJacobianLocalMappedAdjoints
           storeJacobian();
           tape.setActive();
         }
@@ -212,7 +212,7 @@ namespace codi {
       }
 
       /// Finish the preaccumulation region and perform the preaccumulation. Uses local adjoints instead of adjoints
-      /// from the tape. Behaves either like finishLocalMappedAdjoints or like finishLocalAdjointsPreprocessTape,
+      /// from the tape. Behaves either like finishLocalMappedAdjoints or like finishLocalAdjointVectorPreprocessTape,
       /// depending on which is more efficient given the numbers of inputs and outputs. See `addOutput()` for outputs.
       template<typename... Outputs>
       void finishLocalAdjoints(Outputs&... outputs) {
@@ -223,8 +223,8 @@ namespace codi {
 
           tape.setPassive();
           if (std::min(inputData.size(), outputData.size()) > 1) {
-            computeJacobianLocalAdjointsPreprocessTapeIfAvailable<Tape>();  // otherwise
-                                                                            // computeJacobianLocalMappedAdjoints
+            computeJacobianLocalAdjointVectorPreprocessTapeIfAvailable<Tape>();  // otherwise
+                                                                                 // computeJacobianLocalMappedAdjoints
           } else {
             computeJacobianLocalMappedAdjoints();
           }
@@ -240,13 +240,13 @@ namespace codi {
 
       // Tape supports editing -> use a map to edit its identifiers. Disabled by SFINAE otherwise.
       template<typename Tape>
-      TapeTraits::EnableIfSupportsEditing<Tape> computeJacobianLocalAdjointsPreprocessTapeIfAvailable() {
-        computeJacobianLocalAdjointsPreprocessTape();
+      TapeTraits::EnableIfSupportsEditing<Tape> computeJacobianLocalAdjointVectorPreprocessTapeIfAvailable() {
+        computeJacobianLocalAdjointVectorPreprocessTape();
       }
 
       // Tape does not support editing -> use a map for the adjoints. Disabled by SFINAE otherwise.
       template<typename Tape>
-      TapeTraits::EnableIfNoEditing<Tape> computeJacobianLocalAdjointsPreprocessTapeIfAvailable() {
+      TapeTraits::EnableIfNoEditing<Tape> computeJacobianLocalAdjointVectorPreprocessTapeIfAvailable() {
         computeJacobianLocalMappedAdjoints();
       }
 
@@ -357,7 +357,7 @@ namespace codi {
         tape.resetTo(startPos, false);
       }
 
-      void computeJacobianLocalAdjointsPreprocessTape() {
+      void computeJacobianLocalAdjointVectorPreprocessTape() {
         // Perform the accumulation of the tape part.
         Tape& tape = Type::getTape();
         Position endPos = tape.getPosition();
@@ -530,7 +530,7 @@ namespace codi {
 
       /// Does nothing.
       template<typename... Outputs>
-      void finishLocalAdjointsPreprocessTape(Outputs&... outputs) {
+      void finishLocalAdjointVectorPreprocessTape(Outputs&... outputs) {
         CODI_UNUSED(outputs...);
         // Do nothing.
       }
@@ -642,7 +642,7 @@ namespace codi {
 
       /// Reverts the tags on all input and output values.
       template<typename... Outputs>
-      void finishLocalAdjointsPreprocessTape(Outputs&... outputs) {
+      void finishLocalAdjointVectorPreprocessTape(Outputs&... outputs) {
         finish(false, outputs...);
       }
 
