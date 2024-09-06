@@ -371,25 +371,32 @@ namespace codi {
         auto nextIdentifier = typename Tape::Identifier() + 1;
         IdentifierMap oldToNewIdentifierMap;
 
-        auto addIdentifierToMapping = [&](typename Tape::Identifier const& oldIdentifier) {
-          if (tape.isIdentifierActive(oldIdentifier) &&
-              oldToNewIdentifierMap.find(oldIdentifier) == oldToNewIdentifierMap.end()) {
-            oldToNewIdentifierMap[oldIdentifier] = nextIdentifier++;
+        // If needed, inserts the old identifier into the map and associates it with the next identifier. Either way,
+        // returns the associated new identifier.
+        auto accessOldToNewIdentifierMap = [&](typename Tape::Identifier const& oldIdentifier) -> typename Tape::Identifier const& {
+          auto result = oldToNewIdentifierMap.insert({oldIdentifier, nextIdentifier});
+          if (result.second) {  // insertion took place
+            ++nextIdentifier;
           }
+          return result.first->second;
         };
 
-        // Begin by remapping input identifiers.
+        // Remap input identifiers explicitly to account for inputs that are actually not used in the recording.
         for (auto const& oldIdentifier : inputData) {
-          addIdentifierToMapping(oldIdentifier);
+          accessOldToNewIdentifierMap(oldIdentifier);
         }
 
-        auto addAndEditIdentifier = [&](typename Tape::Identifier& oldIdentifier) {
-          addIdentifierToMapping(oldIdentifier);
-          oldIdentifier = oldToNewIdentifierMap[oldIdentifier];
+        // Remap output identifiers explicitly to account for outputs that actually do not depend on the inputs.
+        for (auto const& oldIdentifier : outputData) {
+          accessOldToNewIdentifierMap(oldIdentifier);
+        }
+
+        auto editIdentifier = [&](typename Tape::Identifier& oldIdentifier) {
+          oldIdentifier = accessOldToNewIdentifierMap(oldIdentifier);
         };
 
         // Process the recording to complete the map, edit the tape on the fly.
-        tape.template editIdentifiers(addAndEditIdentifier, startPos, endPos);
+        tape.template editIdentifiers(editIdentifier, startPos, endPos);
 
         // Build new vectors of input and output identifiers.
         std::vector<typename Tape::Identifier> newInputData;
@@ -403,6 +410,10 @@ namespace codi {
         for (auto const& identifier : outputData) {
           newOutputData.push_back(oldToNewIdentifierMap[identifier]);
         }
+
+        // The association with the original input/output identifiers and Jacobian entries is made by position, so we no
+        // longer need the identifier map.
+        oldToNewIdentifierMap.clear();
 
         // Create local adjoints. nextIdentifier holds the local adjoint vector size.
         std::vector<typename Tape::Gradient> localAdjoints(nextIdentifier);
