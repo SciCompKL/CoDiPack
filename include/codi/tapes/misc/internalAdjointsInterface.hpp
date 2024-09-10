@@ -110,8 +110,8 @@ namespace codi {
       /// Ensure that identifiers up to newSize can be passed to operator[] without error.
       CODI_NO_INLINE void resize(Identifier const& newSize);
 
-      /// Set all adjoint variables up to and including maxIndex to Gradient().
-      CODI_INLINE void zeroAll(Identifier const& maxIndex);
+      /// Set all adjoint variables up to and including maxIdentifier to Gradient().
+      CODI_INLINE void zeroAll(Identifier const& maxIdentifier);
 
       /// Swap two sets of adjoint variables. Internally, declares usage of the adjoints.
       template<typename Impl>
