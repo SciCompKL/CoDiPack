@@ -8,6 +8,9 @@ Changelog {#Changelog}
   * Edit identifiers in recorded tapes.
   * Preaccumulation with a local adjoint vector after tape editing.
 
+ - Bugfix:
+  * Improved performance for tape reset of small tapes.
+
 ### v 2.2.0 - 2024-01-30
  - Features:
   * New helper for adding Enzyme-generated derivative functions to the tape. See \ref Example_24_Enzyme_external_function_helper.
