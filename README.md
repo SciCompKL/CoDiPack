@@ -39,6 +39,10 @@ After that there should be no difficulties in replacing the codi::RealReverse ty
 
 For further details please visit our [CoDiPack](http://scicomp.rptu.de/software/codi/) web page.
 
+### License
+
+CoDiPack is released under the GPLv3 license. For other licensing options please contact us.
+
 ### CMake
 
 CMake should be able to find CoDiPack either if `CMAKE_PREFIX_PATH` contains the CoDiPack directory or if the parameter `CoDiPack_DIR` is provided to CMake. If you install CoDiPack into a directory which is in the default search path for CMake then you do not need to specify any additional path.
