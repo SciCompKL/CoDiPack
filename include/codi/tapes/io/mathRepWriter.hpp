@@ -78,6 +78,8 @@ namespace codi {
                           Identifier const* const rhsIdentifiers, size_t const& curPassiveValuePos,
                           Real const* const passiveValues, size_t& curConstantPos, Real const* const constantValues,
                           EvalHandle stmtEvalHandle) {
+        CODI_UNUSED(primalValue, curPassiveValuePos, passiveValues, curConstantPos, constantValues, stmtEvalHandle);
+
         if (nPassiveValues == Config::StatementInputTag) CODI_Unlikely {
           // Do nothing.
         } else CODI_Likely {

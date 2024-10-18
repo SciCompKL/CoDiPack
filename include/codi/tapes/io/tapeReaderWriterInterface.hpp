@@ -140,7 +140,7 @@ namespace codi {
        * @brief  Called once at the beginning of the tape write process. Should initialize all required data structures
        * and files.
        */
-      virtual void start(Tape& tape) {};
+      virtual void start(Tape& tape) { CODI_UNUSED(tape); }
 
       /**
        * @brief  Called for each statement. The method writes the current statement to the file. This
@@ -148,7 +148,10 @@ namespace codi {
        */
       virtual void writeStatement(Identifier const& curLhsIdentifier, size_t& curJacobianPos,
                                   Real const* const rhsJacobians, Identifier const* const rhsIdentifiers,
-                                  Config::ArgumentSize const& nJacobians) {};
+                                  Config::ArgumentSize const& nJacobians) {
+        CODI_UNUSED(curLhsIdentifier, curJacobianPos, rhsJacobians, rhsIdentifiers, nJacobians);
+      }
+
       /**
        * @brief  Called for each statement. The method writes the current statement to the file. This
        * overload is used for the primal value writers and contains additional arguments, such as the WriteInfo.
@@ -157,15 +160,20 @@ namespace codi {
                                   Config::ArgumentSize const& nPassiveValues, size_t const& curRhsIdentifiersPos,
                                   Identifier const* const rhsIdentifiers, size_t const& curPassiveValuePos,
                                   Real const* const passiveValues, size_t& curConstantPos,
-                                  Real const* const constantValues, EvalHandle stmtEvalHandle) {};
+                                  Real const* const constantValues, EvalHandle stmtEvalHandle) {
+        CODI_UNUSED(info, curLhsIdentifier, primalValue, nPassiveValues, curRhsIdentifiersPos, rhsIdentifiers,
+                    passiveValues, curPassiveValuePos, curConstantPos, constantValues, stmtEvalHandle);
+      }
 
       /// Used for statements that contain a low level function.
       virtual void writeLowLevelFunction(size_t& curLLFByteDataPos, char* dataPtr, size_t& curLLFInfoDataPos,
                                          Config::LowLevelFunctionToken* const tokenPtr,
-                                         Config::LowLevelFunctionDataSize* const dataSizePtr) {};
+                                         Config::LowLevelFunctionDataSize* const dataSizePtr) {
+        CODI_UNUSED(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+      }
 
       /// After all the statements have been written, the finish method finalizes the writing process.
-      virtual void finish() {};
+      virtual void finish() {}
   };
 
   /**
@@ -248,7 +256,7 @@ namespace codi {
       virtual ~TapeReaderInterface() {}  ///< Destructor
 
       /// This method uses the the fileName to reproduce a valid tape.
-      virtual void readFile(std::string const& name) {};
+      virtual void readFile(std::string const& name) { CODI_UNUSED(name); }
 
       virtual Tape& getTape() = 0;  ///< Used to get a reference to the restored tape.
 

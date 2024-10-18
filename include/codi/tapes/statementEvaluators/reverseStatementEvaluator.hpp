@@ -97,6 +97,8 @@ namespace codi {
       /// \copydoc StatementEvaluatorInterface::getWriteInformation
       template<typename Tape, typename... Args>
       static WriteInfo getWriteInformation(Handle const& h, Args&&... args) {
+        CODI_UNUSED(h, args...);
+
         CODI_EXCEPTION("ReverseStatementEvaluator does not support get write information calls.");
         return WriteInfo();
       }

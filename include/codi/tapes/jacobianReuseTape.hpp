@@ -239,8 +239,6 @@ namespace codi {
       /// Passes the statement to the writer.
       template<typename TapeTypes>
       CODI_INLINE static void internalWriteTape(
-          /* data from call */
-          JacobianReuseTape& tape,
           /* file interface pointer*/
           codi::TapeWriterInterface<TapeTypes>* writer,
           /* data from low level function byte data vector */
@@ -254,8 +252,7 @@ namespace codi {
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfJacobians) {
-        CODI_UNUSED(curLLFByteDataPos, endLLFByteDataPos, dataPtr, curLLFInfoDataPos, endLLFInfoDataPos, tokenPtr,
-                    dataSizePtr, endJacobianPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endJacobianPos);
         Identifier curLhsIdentifier;
         Config::ArgumentSize curNumberOfJacobians;
 

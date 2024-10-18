@@ -825,7 +825,7 @@ namespace codi {
                                     Position const& end) {
         Impl& impl = cast();
         writer->start(impl);
-        Base::llfByteData.evaluateForward(start, end, Impl::template internalWriteTape<Type>, cast(), writer);
+        Base::llfByteData.evaluateForward(start, end, Impl::template internalWriteTape<Type>,  writer);
         writer->finish();
       }
 

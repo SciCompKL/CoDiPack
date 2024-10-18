@@ -308,7 +308,7 @@ namespace codi {
       template<typename TapeTypes>
       CODI_INLINE static void internalWriteTape(
           /* data from call */
-          PrimalValueReuseTape& tape, Real* primalVector,
+          Real* primalVector,
           /* file interface pointer*/
           codi::TapeWriterInterface<TapeTypes>* writer,
           /* data from low level function byte data vector */
@@ -326,8 +326,8 @@ namespace codi {
           size_t& curStatementPos, size_t const& endStatementPos, Identifier const* const lhsIdentifiers,
           Config::ArgumentSize const* const numberOfPassiveArguments, Real* const oldPrimalValues,
           EvalHandle const* const stmtEvalHandle) {
-        CODI_UNUSED(curLLFByteDataPos, endLLFByteDataPos, dataPtr, curLLFInfoDataPos, endLLFInfoDataPos, tokenPtr,
-                    dataSizePtr, endConstantPos, endPassivePos, endRhsIdentifiersPos, oldPrimalValues);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos,
+                    oldPrimalValues);
 
         while (curStatementPos < endStatementPos) {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
