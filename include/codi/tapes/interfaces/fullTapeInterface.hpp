@@ -48,6 +48,7 @@
 #include "positionalEvaluationTapeInterface.hpp"
 #include "preaccumulationEvaluationTapeInterface.hpp"
 #include "primalEvaluationTapeInterface.hpp"
+#include "readWriteTapeInterface.hpp"
 #include "reverseTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -79,6 +80,7 @@ namespace codi {
         public virtual PositionalEvaluationTapeInterface<T_Position>,
         public virtual PreaccumulationEvaluationTapeInterface<T_Real, T_Gradient, T_Identifier, T_Position>,
         public virtual PrimalEvaluationTapeInterface<T_Real, T_Identifier, T_Position>,
+        public virtual ReadWriteTapeInterface<T_Real, T_Gradient, T_Identifier, T_Position>,
         public virtual ReverseTapeInterface<T_Real, T_Gradient, T_Identifier> {
     public:
 
@@ -89,6 +91,7 @@ namespace codi {
 
 #if CODI_IDE
       using TapeTypes = CODI_ANY;
+      using EvalHandle = CODI_ANY;
 #endif
 
       using PositionalEvaluationTapeInterface<T_Position>::clearAdjoints;

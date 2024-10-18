@@ -69,6 +69,11 @@ namespace codi {
         CODI_UNUSED(result);
         return -1.0;
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "-";
+      }
   };
 #define OPERATION_LOGIC OperationUnaryMinus
 #define FUNCTION operator-
@@ -142,6 +147,11 @@ namespace codi {
           return 0.0;
         }
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "abs";
+      }
   };
 #define OPERATION_LOGIC OperationAbs
 #define FUNCTION abs
@@ -183,6 +193,11 @@ namespace codi {
         }
         return -1.0 / sqrt(1.0 - arg * arg);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "acos";
+      }
   };
 #define OPERATION_LOGIC OperationAcos
 #define FUNCTION acos
@@ -219,6 +234,11 @@ namespace codi {
           }
         }
         return 1.0 / sqrt(arg * arg - 1.0);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "acosh";
       }
   };
 #define OPERATION_LOGIC OperationAcosh
@@ -257,6 +277,11 @@ namespace codi {
         }
         return 1.0 / sqrt(1.0 - arg * arg);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "asin";
+      }
   };
 #define OPERATION_LOGIC OperationAsin
 #define FUNCTION asin
@@ -289,6 +314,11 @@ namespace codi {
         CODI_UNUSED(result);
         return 1.0 / sqrt(arg * arg + 1.0);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "asinh";
+      }
   };
 #define OPERATION_LOGIC OperationAsinh
 #define FUNCTION asinh
@@ -320,6 +350,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return 1.0 / (1.0 + arg * arg);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "atan";
       }
   };
 #define OPERATION_LOGIC OperationAtan
@@ -357,6 +392,11 @@ namespace codi {
           }
         }
         return 1.0 / (1.0 - arg * arg);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "atanh";
       }
   };
 #define OPERATION_LOGIC OperationAtanh
@@ -397,6 +437,11 @@ namespace codi {
         } else {
           return (Real)0.0;
         }
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "cbrt";
       }
   };
 #define OPERATION_LOGIC OperationCbrt
@@ -448,6 +493,11 @@ namespace codi {
         CODI_UNUSED(result);
         return -sin(arg);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "cos";
+      }
   };
 #define OPERATION_LOGIC OperationCos
 #define FUNCTION cos
@@ -479,6 +529,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return sinh(arg);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "sinh";
       }
   };
 #define OPERATION_LOGIC OperationCosh
@@ -512,6 +567,11 @@ namespace codi {
         CODI_UNUSED(result);
         return 1.128379167095513 * exp(-(arg * arg));  // erf'(arg) = 2.0 / sqrt(pi) * exp(-arg^2)
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "erf";
+      }
   };
 #define OPERATION_LOGIC OperationErf
 #define FUNCTION erf
@@ -544,6 +604,11 @@ namespace codi {
         CODI_UNUSED(result);
         return -1.128379167095513 * exp(-(arg * arg));  // erfc'(arg) = - 2.0 / sqrt(pi) * exp(-arg^2)
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "erfc";
+      }
   };
 #define OPERATION_LOGIC OperationErfc
 #define FUNCTION erfc
@@ -575,6 +640,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         return result;
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "exp";
       }
   };
 #define OPERATION_LOGIC OperationExp
@@ -655,6 +725,11 @@ namespace codi {
         }
         return 1.0 / arg;
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "log";
+      }
   };
 #define OPERATION_LOGIC OperationLog
 #define FUNCTION log
@@ -691,6 +766,11 @@ namespace codi {
           }
         }
         return 0.434294481903252 / arg;
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "log10";
       }
   };
 #define OPERATION_LOGIC OperationLog10
@@ -729,6 +809,11 @@ namespace codi {
         }
         return 1.0 / (arg + 1.0);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "log1p";
+      }
   };
 #define OPERATION_LOGIC OperationLog1p
 #define FUNCTION log1p
@@ -765,6 +850,11 @@ namespace codi {
           }
         }
         return 1.442695040888963 / arg;
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "log2";
       }
   };
 #define OPERATION_LOGIC OperationLog2
@@ -816,6 +906,11 @@ namespace codi {
         CODI_UNUSED(result);
         return cos(arg);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "sin";
+      }
   };
 #define OPERATION_LOGIC OperationSin
 #define FUNCTION sin
@@ -847,6 +942,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return cosh(arg);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "sinh";
       }
   };
 #define OPERATION_LOGIC OperationSinh
@@ -888,6 +988,11 @@ namespace codi {
           return (Real)0.0;
         }
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "sqrt";
+      }
   };
 #define OPERATION_LOGIC OperationSqrt
 #define FUNCTION sqrt
@@ -926,6 +1031,11 @@ namespace codi {
         Real tmp = 1.0 / cos(arg);
         return tmp * tmp;
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "tan";
+      }
   };
 #define OPERATION_LOGIC OperationTan
 #define FUNCTION tan
@@ -957,6 +1067,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         return 1.0 - result * result;
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "tanh";
       }
   };
 #define OPERATION_LOGIC OperationTanh
@@ -1024,6 +1139,11 @@ namespace codi {
         }
 
         return diGamma * result;
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "tgamma";
       }
   };
 #define OPERATION_LOGIC OperationTgamma

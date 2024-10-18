@@ -44,7 +44,7 @@ struct TestExprHigherOrder : public TestInterface {
     NAME("ExprHigherOrder")
     IN(2)
     OUT(4)
-    POINTS(1) = {{1.0, 2.0}};
+    POINTS(1) = { {1.0, 2.0} };
 
     template<typename Number>
     static void func(Number* x, Number* y) {

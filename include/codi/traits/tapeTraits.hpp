@@ -39,11 +39,15 @@
 #include "../config.h"
 #include "../misc/macros.hpp"
 #include "../tapes/interfaces/editingTapeInterface.hpp"
-#include "../tapes/jacobianBaseTape.hpp"
-#include "../tapes/primalValueBaseTape.hpp"
+#include "misc/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
+  template<typename Tape, typename Impl>
+  struct PrimalValueBaseTape;
+
+  template<typename Tape, typename Impl>
+  struct JacobianBaseTape;
 
   template<typename T_Real, typename T_Gradient>
   struct ForwardEvaluation;

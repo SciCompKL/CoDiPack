@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 #include <type_traits>
 
 #include "../config.h"
@@ -55,6 +56,7 @@
 #include "data/chunk.hpp"
 #include "data/chunkedData.hpp"
 #include "indices/indexManagerInterface.hpp"
+#include "io/tapeReaderWriterInterface.hpp"
 #include "misc/adjointVectorAccess.hpp"
 #include "misc/duplicateJacobianRemover.hpp"
 #include "misc/localAdjoints.hpp"
@@ -772,6 +774,7 @@ namespace codi {
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
       void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
+        Impl& impl = cast();
 
         codiAssert(size < Config::MaxArgumentSize);
 
@@ -779,9 +782,61 @@ namespace codi {
         jacobianData.reserveItems(size);
 
         indexManager.get().template assignIndex<Impl>(lhsIndex);
-        cast().pushStmtData(lhsIndex, (Config::ArgumentSize)size);
+        impl.pushStmtData(lhsIndex, (Config::ArgumentSize)size);
 
-        cast().initializeManualPushData(lhsValue, lhsIndex, size);
+        impl.initializeManualPushData(lhsValue, lhsIndex, size);
+      }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ReadWriteTapeInterface
+      /// @{
+
+      /// \copydoc codi::ReadWriteTapeInterface::createStatementManual(codi::ReadWriteTapeInterface::Real const&,
+      /// codi::ReadWriteTapeInterface::Identifier&, codi::Config::ArgumentSize const&,
+      /// codi::ReadWriteTapeInterface::Real const*, codi::ReadWriteTapeInterface::Identifier const*)
+      void createStatementManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size,
+                                 Real const* jacobians, Identifier const* rhsIdentifiers) {
+        CODI_UNUSED(lhsValue);
+        Impl& impl = cast();
+
+        statementData.reserveItems(1);
+
+        if (Config::StatementInputTag == size && TapeTypes::IsLinearIndexHandler) CODI_Unlikely {
+          impl.pushStmtData(lhsIndex, (Config::ArgumentSize)size);
+        } else CODI_Likely {
+          jacobianData.reserveItems(size);
+          impl.pushStmtData(lhsIndex, (Config::ArgumentSize)size);
+          impl.initializeManualPushData(lhsValue, lhsIndex, size);
+          // Record the rhs of the statement.
+          for (size_t rhsCount = 0; rhsCount < size; rhsCount++) {
+            cast().incrementManualPushCounter();
+            jacobianData.pushData(jacobians[rhsCount], rhsIdentifiers[rhsCount]);
+          }
+        }
+      }
+
+      using Base::writeTape;
+
+      /// \copydoc codi::ReadWriteTapeInterface::writeTape(codi::ReadWriteTapeInterface::WriterInterface*,
+      /// codi:ReadWriteTapeInterface::Position const&, codi:ReadWriteTapeInterface::Position const& )
+      template<typename Type>
+      CODI_NO_INLINE void writeTape(codi::TapeWriterInterface<Type>* writer, Position const& start,
+                                    Position const& end) {
+        Impl& impl = cast();
+        writer->start(impl);
+        Base::llfByteData.evaluateForward(start, end, Impl::template internalWriteTape<Type>, cast(), writer);
+        writer->finish();
+      }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from IdentifierInformationTapeInterface
+      /// @{
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIndexManager()
+      IndexManager& getIndexManager() {
+        return indexManager.get();
       }
 
       /// @}
@@ -878,12 +933,13 @@ namespace codi {
       }
 
       /// Not implemented, raises an exception.
-      Real primal(Identifier const& identifier) const {
+      Real const& primal(Identifier const& identifier) const {
         CODI_UNUSED(identifier);
 
         CODI_EXCEPTION("Accessing primal vector of an Jacobian tape.");
 
-        return Real();
+        static Real temp;
+        return temp;
       }
 
       /// @}

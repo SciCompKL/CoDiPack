@@ -230,5 +230,46 @@ namespace codi {
           curAdjointPos -= 1;
         }
       }
+
+      /// Passes the statement to the writer.
+      template<typename Real>
+      CODI_INLINE static void internalWriteTape(
+          /* data from call */
+          JacobianLinearTape& tape,
+          /* file interface pointer*/
+          codi::TapeWriterInterface<Real>* writer,
+          /* data from low level function byte data vector */
+          size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+          /* data from low level function info data vector */
+          size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          Config::LowLevelFunctionDataSize* const dataSizePtr,
+          /* data from jacobianData */
+          size_t& curJacobianPos, size_t const& endJacobianPos, typename Real::Real const* const rhsJacobians,
+          typename Real::Identifier const* const rhsIdentifiers,
+          /* data from statementData */
+          size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
+          /* data from index handler */
+          size_t const& startAdjointPos, size_t const& endAdjointPos) {
+        CODI_UNUSED(curLLFByteDataPos, endLLFByteDataPos, dataPtr, curLLFInfoDataPos, endLLFInfoDataPos, tokenPtr,
+                    dataSizePtr, endJacobianPos, endStmtPos);
+
+        typename Real::Identifier curLhsIdentifier;
+        Config::ArgumentSize argsSize;
+        size_t curAdjointPos = startAdjointPos;
+        while (curAdjointPos < endAdjointPos) CODI_Likely {
+          curAdjointPos += 1;
+          curLhsIdentifier = curAdjointPos;
+          argsSize = numberOfJacobians[curStmtPos];
+          if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+            writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+          } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
+            writer->writeStatement(curLhsIdentifier, curJacobianPos, rhsJacobians, rhsIdentifiers, argsSize);
+          } else CODI_Likely {
+            writer->writeStatement(curLhsIdentifier, curJacobianPos, rhsJacobians, rhsIdentifiers, argsSize);
+            curJacobianPos += argsSize;
+          }
+          curStmtPos += 1;
+        }
+      }
   };
 }

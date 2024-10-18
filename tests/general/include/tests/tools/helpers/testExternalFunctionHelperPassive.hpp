@@ -42,7 +42,7 @@ struct TestExternalFunctionHelperPassive : public TestInterface {
     NAME("ExternalFunctionHelperPassive")
     IN(2)
     OUT(1)
-    POINTS(1) = {{2.0, 3.0}};
+    POINTS(1) = { {2.0, 3.0} };
 
     static int constexpr ITER = 5;
 

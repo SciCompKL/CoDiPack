@@ -43,7 +43,7 @@ struct TestReferenceActiveType : public TestInterface {
     NAME("ReferenceActiveType")
     IN(1)
     OUT(1)
-    POINTS(1) = {// clang-format off
+    POINTS(1) = {  // clang-format off
       {0.5}
     };  // clang-format on
 

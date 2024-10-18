@@ -35,6 +35,7 @@
 #pragma once
 
 #include <algorithm>
+#include <fstream>
 #include <type_traits>
 
 #include "../config.h"
@@ -47,6 +48,7 @@
 #include "indices/indexManagerInterface.hpp"
 #include "interfaces/editingTapeInterface.hpp"
 #include "interfaces/reverseTapeInterface.hpp"
+#include "io/tapeReaderWriterInterface.hpp"
 #include "jacobianBaseTape.hpp"
 
 /** \copydoc codi::Namespace */
@@ -234,6 +236,42 @@ namespace codi {
         }
       }
 
+      /// Passes the statement to the writer.
+      template<typename TapeTypes>
+      CODI_INLINE static void internalWriteTape(
+          /* data from call */
+          JacobianReuseTape& tape,
+          /* file interface pointer*/
+          codi::TapeWriterInterface<TapeTypes>* writer,
+          /* data from low level function byte data vector */
+          size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+          /* data from low level function info data vector */
+          size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          Config::LowLevelFunctionDataSize* const dataSizePtr,
+          /* data from jacobianData */
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
+          /* data from statementData */
+          size_t& curStmtPos, size_t const& endStmtPos, Identifier const* const lhsIdentifiers,
+          Config::ArgumentSize const* const numberOfJacobians) {
+        CODI_UNUSED(curLLFByteDataPos, endLLFByteDataPos, dataPtr, curLLFInfoDataPos, endLLFInfoDataPos, tokenPtr,
+                    dataSizePtr, endJacobianPos);
+        Identifier curLhsIdentifier;
+        Config::ArgumentSize curNumberOfJacobians;
+
+        while (curStmtPos < endStmtPos) CODI_Likely {
+          curLhsIdentifier = lhsIdentifiers[curStmtPos];
+          curNumberOfJacobians = numberOfJacobians[curStmtPos];
+          if (Config::StatementLowLevelFunctionTag == curNumberOfJacobians) CODI_Unlikely {
+            writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+          } else CODI_Likely {
+            writer->writeStatement(curLhsIdentifier, curJacobianPos, rhsJacobians, rhsIdentifiers,
+                                   curNumberOfJacobians);
+            curJacobianPos += numberOfJacobians[curStmtPos];
+          }
+          curStmtPos += 1;
+        }
+      }
       /// @}
 
     public:

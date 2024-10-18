@@ -41,6 +41,9 @@
       <tab type="user" title="Example 22 - Event system" url="@ref Example_22_Event_system"/>
       <tab type="user" title="Example 23 - OpenMP parallel codes" url="@ref Example_23_OpenMP_Parallel_Codes"/>
       <tab type="user" title="Example 24 - Enzyme external function helper" url="@ref Example_24_Enzyme_external_function_helper"/>
+      <tab type="user" title="Example 25 - Tape writers" url="@ref Example_25_Tape_Writers"/>
+      <tab type="user" title="Example 26 - Jacobian tape readers" url="@ref Example_26_Jacobian_Tape_Readers"/>
+      <tab type="user" title="Example 27 - Primal tape readers" url="@ref Example_27_Primal_Tape_Readers"/>
     </tab>
     <tab type="user" title="Papers" url="@ref Papers"/>
     <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>

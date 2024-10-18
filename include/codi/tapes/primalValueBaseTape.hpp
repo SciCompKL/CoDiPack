@@ -46,7 +46,9 @@
 #include "../expressions/logic/constructStaticContext.hpp"
 #include "../expressions/logic/helpers/forEachLeafLogic.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
+#include "../expressions/logic/helpers/mathStatementGenLogic.hpp"
 #include "../expressions/logic/traversalLogic.hpp"
+#include "../misc/demangleName.hpp"
 #include "../misc/macros.hpp"
 #include "../misc/mathUtility.hpp"
 #include "../misc/memberStore.hpp"
@@ -58,7 +60,6 @@
 #include "misc/primalAdjointVectorAccess.hpp"
 #include "statementEvaluators/statementEvaluatorInterface.hpp"
 #include "statementEvaluators/statementEvaluatorTapeInterface.hpp"
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -181,7 +182,7 @@ namespace codi {
 
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;  ///< Index manager.
       StatementData statementData;          ///< Data stream for statement specific data.
-      RhsIdentifierData rhsIdentiferData;   ///< Data stream for argument identifier data.
+      RhsIdentifierData rhsIdentifierData;  ///< Data stream for argument identifier data.
       PassiveValueData passiveValueData;    ///< Data stream for passive argument value data.
       ConstantValueData constantValueData;  ///< Data stream for constant argument data.
 
@@ -234,7 +235,7 @@ namespace codi {
             indexManager(Config::MaxArgumentSize),  // Reserve first items for passive values.
             statementData(Config::ChunkSize),
             // The following chunks must be large enough to store data for all arguments of one statement.
-            rhsIdentiferData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
+            rhsIdentifierData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
             passiveValueData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
             constantValueData(std::max(Config::ChunkSize, Config::MaxArgumentSize)),
             adjoints(1),  // Ensure that adjoint[0] exists, see its use in gradient() const.
@@ -243,8 +244,8 @@ namespace codi {
         checkPrimalSize(true);
 
         statementData.setNested(&indexManager.get());
-        rhsIdentiferData.setNested(&statementData);
-        passiveValueData.setNested(&rhsIdentiferData);
+        rhsIdentifierData.setNested(&statementData);
+        passiveValueData.setNested(&rhsIdentifierData);
         constantValueData.setNested(&passiveValueData);
 
         Base::init(&constantValueData);
@@ -329,12 +330,12 @@ namespace codi {
       };
 
       /// Push all data for each argument.
-      struct PushIdentfierPassiveAndConstant : public ForEachLeafLogic<PushIdentfierPassiveAndConstant> {
+      struct PushIdentifierPassiveAndConstant : public ForEachLeafLogic<PushIdentifierPassiveAndConstant> {
         public:
 
           /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
-          CODI_INLINE void handleActive(Node const& node, RhsIdentifierData& rhsIdentiferData,
+          CODI_INLINE void handleActive(Node const& node, RhsIdentifierData& rhsIdentifierData,
                                         PassiveValueData& passiveValueData, ConstantValueData& constantValueData,
                                         size_t& curPassiveArgument) {
             CODI_UNUSED(constantValueData);
@@ -347,15 +348,15 @@ namespace codi {
               passiveValueData.pushData(node.getValue());
             }
 
-            rhsIdentiferData.pushData(rhsIndex);
+            rhsIdentifierData.pushData(rhsIndex);
           }
 
           /// \copydoc codi::ForEachLeafLogic::handleConstant
           template<typename Node>
-          CODI_INLINE void handleConstant(Node const& node, RhsIdentifierData& rhsIdentiferData,
+          CODI_INLINE void handleConstant(Node const& node, RhsIdentifierData& rhsIdentifierData,
                                           PassiveValueData& passiveValueData, ConstantValueData& constantValueData,
                                           size_t& curPassiveArgument) {
-            CODI_UNUSED(rhsIdentiferData, passiveValueData, curPassiveArgument);
+            CODI_UNUSED(rhsIdentifierData, passiveValueData, curPassiveArgument);
 
             using ConversionOperator = typename Node::template ConversionOperator<PassiveReal>;
 
@@ -393,7 +394,8 @@ namespace codi {
                              ExpressionInterface<Real, Rhs> const& rhs) {
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
           CountActiveArguments countActiveArguments;
-          PushIdentfierPassiveAndConstant pushAll;
+          PushIdentifierPassiveAndConstant pushAll;
+
           size_t constexpr MaxActiveArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
           size_t constexpr MaxConstantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
 
@@ -405,12 +407,12 @@ namespace codi {
 
           if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != activeArguments)) {
             statementData.reserveItems(1);
-            rhsIdentiferData.reserveItems(MaxActiveArgs);
+            rhsIdentifierData.reserveItems(MaxActiveArgs);
             passiveValueData.reserveItems(MaxActiveArgs - activeArguments);
             constantValueData.reserveItems(MaxConstantArgs);
 
             size_t passiveArguments = 0;
-            pushAll.eval(rhs.cast(), rhsIdentiferData, passiveValueData, constantValueData, passiveArguments);
+            pushAll.eval(rhs.cast(), rhsIdentifierData, passiveValueData, constantValueData, passiveArguments);
 
             bool generatedNewIndex = indexManager.get().template assignIndex<Impl>(lhs.cast().getIdentifier());
             checkPrimalSize(generatedNewIndex);
@@ -575,7 +577,7 @@ namespace codi {
         values.addSection("Statement entries");
         statementData.addToTapeValues(values);
         values.addSection("Rhs identifiers entries");
-        rhsIdentiferData.addToTapeValues(values);
+        rhsIdentifierData.addToTapeValues(values);
         values.addSection("Passive value entries");
         passiveValueData.addToTapeValues(values);
         values.addSection("Constant value entries");
@@ -789,7 +791,7 @@ namespace codi {
             return passiveValueData.getDataSize();
             break;
           case TapeParameters::RhsIdentifiersSize:
-            return rhsIdentiferData.getDataSize();
+            return rhsIdentifierData.getDataSize();
             break;
           case TapeParameters::PrimalSize:
             return primals.size();
@@ -818,7 +820,7 @@ namespace codi {
             passiveValueData.resize(value);
             break;
           case TapeParameters::RhsIdentifiersSize:
-            rhsIdentiferData.resize(value);
+            rhsIdentifierData.resize(value);
             break;
           case TapeParameters::PrimalSize:
             primals.resize(value);
@@ -888,10 +890,10 @@ namespace codi {
 
       /// @}
       /******************************************************************************
-       * Protected helper function for ManualStatementPushTapeInterface
+       * Public helper function for ManualStatementPushTapeInterface
        */
 
-    protected:
+    public:
 
       /// Implements StatementEvaluatorTapeInterface and StatementEvaluatorInnerTapeInterface
       /// @tparam T_size  Number of arguments.
@@ -937,6 +939,21 @@ namespace codi {
               curPassivePos -= numberOfPassiveArguments;
               curRhsIdentifiersPos -= numberOfPassiveArguments;
             }
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::statementGetWriteInformation
+          template<typename Expr, typename... Args>
+          static WriteInfo statementGetWriteInformation(Args&&... args) {
+            CODI_UNUSED(args...);
+
+            WriteInfo writeInfo;
+            writeInfo.numberOfActiveArguments = ExpressionTraits::NumberOfActiveTypeArguments<Expr>::value;
+            writeInfo.numberOfConstantArguments = ExpressionTraits::NumberOfConstantTypeArguments<Expr>::value;
+            writeInfo.stmtExpression = "Impl, typename Impl::template JacobianStatementGenerator<" +
+                                       std::to_string(size) + ">, codi::JacobianExpression<" + std::to_string(size) +
+                                       ">";
+            writeInfo.mathRepresentation = "Jacobian statement";
+            return writeInfo;
           }
 
           /// @}
@@ -1011,8 +1028,6 @@ namespace codi {
           }
       };
 
-    public:
-
       /*******************************************************************************/
       /// @name Functions from ManualStatementPushTapeInterface
       /// @{
@@ -1024,7 +1039,7 @@ namespace codi {
         cast().incrementManualPushCounter();
 
         passiveValueData.pushData(jacobian);
-        rhsIdentiferData.pushData(index);
+        rhsIdentifierData.pushData(index);
 
         if (Config::StatementEvents) {
           if (this->manualPushCounter == this->manualPushGoal) {
@@ -1032,7 +1047,7 @@ namespace codi {
             Real* jacobians;
             Identifier* rhsIdentifiers;
             passiveValueData.getDataPointers(jacobians);
-            rhsIdentiferData.getDataPointers(rhsIdentifiers);
+            rhsIdentifierData.getDataPointers(rhsIdentifiers);
             jacobians -= this->manualPushGoal;
             rhsIdentifiers -= this->manualPushGoal;
 
@@ -1050,7 +1065,7 @@ namespace codi {
         codiAssert(size < Config::MaxArgumentSize);
 
         statementData.reserveItems(1);
-        rhsIdentiferData.reserveItems(size);
+        rhsIdentifierData.reserveItems(size);
         passiveValueData.reserveItems(size);
 
         indexManager.get().template assignIndex<Impl>(lhsIndex);
@@ -1060,6 +1075,83 @@ namespace codi {
         primalEntry = lhsValue;
 
         cast().initializeManualPushData(lhsValue, lhsIndex, size);
+      }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from ReadWriteTapeInterface
+      /// @{
+
+      /// \copydoc codi::ReadWriteTapeInterface::createStatementManual(codi::ReadWriteTapeInterface::Identifier const&,
+      /// codi::ReadWriteTapeInterface::Real const&, codi::Config::ArgumentSize const&,
+      /// codi::ReadWriteTapeInterface::Identifier const* const, codi::Config::ArgumentSize const&,
+      /// codi::ReadWriteTapeInterface::Real const* const, codi::Config::ArgumentSize const&,
+      /// codi::ReadWriteTapeInterface::Real const* const, codi::ReadWriteTapeInterface::EvalHandle const&)
+      void createStatementManual(Identifier const& lhsIndex, Real const& lhsValue,
+                                 Config::ArgumentSize const& nActiveValues, Identifier const* const rhsIdentifiers,
+                                 Config::ArgumentSize const& nPassiveValues, Real const* const rhsPrimals,
+                                 Config::ArgumentSize const& nConstants, Real const* const rhsConstant,
+                                 EvalHandle const& evalHandle) {
+        Impl& impl = cast();
+        if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
+          // TODO.
+        } else if (Config::StatementInputTag == nPassiveValues && TapeTypes::IsLinearIndexHandler) CODI_Unlikely {
+          statementData.reserveItems(1);
+          if (TapeTypes::IsLinearIndexHandler) {
+            primals[lhsIndex] = lhsValue;
+          }
+          impl.pushStmtData(lhsIndex, Config::StatementInputTag, lhsValue, evalHandle);
+
+        } else CODI_Likely {
+          statementData.reserveItems(1);
+          rhsIdentifierData.reserveItems(nActiveValues);
+          passiveValueData.reserveItems(nPassiveValues);
+          constantValueData.reserveItems(nConstants);
+
+          if (TapeTypes::IsLinearIndexHandler) {
+            primals[lhsIndex] = lhsValue;
+          }
+
+          impl.pushStmtData(lhsIndex, nPassiveValues, lhsValue, evalHandle);
+          impl.initializeManualPushData(lhsValue, lhsIndex, nPassiveValues);
+
+          for (size_t activeCount = 0; activeCount < nActiveValues; activeCount++) {
+            rhsIdentifierData.pushData(rhsIdentifiers[activeCount]);
+          }
+          for (size_t passiveCount = 0; passiveCount < nPassiveValues; passiveCount++) {
+            cast().incrementManualPushCounter();
+            passiveValueData.pushData(rhsPrimals[passiveCount]);
+          }
+          for (size_t constantCount = 0; constantCount < nConstants; constantCount++) {
+            constantValueData.pushData(rhsConstant[constantCount]);
+          }
+        }
+      }
+
+      using Base::writeTape;
+
+      /**
+       * \copydoc codi::ReadWriteTapeInterface::writeTape(codi::ReadWriteTapeInterface::WriterInterface*,
+       * codi:ReadWriteTapeInterface::Position const&, codi:ReadWriteTapeInterface::Position const&)
+       */
+      template<typename Type>
+      CODI_NO_INLINE void writeTape(codi::TapeWriterInterface<Type>* writer, Position const& start,
+                                    Position const& end) {
+        Impl& impl = cast();
+        writer->start(impl);
+        Base::llfByteData.evaluateForward(start, end, Impl::template internalWriteTape<Type>, cast(), primals.data(),
+                                          writer);
+        writer->finish();
+      }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from IdentifierInformationTapeInterface
+      /// @{
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIndexManager()
+      IndexManager& getIndexManager() {
+        return indexManager.get();
       }
 
       /// @}
@@ -1209,6 +1301,41 @@ namespace codi {
       /*******************************************************************************/
       /// @name Function from StatementEvaluatorInnerTapeInterface
       /// @{
+
+      /// \copydoc codi::StatementEvaluatorInnerTapeInterface::statementGetWriteInformation
+      template<typename Expr>
+      static WriteInfo statementGetWriteInformation(Real* primalVector, Config::ArgumentSize numberOfPassiveArguments,
+                                                    size_t& curConstantPos, PassiveReal const* const constantValues,
+                                                    size_t& curPassivePos, Real const* const passiveValues,
+                                                    size_t& curRhsIdentifiersPos,
+                                                    Identifier const* const rhsIdentifiers) {
+        if (Config::StatementInputTag != numberOfPassiveArguments) {
+          for (Config::ArgumentSize curPos = 0; curPos < numberOfPassiveArguments; curPos += 1) {
+            primalVector[curPos] = passiveValues[curPassivePos + curPos];
+          }
+        }
+
+        using Constructor = ConstructStaticContextLogic<Expr, Impl, 0, 0>;
+        using StaticRhs = typename Constructor::ResultType;
+
+        StaticRhs staticRhs = Constructor::construct(primalVector, &rhsIdentifiers[curRhsIdentifiersPos],
+                                                     &constantValues[curConstantPos]);
+
+        WriteInfo writeInfo;
+        writeInfo.numberOfActiveArguments = ExpressionTraits::NumberOfActiveTypeArguments<Expr>::value;
+        writeInfo.numberOfConstantArguments = ExpressionTraits::NumberOfConstantTypeArguments<Expr>::value;
+
+        // The Impl template name is added to simplify the writer and reader interfaces EvalHandles. It represents the
+        // first and second template args in the createHandle method. For the manual push, the second Impl template is
+        // instead replaced with JacobianGenerator<size>.
+
+        writeInfo.stmtExpression = "Impl, Impl, ";
+        writeInfo.stmtExpression += demangleName<Expr>();
+        MathStatementGenLogic<Identifier> mathGen(Config::MaxArgumentSize);
+        mathGen.eval(staticRhs, writeInfo.mathRepresentation);
+
+        return writeInfo;
+      }
 
       /// \copydoc codi::StatementEvaluatorInnerTapeInterface::statementEvaluateForwardInner()
       template<typename Rhs>

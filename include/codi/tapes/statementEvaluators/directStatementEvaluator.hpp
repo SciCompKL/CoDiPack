@@ -53,13 +53,13 @@ namespace codi {
 
       using Handle = void*;  ///< Function pointer.
 
-      Handle forward;  ///< Forward function handle.
-      Handle primal;   ///< Primal function handle.
-      Handle reverse;  ///< Reverse function handle.
-
+      Handle forward;           ///< Forward function handle.
+      Handle primal;            ///< Primal function handle.
+      Handle reverse;           ///< Reverse function handle.
+      Handle writeInformation;  ///< Write information handle.
       /// Constructor
-      PrimalTapeStatementFunctions(Handle forward, Handle primal, Handle reverse)
-          : forward(forward), primal(primal), reverse(reverse) {}
+      PrimalTapeStatementFunctions(Handle forward, Handle primal, Handle reverse, Handle writeInformation)
+          : forward(forward), primal(primal), reverse(reverse), writeInformation(writeInformation) {}
   };
 
   /// Store PrimalTapeStatementFunctions as static variables for each combination of generator (tape) and expression
@@ -77,8 +77,8 @@ namespace codi {
   PrimalTapeStatementFunctions const DirectStatementEvaluatorStaticStore<Generator, Expr>::staticStore(
       (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateForward<Expr>,
       (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluatePrimal<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverse<Expr>);
-
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverse<Expr>,
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementGetWriteInformation<Expr>);
   /**
    * @brief Full evaluation of the expression in the function handle. Storing in static context.
    *
@@ -119,6 +119,12 @@ namespace codi {
         ((FunctionReverse<Tape>)h->reverse)(std::forward<Args>(args)...);
       }
 
+      /// \copydoc StatementEvaluatorInterface::getWriteInformation
+      template<typename Tape, typename... Args>
+      static WriteInfo getWriteInformation(Handle const& h, Args&&... args) {
+        return ((FunctionWriteInformation<Tape>)h->writeInformation)(std::forward<Args>(args)...);
+      }
+
       /// \copydoc StatementEvaluatorInterface::createHandle
       template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle() {
@@ -140,5 +146,9 @@ namespace codi {
       /// Full reverse function type.
       template<typename Tape>
       using FunctionReverse = decltype(&Tape::template statementEvaluateReverse<ActiveType<Tape>>);
+
+      /// Function for WriteInfo
+      template<typename Tape>
+      using FunctionWriteInformation = decltype(&Tape::template statementGetWriteInformation<ActiveType<Tape>>);
   };
 }

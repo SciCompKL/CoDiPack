@@ -39,9 +39,9 @@
 
 #include "../../config.h"
 #include "../../misc/macros.hpp"
+#include "../../misc/mathUtility.hpp"
 #include "../data/emptyData.hpp"
 #include "indexManagerInterface.hpp"
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -209,6 +209,26 @@ namespace codi {
           usedIndicesPos += 1;
 
           index = Base::InactiveIndex;
+        }
+      }
+
+      /// \copydoc codi::IndexManagerInterface::updateLargestCreatedIndex
+      CODI_NO_INLINE void updateLargestCreatedIndex(Index const& index) {
+        /* This method calculates the number of new indices that needs to be added to the unusedIndices vector.
+           The length of the unusedIndices vector is adjusted in multiples of indexSizeIncrement.
+           This is done by recursively calling by generateNewIndices. */
+        if (index > cast().getLargestCreatedIndex()) {
+          Index needToGenerate = index - cast().getLargestCreatedIndex();
+          size_t newUnusedIndexSize = this->unusedIndicesPos + needToGenerate;
+
+          // Round up newUnusedIndexSize to a multiple of indexSizeIncrement and then resize.
+          newUnusedIndexSize = getNextMultiple(newUnusedIndexSize, this->indexSizeIncrement);
+          this->unusedIndices.resize(newUnusedIndexSize);
+
+          // Generate the new unusedIndices in steps of indexSizeIncrement.
+          while (index > cast().getLargestCreatedIndex()) {
+            generateNewIndices();
+          }
         }
       }
 

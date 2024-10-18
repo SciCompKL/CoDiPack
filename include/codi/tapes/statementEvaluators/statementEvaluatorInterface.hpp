@@ -36,6 +36,7 @@
 
 #include "../../misc/macros.hpp"
 #include "../../misc/memberStore.hpp"
+#include "../io/tapeReaderWriterInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -124,6 +125,11 @@ namespace codi {
       ///               depending on the interface the implementation uses.
       template<typename Tape, typename... Args>
       static void callReverse(Handle const& h, Args&&... args);
+
+      /// @tparam Tape  Has to implement StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface,
+      ///               depending on the interface the implementation uses.
+      template<typename Tape, typename... Args>
+      static WriteInfo getWriteInformation(Handle const& h, Args&&... args);
 
       /// @tparam Tape       Usually not required. Access tape specific configurations.
       /// @tparam Generator  Has to implement the StatementEvaluatorTapeInterface or

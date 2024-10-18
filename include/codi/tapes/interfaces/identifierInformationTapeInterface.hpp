@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../indices/indexManagerInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -78,6 +79,7 @@ namespace codi {
       Identifier getInvalidIndex() const;                      ///< Invalid identifier.
       bool isIdentifierActive(Identifier const& index) const;  ///< True if the identifier is considered active by the
                                                                ///< tape.
+      IndexManagerInterface<Identifier>& getIndexManager();    ///< Returns a reference to the Index Manager.
 
       /// Modify the value such that it is no longer active.
       ///

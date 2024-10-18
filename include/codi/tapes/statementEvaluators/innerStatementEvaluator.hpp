@@ -61,8 +61,8 @@ namespace codi {
       /// Constructor
       InnerPrimalTapeStatementData(size_t maxActiveArguments, size_t maxConstantArguments,
                                    typename Base::Handle forward, typename Base::Handle primal,
-                                   typename Base::Handle reverse)
-          : Base(forward, primal, reverse),
+                                   typename Base::Handle reverse, typename Base::Handle writeInformation)
+          : Base(forward, primal, reverse, writeInformation),
             maxActiveArguments(maxActiveArguments),
             maxConstantArguments(maxConstantArguments) {}
   };
@@ -84,7 +84,8 @@ namespace codi {
       ExpressionTraits::NumberOfConstantTypeArguments<Expr>::value,
       (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateForwardInner<Expr>,
       (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluatePrimalInner<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverseInner<Expr>);
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverseInner<Expr>,
+      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementGetWriteInformation<Expr>);
 
   /**
    * @brief Expression evaluation in the inner function. Data loading in the compilation context of the tape.
@@ -137,6 +138,12 @@ namespace codi {
         return &InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
       }
 
+      /// \copydoc StatementEvaluatorInterface::getWriteInformation
+      template<typename Tape, typename... Args>
+      static WriteInfo getWriteInformation(Handle const& h, Args&&... args) {
+        return ((FunctionWriteInformation<Tape>)h->writeInformation)(std::forward<Args>(args)...);
+      }
+
       /// @}
 
     protected:
@@ -152,5 +159,9 @@ namespace codi {
       /// Full reverse function type.
       template<typename Tape>
       using FunctionReverse = decltype(&Tape::template statementEvaluateReverseInner<ActiveType<Tape>>);
+
+      /// Write information function type.
+      template<typename Tape>
+      using FunctionWriteInformation = decltype(&Tape::template statementGetWriteInformation<ActiveType<Tape>>);
   };
 }

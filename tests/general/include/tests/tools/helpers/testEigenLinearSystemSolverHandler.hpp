@@ -45,7 +45,7 @@ struct TestEigenLinearSystemSolverHandler : public TestInterface {
     NAME("EigenLinearSystemSolverHandler")
     IN(6)
     OUT(2)
-    POINTS(1) = {{1.0, 2.0, 3.0, 4.0, 20.0, 10.0}};
+    POINTS(1) = { {1.0, 2.0, 3.0, 4.0, 20.0, 10.0} };
 
 #if CODI_EnableEigen
     template<typename T>

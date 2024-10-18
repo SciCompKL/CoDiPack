@@ -39,7 +39,7 @@ struct TestReset : public TestInterface {
     NAME("Reset")
     IN(2)
     OUT(1)
-    POINTS(1) = {{1.0, 0.5}};
+    POINTS(1) = { {1.0, 0.5} };
 
     template<typename Number>
     static void func(Number* x, Number* y) {

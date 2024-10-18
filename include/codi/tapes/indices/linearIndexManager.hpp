@@ -92,7 +92,6 @@ namespace codi {
 
       Index reservedIndices;  ///< The largest index that is reserved and cannot be assigned to active AD variables.
       Index count;            ///< The current maximum index.
-
     public:
 
       /// Constructor
@@ -164,6 +163,11 @@ namespace codi {
       /// 2. the largest created index coincides with the largest assigned index.
       CODI_INLINE Index getLargestCreatedIndex() const {
         return count;
+      }
+
+      /// \copydoc IndexManagerInterface::updateLargestCreatedIndex
+      CODI_INLINE void updateLargestCreatedIndex(Index const& index) {
+        count = index;
       }
 
       /// @}

@@ -68,6 +68,9 @@ namespace codi {
       /// The type of the argument is the type of the result of a getValue call on the expression.
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result);
+
+      /// Get the math symbol of the unary operation. E.g. `sin()` for functions.
+      static CODI_INLINE std::string getMathRep();
   };
 
   /**
@@ -125,6 +128,11 @@ namespace codi {
       template<typename Logic, typename... Args>
       CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
         logic.cast().template link<0>(arg, *this, std::forward<Args>(args)...);
+      }
+
+      /// \copydoc codi::UnaryOperation::getMathRep
+      CODI_INLINE std::string getMathRep() const {
+        return Operation::getMathRep();
       }
 
       /// \copydoc codi::NodeInterface::forEachLinkConstExpr

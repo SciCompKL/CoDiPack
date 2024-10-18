@@ -80,6 +80,11 @@ namespace codi {
         CODI_UNUSED(argA, argB, result);
         return 1.0;
       }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "+";
+      }
   };
 #define OPERATION_LOGIC OperationAdd
 #define FUNCTION operator+
@@ -113,6 +118,11 @@ namespace codi {
         CODI_UNUSED(argA, argB, result);
         return -1.0;
       }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "-";
+      }
   };
 #define OPERATION_LOGIC OperationSubstract
 #define FUNCTION operator-
@@ -143,6 +153,11 @@ namespace codi {
       static CODI_INLINE ArgA const& gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return argA;
+      }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "*";
       }
   };
 #define OPERATION_LOGIC OperationMultiply
@@ -178,6 +193,11 @@ namespace codi {
 
         checkArguments(argB);
         return -result / argB;
+      }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "/";
       }
 
     private:
@@ -248,6 +268,11 @@ namespace codi {
         return -argA * divisor;
       }
 
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "atan2()";
+      }
+
     private:
       template<typename ArgA, typename ArgB>
       static CODI_INLINE void checkArguments(ArgA& argA, ArgB& argB) {
@@ -303,6 +328,11 @@ namespace codi {
         } else {
           return RealTraits::PassiveReal<Real>(0.0);
         }
+      }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "copysign()";
       }
 
       /// \copydoc codi::BinaryOperation::gradientB()
@@ -361,6 +391,11 @@ namespace codi {
           return -trunc(RealTraits::getPassiveValue(argA / argB));
         }
       }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "fmod()";
+      }
   };
 
 #define OPERATION_LOGIC OperationFmod
@@ -403,6 +438,10 @@ namespace codi {
         CODI_UNUSED(argA, argB, result);
 
         return 0.0;
+      }
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "frexp()";
       }
   };
 
@@ -481,6 +520,11 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "hypot()";
+      }
+
     private:
       static CODI_INLINE void checkResult(Real const& result) {
         if (Config::CheckExpressionArguments) {
@@ -532,6 +576,11 @@ namespace codi {
 
         return 0.0;
       }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "ldexp()";
+      }
   };
 #define OPERATION_LOGIC OperationLdexp
 #define FUNCTION ldexp
@@ -575,6 +624,11 @@ namespace codi {
         } else {
           return 0.0;
         }
+      }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "max()";
       }
 
       /// \copydoc codi::BinaryOperation::gradientB()
@@ -631,6 +685,11 @@ namespace codi {
         } else {
           return 0.0;
         }
+      }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "min()";
       }
 
       /// \copydoc codi::BinaryOperation::gradientB()
@@ -702,6 +761,11 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "pow()";
+      }
+
     private:
       template<typename ArgA, typename ArgB>
       static CODI_INLINE void checkArguments(ArgA const& argA, ArgB const& argB) {
@@ -761,6 +825,11 @@ namespace codi {
 
         using std::round;
         return -round(argA / argB);
+      }
+
+      /// \copydoc codi::BinaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "%";
       }
 
     private:
