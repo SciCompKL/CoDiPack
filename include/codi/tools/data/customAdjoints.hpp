@@ -36,6 +36,7 @@
 #pragma once
 
 #include <map>
+#include <vector>
 
 #include "../../misc/macros.hpp"
 #include "../../traits/adjointVectorTraits.hpp"
@@ -54,7 +55,7 @@ namespace codi {
    * calling contexts. Entries that do not exist yet are created on the fly and default-initialized.
    *
    * @tparam T_Identifier  Identifier type, usually chosen as Tape::Identifier.
-   * @tparam T_Gradient    Gradient type, corresponds to the Adjoint template parameter in the referred-to functions.
+   * @tparam T_Gradient    Gradient type, usually chosen as Tape::Gradient.
    */
   template<typename T_Identifier, typename T_Gradient>
   struct MappedAdjoints {
@@ -82,6 +83,52 @@ namespace codi {
   namespace AdjointVectorTraits {
     template<typename T_Identifier, typename T_Gradient>
     struct GradientImplementation<MappedAdjoints<T_Identifier, T_Gradient>> {
+      public:
+        using Gradient = T_Gradient;
+    };
+  }
+#endif
+
+  /**
+   * @brief Implementation of vector-based adjoints that take into account an offset when addressing into the vector.
+   *
+   * Useful if resizing adjoint vectors based on non-local information would result in a large overallocation. Can be
+   * used as custom adjoints for tape evaluations, see CustomAdjointVectorEvaluationTapeInterface. Can also be used for
+   * Jacobian computations with custom adjoints, see Algorithms::computeJacobianCustomAdjoints().
+   *
+   * The user is responsible for providing memory with adequate size, no bounds checking is performed.
+   *
+   * @tparam T_Identifier  Identifier type, usually chosen as Tape::Identifier.
+   * @tparam T_Gradient    Gradient type, usually chosen as Tape::Gradient.
+   */
+  template<typename T_Identifier, typename T_Gradient>
+  struct AdjointVectorWithOffset {
+    public:
+      using Identifier = CODI_DD(T_Identifier, int);  ///< See AdjointVectorWithOffset.
+      using Gradient = CODI_DD(T_Gradient, double);   ///< See AdjointVectorWithOffset.
+
+      Gradient* adjoints;       ///< Points to user-provided adjoints memory.
+      Identifier const offset;  ///< Offset that is subtracted when addressing into the adjoints memory.
+
+      /// Constructor.
+      AdjointVectorWithOffset(Gradient* adjoints, Identifier const& offset) : adjoints(adjoints), offset(offset) {}
+
+      /// Access operator in non-constant call contexts.
+      CODI_INLINE Gradient& operator[](Identifier const& identifier) {
+        return adjoints[identifier - offset];
+      }
+
+      /// Access operator in constant call contexts.
+      CODI_INLINE Gradient const& operator[](Identifier const& identifier) const {
+        return adjoints[identifier - offset];
+      }
+  };
+
+#ifndef DOXYGEN_DISABLE
+  // Specialize adjoint vector traits.
+  namespace AdjointVectorTraits {
+    template<typename T_Identifier, typename T_Gradient>
+    struct GradientImplementation<AdjointVectorWithOffset<T_Identifier, T_Gradient>> {
       public:
         using Gradient = T_Gradient;
     };
