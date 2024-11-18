@@ -1,6 +1,10 @@
 Changelog {#Changelog}
 ===========================
 
+### v??? - ???
+ - Bugfix:
+   * Allow a tape change in the custom adjoint vector helper.
+
 ### v 2.3.0 - 2024-12-27
  - Features:
   * Tape evaluations with generalized custom adjoints.

@@ -71,14 +71,14 @@ namespace codi {
       using Tape = typename Type::Tape;
       using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface
 
-    protected:
+    private:
 
-      Tape& tape;  ///< Current tape for evaluations. Default: the Type's current tape.
+      Tape* tape;  ///< Current tape for evaluations. Default: the Type's current tape.
 
     public:
 
       /// Constructor
-      CustomAdjointVectorInterface() : tape(Type::getTape()) {}
+      CustomAdjointVectorInterface() : tape(&Type::getTape()) {}
 
       /// Destructor
       virtual ~CustomAdjointVectorInterface() {}
@@ -111,17 +111,22 @@ namespace codi {
 
       /// \copydoc codi::ReverseTapeInterface::evaluate()
       void evaluate() {
-        evaluate(tape.getPosition(), tape.getZeroPosition());
+        evaluate(tape->getPosition(), tape->getZeroPosition());
       }
 
       /// \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward()
       void evaluateForward() {
-        evaluate(tape.getPosition(), tape.getZeroPosition());
+        evaluate(tape->getPosition(), tape->getZeroPosition());
       }
 
       /// Set the tape for the evaluations.
       void setTape(Tape& tape) {
-        this->tape = tape;
+        this->tape = &tape;
+      }
+
+      /// Get the tape for the evaluations.
+      Tape& getTape() {
+        return *this->tape;
       }
 
       /// @}
@@ -208,7 +213,7 @@ namespace codi {
       void evaluate(Position const& start, Position const& end) {
         checkAdjointVectorSize();
 
-        Base::tape.evaluate(start, end, adjointVector.data());
+        Base::getTape().evaluate(start, end, adjointVector.data());
       }
       using Base::evaluate;
 
@@ -216,7 +221,7 @@ namespace codi {
       void evaluateForward(Position const& start, Position const& end) {
         checkAdjointVectorSize();
 
-        Base::tape.evaluateForward(start, end, adjointVector.data());
+        Base::getTape().evaluateForward(start, end, adjointVector.data());
       }
       using Base::evaluateForward;
 
@@ -282,8 +287,8 @@ namespace codi {
     private:
 
       void checkAdjointVectorSize() {
-        if (adjointVector.size() <= Base::tape.getParameter(TapeParameters::LargestIdentifier)) {
-          adjointVector.resize(Base::tape.getParameter(TapeParameters::LargestIdentifier) + 1);
+        if (adjointVector.size() <= Base::getTape().getParameter(TapeParameters::LargestIdentifier)) {
+          adjointVector.resize(Base::getTape().getParameter(TapeParameters::LargestIdentifier) + 1);
         }
       }
   };
