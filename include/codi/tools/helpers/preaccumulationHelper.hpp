@@ -668,8 +668,10 @@ namespace codi {
       }
 
       void handleInput(Type const& input) {
-        inputLocations.push_back(&input);
-        getTape().setTagOnVariable(input);
+        if (Type::getTape().getPassiveIndex() != input.getIdentifier()) {
+          inputLocations.push_back(&input);
+          getTape().setTagOnVariable(input);
+        }
       }
 
       /// Terminator for the recursive implementation.
