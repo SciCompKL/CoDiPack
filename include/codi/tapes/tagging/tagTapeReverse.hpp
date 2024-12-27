@@ -269,8 +269,6 @@ namespace codi {
 
       /// Verify tag.
       bool isIdentifierActive(Identifier const& index) const {
-        Base::verifyTag(index.tag);
-
         return index.tag != Base::PassiveTag;
       }
 

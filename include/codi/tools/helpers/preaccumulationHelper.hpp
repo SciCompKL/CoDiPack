@@ -560,9 +560,7 @@ namespace codi {
    * and the outputs.
    */
   template<typename T_Type>
-  struct PreaccumulationHelper<
-      T_Type, typename enable_if_same<typename T_Type::Tape,
-                                      TagTapeReverse<typename T_Type::Real, typename T_Type::Tape::Tag>>::type> {
+  struct PreaccumulationHelper<T_Type, TapeTraits::EnableIfTagTapeReverse<typename T_Type::Tape>> {
     public:
 
       using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);  ///< See PreaccumulationHelper.
@@ -668,8 +666,10 @@ namespace codi {
       }
 
       void handleInput(Type const& input) {
-        inputLocations.push_back(&input);
-        getTape().setTagOnVariable(input);
+        if (Type::getTape().getPassiveIndex() != input.getIdentifier()) {
+          inputLocations.push_back(&input);
+          getTape().setTagOnVariable(input);
+        }
       }
 
       /// Terminator for the recursive implementation.
