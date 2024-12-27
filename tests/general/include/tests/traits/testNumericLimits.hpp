@@ -43,7 +43,7 @@ struct TestNumericLimits : public TestInterface {
     NAME("NumericLimits")
     IN(1)
     OUT(1)
-    POINTS(1) = {{1.0}};
+    POINTS(1) = { {1.0} };
 
     template<typename Number>
     static void func(Number* x, Number* y) {

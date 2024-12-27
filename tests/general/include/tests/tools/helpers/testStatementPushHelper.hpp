@@ -43,7 +43,7 @@ struct TestStatementPushHelper : public TestInterface {
     NAME("StatementPushHelper")
     IN(2)
     OUT(8)
-    POINTS(1) = {// clang-format off
+    POINTS(1) = {  // clang-format off
       {  1.0,     0.5}
     };  // clang-format on
 

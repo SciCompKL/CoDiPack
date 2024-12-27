@@ -40,6 +40,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../../tools/data/direction.hpp"
+#include "../../traits/adjointVectorTraits.hpp"
 #include "../../traits/realTraits.hpp"
 #include "vectorAccessInterface.hpp"
 
@@ -51,19 +52,22 @@ namespace codi {
    *
    * The adjoint vector is used as is, it is assumed to have the correct size. No bounds checking is performed.
    *
-   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
-   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Real           The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier     The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_AdjointVector  Either a pointer type, for example Gradient*, or a reference to something that can be
+   *                          accessed like a gradient array, for example std::vector<Gradient>&.
    */
-  template<typename T_Real, typename T_Identifier, typename T_Gradient>
+  template<typename T_Real, typename T_Identifier, typename T_AdjointVector>
   struct AdjointVectorAccess : public VectorAccessInterface<T_Real, T_Identifier> {
-      using Real = CODI_DD(T_Real, double);           ///< See AdjointVectorAccess.
-      using Identifier = CODI_DD(T_Identifier, int);  ///< See AdjointVectorAccess.
-      using Gradient = CODI_DD(T_Gradient, double);   ///< See AdjointVectorAccess.
+    public:
+      using Real = CODI_DD(T_Real, double);                                              ///< See AdjointVectorAccess.
+      using Identifier = CODI_DD(T_Identifier, int);                                     ///< See AdjointVectorAccess.
+      using Gradient = CODI_DD(AdjointVectorTraits::Gradient<T_AdjointVector>, double);  ///< Adjoint vector entry type.
+      using AdjointVector = CODI_DD(T_AdjointVector, double*);                           ///< See AdjointVectorAccess.
 
     protected:
 
-      Gradient* adjointVector;  ///< Pointer to the gradient vector.
+      AdjointVector adjointVector;  ///< Pointer/reference to an array-accessible collection of gradients.
 
     private:
 
@@ -74,7 +78,7 @@ namespace codi {
     public:
 
       /// Constructor. See interface documentation for details about the adjoint vector.
-      AdjointVectorAccess(Gradient* adjointVector) : adjointVector(adjointVector), lhs(), buffer() {}
+      AdjointVectorAccess(AdjointVector adjointVector) : adjointVector(adjointVector), lhs(), buffer() {}
 
       /*******************************************************************************/
       /// @name Misc

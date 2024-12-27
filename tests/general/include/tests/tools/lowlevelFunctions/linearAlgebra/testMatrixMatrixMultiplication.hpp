@@ -43,7 +43,7 @@ struct TestMatrixMatrixMultiplication : public TestInterface {
     NAME("MatrixMatrixMultiplication")
     IN(1)
     OUT(1)
-    POINTS(1) = {{2.0}};
+    POINTS(1) = { {2.0} };
 
     static int constexpr ITER = 5;
 

@@ -50,17 +50,19 @@ namespace codi {
    *
    * Inherits from AdjointVectorAccess and overwrites all methods specific to the primals.
    *
-   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam T_Identifier  The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
-   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Real           The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Identifier     The adjoint/tangent identification of a tape, usually chosen as ActiveType::Identifier.
+   * @tparam T_AdjointVector  Either a pointer type, for example Gradient*, or a reference to something that can be
+   *                          accessed like a gradient array, for example std::vector<Gradient>&.
    */
-  template<typename T_Real, typename T_Identifier, typename T_Gradient>
-  struct PrimalAdjointVectorAccess : public AdjointVectorAccess<T_Real, T_Identifier, T_Gradient> {
+  template<typename T_Real, typename T_Identifier, typename T_AdjointVector>
+  struct PrimalAdjointVectorAccess : public AdjointVectorAccess<T_Real, T_Identifier, T_AdjointVector> {
       using Real = CODI_DD(T_Real, double);           ///< See PrimalAdjointVectorAccess.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See PrimalAdjointVectorAccess.
-      using Gradient = CODI_DD(T_Gradient, double);   ///< See PrimalAdjointVectorAccess.
+      using Gradient = CODI_DD(AdjointVectorTraits::Gradient<T_AdjointVector>, double);  ///< Adjoint vector entry type.
+      using AdjointVector = CODI_DD(T_AdjointVector, double*);  ///< See PrimalAdjointVectorAccess.
 
-      using Base = AdjointVectorAccess<Real, Identifier, Gradient>;  ///< Base class abbreviation.
+      using Base = AdjointVectorAccess<Real, Identifier, AdjointVector>;  ///< Base class abbreviation.
 
     private:
 
@@ -69,7 +71,7 @@ namespace codi {
     public:
 
       /// Constructor. See interface documentation for details about the vectors.
-      PrimalAdjointVectorAccess(Gradient* adjointVector, Real* primalVector)
+      PrimalAdjointVectorAccess(AdjointVector adjointVector, Real* primalVector)
           : Base(adjointVector), primalVector(primalVector) {}
 
       /*******************************************************************************/

@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "../data/position.hpp"
+#include "../misc/internalAdjointsInterface.hpp"
 #include "../misc/tapeParameters.hpp"
 #include "forwardEvaluationTapeInterface.hpp"
 
@@ -44,16 +45,23 @@
 namespace codi {
 
   /**
-   * @brief Allows user defined vectors for the forward and adjoint evaluation.
+   * @brief Allows user defined vectors for the forward and adjoint evaluation, and for clearing adjoints.
    *
    * See \ref TapeInterfaces for a general overview of the tape interface design in CoDiPack.
    *
-   * The two additional evaluate methods allow for the evaluation of the tape with a custom adjoint vector. The type of
-   * the vector must support the following operators:
+   * The two additional evaluate methods allow for the evaluation of the tape with a custom adjoint vector, and the
+   * additional clearing method allows clearing the custom adjoint vector according to the recorded tape.
+   *
+   * The adjoint vector type (template parameter AdjointVector in the member functions) must be a accessible with
+   * operator[]. Suitable choices are pointers, e.g., Adjoint*, or classes with overloaded operator[] like
+   * std::vector<Adjoint>.
+   *
+   * codi::AdjointVectorTraits::GradientImplementation must be specialized for AdjointVector.
+   * The type of the vector entries deduced from these traits (gradient type) must support the following operators:
    *  - operator =
    *  - operator *(Tape::Real, Adjoint) (Scalar multiplication from the left)
    *  - operator +=
-   * It must also specialize #codi::GradientTraits::TraitsImplementation.
+   * The gradient type must also specialize #codi::GradientTraits::TraitsImplementation.
    *
    * Here is an example for an evaluation with a custom adjoint vector
    * (documentation/examples/customAdjointVectorEvaluationTapeInterface.cpp):
@@ -71,21 +79,51 @@ namespace codi {
       /// @name Interface definition
 
       /**
-       * \copydoc codi::PositionalEvaluationTapeInterface::evaluate
+       * \copybrief codi::PositionalEvaluationTapeInterface::evaluate
        *
-       * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation.
+       * Tape evaluation with a custom adjoint vector.
+       *
+       * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
-      template<typename Adjoint>
-      void evaluate(Position const& start, Position const& end, Adjoint* data);
+      template<typename AdjointVector>
+      void evaluate(Position const& start, Position const& end, AdjointVector&& data);
 
       // clang-format off
       /**
-       * \copydoc codi::ForwardEvaluationTapeInterface::evaluateForward(T_Position const&, T_Position const&, AdjointsManagement)
+       * \copybrief codi::ForwardEvaluationTapeInterface::evaluateForward(T_Position const&, T_Position const&, AdjointsManagement)
        *
-       * @tparam Adjoint  See CustomAdjointVectorEvaluationTapeInterface documentation.
+       * Tape evaluation with a custom adjoint vector.
+       *
+       * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
        */
       // clang-format on
-      template<typename Adjoint>
-      void evaluateForward(Position const& start, Position const& end, Adjoint* data);
+      template<typename AdjointVector>
+      void evaluateForward(Position const& start, Position const& end, AdjointVector&& data);
+
+      /**
+       * \copybrief codi::ReverseTapeInterface::clearAdjoints
+       *
+       * Clear custom adjoint vector according to a tape recording.
+       *
+       * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface documentation.
+       */
+      template<typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector&& data);
+
+      /**
+       * @brief Obtain a representation of the tape's internal adjoint vector that can be used as custom adjoints.
+       *
+       * To avoid that functionality has to be implemented both for custom, external and internal adjoints, this method
+       * provides access to the internal adjoints so that they can be used as if they were custom adjoints.
+       *
+       * Warning: If you use this method, proceed with care. If internal adjoints are modified due to side effect of
+       * other methods, the object returned here might become invalid, or, conversely, modifications of the returned
+       * object other than reading/writing adjoints might interfere with the tape's management of internal adjoints.
+       *
+       * @tparam InternalAdjoints  Placeholder for the implementation-dependent return type.
+       */
+      CODI_DD(CODI_T(template<typename InternalAdjoints>), )
+      CODI_DD(InternalAdjoints, CODI_T(InternalAdjointsInterface<double, int, CODI_DEFAULT_TAPE>))
+      getInternalAdjoints();
   };
 }

@@ -41,6 +41,7 @@
 #include "../../data/direction.hpp"
 #include "openMPAtomic.hpp"
 #include "openMPMutex.hpp"
+#include "openMPReverseAtomic.hpp"
 #include "openMPStaticThreadLocalPointer.hpp"
 #include "openMPSynchronization.hpp"
 #include "openMPThreadInformation.hpp"
@@ -49,7 +50,7 @@
 namespace codi {
 
   /// Parallel toolbox for OpenMP.
-  using OpenMPToolbox = ParallelToolbox<OpenMPThreadInformation, OpenMPAtomic, OpenMPMutex,
+  using OpenMPToolbox = ParallelToolbox<OpenMPThreadInformation, OpenMPAtomic, OpenMPReverseAtomic, OpenMPMutex,
                                         OpenMPStaticThreadLocalPointer, OpenMPSynchronization>;
 
   /// Thread-safe external function helper for external functions jointly worked on by multiple OpenMP threads.
@@ -62,7 +63,7 @@ namespace codi {
 
   /// \copydoc codi::RealReverseIndexGen <br><br>
   /// This a thread-safe implementation for use with OpenMP. See \ref Example_23_OpenMP_Parallel_Codes for an example.
-  template<typename Real, typename Gradient = OpenMPAtomic<Real>,
+  template<typename Real, typename Gradient = OpenMPReverseAtomic<Real>,
            typename IndexManager = ParallelReuseIndexManager<int, OpenMPToolbox>>
   using RealReverseIndexOpenMPGen = ParallelActiveType<
       JacobianReuseTape<JacobianTapeTypes<Real, Gradient, IndexManager, DefaultChunkedData, OpenMPGlobalAdjoints>>,
@@ -73,5 +74,5 @@ namespace codi {
 
   /// \copydoc codi::RealReverseIndexOpenMPGen
   template<size_t dim>
-  using RealReverseIndexVecOpenMP = RealReverseIndexOpenMPGen<double, Direction<OpenMPAtomic<double>, dim>>;
+  using RealReverseIndexVecOpenMP = RealReverseIndexOpenMPGen<double, Direction<OpenMPReverseAtomic<double>, dim>>;
 }

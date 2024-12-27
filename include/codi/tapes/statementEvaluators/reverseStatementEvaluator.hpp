@@ -94,6 +94,15 @@ namespace codi {
         func(std::forward<Args>(args)...);
       }
 
+      /// \copydoc StatementEvaluatorInterface::getWriteInformation
+      template<typename Tape, typename... Args>
+      static WriteInfo getWriteInformation(Handle const& h, Args&&... args) {
+        CODI_UNUSED(h, args...);
+
+        CODI_EXCEPTION("ReverseStatementEvaluator does not support get write information calls.");
+        return WriteInfo();
+      }
+
       /// \copydoc StatementEvaluatorInterface::createHandle
       template<typename Tape, typename Generator, typename Expr>
       static Handle createHandle() {

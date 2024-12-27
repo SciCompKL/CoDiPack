@@ -37,6 +37,7 @@
 #include "atomicInterface.hpp"
 #include "mutexInterface.hpp"
 #include "readWriteMutex.hpp"
+#include "reverseAtomicInterface.hpp"
 #include "staticThreadLocalPointerInterface.hpp"
 #include "synchronizationInterface.hpp"
 #include "threadInformationInterface.hpp"
@@ -57,28 +58,33 @@ namespace codi {
    *
    * @tparam T_ThreadInformation         Thread information used by the toolbox. See codi::ThreadInformationInterface.
    * @tparam T_Atomic                    Atomic implementation used by the toolbox. See codi::AtomicInterface.
+   * @tparam T_ReverseAtomic             Reverse atomic implementation used by the toolbox. See
+   *                                     codi::ReverseAtomicInterface.
    * @tparam T_Mutex                     Mutex implementation used by the toolbox. See codi::MutexInterface.
    * @tparam T_StaticThreadLocalPointer  Static thread-local pointer implementation used by the toolbox.
    *                                     See codi::StaticThreadLocalPointerInterface.
    * @tparam T_Synchronization           Synchronization facalities that comply with the toolbox.
    *                                     See codi::SynchronizationInterface.
    */
-  template<typename T_ThreadInformation, template<typename> class T_Atomic, typename T_Mutex,
-           template<typename, typename> class T_StaticThreadLocalPointer, typename T_Synchronization>
+  template<typename T_ThreadInformation, template<typename> class T_Atomic, template<typename> class T_ReverseAtomic,
+           typename T_Mutex, template<typename, typename> class T_StaticThreadLocalPointer, typename T_Synchronization>
   struct ParallelToolbox {
     public:
       /// See codi::ParallelToolbox.
       using ThreadInformation = CODI_DD(T_ThreadInformation, ThreadInformationInterface);
       template<typename Type>
       using Atomic = CODI_DD(T_Atomic<Type>, CODI_DEFAULT_ATOMIC<Type>);  ///< See codi::ParallelToolbox.
-      using Mutex = CODI_DD(T_Mutex, MutexInterface);                     ///< See codi::ParallelToolbox.
+      /// See codi::ParallelToolbox.
+      template<typename Type>
+      using ReverseAtomic = CODI_DD(T_ReverseAtomic<Type>, CODI_DEFAULT_REVERSE_ATOMIC<Type>);
+      using Mutex = CODI_DD(T_Mutex, MutexInterface);  ///< See codi::ParallelToolbox.
 
       /// See codi::StaticThreadLocalPointerInterface.
       template<typename Type, typename Owner>
       using StaticThreadLocalPointer = CODI_DD(CODI_T(T_StaticThreadLocalPointer<Type, Owner>),
                                                CODI_T(StaticThreadLocalPointerInterface<Type, Owner, CODI_ANY>));
 
-      using Synchronization = CODI_DD(T_Synchronization, DefaultSynchronization);   ///< See codi::ParallelToolbox.
+      using Synchronization = CODI_DD(T_Synchronization, DefaultSynchronization);  ///< See codi::ParallelToolbox.
 
       using Lock = codi::Lock<Mutex>;                                               ///< See codi::Lock.
       using ReadWriteMutex = codi::ReadWriteMutex<ThreadInformation, Atomic<int>>;  ///< See codi::ReadWriteMutex.

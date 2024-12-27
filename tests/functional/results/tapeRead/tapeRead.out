@@ -1,0 +1,36 @@
+Running jacobian_linear:
+Comparing base vs. txt
+No differences!
+Comparing base vs. binary
+No differences!
+
+Running jacobian_multiuse:
+Comparing base vs. txt
+No differences!
+Comparing base vs. binary
+No differences!
+
+Running jacobian_multiuse:
+Comparing base vs. txt
+No differences!
+Comparing base vs. binary
+No differences!
+
+Running primal_linear:
+Comparing base vs. txt
+No differences!
+Comparing base vs. binary
+No differences!
+
+Running primal_multiuse:
+Comparing base vs. txt
+No differences!
+Comparing base vs. binary
+No differences!
+
+Running primal_reuse:
+Comparing base vs. txt
+No differences!
+Comparing base vs. binary
+No differences!
+

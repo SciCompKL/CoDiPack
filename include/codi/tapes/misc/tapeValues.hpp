@@ -66,11 +66,19 @@ namespace codi {
    *   - formatRow(): Output the data in this object in one row. One column per entry.
    *
    * - Misc:
-   *   - combineData(): Perform a MPI_Allreduce on MPI_COMM_WORLD.
-   *   - getAllocatedMemorySize: Get the allocated memory size.
+   *   - combineData(TapeVales const& other): Perform element-wise addition with other tape values.
+   *   - combineData(): Deprecated. Kept for backwards compatibility. Perform an MPI_Allreduce on MPI_COMM_WORLD.
+   *   - combineDataMPI(): Perform an MPI_Allreduce on a given communicator.
+   *   - getAllocatedMemorySize(): Get the allocated memory size.
    *   - getUsedMemorySize(): Get the used memory size.
    */
   struct TapeValues {
+    public:
+      enum class LocalReductionOperation {
+        Sum,
+        Max
+      };
+
     private:
       enum class EntryType {
         Double,
@@ -82,11 +90,14 @@ namespace codi {
         public:
           std::string name;
           EntryType type;
+          LocalReductionOperation operation;
           size_t pos;
 
-          Entry() : name(), type(), pos() {}
+          Entry() : name(), type(), operation(), pos() {}
 
-          Entry(std::string const& name, EntryType const& type, size_t const& pos) : name(name), type(type), pos(pos) {}
+          Entry(std::string const& name, EntryType const& type, LocalReductionOperation const& operation,
+                size_t const& pos)
+              : name(name), type(type), operation(operation), pos(pos) {}
       };
 
       struct Section {
@@ -114,8 +125,8 @@ namespace codi {
       TapeValues(std::string const& tapeName)
           : sections(), doubleData(), longData(), unsignedLongData(), usedMemoryIndex(0), allocatedMemoryIndex(1) {
         addSection(tapeName);
-        addEntryInternal("Total memory used", EntryType::Double, doubleData, 0.0);
-        addEntryInternal("Total memory allocated", EntryType::Double, doubleData, 0.0);
+        addEntryInternal("Total memory used", EntryType::Double, LocalReductionOperation::Sum, doubleData, 0.0);
+        addEntryInternal("Total memory allocated", EntryType::Double, LocalReductionOperation::Sum, doubleData, 0.0);
       }
 
       /*******************************************************************************/
@@ -123,9 +134,10 @@ namespace codi {
       /// @{
 
       /// Add double entry. If it is a memory entry, it should be in bytes.
-      void addDoubleEntry(std::string const& name, double const& value, bool usedMem = false,
+      void addDoubleEntry(std::string const& name, double const& value,
+                          LocalReductionOperation operation = LocalReductionOperation::Sum, bool usedMem = false,
                           bool allocatedMem = false) {
-        addEntryInternal(name, EntryType::Double, doubleData, value);
+        addEntryInternal(name, EntryType::Double, operation, doubleData, value);
 
         if (usedMem) {
           doubleData[usedMemoryIndex] += value;
@@ -137,8 +149,9 @@ namespace codi {
       }
 
       /// Add long entry.
-      void addLongEntry(std::string const& name, long const& value) {
-        addEntryInternal(name, EntryType::Long, longData, value);
+      void addLongEntry(std::string const& name, long const& value,
+                        LocalReductionOperation operation = LocalReductionOperation::Sum) {
+        addEntryInternal(name, EntryType::Long, operation, longData, value);
       }
 
       /// Add section. All further entries are added under this section.
@@ -147,8 +160,9 @@ namespace codi {
       }
 
       /// Add unsigned long entry.
-      void addUnsignedLongEntry(std::string const& name, unsigned long const& value) {
-        addEntryInternal(name, EntryType::UnsignedLong, unsignedLongData, value);
+      void addUnsignedLongEntry(std::string const& name, unsigned long const& value,
+                                LocalReductionOperation operation = LocalReductionOperation::Sum) {
+        addEntryInternal(name, EntryType::UnsignedLong, operation, unsignedLongData, value);
       }
 
       /// @}
@@ -223,15 +237,75 @@ namespace codi {
       /// @name Misc.
       /// @{
 
-      /// Perform an MPI_Allreduce with MPI_COMM_WORLD.
+      /// Perform entry-wise additions.
+      void combineData(TapeValues const& other) {
+        // Size check for the number of sections.
+        codiAssert(this->sections.size() == other.sections.size());
+
+        for (size_t section = 0; section < this->sections.size(); ++section) {
+          auto& thisSection = this->sections[section];
+          auto const& otherSection = other.sections[section];
+
+          // Basic check to ensure that we combine identically structured tape values.
+          codiAssert(thisSection.name == otherSection.name);
+
+          // Size check for the number of entries.
+          codiAssert(thisSection.data.size() == otherSection.data.size());
+
+          for (size_t entry = 0; entry < thisSection.data.size(); ++entry) {
+            auto& thisEntry = thisSection.data[entry];
+            auto const& otherEntry = otherSection.data[entry];
+
+            // Basic checks to ensure that we combine identically structured tape values.
+            codiAssert(thisEntry.name == otherEntry.name);
+            codiAssert(thisEntry.type == otherEntry.type);
+            codiAssert(thisEntry.operation == otherEntry.operation);
+
+            switch (thisEntry.type) {
+              case EntryType::Double: {
+                performLocalReduction(this->doubleData[thisEntry.pos], other.doubleData[otherEntry.pos],
+                                      thisEntry.operation);
+                break;
+              }
+              case EntryType::Long: {
+                performLocalReduction(this->longData[thisEntry.pos], other.longData[otherEntry.pos],
+                                      thisEntry.operation);
+                break;
+              }
+              case EntryType::UnsignedLong: {
+                performLocalReduction(this->unsignedLongData[thisEntry.pos], other.unsignedLongData[otherEntry.pos],
+                                      thisEntry.operation);
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      /** @brief Perform an MPI_Allreduce with MPI_COMM_WORLD.
+       *
+       * This method is deprecated and only kept for backwards compatibility. combineDataMPI should be used instead.
+       */
       void combineData() {
 #ifdef MPI_VERSION
-        MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-        MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
-        MPI_Allreduce(MPI_IN_PLACE, unsignedLongData.data(), unsignedLongData.size(), MPI_UNSIGNED_LONG, MPI_SUM,
-                      MPI_COMM_WORLD);
+        combineDataMPI(MPI_COMM_WORLD);
 #endif
       }
+
+      /// Perform an MPI_Allreduce with the given communicator.
+#ifdef MPI_VERSION
+      void combineDataMPI(MPI_Comm communicator) {
+        MPI_Allreduce(MPI_IN_PLACE, doubleData.data(), doubleData.size(), MPI_DOUBLE, MPI_SUM, communicator);
+        MPI_Allreduce(MPI_IN_PLACE, longData.data(), longData.size(), MPI_LONG, MPI_SUM, communicator);
+        MPI_Allreduce(MPI_IN_PLACE, unsignedLongData.data(), unsignedLongData.size(), MPI_UNSIGNED_LONG, MPI_SUM,
+                      communicator);
+      }
+#else
+      template<typename Comm>
+      void combineDataMPI(Comm communicator) {
+        CODI_UNUSED(communicator);
+      }
+#endif
 
       /// Get the allocated memory in bytes.
       double getAllocatedMemorySize() {
@@ -248,7 +322,22 @@ namespace codi {
     private:
 
       template<typename T>
-      void addEntryInternal(std::string const& name, EntryType const& type, std::vector<T>& vector, T const& value) {
+      void performLocalReduction(T& lhs, T const& rhs, LocalReductionOperation operation) {
+        switch (operation) {
+          case LocalReductionOperation::Sum: {
+            lhs += rhs;
+            break;
+          }
+          case LocalReductionOperation::Max: {
+            lhs = std::max(lhs, rhs);
+            break;
+          }
+        }
+      }
+
+      template<typename T>
+      void addEntryInternal(std::string const& name, EntryType const& type, LocalReductionOperation const& operation,
+                            std::vector<T>& vector, T const& value) {
         size_t entryPos = vector.size();
         vector.push_back(value);
 
@@ -256,7 +345,7 @@ namespace codi {
           addSection("General");
         }
 
-        sections.back().data.push_back(Entry(name, type, entryPos));
+        sections.back().data.push_back(Entry(name, type, operation, entryPos));
       }
 
       std::string formatEntry(Entry const& entry, int maximumFieldSize) const {

@@ -38,11 +38,16 @@
 
 #include "../config.h"
 #include "../misc/macros.hpp"
-#include "../tapes/jacobianBaseTape.hpp"
-#include "../tapes/primalValueBaseTape.hpp"
+#include "../tapes/interfaces/editingTapeInterface.hpp"
+#include "misc/enableIfHelpers.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
+  template<typename Tape, typename Impl>
+  struct PrimalValueBaseTape;
+
+  template<typename Tape, typename Impl>
+  struct JacobianBaseTape;
 
   template<typename T_Real, typename T_Gradient>
   struct ForwardEvaluation;
@@ -154,6 +159,29 @@ namespace codi {
     /// Enable if wrapper for IsReverseTape
     template<typename Tape>
     using EnableIfReverseTape = typename std::enable_if<IsReverseTape<Tape>::value>::type;
+
+    template<typename Tape, typename = void>
+    struct SupportsEditing : std::false_type {};
+
+#ifndef DOXYGEN_DISABLE
+    template<typename Tape>
+    struct SupportsEditing<Tape, typename enable_if_base_of<EditingTapeInterface<typename Tape::Position>, Tape>::type>
+        : std::true_type {};
+#endif
+
+#if CODI_IS_CPP14
+    /// Value entry of SupportsEditing
+    template<typename Tape>
+    bool constexpr supportsEditing = SupportsEditing<Tape>::value;
+#endif
+
+    /// Enable if wrapper for SupportsEditing
+    template<typename Tape>
+    using EnableIfSupportsEditing = typename std::enable_if<SupportsEditing<Tape>::value>::type;
+
+    /// Enable if wrapper for SupportsEditing
+    template<typename Tape>
+    using EnableIfNoEditing = typename std::enable_if<!SupportsEditing<Tape>::value>::type;
 
     /// @}
   }

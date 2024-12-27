@@ -105,6 +105,18 @@ namespace codi {
         }
       }
 
+      /// \copydoc codi::CustomAdjointVectorEvaluationTapeInterface::clearCustomAdjoints
+      template<typename AdjointVector>
+      void clearCustomAdjoints(Position const& start, Position const& end, AdjointVector data) {
+        using IndexPosition = CODI_DD(typename IndexManager::Position, int);
+        IndexPosition startIndex = this->llfByteData.template extractPosition<IndexPosition>(start);
+        IndexPosition endIndex = this->llfByteData.template extractPosition<IndexPosition>(end);
+
+        for (IndexPosition curPos = endIndex + 1; curPos <= startIndex; curPos += 1) {
+          data[curPos] = AdjointVectorTraits::Gradient<AdjointVector>();
+        }
+      }
+
     protected:
 
       /// \copydoc codi::PrimalValueBaseTape::internalEvaluateForward_EvalStatements
@@ -124,7 +136,7 @@ namespace codi {
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
           /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
-          Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalhandle,
+          Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalHandle,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos,
@@ -133,7 +145,7 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curAdjointPos < endAdjointPos) CODI_Likely {
@@ -156,7 +168,7 @@ namespace codi {
             Gradient lhsTangent = Gradient();
 
             primalVector[curAdjointPos] = StatementEvaluator::template callForward<PrimalValueLinearTape>(
-                stmtEvalhandle[curStatementPos], primalVector, adjointVector, lhsTangent, nPassiveValues,
+                stmtEvalHandle[curStatementPos], primalVector, adjointVector, lhsTangent, nPassiveValues,
                 curConstantPos, constantValues, curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
@@ -194,7 +206,7 @@ namespace codi {
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
           /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
-          Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalhandle,
+          Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalHandle,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos,
@@ -202,7 +214,7 @@ namespace codi {
 
         size_t curAdjointPos = startAdjointPos;
 
-        typename Base::template VectorAccess<Gradient> vectorAccess(nullptr, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(nullptr, primalVector);
 
         while (curAdjointPos < endAdjointPos) CODI_Likely {
           curAdjointPos += 1;
@@ -216,7 +228,7 @@ namespace codi {
             // Do nothing.
           } else CODI_Likely {
             primalVector[curAdjointPos] = StatementEvaluator::template callPrimal<PrimalValueLinearTape>(
-                stmtEvalhandle[curStatementPos], primalVector, nPassiveValues, curConstantPos, constantValues,
+                stmtEvalHandle[curStatementPos], primalVector, nPassiveValues, curConstantPos, constantValues,
                 curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
 
             EventSystem<PrimalValueLinearTape>::notifyStatementEvaluatePrimalListeners(tape, curAdjointPos,
@@ -244,7 +256,7 @@ namespace codi {
           size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
           /* data from statementData */
           size_t& curStatementPos, size_t const& endStatementPos,
-          Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalhandle,
+          Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalHandle,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos,
@@ -253,7 +265,7 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
 
 #if !CODI_VariableAdjointInterfaceInPrimalTapes
-        typename Base::template VectorAccess<Gradient> vectorAccess(adjointVector, primalVector);
+        typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
         while (curAdjointPos > endAdjointPos) CODI_Likely {
@@ -294,11 +306,70 @@ namespace codi {
                                                                                        primalVector[curAdjointPos]);
 
             StatementEvaluator::template callReverse<PrimalValueLinearTape>(
-                stmtEvalhandle[curStatementPos], primalVector, adjointVector, lhsAdjoint, nPassiveValues,
+                stmtEvalHandle[curStatementPos], primalVector, adjointVector, lhsAdjoint, nPassiveValues,
                 curConstantPos, constantValues, curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
           }
 
           curAdjointPos -= 1;
+        }
+      }
+
+      /// Passes the statement information and the stmtEvalHandle to the writer.
+      template<typename TapeTypes>
+      CODI_INLINE static void internalWriteTape(
+          /* data from call */
+          Real* primalVector,
+          /* file interface pointer*/
+          codi::TapeWriterInterface<TapeTypes>* writer,
+          /* data from low level function byte data vector */
+          size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+          /* data from low level function info data vector */
+          size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          Config::LowLevelFunctionDataSize* const dataSizePtr,
+          /* data from constantValueData */
+          size_t& curConstantPos, size_t const& endConstantPos, PassiveReal const* const constantValues,
+          /* data from passiveValueData */
+          size_t& curPassivePos, size_t const& endPassivePos, Real const* const passiveValues,
+          /* data from rhsIdentifiersData */
+          size_t& curRhsIdentifiersPos, size_t const& endRhsIdentifiersPos, Identifier const* const rhsIdentifiers,
+          /* data from statementData */
+          size_t& curStatementPos, size_t const& endStatementPos,
+          Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalHandle,
+          /* data from index handler */
+          size_t const& startAdjointPos, size_t const& endAdjointPos) {
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endConstantPos, endPassivePos, endRhsIdentifiersPos,
+                    endStatementPos);
+
+        size_t curAdjointPos = startAdjointPos;
+
+        while (curAdjointPos < endAdjointPos) {
+          curAdjointPos += 1;
+          Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
+
+          if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
+            writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+          } else CODI_Likely {
+            WriteInfo writeInfo = StatementEvaluator::template getWriteInformation<PrimalValueLinearTape>(
+                stmtEvalHandle[curStatementPos], primalVector, nPassiveValues, curConstantPos, constantValues,
+                curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
+
+            if (Config::StatementInputTag == nPassiveValues) CODI_Unlikely {
+              writer->writeStatement(writeInfo, curAdjointPos, primalVector[curAdjointPos], nPassiveValues,
+                                     curRhsIdentifiersPos, rhsIdentifiers, curPassivePos, passiveValues, curConstantPos,
+                                     constantValues, stmtEvalHandle[curStatementPos]);
+
+            } else CODI_Likely {
+              writer->writeStatement(writeInfo, curAdjointPos, primalVector[curAdjointPos], nPassiveValues,
+                                     curRhsIdentifiersPos, rhsIdentifiers, curPassivePos, passiveValues, curConstantPos,
+                                     constantValues, stmtEvalHandle[curStatementPos]);
+
+              curRhsIdentifiersPos += writeInfo.numberOfActiveArguments;
+              curConstantPos += writeInfo.numberOfConstantArguments;
+              curPassivePos += nPassiveValues;
+            }
+          }
+
+          curStatementPos += 1;
         }
       }
 

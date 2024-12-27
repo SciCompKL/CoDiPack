@@ -40,14 +40,20 @@
 namespace codi {
 
   /**
-   * @brief Provides a data type on which operations are performed atomically.
+   * @brief Provides a data type on which all operations are performed atomically.
+   *
+   * Provides also increment and decrement operators for the use case of an underlying integer type. The increment and
+   * decrement operators don't have to be implemented for underlying non-integer types.
    *
    * If used with an underlying floating point type or an active CoDiPack type, this data type is suitable as an adjoint
-   * variable type. Provides also increment and decrement operators for the use case of an underlying integer type. The
-   * increment and decrement operators don't have to be implemented for underlying non-integer types.
+   * variable type. Note, however, that it is not optimal because it performs all operations atomically. Data types
+   * derived from ReverseAtomicInterface are preferred as adjoint variable types.
    *
    * Implementations likely require template specializations with respect to the underlying type, especially if it is an
    * active CoDiPack type.
+   *
+   * An implementation should preserve the memory footprint of the underlying type, e.g., by inheriting from the under-
+   * lying type or by having a variable of the underlying type as the only member variable.
    *
    * @tparam T_Type  The underlying data type.
    * @tparam T_Impl  Implementing class.

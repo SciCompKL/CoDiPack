@@ -38,6 +38,7 @@
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../misc/exceptions.hpp"
 #include "../tapes/misc/tapeParameters.hpp"
+#include "../traits/adjointVectorTraits.hpp"
 #include "../traits/gradientTraits.hpp"
 #include "data/dummy.hpp"
 #include "data/jacobian.hpp"
@@ -142,67 +143,14 @@ namespace codi {
                                               Identifier const* input, size_t const inputSize, Identifier const* output,
                                               size_t const outputSize, Jac& jac,
                                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-        size_t constexpr gradDim = GT::dim;
-
         // internally, automatic management is implemented in an optimized way that uses manual management
         if (AdjointsManagement::Automatic == adjointsManagement) {
           tape.resizeAdjointVector();
           tape.beginUseAdjointVector();
         }
 
-        EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
-        if (EvaluationType::Forward == evalType) {
-          for (size_t j = 0; j < inputSize; j += gradDim) {
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
-
-            if (keepState) {
-              tape.evaluateForwardKeepState(start, end, AdjointsManagement::Manual);
-            } else {
-              tape.evaluateForward(start, end, AdjointsManagement::Manual);
-            }
-
-            for (size_t i = 0; i < outputSize; i += 1) {
-              for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
-                jac(outputSize - i - 1, j + curDim) =
-                    GT::at(tape.getGradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim);
-                if (Gradient() != output[i]) {
-                  GT::at(tape.gradient(output[outputSize - i - 1], AdjointsManagement::Manual), curDim) =
-                      typename GT::Real();
-                }
-              }
-            }
-
-            setGradientOnIdentifier(tape, j, input, inputSize, typename GT::Real(), AdjointsManagement::Manual);
-          }
-
-          tape.clearAdjoints(end, start, AdjointsManagement::Manual);
-
-        } else if (EvaluationType::Reverse == evalType) {
-          for (size_t i = 0; i < outputSize; i += gradDim) {
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(1.0), AdjointsManagement::Manual);
-
-            if (keepState) {
-              tape.evaluateKeepState(end, start, AdjointsManagement::Manual);
-            } else {
-              tape.evaluate(end, start, AdjointsManagement::Manual);
-            }
-
-            for (size_t j = 0; j < inputSize; j += 1) {
-              for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
-                jac(i + curDim, j) = GT::at(tape.getGradient(input[j], AdjointsManagement::Manual), curDim);
-                GT::at(tape.gradient(input[j], AdjointsManagement::Manual), curDim) = typename GT::Real();
-              }
-            }
-
-            setGradientOnIdentifier(tape, i, output, outputSize, typename GT::Real(), AdjointsManagement::Manual);
-
-            if (!Config::ReversalZeroesAdjoints) {
-              tape.clearAdjoints(end, start, AdjointsManagement::Manual);
-            }
-          }
-        } else {
-          CODI_EXCEPTION("Evaluation mode not implemented. Mode is: %d.", (int)evalType);
-        }
+        computeJacobianCustomAdjoints(tape, start, end, input, inputSize, output, outputSize, jac,
+                                      tape.getInternalAdjoints());
 
         if (AdjointsManagement::Automatic == adjointsManagement) {
           tape.endUseAdjointVector();
@@ -210,9 +158,84 @@ namespace codi {
       }
 
       // clang-format off
-      /// \copybrief computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac, AdjointsManagement)
+      /**
+       * @brief Compute the Jacobian with multiple tape sweeps using a custom adjoint vector.
+       *
+       * See \ref computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac, AdjointsManagement)
+       * for further details.
+       *
+       * @tparam Adjoint        See CustomAdjointVectorEvaluationTapeInterface.
+       * @tparam AdjointVector  See CustomAdjointVectorEvaluationTapeInterface.
+       */
+      // clang-format on
+      template<typename Jac, typename AdjointVector, bool keepState = true>
+      static CODI_INLINE void computeJacobianCustomAdjoints(Tape& tape, Position const& start, Position const& end,
+                                                            Identifier const* input, size_t const inputSize,
+                                                            Identifier const* output, size_t const outputSize, Jac& jac,
+                                                            AdjointVector&& adjoints) {
+        using Adjoint = AdjointVectorTraits::Gradient<AdjointVector>;
+
+        using CustomGT = GradientTraits::TraitsImplementation<Adjoint>;
+
+        size_t constexpr gradDim = CustomGT::dim;
+
+        EvaluationType evalType = getEvaluationChoice(inputSize, outputSize);
+        if (EvaluationType::Forward == evalType) {
+          for (size_t j = 0; j < inputSize; j += gradDim) {
+            setGradientOnIdentifierCustomAdjoints(tape, j, input, inputSize, typename CustomGT::Real(1.0), adjoints);
+
+            if (keepState) {
+              tape.evaluateForwardKeepState(start, end, std::forward<AdjointVector>(adjoints));
+            } else {
+              tape.evaluateForward(start, end, std::forward<AdjointVector>(adjoints));
+            }
+
+            for (size_t i = 0; i < outputSize; i += 1) {
+              for (size_t curDim = 0; curDim < gradDim && j + curDim < inputSize; curDim += 1) {
+                jac(outputSize - i - 1, j + curDim) = CustomGT::at(adjoints[output[outputSize - i - 1]], curDim);
+                if (tape.isIdentifierActive(output[i])) {
+                  CustomGT::at(adjoints[output[outputSize - i - 1]], curDim) = typename GT::Real();
+                }
+              }
+            }
+
+            setGradientOnIdentifierCustomAdjoints(tape, j, input, inputSize, typename CustomGT::Real(), adjoints);
+          }
+
+          tape.clearCustomAdjoints(end, start, std::forward<AdjointVector>(adjoints));
+
+        } else if (EvaluationType::Reverse == evalType) {
+          for (size_t i = 0; i < outputSize; i += gradDim) {
+            setGradientOnIdentifierCustomAdjoints(tape, i, output, outputSize, typename CustomGT::Real(1.0), adjoints);
+
+            if (keepState) {
+              tape.evaluateKeepState(end, start, std::forward<AdjointVector>(adjoints));
+            } else {
+              tape.evaluate(end, start, std::forward<AdjointVector>(adjoints));
+            }
+
+            for (size_t j = 0; j < inputSize; j += 1) {
+              for (size_t curDim = 0; curDim < gradDim && i + curDim < outputSize; curDim += 1) {
+                jac(i + curDim, j) = CustomGT::at(adjoints[input[j]], curDim);
+                CustomGT::at(adjoints[input[j]], curDim) = typename CustomGT::Real();
+              }
+            }
+
+            setGradientOnIdentifierCustomAdjoints(tape, i, output, outputSize, typename CustomGT::Real(), adjoints);
+
+            if (!Config::ReversalZeroesAdjoints) {
+              tape.clearCustomAdjoints(end, start, std::forward<AdjointVector>(adjoints));
+            }
+          }
+        } else {
+          CODI_EXCEPTION("Evaluation mode not implemented. Mode is: %d.", (int)evalType);
+        }
+      }
+
+      // clang-format off
+      /// \copybrief computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointsManagement)
       /// \n This method uses the global tape for the Jacobian evaluation.
-      /// \copydetails computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac& jac, AdjointsManagement)
+      /// \copydetails computeJacobian(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointsManagement)
       // clang-format on
       template<typename Jac>
       static CODI_INLINE void computeJacobian(Position const& start, Position const& end, Identifier const* input,
@@ -220,6 +243,20 @@ namespace codi {
                                               Jac& jac,
                                               AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
         computeJacobian(Type::getTape(), start, end, input, inputSize, output, outputSize, jac, adjointsManagement);
+      }
+
+      // clang-format off
+      /// \copybrief computeJacobianCustomAdjoints(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointVector&&)
+      /// \n This method uses the global tape for the Jacobian evaluation.
+      /// \copydetails computeJacobianCustomAdjoints(Tape&, Position const&, Position const&, Identifier const*, size_t const, Identifier const*, size_t const, Jac&, AdjointVector&&)
+      // clang-format on
+      template<typename Jac, typename AdjointVector>
+      static CODI_INLINE void computeJacobianCustomAdjoints(Position const& start, Position const& end,
+                                                            Identifier const* input, size_t const inputSize,
+                                                            Identifier const* output, size_t const outputSize, Jac& jac,
+                                                            AdjointVector&& adjoints) {
+        computeJacobianCustomAdjoints<Jac, AdjointVector>(Type::getTape(), start, end, input, inputSize, output,
+                                                          outputSize, jac, std::forward<AdjointVector>(adjoints));
       }
 
       /**
@@ -552,8 +589,21 @@ namespace codi {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
-          if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim])) {
+          if (CODI_ENABLE_CHECK(ActiveChecks, tape.isIdentifierActive(identifiers[pos + curDim]))) {
             GT::at(tape.gradient(identifiers[pos + curDim], adjointsManagement), curDim) = value;
+          }
+        }
+      }
+
+      template<typename T, typename Adjoints>
+      static CODI_INLINE void setGradientOnIdentifierCustomAdjoints(Tape& tape, size_t const pos,
+                                                                    Identifier const* identifiers, size_t const size,
+                                                                    T value, Adjoints& adjoints) {
+        size_t constexpr gradDim = GT::dim;
+
+        for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
+          if (CODI_ENABLE_CHECK(ActiveChecks, tape.isIdentifierActive(identifiers[pos + curDim]))) {
+            GT::at(adjoints[identifiers[pos + curDim]], curDim) = value;
           }
         }
       }
@@ -583,7 +633,7 @@ namespace codi {
         size_t constexpr gradDim = GT::dim;
 
         for (size_t curDim = 0; curDim < gradDim && pos + curDim < size; curDim += 1) {
-          if (CODI_ENABLE_CHECK(ActiveChecks, 0 != identifiers[pos + curDim].getIdentifier())) {
+          if (CODI_ENABLE_CHECK(ActiveChecks, tape.isIdentifierActive(identifiers[pos + curDim].getIdentifier()))) {
             GT::at(tape.gradient(identifiers[pos + curDim].getIdentifier()), curDim) = value;
           }
         }

@@ -71,6 +71,10 @@ namespace codi {
       /// Evaluate expression in a reverse mode.
       template<typename Expr, typename... Args>
       static void statementEvaluateReverse(Args&&... args);
+
+      /// Get write information.
+      template<typename Expr, typename... Args>
+      static WriteInfo statementGetWriteInformation(Args&&... args);
   };
 
   /**
@@ -122,5 +126,9 @@ namespace codi {
       /// Evaluate expression in a reverse mode.
       template<typename Expr, typename... Args>
       static void statementEvaluateReverseInner(Args&&... args);
+
+      /// Get write information.
+      template<typename Expr, typename... Args>
+      static WriteInfo statementGetWriteInformation(Args&&... args);
   };
 }

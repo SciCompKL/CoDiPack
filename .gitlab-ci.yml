@@ -1,0 +1,49 @@
+default:
+  image: ubuntu:22.04
+  timeout: 2h
+  tags:
+    - docker
+
+codi-general:
+  script:
+    - apt update && apt install -y build-essential binutils
+    - cd tests/general
+    - make all
+
+codi-events:
+  script:
+    - apt update && apt install -y build-essential binutils
+    - cd tests/events
+    - make all
+
+codi-functional:
+  script:
+    - apt update && apt install -y build-essential binutils
+    - cd tests/functional
+    - make all
+
+codi-examples:
+  script:
+    - apt update && apt install -y build-essential binutils
+    - make examples
+
+opdi:
+  script:
+    - apt update && apt install -y build-essential binutils git
+    - git clone --depth 1 --branch develop https://github.com/SciCompKL/OpDiLib.git
+    - export CODI_DIR=$(pwd)/include
+    - cd OpDiLib
+    - export OPDI_DIR=$(pwd)/include
+    - cd tests
+    - export CXX=g++
+    - make all
+
+medi:
+  script:
+    - apt update && apt install -y build-essential binutils git openmpi-bin libopenmpi-dev
+    - git clone --depth 1 --branch develop https://github.com/SciCompKL/MeDiPack.git
+    - export CODI_DIR=$(pwd)
+    - cd MeDiPack/tests
+    - export OMPI_ALLOW_RUN_AS_ROOT=1
+    - export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+    - make all

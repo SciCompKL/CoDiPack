@@ -103,6 +103,9 @@ namespace codi {
       template<typename Tape>
       bool assignIndex(Index& index);
 
+      /// @brief Update the largest generated index.
+      void updateLargestCreatedIndex(Index const& index);
+
       /// @brief Call on registering input values.
       /// @return true if new indices have been generated internally.
       template<typename Tape>

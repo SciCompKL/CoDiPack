@@ -6,6 +6,7 @@ int main(int nargs, char** args) {
 //! [Custom vector]
   using Real = codi::RealReverse;
   using Tape = typename Real::Tape;
+  using Gradient = codi::Direction<double, 2>;
 
   Tape& tape = Real::getTape();
 
@@ -25,7 +26,7 @@ int main(int nargs, char** args) {
 
   // Reverse evaluation
   size_t adjointSize = tape.getParameter(codi::TapeParameters::LargestIdentifier);
-  codi::Direction<double, 2>* adjoints = new codi::Direction<double, 2>[adjointSize + 1];
+  Gradient* adjoints = new Gradient[adjointSize + 1];
 
   adjoints[y1.getIdentifier()] = {1.0, 0.0};
   adjoints[y2.getIdentifier()] = {0.0, 1.0};

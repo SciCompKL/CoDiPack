@@ -40,7 +40,7 @@ struct TestExtFunctionCall : public TestInterface {
     NAME("ExtFunctionCall")
     IN(2)
     OUT(1)
-    POINTS(1) = {{2.0, 3.0}};
+    POINTS(1) = { {2.0, 3.0} };
 
     template<typename Number>
     static void func(Number* x, Number* y) {

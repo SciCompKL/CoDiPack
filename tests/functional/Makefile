@@ -89,7 +89,7 @@ $(BUILD_DIR)/%.exe : %.cpp $(BUILD_DIR)/compiler_flags
 	@mkdir -p $(<D)/$(TEST_NAME)_run
 	cd $(<D)/$(TEST_NAME)_run; ../$(<F) $(SELECTED_TESTS)
 	@echo "Comparing"
-	@scripts/compare.sh $(TEST_NAME) $(filter ALL $(TEST_NAME)/%, $(SELECTED_TESTS))
+	@bash scripts/compare.sh $(TEST_NAME) $(filter ALL $(TEST_NAME)/%, $(SELECTED_TESTS))
 
 functionTests: $(SELECTED_PROBLEMS)
 

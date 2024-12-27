@@ -64,6 +64,7 @@
 #include "codi/tools/helpers/customAdjointVectorHelper.hpp"
 #include "codi/tools/helpers/externalFunctionHelper.hpp"
 // #include "codi/tools/helpers/evaluationHelper.hpp" // Included at the end of this file.
+#include "codi/tapes/io/readerWriterHelpers.hpp"
 #include "codi/tools/helpers/linearSystem/linearSystemHandler.hpp"
 #include "codi/tools/helpers/preaccumulationHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"

@@ -97,8 +97,12 @@ namespace codi {
       /// Constant reference access to the adjoint variable identified by identifier.
       CODI_INLINE Gradient const& operator[](Identifier const& identifier) const;
 
-      /// Pointer to an underlying array implementation.
-      CODI_INLINE Gradient* data();
+      /**
+       * @brief Return an array-like object for data access, for example a pointer to an underlying array or a reference
+       *        to something with overloaded operator[].
+       */
+      CODI_DD(CODI_T(template<typename ArrayAccess>), )
+      CODI_INLINE CODI_DD(ArrayAccess, Gradient*) data();
 
       /// Returns the number of adjoint variables. Internally, declares usage of the adjoints.
       CODI_INLINE size_t size() const;
@@ -106,8 +110,8 @@ namespace codi {
       /// Ensure that identifiers up to newSize can be passed to operator[] without error.
       CODI_NO_INLINE void resize(Identifier const& newSize);
 
-      /// Set all adjoint variables to Gradient().
-      CODI_INLINE void zeroAll();
+      /// Set all adjoint variables up to and including maxIdentifier to Gradient().
+      CODI_INLINE void zeroAll(Identifier const& maxIdentifier);
 
       /// Swap two sets of adjoint variables. Internally, declares usage of the adjoints.
       template<typename Impl>

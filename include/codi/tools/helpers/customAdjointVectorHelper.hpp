@@ -171,7 +171,8 @@ namespace codi {
       Gradient zeroValue;             ///< Temporary zero value.
       Gradient const constZeroValue;  ///< Temporary constant zero value.
 
-      AdjointVectorAccess<Real, Identifier, Gradient>* adjointInterface;  ///< Last created adjoint interface.
+      /// Last created adjoint interface.
+      AdjointVectorAccess<Real, Identifier, Gradient*>* adjointInterface;
 
     public:
 
@@ -226,7 +227,7 @@ namespace codi {
         }
 
         checkAdjointVectorSize();
-        adjointInterface = new AdjointVectorAccess<Real, Identifier, Gradient>(adjointVector.data());
+        adjointInterface = new AdjointVectorAccess<Real, Identifier, Gradient*>(adjointVector.data());
         return adjointInterface;
       }
 

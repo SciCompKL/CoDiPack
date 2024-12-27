@@ -44,7 +44,7 @@ struct TestCopyHigherOrder : public TestInterface {
     NAME("CopyHigherOrder")
     IN(1)
     OUT(4)
-    POINTS(1) = {{1.0}};
+    POINTS(1) = { {1.0} };
 
     template<typename Number>
     static void func(Number* x, Number* y) {

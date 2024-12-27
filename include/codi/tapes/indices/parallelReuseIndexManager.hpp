@@ -88,9 +88,26 @@ namespace codi {
 
     private:
 
-      static Atomic<T_Index> globalMaximumIndex;      ///< The largest index created across all instances of this class.
-      static bool globalMaximumIndexInitialized;      ///< Indicates whether globalMaximumIndex is initialized.
-      static ReadWriteMutex globalMaximumIndexMutex;  ///< Safeguards globalMaximumIndex, globalMaximumIndexInitialized.
+      /// The largest index created across all instances of this class. Construct on first use to avoid issues with
+      /// static initialization order.
+      static CODI_NO_INLINE Atomic<T_Index>& globalMaximumIndex() {
+        static Atomic<T_Index> _globalMaximumIndex;
+        return _globalMaximumIndex;
+      }
+
+      /// Indicates whether globalMaximumIndex is initialized. Construct on first use to avoid issues with static
+      /// initialization order.
+      static CODI_NO_INLINE bool& globalMaximumIndexInitialized() {
+        static bool _globalMaximumIndexInitialized = false;
+        return _globalMaximumIndexInitialized;
+      }
+
+      /// Safeguards globalMaximumIndex, globalMaximumIndexInitialized. Construct on first use to avoid issues with
+      /// static initialization order.
+      static CODI_NO_INLINE ReadWriteMutex& globalMaximumIndexMutex() {
+        static ReadWriteMutex _globalMaximumIndexMutex;
+        return _globalMaximumIndexMutex;
+      }
 
     public:
 
@@ -98,12 +115,12 @@ namespace codi {
       /// For a tape class that uses this index manager, all tape instances are expected to pass the same number of
       /// reservedIndices to this constructor.
       ParallelReuseIndexManager(Index const& reservedIndices) {
-        globalMaximumIndexMutex.lockWrite();
-        if (!globalMaximumIndexInitialized) {
-          globalMaximumIndex = reservedIndices;
-          globalMaximumIndexInitialized = true;
+        globalMaximumIndexMutex().lockWrite();
+        if (!globalMaximumIndexInitialized()) {
+          globalMaximumIndex() = reservedIndices;
+          globalMaximumIndexInitialized() = true;
         }
-        globalMaximumIndexMutex.unlockWrite();
+        globalMaximumIndexMutex().unlockWrite();
         generateNewIndices();
       }
 
@@ -117,9 +134,12 @@ namespace codi {
       /// \copydoc IndexManagerInterface::addToTapeValues <br><br>
       /// Implementation: Adds max live indices, cur live indices, indices stored, memory used, memory allocated.
       void addToTapeValues(TapeValues& values) const {
-        unsigned long maximumGlobalIndex = globalMaximumIndex;
+        unsigned long maximumGlobalIndex = globalMaximumIndex();
 
-        values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex);
+        // As maximumGlobalIndex is static, it uses a local maximum reduction.
+        TapeValues::LocalReductionOperation constexpr operation = TapeValues::LocalReductionOperation::Max;
+
+        values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex, operation);
         // The number of current live indices cannot be computed from one instance alone.
         // It equals the number of maximum live indices minus the number of indices stored across all instances.
 
@@ -131,7 +151,7 @@ namespace codi {
       /// 1. tape resets do not change the largest created index,
       /// 2. it is not guaranteed that the largest created index has been assigned to a variable already.
       CODI_INLINE Index getLargestCreatedIndex() const {
-        return globalMaximumIndex;
+        return globalMaximumIndex();
       }
 
       /// @}
@@ -146,7 +166,7 @@ namespace codi {
 
         codiAssert(this->unusedIndices.size() >= this->indexSizeIncrement);
 
-        Index upperIndexRangeBound = globalMaximumIndex += this->indexSizeIncrement;  // note: atomic operation
+        Index upperIndexRangeBound = globalMaximumIndex() += this->indexSizeIncrement;  // note: atomic operation
         Index lowerIndexRangeBound = upperIndexRangeBound - this->indexSizeIncrement;
 
         for (size_t pos = 0; pos < this->indexSizeIncrement; ++pos) {
@@ -156,15 +176,4 @@ namespace codi {
         this->unusedIndicesPos = this->indexSizeIncrement;
       }
   };
-
-  template<typename Index, typename ParallelToolbox>
-  typename ParallelReuseIndexManager<Index, ParallelToolbox>::template Atomic<Index>
-      ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndex;
-
-  template<typename Index, typename ParallelToolbox>
-  bool ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndexInitialized = false;
-
-  template<typename Index, typename ParallelToolbox>
-  typename ParallelReuseIndexManager<Index, ParallelToolbox>::ReadWriteMutex
-      ParallelReuseIndexManager<Index, ParallelToolbox>::globalMaximumIndexMutex;
 }

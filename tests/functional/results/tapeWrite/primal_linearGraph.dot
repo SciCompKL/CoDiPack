@@ -1,0 +1,106 @@
+digraph Net {
+Inputs [label = "Inputs", color="blue"];
+Outputs [label = "Outputs", color="red"];
+Inter [label = "Inter"];
+A254_1 [label = "X254", color="blue"];
+A255_1 [label = "T255 = sin(X254)", color="black"];
+A254_1 -> A255_1
+A0_1 [label = "T0", color="black"];
+A256_1 [label = "T256 = p(0.000000) + T255", color="black"];
+A0_1 -> A256_1
+A255_1 -> A256_1
+A257_1 [label = "T257 = p(0.000000) + T256", color="black"];
+A0_1 -> A257_1
+A256_1 -> A257_1
+A258_1 [label = "T258 = p(1.000000) * T255", color="black"];
+A0_1 -> A258_1
+A255_1 -> A258_1
+A259_1 [label = "T259 = p(1.000000) * T258", color="black"];
+A0_1 -> A259_1
+A258_1 -> A259_1
+A260_1 [label = "X260", color="blue"];
+A261_1 [label = "T261 = sin(X260)", color="black"];
+A260_1 -> A261_1
+A262_1 [label = "T262 = T257 + T261", color="black"];
+A257_1 -> A262_1
+A261_1 -> A262_1
+A263_1 [label = "T263 = T257 + T262", color="black"];
+A257_1 -> A263_1
+A262_1 -> A263_1
+A264_1 [label = "T264 = T259 * T261", color="black"];
+A259_1 -> A264_1
+A261_1 -> A264_1
+A265_1 [label = "T265 = T259 * T264", color="black"];
+A259_1 -> A265_1
+A264_1 -> A265_1
+A266_1 [label = "X266", color="blue"];
+A267_1 [label = "T267 = sin(X266)", color="black"];
+A266_1 -> A267_1
+A268_1 [label = "T268 = T263 + T267", color="black"];
+A263_1 -> A268_1
+A267_1 -> A268_1
+A269_1 [label = "T269 = T263 + T268", color="black"];
+A263_1 -> A269_1
+A268_1 -> A269_1
+A270_1 [label = "T270 = T265 * T267", color="black"];
+A265_1 -> A270_1
+A267_1 -> A270_1
+A271_1 [label = "T271 = T265 * T270", color="black"];
+A265_1 -> A271_1
+A270_1 -> A271_1
+A272_1 [label = "X272", color="blue"];
+A273_1 [label = "T273 = sin(X272)", color="black"];
+A272_1 -> A273_1
+A274_1 [label = "T274 = T269 + T273", color="black"];
+A269_1 -> A274_1
+A273_1 -> A274_1
+A275_1 [label = "T275 = T269 + T274", color="black"];
+A269_1 -> A275_1
+A274_1 -> A275_1
+A276_1 [label = "T276 = T271 * T273", color="black"];
+A271_1 -> A276_1
+A273_1 -> A276_1
+A277_1 [label = "T277 = T271 * T276", color="black"];
+A271_1 -> A277_1
+A276_1 -> A277_1
+A278_1 [label = "X278", color="blue"];
+A279_1 [label = "T279 = sin(X278)", color="black"];
+A278_1 -> A279_1
+A280_1 [label = "T280 = T275 + T279", color="black"];
+A275_1 -> A280_1
+A279_1 -> A280_1
+A281_1 [label = "T281 = T275 + T280", color="black"];
+A275_1 -> A281_1
+A280_1 -> A281_1
+A282_1 [label = "T282 = T277 * T279", color="black"];
+A277_1 -> A282_1
+A279_1 -> A282_1
+A283_1 [label = "T283 = T277 * T282", color="black"];
+A277_1 -> A283_1
+A282_1 -> A283_1
+A284_1 [label = "Y284 = T255 + T281", color="red"];
+A255_1 -> A284_1
+A281_1 -> A284_1
+A285_1 [label = "Y285 = T261 * T283", color="red"];
+A261_1 -> A285_1
+A283_1 -> A285_1
+A286_1 [label = "Y286 = T267 + T281", color="red"];
+A267_1 -> A286_1
+A281_1 -> A286_1
+A287_1 [label = "Y287 = T273 * T283", color="red"];
+A273_1 -> A287_1
+A283_1 -> A287_1
+A288_1 [label = "Y288 = T279 + T281", color="red"];
+A279_1 -> A288_1
+A281_1 -> A288_1
+A289_1 [label = "T289 = Y284", color="black"];
+A284_1 -> A289_1
+A290_1 [label = "T290 = Y285", color="black"];
+A285_1 -> A290_1
+A291_1 [label = "T291 = Y286", color="black"];
+A286_1 -> A291_1
+A292_1 [label = "T292 = Y287", color="black"];
+A287_1 -> A292_1
+A293_1 [label = "T293 = Y288", color="black"];
+A288_1 -> A293_1
+}

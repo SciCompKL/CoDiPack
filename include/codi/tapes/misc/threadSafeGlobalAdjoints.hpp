@@ -35,6 +35,7 @@
 #pragma once
 
 #include "../../tools/parallel/parallelToolbox.hpp"
+#include "../../traits/adjointVectorTraits.hpp"
 #include "internalAdjointsInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -108,9 +109,10 @@ namespace codi {
       }
 
       /// \copydoc InternalAdjointsInterface::zeroAll
-      CODI_INLINE void zeroAll() {
-        for (Gradient& gradient : adjoints) {
-          gradient = Gradient();
+      CODI_INLINE void zeroAll(Identifier const& maxIdentifier) {
+        Identifier maxSize = std::min(maxIdentifier + 1, (Identifier)adjoints.size());
+        for (Identifier i = 0; i < maxSize; i += 1) {
+          adjoints[i] = Gradient();
         }
       }
 
@@ -139,4 +141,16 @@ namespace codi {
   template<typename Gradient, typename Identifier, typename Tape, typename ParallelToolbox>
   typename CODI_DD(ParallelToolbox, CODI_DEFAULT_PARALLEL_TOOLBOX)::ReadWriteMutex
       ThreadSafeGlobalAdjoints<Gradient, Identifier, Tape, ParallelToolbox>::adjointsMutex;
+
+#ifndef DOXYGEN_DISABLE
+
+  /// Specialization of AdjointVectorTraits.
+  namespace AdjointVectorTraits {
+    template<typename T_Gradient, typename T_Identifier, typename T_Tape, typename T_ParallelToolbox>
+    struct GradientImplementation<ThreadSafeGlobalAdjoints<T_Gradient, T_Identifier, T_Tape, T_ParallelToolbox>> {
+      public:
+        using Gradient = T_Gradient;
+    };
+  }
+#endif
 }

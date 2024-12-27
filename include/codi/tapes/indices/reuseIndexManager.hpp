@@ -93,8 +93,11 @@ namespace codi {
         unsigned long storedIndices = this->usedIndicesPos + this->unusedIndicesPos;
         long currentLiveIndices = maximumGlobalIndex - storedIndices;
 
-        values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex);
-        values.addLongEntry("Cur. live indices", currentLiveIndices);
+        TapeValues::LocalReductionOperation constexpr operation =
+            NeedsStaticStorage ? TapeValues::LocalReductionOperation::Max : TapeValues::LocalReductionOperation::Sum;
+
+        values.addUnsignedLongEntry("Max. live indices", maximumGlobalIndex, operation);
+        values.addLongEntry("Cur. live indices", currentLiveIndices, operation);
 
         Base::addToTapeValues(values);
       }
@@ -117,13 +120,15 @@ namespace codi {
         // equals the number of indices we generate now, therefore
         // we do not have to check for size.
 
+        // If used in another context, then the calling method has to ensure that enough space is available.
+
         codiAssert(this->unusedIndices.size() >= this->indexSizeIncrement);
 
         for (size_t pos = 0; pos < this->indexSizeIncrement; ++pos) {
           this->unusedIndices[this->unusedIndicesPos + pos] = globalMaximumIndex + Index(pos) + 1;
         }
 
-        this->unusedIndicesPos = this->indexSizeIncrement;
+        this->unusedIndicesPos += this->indexSizeIncrement;
         globalMaximumIndex += this->indexSizeIncrement;
       }
   };

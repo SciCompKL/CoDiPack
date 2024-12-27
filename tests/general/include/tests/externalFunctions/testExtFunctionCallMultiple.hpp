@@ -40,7 +40,7 @@ struct TestExtFunctionCallMultiple : public TestInterface {
     NAME("ExtFunctionCallMultiple")
     IN(2)
     OUT(1)
-    POINTS(1) = {{2.0, 3.0}};
+    POINTS(1) = { {2.0, 3.0} };
 
     static int const ITER = 5;
 

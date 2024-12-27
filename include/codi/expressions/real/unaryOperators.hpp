@@ -69,6 +69,11 @@ namespace codi {
         CODI_UNUSED(result);
         return -1.0;
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "-";
+      }
   };
 #define OPERATION_LOGIC OperationUnaryMinus
 #define FUNCTION operator-
@@ -87,7 +92,9 @@ namespace codi {
 
   using std::abs;
   using std::acos;
+  using std::acosh;
   using std::asin;
+  using std::asinh;
   using std::atan;
   using std::atanh;
   using std::cbrt;
@@ -105,6 +112,8 @@ namespace codi {
   using std::isnormal;
   using std::log;
   using std::log10;
+  using std::log1p;
+  using std::log2;
   using std::round;
   using std::sin;
   using std::sinh;
@@ -137,6 +146,11 @@ namespace codi {
         } else {
           return 0.0;
         }
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "abs";
       }
   };
 #define OPERATION_LOGIC OperationAbs
@@ -179,6 +193,11 @@ namespace codi {
         }
         return -1.0 / sqrt(1.0 - arg * arg);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "acos";
+      }
   };
 #define OPERATION_LOGIC OperationAcos
 #define FUNCTION acos
@@ -190,6 +209,48 @@ namespace codi {
 
 #define OPERATION_LOGIC OperationAcos
 #define FUNCTION acosl
+#include "unaryOverloads.tpp"
+
+  /// UnaryOperation implementation for acosh
+  template<typename T_Real>
+  struct OperationAcosh : public UnaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc UnaryOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return acosh(arg);
+      }
+
+      /// \copydoc UnaryOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(result);
+        if (Config::CheckExpressionArguments) {
+          if (RealTraits::getPassiveValue(arg) <= 1.0) {
+            CODI_EXCEPTION("acosh outside of (1, inf).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
+          }
+        }
+        return 1.0 / sqrt(arg * arg - 1.0);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "acosh";
+      }
+  };
+#define OPERATION_LOGIC OperationAcosh
+#define FUNCTION acosh
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAcosh
+#define FUNCTION acoshf
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAcosh
+#define FUNCTION acoshl
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for asin
@@ -216,6 +277,11 @@ namespace codi {
         }
         return 1.0 / sqrt(1.0 - arg * arg);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "asin";
+      }
   };
 #define OPERATION_LOGIC OperationAsin
 #define FUNCTION asin
@@ -227,6 +293,43 @@ namespace codi {
 
 #define OPERATION_LOGIC OperationAsin
 #define FUNCTION asinl
+#include "unaryOverloads.tpp"
+
+  /// UnaryOperation implementation for asinh
+  template<typename T_Real>
+  struct OperationAsinh : public UnaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc UnaryOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return asinh(arg);
+      }
+
+      /// \copydoc UnaryOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(result);
+        return 1.0 / sqrt(arg * arg + 1.0);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "asinh";
+      }
+  };
+#define OPERATION_LOGIC OperationAsinh
+#define FUNCTION asinh
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAsinh
+#define FUNCTION asinhf
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationAsinh
+#define FUNCTION asinhl
 #include "unaryOverloads.tpp"
 
   /// UnaryOperation implementation for atan
@@ -247,6 +350,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return 1.0 / (1.0 + arg * arg);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "atan";
       }
   };
 #define OPERATION_LOGIC OperationAtan
@@ -284,6 +392,11 @@ namespace codi {
           }
         }
         return 1.0 / (1.0 - arg * arg);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "atanh";
       }
   };
 #define OPERATION_LOGIC OperationAtanh
@@ -324,6 +437,11 @@ namespace codi {
         } else {
           return (Real)0.0;
         }
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "cbrt";
       }
   };
 #define OPERATION_LOGIC OperationCbrt
@@ -375,6 +493,11 @@ namespace codi {
         CODI_UNUSED(result);
         return -sin(arg);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "cos";
+      }
   };
 #define OPERATION_LOGIC OperationCos
 #define FUNCTION cos
@@ -406,6 +529,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return sinh(arg);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "sinh";
       }
   };
 #define OPERATION_LOGIC OperationCosh
@@ -439,6 +567,11 @@ namespace codi {
         CODI_UNUSED(result);
         return 1.128379167095513 * exp(-(arg * arg));  // erf'(arg) = 2.0 / sqrt(pi) * exp(-arg^2)
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "erf";
+      }
   };
 #define OPERATION_LOGIC OperationErf
 #define FUNCTION erf
@@ -471,6 +604,11 @@ namespace codi {
         CODI_UNUSED(result);
         return -1.128379167095513 * exp(-(arg * arg));  // erfc'(arg) = - 2.0 / sqrt(pi) * exp(-arg^2)
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "erfc";
+      }
   };
 #define OPERATION_LOGIC OperationErfc
 #define FUNCTION erfc
@@ -502,6 +640,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         return result;
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "exp";
       }
   };
 #define OPERATION_LOGIC OperationExp
@@ -582,6 +725,11 @@ namespace codi {
         }
         return 1.0 / arg;
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "log";
+      }
   };
 #define OPERATION_LOGIC OperationLog
 #define FUNCTION log
@@ -619,6 +767,11 @@ namespace codi {
         }
         return 0.434294481903252 / arg;
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "log10";
+      }
   };
 #define OPERATION_LOGIC OperationLog10
 #define FUNCTION log10
@@ -630,6 +783,90 @@ namespace codi {
 
 #define OPERATION_LOGIC OperationLog10
 #define FUNCTION log10l
+#include "unaryOverloads.tpp"
+
+  /// UnaryOperation implementation for log1p
+  template<typename T_Real>
+  struct OperationLog1p : public UnaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc UnaryOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return log1p(arg);
+      }
+
+      /// \copydoc UnaryOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(result);
+        if (Config::CheckExpressionArguments) {
+          if (0.0 > RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
+          }
+        }
+        return 1.0 / (arg + 1.0);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "log1p";
+      }
+  };
+#define OPERATION_LOGIC OperationLog1p
+#define FUNCTION log1p
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLog1p
+#define FUNCTION log1pf
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLog1p
+#define FUNCTION log1pl
+#include "unaryOverloads.tpp"
+
+  /// UnaryOperation implementation for log2
+  template<typename T_Real>
+  struct OperationLog2 : public UnaryOperation<T_Real> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+
+      /// \copydoc UnaryOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return log2(arg);
+      }
+
+      /// \copydoc UnaryOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(result);
+        if (Config::CheckExpressionArguments) {
+          if (0.0 > RealTraits::getPassiveValue(arg)) {
+            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
+          }
+        }
+        return 1.442695040888963 / arg;
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "log2";
+      }
+  };
+#define OPERATION_LOGIC OperationLog2
+#define FUNCTION log2
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLog2
+#define FUNCTION log2f
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationLog2
+#define FUNCTION log2l
 #include "unaryOverloads.tpp"
 
   /// Function overload for round
@@ -669,6 +906,11 @@ namespace codi {
         CODI_UNUSED(result);
         return cos(arg);
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "sin";
+      }
   };
 #define OPERATION_LOGIC OperationSin
 #define FUNCTION sin
@@ -700,6 +942,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return cosh(arg);
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "sinh";
       }
   };
 #define OPERATION_LOGIC OperationSinh
@@ -741,6 +988,11 @@ namespace codi {
           return (Real)0.0;
         }
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "sqrt";
+      }
   };
 #define OPERATION_LOGIC OperationSqrt
 #define FUNCTION sqrt
@@ -779,6 +1031,11 @@ namespace codi {
         Real tmp = 1.0 / cos(arg);
         return tmp * tmp;
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "tan";
+      }
   };
 #define OPERATION_LOGIC OperationTan
 #define FUNCTION tan
@@ -810,6 +1067,11 @@ namespace codi {
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         return 1.0 - result * result;
+      }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "tanh";
       }
   };
 #define OPERATION_LOGIC OperationTanh
@@ -878,6 +1140,11 @@ namespace codi {
 
         return diGamma * result;
       }
+
+      /// \copydoc UnaryOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "tgamma";
+      }
   };
 #define OPERATION_LOGIC OperationTgamma
 #define FUNCTION tgamma
@@ -912,9 +1179,15 @@ namespace std {
   using codi::abs;
   using codi::acos;
   using codi::acosf;
+  using codi::acosh;
+  using codi::acoshf;
+  using codi::acoshl;
   using codi::acosl;
   using codi::asin;
   using codi::asinf;
+  using codi::asinh;
+  using codi::asinhf;
+  using codi::asinhl;
   using codi::asinl;
   using codi::atan;
   using codi::atanf;
@@ -957,6 +1230,12 @@ namespace std {
   using codi::log10;
   using codi::log10f;
   using codi::log10l;
+  using codi::log1p;
+  using codi::log1pf;
+  using codi::log1pl;
+  using codi::log2;
+  using codi::log2f;
+  using codi::log2l;
   using codi::logf;
   using codi::logl;
   using codi::round;

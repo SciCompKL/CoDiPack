@@ -39,9 +39,9 @@
 
 #include "../../config.h"
 #include "../../misc/macros.hpp"
+#include "../../misc/mathUtility.hpp"
 #include "../data/emptyData.hpp"
 #include "indexManagerInterface.hpp"
-
 /** \copydoc codi::Namespace */
 namespace codi {
 
@@ -102,6 +102,11 @@ namespace codi {
       /// Cast to the implementation.
       CODI_INLINE Impl& cast() {
         return static_cast<Impl&>(*this);
+      }
+
+      /// Const cast to the implementation.
+      CODI_INLINE Impl const& cast() const {
+        return static_cast<Impl const&>(*this);
       }
 
       /// Method to generate new indices. Only called when unusedIndices is empty.
@@ -192,6 +197,7 @@ namespace codi {
       template<typename Tape>
       CODI_INLINE void freeIndex(Index& index) {
         if (valid && Base::InactiveIndex != index) {  // Do not free the zero index.
+          codiAssert(index <= cast().getLargestCreatedIndex());
 
           EventSystem<Tape>::notifyIndexFreeListeners(index);
 
@@ -203,6 +209,26 @@ namespace codi {
           usedIndicesPos += 1;
 
           index = Base::InactiveIndex;
+        }
+      }
+
+      /// \copydoc codi::IndexManagerInterface::updateLargestCreatedIndex
+      CODI_NO_INLINE void updateLargestCreatedIndex(Index const& index) {
+        /* This method calculates the number of new indices that needs to be added to the unusedIndices vector.
+           The length of the unusedIndices vector is adjusted in multiples of indexSizeIncrement.
+           This is done by recursively calling by generateNewIndices. */
+        if (index > cast().getLargestCreatedIndex()) {
+          Index needToGenerate = index - cast().getLargestCreatedIndex();
+          size_t newUnusedIndexSize = this->unusedIndicesPos + needToGenerate;
+
+          // Round up newUnusedIndexSize to a multiple of indexSizeIncrement and then resize.
+          newUnusedIndexSize = getNextMultiple(newUnusedIndexSize, this->indexSizeIncrement);
+          this->unusedIndices.resize(newUnusedIndexSize);
+
+          // Generate the new unusedIndices in steps of indexSizeIncrement.
+          while (index > cast().getLargestCreatedIndex()) {
+            generateNewIndices();
+          }
         }
       }
 
@@ -237,9 +263,13 @@ namespace codi {
         double memoryStoredIndices = (double)storedIndices * (double)(sizeof(Index));
         double memoryAllocatedIndices = (double)allocatedIndices * (double)(sizeof(Index));
 
-        values.addUnsignedLongEntry("Indices stored", storedIndices);
-        values.addDoubleEntry("Memory used", memoryStoredIndices, true, false);
-        values.addDoubleEntry("Memory allocated", memoryAllocatedIndices, false, true);
+        TapeValues::LocalReductionOperation constexpr operation = Impl::NeedsStaticStorage
+                                                                      ? TapeValues::LocalReductionOperation::Max
+                                                                      : TapeValues::LocalReductionOperation::Sum;
+
+        values.addUnsignedLongEntry("Indices stored", storedIndices, operation);
+        values.addDoubleEntry("Memory used", memoryStoredIndices, operation, true, false);
+        values.addDoubleEntry("Memory allocated", memoryAllocatedIndices, operation, false, true);
       }
 
       /// @}

@@ -1,6 +1,21 @@
 Changelog {#Changelog}
 ===========================
 
+### v ???
+ - Features:
+  * Tape evaluations with generalized custom adjoints.
+  * Preaccumulation with local mapped adjoints.
+  * Edit identifiers in recorded tapes.
+  * Preaccumulation with a local adjoint vector after tape editing.
+  * Added tape writers to store a tape to the disk, in a binary or text file. See example 25.
+  * Added tape readers to restore a tape from the disk, in a binary or text file. See example 26 and 27.
+  * Generate a computational graph of a tape in a .dot file format.
+  * Record the mathematical statements from the tape to a .txt file or add these statements to the computational graph for 
+    primal value tapes.
+
+ - Bugfix:
+  * Improved performance for tape reset of small tapes.
+
 ### v 2.2.0 - 2024-01-30
  - Features:
   * New helper for adding Enzyme-generated derivative functions to the tape. See \ref Example_24_Enzyme_external_function_helper.
