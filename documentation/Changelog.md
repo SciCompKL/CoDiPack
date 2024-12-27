@@ -1,7 +1,7 @@
 Changelog {#Changelog}
 ===========================
 
-### v ???
+### v 2.3.0 - 2024-12-27
  - Features:
   * Tape evaluations with generalized custom adjoints.
   * Preaccumulation with local mapped adjoints.
@@ -15,6 +15,9 @@ Changelog {#Changelog}
 
  - Bugfix:
   * Improved performance for tape reset of small tapes.
+  * Added missing unused declarations.
+  * Fixes for tagging tape.
+  * Fixes for reference active type.
 
 ### v 2.2.0 - 2024-01-30
  - Features:
