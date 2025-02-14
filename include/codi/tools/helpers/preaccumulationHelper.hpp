@@ -95,7 +95,8 @@ namespace codi {
       std::vector<Type*> outputValues;     ///< List of output value pointers. Can be added manually before finish() is
                                            ///< called. Has to be in sync with outputData.
 
-      std::vector<Gradient> localAdjoints;
+      std::vector<Gradient> localAdjoints;  ///< Vector of local adjoint variables. Persists across preaccumulations to
+                                            ///< reduce the number of allocations, can be freed anytime if needed.
 
     protected:
 
@@ -107,7 +108,7 @@ namespace codi {
 
       /// Constructor
       PreaccumulationHelper()
-          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobian(0, 0) {}
+          : inputData(), outputData(), outputValues(), localAdjoints(), startPos(), storedAdjoints(), jacobian(0, 0) {}
 
       /// Add multiple additional inputs. Inputs need to be of type `Type`. Called after start().
       template<typename... Inputs>
