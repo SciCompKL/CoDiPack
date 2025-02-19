@@ -34,7 +34,9 @@
  */
 #pragma once
 
+#ifdef __GNUC__
 #include <cxxabi.h>
+#endif
 
 #include "../config.h"
 

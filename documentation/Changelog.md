@@ -1,6 +1,9 @@
 Changelog {#Changelog}
 ===========================
 
+### v 2.3.1 - 2025-02-19
+ - Bugfix: Only include cxxabi.h for gnu compiler.
+
 ### v 2.3.0 - 2024-12-27
  - Features:
   * Tape evaluations with generalized custom adjoints.
