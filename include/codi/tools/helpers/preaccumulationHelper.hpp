@@ -413,7 +413,7 @@ namespace codi {
         }
 
         // Process the tape. Does not edit identifiers in the tape.
-        tape.template editIdentifiers(determineMinMaxIdentifier, startPos, endPos);
+        tape.editIdentifiers(determineMinMaxIdentifier, startPos, endPos);
 
         // Plus one to cover the range [minIdentifier, maxIdentifier].
         size_t requiredVectorSize = maxIdentifier - minIdentifier + 1;
@@ -488,7 +488,7 @@ namespace codi {
         };
 
         // Process the recording to complete the map, edit the tape on the fly.
-        tape.template editIdentifiers(editIdentifier, startPos, endPos);
+        tape.editIdentifiers(editIdentifier, startPos, endPos);
 
         // Build new vectors of input and output identifiers.
         std::vector<typename Tape::Identifier> newInputData;
