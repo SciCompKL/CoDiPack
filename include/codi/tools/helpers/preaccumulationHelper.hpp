@@ -95,6 +95,9 @@ namespace codi {
       std::vector<Type*> outputValues;     ///< List of output value pointers. Can be added manually before finish() is
                                            ///< called. Has to be in sync with outputData.
 
+      std::vector<Gradient> localAdjoints;  ///< Vector of local adjoint variables. Persists across preaccumulations to
+                                            ///< reduce the number of allocations, can be freed anytime if needed.
+
     protected:
 
       Position startPos;                        ///< Starting position for the region.
@@ -105,7 +108,7 @@ namespace codi {
 
       /// Constructor
       PreaccumulationHelper()
-          : inputData(), outputData(), outputValues(), startPos(), storedAdjoints(), jacobian(0, 0) {}
+          : inputData(), outputData(), outputValues(), localAdjoints(), startPos(), storedAdjoints(), jacobian(0, 0) {}
 
       /// Add multiple additional inputs. Inputs need to be of type `Type`. Called after start().
       template<typename... Inputs>
@@ -145,49 +148,53 @@ namespace codi {
         }
       }
 
-      /// Finish the preaccumulation region and perform the preaccumulation. See `addOutput()` for outputs.
-      /// Not compatible with simultaneous thread-local preaccumulations with shared inputs. In this case, see
-      /// finishLocalMappedAdjoints, finishLocalAdjointsPreprocessTape, and finishLocalAdjoints.
-      template<typename... Outputs>
-      void finish(bool const storeAdjoints, Outputs&... outputs) {
+    protected:
+      /// Internal implementation of workflow for preaccumulation with local adjoints.
+      template<typename Func, typename... Outputs>
+      void finishInternal(Func& coreRoutine, Outputs&... outputs) {
         Tape& tape = Type::getTape();
 
         if (tape.isActive()) {
           addOutputRecursive(outputs...);
 
-          if (storeAdjoints) {
-            storeInputAdjoints();
-          }
-
           tape.setPassive();
-          computeJacobian();
+          coreRoutine();
           storeJacobian();
           tape.setActive();
-
-          if (storeAdjoints) {
-            restoreInputAdjoints();
-          }
         }
 
         EventSystem<Tape>::notifyPreaccFinishListeners(tape);
+      }
+
+    public:
+      /// Finish the preaccumulation region and perform the preaccumulation. See `addOutput()` for outputs.
+      /// Not compatible with simultaneous thread-local preaccumulations with shared inputs. In this case, see
+      /// finishLocalMappedAdjoints, finishLocalAdjointVectorPreprocessTape, finishLocalAdjoints,
+      /// finishLocalAdjointVector, and finishLocalAdjointVectorOffset.
+      template<typename... Outputs>
+      void finish(bool const storeAdjoints, Outputs&... outputs) {
+        auto coreRoutine = [&storeAdjoints, this]() {
+          if (storeAdjoints) {
+            storeInputAdjoints();
+          }
+          computeJacobian();
+          if (storeAdjoints) {
+            restoreInputAdjoints();
+          }
+        };
+
+        finishInternal(coreRoutine, outputs...);
       }
 
       /// Finish the preaccumulation region and perform the preaccumulation. Creates a local map of adjoints instead of
       /// using adjoints from the tape. See `addOutput()` for outputs.
       template<typename... Outputs>
       void finishLocalMappedAdjoints(Outputs&... outputs) {
-        Tape& tape = Type::getTape();
-
-        if (tape.isActive()) {
-          addOutputRecursive(outputs...);
-
-          tape.setPassive();
+        auto coreRoutine = [this]() {
           computeJacobianLocalMappedAdjoints();
-          storeJacobian();
-          tape.setActive();
-        }
+        };
 
-        EventSystem<Tape>::notifyPreaccFinishListeners(tape);
+        finishInternal(coreRoutine, outputs...);
       }
 
       /// Finish the preaccumulation region and perform the preaccumulation. Create a local adjoint vector instead of
@@ -195,59 +202,81 @@ namespace codi {
       /// More efficient than finishLocalMappedAdjoints if both the numbers of inputs and outputs are > 1. Behaves like
       /// finishLocalMappedAdjoints if the underlying tape does not support editing.
       template<typename... Outputs>
-      void finishLocalAdjointsPreprocessTape(Outputs&... outputs) {
-        Tape& tape = Type::getTape();
+      void finishLocalAdjointVectorPreprocessTape(Outputs&... outputs) {
+        auto coreRoutine = [this]() {
+          computeJacobianLocalAdjointVectorPreprocessTapeIfAvailable<Tape>();  // otherwise
+                                                                               // computeJacobianLocalMappedAdjoints
+        };
 
-        if (tape.isActive()) {
-          addOutputRecursive(outputs...);
-
-          tape.setPassive();
-          computeJacobianLocalAdjointsPreprocessTapeIfAvailable<Tape>();  // otherwise
-                                                                          // computeJacobianLocalMappedAdjoints
-          storeJacobian();
-          tape.setActive();
-        }
-
-        EventSystem<Tape>::notifyPreaccFinishListeners(tape);
+        finishInternal(coreRoutine, outputs...);
       }
 
       /// Finish the preaccumulation region and perform the preaccumulation. Uses local adjoints instead of adjoints
-      /// from the tape. Behaves either like finishLocalMappedAdjoints or like finishLocalAdjointsPreprocessTape,
+      /// from the tape. Behaves either like finishLocalMappedAdjoints or like finishLocalAdjointVectorPreprocessTape,
       /// depending on which is more efficient given the numbers of inputs and outputs. See `addOutput()` for outputs.
       template<typename... Outputs>
       void finishLocalAdjoints(Outputs&... outputs) {
-        Tape& tape = Type::getTape();
-
-        if (tape.isActive()) {
-          addOutputRecursive(outputs...);
-
-          tape.setPassive();
+        auto coreRoutine = [this]() {
           if (std::min(inputData.size(), outputData.size()) > 1) {
-            computeJacobianLocalAdjointsPreprocessTapeIfAvailable<Tape>();  // otherwise
-                                                                            // computeJacobianLocalMappedAdjoints
+            computeJacobianLocalAdjointVectorPreprocessTapeIfAvailable<Tape>();  // otherwise
+                                                                                 // computeJacobianLocalMappedAdjoints
           } else {
             computeJacobianLocalMappedAdjoints();
           }
+        };
 
-          storeJacobian();
-          tape.setActive();
-        }
+        finishInternal(coreRoutine, outputs...);
+      }
 
-        EventSystem<Tape>::notifyPreaccFinishListeners(tape);
+      /// Finish the preaccumulation region and perform the preaccumulation. Maintains a local adjoint vector that is as
+      /// large as the global one. See `addOutput()` for outputs.
+      template<typename... Outputs>
+      void finishLocalAdjointVector(Outputs&... outputs) {
+        auto coreRoutine = [this]() {
+          computeJacobianLocalAdjointVector();
+        };
+
+        finishInternal(coreRoutine, outputs...);
+      }
+
+      /// Finish the preaccumulation region and perform the preaccumulation. Precomputes the identifier range used in
+      /// the recording and creates a local adjoint vector, into which we address with an offset. Depends on tape
+      /// editing features to preprocess identifiers. If tape editing is not supported, we fall back to the behaviour of
+      /// finishLocalAdjointVector(). See `addOutput()` for outputs.
+      template<typename... Outputs>
+      void finishLocalAdjointVectorOffset(Outputs&... outputs) {
+        auto coreRoutine = [this]() {
+          computeJacobianLocalAdjointVectorOffsetIfAvailable<Tape>();  // otherwise
+                                                                       // computeJacobianLocalAdjointVector
+        };
+
+        finishInternal(coreRoutine, outputs...);
       }
 
     private:
 
       // Tape supports editing -> use a map to edit its identifiers. Disabled by SFINAE otherwise.
       template<typename Tape>
-      TapeTraits::EnableIfSupportsEditing<Tape> computeJacobianLocalAdjointsPreprocessTapeIfAvailable() {
-        computeJacobianLocalAdjointsPreprocessTape();
+      TapeTraits::EnableIfSupportsEditing<Tape> computeJacobianLocalAdjointVectorPreprocessTapeIfAvailable() {
+        computeJacobianLocalAdjointVectorPreprocessTape();
       }
 
       // Tape does not support editing -> use a map for the adjoints. Disabled by SFINAE otherwise.
       template<typename Tape>
-      TapeTraits::EnableIfNoEditing<Tape> computeJacobianLocalAdjointsPreprocessTapeIfAvailable() {
+      TapeTraits::EnableIfNoEditing<Tape> computeJacobianLocalAdjointVectorPreprocessTapeIfAvailable() {
         computeJacobianLocalMappedAdjoints();
+      }
+
+      // Tape supports editing -> use a map to edit its identifiers. Disabled by SFINAE otherwise.
+      template<typename Tape>
+      TapeTraits::EnableIfSupportsEditing<Tape> computeJacobianLocalAdjointVectorOffsetIfAvailable() {
+        computeJacobianLocalAdjointVectorOffset();
+      }
+
+      // Tape does not support editing -> use a map for the adjoints. Disabled by SFINAE otherwise.
+      template<typename Tape>
+      TapeTraits::EnableIfNoEditing<Tape> computeJacobianLocalAdjointVectorOffsetIfAvailable() {
+        computeJacobianLocalAdjointVector();
       }
 
       void addInputLogic(Type const& input) {
@@ -339,6 +368,69 @@ namespace codi {
         tape.endUseAdjointVector();
       }
 
+      void computeJacobianLocalAdjointVector() {
+        // Perform the accumulation of the tape part.
+        Tape& tape = Type::getTape();
+        Position endPos = tape.getPosition();
+
+        resizeJacobian();
+
+        size_t requiredVectorSize = tape.getParameter(TapeParameters::LargestIdentifier) + 1;
+
+        this->localAdjoints.resize(requiredVectorSize);
+
+        Algorithms<Type, false>::computeJacobianCustomAdjoints(startPos, endPos, inputData.data(), inputData.size(),
+                                                               outputData.data(), outputData.size(), jacobian,
+                                                               this->localAdjoints.data());
+
+        tape.resetTo(startPos, false);
+      }
+
+      void computeJacobianLocalAdjointVectorOffset() {
+        // Perform the accumulation of the tape part.
+        Tape& tape = Type::getTape();
+        Position endPos = tape.getPosition();
+
+        resizeJacobian();
+
+        // Determine minimum and maximum identifier used in the recording.
+
+        Identifier minIdentifier = std::numeric_limits<Identifier>::max();
+        Identifier maxIdentifier = std::numeric_limits<Identifier>::min();
+
+        auto determineMinMaxIdentifier = [&minIdentifier, &maxIdentifier](typename Tape::Identifier const& identifier) {
+          minIdentifier = std::min(minIdentifier, identifier);
+          maxIdentifier = std::max(maxIdentifier, identifier);
+        };
+
+        // Begin by processing inputs and outputs.
+        for (auto const& identifier : inputData) {
+          determineMinMaxIdentifier(identifier);
+        }
+
+        for (auto const& identifier : outputData) {
+          determineMinMaxIdentifier(identifier);
+        }
+
+        // Process the tape. Does not edit identifiers in the tape.
+        tape.editIdentifiers(determineMinMaxIdentifier, startPos, endPos);
+
+        // Plus one to cover the range [minIdentifier, maxIdentifier].
+        size_t requiredVectorSize = maxIdentifier - minIdentifier + 1;
+        this->localAdjoints.resize(requiredVectorSize);
+
+        // Define adjoints that take into account the offset when addressing into the vector.
+        using LocalAdjointsOffset = AdjointVectorWithOffset<Identifier, Gradient>;
+        LocalAdjointsOffset localAdjointsOffset(this->localAdjoints.data(), minIdentifier);
+
+        // Preaccumulation with a local adjoint vector and identifier offsets.
+        Algorithms<Type, false>::computeJacobianCustomAdjoints(startPos, endPos, inputData.data(), inputData.size(),
+                                                               outputData.data(), outputData.size(), jacobian,
+                                                               localAdjointsOffset);
+
+        tape.resetTo(startPos, false);
+      }
+
       void computeJacobianLocalMappedAdjoints() {
         // Perform the accumulation of the tape part.
         Tape& tape = Type::getTape();
@@ -357,7 +449,7 @@ namespace codi {
         tape.resetTo(startPos, false);
       }
 
-      void computeJacobianLocalAdjointsPreprocessTape() {
+      void computeJacobianLocalAdjointVectorPreprocessTape() {
         // Perform the accumulation of the tape part.
         Tape& tape = Type::getTape();
         Position endPos = tape.getPosition();
@@ -371,25 +463,32 @@ namespace codi {
         auto nextIdentifier = typename Tape::Identifier() + 1;
         IdentifierMap oldToNewIdentifierMap;
 
-        auto addIdentifierToMapping = [&](typename Tape::Identifier const& oldIdentifier) {
-          if (tape.isIdentifierActive(oldIdentifier) &&
-              oldToNewIdentifierMap.find(oldIdentifier) == oldToNewIdentifierMap.end()) {
-            oldToNewIdentifierMap[oldIdentifier] = nextIdentifier++;
+        // If needed, inserts the old identifier into the map and associates it with the next identifier. Either way,
+        // returns the associated new identifier.
+        auto accessOldToNewIdentifierMap = [&](typename Tape::Identifier const& oldIdentifier) -> typename Tape::Identifier const& {
+          auto result = oldToNewIdentifierMap.insert({oldIdentifier, nextIdentifier});
+          if (result.second) {  // insertion took place
+            ++nextIdentifier;
           }
+          return result.first->second;
         };
 
-        // Begin by remapping input identifiers.
+        // Remap input identifiers explicitly to account for inputs that are actually not used in the recording.
         for (auto const& oldIdentifier : inputData) {
-          addIdentifierToMapping(oldIdentifier);
+          accessOldToNewIdentifierMap(oldIdentifier);
         }
 
-        auto addAndEditIdentifier = [&](typename Tape::Identifier& oldIdentifier) {
-          addIdentifierToMapping(oldIdentifier);
-          oldIdentifier = oldToNewIdentifierMap[oldIdentifier];
+        // Remap output identifiers explicitly to account for outputs that actually do not depend on the inputs.
+        for (auto const& oldIdentifier : outputData) {
+          accessOldToNewIdentifierMap(oldIdentifier);
+        }
+
+        auto editIdentifier = [&](typename Tape::Identifier& oldIdentifier) {
+          oldIdentifier = accessOldToNewIdentifierMap(oldIdentifier);
         };
 
         // Process the recording to complete the map, edit the tape on the fly.
-        tape.template editIdentifiers(addAndEditIdentifier, startPos, endPos);
+        tape.editIdentifiers(editIdentifier, startPos, endPos);
 
         // Build new vectors of input and output identifiers.
         std::vector<typename Tape::Identifier> newInputData;
@@ -403,6 +502,10 @@ namespace codi {
         for (auto const& identifier : outputData) {
           newOutputData.push_back(oldToNewIdentifierMap[identifier]);
         }
+
+        // The association with the original input/output identifiers and Jacobian entries is made by position, so we no
+        // longer need the identifier map.
+        oldToNewIdentifierMap.clear();
 
         // Create local adjoints. nextIdentifier holds the local adjoint vector size.
         std::vector<typename Tape::Gradient> localAdjoints(nextIdentifier);
@@ -530,7 +633,7 @@ namespace codi {
 
       /// Does nothing.
       template<typename... Outputs>
-      void finishLocalAdjointsPreprocessTape(Outputs&... outputs) {
+      void finishLocalAdjointVectorPreprocessTape(Outputs&... outputs) {
         CODI_UNUSED(outputs...);
         // Do nothing.
       }
@@ -538,6 +641,20 @@ namespace codi {
       /// Does nothing.
       template<typename... Outputs>
       void finishLocalAdjoints(Outputs&... outputs) {
+        CODI_UNUSED(outputs...);
+        // Do nothing.
+      }
+
+      /// Does nothing.
+      template<typename... Outputs>
+      void finishLocalAdjointVector(Outputs&... outputs) {
+        CODI_UNUSED(outputs...);
+        // Do nothing.
+      }
+
+      /// Does nothing.
+      template<typename... Outputs>
+      void finishLocalAdjointVectorOffset(Outputs&... outputs) {
         CODI_UNUSED(outputs...);
         // Do nothing.
       }
@@ -642,13 +759,25 @@ namespace codi {
 
       /// Reverts the tags on all input and output values.
       template<typename... Outputs>
-      void finishLocalAdjointsPreprocessTape(Outputs&... outputs) {
+      void finishLocalAdjointVectorPreprocessTape(Outputs&... outputs) {
         finish(false, outputs...);
       }
 
       /// Reverts the tags on all input and output values.
       template<typename... Outputs>
       void finishLocalAdjoints(Outputs&... outputs) {
+        finish(false, outputs...);
+      }
+
+      /// Reverts the tags on all input and output values.
+      template<typename... Outputs>
+      void finishLocalAdjointVector(Outputs&... outputs) {
+        finish(false, outputs...);
+      }
+
+      /// Reverts the tags on all input and output values.
+      template<typename... Outputs>
+      void finishLocalAdjointVectorOffset(Outputs&... outputs) {
         finish(false, outputs...);
       }
 

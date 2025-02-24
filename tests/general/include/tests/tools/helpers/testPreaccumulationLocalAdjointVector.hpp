@@ -2,12 +2,12 @@
  * CoDiPack, a Code Differentiation Package
  *
  * Copyright (C) 2015-2025 Chair for Scientific Computing (SciComp), University of Kaiserslautern-Landau
- * Homepage: http://scicomp.rptu.de
+ * Homepage: http://www.scicomp.uni-kl.de
  * Contact:  Prof. Nicolas R. Gauger (codi@scicomp.uni-kl.de)
  *
  * Lead developers: Max Sagebaum, Johannes Blühdorn (SciComp, University of Kaiserslautern-Landau)
  *
- * This file is part of CoDiPack (http://scicomp.rptu.de/software/codi).
+ * This file is part of CoDiPack (http://www.scicomp.uni-kl.de/software/codi).
  *
  * CoDiPack is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,15 +32,14 @@
  *    - Former members:
  *      - Tim Albring
  */
-#include "basePreaccumulationForward.hpp"
+#include "basePreaccumulation.hpp"
 
-struct TestPreaccumulationLocalAdjointsPreprocessTapeForward
-    : public BasePreaccumulationForward<TestPreaccumulationLocalAdjointsPreprocessTapeForward> {
+struct TestPreaccumulationLocalAdjointVector : public BasePreaccumulation<TestPreaccumulationLocalAdjointVector> {
   public:
-    NAME("PreaccumulationLocalAdjointsPreprocessTapeForward")
+    NAME("PreaccumulationLocalAdjointVector")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finishLocalAdjointsPreprocessTape(y[0], y[1], y[2], y[3]);
+      ph.finishLocalAdjointVector(y[0], y[1]);
     }
 };

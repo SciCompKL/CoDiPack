@@ -32,16 +32,15 @@
  *    - Former members:
  *      - Tim Albring
  */
-#include "basePreaccumulationForwardInvalidAdjoint.hpp"
+#include "basePreaccumulationZeroJacobi.hpp"
 
-struct TestPreaccumulationLocalAdjointsPreprocessTapeForwardInvalidAdjoint
-    : public BasePreaccumulationForwardInvalidAdjoint<
-          TestPreaccumulationLocalAdjointsPreprocessTapeForwardInvalidAdjoint> {
+struct TestPreaccumulationLocalAdjointVectorPreprocessTapeZeroJacobi
+    : public BasePreaccumulationZeroJacobi<TestPreaccumulationLocalAdjointVectorPreprocessTapeZeroJacobi> {
   public:
-    NAME("PreaccumulationLocalAdjointsPreprocessTapeForwardInvalidAdjoint")
+    NAME("PreaccumulationLocalAdjointVectorPreprocessTapeZeroJacobi")
 
     template<typename Number>
     static void finish(codi::PreaccumulationHelper<Number>& ph, Number* y) {
-      ph.finishLocalAdjointsPreprocessTape(y[0], y[1], y[2], y[3]);
+      ph.finishLocalAdjointVectorPreprocessTape(y[0], y[1]);
     }
 };

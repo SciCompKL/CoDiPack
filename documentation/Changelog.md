@@ -2,6 +2,9 @@ Changelog {#Changelog}
 ===========================
 
 ### v??? - ???
+ - Features:
+   * Preaccumulation with vector-based local adjoints.
+
  - Bugfix:
    * Allow a tape change in the custom adjoint vector helper.
 
