@@ -1,35 +1,38 @@
 default:
-  image: ubuntu:22.04
+  image: fedora:41
   timeout: 2h
   tags:
     - docker
 
+variables:
+  COMMON_PACKAGES: "diffutils binutils git"
+
 codi-general:
   script:
-    - apt update && apt install -y build-essential binutils
+    - dnf install -y $COMMON_PACKAGES g++
     - cd tests/general
     - make all
 
 codi-events:
   script:
-    - apt update && apt install -y build-essential binutils
+    - dnf install -y $COMMON_PACKAGES g++
     - cd tests/events
     - make all
 
 codi-functional:
   script:
-    - apt update && apt install -y build-essential binutils
+    - dnf install -y $COMMON_PACKAGES g++
     - cd tests/functional
     - make all
 
 codi-examples:
   script:
-    - apt update && apt install -y build-essential binutils
+    - dnf install -y $COMMON_PACKAGES g++
     - make examples
 
 opdi:
   script:
-    - apt update && apt install -y build-essential binutils git
+    - dnf install -y $COMMON_PACKAGES g++
     - git clone --depth 1 --branch develop https://github.com/SciCompKL/OpDiLib.git
     - export CODI_DIR=$(pwd)/include
     - cd OpDiLib
@@ -39,8 +42,9 @@ opdi:
     - make all
 
 medi:
+  image: ubuntu:24.04
   script:
-    - apt update && apt install -y build-essential binutils git openmpi-bin libopenmpi-dev
+    - apt update && apt install -y $COMMON_PACKAGES build-essential openmpi-bin libopenmpi-dev
     - git clone --depth 1 --branch develop https://github.com/SciCompKL/MeDiPack.git
     - export CODI_DIR=$(pwd)
     - cd MeDiPack/tests
