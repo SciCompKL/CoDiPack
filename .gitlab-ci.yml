@@ -7,30 +7,40 @@ default:
 variables:
   COMMON_PACKAGES: "diffutils binutils git"
 
-codi-general:
+stages:
+  - codi
+  - opdi
+  - medi
+
+general:
+  stage: codi
   script:
     - dnf install -y $COMMON_PACKAGES g++
     - cd tests/general
     - make all
 
-codi-events:
+events:
+  stage: codi
   script:
     - dnf install -y $COMMON_PACKAGES g++
     - cd tests/events
     - make all
 
-codi-functional:
+functional:
+  stage: codi
   script:
     - dnf install -y $COMMON_PACKAGES g++
     - cd tests/functional
     - make all
 
-codi-examples:
+examples:
+  stage: codi
   script:
     - dnf install -y $COMMON_PACKAGES g++
     - make examples
 
 opdi:
+  stage: opdi
   script:
     - dnf install -y $COMMON_PACKAGES g++
     - git clone --depth 1 --branch develop https://github.com/SciCompKL/OpDiLib.git
@@ -42,6 +52,7 @@ opdi:
     - make all
 
 medi:
+  stage: medi
   image: ubuntu:24.04
   script:
     - apt update && apt install -y $COMMON_PACKAGES build-essential openmpi-bin libopenmpi-dev
