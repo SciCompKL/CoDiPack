@@ -14,29 +14,45 @@ stages:
 
 general:
   stage: codi
+  parallel:
+    matrix:
+      - COMPILER: ["g++", "clang++"]
   script:
-    - dnf install -y $COMMON_PACKAGES g++
+    - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/general
+    - export CXX=$COMPILER
     - make all
 
 events:
   stage: codi
+  parallel:
+    matrix:
+      - COMPILER: ["g++", "clang++"]
   script:
-    - dnf install -y $COMMON_PACKAGES g++
+    - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/events
+    - export CXX=$COMPILER
     - make all
 
 functional:
   stage: codi
+  parallel:
+    matrix:
+      - COMPILER: ["g++", "clang++"]
   script:
-    - dnf install -y $COMMON_PACKAGES g++
+    - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/functional
+    - export CXX=$COMPILER
     - make all
 
 examples:
   stage: codi
+  parallel:
+    matrix:
+      - COMPILER: ["g++", "clang++"]
   script:
-    - dnf install -y $COMMON_PACKAGES g++
+    - dnf install -y $COMMON_PACKAGES $COMPILER
+    - export CXX=$COMPILER
     - make examples
 
 opdi:
