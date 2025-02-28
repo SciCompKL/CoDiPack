@@ -169,8 +169,8 @@ build/%.out: build/%.exe
 	./$< > $@
 
 # compare output file against reference file
-build/%.diff: build/%.out
-	@if cmp -s $< results/$*.ref; then printf "%s \e[0;32mOK\e[0m\n" "$*"; else printf "%s \e[0;31mFAILED\e[0m\n" "$*"; diff $< results/$*.ref || true; fi
+build/%.compare: build/%.out
+	@if cmp -s $< results/$*.ref; then printf "%s \e[0;32mOK\e[0m\n" "$*"; else printf "%s \e[0;31mFAILED\e[0m\n" "$*"; diff $< results/$*.ref | tee build/$*.diff; fi
 
 # delete reference files
 .PHONY: cleanReference
@@ -187,7 +187,8 @@ reference: $(foreach case,$(usedCases),results/$(case).ref)
 
 # run all tests
 .PHONY: all
-all: $(foreach case,$(usedCases),build/$(case).diff)
+all: $(foreach case,$(usedCases),build/$(case).compare)
+	@[ -z "$$(find build -name '*.diff')" ];
 
 DEPENDENCIES = $(shell find build -name '*.d')
 
