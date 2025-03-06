@@ -21,7 +21,7 @@ general:
     - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/general
     - export CXX=$COMPILER
-    - make all
+    - make all -j12
 
 events:
   stage: codi
@@ -32,7 +32,7 @@ events:
     - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/events
     - export CXX=$COMPILER
-    - make all
+    - make all -j12
 
 functional:
   stage: codi
@@ -43,7 +43,7 @@ functional:
     - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/functional
     - export CXX=$COMPILER
-    - make all
+    - make all -j12
 
 examples:
   stage: codi
@@ -53,7 +53,7 @@ examples:
   script:
     - dnf install -y $COMMON_PACKAGES $COMPILER
     - export CXX=$COMPILER
-    - make examples
+    - make examples -j12
 
 opdi:
   stage: opdi
@@ -77,4 +77,5 @@ medi:
     - cd MeDiPack/tests
     - export OMPI_ALLOW_RUN_AS_ROOT=1
     - export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+    - make all -j6
     - make all
