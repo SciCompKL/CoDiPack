@@ -118,7 +118,7 @@ namespace codi {
     }
 
     return writer;
-  };
+  }
 
   /**
    * @brief  Uses the fileName to read and restore a Jacobian tape. The file extension is used to determine wether the
@@ -151,7 +151,7 @@ namespace codi {
     reader->readFile(fileName);
 
     return reader;
-  };
+  }
 
   /**
    * @brief  Uses the fileName to read and restore a primal value tape. The file extension is used to determine whether
@@ -187,5 +187,5 @@ namespace codi {
     reader->readFile(fileName);
 
     return reader;
-  };
+  }
 }
