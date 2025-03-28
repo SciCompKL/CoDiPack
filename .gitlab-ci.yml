@@ -7,13 +7,7 @@ default:
 variables:
   COMMON_PACKAGES: "diffutils binutils git"
 
-stages:
-  - codi
-  - opdi
-  - medi
-
-general:
-  stage: codi
+codi-general:
   parallel:
     matrix:
       - COMPILER: ["g++", "clang++"]
@@ -23,8 +17,8 @@ general:
     - export CXX=$COMPILER
     - make all -j12
 
-events:
-  stage: codi
+codi-events:
+  needs: ["codi-general"]
   parallel:
     matrix:
       - COMPILER: ["g++", "clang++"]
@@ -34,8 +28,8 @@ events:
     - export CXX=$COMPILER
     - make all -j12
 
-functional:
-  stage: codi
+codi-functional:
+  needs: ["codi-general"]
   parallel:
     matrix:
       - COMPILER: ["g++", "clang++"]
@@ -45,8 +39,8 @@ functional:
     - export CXX=$COMPILER
     - make all -j12
 
-examples:
-  stage: codi
+codi-examples:
+  needs: ["codi-general"]
   parallel:
     matrix:
       - COMPILER: ["g++", "clang++"]
@@ -56,7 +50,7 @@ examples:
     - make examples -j12
 
 opdi:
-  stage: opdi
+  needs: ["codi-general"]
   script:
     - dnf install -y $COMMON_PACKAGES g++
     - git clone --depth 1 --branch develop https://github.com/SciCompKL/OpDiLib.git
@@ -68,7 +62,7 @@ opdi:
     - make all
 
 medi:
-  stage: medi
+  needs: ["codi-general"]
   image: ubuntu:24.04
   script:
     - apt update && apt install -y $COMMON_PACKAGES build-essential openmpi-bin libopenmpi-dev
