@@ -1,6 +1,9 @@
 Changelog {#Changelog}
 ===========================
 
+### v 2.3.2 - 2025-04-08
+ - Bugfix: Correct dyadic update for adjoint matrix in linear system solvers.
+
 ### v 2.3.1 - 2025-02-19
  - Bugfix: Only include cxxabi.h for gnu compiler.
 

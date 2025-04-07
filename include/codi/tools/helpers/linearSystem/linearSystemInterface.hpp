@@ -200,8 +200,8 @@ namespace codi {
       /// For sparse matrices, only the elements of the sparsity pattern need to be considered.
       /// Used for e.g. the computation of the dyadic product \f$A=x_v*b_b^T\f$.
       template<typename Func>
-      void iterateDyadic(Func func, MatrixIdentifier* mat_id, VectorReal* x_v, VectorReal* b_b) {
-        CODI_UNUSED(func, mat_id, x_v, b_b);
+      void iterateDyadic(Func func, MatrixIdentifier* mat_id, VectorReal* b_b, VectorReal* x_v) {
+        CODI_UNUSED(func, mat_id, b_b, x_v);
       }
 
       /// Create a transposed matrix.
