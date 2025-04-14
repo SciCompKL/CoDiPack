@@ -1,35 +1,58 @@
 default:
-  image: ubuntu:22.04
+  image: fedora:41
   timeout: 2h
   tags:
     - docker
 
+variables:
+  COMMON_PACKAGES: "diffutils binutils git"
+
 codi-general:
+  parallel:
+    matrix:
+      - COMPILER: ["g++", "clang++"]
   script:
-    - apt update && apt install -y build-essential binutils
+    - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/general
-    - make all
+    - export CXX=$COMPILER
+    - make all -j12
 
 codi-events:
+  needs: ["codi-general"]
+  parallel:
+    matrix:
+      - COMPILER: ["g++", "clang++"]
   script:
-    - apt update && apt install -y build-essential binutils
+    - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/events
-    - make all
+    - export CXX=$COMPILER
+    - make all -j12
 
 codi-functional:
+  needs: ["codi-general"]
+  parallel:
+    matrix:
+      - COMPILER: ["g++", "clang++"]
   script:
-    - apt update && apt install -y build-essential binutils
+    - dnf install -y $COMMON_PACKAGES $COMPILER
     - cd tests/functional
-    - make all
+    - export CXX=$COMPILER
+    - make all -j12
 
 codi-examples:
+  needs: ["codi-general"]
+  parallel:
+    matrix:
+      - COMPILER: ["g++", "clang++"]
   script:
-    - apt update && apt install -y build-essential binutils
-    - make examples
+    - dnf install -y $COMMON_PACKAGES $COMPILER
+    - export CXX=$COMPILER
+    - make examples -j12
 
 opdi:
+  needs: ["codi-general"]
   script:
-    - apt update && apt install -y build-essential binutils git
+    - dnf install -y $COMMON_PACKAGES g++
     - git clone --depth 1 --branch develop https://github.com/SciCompKL/OpDiLib.git
     - export CODI_DIR=$(pwd)/include
     - cd OpDiLib
@@ -39,11 +62,14 @@ opdi:
     - make all
 
 medi:
+  needs: ["codi-general"]
+  image: ubuntu:24.04
   script:
-    - apt update && apt install -y build-essential binutils git openmpi-bin libopenmpi-dev
+    - apt update && apt install -y $COMMON_PACKAGES build-essential openmpi-bin libopenmpi-dev
     - git clone --depth 1 --branch develop https://github.com/SciCompKL/MeDiPack.git
     - export CODI_DIR=$(pwd)
     - cd MeDiPack/tests
     - export OMPI_ALLOW_RUN_AS_ROOT=1
     - export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+    - make all -j6
     - make all
