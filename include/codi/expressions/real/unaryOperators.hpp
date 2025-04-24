@@ -40,7 +40,7 @@
 #include "../../misc/exceptions.hpp"
 #include "../../misc/macros.hpp"
 #include "../../traits/realTraits.hpp"
-#include "../unaryExpression.hpp"
+#include "../computeExpression.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -49,20 +49,20 @@ namespace codi {
   /// @name Builtin unary operators
   /// @{
 
-  /// UnaryOperation implementation for operator -
+  /// UnaryJacobianOperation implementation for operator -
   template<typename T_Real>
-  struct OperationUnaryMinus : public UnaryOperation<T_Real> {
+  struct OperationUnaryMinus : public UnaryJacobianOperation<T_Real, OperationUnaryMinus<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return -arg;
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
@@ -70,7 +70,7 @@ namespace codi {
         return -1.0;
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "-";
       }
@@ -122,20 +122,20 @@ namespace codi {
   using std::tanh;
   using std::tgamma;
 
-  /// UnaryOperation implementation for abs
+  /// UnaryJacobianOperation implementation for abs
   template<typename T_Real>
-  struct OperationAbs : public UnaryOperation<T_Real> {
+  struct OperationAbs : public UnaryJacobianOperation<T_Real, OperationAbs<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return abs(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
@@ -148,7 +148,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "abs";
       }
@@ -169,34 +169,41 @@ namespace codi {
 #define FUNCTION fabsl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for acos
+  /// UnaryJacobianOperation implementation for acos
   template<typename T_Real>
-  struct OperationAcos : public UnaryOperation<T_Real> {
+  struct OperationAcos : public UnaryJacobianOperation<T_Real, OperationAcos<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return acos(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if (Config::CheckExpressionArguments) {
-          if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
-            CODI_EXCEPTION("acos outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
-          }
+          checkArgument(arg);
         }
         return -1.0 / sqrt(1.0 - arg * arg);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "acos";
+      }
+
+    private:
+
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+          CODI_EXCEPTION("Argument of acos outside of (-1, 1). (Value: %0.15e)", RealTraits::getPassiveValue(arg));
+        }
       }
   };
 #define OPERATION_LOGIC OperationAcos
@@ -211,34 +218,41 @@ namespace codi {
 #define FUNCTION acosl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for acosh
+  /// UnaryJacobianOperation implementation for acosh
   template<typename T_Real>
-  struct OperationAcosh : public UnaryOperation<T_Real> {
+  struct OperationAcosh : public UnaryJacobianOperation<T_Real, OperationAcosh<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return acosh(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if (Config::CheckExpressionArguments) {
-          if (RealTraits::getPassiveValue(arg) <= 1.0) {
-            CODI_EXCEPTION("acosh outside of (1, inf).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
-          }
+          checkArgument(arg);
         }
         return 1.0 / sqrt(arg * arg - 1.0);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "acosh";
+      }
+
+    private:
+
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        if (RealTraits::getPassiveValue(arg) > 1.0) {
+          CODI_EXCEPTION("Argument of acosh outside of (1, inf). (Value: %0.15e)", RealTraits::getPassiveValue(arg));
+        }
       }
   };
 #define OPERATION_LOGIC OperationAcosh
@@ -253,34 +267,41 @@ namespace codi {
 #define FUNCTION acoshl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for asin
+  /// UnaryJacobianOperation implementation for asin
   template<typename T_Real>
-  struct OperationAsin : public UnaryOperation<T_Real> {
+  struct OperationAsin : public UnaryJacobianOperation<T_Real, OperationAsin<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return asin(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if (Config::CheckExpressionArguments) {
-          if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
-            CODI_EXCEPTION("asin outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
-          }
+          checkArgument(arg);
         }
         return 1.0 / sqrt(1.0 - arg * arg);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "asin";
+      }
+
+    private:
+
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+          CODI_EXCEPTION("Argument of asin outside of (-1, 1). (Value: %0.15e)", RealTraits::getPassiveValue(arg));
+        }
       }
   };
 #define OPERATION_LOGIC OperationAsin
@@ -295,27 +316,28 @@ namespace codi {
 #define FUNCTION asinl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for asinh
+  /// UnaryJacobianOperation implementation for asinh
   template<typename T_Real>
-  struct OperationAsinh : public UnaryOperation<T_Real> {
+  struct OperationAsinh : public UnaryJacobianOperation<T_Real, OperationAsinh<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return asinh(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
+
         return 1.0 / sqrt(arg * arg + 1.0);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "asinh";
       }
@@ -332,29 +354,42 @@ namespace codi {
 #define FUNCTION asinhl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for atan
+  /// UnaryJacobianOperation implementation for atan
   template<typename T_Real>
-  struct OperationAtan : public UnaryOperation<T_Real> {
+  struct OperationAtan : public UnaryJacobianOperation<T_Real, OperationAtan<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return atan(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
+
+        if (Config::CheckExpressionArguments) {
+          checkArgument(arg);
+        }
+
         return 1.0 / (1.0 + arg * arg);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "atan";
+      }
+
+    private:
+
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        CODI_UNUSED(arg);
+        // Nothing to check.
       }
   };
 #define OPERATION_LOGIC OperationAtan
@@ -369,34 +404,41 @@ namespace codi {
 #define FUNCTION atanl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for atanh
+  /// UnaryJacobianOperation implementation for atanh
   template<typename T_Real>
-  struct OperationAtanh : public UnaryOperation<T_Real> {
+  struct OperationAtanh : public UnaryJacobianOperation<T_Real, OperationAtanh<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return atanh(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if (Config::CheckExpressionArguments) {
-          if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
-            CODI_EXCEPTION("atanh outside of (-1, 1).(Value: %0.15e)", RealTraits::getPassiveValue(arg));
-          }
+          checkArgument(arg);
         }
         return 1.0 / (1.0 - arg * arg);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "atanh";
+      }
+
+    private:
+
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        if (RealTraits::getPassiveValue(arg) <= -1.0 || 1.0 <= RealTraits::getPassiveValue(arg)) {
+          CODI_EXCEPTION("Argument of atanh outside of (-1, 1). (Value: %0.15e)", RealTraits::getPassiveValue(arg));
+        }
       }
   };
 #define OPERATION_LOGIC OperationAtanh
@@ -411,25 +453,25 @@ namespace codi {
 #define FUNCTION atanhl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for cbrt
+  /// UnaryJacobianOperation implementation for cbrt
   template<typename T_Real>
-  struct OperationCbrt : public UnaryOperation<T_Real> {
+  struct OperationCbrt : public UnaryJacobianOperation<T_Real, OperationCbrt<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return cbrt(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         if (Config::CheckExpressionArguments) {
           if (0.0 == RealTraits::getPassiveValue(arg)) {
-            CODI_EXCEPTION("Cbrt of zero value.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
+            CODI_EXCEPTION("Cbrt of zero value. (Value: %0.15e)", RealTraits::getPassiveValue(arg));
           }
         }
         if (result != 0.0) {
@@ -439,7 +481,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "cbrt";
       }
@@ -474,27 +516,27 @@ namespace codi {
     return ceil(RealTraits::getPassiveValue(arg.cast()));
   }
 
-  /// UnaryOperation implementation for cos
+  /// UnaryJacobianOperation implementation for cos
   template<typename T_Real>
-  struct OperationCos : public UnaryOperation<T_Real> {
+  struct OperationCos : public UnaryJacobianOperation<T_Real, OperationCos<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return cos(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return -sin(arg);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "cos";
       }
@@ -511,27 +553,27 @@ namespace codi {
 #define FUNCTION cosl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for cosh
+  /// UnaryJacobianOperation implementation for cosh
   template<typename T_Real>
-  struct OperationCosh : public UnaryOperation<T_Real> {
+  struct OperationCosh : public UnaryJacobianOperation<T_Real, OperationCosh<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return cosh(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return sinh(arg);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "sinh";
       }
@@ -548,27 +590,27 @@ namespace codi {
 #define FUNCTION coshl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for erf
+  /// UnaryJacobianOperation implementation for erf
   template<typename T_Real>
-  struct OperationErf : public UnaryOperation<T_Real> {
+  struct OperationErf : public UnaryJacobianOperation<T_Real, OperationErf<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return erf(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return 1.128379167095513 * exp(-(arg * arg));  // erf'(arg) = 2.0 / sqrt(pi) * exp(-arg^2)
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "erf";
       }
@@ -585,27 +627,27 @@ namespace codi {
 #define FUNCTION erfl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for erfc
+  /// UnaryJacobianOperation implementation for erfc
   template<typename T_Real>
-  struct OperationErfc : public UnaryOperation<T_Real> {
+  struct OperationErfc : public UnaryJacobianOperation<T_Real, OperationErfc<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return erfc(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return -1.128379167095513 * exp(-(arg * arg));  // erfc'(arg) = - 2.0 / sqrt(pi) * exp(-arg^2)
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "erfc";
       }
@@ -622,27 +664,27 @@ namespace codi {
 #define FUNCTION erfcl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for exp
+  /// UnaryJacobianOperation implementation for exp
   template<typename T_Real>
-  struct OperationExp : public UnaryOperation<T_Real> {
+  struct OperationExp : public UnaryJacobianOperation<T_Real, OperationExp<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return exp(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         return result;
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "exp";
       }
@@ -701,34 +743,41 @@ namespace codi {
     return isnormal(RealTraits::getPassiveValue(arg.cast()));
   }
 
-  /// UnaryOperation implementation for log
+  /// UnaryJacobianOperation implementation for log
   template<typename T_Real>
-  struct OperationLog : public UnaryOperation<T_Real> {
+  struct OperationLog : public UnaryJacobianOperation<T_Real, OperationLog<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return log(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if (Config::CheckExpressionArguments) {
-          if (0.0 > RealTraits::getPassiveValue(arg)) {
-            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
-          }
+          checkArgument(arg);
         }
         return 1.0 / arg;
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "log";
+      }
+
+    private:
+
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        if (0.0 > RealTraits::getPassiveValue(arg)) {
+          CODI_EXCEPTION("Logarithm of negative value or zero. (Value: %0.15e)", RealTraits::getPassiveValue(arg));
+        }
       }
   };
 #define OPERATION_LOGIC OperationLog
@@ -743,34 +792,40 @@ namespace codi {
 #define FUNCTION logl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for log10
+  /// UnaryJacobianOperation implementation for log10
   template<typename T_Real>
-  struct OperationLog10 : public UnaryOperation<T_Real> {
+  struct OperationLog10 : public UnaryJacobianOperation<T_Real, OperationLog10<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return log10(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if (Config::CheckExpressionArguments) {
-          if (0.0 > RealTraits::getPassiveValue(arg)) {
-            CODI_EXCEPTION("Logarithm of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
-          }
+          checkArgument(arg);
         }
         return 0.434294481903252 / arg;
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "log10";
+      }
+
+    private:
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        if (0.0 > RealTraits::getPassiveValue(arg)) {
+          CODI_EXCEPTION("Logarithm of negative value or zero. (Value: %0.15e)", RealTraits::getPassiveValue(arg));
+        }
       }
   };
 #define OPERATION_LOGIC OperationLog10
@@ -785,20 +840,20 @@ namespace codi {
 #define FUNCTION log10l
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for log1p
+  /// UnaryJacobianOperation implementation for log1p
   template<typename T_Real>
-  struct OperationLog1p : public UnaryOperation<T_Real> {
+  struct OperationLog1p : public UnaryJacobianOperation<T_Real, OperationLog1p<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return log1p(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
@@ -810,7 +865,7 @@ namespace codi {
         return 1.0 / (arg + 1.0);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "log1p";
       }
@@ -827,20 +882,20 @@ namespace codi {
 #define FUNCTION log1pl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for log2
+  /// UnaryJacobianOperation implementation for log2
   template<typename T_Real>
-  struct OperationLog2 : public UnaryOperation<T_Real> {
+  struct OperationLog2 : public UnaryJacobianOperation<T_Real, OperationLog2<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return log2(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
@@ -852,7 +907,7 @@ namespace codi {
         return 1.442695040888963 / arg;
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "log2";
       }
@@ -887,27 +942,27 @@ namespace codi {
     return round(arg.cast().getValue());
   }
 
-  /// UnaryOperation implementation for sin
+  /// UnaryJacobianOperation implementation for sin
   template<typename T_Real>
-  struct OperationSin : public UnaryOperation<T_Real> {
+  struct OperationSin : public UnaryJacobianOperation<T_Real, OperationSin<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return sin(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return cos(arg);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "sin";
       }
@@ -924,27 +979,27 @@ namespace codi {
 #define FUNCTION sinl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for sinh
+  /// UnaryJacobianOperation implementation for sinh
   template<typename T_Real>
-  struct OperationSinh : public UnaryOperation<T_Real> {
+  struct OperationSinh : public UnaryJacobianOperation<T_Real, OperationSinh<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return sinh(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         return cosh(arg);
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "sinh";
       }
@@ -961,26 +1016,24 @@ namespace codi {
 #define FUNCTION sinhl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for sqrt
+  /// UnaryJacobianOperation implementation for sqrt
   template<typename T_Real>
-  struct OperationSqrt : public UnaryOperation<T_Real> {
+  struct OperationSqrt : public UnaryJacobianOperation<T_Real, OperationSqrt<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return sqrt(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         if (Config::CheckExpressionArguments) {
-          if (0.0 > RealTraits::getPassiveValue(arg)) {
-            CODI_EXCEPTION("Sqrt of negative value or zero.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
-          }
+          checkArgument(arg);
         }
         if (result != 0.0) {
           return 0.5 / result;
@@ -989,9 +1042,17 @@ namespace codi {
         }
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "sqrt";
+      }
+
+    private:
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        if (0.0 > RealTraits::getPassiveValue(arg)) {
+          CODI_EXCEPTION("Sqrt of negative value or zero. (Value: %0.15e)", RealTraits::getPassiveValue(arg));
+        }
       }
   };
 #define OPERATION_LOGIC OperationSqrt
@@ -1006,35 +1067,41 @@ namespace codi {
 #define FUNCTION sqrtl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for tan
+  /// UnaryJacobianOperation implementation for tan
   template<typename T_Real>
-  struct OperationTan : public UnaryOperation<T_Real> {
+  struct OperationTan : public UnaryJacobianOperation<T_Real, OperationTan<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return tan(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(result);
         if (Config::CheckExpressionArguments) {
-          if (0.0 == cos(RealTraits::getPassiveValue(arg))) {
-            CODI_EXCEPTION("Tan evaluated at (0.5  + i) * PI.(Value: %0.15e)", RealTraits::getPassiveValue(arg));
-          }
+          checkArgument(arg);
         }
         Real tmp = 1.0 / cos(arg);
         return tmp * tmp;
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "tan";
+      }
+
+    private:
+      template<typename Arg>
+      CODI_INLINE static void checkArgument(Arg const& arg) {
+        if (0.0 == abs(cos(RealTraits::getPassiveValue(arg)))) {
+          CODI_EXCEPTION("Tan evaluated at (0.5 + i) * PI. (Value: %0.15e)", RealTraits::getPassiveValue(arg));
+        }
       }
   };
 #define OPERATION_LOGIC OperationTan
@@ -1049,27 +1116,27 @@ namespace codi {
 #define FUNCTION tanl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for tanh
+  /// UnaryJacobianOperation implementation for tanh
   template<typename T_Real>
-  struct OperationTanh : public UnaryOperation<T_Real> {
+  struct OperationTanh : public UnaryJacobianOperation<T_Real, OperationTanh<T_Real>> {
     public:
 
       using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return tanh(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         CODI_UNUSED(arg);
         return 1.0 - result * result;
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "tanh";
       }
@@ -1086,20 +1153,20 @@ namespace codi {
 #define FUNCTION tanhl
 #include "unaryOverloads.tpp"
 
-  /// UnaryOperation implementation for tgamma
+  /// UnaryJacobianOperation implementation for tgamma
   template<typename T_Real>
-  struct OperationTgamma : public UnaryOperation<T_Real> {
+  struct OperationTgamma : public UnaryJacobianOperation<T_Real, OperationTgamma<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
 
-      /// \copydoc UnaryOperation::primal
+      /// \copydoc UnaryJacobianOperation::primal
       template<typename Arg>
       static CODI_INLINE Real primal(Arg const& arg) {
         return tgamma(arg);
       }
 
-      /// \copydoc UnaryOperation::gradient
+      /// \copydoc UnaryJacobianOperation::gradient
       template<typename Arg>
       static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
         if (arg <= 0.0) {
@@ -1141,7 +1208,7 @@ namespace codi {
         return diGamma * result;
       }
 
-      /// \copydoc UnaryOperation::getMathRep()
+      /// \copydoc UnaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "tgamma";
       }

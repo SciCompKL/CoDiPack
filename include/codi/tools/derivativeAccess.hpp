@@ -339,7 +339,7 @@ namespace codi {
       /// Compile time set of all derivatives of the same order. \f$order \in \{0, ..., selectionDepth\}\f$.
       template<size_t order, typename Derivative, size_t selectionDepth = RealTraits::MaxDerivativeOrder<Type>()>
       static void setAllDerivatives(Type& v, Derivative const& d) {
-        CompileTimeLoop<DerivativeAccessImpl::maximumDerivatives(selectionDepth, order)>::eval(
+        static_for<DerivativeAccessImpl::maximumDerivatives(selectionDepth, order)>(
             CallSetDerivative<order, Derivative, selectionDepth>{}, v, d);
       }
 
@@ -384,7 +384,7 @@ namespace codi {
         public:
           template<size_t pos>
           void operator()(std::integral_constant<size_t, pos>, Type& v, Derivative const& d) {
-            DerivativeAccess::derivative<order, pos - 1, selectionDepth>(v) = d;
+            DerivativeAccess::derivative<order, pos, selectionDepth>(v) = d;
           }
       };
   };

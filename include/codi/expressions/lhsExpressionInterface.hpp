@@ -188,19 +188,7 @@ namespace codi {
       /// @name Implementation of NodeInterface
       /// @{
 
-      static bool constexpr EndPoint = true;  ///< \copydoc codi::NodeInterface::EndPoint
-
-      /// \copydoc codi::NodeInterface::forEachLink
-      template<typename Logic, typename... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
-        CODI_UNUSED(logic, args...);
-      }
-
-      /// \copydoc codi::NodeInterface::forEachLinkConstExpr
-      template<typename Logic, typename... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... CODI_UNUSED_ARG(args)) {
-        return Logic::NeutralElement;
-      }
+      static size_t constexpr LinkCount = 0;  ///< \copydoc codi::NodeInterface::LinkCount
 
     protected:
 

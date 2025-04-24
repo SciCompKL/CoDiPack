@@ -44,6 +44,11 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  namespace RealTraits {
+    template<typename T_Type, typename>
+    struct TraitsImplementation;
+  }
+
   namespace ComputationTraits {
 
     /**
@@ -207,7 +212,7 @@ namespace codi {
       using Outer = T_Outer;
       using Inner = T_Inner;
 
-      using InnerActive = typename Inner::ActiveResult;
+      using InnerActive = ExpressionTraits::ActiveResult<typename Inner::Real, typename Inner::ADLogic>;
       using InnerActiveConversion = ComputationTraits::AdjointConversionImpl<Outer, InnerActive>;
 
       using Return = typename InnerActiveConversion::Return;
@@ -234,6 +239,23 @@ namespace codi {
   /// Transpose specialization for floating point numbers.
   template<typename T>
   struct ComputationTraits::TransposeImpl<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
+
+    public:
+      using Jacobian = T;
+      using Return = T;
+
+      static Return transpose(Jacobian const& jacobian) {
+        return jacobian;
+      }
+  };
+
+  /// Transpose specialization for expressions of floating point numbers.
+  template<typename T>
+  struct ComputationTraits::TransposeImpl<
+      T, std::enable_if_t<
+             ExpressionTraits::isExpression<T> &
+             std::is_floating_point<typename RealTraits::TraitsImplementation<T, void>::PassiveReal>::value>> {
+
     public:
       using Jacobian = T;
       using Return = T;

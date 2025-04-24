@@ -60,7 +60,7 @@ namespace codi {
   template<typename T_Tape, typename T_Impl>
   struct ActiveTypeBase
       : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient, T_Tape, T_Impl>,
-        public AssignmentOperators<T_Tape, T_Impl>,
+        public AssignmentOperators<typename T_Tape::Real, T_Tape::AllowJacobianOptimization, T_Impl>,
         public IncrementOperators<T_Tape, T_Impl> {
     public:
 
@@ -145,7 +145,7 @@ namespace codi {
       /// @{
 
       using StoreAs = Impl const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = Impl;    ///< \copydoc codi::ExpressionInterface::ActiveResult
+      using ADLogic = Tape;         ///< \copydoc codi::ExpressionInterface::ADLogic
 
       /// @}
       /*******************************************************************************/

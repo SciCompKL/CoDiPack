@@ -317,6 +317,28 @@ namespace codi {
         return doubleData[usedMemoryIndex];
       }
 
+      /// Performs 'this - other' on all values provided by the tape.
+      TapeValues subtract(TapeValues const& other) {
+        if (this->sections.size() != other.sections.size() || this->doubleData.size() != other.doubleData.size() ||
+            this->longData.size() != other.longData.size() ||
+            this->unsignedLongData.size() != other.unsignedLongData.size()) {
+          CODI_EXCEPTION("Tape values have not the same number of entries.");
+        }
+
+        TapeValues result = *this;
+        for (size_t i = 0; i < result.doubleData.size(); i += 1) {
+          result.doubleData[i] -= other.doubleData[i];
+        }
+        for (size_t i = 0; i < result.longData.size(); i += 1) {
+          result.longData[i] -= other.longData[i];
+        }
+        for (size_t i = 0; i < result.unsignedLongData.size(); i += 1) {
+          result.unsignedLongData[i] -= other.unsignedLongData[i];
+        }
+
+        return result;
+      }
+
       /// @}
 
     private:

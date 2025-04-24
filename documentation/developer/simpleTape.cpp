@@ -266,17 +266,17 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
 //! [Storing - Unary operator]
     template<typename Arg, template<typename> class Op>
-    struct StoreOperator_Impl<codi::UnaryExpression<double, Arg, Op>> {
+    struct StoreOperator_Impl<codi::ComputeExpression<double, Op, Arg>> {
       public:
         static void store(
-            codi::UnaryExpression<double, Arg, Op> const& exp, SimpleTape& tape,
+            codi::ComputeExpression<double, Op, Arg> const& exp, SimpleTape& tape,
             double& resultValue, int& resultIdentifier, bool copy)
         {
 
           double argValue;
           int argIdentifier;
 
-          tape.storeOperator(exp.arg, argValue, argIdentifier, false);
+          tape.storeOperator(std::get<0>(exp.args), argValue, argIdentifier, false);
 
           if (argIdentifier != 0) {
             // Active argument or branch => store the operator.
@@ -302,10 +302,10 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
 //! [Storing - Other operators]
     template<typename Arg1, typename Arg2, template<typename> class Op>
-    struct StoreOperator_Impl<codi::BinaryExpression<double, Arg1, Arg2, Op>> {
+    struct StoreOperator_Impl<codi::ComputeExpression<double, Op, Arg1, Arg2>> {
       public:
         static void store(
-            codi::BinaryExpression<double, Arg1, Arg2, Op> const& exp, SimpleTape& tape,
+            codi::ComputeExpression<double, Op, Arg1, Arg2> const& exp, SimpleTape& tape,
             double& resultValue, int& resultIdentifier, bool copy)
         {
 
@@ -314,8 +314,8 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
           int argAIdentifier;
           int argBIdentifier;
 
-          tape.storeOperator(exp.argA, argAValue, argAIdentifier, false);
-          tape.storeOperator(exp.argB, argBValue, argBIdentifier, false);
+          tape.storeOperator(std::get<0>(exp.args), argAValue, argAIdentifier, false);
+          tape.storeOperator(std::get<1>(exp.args), argBValue, argBIdentifier, false);
 
           if (argAIdentifier != 0 || argBIdentifier != 0) {
             // Active argument or branch => store the operator.

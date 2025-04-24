@@ -64,10 +64,10 @@
   #include "../../config.h"
   #include "../../misc/macros.hpp"
   #include "../../traits/realTraits.hpp"
-  #include "../binaryExpression.hpp"
+  #include "../computeExpression.hpp"
   #include "../constantExpression.hpp"
   #include "../expressionInterface.hpp"
-  #define OPERATION_LOGIC BinaryOperation
+  #define OPERATION_LOGIC BinaryJacobianOperation
   #define FUNCTION func
   #define SECOND_ARG_TYPE double
   #define SECOND_ARG_CONVERSION ConstantDataConversion
@@ -77,9 +77,8 @@ namespace codi {
 
   /// Function overload for FUNCTION.
   template<typename Real, typename ArgA>
-  CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<SECOND_ARG_TYPE, SECOND_ARG_CONVERSION>, OPERATION_LOGIC>
-  FUNCTION(ExpressionInterface<Real, ArgA> const& argA, SECOND_ARG_TYPE const& argB) {
-    return BinaryExpression<Real, ArgA, ConstantExpression<SECOND_ARG_TYPE, SECOND_ARG_CONVERSION>, OPERATION_LOGIC>(
+  CODI_INLINE auto FUNCTION(ExpressionInterface<Real, ArgA> const& argA, SECOND_ARG_TYPE const& argB) {
+    return ComputeExpression<Real, OPERATION_LOGIC, ArgA, ConstantExpression<SECOND_ARG_TYPE, SECOND_ARG_CONVERSION>>(
         argA, ConstantExpression<SECOND_ARG_TYPE, SECOND_ARG_CONVERSION>(argB));
   }
 

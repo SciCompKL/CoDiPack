@@ -97,7 +97,9 @@ struct Runner {
         return 0;
       }
 
-      makePath(dirname(strdupa(dir)), mode);
+      char* dir_copy = strdup(dir);
+      makePath(dirname(dir_copy), mode);
+      free(dir_copy);
 
       return mkdir(dir, mode);
     }

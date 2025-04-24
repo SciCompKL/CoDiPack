@@ -61,7 +61,8 @@ namespace codi {
   struct ImmutableActiveType
       : public LhsExpressionInterface<typename T_ActiveType::Real, typename T_ActiveType::Gradient,
                                       typename T_ActiveType::Tape, ImmutableActiveType<T_ActiveType>>,
-        public AssignmentOperators<typename T_ActiveType::Tape, ImmutableActiveType<T_ActiveType>>,
+        public AssignmentOperators<typename T_ActiveType::Tape::Real, T_ActiveType::Tape::AllowJacobianOptimization,
+                                   ImmutableActiveType<T_ActiveType>>,
         public IncrementOperators<typename T_ActiveType::Tape, ImmutableActiveType<T_ActiveType>> {
     public:
 
@@ -109,8 +110,8 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = ImmutableActiveType const&;              ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = typename ActiveType::ActiveResult;  ///< \copydoc codi::ExpressionInterface::ActiveResult
+      using StoreAs = ImmutableActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ADLogic = Tape;                        ///< \copydoc codi::ExpressionInterface::ADLogic
 
       /// @}
       /*******************************************************************************/

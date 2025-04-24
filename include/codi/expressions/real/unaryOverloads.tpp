@@ -57,18 +57,18 @@
 
   #include "../../config.h"
   #include "../../misc/macros.hpp"
+  #include "../computeExpression.hpp"
   #include "../expressionInterface.hpp"
-  #include "../unaryExpression.hpp"
   #define FUNCTION func
-  #define OPERATION_LOGIC UnaryOperation
+  #define OPERATION_LOGIC UnaryJacobianOperation
 
 namespace codi {
 #endif
 
   /// Function overload for FUNCTION.
   template<typename Real, typename Arg>
-  CODI_INLINE UnaryExpression<Real, Arg, OPERATION_LOGIC> FUNCTION(ExpressionInterface<Real, Arg> const& arg) {
-    return UnaryExpression<Real, Arg, OPERATION_LOGIC>(arg);
+  CODI_INLINE auto FUNCTION(ExpressionInterface<Real, Arg> const& arg) {
+    return ComputeExpression<Real, OPERATION_LOGIC, Arg>(arg);
   }
 
 // Create a correct include environment for viewing and programming in an IDE.

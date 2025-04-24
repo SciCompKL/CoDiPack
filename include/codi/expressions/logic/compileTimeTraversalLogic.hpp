@@ -37,7 +37,9 @@
 #include <utility>
 
 #include "../../config.h"
+#include "../../misc/compileTimeLoop.hpp"
 #include "../../misc/macros.hpp"
+#include "../../traits/misc/removeAll.hpp"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -97,7 +99,7 @@ namespace codi {
       template<typename Node, typename... Args>
       CODI_INLINE static ResultType constexpr node(Args&&... args) {
         // Default logic forwards to all links.
-        return toLinks<Node>(std::forward<Args>(args)...);
+        return Impl::template toLinks<Node>(std::forward<Args>(args)...);
       }
 
       /**
@@ -125,7 +127,7 @@ namespace codi {
       template<size_t ChildNumber, typename Child, typename Root, typename... Args>
       CODI_INLINE static ResultType constexpr link(Args&&... args) {
         // Default logic forwards to node evaluation.
-        return toNode<Child>(std::forward<Args>(args)...);
+        return Impl::template toNode<Child>(std::forward<Args>(args)...);
       }
 
       /// @}
@@ -155,13 +157,39 @@ namespace codi {
       /// Helper method to distinguish between leaf nodes and normal nodes.
       template<typename Node, typename... Args>
       CODI_INLINE static ResultType constexpr toNode(Args&&... args) {
-        return CallSwitch<Impl, Node::EndPoint>::template call<Node>(std::forward<Args>(args)...);
+        return CallSwitch<Impl, 0 == Node::LinkCount>::template call<Node>(std::forward<Args>(args)...);
       }
 
-      /// Helper method which calls forEachLinkConstExpr on the node.
+    private:
+
+      // Reduce variadic for just one argument.
+      template<typename Arg1>
+      CODI_INLINE static ResultType constexpr reduceVariadic(Arg1&& arg1) {
+        return arg1;
+      }
+
+      // Recursively calls reduceVariadic on the remainder and reduces the result with Impl::reduce together with
+      // the first argument.
+      template<typename Arg1, typename... Args>
+      CODI_INLINE static ResultType constexpr reduceVariadic(Arg1&& arg1, Args&&... args) {
+        return Impl::reduce(std::forward<Arg1>(arg1), reduceVariadic(std::forward<Args>(args)...));
+      }
+
+      // Expands the index sequence with the argument type of the getLink method from the Node. Calls reduceVariadic
+      // with all arguments.
+      template<typename Node, std::size_t... Is, typename... Args>
+      CODI_INLINE static ResultType constexpr toLinksImpl(std::index_sequence<Is...>, Args&&... args) {
+        return reduceVariadic(
+            Impl::template link<Is, remove_all<decltype(std::declval<Node>().template getLink<Is>())>, Node>(
+                std::forward<Args>(args)...)...);
+      }
+
+    public:
+
+      /// Helper method which calls the method 'link' on all links of the node and reduces the results.
       template<typename Node, typename... Args>
       CODI_INLINE static ResultType constexpr toLinks(Args&&... args) {
-        return Node::template forEachLinkConstExpr<Impl>(std::forward<Args>(args)...);
+        return toLinksImpl<Node>(std::make_index_sequence<Node::LinkCount>(), std::forward<Args>(args)...);
       }
   };
 }

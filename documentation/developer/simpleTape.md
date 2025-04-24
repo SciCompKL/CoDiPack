@@ -116,8 +116,8 @@ strategy with expressions (\ref Expressions), the storing of pure operators is a
 recursively through the expression tree and store all operators in this tree. In order to do that we define a helper
 class `StoreOperator_Impl`. This class is then specialized for all the different nodes in a CoDiPack expression. In our
 case these will be
- - codi::UnaryExpression,
- - codi::BinaryExpression,
+ - codi::ComputeExpression with one argument,
+ - codi::ComputeExpression with two arguments,
  - codi::ConstantExpression,
  - codi::LhsExpressionInterface.
 

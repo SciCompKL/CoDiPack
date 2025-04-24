@@ -63,28 +63,73 @@ namespace codi {
     /// @name Expression traits.
     /// @{
 
-    /// Validates if the active type results of two expressions are the same or compatible. `void` results are
-    /// interpreted as the active type result of a constant expression.
-    template<typename ResultA, typename ResultB, typename = void>
-    struct ValidateResultImpl {
+    /**
+     *  @brief Validates if the AD logic of an arbitrary amount of expressions are the same or compatible. `void`
+     * results are interpreted as the AD logic of a constant expression.
+     *
+     *  Implementation proxy for AD logic validation. See the specializations for details.
+     */
+    template<typename... Logic>
+    struct ValidateADLogicImpl;
+
+    /// Validation for one arguments just defines the input logic as the valid one.
+    template<typename Logic>
+    struct ValidateADLogicImpl<Logic> {
+      public:
+
+        /// The resulting AD logic type of an expression.
+        using ADLogic = Logic;
+    };
+
+    /// Validation for two arguments. Validates if one of the two is void or both are the same.
+    template<typename LogicA, typename LogicB>
+    struct ValidateADLogicImpl<LogicA, LogicB> {
       private:
-        static bool constexpr isAVoid = std::is_same<void, ResultA>::value;
-        static bool constexpr isBVoid = std::is_same<void, ResultB>::value;
+        static bool constexpr isAVoid = std::is_same<void, LogicA>::value;
+        static bool constexpr isBVoid = std::is_same<void, LogicB>::value;
         static bool constexpr isBothVoid = isAVoid & isBVoid;
-        static bool constexpr isBothSame = std::is_same<ResultA, ResultB>::value;
+        static bool constexpr isBothSame = std::is_same<LogicA, LogicB>::value;
 
         // Either one can be void (aka. constant value) but not both otherwise both need to be the same.
-        CODI_STATIC_ASSERT((!isBothVoid) & (!isAVoid | !isBVoid | isBothSame), "Result types need to be the same.");
+        CODI_STATIC_ASSERT((!isBothVoid) & (!isAVoid | !isBVoid | isBothSame), "AD logic types need to be the same.");
 
       public:
 
-        /// The resulting active type of an expression.
-        using ActiveResult = typename std::conditional<isBVoid, ResultA, ResultB>::type;
+        /// The resulting AD logic type of an expression.
+        using ADLogic = typename std::conditional<isBVoid, LogicA, LogicB>::type;
     };
 
-    /// \copydoc ValidateResultImpl
-    template<typename ResultA, typename ResultB>
-    using ValidateResult = ValidateResultImpl<ResultA, ResultB>;
+    /// Validation for an arbitrary number of arguments. Gets the logic of the remainder and validates this with LogicA.
+    template<typename LogicA, typename... LogicOther>
+    struct ValidateADLogicImpl<LogicA, LogicOther...> {
+      public:
+
+        /// The resulting AD logic type of an expression.
+        using ADLogic =
+            typename ValidateADLogicImpl<LogicA, typename ValidateADLogicImpl<LogicOther...>::ADLogic>::ADLogic;
+    };
+
+    /// \copybrief ValidateADLogicImpl
+    template<typename... Results>
+    using ValidateADLogic = ValidateADLogicImpl<Results...>;
+
+    /// Create a CoDiPack active type that can capture an expression result. The ADLogic type definition in the
+    /// expression is usually the tape type.
+    /// @tparam T_Real Real value of the expression.
+    /// @tparam T_Tape ADLogic of the expression.
+    /// @tparam T_isStatic If a static context active type should be used.
+    template<typename T_Real, typename T_Tape, bool T_isStatic = false, typename = void>
+    struct ActiveResultImpl {
+        using Real = CODI_DD(T_Real, CODI_ANY);  ///< See ActiveResultImpl.
+        using Tape = CODI_DD(T_Tape, CODI_ANY);  ///< See ActiveResultImpl.
+
+        /// The resulting active type of an expression.
+        using ActiveResult = CODI_ANY;
+    };
+
+    /// \copydoc ActiveResultImpl
+    template<typename Real, typename Tape, bool isStatic = false>
+    using ActiveResult = typename ActiveResultImpl<Real, Tape, isStatic>::ActiveResult;
 
     /// @}
     /*******************************************************************************/

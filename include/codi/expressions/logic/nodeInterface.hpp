@@ -66,16 +66,11 @@ namespace codi {
       /*******************************************************************************/
       /// @name Interface definition
 
-      static bool constexpr EndPoint = CODI_UNDEFINED_VALUE;  ///< If this expression is handled as a leaf in the tree.
+      static size_t constexpr LinkCount = CODI_UNDEFINED_VALUE;  ///< Number of links the expression has. Zero will
+                                                                 ///< handle the expression as a leaf node.
 
-      /// Call the link method of the given logic for all arguments (links) of this node (not to be confused with args).
-      /// Pass args to each call.
-      template<typename Logic, typename... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const;
-
-      /// Call the link method of the given logic for all arguments (links) of this node (not to be confused with args).
-      /// Pass args to each call.
-      template<typename Logic, typename... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... args);
+      template<size_t argNumber>
+      CODI_INLINE CODI_UNDEFINED const& getLink() const;  ///< Get the argument for the specific link. Usually
+                                                                  ///< an expression.
   };
 }
